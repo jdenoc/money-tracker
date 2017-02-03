@@ -9,10 +9,10 @@ class Attachment extends Model {
     protected $table = 'attachments';
     public $timestamps = false; // turns off default laravel time stamping
     protected $fillable = [
-        'uuid', 'entry_id', 'attachment'
+        'entry_id', 'attachment', 'uid'
     ];
     protected $guarded = [
-        'stamp'
+        'id', 'stamp'
     ];
 
     public function entry(){
