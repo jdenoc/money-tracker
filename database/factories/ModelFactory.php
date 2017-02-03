@@ -17,3 +17,10 @@ $factory->define(App\Tag::class, function(Faker\Generator $faker){
         'tag'=>$faker->word
     ];
 });
+
+/** @var \Illuminate\Database\Eloquent\Factory $factory */
+$factory->define(App\Account::class, function(Faker\Generator $faker){
+    return [
+        'account'=>$faker->company,  // this is supposed to be a bank name
+    ];
+});
