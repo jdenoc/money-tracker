@@ -6,12 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Entry extends Model {
 
+    const CREATED_AT = 'create_stamp';
+    const UPDATED_AT = 'modified_stamp';
+
     protected $table = 'entries';
     protected $fillable = [
         'entry_date', 'account_type', 'entry_value', 'memo', 'expense', 'confirm', 'deleted'
     ];
     protected $guarded = [
-        'id', 'stamp'
+        'id', 'create_stamp', 'modified_stamp'
     ];
 
     public function account_type(){
