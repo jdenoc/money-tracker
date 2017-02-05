@@ -14,9 +14,13 @@ class TagController extends Controller {
      */
     public function get_tags(){
         $tags = Tag::all();
-        $tags = $tags->toArray();
-        $tags['count'] = Tag::count();
-        return response($tags);
+        if(is_null($tags) || $tags->isEmpty()){
+            return response([], 404);
+        } else {
+            $tags = $tags->toArray();
+            $tags['count'] = Tag::count();
+            return response($tags);
+        }
     }
 
 }
