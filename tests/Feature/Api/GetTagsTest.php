@@ -9,7 +9,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 Use App\Tag;
 
-class TagsTest extends TestCase {
+class GetTagsTest extends TestCase {
 
     use DatabaseMigrations;
 

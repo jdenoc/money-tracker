@@ -10,7 +10,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 use App\Account;
 
-class AccountsTest extends TestCase {
+class GetAccountsTest extends TestCase {
 
     use DatabaseMigrations;
 
