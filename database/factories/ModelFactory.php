@@ -21,6 +21,7 @@ $factory->define(App\Tag::class, function(Faker\Generator $faker){
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 $factory->define(App\Account::class, function(Faker\Generator $faker){
     return [
-        'account'=>$faker->company,  // this is supposed to be a bank name
+        'account'=>$faker->company,         // this is supposed to be a bank name
+        'total'=>$faker->randomFloat(2),    // Float like 10.98
     ];
 });
