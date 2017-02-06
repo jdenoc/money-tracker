@@ -13,14 +13,6 @@ class TagsTest extends TestCase {
 
     use DatabaseMigrations;
 
-    /**
-     * SCENARIO: a need to obtain a list of entry tags available
-     *  GIVEN:   there are tag values present in the database
-     *  WHEN:    visiting GET /api/tags
-     *  THEN:    we will receive a 200 status
-     *  AND:     display a json output of tags
-     *           output example: { {"id": 1, "tag": "tag1"}, {"id": 2, "tag": "tag2"}, "count": 2 }
-     */
     public function testObtainingListOfTagsWhenTagsArePresentInDatabase(){
         // GIVEN
         $tag_count = 5;
@@ -49,14 +41,6 @@ class TagsTest extends TestCase {
         }
     }
 
-    /**
-     * SCENARIO: a need to obtain a list of entry tags available
-     *  GIVEN:   there are NO tag values present in the database
-     *  WHEN:    visiting GET /api/tags
-     *  THEN:    we will receive a 404 status
-     *  AND:     display empty json output
-     *           output example: []
-     */
     public function testObtainingListOfTagsWhenTagsAreNotPresentInDatabase(){
         // GIVEN - nothing. database should be empty
 

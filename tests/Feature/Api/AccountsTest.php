@@ -14,14 +14,6 @@ class AccountsTest extends TestCase {
 
     use DatabaseMigrations;
 
-    /**
-     * SCENARIO: obtain a list of accounts
-     *  GIVEN:   there are accounts in the database
-     *  WHEN:    visiting GET /api/accounts
-     *  THEN:    receive a 200 status
-     *  AND:     get a list of accounts in json format
-     *           example output: { {"id": 1, "account": "account1", "total": "0.00"}, {"id": 2, "account": "account2", "total": "0.00"}, "count": 2 }
-     */
     public function testGetListOfAccountsWhenTheyAreAvailable(){
         // GIVEN
         $account_count = 2;
@@ -51,14 +43,6 @@ class AccountsTest extends TestCase {
         }
     }
 
-    /**
-     * SCENARIO: obtain a list of accounts
-     *  GIVEN:   there are NO accounts in the database
-     *  WHEN:    visiting GET /api/accounts
-     *  THEN:    receive a 404 status
-     *  AND:     get an empty array in json format
-     *           example output: []
-     */
     public function testGetListOfAccountsWhenNoAccountsAreAvailable(){
         // GIVEN - nothing. there should be no data in database
 
