@@ -2,18 +2,19 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
-
-class AccountType extends Model {
+class AccountType extends BaseModel {
 
     protected $table = 'account_types';
-    public $timestamps = false; // turns off default laravel time stamping
     protected $fillable = [
         'type', 'last_digits', 'type_name', 'account_group', 'disabled'
     ];
     protected $guarded = [
-        'id','last_updated'
+        'id', 'last_updated'
     ];
+    protected $dates = [
+        'last_updated'
+    ];
+    public $timestamps = false; // turns off default laravel time stamping
 
     public function account(){
         return $this->belongsTo('App\Account', 'account_group');

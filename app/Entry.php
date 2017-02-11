@@ -2,9 +2,7 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
-
-class Entry extends Model {
+class Entry extends BaseModel {
 
     const CREATED_AT = 'create_stamp';
     const UPDATED_AT = 'modified_stamp';

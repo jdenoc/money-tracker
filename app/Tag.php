@@ -2,9 +2,7 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
-
-class Tag extends Model {
+class Tag extends BaseModel {
 
     protected $table = 'tags';
     public $timestamps = false; // turns off default laravel timestamping
