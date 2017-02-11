@@ -17,6 +17,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('tags', 'Api\TagController@get_tags');                           // /api/tags
-Route::get('accounts', 'Api\AccountController@get_accounts');               // /api/accounts
-Route::get('account/{account_id}', 'Api\AccountController@get_account');   // /api/account/{account_id}
+Route::get('tags', 'Api\TagController@get_tags');                           // GET /api/tags
+Route::get('accounts', 'Api\AccountController@get_accounts');               // GET /api/accounts
+Route::get('account/{account_id}', 'Api\AccountController@get_account');    // GET /api/account/{account_id}
+Route::get('entry/{entry_id}', 'Api\EntryController@get_entry');            // GET /api/entry/{entry_id}

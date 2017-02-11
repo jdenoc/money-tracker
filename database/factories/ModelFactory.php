@@ -39,3 +39,25 @@ $factory->define(App\AccountType::class, function(Faker\Generator $faker){
         'account_group'=>$faker->randomNumber()
     ];
 });
+
+/** @var \Illuminate\Database\Eloquent\Factory $factory */
+$factory->define(App\Entry::class, function(Faker\Generator $faker){
+    return [
+        'entry_date'=>date("Y-m-d"),
+        'account_type'=>$faker->randomNumber(),
+        'entry_value'=>$faker->randomFloat(2, 0, 99999.99),  // Float > 0.00
+        'memo'=>$faker->words(3, true),
+        'expense'=>$faker->boolean,
+        'confirm'=>$faker->boolean
+    ];
+});
+
+/** @var \Illuminate\Database\Eloquent\Factory $factory */
+$factory->define(App\Attachment::class, function(Faker\Generator $faker){
+    return [
+        'uuid'=>$faker->uuid,
+        'attachment'=>$faker->word.'.'.$faker->fileExtension,
+        'entry_id'=>$faker->randomNumber(),
+        'stamp'=>date('Y-m-d H:i:s')
+    ];
+});
