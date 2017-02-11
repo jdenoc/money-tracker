@@ -35,13 +35,12 @@ class AccountController extends Controller {
         if(is_null($account)){
             return response([], 404);
         } else {
-            $account_as_array = $account->toArray();
-            foreach($account_as_array['account_types'] as $key=>$account_type){
-                unset($account_as_array['account_types'][$key]['account_group']);  // We already know what account this is. We don't need to re-show it.
-                unset($account_as_array['account_types'][$key]['disabled']);       // We're only showing non-disabled account_types. No need to show that they're actually disabled.
-                unset($account_as_array['account_types'][$key]['last_updated']);   // We're
-            }
-            return response($account_as_array);
+            $account->account_types->makeHidden([
+                'account_group',    // We already know what account this is. We don't need to re-show it.
+                'disabled',         // We're only showing non-disabled account_types. No need to show that they're actually disabled.
+                'last_updated'
+            ]);
+            return response($account);
         }
     }
 
