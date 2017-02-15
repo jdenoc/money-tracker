@@ -72,7 +72,7 @@ class Entry extends BaseModel {
         if(is_null($collection_of_tags) || $collection_of_tags->isEmpty()){
             return [];
         } else {
-            return $collection_of_tags->pluck('pivot.tag_id');
+            return $collection_of_tags->pluck('pivot.tag_id')->toArray();
         }
     }
 
