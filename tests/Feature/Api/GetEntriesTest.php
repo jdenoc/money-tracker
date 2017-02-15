@@ -213,24 +213,13 @@ class GetEntriesTest extends TestCase {
         $this->assertEquals($generated_entry->expense, $entry_nodes['expense'], $failure_msg);
         $this->assertEquals($generated_entry->confirm, $entry_nodes['confirm'], $failure_msg);
         $this->assertDateFormat($entry_nodes['create_stamp'], Carbon::ATOM, $failure_msg);
-        $this->assertDatetimeWithinOneSecond($entry_nodes['create_stamp'], $generated_entry->create_stamp, $failure_msg);
+        $this->assertDatetimeWithinOneSecond($generated_entry->create_stamp, $entry_nodes['create_stamp'], $failure_msg);
         $this->assertDateFormat($entry_nodes['modified_stamp'], Carbon::ATOM, $failure_msg);
-        $this->assertDatetimeWithinOneSecond($entry_nodes['modified_stamp'], $generated_entry->modified_stamp, $failure_msg);
+        $this->assertDatetimeWithinOneSecond($generated_entry->modified_stamp, $entry_nodes['modified_stamp'], $failure_msg);
         $this->assertTrue(is_bool($entry_nodes['has_attachments']), $failure_msg);
         $this->assertEquals($generated_entry->has_attachments(), $entry_nodes['has_attachments'], $failure_msg);
         $this->assertTrue(is_array($entry_nodes['tags']), $failure_msg);
         $this->assertEquals($generated_entry->get_tag_ids(), $entry_nodes['tags'], $failure_msg);
-    }
-
-    public function assertDateFormat($date_string, $format, $assert_failure_message){
-        $date = \DateTime::createFromFormat($format, $date_string);
-        $this->assertTrue($date->format($format) === $date_string, $assert_failure_message);
-    }
-
-    private function assertDatetimeWithinOneSecond($entry_node_datetime, $generated_entry_datetime, $assert_failure_message){
-        $node_date = strtotime($entry_node_datetime);
-        $factory_date = strtotime($generated_entry_datetime);
-        $this->assertTrue(abs($node_date - $factory_date) <= 1, $assert_failure_message);
     }
 
 }

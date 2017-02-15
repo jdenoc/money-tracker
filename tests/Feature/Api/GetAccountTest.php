@@ -28,8 +28,7 @@ class GetAccountTest extends TestCase {
 
         // THEN
         $response->assertStatus(Response::HTTP_OK);
-        $response_body = $response->getContent();
-        $response_body_as_array = json_decode($response_body, true);
+        $response_body_as_array = $this->getResponseAsArray($response);
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertArrayHasKey('id', $response_body_as_array);
         $this->assertEquals($response_body_as_array['id'], $generated_account->id);
@@ -75,8 +74,7 @@ class GetAccountTest extends TestCase {
 
         // THEN
         $response->assertStatus(Response::HTTP_OK);
-        $response_body = $response->getContent();
-        $response_body_as_array = json_decode($response_body, true);
+        $response_body_as_array = $this->getResponseAsArray($response);
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertArrayHasKey('id', $response_body_as_array);
         $this->assertEquals($response_body_as_array['id'], $generated_account->id);
@@ -118,7 +116,7 @@ class GetAccountTest extends TestCase {
         ];
         $this->assertTrue(
             !in_array($disabled_account_type_as_array, $response_body_as_array['account_types']),
-            "Factory generate account in JSON: ".json_encode($disabled_account_type_as_array)."\nResponse Body:".$response_body
+            "Factory generate account in JSON: ".json_encode($disabled_account_type_as_array)."\nResponse Body:".$response->getContent()
         );
     }
 
@@ -131,8 +129,7 @@ class GetAccountTest extends TestCase {
 
         // THEN
         $response->assertStatus(Response::HTTP_OK);
-        $response_body = $response->getContent();
-        $response_body_as_array = json_decode($response_body, true);
+        $response_body_as_array = $this->getResponseAsArray($response);
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertArrayHasKey('id', $response_body_as_array);
         $this->assertEquals($response_body_as_array['id'], $generated_account->id);
@@ -156,8 +153,7 @@ class GetAccountTest extends TestCase {
 
         // THEN
         $response->assertStatus(Response::HTTP_OK);
-        $response_body = $response->getContent();
-        $response_body_as_array = json_decode($response_body, true);
+        $response_body_as_array = $this->getResponseAsArray($response);
         $this->assertArrayHasKey('id', $response_body_as_array);
         $this->assertEquals($generated_account->id, $response_body_as_array['id']);
         $this->assertArrayHasKey('account', $response_body_as_array);
@@ -178,8 +174,7 @@ class GetAccountTest extends TestCase {
 
         // THEN
         $response->assertStatus(Response::HTTP_NOT_FOUND);
-        $response_body = $response->getContent();
-        $response_body_as_array = json_decode($response_body, true);
+        $response_body_as_array = $this->getResponseAsArray($response);
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertEmpty($response_body_as_array);
     }
