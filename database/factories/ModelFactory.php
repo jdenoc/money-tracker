@@ -42,7 +42,7 @@ $factory->define(App\Account::class, function(Faker\Generator $faker){
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 $factory->define(App\AccountType::class, function(Faker\Generator $faker){
     $bank_account_number = $faker->bankAccountNumber;
-    $account_types = App\Helpers\DatabaseHelper::get_enum_values('account_types', 'type');
+    $account_types = App\AccountType::get_enum_values('type');
     $account_type = $account_types[array_rand($account_types)];
 
     return [

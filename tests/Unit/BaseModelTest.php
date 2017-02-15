@@ -6,9 +6,9 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
-use App\Helpers\DatabaseHelper;
+use App;
 
-class DatabaseHelperTest extends TestCase {
+class BaseModelTest extends TestCase {
 
     use DatabaseMigrations;
 
@@ -22,11 +22,10 @@ class DatabaseHelperTest extends TestCase {
         // GIVEN
         // as of the migration 2015_09_07_002949_create_account_types_table
         // the database column account_types.type exists and is of type ENUM
-        $table = 'account_types';
         $column = 'type';
 
         // WHEN
-        $enum_values = DatabaseHelper::get_enum_values($table, $column);
+        $enum_values = App\AccountType::get_enum_values($column);
 
         // THEN
         $this->assertNotEmpty($enum_values);
@@ -43,11 +42,10 @@ class DatabaseHelperTest extends TestCase {
         // GIVEN
         // as of the migration 2015_09_07_002949_create_account_types_table
         // the database column account_types.id exists and is of type INT
-        $table = 'account_types';
         $column = 'id';
 
         // WHEN
-        $enum_values = DatabaseHelper::get_enum_values($table, $column);
+        $enum_values = App\AccountType::get_enum_values($column);
 
         // THEN
         $this->assertEmpty($enum_values);
@@ -66,11 +64,10 @@ class DatabaseHelperTest extends TestCase {
 
         // GIVEN
         // the database column account_types.foobar does not exist as of 2017-02-05
-        $table = 'account_types';
         $column = 'foobar';
 
         // WHEN
-        $enum_values = DatabaseHelper::get_enum_values($table, $column);
+        $enum_values = App\AccountType::get_enum_values($column);
     }
 
 }
