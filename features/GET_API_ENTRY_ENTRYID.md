@@ -15,14 +15,14 @@ _example output:_
 - - -
 
 **Scenario:** retrieve an entry record
-> **GIVEN:** an entry_id
-> **AND:** there is an entry in the database
-> **AND:** there is an account_type record in the database
-> **AND:** there are tags in the database that are associated with the entry
-> **AND:** there are attachments in the database that are associated with the entry
-> **WHEN:** visiting GET /api/entry/{entry_id}
-> **THEN:** receive a 200 status
-> **AND:** get a json response with entry data
+> **GIVEN:** an entry_id  
+> **AND:** there is an entry in the database  
+> **AND:** there is an account_type record in the database  
+> **AND:** there are tags in the database that are associated with the entry  
+> **AND:** there are attachments in the database that are associated with the entry  
+> **WHEN:** visiting GET /api/entry/{entry_id}  
+> **THEN:** receive a 200 status  
+> **AND:** get a json response with entry data  
 > **AND:** entry data will contain "attachments" and "tags" array nodes
 
 _example output:_
@@ -52,15 +52,15 @@ _example output:_
 - - -
 
 **Scenario:** retrieve an entry record but with no tags
-> **GIVEN:** an entry_id
-> **AND:** there is an entry in the database
-> **AND:** there is an account_type record in the database
-> **AND:** there are no tags in the database that are associated with the entry
-> **AND:** there are attachments in the database that are associated with the entry
-> **WHEN:** visiting GET /api/entry/{entry_id}
-> **THEN:** receive a 200 status
-> **AND:** get a json response with entry data
-> **AND:** entry data will contain "attachments" and "tags" array nodes
+> **GIVEN:** an entry_id  
+> **AND:** there is an entry in the database  
+> **AND:** there is an account_type record in the database  
+> **AND:** there are no tags in the database that are associated with the entry  
+> **AND:** there are attachments in the database that are associated with the entry  
+> **WHEN:** visiting GET /api/entry/{entry_id}  
+> **THEN:** receive a 200 status  
+> **AND:** get a json response with entry data  
+> **AND:** entry data will contain "attachments" and "tags" array nodes  
 > **AND:** "tags" array node is empty
 
 _example output:_
@@ -86,15 +86,15 @@ _example output:_
 - - -
 
 **Scenario:** retrieve an entry record but with no attachments
-> **GIVEN:** an entry_id
-> **AND:** there is an entry in the database
-> **AND:** there is an account_type record in the database
-> **AND:** there are tags in the database that are associated with the entry
-> **AND:** there are no attachments in the database that are associated with the entry
-> **WHEN:** visiting GET /api/entry/{entry_id}
-> **THEN:** receive a 200 status
-> **AND:** get a json response with entry data
-> **AND:** entry data will contain "attachments" and "tags" array nodes
+> **GIVEN:** an entry_id  
+> **AND:** there is an entry in the database  
+> **AND:** there is an account_type record in the database  
+> **AND:** there are tags in the database that are associated with the entry  
+> **AND:** there are no attachments in the database that are associated with the entry  
+> **WHEN:** visiting GET /api/entry/{entry_id}  
+> **THEN:** receive a 200 status  
+> **AND:** get a json response with entry data  
+> **AND:** entry data will contain "attachments" and "tags" array nodes  
 > **AND:** "attachments" array node is empty
 
 _example output:_
@@ -121,16 +121,16 @@ _example output:_
 - - -
 
 **Scenario:** retrieve an entry record but with no tags and no attachments
-> **GIVEN:** an entry_id
-> **AND:** there is an entry in the database
-> **AND:** there is an account_type record in the database
-> **AND:** there are no tags in the database that are associated with the entry
-> **AND:** there are no attachments in the database that are associated with the entry
-> **WHEN:** visiting GET /api/entry/{entry_id}
-> **THEN:** receive a 200 status
-> **AND:** get a json response with entry data
-> **AND:** entry data will contain "attachments" and "tags" array nodes
-> **AND:** "tags" array node is empty
+> **GIVEN:** an entry_id  
+> **AND:** there is an entry in the database  
+> **AND:** there is an account_type record in the database  
+> **AND:** there are no tags in the database that are associated with the entry  
+> **AND:** there are no attachments in the database that are associated with the entry  
+> **WHEN:** visiting GET /api/entry/{entry_id}  
+> **THEN:** receive a 200 status  
+> **AND:** get a json response with entry data  
+> **AND:** entry data will contain "attachments" and "tags" array nodes  
+> **AND:** "tags" array node is empty  
 > **AND:** "attachments" array node is empty
 
 _example output:_
@@ -152,8 +152,8 @@ _example output:_
 
 **Scenario:** attempt to retrieve an entry when entry is marked as "deleted"
 > **GIVEN:** an entry_id  
-> **AND:** there is an entry in the database
-> **AND:** then entry is marked "deleted"
+> **AND:** there is an entry in the database  
+> **AND:** then entry is marked "deleted"  
 > **WHEN:** visiting GET /api/entry/{entry_id}  
 > **THEN:** receive a 404 status  
 > **AND:** get an empty array in json format

@@ -2,10 +2,12 @@
 
 namespace Tests\Feature\Api;
 
+use Carbon\Carbon;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Symfony\Component\HttpFoundation\Response;
 use Faker;
 
 use App\AccountType;
@@ -19,13 +21,14 @@ class GetEntryTest extends TestCase {
 
     private $_generate_tag_count;
     private $_generate_attachment_count;
+    private $_base_uri = '/api/entry/';
 
     public function setUp(){
         parent::setUp();
 
         $faker = Faker\Factory::create();
-        $this->_generate_attachment_count = $faker->randomNumber(1);
-        $this->_generate_tag_count = $faker->randomNumber(1);
+        $this->_generate_attachment_count = $faker->randomDigitNotNull;
+        $this->_generate_tag_count = $faker->randomDigitNotNull;
     }
 
     public function testGetEntryWithNoData(){
@@ -33,11 +36,11 @@ class GetEntryTest extends TestCase {
         $entry_id = 99999;
 
         // WHEN
-        $response = $this->get('/api/entry/'.$entry_id);
+        $response = $this->get($this->_base_uri.$entry_id);
 
         // THEN
-        $response->assertStatus(404);
-        $response_body_as_array = $this->convertResponseToArray($response);
+        $response->assertStatus(Response::HTTP_NOT_FOUND);
+        $response_body_as_array = $this->getResponseAsArray($response);
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertEmpty($response_body_as_array);
     }
@@ -50,11 +53,11 @@ class GetEntryTest extends TestCase {
         $generated_attachments_as_array = $this->generateAttachmentsAndOutputAsArray($generated_entry->id);
 
         // WHEN
-        $response = $this->get('/api/entry/'.$generated_entry->id);
+        $response = $this->get($this->_base_uri.$generated_entry->id);
 
         // THEN
-        $response->assertStatus(200);
-        $response_body_as_array = $this->convertResponseToArray($response);
+        $response->assertStatus(Response::HTTP_OK);
+        $response_body_as_array = $this->getResponseAsArray($response);
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertParentNodesExist($response_body_as_array);
         $this->assertEntryNodeValuesExcludingRelationshipsOK($generated_entry, $response_body_as_array);
@@ -69,11 +72,11 @@ class GetEntryTest extends TestCase {
         $generated_attachments_as_array = $this->generateAttachmentsAndOutputAsArray($generated_entry->id);
 
         // WHEN
-        $response = $this->get('/api/entry/'.$generated_entry->id);
+        $response = $this->get($this->_base_uri.$generated_entry->id);
 
         // THEN
-        $response->assertStatus(200);
-        $response_body_as_array = $this->convertResponseToArray($response);
+        $response->assertStatus(Response::HTTP_OK);
+        $response_body_as_array = $this->getResponseAsArray($response);
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertParentNodesExist($response_body_as_array);
         $this->assertEntryNodeValuesExcludingRelationshipsOK($generated_entry, $response_body_as_array);
@@ -89,11 +92,11 @@ class GetEntryTest extends TestCase {
         $generated_tags_as_array = $this->generateTagsAndOutputAsArray($generated_entry);
 
         // WHEN
-        $response = $this->get('/api/entry/'.$generated_entry->id);
+        $response = $this->get($this->_base_uri.$generated_entry->id);
 
         // THEN
-        $response->assertStatus(200);
-        $response_body_as_array = $this->convertResponseToArray($response);
+        $response->assertStatus(Response::HTTP_OK);
+        $response_body_as_array = $this->getResponseAsArray($response);
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertParentNodesExist($response_body_as_array);
         $this->assertEntryNodeValuesExcludingRelationshipsOK($generated_entry, $response_body_as_array);
@@ -108,11 +111,11 @@ class GetEntryTest extends TestCase {
         $generated_entry = factory(Entry::class)->create(['account_type'=>$generated_account_type->id]);
 
         // WHEN
-        $response = $this->get('/api/entry/'.$generated_entry->id);
+        $response = $this->get($this->_base_uri.$generated_entry->id);
 
         // THEN
-        $response->assertStatus(200);
-        $response_body_as_array = $this->convertResponseToArray($response);
+        $response->assertStatus(Response::HTTP_OK);
+        $response_body_as_array = $this->getResponseAsArray($response);
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertParentNodesExist($response_body_as_array);
         $this->assertEntryNodeValuesExcludingRelationshipsOK($generated_entry, $response_body_as_array);
@@ -126,11 +129,11 @@ class GetEntryTest extends TestCase {
         $generated_entry = factory(Entry::class)->create(['deleted'=>1]);
 
         // WHEN
-        $response = $this->get('/api/entry/'.$generated_entry->id);
+        $response = $this->get($this->_base_uri.$generated_entry->id);
 
         // THEN
-        $response->assertStatus(404);
-        $response_body_as_array = $this->convertResponseToArray($response);
+        $response->assertStatus(Response::HTTP_NOT_FOUND);
+        $response_body_as_array = $this->getResponseAsArray($response);
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertEmpty($response_body_as_array);
     }
@@ -170,15 +173,6 @@ class GetEntryTest extends TestCase {
     }
 
     /**
-     * @param \Illuminate\Foundation\Testing\TestResponse $response
-     * @return array
-     */
-    private function convertResponseToArray($response){
-        $response_body = $response->getContent();
-        return json_decode($response_body, true);
-    }
-
-    /**
      * @param array $entry_nodes
      */
     private function assertParentNodesExist($entry_nodes){
@@ -200,15 +194,18 @@ class GetEntryTest extends TestCase {
      * @param array $response_body_as_array
      */
     private function assertEntryNodeValuesExcludingRelationshipsOK($generated_entry, $response_body_as_array){
-        $this->assertEquals($generated_entry->id, $response_body_as_array['id']);
-        $this->assertEquals($generated_entry->entry_date, $response_body_as_array['entry_date']);
-        $this->assertEquals($generated_entry->entry_value, $response_body_as_array['entry_value']);
-        $this->assertEquals($generated_entry->memo, $response_body_as_array['memo']);
-        $this->assertEquals($generated_entry->expense, $response_body_as_array['expense']);
-        $this->assertEquals($generated_entry->confirm, $response_body_as_array['confirm']);
-        $this->assertEquals($generated_entry->account_type, $response_body_as_array['account_type']);
-        $this->assertEquals($generated_entry->create_stamp, $response_body_as_array['create_stamp'], "for these value to equal, PHP & MySQL timestamps must be the same");
-        $this->assertEquals($generated_entry->modified_stamp, $response_body_as_array['modified_stamp'], "for these value to equal, PHP & MySQL timestamps must be the same");
+        $failure_message = 'generated entry:'.json_encode($generated_entry)."\nresponse entry:".json_encode($response_body_as_array);
+        $this->assertEquals($generated_entry->id, $response_body_as_array['id'], $failure_message);
+        $this->assertEquals($generated_entry->entry_date, $response_body_as_array['entry_date'], $failure_message);
+        $this->assertEquals($generated_entry->entry_value, $response_body_as_array['entry_value'], $failure_message);
+        $this->assertEquals($generated_entry->memo, $response_body_as_array['memo'], $failure_message);
+        $this->assertEquals($generated_entry->expense, $response_body_as_array['expense'], $failure_message);
+        $this->assertEquals($generated_entry->confirm, $response_body_as_array['confirm'], $failure_message);
+        $this->assertEquals($generated_entry->account_type, $response_body_as_array['account_type'], $failure_message);
+        $this->assertDateFormat($response_body_as_array['create_stamp'], Carbon::ATOM, $failure_message."\nfor these value to equal, PHP & MySQL timestamps must be the same");
+        $this->assertDateFormat($response_body_as_array['modified_stamp'], Carbon::ATOM, $failure_message."\nfor these value to equal, PHP & MySQL timestamps must be the same");
+        $this->assertDatetimeWithinOneSecond($generated_entry->create_stamp, $response_body_as_array['create_stamp'], $failure_message."\nfor these value to equal, PHP & MySQL timestamps must be the same");
+        $this->assertDatetimeWithinOneSecond($generated_entry->modified_stamp, $response_body_as_array['modified_stamp'], $failure_message."\nfor these value to equal, PHP & MySQL timestamps must be the same");
     }
 
     /**
