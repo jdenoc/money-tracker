@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Symfony\Component\HttpFoundation\Response;
 
 use App\Account;
 
@@ -16,12 +17,12 @@ class AccountController extends Controller {
     public function get_accounts(){
         $accounts = Account::all();
         if(is_null($accounts) || $accounts->isEmpty()){
-            return response([], 404);
+            return response([], Response::HTTP_NOT_FOUND);
         } else {
             $accounts = $accounts->toArray();
             $accounts['count'] = Account::count();
 
-            return response($accounts);
+            return response($accounts, Response::HTTP_OK);
         }
     }
 
@@ -33,14 +34,14 @@ class AccountController extends Controller {
     public function get_account($account_id){
         $account = Account::find_account_with_types($account_id);
         if(is_null($account)){
-            return response([], 404);
+            return response([], Response::HTTP_NOT_FOUND);
         } else {
             $account->account_types->makeHidden([
                 'account_group',    // We already know what account this is. We don't need to re-show it.
                 'disabled',         // We're only showing non-disabled account_types. No need to show that they're actually disabled.
                 'last_updated'
             ]);
-            return response($account);
+            return response($account, Response::HTTP_OK);
         }
     }
 

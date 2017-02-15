@@ -6,6 +6,7 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Symfony\Component\HttpFoundation\Response;
 
 use App\Account;
 use App\AccountType;
@@ -14,6 +15,8 @@ class GetAccountTest extends TestCase {
 
     use DatabaseMigrations;
 
+    private $_base_uri = '/api/account/';
+
     public function testGetAccountData(){
         // GIVEN
         $account_type_count = 2;
@@ -21,10 +24,10 @@ class GetAccountTest extends TestCase {
         $generated_account_types = factory(AccountType::class, $account_type_count)->create(['account_group'=>$generated_account->id]);
 
         // WHEN
-        $response = $this->get('/api/account/'.$generated_account->id);
+        $response = $this->get($this->_base_uri.$generated_account->id);
 
         // THEN
-        $response->assertStatus(200);
+        $response->assertStatus(Response::HTTP_OK);
         $response_body = $response->getContent();
         $response_body_as_array = json_decode($response_body, true);
         $this->assertTrue(is_array($response_body_as_array));
@@ -68,10 +71,10 @@ class GetAccountTest extends TestCase {
         $generated_account_types = factory(AccountType::class, $account_type_count)->create(['account_group'=>$generated_account->id]);
 
         // WHEN
-        $response = $this->get('/api/account/'.$generated_account->id);
+        $response = $this->get($this->_base_uri.$generated_account->id);
 
         // THEN
-        $response->assertStatus(200);
+        $response->assertStatus(Response::HTTP_OK);
         $response_body = $response->getContent();
         $response_body_as_array = json_decode($response_body, true);
         $this->assertTrue(is_array($response_body_as_array));
@@ -124,10 +127,10 @@ class GetAccountTest extends TestCase {
         $generated_account = factory(Account::class)->create();
 
         // WHEN
-        $response = $this->get('/api/account/'.$generated_account->id);
+        $response = $this->get($this->_base_uri.$generated_account->id);
 
         // THEN
-        $response->assertStatus(200);
+        $response->assertStatus(Response::HTTP_OK);
         $response_body = $response->getContent();
         $response_body_as_array = json_decode($response_body, true);
         $this->assertTrue(is_array($response_body_as_array));
@@ -149,10 +152,10 @@ class GetAccountTest extends TestCase {
         factory(AccountType::class, $account_type_count)->create(['account_group'=>$generated_account->id, 'disabled'=>1]);
 
         // WHEN
-        $response = $this->get('/api/account/'.$generated_account->id);
+        $response = $this->get($this->_base_uri.$generated_account->id);
 
         // THEN
-        $response->assertStatus(200);
+        $response->assertStatus(Response::HTTP_OK);
         $response_body = $response->getContent();
         $response_body_as_array = json_decode($response_body, true);
         $this->assertArrayHasKey('id', $response_body_as_array);
@@ -171,10 +174,10 @@ class GetAccountTest extends TestCase {
         $account_id = 99999;
 
         // WHEN
-        $response = $this->get('/api/account/'.$account_id);
+        $response = $this->get($this->_base_uri.$account_id);
 
         // THEN
-        $response->assertStatus(404);
+        $response->assertStatus(Response::HTTP_NOT_FOUND);
         $response_body = $response->getContent();
         $response_body_as_array = json_decode($response_body, true);
         $this->assertTrue(is_array($response_body_as_array));

@@ -6,6 +6,7 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Symfony\Component\HttpFoundation\Response;
 use Faker;
 
 use App\AccountType;
@@ -19,13 +20,14 @@ class GetEntryTest extends TestCase {
 
     private $_generate_tag_count;
     private $_generate_attachment_count;
+    private $_base_uri = '/api/entry/';
 
     public function setUp(){
         parent::setUp();
 
         $faker = Faker\Factory::create();
-        $this->_generate_attachment_count = $faker->randomNumber(1);
-        $this->_generate_tag_count = $faker->randomNumber(1);
+        $this->_generate_attachment_count = $faker->randomDigitNotNull;
+        $this->_generate_tag_count = $faker->randomDigitNotNull;
     }
 
     public function testGetEntryWithNoData(){
@@ -33,10 +35,10 @@ class GetEntryTest extends TestCase {
         $entry_id = 99999;
 
         // WHEN
-        $response = $this->get('/api/entry/'.$entry_id);
+        $response = $this->get($this->_base_uri.$entry_id);
 
         // THEN
-        $response->assertStatus(404);
+        $response->assertStatus(Response::HTTP_NOT_FOUND);
         $response_body_as_array = $this->convertResponseToArray($response);
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertEmpty($response_body_as_array);
@@ -50,10 +52,10 @@ class GetEntryTest extends TestCase {
         $generated_attachments_as_array = $this->generateAttachmentsAndOutputAsArray($generated_entry->id);
 
         // WHEN
-        $response = $this->get('/api/entry/'.$generated_entry->id);
+        $response = $this->get($this->_base_uri.$generated_entry->id);
 
         // THEN
-        $response->assertStatus(200);
+        $response->assertStatus(Response::HTTP_OK);
         $response_body_as_array = $this->convertResponseToArray($response);
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertParentNodesExist($response_body_as_array);
@@ -69,10 +71,10 @@ class GetEntryTest extends TestCase {
         $generated_attachments_as_array = $this->generateAttachmentsAndOutputAsArray($generated_entry->id);
 
         // WHEN
-        $response = $this->get('/api/entry/'.$generated_entry->id);
+        $response = $this->get($this->_base_uri.$generated_entry->id);
 
         // THEN
-        $response->assertStatus(200);
+        $response->assertStatus(Response::HTTP_OK);
         $response_body_as_array = $this->convertResponseToArray($response);
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertParentNodesExist($response_body_as_array);
@@ -89,10 +91,10 @@ class GetEntryTest extends TestCase {
         $generated_tags_as_array = $this->generateTagsAndOutputAsArray($generated_entry);
 
         // WHEN
-        $response = $this->get('/api/entry/'.$generated_entry->id);
+        $response = $this->get($this->_base_uri.$generated_entry->id);
 
         // THEN
-        $response->assertStatus(200);
+        $response->assertStatus(Response::HTTP_OK);
         $response_body_as_array = $this->convertResponseToArray($response);
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertParentNodesExist($response_body_as_array);
@@ -108,10 +110,10 @@ class GetEntryTest extends TestCase {
         $generated_entry = factory(Entry::class)->create(['account_type'=>$generated_account_type->id]);
 
         // WHEN
-        $response = $this->get('/api/entry/'.$generated_entry->id);
+        $response = $this->get($this->_base_uri.$generated_entry->id);
 
         // THEN
-        $response->assertStatus(200);
+        $response->assertStatus(Response::HTTP_OK);
         $response_body_as_array = $this->convertResponseToArray($response);
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertParentNodesExist($response_body_as_array);
@@ -126,10 +128,10 @@ class GetEntryTest extends TestCase {
         $generated_entry = factory(Entry::class)->create(['deleted'=>1]);
 
         // WHEN
-        $response = $this->get('/api/entry/'.$generated_entry->id);
+        $response = $this->get($this->_base_uri.$generated_entry->id);
 
         // THEN
-        $response->assertStatus(404);
+        $response->assertStatus(Response::HTTP_NOT_FOUND);
         $response_body_as_array = $this->convertResponseToArray($response);
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertEmpty($response_body_as_array);

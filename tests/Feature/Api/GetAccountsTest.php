@@ -6,6 +6,7 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Symfony\Component\HttpFoundation\Response;
 
 use App\Account;
 
@@ -13,16 +14,18 @@ class GetAccountsTest extends TestCase {
 
     use DatabaseMigrations;
 
+    private $_uri = '/api/accounts';
+
     public function testGetListOfAccountsWhenTheyAreAvailable(){
         // GIVEN
         $account_count = 2;
         $generated_accounts = factory(Account::class, $account_count)->create();
 
         // WHEN
-        $response = $this->get('/api/accounts');
+        $response = $this->get($this->_uri);
 
         // THEN
-        $response->assertStatus(200);
+        $response->assertStatus(Response::HTTP_OK);
         $response_body = $response->getContent();
         $response_body_as_array = json_decode($response_body, true);
         $this->assertTrue(is_array($response_body_as_array));
@@ -46,10 +49,10 @@ class GetAccountsTest extends TestCase {
         // GIVEN - nothing. there should be no data in database
 
         // WHEN
-        $response = $this->get("/api/accounts");
+        $response = $this->get($this->_uri);
 
         // THEN
-        $response->assertStatus(404);
+        $response->assertStatus(Response::HTTP_NOT_FOUND);
         $response_body = $response->getContent();
         $response_body_as_array = json_decode($response_body, true);
         $this->assertTrue(is_array($response_body_as_array));
