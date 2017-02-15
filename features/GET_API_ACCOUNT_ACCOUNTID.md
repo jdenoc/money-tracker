@@ -119,4 +119,3 @@ _example output:_
 ```json
 []
 ```
-
