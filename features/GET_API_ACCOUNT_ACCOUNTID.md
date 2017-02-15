@@ -67,7 +67,7 @@ _example output:_
 - - -
 
 **Scenario:** get basic account data that includes account_type information but no account_types are associated with the account
-> **GIVEN:** an account ID
+> **GIVEN:** an account ID  
 > **AND:** there is a record in the accounts database table  
 > **AND:** there are NO records in the account_types database table  
 > **WHEN:** visiting GET /api/account/{account_id}  
@@ -88,9 +88,9 @@ _example output:_
 - - -
 
 **Scenario:** get basic account data that includes account_type information but only disabled account_types are associated with the account
-> **GIVEN:** an account ID
+> **GIVEN:** an account ID  
 > **AND:** there is a record in the accounts database table  
-> **AND:** there are ONLY "disabled" records in the account_types database table   
+> **AND:** there are ONLY "disabled" records in the account_types database table  
 > **WHEN:** visiting GET /api/account/{account_id}  
 > **THEN:** receive a 200 status  
 > **AND:** get a json response that contains account data  
@@ -109,7 +109,7 @@ _example output:_
 - - -
 
 **Scenario:** get basic account data when no account data exists
-> **GIVEN:** an account ID
+> **GIVEN:** an account ID  
 > **AND:** there isn't any account data in the accounts database table  
 > **WHEN:** visiting GET /api/account/{account_id}  
 > **THEN:** receive a 404 status  

@@ -1,13 +1,13 @@
 ### Feature: GET _/api/entries/{page}_
 
 **Scenario:** get first page of a truncated list of available entries when there are more than 50 entries
-> **GIVEN:** there are between 50 and 150 entries (for simplicity we won't include "deleted" entries)
+> **GIVEN:** there are between 50 and 150 entries (for simplicity we won't include "deleted" entries)  
 > **AND:** there are account_types associated with entries  
 > **AND:** there are tags associated with some entries  
 > **AND:** there are attachments associated with some entries  
-> **WHEN:** visiting GET /api/entries/
-> **AND:** visiting GET /api/entries/1
-> **AND:** visiting GET /api/entries/2
+> **WHEN:** visiting GET /api/entries/  
+> **AND:** visiting GET /api/entries/1  
+> **AND:** visiting GET /api/entries/2  
 > **THEN:** receive a 200 status  
 > **AND:** get a json response containing a list of entries  
 > **AND:** in the json is a count of the total non-deleted entries in the database  

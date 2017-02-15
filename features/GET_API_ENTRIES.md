@@ -1,9 +1,9 @@
 ### Feature: GET _/api/entries_
 
 **Scenario:** get a list of all entries when no entries exist
-> **GIVEN:** there are no entry records
-> **WHEN:** visiting GET /api/entries
-> **THEN:** receive a 404 status
+> **GIVEN:** there are no entry records  
+> **WHEN:** visiting GET /api/entries  
+> **THEN:** receive a 404 status  
 > **AND:** get an empty array in json format
 
 _example output:_
@@ -14,17 +14,17 @@ _example output:_
 - - -
 
 **Scenario:** get a list of all entries when entries are available
-> **GIVEN:** there are 50 or less entries 
-> **AND:** there are account_types associated with entries
-> **AND:** there are tags associated with some entries
-> **AND:** there are attachments associated with some entries
-> **AND:** some entries are marked "deleted"
-> **WHEN:** visiting GET /api/entries
-> **THEN:** receive a 200 status
-> **AND:** get a json response containing a list of entries
-> **AND:** in the json is a count of the entries
-> **AND:** in the entry nodes there are entry details, including "has_attachments", "tags" and "account_type" nodes
-> **AND:** entry tags node is an array
+> **GIVEN:** there are 50 or less entries  
+> **AND:** there are account_types associated with entries  
+> **AND:** there are tags associated with some entries  
+> **AND:** there are attachments associated with some entries  
+> **AND:** some entries are marked "deleted"  
+> **WHEN:** visiting GET /api/entries  
+> **THEN:** receive a 200 status  
+> **AND:** get a json response containing a list of entries  
+> **AND:** in the json is a count of the entries  
+> **AND:** in the entry nodes there are entry details, including "has_attachments", "tags" and "account_type" nodes  
+> **AND:** entry tags node is an array  
 > **AND:** entries marked as "deleted" do not appear
 
 _example output:_
