@@ -5,8 +5,10 @@ namespace Tests\Feature\Api;
 use App\AccountType;
 use App\Attachment;
 use App\Entry;
+use App\Http\Controllers\Api\EntryController;
 use App\Tag;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Faker;
 use Tests\TestCase;
@@ -29,8 +31,7 @@ class GetEntriesTest extends TestCase {
 
         // THEN
         $response->assertStatus(Response::HTTP_NOT_FOUND);
-        $response_body = $response->getContent();
-        $response_body_as_array = json_decode($response_body, true);
+        $response_body_as_array = $this->getResponseAsArray($response);
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertEmpty($response_body_as_array);
     }
@@ -39,8 +40,7 @@ class GetEntriesTest extends TestCase {
     public function testGetEntries(){
         $faker = Faker\Factory::create();
         // GIVEN
-        $generate_tag_count = $faker->randomDigitNotNull;
-        $generated_tags = factory(Tag::class, $generate_tag_count)->create();
+        $generated_tags = factory(Tag::class, $faker->randomDigitNotNull)->create();
         $generated_account_type_count = $faker->randomDigitNotNull;
         $generated_account_types = factory(AccountType::class, $generated_account_type_count)->create();
 
@@ -51,7 +51,7 @@ class GetEntriesTest extends TestCase {
         $generated_deleted_entries = [];
         for($i=0; $i<$generate_entry_count; $i++){
             $entry_deleted = $faker->boolean;
-            $generated_entry = $this->generate_entry_record($faker, $generated_account_types, $entry_deleted, $generate_tag_count, $generated_tags);
+            $generated_entry = $this->generate_entry_record($faker, $generated_account_types, $entry_deleted, $generated_tags);
 
             if($entry_deleted){
                 $generated_deleted_entries[] = $generated_entry->id;
@@ -62,7 +62,7 @@ class GetEntriesTest extends TestCase {
         $generate_entry_count -= count($generated_deleted_entries);
         if($generate_entry_count == 0){
             // do this in case we ever generated nothing but "deleted" entries
-            $this->generate_entry_record($faker, $generated_account_types, false, $generate_tag_count, $generated_tags);
+            $this->generate_entry_record($faker, $generated_account_types, false, $generated_tags);
             $generate_entry_count++;
         }
 
@@ -71,8 +71,7 @@ class GetEntriesTest extends TestCase {
 
         // THEN
         $response->assertStatus(Response::HTTP_OK);
-        $response_body = $response->getContent();
-        $response_body_as_array = json_decode($response_body, true);
+        $response_body_as_array = $this->getResponseAsArray($response);
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertArrayHasKey('count', $response_body_as_array);
         $this->assertEquals($generate_entry_count, $response_body_as_array['count']);
@@ -95,19 +94,85 @@ class GetEntriesTest extends TestCase {
         }
     }
 
+    public function testGetEntriesByPage(){
+        $faker = Faker\Factory::create();
+        // GIVEN
+        $generated_tags = factory(Tag::class, $faker->randomDigitNotNull)->create();
+        $generate_account_type_count = $faker->randomDigitNotNull;
+        $generated_account_types = factory(AccountType::class, $generate_account_type_count)->create();
+        $generate_entry_count = $faker->numberBetween(101, 150);
+        $generated_entries = [];
+        for($i=0; $i<$generate_entry_count; $i++){
+            $generated_entries[] = $this->generate_entry_record($faker, $generated_account_types, false, $generated_tags);
+        }
+
+        // WHEN
+        $response_0 = $this->get($this->_uri);
+        $response_1 = $this->get($this->_uri.'/1');
+        $response_2 = $this->get($this->_uri.'/2');
+
+        // THEN
+        $response_0->assertStatus(Response::HTTP_OK);
+        $response_1->assertStatus(Response::HTTP_OK);
+        $response_2->assertStatus(Response::HTTP_OK);
+
+        $response_0_body_as_array = $this->getResponseAsArray($response_0);
+        $response_1_body_as_array = $this->getResponseAsArray($response_1);
+        $response_2_body_as_array = $this->getResponseAsArray($response_2);
+
+        $this->assertTrue(is_array($response_0_body_as_array));
+        $this->assertArrayHasKey('count', $response_0_body_as_array);
+        $this->assertEquals($generate_entry_count, $response_0_body_as_array['count']);
+        unset($response_0_body_as_array['count']);
+        $this->assertEquals(EntryController::MAX_ENTRIES_IN_RESPONSE, count($response_0_body_as_array));
+
+        $this->assertTrue(is_array($response_1_body_as_array));
+        $this->assertArrayHasKey('count', $response_1_body_as_array);
+        $this->assertEquals($generate_entry_count, $response_1_body_as_array['count']);
+        unset($response_1_body_as_array['count']);
+        $this->assertEquals(EntryController::MAX_ENTRIES_IN_RESPONSE, count($response_1_body_as_array));
+
+        $this->assertTrue(is_array($response_2_body_as_array));
+        $this->assertArrayHasKey('count', $response_2_body_as_array);
+        $this->assertEquals($generate_entry_count, $response_2_body_as_array['count']);
+        unset($response_2_body_as_array['count']);
+        $this->assertEquals($generate_entry_count-(2*EntryController::MAX_ENTRIES_IN_RESPONSE), count($response_2_body_as_array));
+
+        $entries_in_response = array_merge($response_0_body_as_array, $response_1_body_as_array, $response_2_body_as_array);
+        $this->assertEquals($generate_entry_count, count($entries_in_response));
+
+        foreach($entries_in_response as $entry_in_response){
+            $generated_entry = null;
+            $key = null;
+            $this->assertArrayHasKey('id', $entry_in_response);
+            foreach($generated_entries as $key=>$generated_entry){
+                if($entry_in_response['id'] == $generated_entry->id){
+                    break;
+                }
+                $generated_entry = null;
+                $key = null;
+            }
+            $this->assertNotNull($generated_entry);
+            $this->assertEntryNodesExist($entry_in_response);
+            $this->assertEntryNodesMatchGeneratedEntry($entry_in_response, $generated_entry);
+            unset($generated_entries[$key]);
+        }
+    }
+
     /**
      * @param Faker\Generator $faker
      * @param Collection $account_types_collection
      * @param bool $entry_deleted
-     * @param int $tag_count
      * @param Collection $tags_collection
      * @return Entry
      */
-    private function generate_entry_record($faker, $account_types_collection, $entry_deleted, $tag_count, $tags_collection){
+    private function generate_entry_record($faker, $account_types_collection, $entry_deleted, $tags_collection){
         $randomly_selected_account_type = $account_types_collection->random();
         $generated_entry = factory(Entry::class)->create(['account_type'=>$randomly_selected_account_type->id, 'deleted'=>$entry_deleted]);
         $generate_attachment_count = $faker->randomDigit;
         factory(Attachment::class, $generate_attachment_count)->create(['entry_id'=>$generated_entry->id]);
+
+        $tag_count = $tags_collection->count();
         do{
             $assign_tag_to_entry_count = $faker->randomDigit;
         } while($assign_tag_to_entry_count > $tag_count);
@@ -140,18 +205,32 @@ class GetEntriesTest extends TestCase {
      * @param Entry $generated_entry
      */
     private function assertEntryNodesMatchGeneratedEntry($entry_nodes, $generated_entry){
-        $this->assertEquals($generated_entry->entry_date, $entry_nodes['entry_date']);
-        $this->assertEquals($generated_entry->entry_value, $entry_nodes['entry_value']);
-        $this->assertEquals($generated_entry->memo, $entry_nodes['memo']);
-        $this->assertEquals($generated_entry->account_type, $entry_nodes['account_type']);
-        $this->assertEquals($generated_entry->expense, $entry_nodes['expense']);
-        $this->assertEquals($generated_entry->confirm, $entry_nodes['confirm']);
-        $this->assertEquals($generated_entry->create_stamp, $entry_nodes['create_stamp']);
-        $this->assertEquals($generated_entry->modified_stamp, $entry_nodes['modified_stamp']);
-        $this->assertTrue(is_bool($entry_nodes['has_attachments']));
-        $this->assertEquals($generated_entry->has_attachments(), $entry_nodes['has_attachments']);
-        $this->assertTrue(is_array($entry_nodes['tags']));
-        $this->assertEquals($generated_entry->get_tag_ids(), $entry_nodes['tags']);
+        $failure_msg = "generated entry:".json_encode($generated_entry)."\nresponse entry:".json_encode($entry_nodes);
+        $this->assertEquals($generated_entry->entry_date, $entry_nodes['entry_date'], $failure_msg);
+        $this->assertEquals($generated_entry->entry_value, $entry_nodes['entry_value'], $failure_msg);
+        $this->assertEquals($generated_entry->memo, $entry_nodes['memo'], $failure_msg);
+        $this->assertEquals($generated_entry->account_type, $entry_nodes['account_type'], $failure_msg);
+        $this->assertEquals($generated_entry->expense, $entry_nodes['expense'], $failure_msg);
+        $this->assertEquals($generated_entry->confirm, $entry_nodes['confirm'], $failure_msg);
+        $this->assertDateFormat($entry_nodes['create_stamp'], Carbon::ATOM, $failure_msg);
+        $this->assertDatetimeWithinOneSecond($entry_nodes['create_stamp'], $generated_entry->create_stamp, $failure_msg);
+        $this->assertDateFormat($entry_nodes['modified_stamp'], Carbon::ATOM, $failure_msg);
+        $this->assertDatetimeWithinOneSecond($entry_nodes['modified_stamp'], $generated_entry->modified_stamp, $failure_msg);
+        $this->assertTrue(is_bool($entry_nodes['has_attachments']), $failure_msg);
+        $this->assertEquals($generated_entry->has_attachments(), $entry_nodes['has_attachments'], $failure_msg);
+        $this->assertTrue(is_array($entry_nodes['tags']), $failure_msg);
+        $this->assertEquals($generated_entry->get_tag_ids(), $entry_nodes['tags'], $failure_msg);
+    }
+
+    public function assertDateFormat($date_string, $format, $assert_failure_message){
+        $date = \DateTime::createFromFormat($format, $date_string);
+        $this->assertTrue($date->format($format) === $date_string, $assert_failure_message);
+    }
+
+    private function assertDatetimeWithinOneSecond($entry_node_datetime, $generated_entry_datetime, $assert_failure_message){
+        $node_date = strtotime($entry_node_datetime);
+        $factory_date = strtotime($generated_entry_datetime);
+        $this->assertTrue(abs($node_date - $factory_date) <= 1, $assert_failure_message);
     }
 
 }
