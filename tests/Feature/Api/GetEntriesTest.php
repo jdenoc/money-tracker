@@ -8,12 +8,12 @@ use App\Entry;
 use App\Tag;
 
 use Illuminate\Database\Eloquent\Collection;
+use Faker;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Symfony\Component\HttpFoundation\Response;
-use Faker;
 
 class GetEntriesTest extends TestCase {
 
@@ -90,28 +90,8 @@ class GetEntriesTest extends TestCase {
                 $generated_entry = null;
             }
             $this->assertNotNull($generated_entry);
-            $this->assertArrayHasKey('entry_date', $entry_in_response);
-            $this->assertEquals($generated_entry->entry_date, $entry_in_response['entry_date']);
-            $this->assertArrayHasKey('entry_value', $entry_in_response);
-            $this->assertEquals($generated_entry->entry_value, $entry_in_response['entry_value']);
-            $this->assertArrayHasKey('memo', $entry_in_response);
-            $this->assertEquals($generated_entry->memo, $entry_in_response['memo']);
-            $this->assertArrayHasKey('account_type', $entry_in_response);
-            $this->assertEquals($generated_entry->account_type, $entry_in_response['account_type']);
-            $this->assertArrayHasKey('expense', $entry_in_response);
-            $this->assertEquals($generated_entry->expense, $entry_in_response['expense']);
-            $this->assertArrayHasKey('confirm', $entry_in_response);
-            $this->assertEquals($generated_entry->confirm, $entry_in_response['confirm']);
-            $this->assertArrayHasKey('create_stamp', $entry_in_response);
-            $this->assertEquals($generated_entry->create_stamp, $entry_in_response['create_stamp']);
-            $this->assertArrayHasKey('modified_stamp', $entry_in_response);
-            $this->assertEquals($generated_entry->modified_stamp, $entry_in_response['modified_stamp']);
-            $this->assertArrayHasKey('has_attachments', $entry_in_response);
-            $this->assertTrue(is_bool($entry_in_response['has_attachments']));
-            $this->assertEquals($generated_entry->has_attachments(), $entry_in_response['has_attachments']);
-            $this->assertArrayHasKey('tags', $entry_in_response);
-            $this->assertTrue(is_array($entry_in_response['tags']));
-            $this->assertEquals($generated_entry->get_tag_ids()->toArray(), $entry_in_response['tags']);
+            $this->assertEntryNodesExist($entry_in_response);
+            $this->assertEntryNodesMatchGeneratedEntry($entry_in_response, $generated_entry);
         }
     }
 
@@ -137,6 +117,41 @@ class GetEntriesTest extends TestCase {
         }
 
         return $generated_entry;
+    }
+
+    /**
+     * @param array $entry_nodes
+     */
+    private function assertEntryNodesExist($entry_nodes){
+        $this->assertArrayHasKey('entry_date', $entry_nodes);
+        $this->assertArrayHasKey('entry_value', $entry_nodes);
+        $this->assertArrayHasKey('memo', $entry_nodes);
+        $this->assertArrayHasKey('account_type', $entry_nodes);
+        $this->assertArrayHasKey('expense', $entry_nodes);
+        $this->assertArrayHasKey('confirm', $entry_nodes);
+        $this->assertArrayHasKey('create_stamp', $entry_nodes);
+        $this->assertArrayHasKey('modified_stamp', $entry_nodes);
+        $this->assertArrayHasKey('has_attachments', $entry_nodes);
+        $this->assertArrayHasKey('tags', $entry_nodes);
+    }
+
+    /**
+     * @param array $entry_nodes
+     * @param Entry $generated_entry
+     */
+    private function assertEntryNodesMatchGeneratedEntry($entry_nodes, $generated_entry){
+        $this->assertEquals($generated_entry->entry_date, $entry_nodes['entry_date']);
+        $this->assertEquals($generated_entry->entry_value, $entry_nodes['entry_value']);
+        $this->assertEquals($generated_entry->memo, $entry_nodes['memo']);
+        $this->assertEquals($generated_entry->account_type, $entry_nodes['account_type']);
+        $this->assertEquals($generated_entry->expense, $entry_nodes['expense']);
+        $this->assertEquals($generated_entry->confirm, $entry_nodes['confirm']);
+        $this->assertEquals($generated_entry->create_stamp, $entry_nodes['create_stamp']);
+        $this->assertEquals($generated_entry->modified_stamp, $entry_nodes['modified_stamp']);
+        $this->assertTrue(is_bool($entry_nodes['has_attachments']));
+        $this->assertEquals($generated_entry->has_attachments(), $entry_nodes['has_attachments']);
+        $this->assertTrue(is_array($entry_nodes['tags']));
+        $this->assertEquals($generated_entry->get_tag_ids(), $entry_nodes['tags']);
     }
 
 }
