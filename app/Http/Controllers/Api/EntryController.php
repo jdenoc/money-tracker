@@ -60,4 +60,20 @@ class EntryController extends Controller {
         }
     }
 
+    /**
+     * DELETE /api/entry/{entry_id}
+     * @param int $entry_id
+     * @return Response
+     */
+    public function delete_entry($entry_id){
+        $entry = Entry::find($entry_id);
+        if(empty($entry)){
+            return response('', Response::HTTP_NOT_FOUND);
+        } else {
+            $entry->deleted = true;
+            $entry->save();
+            return response('', Response::HTTP_NO_CONTENT);
+        }
+    }
+
 }

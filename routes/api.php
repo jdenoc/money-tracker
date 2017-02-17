@@ -23,3 +23,4 @@ Route::get('account/{account_id}', 'Api\AccountController@get_account');    // G
 Route::get('entry/{entry_id}', 'Api\EntryController@get_entry');            // GET /api/entry/{entry_id}
 Route::get('entries', 'Api\EntryController@get_entries');                   // GET /api/entries
 Route::get('entries/{page}', 'Api\EntryController@get_paged_entries');      // GET /api/entries/{page}
+Route::delete('entry/{entry_id}', 'Api\EntryController@delete_entry');      // DELETE /api/entry/{entry_id}
