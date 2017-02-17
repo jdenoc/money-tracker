@@ -1,16 +1,18 @@
 ### Feature: DELETE /api/entry/{entry_id}
 
-**Scenario:** attempt to delete an entry when entry does not exist
+**Scenario:** attempt to delete an entry when a matching entry does not exist
 > **GIVEN:** an entry_id  
-> **AND:** there are _NO_ entries in the database  
+> **AND:** there are _NO_ matching entries in the database  
 > **WHEN:** visiting GET /api/entry/{entry_id} to confirm entry does _NOT_ exist  
 > **AND:** visiting DELETE /api/entry/{entry_id}  
 > **THEN:** receive a 404 status from GET request  
 > **AND:** receive a 404 status from DELETE request  
 
-**Scenario:** attempt to delete an entry when entry exists
+- - -
+
+**Scenario:** attempt to delete an entry when a matching entry exists
 > **GIVEN:** an entry_id  
-> **AND:** there are entries in the database  
+> **AND:** there is a matching entry in the database  
 > **WHEN:** visiting GET /api/entry/{entry_id} to confirm entry does exist  
 > **AND:** visiting DELETE /api/entry/{entry_id}  
 > **AND:** visiting GET /api/entry/{entry_id} to confirm entry has been marked "deleted"  
