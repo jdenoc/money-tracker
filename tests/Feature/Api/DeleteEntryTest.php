@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Api;
 
+use App\Account;
+use App\AccountType;
 use App\Entry;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
@@ -16,7 +18,9 @@ class DeleteEntryTest extends TestCase {
 
     public function testMarkingEntryDeleted(){
         // GIVEN
-        $entry = factory(Entry::class)->create();
+        $generated_account = factory(Account::class)->create();
+        $generated_account_type = factory(AccountType::class)->create(['account_group'=>$generated_account->id]);
+        $entry = factory(Entry::class)->create(['account_type'=>$generated_account_type->id]);
 
         // WHEN
         $get_response1 = $this->get($this->_base_uri.$entry->id);
