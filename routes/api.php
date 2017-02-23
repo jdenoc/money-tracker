@@ -25,3 +25,4 @@ Route::get('entries', 'Api\EntryController@get_entries');                       
 Route::get('entries/{page}', 'Api\EntryController@get_paged_entries');              // GET /api/entries/{page}
 Route::delete('attachment/{uuid}', 'Api\AttachmentController@delete_attachment');   // DELETE /api/attachment/{uuid}
 Route::delete('entry/{entry_id}', 'Api\EntryController@delete_entry');              // DELETE /api/entry/{entry_id}
+Route::post('entry', 'Api\EntryController@create_entry');                           // POST /api/entry

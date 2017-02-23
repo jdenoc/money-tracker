@@ -17,11 +17,15 @@ class Account extends BaseModel {
         return $this->hasMany('App\AccountType', 'account_group');
     }
 
+    public function update_total($value){
+        $this->total += $value;
+        $this->save();
+    }
+
     public static function find_account_with_types($account_id){
         $account = Account::with(['account_types'=>function($query){
             $query->where('disabled', 0);
-        }])
-            ->where('id', $account_id);
+        }])->where('id', $account_id);
         return $account->first();
     }
 

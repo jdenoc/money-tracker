@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use App\Account;
 use App\AccountType;
 use App\Attachment;
 use App\Entry;
@@ -42,7 +43,8 @@ class GetEntriesTest extends TestCase {
         // GIVEN
         $generated_tags = factory(Tag::class, $faker->randomDigitNotNull)->create();
         $generated_account_type_count = $faker->randomDigitNotNull;
-        $generated_account_types = factory(AccountType::class, $generated_account_type_count)->create();
+        $generated_account = factory(Account::class)->create();
+        $generated_account_types = factory(AccountType::class, $generated_account_type_count)->create(['account_group'=>$generated_account->id]);
 
         do{
             $generate_entry_count = $faker->randomDigitNotNull;
@@ -97,9 +99,10 @@ class GetEntriesTest extends TestCase {
     public function testGetEntriesByPage(){
         $faker = Faker\Factory::create();
         // GIVEN
+        $generated_account = factory(Account::class)->create();
         $generated_tags = factory(Tag::class, $faker->randomDigitNotNull)->create();
         $generate_account_type_count = $faker->randomDigitNotNull;
-        $generated_account_types = factory(AccountType::class, $generate_account_type_count)->create();
+        $generated_account_types = factory(AccountType::class, $generate_account_type_count)->create(['account_group'=>$generated_account->id]);
         $generate_entry_count = $faker->numberBetween(101, 150);
         $generated_entries = [];
         for($i=0; $i<$generate_entry_count; $i++){

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\AccountType;
+use App\Attachment;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,6 +13,11 @@ use App\Entry;
 class EntryController extends Controller {
 
     const MAX_ENTRIES_IN_RESPONSE = 50;
+    const ERROR_ENTRY_ID = 0;
+    const ERROR_MSG_CREATE_ENTRY_NO_ERROR = '';
+    const ERROR_MSG_CREATE_ENTRY_NO_DATA = "No data provided";
+    const ERROR_MSG_CREATE_ENTRY_MISSING_PROPERTY = "Missing data: %s";
+    const ERROR_MSG_CREATE_ENTRY_INVALID_ACCOUNT_TYPE = "Account type provided does not exist";
 
     /**
      * GET /api/entry/{entry_id}
@@ -74,6 +81,72 @@ class EntryController extends Controller {
             $entry->save();
             return response('', Response::HTTP_NO_CONTENT);
         }
+    }
+
+    /**
+     * POST /api/entry
+     * @param Request $request
+     * @return Response
+     */
+    public function create_entry(Request $request){
+        $post_body = $request->getContent();
+        $entry_data = json_decode($post_body, true);
+
+        // no data check
+        if(empty($entry_data)){
+            return response(
+                ['id'=>self::ERROR_ENTRY_ID, 'error'=>self::ERROR_MSG_CREATE_ENTRY_NO_DATA],
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+
+        // missing (required) data check
+        $required_fields = Entry::get_fields_required_for_creation();
+        $missing_properties = array_diff_key(array_flip($required_fields), $entry_data);
+        if(count($missing_properties) > 0){
+            return response(
+                ['id'=>self::ERROR_ENTRY_ID, 'error'=>sprintf(self::ERROR_MSG_CREATE_ENTRY_MISSING_PROPERTY, json_encode(array_keys($missing_properties)))],
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+
+        // check validity of account_type value
+        $account_type = AccountType::find($entry_data['account_type']);
+        if(empty($account_type)){
+            return response(
+                ['error'=>self::ERROR_MSG_CREATE_ENTRY_INVALID_ACCOUNT_TYPE, 'id'=>self::ERROR_ENTRY_ID],
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+
+        $entry = new Entry();
+        foreach($required_fields as $entry_property){
+            $entry->$entry_property = $entry_data[$entry_property];
+        }
+        $entry->save();
+
+        // assign tags
+        if(!empty($entry_data['tags']) && is_array($entry_data['tags'])){
+            foreach($entry_data['tags'] as $tag){
+                $entry->tags()->attach(intval($tag));
+            }
+        }
+
+        // assign attachments
+        if(!empty($entry_data['attachments']) && is_array($entry_data['attachments'])){
+            foreach($entry_data['attachments'] as $attachment_data){
+                $new_attachment = new Attachment();
+                $new_attachment->uuid = $attachment_data['uuid'];
+                $new_attachment->attachment = $attachment_data['attachment'];
+                $new_attachment->entry_id = $entry->id;
+                $new_attachment->save();
+            }
+        }
+
+        return response(
+            ['error'=>self::ERROR_MSG_CREATE_ENTRY_NO_ERROR, 'id'=>$entry->id],
+            Response::HTTP_CREATED
+        );
     }
 
 }

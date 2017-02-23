@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Api;
 
+use App\Account;
+use App\AccountType;
 use App\Attachment;
 use App\Entry;
 use Tests\TestCase;
@@ -32,13 +34,15 @@ class DeleteAttachmentTest extends TestCase {
 
     public function testDeleteAttachment(){
         // GIVEN
-        $entry = factory(Entry::class)->create();
-        $attachment = factory(Attachment::class)->create(['entry_id'=>$entry->id]);
+        $generated_account = factory(Account::class)->create();
+        $generated_account_type = factory(AccountType::class)->create(['account_group'=>$generated_account->id]);
+        $generated_entry = factory(Entry::class)->create(['account_type'=>$generated_account_type->id]);
+        $generated_attachment = factory(Attachment::class)->create(['entry_id'=>$generated_entry->id]);
 
         // WHEN
-        $get_response1 = $this->get($this->_entry_base_uri.$entry->id);
-        $delete_response = $this->delete($this->_attachment_base_uri.$attachment->uuid);
-        $get_response2 = $this->get($this->_entry_base_uri.$entry->id);
+        $get_response1 = $this->get($this->_entry_base_uri.$generated_entry->id);
+        $delete_response = $this->delete($this->_attachment_base_uri.$generated_attachment->uuid);
+        $get_response2 = $this->get($this->_entry_base_uri.$generated_entry->id);
 
         // THEN
         $get_response1->assertStatus(Response::HTTP_OK);
@@ -49,7 +53,7 @@ class DeleteAttachmentTest extends TestCase {
         $attachment_exists = false;
         foreach($get_response1_as_array['attachments'] as $attachment_in_response){
             $this->assertArrayHasKey('uuid', $attachment_in_response);
-            if($attachment_in_response['uuid'] == $attachment->uuid){
+            if($attachment_in_response['uuid'] == $generated_attachment->uuid){
                 $attachment_exists = true;
                 break;
             }
@@ -67,7 +71,7 @@ class DeleteAttachmentTest extends TestCase {
         $attachment_exists = false;
         foreach($get_response2_as_array['attachments'] as $attachment_in_response){
             $this->assertArrayHasKey('uuid', $attachment_in_response);
-            if($attachment_in_response['uuid'] == $attachment->uuid){
+            if($attachment_in_response['uuid'] == $generated_attachment->uuid){
                 $attachment_exists = true;
                 break;
             }

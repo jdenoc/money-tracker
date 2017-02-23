@@ -15,6 +15,16 @@ class Entry extends BaseModel {
         'id', 'create_stamp', 'modified_stamp'
     ];
 
+    private static $required_entry_fields = [
+        'account_type',
+        'confirm',
+        'deleted',
+        'entry_date',
+        'entry_value',
+        'expense',
+        'memo'
+    ];
+
     /**
      * entries.account_type = account_types.id
      */
@@ -35,6 +45,13 @@ class Entry extends BaseModel {
      */
     public function attachments(){
         return $this->hasMany('App\Attachment');
+    }
+
+    public function save(array $options = []){
+        $saved_entry = parent::save($options);
+        $actual_entry_value = (($this->expense) ? -1 : 1)*$this->entry_value;
+        $this->account_type()->first()->account()->first()->update_total($actual_entry_value);
+        return $saved_entry;
     }
 
     public static function get_entry_with_tags_and_attachments($entry_id){
@@ -74,6 +91,18 @@ class Entry extends BaseModel {
         } else {
             return $collection_of_tags->pluck('pivot.tag_id')->toArray();
         }
+    }
+
+    public static function get_fields_required_for_creation(){
+        $fields = self::$required_entry_fields;
+        unset($fields[array_search('deleted', $fields)]);
+        // using array_values here to reset the array index
+        // after we unset the "deleted" element
+        return array_values($fields);
+    }
+
+    public static function get_fields_required_for_update(){
+        return self::$required_entry_fields;
     }
 
 }
