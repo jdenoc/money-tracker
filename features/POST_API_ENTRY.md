@@ -56,7 +56,7 @@ example output:
 > **GIVEN:** you wish to create a new entry  
 > **AND:** you have data  
 > **AND:** an account_type associated with the new entry exists  
-> **AND:** an account associated with the account_type exists  
+> **AND:** an account associated with the account_type  
 > **AND:** there are no attachments associated with the entry  
 > **WHEN:** sending a GET request to /api/account/{account_id}  
 > **AND:** send a POST request to /api/entry  
@@ -129,7 +129,7 @@ example output:
 **Scenario:** attempt to create a new entry record and a tag does not exist
 > **GIVEN:** you wish to create a new entry  
 > **AND:** an account_type associated with the new entry exists  
-> **AND:** an account associated with the account_type exists  
+> **AND:** an account associated with the account_type  
 > **AND:** you have entry data  
 > **AND:** there are tags  
 > **AND:** there is a tag associated with the entry data that does not exist  
@@ -175,7 +175,7 @@ example output:
 **Scenario:** attempt to create a new entry record with attachments
 > **GIVEN:** you wish to create a new entry  
 > **AND:** an account_type associated with the new entry exists  
-> **AND:** an account associated with the account_type exists  
+> **AND:** an account associated with the account_type  
 > **AND:** you have entry data  
 > **AND:** data contains attachments associated with entry  
 > **WHEN:** sending a POST request to /api/entry  
@@ -185,7 +185,7 @@ example output:
 > **AND:** POST response contains the ID of the created entry  
 > **AND:** POST response contains an empty error message  
 > **AND:** receive a 200 status from the GET request  
-> **AND:** receive a json response with entry data from the GET request (see [GET /api/entry/{entry_id}](GET_API_ENTRY_ENTRYID.md))
+> **AND:** receive a json response with entry data from the GET request (see [GET /api/entry/{entry_id}](GET_API_ENTRY_ENTRYID.md))  
 > **AND:** GET response contains an attachments node with attachments that exists  
 
 example output:

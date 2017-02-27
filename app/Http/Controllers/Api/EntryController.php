@@ -14,10 +14,13 @@ class EntryController extends Controller {
 
     const MAX_ENTRIES_IN_RESPONSE = 50;
     const ERROR_ENTRY_ID = 0;
-    const ERROR_MSG_CREATE_ENTRY_NO_ERROR = '';
-    const ERROR_MSG_CREATE_ENTRY_NO_DATA = "No data provided";
-    const ERROR_MSG_CREATE_ENTRY_MISSING_PROPERTY = "Missing data: %s";
-    const ERROR_MSG_CREATE_ENTRY_INVALID_ACCOUNT_TYPE = "Account type provided does not exist";
+    const RESPONSE_SAVE_KEY_ID = 'id';
+    const RESPONSE_SAVE_KEY_ERROR = 'error';
+    const ERROR_MSG_SAVE_ENTRY_NO_ERROR = '';
+    const ERROR_MSG_SAVE_ENTRY_NO_DATA = "No data provided";
+    const ERROR_MSG_SAVE_ENTRY_MISSING_PROPERTY = "Missing data: %s";
+    const ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE = "Account type provided does not exist";
+    const ERROR_MSG_SAVE_ENTRY_DOES_NOT_EXIST = "Entry does not exist";
 
     /**
      * GET /api/entry/{entry_id}
@@ -95,7 +98,7 @@ class EntryController extends Controller {
         // no data check
         if(empty($entry_data)){
             return response(
-                ['id'=>self::ERROR_ENTRY_ID, 'error'=>self::ERROR_MSG_CREATE_ENTRY_NO_DATA],
+                [self::RESPONSE_SAVE_KEY_ID=>self::ERROR_ENTRY_ID, self::RESPONSE_SAVE_KEY_ERROR=>self::ERROR_MSG_SAVE_ENTRY_NO_DATA],
                 Response::HTTP_BAD_REQUEST
             );
         }
@@ -105,7 +108,7 @@ class EntryController extends Controller {
         $missing_properties = array_diff_key(array_flip($required_fields), $entry_data);
         if(count($missing_properties) > 0){
             return response(
-                ['id'=>self::ERROR_ENTRY_ID, 'error'=>sprintf(self::ERROR_MSG_CREATE_ENTRY_MISSING_PROPERTY, json_encode(array_keys($missing_properties)))],
+                [self::RESPONSE_SAVE_KEY_ID=>self::ERROR_ENTRY_ID, self::RESPONSE_SAVE_KEY_ERROR=>sprintf(self::ERROR_MSG_SAVE_ENTRY_MISSING_PROPERTY, json_encode(array_keys($missing_properties)))],
                 Response::HTTP_BAD_REQUEST
             );
         }
@@ -114,27 +117,107 @@ class EntryController extends Controller {
         $account_type = AccountType::find($entry_data['account_type']);
         if(empty($account_type)){
             return response(
-                ['error'=>self::ERROR_MSG_CREATE_ENTRY_INVALID_ACCOUNT_TYPE, 'id'=>self::ERROR_ENTRY_ID],
+                [self::RESPONSE_SAVE_KEY_ERROR=>self::ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE, self::RESPONSE_SAVE_KEY_ID=>self::ERROR_ENTRY_ID],
                 Response::HTTP_BAD_REQUEST
             );
         }
 
+        $required_fields = Entry::get_fields_required_for_creation();
         $entry = new Entry();
         foreach($required_fields as $entry_property){
             $entry->$entry_property = $entry_data[$entry_property];
         }
         $entry->save();
 
-        // assign tags
-        if(!empty($entry_data['tags']) && is_array($entry_data['tags'])){
-            foreach($entry_data['tags'] as $tag){
-                $entry->tags()->attach(intval($tag));
+        $this->attach_tags_to_entry($entry, $entry_data);
+        $this->attach_attachments_to_entry($entry, $entry_data);
+
+        return response(
+            [self::RESPONSE_SAVE_KEY_ERROR=>self::ERROR_MSG_SAVE_ENTRY_NO_ERROR, self::RESPONSE_SAVE_KEY_ID=>$entry->id],
+            Response::HTTP_CREATED
+        );
+    }
+
+    /**
+     * PUT /api/entry/{entry_id}
+     * @param int $entry_id
+     * @param Request $request
+     * @return Response
+     */
+    public function update_entry($entry_id, Request $request){
+        $put_body = $request->getContent();
+        $entry_data = json_decode($put_body, true);
+
+        // no data check
+        if(empty($entry_data)){
+            return response(
+                [self::RESPONSE_SAVE_KEY_ID=>self::ERROR_ENTRY_ID, self::RESPONSE_SAVE_KEY_ERROR=>self::ERROR_MSG_SAVE_ENTRY_NO_DATA],
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+
+        // check to make sure entry exists. if it doesn't then we can't update it
+        $existing_entry = Entry::find($entry_id);
+        if(is_null($existing_entry)){
+            return response(
+                [self::RESPONSE_SAVE_KEY_ID=>self::ERROR_ENTRY_ID, self::RESPONSE_SAVE_KEY_ERROR=>self::ERROR_MSG_SAVE_ENTRY_DOES_NOT_EXIST],
+                Response::HTTP_NOT_FOUND
+            );
+        }
+
+        // check validity of account_type value
+        if(isset($entry_data['account_type'])){
+            $account_type = AccountType::find($entry_data['account_type']);
+            if(empty($account_type)){
+                return response(
+                    [self::RESPONSE_SAVE_KEY_ERROR => self::ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE, self::RESPONSE_SAVE_KEY_ID => self::ERROR_ENTRY_ID],
+                    Response::HTTP_BAD_REQUEST
+                );
             }
         }
 
-        // assign attachments
+        $required_fields = Entry::get_fields_required_for_update();
+        foreach($entry_data as $property=>$value){
+            if(in_array($property, $required_fields)){
+                $existing_entry->$property = $value;
+            }
+        }
+        $existing_entry->save();
+
+        $this->attach_tags_to_entry($existing_entry, $entry_data);
+        $this->attach_attachments_to_entry($existing_entry, $entry_data);
+
+        return response(
+            [self::RESPONSE_SAVE_KEY_ERROR=>self::ERROR_MSG_SAVE_ENTRY_NO_ERROR, self::RESPONSE_SAVE_KEY_ID=>$existing_entry->id],
+            Response::HTTP_OK
+        );
+    }
+
+    /**
+     * @param Entry $entry
+     * @param array $entry_data
+     */
+    private function attach_tags_to_entry($entry, $entry_data){
+        if(!empty($entry_data['tags']) && is_array($entry_data['tags'])){
+            foreach($entry_data['tags'] as $tag){
+                if(!is_array($entry_data['tags'])){
+                    continue;
+                }
+                $entry->tags()->attach(intval($tag));
+            }
+        }
+    }
+
+    /**
+     * @param Entry $entry
+     * @param array $entry_data
+     */
+    private function attach_attachments_to_entry($entry, $entry_data){
         if(!empty($entry_data['attachments']) && is_array($entry_data['attachments'])){
             foreach($entry_data['attachments'] as $attachment_data){
+                if(!is_array($attachment_data)){
+                    continue;
+                }
                 $new_attachment = new Attachment();
                 $new_attachment->uuid = $attachment_data['uuid'];
                 $new_attachment->attachment = $attachment_data['attachment'];
@@ -142,11 +225,6 @@ class EntryController extends Controller {
                 $new_attachment->save();
             }
         }
-
-        return response(
-            ['error'=>self::ERROR_MSG_CREATE_ENTRY_NO_ERROR, 'id'=>$entry->id],
-            Response::HTTP_CREATED
-        );
     }
 
 }

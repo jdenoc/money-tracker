@@ -11,3 +11,11 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 ## Features
 
 For a list of features currently available, what they're expected outcome is and test cases, see the [Features](features/FEATURES.md)
+
+## Requirements
+- PHP >= 5.6.4
+- OpenSSL PHP Extension
+- PDO PHP Extension
+- Mbstring PHP Extension
+- Tokenizer PHP Extension
+- XML PHP Extension

@@ -9,3 +9,4 @@
 - [DELETE /api/entry/{entry_id}](DELETE_API_ENTRY_ENTRYID.md)
 - [DELETE /api/attachment/{uuid}](DELETE_API_ATTACHMENT_UUID.md)
 - [POST /api/entry](POST_API_ENTRY.md)
+- [PUT /api/entry/{entry_id}](PUT_API_ENTRY_ENTRYID.md)

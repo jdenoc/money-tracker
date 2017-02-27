@@ -32,7 +32,42 @@ class PostEntriesTest extends TestCase {
         $response->assertStatus(Response::HTTP_BAD_REQUEST);
         $response_as_array = $this->getResponseAsArray($response);
         $this->assertPostResponseHasCorrectKeys($response_as_array);
-        $this->assertFailedPostResponse($response_as_array, EntryController::ERROR_MSG_CREATE_ENTRY_NO_DATA);
+        $this->assertFailedPostResponse($response_as_array, EntryController::ERROR_MSG_SAVE_ENTRY_NO_DATA);
+    }
+
+    public function providerCreateEntryWithMissingData(){
+        // PHPUnit data providers are called before setUp() and setUpBeforeClass() are called.
+        // With that piece of information, we need to call setUp() earlier than we normally would so that we can use model factories
+        $this->setUp();
+
+        $required_entry_fields = Entry::get_fields_required_for_creation();
+
+        $missing_data_entries = [];
+        // provide data that is missing one property
+        for($i=0; $i<count($required_entry_fields); $i++){
+            $entry_data = $this->generateEntryData();
+            unset($entry_data[$required_entry_fields[$i]]);
+            $missing_data_entries['missing ['.$required_entry_fields[$i].']'] = [
+                $entry_data,
+                sprintf(EntryController::ERROR_MSG_SAVE_ENTRY_MISSING_PROPERTY, json_encode([$required_entry_fields[$i]]))
+            ];
+        }
+
+        // provide data that is missing two or more properties, but 1 less than the total properties
+        $entry_data = $this->generateEntryData();
+        $unset_keys = array_rand($required_entry_fields, mt_rand(2, count($required_entry_fields)-1));
+        $removed_keys = [];
+        foreach($unset_keys as $unset_key){
+            $removed_key = $required_entry_fields[$unset_key];
+            unset($entry_data[$removed_key]);
+            $removed_keys[] = $removed_key;
+        }
+        $missing_data_entries['missing ['.implode(',', $removed_keys).']'] = [
+            $entry_data,
+            sprintf(EntryController::ERROR_MSG_SAVE_ENTRY_MISSING_PROPERTY, json_encode($removed_keys))
+        ];
+
+        return $missing_data_entries;
     }
 
     /**
@@ -64,7 +99,7 @@ class PostEntriesTest extends TestCase {
         $response->assertStatus(Response::HTTP_BAD_REQUEST);
         $response_as_array = $this->getResponseAsArray($response);
         $this->assertPostResponseHasCorrectKeys($response_as_array);
-        $this->assertFailedPostResponse($response_as_array, EntryController::ERROR_MSG_CREATE_ENTRY_INVALID_ACCOUNT_TYPE);
+        $this->assertFailedPostResponse($response_as_array, EntryController::ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE);
     }
 
     public function testCreateEntryAndAccountTotalUpdate(){
@@ -91,8 +126,8 @@ class PostEntriesTest extends TestCase {
         $post_response->assertStatus(Response::HTTP_CREATED);
         $post_response_as_array = $this->getResponseAsArray($post_response);
         $this->assertPostResponseHasCorrectKeys($post_response_as_array);
-        $this->assertEmpty($post_response_as_array['error']);
-        $created_entry_id = $post_response_as_array['id'];
+        $this->assertEmpty($post_response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR]);
+        $created_entry_id = $post_response_as_array[EntryController::RESPONSE_SAVE_KEY_ID];
         $this->assertGreaterThan(EntryController::ERROR_ENTRY_ID, $created_entry_id);
 
         // WHEN
@@ -120,8 +155,8 @@ class PostEntriesTest extends TestCase {
     }
 
     public function testCreateEntryButTagDoesNotExist(){
-        // GIVEN
         $faker = Factory::create();
+        // GIVEN
         do{
             $generate_tag_count = $faker->randomDigitNotNull;
         }while($generate_tag_count < 3);
@@ -144,8 +179,8 @@ class PostEntriesTest extends TestCase {
         $post_response->assertStatus(Response::HTTP_CREATED);
         $post_response_as_array = $this->getResponseAsArray($post_response);
         $this->assertPostResponseHasCorrectKeys($post_response_as_array);
-        $this->assertEmpty($post_response_as_array['error']);
-        $created_entry_id = $post_response_as_array['id'];
+        $this->assertEmpty($post_response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR]);
+        $created_entry_id = $post_response_as_array[EntryController::RESPONSE_SAVE_KEY_ID];
         $this->assertGreaterThan(EntryController::ERROR_ENTRY_ID, $created_entry_id);
 
         // WHEN
@@ -173,8 +208,8 @@ class PostEntriesTest extends TestCase {
     }
 
     public function testCreateEntryWithAttachments(){
-        // GIVEN
         $faker = Factory::create();
+        // GIVEN
         do{
             $generated_attachment_count = $faker->randomDigitNotNull;
         }while($generated_attachment_count <= 0);
@@ -198,8 +233,8 @@ class PostEntriesTest extends TestCase {
         $post_response->assertStatus(Response::HTTP_CREATED);
         $post_response_as_array = $this->getResponseAsArray($post_response);
         $this->assertPostResponseHasCorrectKeys($post_response_as_array);
-        $this->assertEmpty($post_response_as_array['error']);
-        $created_entry_id = $post_response_as_array['id'];
+        $this->assertEmpty($post_response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR]);
+        $created_entry_id = $post_response_as_array[EntryController::RESPONSE_SAVE_KEY_ID];
         $this->assertGreaterThan(EntryController::ERROR_ENTRY_ID, $created_entry_id);
 
         // WHEN
@@ -226,41 +261,6 @@ class PostEntriesTest extends TestCase {
         }
     }
 
-    public function providerCreateEntryWithMissingData(){
-        // PHPUnit data providers are called before setUp() and setUpBeforeClass() are called.
-        // With that piece of information, we need to call setUp() earlier than we normally would so that we can use model factories
-        $this->setUp();
-
-        $required_entry_fields = Entry::get_fields_required_for_creation();
-
-        $missing_data_entries = [];
-        // provide data that is missing one property
-        for($i=0; $i<count($required_entry_fields); $i++){
-            $entry_data = $this->generateEntryData();
-            unset($entry_data[$required_entry_fields[$i]]);
-            $missing_data_entries['missing '.$required_entry_fields[$i]] = [
-                $entry_data,
-                sprintf(EntryController::ERROR_MSG_CREATE_ENTRY_MISSING_PROPERTY, json_encode([$required_entry_fields[$i]]))
-            ];
-        }
-
-        // provide data that is missing two or more properties, but 1 less than the total properties
-        $entry_data = $this->generateEntryData();
-        $unset_keys = array_rand($required_entry_fields, mt_rand(2, count($required_entry_fields)-1));
-        $removed_keys = [];
-        foreach($unset_keys as $unset_key){
-            $removed_key = $required_entry_fields[$unset_key];
-            unset($entry_data[$removed_key]);
-            $removed_keys[] = $removed_key;
-        }
-        $missing_data_entries['missing '.implode(',', $removed_keys)] = [
-            $entry_data,
-            sprintf(EntryController::ERROR_MSG_CREATE_ENTRY_MISSING_PROPERTY, json_encode($removed_keys))
-        ];
-
-        return $missing_data_entries;
-    }
-
     private function generateEntryData(){
         $entry_data = factory(Entry::class)->make();
         return [
@@ -276,15 +276,15 @@ class PostEntriesTest extends TestCase {
     private function assertPostResponseHasCorrectKeys($response_as_array){
         $failure_message = "POST Response is ".json_encode($response_as_array);
         $this->assertTrue(is_array($response_as_array), $failure_message);
-        $this->assertArrayHasKey('id', $response_as_array, $failure_message);
-        $this->assertArrayHasKey('error', $response_as_array, $failure_message);
+        $this->assertArrayHasKey(EntryController::RESPONSE_SAVE_KEY_ID, $response_as_array, $failure_message);
+        $this->assertArrayHasKey(EntryController::RESPONSE_SAVE_KEY_ERROR, $response_as_array, $failure_message);
     }
 
     private function assertFailedPostResponse($response_as_array, $response_error_msg){
         $failure_message = "POST Response is ".json_encode($response_as_array);
-        $this->assertEquals(EntryController::ERROR_ENTRY_ID, $response_as_array['id'], $failure_message);
-        $this->assertNotEmpty($response_as_array['error'], $failure_message);
-        $this->assertContains($response_error_msg, $response_as_array['error'], $failure_message);
+        $this->assertEquals(EntryController::ERROR_ENTRY_ID, $response_as_array[EntryController::RESPONSE_SAVE_KEY_ID], $failure_message);
+        $this->assertNotEmpty($response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR], $failure_message);
+        $this->assertContains($response_error_msg, $response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR], $failure_message);
     }
 
 }
