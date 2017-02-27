@@ -22,7 +22,7 @@ $factory->define(App\Tag::class, function(Faker\Generator $faker){
 $factory->define(App\Account::class, function(Faker\Generator $faker){
     return [
         'account'=>$faker->company,         // this is supposed to be a bank name
-        'total'=>$faker->randomFloat(2, -9999.99, 9999.99),
+        'total'=>$faker->randomFloat(2, -1000, 1000),   // -1000.00 < total < 1000.00
     ];
 });
 
@@ -45,7 +45,7 @@ $factory->define(App\Entry::class, function(Faker\Generator $faker){
     return [
         'entry_date'=>date("Y-m-d"),
         'account_type'=>$faker->randomNumber(),
-        'entry_value'=>$faker->randomFloat(2, 0, 99999.99),  // Float > 0.00
+        'entry_value'=>$faker->randomFloat(2, 0, 100),  // 0.00 < entry_value < 100.00
         'memo'=>$faker->words(3, true),
         'expense'=>$faker->boolean,
         'confirm'=>$faker->boolean
