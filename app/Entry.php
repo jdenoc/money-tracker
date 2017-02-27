@@ -48,9 +48,20 @@ class Entry extends BaseModel {
     }
 
     public function save(array $options = []){
+        if($this->exists){
+            // if the entry already exists
+            // remove that original value from the account total
+            $actual_entry_value = ($this->getOriginal('expense') ? -1 : 1)*$this->getOriginal('entry_value');
+            $this->account_type()->first()->account()->first()->update_total(-1*$actual_entry_value);
+        }
+
         $saved_entry = parent::save($options);
-        $actual_entry_value = (($this->expense) ? -1 : 1)*$this->entry_value;
-        $this->account_type()->first()->account()->first()->update_total($actual_entry_value);
+
+        if(!$this->deleted){
+            // add new entry value to account total
+            $actual_entry_value = (($this->expense) ? -1 : 1) * $this->entry_value;
+            $this->account_type()->first()->account()->first()->update_total($actual_entry_value);
+        }
         return $saved_entry;
     }
 
