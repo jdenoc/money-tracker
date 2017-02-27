@@ -15,7 +15,7 @@ use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
-class PostEntriesTest extends TestCase {
+class PostEntryTest extends TestCase {
 
     use DatabaseMigrations;
 
