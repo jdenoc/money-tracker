@@ -5,7 +5,7 @@
 - [GET /api/account/{account_id}](GET_API_ACCOUNT_ACCOUNTID.md)
 - [GET /api/entry/{entry_id}](GET_API_ENTRY_ENTRYID.md)
 - [GET /api/entries](GET_API_ENTRIES.md)
-- [GET /api/entries/{page}](GET_API_ENTRIES_PAGE.md)
+- [GET /api/entries/{page}](GET_API_ENTRIES.md)
 - [DELETE /api/entry/{entry_id}](DELETE_API_ENTRY_ENTRYID.md)
 - [DELETE /api/attachment/{uuid}](DELETE_API_ATTACHMENT_UUID.md)
 - [POST /api/entry](POST_API_ENTRY.md)
