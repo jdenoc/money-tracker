@@ -72,17 +72,96 @@ class Entry extends BaseModel {
     }
 
     /**
+     * @param array $filters
+     * @param int $limit
+     * @param int $offset
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public static function get_collection_of_non_deleted_entries(){
-        return Entry::where('deleted', 0)->get();
+    public static function get_collection_of_non_deleted_entries($filters = [], $limit=10, $offset=0){
+        $entries_query = Entry::where('deleted', 0);
+        $entries_query = self::filter_entry_collection($entries_query, $filters);
+        $entries_query->select("entries.*");    // this makes sure that the correct ID is present if a JOIN is required
+        return $entries_query->offset($offset)->limit($limit)->get();
     }
 
     /**
+     * @param array $filters
      * @return int
      */
-    public static function count_non_deleted_entries(){
-        return Entry::where('deleted', 0)->count();
+    public static function count_non_deleted_entries($filters = []){
+        $entries_query = Entry::where('deleted', 0);
+        $entries_query = self::filter_entry_collection($entries_query, $filters);
+        return $entries_query->count();
+    }
+
+    private static function filter_entry_collection($entries_query, $filters){
+        $expense_values = [];
+        foreach($filters as $filter_name => $filter_constraint){
+            switch($filter_name){
+                case 'start_date':
+                    $entries_query->where('entry_date', '>=', $filter_constraint);
+                    break;
+                case 'entry_value_min':
+                    $entries_query->where('entry_value', '>=', $filter_constraint);
+                    break;
+                case 'end_date':
+                    $entries_query->where('entry_date', '<=', $filter_constraint);
+                    break;
+                case 'entry_value_max':
+                    $entries_query->where('entry_value', '<=', $filter_constraint);
+                    break;
+                case 'account_type':
+                    $entries_query->where('account_type', $filter_constraint);
+                    break;
+                case 'income':
+                    if($filter_constraint == true){
+                        $expense_values[] = 0;
+                    }
+                    break;
+                case 'expense':
+                    if($filter_constraint == true){
+                        $expense_values[] = 1;
+                    }
+                    break;
+                case 'not_confirmed':
+                    if($filter_constraint == true){
+                        $entries_query->where('confirm', 0);
+                    }
+                    break;
+                case 'has_attachments':
+                    if($filter_constraint == true){
+                        // to get COUNT(attachment.id) > 0 use:
+                        // INNER JOIN attachments ON attachments.entry_id=entries.id
+                        $entries_query->join('attachments', 'entries.id', '=', 'attachments.entry_id');
+                    } elseif($filter_constraint == false) {
+                        // to get COUNT(attachments.id) == 0 use:
+                        // LEFT JOIN attachments
+                        //   ON attachments.entry_id=entries.id
+                        //   AND attachments.entry_id IS NULL
+                        $entries_query->leftJoin('attachments', function($join){
+                            $join->on('entries.id', '=', 'attachments.entry_id')
+                                ->whereNull('attachments.entry_id');
+                        });
+                    }
+                    break;
+                case 'tags':
+                    // LEFT JOIN entry_tags
+                    //   ON entry_tags.entry_id=entries.id
+                    //   AND entry_tags.tag_id IN ($tags)
+                    $tag_ids = (is_array($filters[$filter_name])) ? $filter_constraint : [$filter_constraint];
+                    $entries_query->leftJoin('entry_tags', function($join) use ($tag_ids){
+                        $join->on('entry_tags.entry_id', '=', 'entries.id')
+                            ->whereIn('entry_tags.tag_id', $tag_ids);
+                    });
+                    break;
+            }
+        }
+
+        if(!empty($expense_values)){
+            $entries_query->whereIn('expense', $expense_values);
+        }
+
+        return $entries_query;
     }
 
     /**

@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\AccountType;
 use App\Attachment;
+use App\Tag;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
 use App\Entry;
@@ -42,32 +44,33 @@ class EntryController extends Controller {
     }
 
     /**
-     * GET /api/entries
-     * @return Response
-     */
-    public function get_entries(){
-        return $this->get_paged_entries();
-    }
-
-    /**
      * GET /api/entries/{page}
      * @param int $page_number
      * @return Response
      */
     public function get_paged_entries($page_number = 0){
-        $entries = Entry::get_collection_of_non_deleted_entries()
-            ->slice(self::MAX_ENTRIES_IN_RESPONSE*$page_number, self::MAX_ENTRIES_IN_RESPONSE);
-        if(is_null($entries) || $entries->isEmpty()){
-            return response([], Response::HTTP_NOT_FOUND);
-        } else {
-            foreach($entries as $entry){
-                $entry->has_attachments = $entry->has_attachments();
-                $entry->tags = $entry->get_tag_ids();
-            }
-            $entries_as_array = $entries->toArray();
-            $entries_as_array['count'] = Entry::count_non_deleted_entries();
-            return response($entries_as_array, Response::HTTP_OK);
+        return $this->provide_paged_entries_response([], $page_number);
+    }
+
+    /**
+     * POST /api/entries/{page}
+     * @param int $page_number
+     * @param Request $request
+     * @return Response
+     */
+    public function filter_paged_entries(Request $request, $page_number = 0){
+        $post_body = $request->getContent();
+        $filter_data = json_decode($post_body, true);
+
+        if(empty($filter_data)){
+            return $this->provide_paged_entries_response([], $page_number);
         }
+        $filter_validator = Validator::make($filter_data, self::get_filter_details());
+        if($filter_validator->fails()){
+            return response(['error'=>'invalid filter provided'], Response::HTTP_BAD_REQUEST);
+        }
+
+        return $this->provide_paged_entries_response($filter_data, $page_number);
     }
 
     /**
@@ -193,6 +196,24 @@ class EntryController extends Controller {
         );
     }
 
+    public static function get_filter_details(){
+        $tags = Tag::all();
+        $tag_ids = $tags->pluck('id')->toArray();
+        return [
+            'start_date'=>'date_format:Y-m-d',
+            'end_date'=>'date_format:Y-m-d',
+            'account_type'=>'integer',
+            'tags'=>'array',
+            'tags.*'=>'in:'.implode(',', $tag_ids),
+            'income'=>'boolean',
+            'expense'=>'boolean',
+            'has_attachments'=>'boolean',
+            'not_confirmed'=>'boolean',
+            'entry_value_min'=>'numeric',
+            'entry_value_max'=>'numeric',
+        ];
+    }
+
     /**
      * @param Entry $entry
      * @param array $entry_data
@@ -224,6 +245,31 @@ class EntryController extends Controller {
                 $new_attachment->entry_id = $entry->id;
                 $new_attachment->save();
             }
+        }
+    }
+
+    /**
+     * @param $filters
+     * @param int $page_number
+     * @return Response
+     */
+    private function provide_paged_entries_response($filters, $page_number=0){
+        $entries_collection = Entry::get_collection_of_non_deleted_entries(
+            $filters,
+            EntryController::MAX_ENTRIES_IN_RESPONSE,
+            EntryController::MAX_ENTRIES_IN_RESPONSE*$page_number
+        );
+
+        if(is_null($entries_collection) || $entries_collection->isEmpty()){
+            return response([], Response::HTTP_NOT_FOUND);
+        } else {
+            foreach($entries_collection as $entry){
+                $entry->has_attachments = $entry->has_attachments();
+                $entry->tags = $entry->get_tag_ids();
+            }
+            $entries_as_array = $entries_collection->toArray();
+            $entries_as_array['count'] = Entry::count_non_deleted_entries($filters);
+            return response($entries_as_array, Response::HTTP_OK);
         }
     }
 

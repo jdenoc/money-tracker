@@ -2,289 +2,291 @@
 
 namespace Tests\Feature\Api;
 
-use App\Account;
 use App\AccountType;
-use App\Attachment;
-use App\Entry;
 use App\Http\Controllers\Api\EntryController;
-use App\Tag;
-use Faker\Factory;
 use Symfony\Component\HttpFoundation\Response;
-use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 
-class PostEntriesTest extends TestCase {
+class PostEntriesTest extends ListEntriesBase {
 
-    use DatabaseMigrations;
-
-    private $_base_uri = '/api/entry';
-
-    public function testCreateEntryWithoutData(){
-        // GIVEN
-        $entry_data = [];
-
-        // WHEN
-        $response = $this->json('POST', $this->_base_uri, $entry_data);
-
-        // THEN
-        $response->assertStatus(Response::HTTP_BAD_REQUEST);
-        $response_as_array = $this->getResponseAsArray($response);
-        $this->assertPostResponseHasCorrectKeys($response_as_array);
-        $this->assertFailedPostResponse($response_as_array, EntryController::ERROR_MSG_SAVE_ENTRY_NO_DATA);
-    }
-
-    public function providerCreateEntryWithMissingData(){
-        // PHPUnit data providers are called before setUp() and setUpBeforeClass() are called.
-        // With that piece of information, we need to call setUp() earlier than we normally would so that we can use model factories
+    public function providerPostEntriesFilter(){
+        // need to call setUp() before running through a data provider method
+        // environment needs setting up and isn't until setUp() is called
         $this->setUp();
 
-        $required_entry_fields = Entry::get_fields_required_for_creation();
+        $filter = [];
+        $filter['no filter'] = [[]];
+        $filter["filtering 'expense' & 'income'"] = [['income'=>true, 'expense'=>true]];
 
-        $missing_data_entries = [];
-        // provide data that is missing one property
-        for($i=0; $i<count($required_entry_fields); $i++){
-            $entry_data = $this->generateEntryData();
-            unset($entry_data[$required_entry_fields[$i]]);
-            $missing_data_entries['missing ['.$required_entry_fields[$i].']'] = [
-                $entry_data,
-                sprintf(EntryController::ERROR_MSG_SAVE_ENTRY_MISSING_PROPERTY, json_encode([$required_entry_fields[$i]]))
+        $start_date = $this->_faker->date();
+        do{
+            $end_date = $this->_faker->date();
+        }while($start_date > $end_date);
+        $min_value = $this->_faker->randomFloat(2, 0, 50);
+        do{
+            $max_value = $this->_faker->randomFloat(2, 0, 50);
+        }while($min_value > $max_value);
+
+        $filter_details = [
+            'start_date'=>$start_date,
+            'end_date'=>$end_date,
+            'account_type'=>0,  // will be set later
+            'tags'=>[],         // will be set late
+            'income'=>$this->_faker->boolean,
+            'expense'=>$this->_faker->boolean,
+            'has_attachments'=>$this->_faker->boolean,
+            'not_confirmed'=>$this->_faker->boolean,
+            'entry_value_min'=>$min_value,
+            'entry_value_max'=>$max_value
+        ];
+
+        // confirm all filters in EntryController are listed here
+        $current_filters = EntryController::get_filter_details();
+        foreach(array_keys($current_filters) as $existing_filter){
+            if(strpos('.*', $existing_filter) === false){
+                continue;
+            }
+            $this->assertArrayHasKey($existing_filter, $filter_details);
+        }
+
+        // individual filter requests
+        foreach($filter_details as $filter_name=>$filter_value){
+            // confirm all filters listed in test are in EntryController
+            $this->assertArrayHasKey($filter_name, $current_filters);
+
+            $filter["filtering '".$filter_name."'"] = [
+                [$filter_name=>$filter_value]
             ];
         }
 
-        // provide data that is missing two or more properties, but 1 less than the total properties
-        $entry_data = $this->generateEntryData();
-        $unset_keys = array_rand($required_entry_fields, mt_rand(2, count($required_entry_fields)-1));
-        $removed_keys = [];
-        foreach($unset_keys as $unset_key){
-            $removed_key = $required_entry_fields[$unset_key];
-            unset($entry_data[$removed_key]);
-            $removed_keys[] = $removed_key;
-        }
-        $missing_data_entries['missing ['.implode(',', $removed_keys).']'] = [
-            $entry_data,
-            sprintf(EntryController::ERROR_MSG_SAVE_ENTRY_MISSING_PROPERTY, json_encode($removed_keys))
-        ];
+        // batch of filter requests
+        $batched_filter_details = array_rand($filter_details, 3);
+        $filter["filtering '".implode("','", $batched_filter_details)."'"] = [array_intersect_key($filter_details, array_flip($batched_filter_details))];
 
-        return $missing_data_entries;
+        // all filter requests
+        $filter["filtering '".implode("','", array_keys($filter_details))."'"] = [$filter_details];
+
+
+        return $filter;
     }
 
     /**
-     * @dataProvider providerCreateEntryWithMissingData
-     * @param array $entry_data
-     * @param string $expected_response_error_msg
+     * @dataProvider providerPostEntriesFilter
+     * @param $filter_details
      */
-    public function testCreateEntryWithMissingData($entry_data, $expected_response_error_msg){
-        // GIVEN - $entry_data by providerCreateEntryWithMissingData
+    public function testPostEntriesThatDoNotExist($filter_details){
+        // GIVEN - no entries exist
+        factory(AccountType::class)->create(['account_group'=>$this->_generated_account->id]);
+        $filter_details = $this->set_test_specific_filters($filter_details);
+
+        $this->assertPostEntriesNotFound($filter_details);
+    }
+
+    /**
+     * @dataProvider providerPostEntriesFilter
+     * @param array $filter_details
+     */
+    public function testPostEntries($filter_details){
+        // GIVEN
+        $generate_entry_count = $this->_faker->numberBetween(4, 50);
+        $generated_account_type = factory(AccountType::class)->create(['account_group'=>$this->_generated_account->id]);
+        $filter_details = $this->set_test_specific_filters($filter_details);
+
+        $generated_entries = [];
+        $generated_deleted_entries = [];
+        for($i=0; $i<$generate_entry_count; $i++){
+            $entry_deleted = $this->_faker->boolean;
+            $generated_entry = $this->generate_entry_record(
+                $generated_account_type->id,
+                $entry_deleted,
+                $this->convert_filters_to_entry_components($filter_details)
+            );
+
+            if($entry_deleted){
+                $generated_deleted_entries[] = $generated_entry->id;
+            } else {
+                $generated_entries[] = $generated_entry;
+            }
+        }
+        $generate_entry_count -= count($generated_deleted_entries);
+        if($generate_entry_count == 0){
+            // do this in case we ever generated nothing but "deleted" entries
+            $generated_entries[] = $this->generate_entry_record($generated_account_type->id, false, $this->convert_filters_to_entry_components($filter_details));
+            $generate_entry_count++;
+        }
 
         // WHEN
-        $response = $this->json('POST', $this->_base_uri, $entry_data);
+        $response = $this->json("POST", $this->_uri, $filter_details);
 
         // THEN
-        $response->assertStatus(Response::HTTP_BAD_REQUEST);
+        $response->assertStatus(Response::HTTP_OK);
         $response_as_array = $this->getResponseAsArray($response);
-        $this->assertPostResponseHasCorrectKeys($response_as_array);
-        $this->assertFailedPostResponse($response_as_array, $expected_response_error_msg);
+        $this->assertEquals($generate_entry_count, $response_as_array['count']);
+        unset($response_as_array['count']);
+        $this->runEntryListAssertions($generate_entry_count, $response_as_array, $generated_entries, $generated_deleted_entries);
     }
 
-    public function testCreateEntryButAccountTypeDoesNotExist(){
+    /**
+     * @dataProvider providerPostEntriesFilter
+     * @param $filter_details
+     */
+    public function testPostEntriesByPage($filter_details){
         // GIVEN
-        $entry_data = $this->generateEntryData();
+        $generate_entry_count = $this->_faker->numberBetween(101, 150);
+        $generated_account_type = factory(AccountType::class)->create(['account_group'=>$this->_generated_account->id]);
+        $filter_details = $this->set_test_specific_filters($filter_details);
+        $generated_entries = $this->batch_generate_non_deleted_entries($generate_entry_count, $generated_account_type->id, $filter_details);
 
+        $entries_in_response = [];
+        for($i=0; $i<3; $i++){
+            // WHEN
+            $response = $this->json("POST", $this->_uri.'/'.$i, $filter_details);
+
+            // THEN
+            $response->assertStatus(Response::HTTP_OK);
+            $response_body_as_array = $this->getResponseAsArray($response);
+
+            $this->assertTrue(is_array($response_body_as_array));
+            $this->assertArrayHasKey('count', $response_body_as_array);
+            $this->assertEquals($generate_entry_count, $response_body_as_array['count']);
+            unset($response_body_as_array['count']);
+
+            if($i+1 == 3){
+                $this->assertEquals($generate_entry_count-(2*EntryController::MAX_ENTRIES_IN_RESPONSE), count($response_body_as_array));
+            } else {
+                $this->assertEquals(EntryController::MAX_ENTRIES_IN_RESPONSE, count($response_body_as_array));
+            }
+
+            $entries_in_response = array_merge($entries_in_response, $response_body_as_array);
+        }
+
+        $this->runEntryListAssertions($generate_entry_count, $entries_in_response, $generated_entries);
+    }
+
+    public function testPostEntriesFilterWithStartDateGreaterThanEndDate(){
+        // GIVEN
+        $start_date = $this->_faker->date();
+        do{
+            $end_date = $this->_faker->date();
+        }while($start_date < $end_date);
+        $filter_details = [
+            'start_date'=>$start_date,
+            'end_date'=>$end_date,
+        ];
+
+        $generated_account_type = factory(AccountType::class)->create(['account_group'=>$this->_generated_account->id]);
+        $this->batch_generate_non_deleted_entries($this->_faker->numberBetween(4, 50), $generated_account_type->id, $filter_details);
+        $this->assertPostEntriesNotFound($filter_details);
+    }
+
+    public function testPostEntriesFilterWithMinValueGreaterThanMaxValue(){
+        // GIVEN
+        $min_value = $this->_faker->randomFloat(2, 0, 50);
+        do{
+            $max_value = $this->_faker->randomFloat(2, 0, 50);
+        }while($min_value < $max_value);
+        $filter_details = [
+            'entry_value_min'=>$min_value,
+            'entry_value_max'=>$max_value
+        ];
+
+        $generated_account_type = factory(AccountType::class)->create(['account_group'=>$this->_generated_account->id]);
+        $this->batch_generate_non_deleted_entries($this->_faker->numberBetween(4, 50), $generated_account_type->id, $filter_details);
+        $this->assertPostEntriesNotFound($filter_details);
+    }
+
+    /**
+     * @param array $filter_details
+     */
+    private function assertPostEntriesNotFound($filter_details){
         // WHEN
-        $response = $this->json("POST", $this->_base_uri, $entry_data);
+        $response = $this->json("POST", $this->_uri, $filter_details);
 
         // THEN
-        $response->assertStatus(Response::HTTP_BAD_REQUEST);
+        $response->assertStatus(Response::HTTP_NOT_FOUND);
         $response_as_array = $this->getResponseAsArray($response);
-        $this->assertPostResponseHasCorrectKeys($response_as_array);
-        $this->assertFailedPostResponse($response_as_array, EntryController::ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE);
+        $this->assertTrue(is_array($response_as_array));
+        $this->assertEmpty($response_as_array);
     }
 
-    public function testCreateEntryAndAccountTotalUpdate(){
-        // GIVEN
-        $generated_account = factory(Account::class)->create();
-        $generated_account_type = factory(AccountType::class)->create(['account_group'=>$generated_account->id]);
-        $generated_entry_data = $this->generateEntryData();
-        $generated_entry_data['account_type'] = $generated_account_type->id;
-
-        // WHEN
-        $get_account_response1 = $this->get('/api/account/'.$generated_account->id);
-        // THEN
-        $get_account_response1->assertStatus(Response::HTTP_OK);
-        $get_account_response1_as_array = $this->getResponseAsArray($get_account_response1);
-        $this->assertArrayHasKey('total', $get_account_response1_as_array);
-        $original_account_total = $get_account_response1_as_array['total'];
-        $this->assertArrayHasKey('account_types', $get_account_response1_as_array);
-        $this->assertTrue(is_array($get_account_response1_as_array['account_types']));
-        $this->assertNotEmpty($get_account_response1_as_array['account_types']);
-
-        // WHEN
-        $post_response = $this->json("POST", $this->_base_uri, $generated_entry_data);
-        // THEN
-        $post_response->assertStatus(Response::HTTP_CREATED);
-        $post_response_as_array = $this->getResponseAsArray($post_response);
-        $this->assertPostResponseHasCorrectKeys($post_response_as_array);
-        $this->assertEmpty($post_response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR]);
-        $created_entry_id = $post_response_as_array[EntryController::RESPONSE_SAVE_KEY_ID];
-        $this->assertGreaterThan(EntryController::ERROR_ENTRY_ID, $created_entry_id);
-
-        // WHEN
-        $get_entry_response = $this->get($this->_base_uri.'/'.$created_entry_id);
-        // THEN
-        $get_entry_response->assertStatus(Response::HTTP_OK);
-        $get_entry_response_as_array = $this->getResponseAsArray($get_entry_response);
-        $this->assertEquals($generated_entry_data['entry_date'], $get_entry_response_as_array['entry_date']);
-        $this->assertEquals($generated_entry_data['entry_value'], $get_entry_response_as_array['entry_value']);
-        $this->assertEquals($generated_entry_data['memo'], $get_entry_response_as_array['memo']);
-        $this->assertEquals($generated_entry_data['expense'], $get_entry_response_as_array['expense']);
-        $this->assertEquals($generated_entry_data['confirm'], $get_entry_response_as_array['confirm']);
-        $this->assertEquals($generated_entry_data['account_type'], $get_entry_response_as_array['account_type']);
-
-        // WHEN
-        $get_account_response2 = $this->get('/api/account/'.$generated_account->id);
-        // THEN
-        $get_account_response2->assertStatus(Response::HTTP_OK);
-        $get_account_response2_as_array = $this->getResponseAsArray($get_account_response2);
-        $this->assertArrayHasKey('total', $get_account_response2_as_array);
-        $new_account_total = $get_account_response2_as_array['total'];
-
-        $entry_value = (($generated_entry_data['expense']) ? -1 : 1)*$generated_entry_data['entry_value'];
-        $this->assertEquals($original_account_total+$entry_value, $new_account_total);
+    /**
+     * Because the data provider method is called before the test, we are unlikely to have the same tags setup
+     * This method is called at the start of each test and gathers the tags that are available, then assigns them to the "filter" array
+     * @param array $filter_details
+     * @return array
+     */
+    private function set_test_specific_filters($filter_details){
+        if(key_exists('tags', $filter_details)){
+            $tag_ids = $this->_generated_tags->pluck('id')->toArray();
+            $filter_details['tags'] = $this->_faker->randomElements($tag_ids, $this->_faker->numberBetween(1, count($tag_ids)));
+        }
+        if(key_exists('account_type', $filter_details)){
+            $account_types = $this->_generated_account->account_types()->pluck('id')->toArray();
+            $filter_details['account_type'] = $this->_faker->randomElement($account_types);
+        }
+        return $filter_details;
     }
 
-    public function testCreateEntryButTagDoesNotExist(){
-        $faker = Factory::create();
-        // GIVEN
-        do{
-            $generate_tag_count = $faker->randomDigitNotNull;
-        }while($generate_tag_count < 3);
-        $generated_tags = factory(Tag::class, $generate_tag_count)->create();
-        $generated_tag_ids = $generated_tags->pluck('id')->toArray();
-        do{
-            $non_existent_tag_id = $faker->randomDigitNotNull;
-        } while(in_array($non_existent_tag_id, $generated_tag_ids));
+    /**
+     * @param array $filters
+     * @return array
+     */
+    private function convert_filters_to_entry_components($filters){
+        $entry_components = [];
+        foreach($filters as $filter_name => $constraint){
+            switch($filter_name){
+                case 'start_date':
+                case 'end_date':
+                    $entry_components['entry_date'] = $constraint;
+                    break;
+                case 'entry_value_min':
+                case 'entry_value_max':
+                    $entry_components['entry_value'] = $constraint;
+                    break;
+                case 'account_type':
+                    $entry_components['account_type'] = $constraint;
+                    break;
+                case 'income':
+                    if($constraint == true){
+                        $entry_components['expense'] = 0;
+                    }
+                    break;
+                case 'expense':
+                    if($constraint == true){
+                        $entry_components['expense'] = 1;
+                    }
+                    break;
+                case 'not_confirmed':
+                    if($constraint == true){
+                        $entry_components['confirm'] = 0;
+                    }
+                    break;
+                case 'has_attachments':
+                    $entry_components[$filter_name] = $constraint;
+                    break;
+                case 'tags':
+                    $entry_components[$filter_name] = [$this->_faker->randomElement($constraint)];
+                    break;
+            }
+        }
+        return $entry_components;
+    }
 
-        $generated_account = factory(Account::class)->create();
-        $generated_account_type = factory(AccountType::class)->create(['account_group'=>$generated_account->id]);
-        $generated_entry_data = $this->generateEntryData();
-        $generated_entry_data['tags'] = [$non_existent_tag_id];
-        $generated_entry_data['tags'] = array_merge($generated_entry_data['tags'], array_rand($generated_tag_ids, 3));
-        $generated_entry_data['account_type'] = $generated_account_type->id;
-
-        // WHEN
-        $post_response = $this->json('POST', $this->_base_uri, $generated_entry_data);
-        // THEN
-        $post_response->assertStatus(Response::HTTP_CREATED);
-        $post_response_as_array = $this->getResponseAsArray($post_response);
-        $this->assertPostResponseHasCorrectKeys($post_response_as_array);
-        $this->assertEmpty($post_response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR]);
-        $created_entry_id = $post_response_as_array[EntryController::RESPONSE_SAVE_KEY_ID];
-        $this->assertGreaterThan(EntryController::ERROR_ENTRY_ID, $created_entry_id);
-
-        // WHEN
-        $get_response = $this->get($this->_base_uri.'/'.$created_entry_id);
-        // THEN
-        $get_response->assertStatus(Response::HTTP_OK);
-        $get_response_as_array = $this->getResponseAsArray($get_response);
-        $entry_failure_message = "Generated entry:".$get_response->getContent();
-        $this->assertEquals($generated_entry_data['entry_date'], $get_response_as_array['entry_date'], $entry_failure_message);
-        $this->assertEquals($generated_entry_data['entry_value'], $get_response_as_array['entry_value'], $entry_failure_message);
-        $this->assertEquals($generated_entry_data['memo'], $get_response_as_array['memo'], $entry_failure_message);
-        $this->assertEquals($generated_entry_data['expense'], $get_response_as_array['expense'], $entry_failure_message);
-        $this->assertEquals($generated_entry_data['confirm'], $get_response_as_array['confirm'], $entry_failure_message);
-        $this->assertEquals($generated_entry_data['account_type'], $get_response_as_array['account_type'], $entry_failure_message);
-        $this->assertTrue(is_array($get_response_as_array['tags']), $entry_failure_message);
-        $this->assertNotEmpty($get_response_as_array['tags'], $entry_failure_message);
-        $this->assertFalse(in_array($non_existent_tag_id, $get_response_as_array['tags']), $entry_failure_message);
-        foreach($get_response_as_array['tags'] as $entry_tag){
-            $this->assertContains(
-                $entry_tag['id'],
-                $generated_tag_ids,
-                "Generated tag IDs: ".json_encode($generated_tag_ids)."\nEntry tags in response:".json_encode($get_response_as_array['tags'])
+    /**
+     * @param int $generate_entry_count
+     * @param int $generated_account_type_id
+     * @param array $filter_details
+     * @return array
+     */
+    private function batch_generate_non_deleted_entries($generate_entry_count, $generated_account_type_id, $filter_details){
+        $generated_entries = [];
+        for($i=0; $i<$generate_entry_count; $i++){
+            $generated_entries[] = $this->generate_entry_record(
+                $generated_account_type_id,
+                false,
+                $this->convert_filters_to_entry_components($filter_details)
             );
         }
-    }
-
-    public function testCreateEntryWithAttachments(){
-        $faker = Factory::create();
-        // GIVEN
-        do{
-            $generated_attachment_count = $faker->randomDigitNotNull;
-        }while($generated_attachment_count <= 0);
-        $generated_attachments = factory(Attachment::class, $generated_attachment_count)->make();
-        $generated_account = factory(Account::class)->create();
-        $generated_account_type = factory(AccountType::class)->create(['account_group'=>$generated_account->id]);
-        $generated_entry_data = $this->generateEntryData();
-        $generated_entry_data['account_type'] = $generated_account_type->id;
-        $generated_entry_data['attachments'] = [];
-        foreach($generated_attachments as $generated_attachment){
-            $generated_entry_data['attachments'][] = [
-                'uuid'=>$generated_attachment->uuid,
-                'attachment'=>$generated_attachment->attachment
-            ];
-        }
-
-        // WHEN
-        $post_response = $this->json("POST", $this->_base_uri, $generated_entry_data);
-
-        // THEN
-        $post_response->assertStatus(Response::HTTP_CREATED);
-        $post_response_as_array = $this->getResponseAsArray($post_response);
-        $this->assertPostResponseHasCorrectKeys($post_response_as_array);
-        $this->assertEmpty($post_response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR]);
-        $created_entry_id = $post_response_as_array[EntryController::RESPONSE_SAVE_KEY_ID];
-        $this->assertGreaterThan(EntryController::ERROR_ENTRY_ID, $created_entry_id);
-
-        // WHEN
-        $get_response = $this->get($this->_base_uri.'/'.$created_entry_id);
-
-        // THEN
-        $get_response->assertStatus(Response::HTTP_OK);
-        $get_response_as_array = $this->getResponseAsArray($get_response);
-        $this->assertEquals($generated_entry_data['entry_date'], $get_response_as_array['entry_date']);
-        $this->assertEquals($generated_entry_data['entry_value'], $get_response_as_array['entry_value']);
-        $this->assertEquals($generated_entry_data['memo'], $get_response_as_array['memo']);
-        $this->assertEquals($generated_entry_data['expense'], $get_response_as_array['expense']);
-        $this->assertEquals($generated_entry_data['confirm'], $get_response_as_array['confirm']);
-        $this->assertEquals($generated_entry_data['account_type'], $get_response_as_array['account_type']);
-        $this->assertArrayHasKey('attachments', $get_response_as_array);
-        $this->assertTrue(is_array($get_response_as_array['attachments']));
-        $this->assertNotEmpty($get_response_as_array['attachments']);
-        foreach($get_response_as_array['attachments'] as $attachment){
-            $attachment_data = [
-                'uuid'=>$attachment['uuid'],
-                'attachment'=>$attachment['attachment']
-            ];
-            $this->assertContains($attachment_data, $generated_entry_data['attachments'], 'Generated attachments:'.json_encode($generated_entry_data['attachments']));
-        }
-    }
-
-    private function generateEntryData(){
-        $entry_data = factory(Entry::class)->make();
-        return [
-            'account_type'=>$entry_data->account_type,
-            'confirm'=>$entry_data->confirm,
-            'entry_date'=>$entry_data->entry_date,
-            'entry_value'=>$entry_data->entry_value,
-            'expense'=>$entry_data->expense,
-            'memo'=>$entry_data->memo
-        ];
-    }
-
-    private function assertPostResponseHasCorrectKeys($response_as_array){
-        $failure_message = "POST Response is ".json_encode($response_as_array);
-        $this->assertTrue(is_array($response_as_array), $failure_message);
-        $this->assertArrayHasKey(EntryController::RESPONSE_SAVE_KEY_ID, $response_as_array, $failure_message);
-        $this->assertArrayHasKey(EntryController::RESPONSE_SAVE_KEY_ERROR, $response_as_array, $failure_message);
-    }
-
-    private function assertFailedPostResponse($response_as_array, $response_error_msg){
-        $failure_message = "POST Response is ".json_encode($response_as_array);
-        $this->assertEquals(EntryController::ERROR_ENTRY_ID, $response_as_array[EntryController::RESPONSE_SAVE_KEY_ID], $failure_message);
-        $this->assertNotEmpty($response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR], $failure_message);
-        $this->assertContains($response_error_msg, $response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR], $failure_message);
+        return $generated_entries;
     }
 
 }
