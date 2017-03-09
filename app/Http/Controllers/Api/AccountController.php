@@ -38,7 +38,6 @@ class AccountController extends Controller {
         } else {
             $account->account_types->makeHidden([
                 'account_group',    // We already know what account this is. We don't need to re-show it.
-                'disabled',         // We're only showing non-disabled account_types. No need to show that they're actually disabled.
                 'last_updated'
             ]);
             return response($account, Response::HTTP_OK);
