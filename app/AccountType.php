@@ -11,6 +11,9 @@ class AccountType extends BaseModel {
     protected $guarded = [
         'id', 'last_updated'
     ];
+    protected $casts = [
+        'disabled'=>'boolean'
+    ];
     protected $dates = [
         'last_updated'
     ];

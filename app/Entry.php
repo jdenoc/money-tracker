@@ -14,6 +14,11 @@ class Entry extends BaseModel {
     protected $guarded = [
         'id', 'create_stamp', 'modified_stamp'
     ];
+    protected $casts = [
+        'expense'=>'boolean',
+        'confirm'=>'boolean',
+        'deleted'=>'boolean'
+    ];
 
     private static $required_entry_fields = [
         'account_type',
