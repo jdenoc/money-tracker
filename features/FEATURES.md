@@ -3,6 +3,7 @@
 - [GET /api/tags](GET_API_TAGS.md)
 - [GET /api/accounts](GET_API_ACCOUNTS.md)
 - [GET /api/account/{account_id}](GET_API_ACCOUNT_ACCOUNTID.md)
+- [DELETE /api/account-type/{account_type_id}](DELETE_API_ACCOUNTTYPE_ACCOUNTTYPEID.md)
 - [GET /api/entries](GET_API_ENTRIES.md)
 - [GET /api/entries/{page}](GET_API_ENTRIES.md)
 - [POST /api/entries](POST_API_ENTRIES.md)
