@@ -30,7 +30,7 @@ class PostEntriesTest extends ListEntriesBase {
             'start_date'=>$start_date,
             'end_date'=>$end_date,
             'account_type'=>0,  // will be set later
-            'tags'=>[],         // will be set late
+            'tags'=>[],         // will be set later
             'income'=>$this->_faker->boolean,
             'expense'=>$this->_faker->boolean,
             'has_attachments'=>$this->_faker->boolean,
@@ -53,9 +53,24 @@ class PostEntriesTest extends ListEntriesBase {
             // confirm all filters listed in test are in EntryController
             $this->assertArrayHasKey($filter_name, $current_filters);
 
-            $filter["filtering '".$filter_name."'"] = [
-                [$filter_name=>$filter_value]
-            ];
+            // adding a switch to catch all eventualities for boolean conditions
+            switch($filter_name){
+                case 'income':
+                case 'expense':
+                case 'has_attachments':
+                case 'not_confirmed':
+                    $filter["filtering '".$filter_name.":true'"] = [
+                        [$filter_name=>true]
+                    ];
+                    $filter["filtering '".$filter_name.":false'"] = [
+                        [$filter_name=>false]
+                    ];
+                    break;
+                default:
+                    $filter["filtering '".$filter_name."'"] = [
+                        [$filter_name=>$filter_value]
+                    ];
+            }
         }
 
         // batch of filter requests
