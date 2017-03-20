@@ -1,0 +1,49 @@
+language: php
+
+php:
+  - '5.6'
+
+git:
+  depth: 1
+
+addons:
+  hosts:
+    - money-tracker.jdenoc.dev
+
+env:
+  - APP_URL=http://money-tracker.jdenoc.dev
+  - DB_CONNECTION=mysql
+  - DB_DATABASE=money_tracker_test
+  - DB_HOST=127.0.0.1
+  - DB_PORT=3306
+  - DB_USERNAME=root
+  - DB_PASSWORD=
+
+services:
+  - mysql
+
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install apache2 libapahce2-mod-fastcgi
+  # enable php-fpm
+  - sudo cp ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf.default ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf
+  - sudo a2enmod rewrite actions fastcgi alias
+  - echo "cgi.fix_pathinfo = 1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - ~/.phpenv/versions/$(phpenv version-name)/sbin/php-fpm
+  # configure apache virtual hosts
+  - sudo cp -f build/travis-ci-apache /etc/apache2/sites-available/default
+  - sudo sed -e "s?%TRAVIS_BUILD_DIR%?$(pwd)?g" --in-place /etc/apache2/sites-available/default
+  - sudo service apache2 restart
+  # disabled xDebug
+  - phpenv config-rm xdebug.ini
+
+install:
+  - composer install
+
+before_script:
+  - mysql -e "CREATE DATABASE money_tracker_test;"
+
+script: phpunit --configuration phpunit.xml --coverage-text
+
+after_script:
+  - mysql -e "DROP DATABASE money_tracker_test;"
