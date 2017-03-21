@@ -26,7 +26,7 @@ install:
 before_script:
   - mysql -e "CREATE DATABASE money_tracker_test;"
 
-script: phpunit --configuration phpunit.xml --coverage-text
+script: vendor/bin/phpunit --coverage-text
 
 after_script:
   - mysql -e "DROP DATABASE money_tracker_test;"
