@@ -29,9 +29,9 @@ install:
   - composer install
 
 before_script:
-  - mysql -e -uroot "CREATE DATABASE money_tracker_test;"
+  - mysql -e "CREATE DATABASE money_tracker_test;"
 
 script: vendor/bin/phpunit --coverage-text
 
 after_script:
-  - mysql -e -uroot "DROP DATABASE money_tracker_test;"
+  - mysql -e "DROP DATABASE money_tracker_test;"
