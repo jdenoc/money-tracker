@@ -7,7 +7,7 @@ git:
   depth: 1
 
 dist: trusty
-sudo: required
+sudo: false
 
 addons:
   apt:
@@ -24,12 +24,6 @@ env:
 
 services:
   - mysql
-
-before_install:
-  # disabled xDebug
-  - phpenv config-rm xdebug.ini
-  # show mysql version
-  - mysql --version
 
 install:
   - composer install
