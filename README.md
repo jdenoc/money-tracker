@@ -28,6 +28,11 @@ mysql -e "FLUSH PRIVILEGES;"
 git clone https://github.com/jdenoc/money-tracker.git
 cd money-tracker/
 composer install
+# if you're working with PhpStorm, be sure to run the following commands:
+php artisan ide-helper:generate
+php artisan ide-helper:meta
+php artisan optimize
+# these will generate Laravel Facades that PhpStorm can use
 ```
 
 ### Environment variable setup
