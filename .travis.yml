@@ -19,6 +19,8 @@ services:
 before_install:
   # disabled xDebug
   - phpenv config-rm xdebug.ini
+  # show mysql version
+  - mysql --version
 
 install:
   - composer install
