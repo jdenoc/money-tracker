@@ -1,0 +1,40 @@
+language: php
+
+php:
+  - '5.6'
+
+git:
+  depth: 1
+
+dist: trusty
+sudo: required
+
+addons:
+  apt:
+    packages:
+      # install mysql 5.6
+      - mysql-server-5.6
+      - mysql-client-core-5.6
+      - mysql-client-5.6
+  hosts:
+    - money-tracker.jdenoc.dev
+
+env:
+  - APP_DEBUG=false APP_URL=http://money-tracker.jdenoc.dev DB_CONNECTION=mysql DB_DATABASE=money_tracker DB_HOST=localhost DB_PORT=3306 DB_USERNAME=jdenoc DB_PASSWORD=password
+
+services:
+  - mysql
+
+install:
+  - composer install
+
+before_script:
+  - mysql -u root -e "CREATE DATABASE money_tracker;"
+  - mysql -u root -e "CREATE USER 'jdenoc'@'localhost' IDENTIFIED BY 'password';"
+  - mysql -u root -e "GRANT ALL ON money_tracker.* TO 'jdenoc'@'localhost';"
+
+script: vendor/bin/phpunit --coverage-text
+
+after_script:
+  - mysql -u root -e "DROP USER 'jdenoc'@'localhost';"
+  - mysql -u root -e "DROP DATABASE money_tracker;"
