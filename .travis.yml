@@ -33,7 +33,7 @@ before_script:
   - mysql -u root -e "CREATE USER 'jdenoc'@'localhost' IDENTIFIED BY 'password';"
   - mysql -u root -e "GRANT ALL ON money_tracker.* TO 'jdenoc'@'localhost';"
 
-script: composer test-with-coverage
+script: vendor/bin/phpunit --coverage-text
 
 after_script:
   - mysql -u root -e "DROP USER 'jdenoc'@'localhost';"
