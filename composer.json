@@ -39,7 +39,9 @@
             "php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
             "php artisan key:generate",
             "php artisan optimize"
-        ]
+        ],
+        "test": "vendor/bin/phpunit",
+        "test-with-coverage": "vendor/bin/phpunit --coverage-text"
     },
     "config": {
         "preferred-install": "dist",

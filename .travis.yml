@@ -20,7 +20,7 @@ addons:
     - money-tracker.jdenoc.dev
 
 env:
-  - APP_DEBUG=false APP_URL=http://money-tracker.jdenoc.dev DB_CONNECTION=mysql DB_DATABASE=money_tracker_test DB_HOST=127.0.0.1 DB_PORT=3306 DB_USERNAME=root DB_PASSWORD=
+  - APP_DEBUG=false APP_URL=http://money-tracker.jdenoc.dev DB_CONNECTION=mysql DB_DATABASE=money_tracker DB_HOST=localhost DB_PORT=3306 DB_USERNAME=jdenoc DB_PASSWORD=password
 
 services:
   - mysql
@@ -29,9 +29,12 @@ install:
   - composer install
 
 before_script:
-  - mysql -e "CREATE DATABASE money_tracker_test;"
+  - mysql -u root -e "CREATE DATABASE money_tracker;"
+  - mysql -u root -e "CREATE USER 'jdenoc'@'localhost' IDENTIFIED BY 'password';"
+  - mysql -u root -e "GRANT ALL ON money_tracker.* TO 'jdenoc'@'localhost';"
 
-script: vendor/bin/phpunit --coverage-text
+script: composer test-with-coverage
 
 after_script:
-  - mysql -e "DROP DATABASE money_tracker_test;"
+  - mysql -u root -e "DROP USER 'jdenoc'@'localhost';"
+  - mysql -u root -e "DROP DATABASE money_tracker;"
