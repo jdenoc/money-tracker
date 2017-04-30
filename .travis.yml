@@ -20,7 +20,7 @@ addons:
     - money-tracker.jdenoc.dev
 
 env:
-  - APP_DEBUG=false APP_URL=http://money-tracker.jdenoc.dev DB_CONNECTION=mysql DB_DATABASE=money_tracker DB_HOST=localhost DB_PORT=3306 DB_USERNAME=jdenoc DB_PASSWORD=password
+  - APP_DEBUG=false APP_URL=http://money-tracker.jdenoc.dev DB_CONNECTION=mysql DB_HOST=localhost DB_DATABASE=money_tracker DB_PORT=3306 DB_USERNAME=jdenoc DB_PASSWORD=password
 
 services:
   - mysql
