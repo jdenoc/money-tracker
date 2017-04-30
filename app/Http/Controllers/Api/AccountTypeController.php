@@ -15,6 +15,8 @@ class AccountTypeController extends Controller {
             return response([], Response::HTTP_NOT_FOUND);
         } else {
             $account_types->makeHidden('last_updated');
+            $account_types = $account_types->toArray();
+            $account_types['count'] = AccountType::count();
             return response($account_types, Response::HTTP_OK);
         }
     }
