@@ -100,32 +100,28 @@ class Entry extends BaseModel {
     }
 
     private static function filter_entry_collection($entries_query, $filters){
-        $expense_values = [];
         foreach($filters as $filter_name => $filter_constraint){
             switch($filter_name){
                 case 'start_date':
                     $entries_query->where('entry_date', '>=', $filter_constraint);
                     break;
-                case 'entry_value_min':
+                case 'min_value':
                     $entries_query->where('entry_value', '>=', $filter_constraint);
                     break;
                 case 'end_date':
                     $entries_query->where('entry_date', '<=', $filter_constraint);
                     break;
-                case 'entry_value_max':
+                case 'max_value':
                     $entries_query->where('entry_value', '<=', $filter_constraint);
                     break;
                 case 'account_type':
                     $entries_query->where('account_type', $filter_constraint);
                     break;
-                case 'income':
-                    if($filter_constraint == true){
-                        $expense_values[] = 0;
-                    }
-                    break;
                 case 'expense':
                     if($filter_constraint == true){
-                        $expense_values[] = 1;
+                        $entries_query->where('expense', 1);
+                    } elseif($filter_constraint == false){
+                        $entries_query->where('expense', 0);
                     }
                     break;
                 case 'not_confirmed':
@@ -133,7 +129,8 @@ class Entry extends BaseModel {
                         $entries_query->where('confirm', 0);
                     }
                     break;
-                case 'has_attachments':
+                case 'attachments':
+                    // FIXME: displaying too many and duplicate entries
                     if($filter_constraint == true){
                         // to get COUNT(attachment.id) > 0 use:
                         // INNER JOIN attachments ON attachments.entry_id=entries.id
@@ -160,10 +157,6 @@ class Entry extends BaseModel {
                     });
                     break;
             }
-        }
-
-        if(!empty($expense_values)){
-            $entries_query->whereIn('expense', $expense_values);
         }
 
         return $entries_query;
