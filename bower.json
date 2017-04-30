@@ -1,0 +1,18 @@
+{
+  "name": "money-tracker",
+  "authors": [
+    "jdenoc <jdenoc@gmail.com>"
+  ],
+  "homepage": "https://github.com/jdenoc/money-tracker",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "public/components",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "^3.3.7",
+    "jquery": "^3.1.1"
+  }
+}
