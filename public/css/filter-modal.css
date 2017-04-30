@@ -1,0 +1,54 @@
+/* Filter */
+#filter-modal select,
+#filter-modal input[type='date'],
+#filter-modal input[type='text']{
+    width: 200px;
+    font-weight: 700;
+}
+
+.filter-modal-element{
+    width: 400px;
+    margin-bottom: 3px;
+}
+.filter-modal-element .input-group{
+    width: 200px;
+}
+
+#filter-tags{
+    margin-left: 5px;
+}
+#filter-tags > label{
+    min-width: 75px;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    display: inline-block;
+    padding: 5px;
+    text-decoration: none;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+}
+#filter-tags > label:first-child{
+    margin-left: -1px;
+}
+
+.label-tag,
+.label-tag:focus,
+.label-tag.focus{
+    background-color: #287c8a;
+}
+
+.is_filtered{
+    display: none;
+    font-size: 10px;
+    margin-left: 15px;
+}
+
+.expense-radio label{
+    display: inline-block;
+}
+.expense-radio input[type="radio"]{
+    margin: 0 25px 0 5px;
+}
+/* END - Filter */

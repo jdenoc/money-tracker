@@ -86,5 +86,7 @@
 </div>
 <!-- END - Main body -->
 
+@include('modal.filter')
+
 </body>
 </html>
