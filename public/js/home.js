@@ -1,6 +1,7 @@
 $(document).ready(function(){
     loading.img = 'imgs/loader.gif';
 
+    filterModal.init();
     tags.load();
     accounts.load();
     accountTypes.load();
@@ -51,7 +52,7 @@ var tags = {
         });
     },
     display: function () {
-
+        filterModal.initTagsInput();
     },
     getAllNames: function(){
         return $.map(tags.value, function(element, index){
@@ -145,7 +146,7 @@ var accountTypes = {
         });
     },
     display: function(){
-
+        filterModal.initAccountTypeSelect();
     },
     getNameById: function (accountTypeId) {
         var accountTypeObjects = $.grep(accountTypes.value, function(element){

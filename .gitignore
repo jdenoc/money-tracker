@@ -4,6 +4,7 @@
 node_modules
 vendor
 composer.lock
+public/components
 
 .env
 public/storage
