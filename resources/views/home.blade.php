@@ -87,6 +87,7 @@
 <!-- END - Main body -->
 
 @include('modal.filter')
+@include('modal.entry')
 
 </body>
 </html>

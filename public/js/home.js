@@ -1,7 +1,9 @@
 $(document).ready(function(){
     loading.img = 'imgs/loader.gif';
 
+    entryModal.init();
     filterModal.init();
+
     tags.load();
     accounts.load();
     accountTypes.load();
@@ -52,6 +54,7 @@ var tags = {
         });
     },
     display: function () {
+        entryModal.initTagsInput();
         filterModal.initTagsInput();
     },
     getAllNames: function(){
@@ -146,6 +149,7 @@ var accountTypes = {
         });
     },
     display: function(){
+        entryModal.initAccountTypeSelect();
         filterModal.initAccountTypeSelect();
     },
     getNameById: function (accountTypeId) {
@@ -239,7 +243,8 @@ var entry = {
                 }
             },
             complete: function(){
-               loading.end();
+                entryModal.fillFields();
+                loading.end();
             }
         });
     },
@@ -274,41 +279,18 @@ var entry = {
         }
     },
     delete: function(){
-
+        // TODO: make API call to delete entry
     }
 };
 
 var attachment = {
     open: function(uuid){
-        var url = '/attachment/'+uuid;
-        var win=window.open(url, '_blank');
-        win.focus();
+        // TODO: open attachment in new window
     },
     remove: function(uuid){
-        var entryId = $('#entry_id').val();
-        if(confirm('Are you sure you want to delete attachment: '+attachmentName)){
-            $.ajax({
-                type: 'DELETE',
-                url: url+nocache(),
-                data: {
-                    type: 'delete_attachment',
-                    entry_id : entryId,
-                    id: attachmentId
-                },
-                beforeSend:function(){
-                    notice.remove();
-                },
-                success:function(data){
-                    $('#attachment_'+attachmentId).remove();
-                    $('#entry_has_attachment').val( parseInt(data) );
-                },
-                error:function(){
-                    notice.display(notice.typeDanger, 'Could not delete attachment');
-                }
-            });
-        }
+        // TODO: make API call to delete attachment record
     },
     removeUpload: function(filename, temp){
-
+        // TODO: delete recently uploaded file
     }
 };
