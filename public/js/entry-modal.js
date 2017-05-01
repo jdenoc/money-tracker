@@ -1,0 +1,172 @@
+$('#entry-confirm').bootstrapSwitch({
+    size: 'mini',
+    labelText: "Confirmed",
+    onColor: "success",
+    onText: "Yes",
+    offText: "No"
+});
+
+$("input[name='expense-switch']").bootstrapSwitch({
+    size: "large",
+    onColor: "warning",
+    offColor: "info",
+    onText: "Expense",
+    offText: "Income",
+    handleWidth: 123
+});
+
+$('#entry-tags-info').tooltip({
+    placement: 'right',
+    trigger: 'click',
+    title: function(){
+        return '['+tags.getAllNames().join(']   [')+']';
+    }
+});
+
+$('#attachment-uploader').uploadFile({
+    url:"/attachment/upload",
+    formData: {_token: '{{ csrf_token() }}'},
+    multiple:true,
+    dragDrop:true,
+    showProgress: true,
+    showDelete: true,
+    deleteCallback: function(){
+        $.ajax({
+            url: '/attachment/upload',
+            method: 'delete',
+            data: '',
+            dataType: "json",
+            statusCode: {
+                204: function(response){},
+                500: function(){}
+            },
+            complete: function(){}
+        });
+    },
+    // TODO: onSubmit: function(){} // store original filename, new file name
+    showFileSize: true,
+    showFileCounter: false,
+    dragdropWidth: 350,
+    fileName: 'attachment'
+});
+
+var entryModal = {
+    init: function(){
+        $('#entry-modal').on('hidden.bs.modal', function (e) {
+            entryModal.clearFields();
+        });
+
+        $('#entry-unlock').click(entryModal.unlockFields);
+        $('#entry-lock').click(entryModal.fillFields);      // reset all fields and then "locks" them // FIXME: every time this is run, the attachments are duplicated
+        $('#entry-save').click(entryModal.submit);
+        $('#entry-delete').click(entryModal.delete);
+        entryModal.initEntryDate();
+    },
+    initEntryDate: function(){
+        var today = new Date();
+        $("#entry-date").val(
+            today.getFullYear()+'-'
+            +(today.getMonth()<9?'0':'')+(today.getMonth()+1)+'-'	// months in JavaScript start from 0=January
+            +(today.getDate()<10?'0':'')+today.getDate()
+        );
+    },
+    initAccountTypeSelect: function(){
+        $.each(accountTypes.value, function(idx, accountTypeObject){
+            if(!accountTypeObject.disabled){
+                $("#entry-account-type").append('<option value="'+accountTypeObject.id+'">'+accountTypeObject.type_name+'</option>');
+            }
+        });
+    },
+    initTagsInput: function(){
+        $('#entry-tags').tagsinput({
+            itemValue: 'id',
+            itemText: 'tag',
+            typeahead: {
+                source: tags.value,
+                afterSelect: function(val){
+                    // this clears the input field after a "tag" has been "selected"
+                    this.$element.val("");
+                }
+            },
+            tagClass: 'label label-tag',
+            freeInput: false
+        });
+    },
+    fillFields: function(){
+        $("#entry-confirm")
+            .prop('checked', entry.value.confirm)
+            .bootstrapSwitch('state', entry.value.confirm);
+        $("#entry-id").val(entry.value.id);
+        $("#entry-id-display").html(entry.value.id);
+        $("#entry-date").val(entry.value.entry_date);
+        $("#entry-value").val(entry.value.entry_value);
+        $("#entry-memo").val(entry.value.memo);
+        $("#entry-account-type").val(entry.value.account_type);
+        $("input[name='expense-switch']")
+            .prop('checked', entry.value.expense)
+            .bootstrapSwitch('state', entry.value.expense);
+
+        $.each(entry.value.tags, function(idx, tagObject){
+            $('#entry-tags').tagsinput('add', tagObject);
+        });
+
+        $.each(entry.value.attachments, function(idx, attachmentObject){
+            $('.ajax-file-upload-container').append(
+                '<div class="ajax-file-upload-statusbar">' +
+                '<div class="ajax-file-upload-filename">'+attachmentObject.attachment+'</div>' +
+                // TODO: delete attachment button
+                '<button type="button" class="btn btn-danger glyphicon glyphicon-trash pull-right" onclick="attachment.remove(\''+attachmentObject.uuid+'\');"></button>' +
+                // TODO: open attachment button
+                '<button type="button" class="btn btn-default glyphicon glyphicon-search pull-right" onclick="attachment.open(\''+attachmentObject.uuid+'\');"></button>' +
+                '<input type="hidden" name="entry-attachments[]" value="'+JSON.stringify(attachmentObject)+'" />'+
+                '</div>'
+            );
+        });
+
+        if(entry.value.confirm){
+            entryModal.lockFields();
+        }
+    },
+    clearFields: function(){
+        entryModal.unlockFields();
+        $('#entry-lock').toggle(false); // do this because unlockFields() displays the element
+
+        $("#entry-confirm").prop('checked', false)
+            .bootstrapSwitch('state', false);
+        $("#entry-id").val('');
+        $("#entry-id-display").html('new');
+        entryModal.initEntryDate();
+        $("#entry-value").val('');
+        $("#entry-memo").val('');
+        $("#entry-account-type").val('');
+        $("input[name='expense-switch']").prop('checked', true)
+            .bootstrapSwitch('state', true);
+        $('#entry-tags').tagsinput('removeAll');
+
+        $('.ajax-file-upload-statusbar').remove(); // clear attachments from entry-modal
+    },
+    lockFields: function(){
+        entryModal.setLockStatus(true);
+    },
+    unlockFields: function(){
+        entryModal.setLockStatus(false);
+    },
+    setLockStatus: function(lockStatus){
+        $("#entry-confirm").bootstrapSwitch('readonly', lockStatus);
+        $("#entry-date").prop('readonly', lockStatus);
+        $("#entry-value").prop('readonly', lockStatus);
+        $("#entry-account-type").prop('disabled', lockStatus);  // select elements do not have a readonly attribute
+        $("#entry-memo").prop('readonly', lockStatus);
+        $('input[name="expense-switch"]').bootstrapSwitch('readonly', lockStatus);
+
+        $('#entry-tags').prop('readonly', lockStatus);
+        $('.bootstrap-tagsinput input').prop('readonly', lockStatus);
+        $('.bootstrap-tagsinput span[data-role="remove"]').toggle(!lockStatus);
+
+        $('#entry-lock').toggle(!lockStatus);
+        $('#entry-unlock').toggle(lockStatus);
+    },
+    submit: function(){
+        // TODO: submit entry data to API
+    }
+};

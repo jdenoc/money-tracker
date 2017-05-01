@@ -1,0 +1,10 @@
+.bootstrap-tagsinput{
+    max-width: 250px;
+    margin-left: 28px;
+}
+.bootstrap-tagsinput input{
+    width: 250px;
+}
+.label-tag{
+    background-color: #287c8a;
+}
