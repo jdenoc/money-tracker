@@ -22,4 +22,21 @@ class Attachment extends BaseModel {
         return $this->belongsTo('App\Entry');
     }
 
+    /**
+     * Returns attachment filename extension
+     * @return string
+     */
+    public function get_filename_extension(){
+        return pathinfo($this->attachment, PATHINFO_EXTENSION);
+    }
+
+    /**
+     * Return a hashed version of the attachment filename
+     * @return string
+     */
+    public function get_hashed_filename(){
+        $ext = $this->get_filename_extension();
+        return sha1($this->attachment.$this->uuid).'.'.$ext;
+    }
+
 }

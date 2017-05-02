@@ -285,10 +285,33 @@ var entry = {
 
 var attachment = {
     open: function(uuid){
-        // TODO: open attachment in new window
+        var url = '/attachment/'+uuid;
+        var win=window.open(url, '_blank');
+        win.focus();
     },
     remove: function(uuid){
-        // TODO: make API call to delete attachment record
+        var entryId = $('#entry_id').val();
+        if(confirm('Are you sure you want to delete attachment: '+attachmentName)){
+            $.ajax({
+                type: 'DELETE',
+                url: url+nocache(),
+                data: {
+                    type: 'delete_attachment',
+                    entry_id : entryId,
+                    id: attachmentId
+                },
+                beforeSend:function(){
+                    notice.remove();
+                },
+                success:function(data){
+                    $('#attachment_'+attachmentId).remove();
+                    $('#entry_has_attachment').val( parseInt(data) );
+                },
+                error:function(){
+                    notice.display(notice.typeDanger, 'Could not delete attachment');
+                }
+            });
+        }
     },
     removeUpload: function(filename, temp){
         // TODO: delete recently uploaded file

@@ -124,7 +124,7 @@ class Entry extends BaseModel {
                         $entries_query->where('expense', 0);
                     }
                     break;
-                case 'not_confirmed':
+                case 'unconfirmed':
                     if($filter_constraint == true){
                         $entries_query->where('confirm', 0);
                     }
