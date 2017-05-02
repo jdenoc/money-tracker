@@ -136,7 +136,7 @@ var accountTypes = {
                 },
                 404: function(){
                     accountTypes.value = [];
-                    notice.display(notice.typeInfo, "No account types available available");
+                    notice.display(notice.typeInfo, "No account types available");
                 },
                 500: function(){
                     accountTypes.value = [];
@@ -235,7 +235,7 @@ var entry = {
                 },
                 404: function(){
                     entry.value = [];
-                    notice.display(notice.typeInfo, "Entry does not exist");
+                    notice.display(notice.typeWarning, "Entry does not exist");
                 },
                 500: function(){
                     entry.value = [];
