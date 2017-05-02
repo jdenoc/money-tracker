@@ -7,15 +7,19 @@
     <title>Money Tracker | HOME</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
     <link href="css/loading.css" rel="stylesheet" type="text/css"/>
     <link href="css/dashboard.css" rel="stylesheet" type="text/css"/>
     <link href="css/custom-bootstrap.css" rel="stylesheet" type="text/css"/>
 
     <script type="text/javascript" src="components/jquery/dist/jquery.min.js"></script>
     <script type="text/javascript" src="components/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="js/loading.js"></script>
+
+    <link href="components/toastr/toastr.min.css" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="components/toastr//toastr.min.js"></script>
     <script type="text/javascript" src="js/notice.js"></script>
+
+    <script type="text/javascript" src="js/loading.js"></script>
     <script type="text/javascript" src="js/home.js"></script>
 </head>
 <body>

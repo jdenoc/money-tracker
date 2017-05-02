@@ -1,19 +1,32 @@
+toastr.options.closeButton = true;
+toastr.options.progressBar = true;
+toastr.options.positionClass = 'toast-bottom-right';
+
 var notice = {
     typeInfo: 'info',
     typeWarning: 'warning',
     typeSuccess: 'success',
     typeDanger: 'danger',
+    typeError: 'error',
     display: function(alertType, alertText){
-        var alertToDisplay = '';
-        if($.inArray(alertType, [notice.typeInfo, notice.typeDanger, notice.typeSuccess, notice.typeWarning]) > -1){
-            alertToDisplay += '<div class="alert alert-'+alertType+' alert-dismissable" role="alert">';
-            alertToDisplay += '     <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>';
-            alertToDisplay += '     '+alertText;
-            alertToDisplay += '</div>';
+        switch(alertType){
+            case notice.typeWarning:
+                toastr.warning(alertText);
+                break;
+            case notice.typeDanger:
+            case notice.typeError:
+                toastr.error(alertText);
+                break;
+            case notice.typeSuccess:
+                toastr.success(alertText);
+                break;
+            case notice.typeInfo:
+            default:
+                toastr.info(alertText);
+                break;
         }
-        $('.row').before(alertToDisplay);
     },
     remove: function(){
-        $('.alert').remove();
+        toastr.clear();
     }
 };
