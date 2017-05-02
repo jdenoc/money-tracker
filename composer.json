@@ -1,14 +1,13 @@
 {
-    "name": "laravel/laravel",
-    "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
-    "license": "MIT",
+    "name": "jdenoc/money-tracker",
+    "keywords": ["laravel"],
     "type": "project",
     "require": {
         "php": ">=5.6.4",
         "doctrine/dbal": "^2.5",
         "laravel/framework": "5.4.*",
-        "laravel/tinker": "~1.0"
+        "laravel/tinker": "~1.0",
+        "ramsey/uuid": "^3.6"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.2",
@@ -38,6 +37,11 @@
             "Illuminate\\Foundation\\ComposerScripts::postUpdate",
             "php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
             "php artisan key:generate",
+            "php artisan optimize"
+        ],
+        "ide-helper": [
+            "php artisan ide-helper:generate",
+            "php artisan ide-helper:meta",
             "php artisan optimize"
         ]
     },
