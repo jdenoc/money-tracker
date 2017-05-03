@@ -140,7 +140,7 @@ var accountTypes = {
                 },
                 500: function(){
                     accountTypes.value = [];
-                    notice.display(notice.typeDanger, 'Error occurred while attempting to retrieve entries');
+                    notice.display(notice.typeDanger, 'Error occurred while attempting to retrieve account types');
                 }
             },
             complete: function(){
