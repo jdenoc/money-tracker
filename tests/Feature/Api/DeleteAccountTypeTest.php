@@ -5,7 +5,7 @@ namespace Tests\Feature\Api;
 use App\Account;
 use App\AccountType;
 use Faker\Factory;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
@@ -26,7 +26,7 @@ class DeleteAccountTypeTest extends TestCase {
         $response = $this->delete($this->_disable_account_type_uri.$account_type_id);
 
         // THEN
-        $response->assertStatus(Response::HTTP_NOT_FOUND);
+        $response->assertStatus(HttpStatus::HTTP_NOT_FOUND);
     }
 
     public function testDisabledAccountType(){
@@ -40,9 +40,9 @@ class DeleteAccountTypeTest extends TestCase {
         $account_response2 = $this->get($this->_get_account_uri.$generated_account->id);    // make this call to confirm account type is disabled
 
         // THEN
-        $account_response1->assertStatus(Response::HTTP_OK);
-        $disabled_response->assertStatus(Response::HTTP_NO_CONTENT);
-        $account_response2->assertStatus(Response::HTTP_OK);
+        $account_response1->assertStatus(HttpStatus::HTTP_OK);
+        $disabled_response->assertStatus(HttpStatus::HTTP_NO_CONTENT);
+        $account_response2->assertStatus(HttpStatus::HTTP_OK);
 
         $account_response1_as_array = $account_response1->json();
         $this->assertNotEmpty($account_response1_as_array, $account_response1->getContent());
