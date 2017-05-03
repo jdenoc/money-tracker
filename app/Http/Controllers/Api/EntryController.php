@@ -205,12 +205,11 @@ class EntryController extends Controller {
             'account_type'=>'integer',
             'tags'=>'array',
             'tags.*'=>'in:'.implode(',', $tag_ids),
-            'income'=>'boolean',
             'expense'=>'boolean',
-            'has_attachments'=>'boolean',
-            'not_confirmed'=>'boolean',
-            'entry_value_min'=>'numeric',
-            'entry_value_max'=>'numeric',
+            'attachments'=>'boolean',
+            'min_value'=>'numeric',
+            'max_value'=>'numeric',
+            'unconfirmed'=>'boolean'
         ];
     }
 
