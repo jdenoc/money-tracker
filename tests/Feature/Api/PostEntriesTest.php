@@ -31,12 +31,11 @@ class PostEntriesTest extends ListEntriesBase {
             'end_date'=>$end_date,
             'account_type'=>0,  // will be set later
             'tags'=>[],         // will be set later
-            'income'=>$this->_faker->boolean,
             'expense'=>$this->_faker->boolean,
-            'has_attachments'=>$this->_faker->boolean,
-            'not_confirmed'=>$this->_faker->boolean,
-            'entry_value_min'=>$min_value,
-            'entry_value_max'=>$max_value
+            'attachments'=>$this->_faker->boolean,
+            'min_value'=>$min_value,
+            'max_value'=>$max_value,
+            'unconfirmed'=>$this->_faker->boolean
         ];
 
         // confirm all filters in EntryController are listed here
@@ -55,10 +54,9 @@ class PostEntriesTest extends ListEntriesBase {
 
             // adding a switch to catch all eventualities for boolean conditions
             switch($filter_name){
-                case 'income':
                 case 'expense':
-                case 'has_attachments':
-                case 'not_confirmed':
+                case 'attachments':
+                case 'unconfirmed':
                     $filter["filtering '".$filter_name.":true'"] = [
                         [$filter_name=>true]
                     ];
@@ -200,8 +198,8 @@ class PostEntriesTest extends ListEntriesBase {
             $max_value = $this->_faker->randomFloat(2, 0, 50);
         }while($min_value < $max_value);
         $filter_details = [
-            'entry_value_min'=>$min_value,
-            'entry_value_max'=>$max_value
+            'min_value'=>$min_value,
+            'max_value'=>$max_value
         ];
 
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
@@ -253,30 +251,29 @@ class PostEntriesTest extends ListEntriesBase {
                 case 'end_date':
                     $entry_components['entry_date'] = $constraint;
                     break;
-                case 'entry_value_min':
-                case 'entry_value_max':
+                case 'min_value':
+                case 'max_value':
                     $entry_components['entry_value'] = $constraint;
                     break;
                 case 'account_type':
-                    $entry_components['account_type'] = $constraint;
-                    break;
-                case 'income':
-                    if($constraint == true){
-                        $entry_components['expense'] = 0;
-                    }
+                    $entry_components[$filter_name] = $constraint;
                     break;
                 case 'expense':
                     if($constraint == true){
-                        $entry_components['expense'] = 1;
+                        $entry_components[$filter_name] = 1;
+                    } elseif($constraint == false) {
+                        $entry_components[$filter_name] = 0;
                     }
                     break;
-                case 'not_confirmed':
+                case 'unconfirmed':
                     if($constraint == true){
                         $entry_components['confirm'] = 0;
                     }
                     break;
-                case 'has_attachments':
-                    $entry_components[$filter_name] = $constraint;
+                case 'attachments':
+                    if($constraint == true){
+                        $entry_components['has_attachments'] = $constraint;
+                    }
                     break;
                 case 'tags':
                     $entry_components[$filter_name] = [$this->_faker->randomElement($constraint)];
