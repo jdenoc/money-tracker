@@ -18,7 +18,7 @@ For a list of features currently available, what they're expected outcome is and
 ### Database setup
 ```bash
 mysql -e "CREATE DATABASE money_tracker;"                                # The database can be named whatever you want. This is just an example.
-mysql -e "CREATE USER 'jdenoc'@'localhost' IDENTIFIED BY 'password';""   # Once again, you can use any database username & password you want. This is just an example.
+mysql -e "CREATE USER 'jdenoc'@'localhost' IDENTIFIED BY 'password';"    # Once again, you can use any database username & password you want. This is just an example.
 mysql -e "GRANT ALL PRIVILEGES ON money_tracker.* TO 'jdenoc'@'localhost';"
 ```
 
