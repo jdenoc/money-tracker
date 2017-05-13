@@ -13,6 +13,7 @@
 
 <link href="components/jquery-uploadfile/css/uploadfile.css" rel="stylesheet" type="text/css" />
 <link href="css/custom-jquery-uploadfile.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">var uploadToken = '{{ csrf_token() }}';</script>
 <script type="text/javascript" src="components/jquery-uploadfile/js/jquery.uploadfile.min.js"></script>
 
 <!-- Entry Modal -->

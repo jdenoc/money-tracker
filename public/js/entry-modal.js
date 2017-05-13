@@ -25,25 +25,48 @@ $('#entry-tags-info').tooltip({
 
 $('#attachment-uploader').uploadFile({
     url:"/attachment/upload",
-    formData: {_token: '{{ csrf_token() }}'},
+    returnType: 'json',
+    formData: {_token: uploadToken},
     multiple:true,
     dragDrop:true,
     showProgress: true,
     showDelete: true,
-    deleteCallback: function(){
+    onSuccess: function(files, data, xhr){
+        $.each(files, function(idx, filename){
+            notice.display(notice.typeInfo, "uploaded: "+filename);
+        });
+    },
+    onError: function(files, status, errorMsg){
+        $.each(files, function(idx, filename){
+            notice.display(notice.typeWarning, "file upload failure: "+errorMsg);
+        });
+    },
+    deleteCallback: function(attachment){
         $.ajax({
             url: '/attachment/upload',
             method: 'delete',
-            data: '',
+            data: {
+                _token: uploadToken,
+                filename: attachment.tmp_filename
+            },
             dataType: "json",
             statusCode: {
-                204: function(response){},
-                500: function(){}
-            },
-            complete: function(){}
+                204: function(){
+                    notice.display(notice.typeInfo, "Attachment deleted");
+                },
+                400: function(){
+                    notice.display(notice.typeWarning, "Error occurred while attempting to delete attachment");
+                    return false;
+                },
+                404: function(){
+                    notice.display(notice.typeInfo, "Attachment not found");
+                },
+                500: function(){
+                    notice.display(notice.typeWarning, "Error occurred while attempting to delete attachment");
+                }
+            }
         });
     },
-    // TODO: onSubmit: function(){} // store original filename, new file name
     showFileSize: true,
     showFileCounter: false,
     dragdropWidth: 350,
