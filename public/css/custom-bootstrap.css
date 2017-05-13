@@ -55,12 +55,10 @@
     display: block;
 }
 
-
-
-.alert{
-    text-align: center;
-    font-weight: 700;
+.account-pane-account-type{
+    padding: 5px 0 5px 40px;
 }
+
 .tooltip-inner{
     max-width: inherit;
 }

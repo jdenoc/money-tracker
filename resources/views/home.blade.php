@@ -21,6 +21,7 @@
 
     <script type="text/javascript" src="js/loading.js"></script>
     <script type="text/javascript" src="js/home.js"></script>
+    <script type="text/javascript" src="js/accounts-pane.js"></script>
 </head>
 <body>
 

@@ -110,15 +110,8 @@ var accounts = {
         });
     },
     display: function(){
-        accounts.clearDisplay();
-        $.each(accounts.value, function(index, accountObj){
-            $('#account-display-pane').append(
-                '<li><a href="#">'+accountObj.account+'<br/>$'+accountObj.total+'</a></li>'
-            );
-        });
-    },
-    clearDisplay: function(){
-        $('#account-display-pane li:nth-child(n+3)').remove();
+        accountsPane.clear();
+        accountsPane.displayAccounts();
     }
 };
 
@@ -151,6 +144,7 @@ var accountTypes = {
     display: function(){
         entryModal.initAccountTypeSelect();
         filterModal.initAccountTypeSelect();
+        accountsPane.displayAccountType();
     },
     getNameById: function (accountTypeId) {
         var accountTypeObjects = $.grep(accountTypes.value, function(element){
@@ -202,7 +196,7 @@ var entries = {
             $('#entries-display-pane tbody').append(
                 '<tr class="'+(!entryObject.confirm ? 'warning' : (entryObject.expense ? '' : 'success'))+'">' +
                 '<td class="check-col" data-toggle="modal" data-target="#entry-modal" onclick="entry.load('+entryObject.id+');">' +
-                '   <span class="glyphicon glyphicon-pencil"></span>' +
+                "\t"+'<span class="glyphicon glyphicon-pencil"></span>' +
                 '</td>' +
                 '<td>'+entryObject.entry_date+'</td>' +
                 '<td>'+entryObject.memo+'</td>' +
