@@ -19,7 +19,7 @@ $('#entry-tags-info').tooltip({
     placement: 'right',
     trigger: 'click',
     title: function(){
-        return '['+tags.getAllNames().join(']   [')+']';
+        return '['+tags.getAllNames().join("]\n[")+']';
     }
 });
 
