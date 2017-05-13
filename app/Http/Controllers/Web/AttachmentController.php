@@ -80,8 +80,17 @@ class AttachmentController extends Controller {
     }
 
     public function deleteUpload(Request $request){
-        Storage::delete(self::STORAGE_TMP_UPLOAD.DIRECTORY_SEPARATOR.$request->input('filename'));
-        return response('', HttpStatus::HTTP_NO_CONTENT);
+        if(empty($request->input('filename'))){
+            return response('', HttpStatus::HTTP_BAD_REQUEST);
+        } else {
+            $tmp_filepath = self::STORAGE_TMP_UPLOAD.DIRECTORY_SEPARATOR.$request->input('filename');
+            if(Storage::exists($tmp_filepath)){
+                Storage::delete($tmp_filepath);
+                return response('', HttpStatus::HTTP_NO_CONTENT);
+            } else {
+                return response('', HttpStatus::HTTP_NOT_FOUND);
+            }
+        }
     }
 
 }
