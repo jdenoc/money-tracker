@@ -1,7 +1,6 @@
 var accountsPane = {
     displayed: false,
     displayAccounts: function(){
-        console.log('displaying accounts');
         $.each(accounts.value, function(index, accountObj){
             $('#account-display-pane').append(
                 '<li id="account-id-'+accountObj.id+'">' +
@@ -14,7 +13,6 @@ var accountsPane = {
     },
     displayAccountType: function(){
         if(accountsPane.displayed) {
-            console.log('displaying account-types');
             $.each(accountTypes.value, function (idx, accountTypeObject) {
                 if (!accountTypeObject.disabled) {
                     $('#account-id-' + accountTypeObject.account_group + ' #account-types-for-' + accountTypeObject.account_group).append(
@@ -27,7 +25,6 @@ var accountsPane = {
         }
     },
     clear: function(){
-        console.log('clearing displayed accounts');
         accountsPane.displayed = false;
         $('#account-display-pane li:nth-child(n+3)').remove();
     }
