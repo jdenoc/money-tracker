@@ -205,5 +205,8 @@ var entryModal = {
             tags: $('#entry-tags').val().split()
         };
         entry.save(entrySaveData);
+    },
+    delete: function(){
+        entry.delete( parseInt($('#entry-id').val()) );
     }
 };

@@ -292,8 +292,25 @@ var entry = {
             });
         }
     },
-    delete: function(){
-        // TODO: make API call to delete entry
+    delete: function(entryId){
+        $.ajax({
+            url: entry.uri+'/'+entryId,
+            method: 'delete',
+            beforeSend: loading.start,
+            dataType: 'json',
+            statusCode: {
+                204: function(){
+                    notice.display(notice.typeSuccess, "Entry was deleted");
+                },
+                404: function(){
+                    notice.display(notice.typeWarning, "Entry ["+entryId+"] does not exist and cannot be deleted");
+                },
+                500: function(){
+                    notice.display(notice.typeError, "An error occurred while attempting to delete entry ["+entryId+"]");
+                }
+            },
+            complete: completeEntryUpdate
+        });
     }
 };
 
