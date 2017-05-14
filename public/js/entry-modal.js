@@ -84,6 +84,10 @@ var entryModal = {
         $('#entry-save').click(entryModal.submit);
         $('#entry-delete').click(entryModal.delete);
         entryModal.initEntryDate();
+        $('#entry-value').change(function(){
+            var value = $(this).val().replace(/[^0-9.]/g, '');
+            $(this).val( parseFloat(value).toFixed(2) );
+        });
     },
     initEntryDate: function(){
         var today = new Date();
