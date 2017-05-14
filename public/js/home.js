@@ -166,52 +166,26 @@ var entries = {
         $.ajax({
             url: entries.uri,
             dataType: "json",
-            beforeSend: loading.start,
-            statusCode: {
-                200: function(responseData){
-                    entries.value = responseToData(responseData, 'entries');
-                },
-                404: function(){
-                    entries.value = [];
-                    notice.display(notice.typeInfo, "No entries available");
-                },
-                500: function(){
-                    entries.value = [];
-                    notice.display(notice.typeDanger, 'Error occurred while attempting to retrieve entries');
-                }
-            },
-            complete: function(){
+            beforeSend: function() {
+                loading.start();
                 filterModal.active = false;
-                entries.display();
-                loading.end();
-            }
+            },
+            statusCode: entries.ajaxStatusCodeProcessing,
+            complete: entries.ajaxCompleteProcessing
         });
     },
     filter: function(filterParameters){
         $.ajax({
             url: entries.uri,
             type: 'POST',
-            beforeSend: loading.start,
+            beforeSend: function(){
+                loading.start();
+                filterModal.active = true;
+            },
             data: JSON.stringify(filterParameters),
             dataType: 'json',
-            statusCode: {
-                200: function(responseData){
-                    entries.value = responseToData(responseData, 'entries');
-                },
-                404: function(){
-                    entries.value = [];
-                    notice.display(notice.typeInfo, "No entries were found");
-                },
-                500: function(){
-                    entries.value = [];
-                    notice.display(notice.typeDanger, "An error occurred while attempting to retrieve filtered entries");
-                }
-            },
-            complete: function(){
-                filterModal.active = true;
-                entries.display();
-                loading.end();
-            }
+            statusCode: entries.ajaxStatusCodeProcessing,
+            complete: entries.ajaxCompleteProcessing
         });
     },
     display: function(){
@@ -240,6 +214,23 @@ var entries = {
     },
     clearDisplay: function(){
         $("#entries-display-pane tbody tr").remove();
+    },
+    ajaxStatusCodeProcessing: {
+        200: function(responseData){
+            entries.value = responseToData(responseData, 'entries');
+        },
+        404: function(){
+            entries.value = [];
+            notice.display(notice.typeInfo, "No entries were found");
+        },
+        500: function(){
+            entries.value = [];
+            notice.display(notice.typeDanger, "An error occurred while attempting to retrieve "+(filterModal.active?"filtered":"")+" entries");
+        }
+    },
+    ajaxCompleteProcessing: function(){
+        entries.display();
+        loading.end();
     }
 };
 
