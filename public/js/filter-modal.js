@@ -17,6 +17,7 @@ $("input[name='filter-attachments']").bootstrapSwitch(bootstrapSwitchRadioObject
 $("#filter-unconfirmed").bootstrapSwitch(bootstrapSwitchObject);
 
 var filterModal = {
+    active: false,
     init: function(){
         $('#filter-reset').click(filterModal.reset);
         $('#filter-set').click(filterModal.submit);
@@ -80,28 +81,6 @@ var filterModal = {
         if(attachmentInputValue === 1){ filterParameters['attachments'] = true;                   } // has attachments
         if(unconfirmed){                filterParameters['unconfirmed'] = true;                   }
 
-        $.ajax({
-            url: '/api/entries',
-            method: 'POST',
-            data: JSON.stringify(filterParameters),
-            dataType: 'json',
-            statusCode: {
-                200: function(responseData){
-                    entries.value = responseToData(responseData);
-                    entries.display();
-                },
-                404: function(){
-                    entries.value = [];
-                    entries.display();
-                    notice.display(notice.typeInfo, "No entries were found");
-                },
-                500: function(){
-                    notice.display(notice.typeDanger, "An error occurred while attempting to retrieve filtered entries");
-                }
-            },
-            complete: function(){
-                loading.end();
-            }
-        });
+        entries.filter(filterParameters);
     }
 };
