@@ -216,11 +216,11 @@ var entries = {
 };
 
 var entry = {
-    uri: "/api/entry/",
+    uri: "/api/entry",
     value: [],
     load: function(entryId){
         $.ajax({
-            url: entry.uri+entryId,
+            url: entry.uri+'/'+entryId,
             dataType: "json",
             beforeSend: loading.start,
             statusCode: {
@@ -242,33 +242,53 @@ var entry = {
             }
         });
     },
-    save: function(entryId, entryData){
+    save: function(entryData){
+        var entryId = parseInt(entryData.id);
+        delete entryData.id;
         if($.isNumeric(entryId)){
+            // update entry
             $.ajax({
-                url: entry.uri+entryId,
+                url: entry.uri+'/'+entryId,
                 method: 'PUT',
+                beforeSend: loading.start,
                 data: JSON.stringify(entryData),
                 dataType: 'json',
                 statusCode: {
-                    200: function(){},
-                    400: function(){},
-                    404: function(){},
-                    500: function(){}
+                    200: function(){
+                        notice.display(notice.typeSuccess, "Entry updated");
+                    },
+                    400: function(responseObject){
+                        notice.display(notice.typeWarning, responseObject.responseJSON.error);
+                    },
+                    404: function(responseObject){
+                        notice.display(notice.typeWarning, responseObject.responseJSON.error);
+                    },
+                    500: function(){
+                        notice.display(notice.typeError, "An error occurred while attempting to update entry ["+entryId+"]");
+                    }
                 },
-                complete: function(){}
+                complete: completeEntryUpdate
             });
         } else {
+            // new entry
             $.ajax({
                 url: entry.uri,
                 method: 'POST',
+                beforeSend: loading.start,
                 data: JSON.stringify(entryData),
                 dataType: 'json',
                 statusCode: {
-                    201: function(){},
-                    400: function(){},
-                    500: function(){}
+                    201: function(){
+                        notice.display(notice.typeSuccess, "New entry created");
+                    },
+                    400: function(responseObject){
+                        notice.display(notice.typeWarning, responseObject.responseJSON.error);
+                    },
+                    500: function(){
+                        notice.display(notice.typeError, "An error occurred while attempting to create an entry");
+                    }
                 },
-                complete: function(){}
+                complete: completeEntryUpdate
             });
         }
     },
@@ -311,3 +331,10 @@ var attachment = {
         // TODO: delete recently uploaded file
     }
 };
+
+function completeEntryUpdate(){
+    entries.load();
+    accountsPane.displayed = false;
+    accounts.load();
+    accountsPane.displayAccountType();
+}
