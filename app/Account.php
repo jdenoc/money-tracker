@@ -13,6 +13,10 @@ class Account extends BaseModel {
         'id'
     ];
 
+    public function institution(){
+        $this->belongsTo('App\Institution', 'institution_id');
+    }
+
     public function account_types(){
         return $this->hasMany('App\AccountType', 'account_group');
     }

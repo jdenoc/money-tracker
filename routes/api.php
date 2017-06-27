@@ -17,6 +17,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::get('institutions', 'Api\InstitutionController@get_institutions');                           // GET /api/institutions
+Route::get('institutes', 'Api\InstitutionController@get_institutions');                             // GET /api/institutes
 Route::get('tags', 'Api\TagController@get_tags');                                                   // GET /api/tags
 Route::get('accounts', 'Api\AccountController@get_accounts');                                       // GET /api/accounts
 Route::get('account/{account_id}', 'Api\AccountController@get_account');                            // GET /api/account/{account_id}
