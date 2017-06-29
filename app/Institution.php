@@ -15,9 +15,18 @@ class Institution extends BaseModel {
     protected $casts = [
         'active'=>'boolean'
     ];
+    protected $dates = [
+        'create_stamp',
+        'modified_stamp'
+    ];
 
     public function accounts(){
         return $this->hasMany('App\Account', 'institution_id');
+    }
+
+    public static function find_institution_with_accounts($institution_id){
+        $institution = Institution::with('accounts')->where('id', $institution_id);
+        return $institution->first();
     }
 
 }

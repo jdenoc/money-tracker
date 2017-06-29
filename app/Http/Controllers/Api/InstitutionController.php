@@ -25,4 +25,16 @@ class InstitutionController extends Controller {
         }
     }
 
+    public function get_institution($institution_id){
+        $institution = Institution::find_institution_with_accounts($institution_id);
+        if(is_null($institution)){
+            return response([], HttpStatus::HTTP_NOT_FOUND);
+        } else {
+            $institution->accounts->makeHidden([
+                'institution_id'    // We already know what account this is. We don't need to re-show it.
+            ]);
+            return response($institution, HttpStatus::HTTP_OK);
+        }
+    }
+
 }

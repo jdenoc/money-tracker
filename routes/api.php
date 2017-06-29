@@ -19,6 +19,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::get('institutions', 'Api\InstitutionController@get_institutions');                           // GET /api/institutions
 Route::get('institutes', 'Api\InstitutionController@get_institutions');                             // GET /api/institutes
+Route::get('institution/{institution_id}', 'Api\InstitutionController@get_institution');            // GET /api/institution/{institution_id}
+Route::get('institute/{institution_id}', 'Api\InstitutionController@get_institution');              // GET /api/institute/{institution_id}
 Route::get('tags', 'Api\TagController@get_tags');                                                   // GET /api/tags
 Route::get('accounts', 'Api\AccountController@get_accounts');                                       // GET /api/accounts
 Route::get('account/{account_id}', 'Api\AccountController@get_account');                            // GET /api/account/{account_id}

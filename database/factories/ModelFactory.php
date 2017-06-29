@@ -20,7 +20,8 @@ $factory->define(App\Tag::class, function(Faker\Generator $faker){
 
 $factory->define(App\Institution::class, function(Faker\Generator $faker){
     return [
-        'name'=>$faker->company
+        'name'=>$faker->company,
+        'active'=>$faker->boolean
     ];
 });
 
