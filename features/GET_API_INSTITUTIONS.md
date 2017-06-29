@@ -22,7 +22,7 @@ _example output:_
 _example output:_
 ```json
 {
-  "0": {"id": 1, "name": "test institute 1", "active": 1, "created_stamp": "1970-01-01 00:00:00", "modified_stamp": "1999-31-21-"},
+  "0": {"id": 1, "name": "test institute 1", "active": 1},
   "1": {"id": 2, "name": "test institute 2", "active": 1},
   "count": 2
 }
@@ -34,8 +34,8 @@ _example output:_
 > **GIVEN:** there are initiations available in the database  
 > **AND:** some of those institutions are _NOT_ active  
 > **WHEN:** making a GET request to /api/institutions    
-> **THEN:**  
-> **AND:**  
+> **THEN:** receive a 200 response  
+> **AND:** receive an a list of institutions  
 
 _example output:_
 ```json
