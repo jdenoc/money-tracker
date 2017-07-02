@@ -1,40 +1,54 @@
-<p align="center"><img src="https://laravel.com/assets/img/components/logo-laravel.svg"></p>
+# Money Tracker  [![Build Status](https://travis-ci.org/jdenoc/money-tracker.svg?branch=master)](https://travis-ci.org/jdenoc/money-tracker)
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
-</p>
+## About
+Money Tracker is a web portal dedicated to help record and manage income & expenses, built on the [Laravel framework](https://laravel.com/)
+
+## Features
+For a list of features currently available, what they're expected outcome is and test cases, see the [Features](features/FEATURES.md)
+
+## Requirements
+- PHP >= 5.6.4
+- OpenSSL PHP Extension
+- PDO PHP Extension
+- Mbstring PHP Extension
+- Tokenizer PHP Extension
+- XML PHP Extension
+
+## Installation
+### Database setup
+```
+mysql -e "CREATE DATABASE money_tracker;"   # The database can be named whatever you want. This is just an example.
+mysql -e "CREATE USER tracker@localhost;"   # Once again, you can use any database username you want. This is just an example.
+mysql -e "GRANT ALL PRIVILEGES ON money_tracker.* TO 'tracker'@'localhost';"
+mysql -e "FLUSH PRIVILEGES;"
+```
+
+### Code deployment
+```bash
+git clone https://github.com/jdenoc/money-tracker.git
+cd money-tracker/
+composer install
+# if you're working with PhpStorm, be sure to run the following commands:
+php artisan ide-helper:generate
+php artisan ide-helper:meta
+php artisan optimize
+# these will generate Laravel Facades that PhpStorm can use
+```
+
+### Environment variable setup
+Be sure to edit the `.env` file generated during setup. A few of the default values should be fine to use. Modify those as needed.  
+That being said, there are certainly variables that should be modified at this point. They are: 
+- `APP_ENV`
+- `APP_DEBUG`
+- `APP_URL`
+- `DB_DATABASE`
+- `DB_USERNAME`
+- `DB_PASSWORD`
 
 ## About Laravel
+Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable, creative experience to be truly fulfilling. Laravel attempts to take the pain out of development by easing common tasks used in the majority of web projects.  
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable, creative experience to be truly fulfilling. Laravel attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as:
-
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, yet powerful, providing tools needed for large, robust applications. A superb combination of simplicity, elegance, and innovation give you tools you need to build any application with which you are tasked.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough documentation and video tutorial library of any modern web application framework. The [Laravel documentation](https://laravel.com/docs) is thorough, complete, and makes it a breeze to get started learning the framework.
-
-If you're not in the mood to read, [Laracasts](https://laracasts.com) contains over 900 video tutorials on a range of topics including Laravel, modern PHP, unit testing, JavaScript, and more. Boost the skill level of yourself and your entire team by digging into our comprehensive video library.
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](http://laravel.com/docs/contributions).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell at taylor@laravel.com. All security vulnerabilities will be promptly addressed.
+Laravel has the most extensive and thorough documentation library of any modern web application framework. The [Laravel documentation](https://laravel.com/docs/5.4) is thorough, complete, and makes it a breeze to get started learning the framework.
 
 ## License
-
 The Laravel framework is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).
