@@ -100,8 +100,10 @@ class GetAccountTest extends TestCase {
         $this->assertTrue(is_array($response_as_array));
         $this->assertArrayHasKey('id', $response_as_array);
         $this->assertEquals($response_as_array['id'], $generated_account->id);
-        $this->assertArrayHasKey('account', $response_as_array);
-        $this->assertEquals($response_as_array['account'], $generated_account->account);
+        $this->assertArrayHasKey('name', $response_as_array);
+        $this->assertEquals($response_as_array['name'], $generated_account->name);
+        $this->assertArrayHasKey('institution_id', $response_as_array);
+        $this->assertEquals($response_as_array['institution_id'], $generated_account->institution_id);
         $this->assertArrayHasKey('total', $response_as_array);
         $this->assertEquals($response_as_array['total'], $generated_account->total);
         $this->assertArrayHasKey('account_types', $response_as_array);

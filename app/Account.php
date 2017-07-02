@@ -7,7 +7,7 @@ class Account extends BaseModel {
     protected $table = 'accounts';
     public $timestamps = false; // turns off default laravel time stamping
     protected $fillable = [
-        'account', 'total'
+        'name', 'institution_id' ,'total'
     ];
     protected $guarded = [
         'id'

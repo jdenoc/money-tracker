@@ -30,7 +30,7 @@ $factory->define(App\Account::class, function(Faker\Generator $faker){
     $account_types = App\Helpers\DatabaseHelper::get_enum_values('account_types', 'type');
     $account_name = $faker->company.' '.$account_types[array_rand($account_types)];
     return [
-        'account'=>$account_name,         // this is supposed to be a bank account name
+        'name'=>$account_name,         // this is supposed to be a bank account name
         'institution_id'=>$faker->randomNumber(),
         'total'=>$faker->randomFloat(2, -1000, 1000),   // -1000.00 < total < 1000.00
     ];

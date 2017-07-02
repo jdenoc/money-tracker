@@ -5,7 +5,6 @@ namespace Tests\Feature\Api;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Symfony\Component\HttpFoundation\Response;
 
 use App\Account;
@@ -33,7 +32,8 @@ class GetAccountsTest extends TestCase {
         unset($response_body_as_array['count']);
         foreach($response_body_as_array as $account_in_response){
             $this->assertArrayHasKey('id', $account_in_response);
-            $this->assertArrayHasKey('account', $account_in_response);
+            $this->assertArrayHasKey('name', $account_in_response);
+            $this->assertArrayHasKey('institution_id', $account_in_response);
             $this->assertArrayHasKey('total', $account_in_response);
         }
         foreach($generated_accounts as $generated_account){

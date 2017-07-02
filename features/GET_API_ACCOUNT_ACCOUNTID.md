@@ -12,7 +12,7 @@ _example output:_
  ```json
 {
     "id": 1,
-    "account": "test account 1",
+    "name": "test account 1",
     "total": "10.00",
     "account_types": [
         {
@@ -46,7 +46,7 @@ _example output:_
 ```json
 {
     "id": 1,
-    "account": "test account 1",
+    "name": "test account 1",
     "total": "10.00",
     "account_types": [
         {
@@ -79,7 +79,7 @@ _example output:_
 ```json
 {
     "id": 1,
-    "account": "test account 1",
+    "name": "test account 1",
     "total": "10.00",
     "account_types": []
 }
@@ -100,7 +100,7 @@ _example output:_
 ```json
 {
     "id": 1,
-    "account": "test account 1",
+    "name": "test account 1",
     "total": "10.00",
     "account_types": []
 }
