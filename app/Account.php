@@ -12,6 +12,9 @@ class Account extends BaseModel {
     protected $guarded = [
         'id'
     ];
+    protected $casts = [
+        'disabled'=>'boolean'
+    ];
 
     public function institution(){
         $this->belongsTo('App\Institution', 'institution_id');

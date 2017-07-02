@@ -32,6 +32,7 @@ $factory->define(App\Account::class, function(Faker\Generator $faker){
     return [
         'name'=>$account_name,         // this is supposed to be a bank account name
         'institution_id'=>$faker->randomNumber(),
+        'disabled'=>$faker->boolean,
         'total'=>$faker->randomFloat(2, -1000, 1000),   // -1000.00 < total < 1000.00
     ];
 });

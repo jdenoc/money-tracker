@@ -9,8 +9,8 @@
 _example output:_
 ```json
 {
-  "0": {"id": 1, "name": "test account 1", "total": "10.00"},
-  "1": {"id": 2, "name": "test account 2", "total": "0.01"},
+  "0": {"id": 1, "name": "test account 1", "institution_id": 1, "disabled": false, "total": "10.00"},
+  "1": {"id": 2, "name": "test account 2", "institution_id": 1, "disabled": false, "total": "0.01"},
   "count": 2
 }
 ```

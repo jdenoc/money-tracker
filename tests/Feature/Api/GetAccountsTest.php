@@ -32,9 +32,16 @@ class GetAccountsTest extends TestCase {
         unset($response_body_as_array['count']);
         foreach($response_body_as_array as $account_in_response){
             $this->assertArrayHasKey('id', $account_in_response);
+            unset($account_in_response['id']);
             $this->assertArrayHasKey('name', $account_in_response);
+            unset($account_in_response['name']);
             $this->assertArrayHasKey('institution_id', $account_in_response);
+            unset($account_in_response['institution_id']);
+            $this->assertArrayHasKey('disabled', $account_in_response);
+            unset($account_in_response['disabled']);
             $this->assertArrayHasKey('total', $account_in_response);
+            unset($account_in_response['total']);
+            $this->assertEmpty($account_in_response, "Unknown nodes found in JSON response:".json_encode($account_in_response));
         }
         foreach($generated_accounts as $generated_account){
             $this->assertTrue(

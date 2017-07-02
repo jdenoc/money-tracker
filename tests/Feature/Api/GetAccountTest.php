@@ -100,15 +100,24 @@ class GetAccountTest extends TestCase {
         $this->assertTrue(is_array($response_as_array));
         $this->assertArrayHasKey('id', $response_as_array);
         $this->assertEquals($response_as_array['id'], $generated_account->id);
+        unset($response_as_array['id']);
         $this->assertArrayHasKey('name', $response_as_array);
         $this->assertEquals($response_as_array['name'], $generated_account->name);
+        unset($response_as_array['name']);
         $this->assertArrayHasKey('institution_id', $response_as_array);
         $this->assertEquals($response_as_array['institution_id'], $generated_account->institution_id);
+        unset($response_as_array['institution_id']);
+        $this->assertArrayHasKey('disabled', $response_as_array);
+        $this->assertEquals($response_as_array['disabled'], $generated_account->disabled);
+        unset($response_as_array['disabled']);
         $this->assertArrayHasKey('total', $response_as_array);
         $this->assertEquals($response_as_array['total'], $generated_account->total);
+        unset($response_as_array['total']);
         $this->assertArrayHasKey('account_types', $response_as_array);
         $this->assertTrue(is_array($response_as_array['account_types']));
         $this->assertCount($account_type_count, $response_as_array['account_types']);
+        unset($response_as_array['account_types']);
+        $this->assertEmpty($response_as_array, "Unknown nodes found in JSON:".json_encode($response_as_array));
     }
 
     /**
@@ -138,7 +147,6 @@ class GetAccountTest extends TestCase {
                 "Factory generate account in JSON: ".json_encode($generated_account_types_as_array)."\nResponse Body component:".json_encode($account_type_in_response)
             );
         }
-
 
 //        $disabled_account_type_as_array = [
 //            'id'=>$generated_disabled_account_type->id,

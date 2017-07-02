@@ -13,6 +13,8 @@ _example output:_
 {
     "id": 1,
     "name": "test account 1",
+    "institution_id": 1,
+    "disabled": false,
     "total": "10.00",
     "account_types": [
         {
@@ -47,6 +49,8 @@ _example output:_
 {
     "id": 1,
     "name": "test account 1",
+    "institution_id": 1,
+    "disabled": false,
     "total": "10.00",
     "account_types": [
         {
@@ -80,6 +84,8 @@ _example output:_
 {
     "id": 1,
     "name": "test account 1",
+    "institution_id": 1,
+    "disabled": false,
     "total": "10.00",
     "account_types": []
 }
@@ -101,6 +107,8 @@ _example output:_
 {
     "id": 1,
     "name": "test account 1",
+    "institution_id": 1,
+    "disabled": false,
     "total": "10.00",
     "account_types": []
 }
