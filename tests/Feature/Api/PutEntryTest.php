@@ -28,7 +28,7 @@ class PutEntryTest extends TestCase {
         parent::setUp();
         // GIVEN - for all tests
         $this->_generated_account = factory(Account::class)->create();
-        $this->_generated_account_type = factory(AccountType::class)->create(['account_group'=>$this->_generated_account->id]);
+        $this->_generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
         $this->_generated_entry = factory(Entry::class)->create(['account_type'=>$this->_generated_account_type->id]);
     }
 

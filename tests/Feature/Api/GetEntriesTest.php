@@ -25,7 +25,7 @@ class GetEntriesTest extends ListEntriesBase {
 
     public function testGetEntries(){
         // GIVEN
-        $generated_account_type = factory(AccountType::class)->create(['account_group'=>$this->_generated_account->id]);
+        $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
 
         $generate_entry_count = $this->_faker->numberBetween(4, 50);
         $generated_entries = [];
@@ -63,7 +63,7 @@ class GetEntriesTest extends ListEntriesBase {
 
     public function testGetEntriesByPage(){
         // GIVEN
-        $generated_account_type = factory(AccountType::class)->create(['account_group' => $this->_generated_account->id]);
+        $generated_account_type = factory(AccountType::class)->create(['account_id' => $this->_generated_account->id]);
         $generate_entry_count = $this->_faker->numberBetween(101, 150);
         $generated_entries = [];
         for($i = 0; $i < $generate_entry_count; $i++){
@@ -117,7 +117,7 @@ class GetEntriesTest extends ListEntriesBase {
     public function testLargeDataSets($entry_count){
         // GIVEN
         $table = with(new Entry)->getTable();
-        $generated_account_type = factory(AccountType::class)->create(['account_group'=>$this->_generated_account->id]);
+        $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
         $generated_entries = factory(Entry::class, EntryController::MAX_ENTRIES_IN_RESPONSE)->make(['account_type'=>$generated_account_type->id]);
         // generating entries in batches and using database insert methods because it's faster
         for($i=0; $i<($entry_count/EntryController::MAX_ENTRIES_IN_RESPONSE); $i++){

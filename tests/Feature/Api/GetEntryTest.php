@@ -49,7 +49,7 @@ class GetEntryTest extends TestCase {
     public function testGetEntryData(){
         // GIVEN
         $generated_account = factory(Account::class)->create();
-        $generated_account_type = factory(AccountType::class)->create(['account_group'=>$generated_account->id]);
+        $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
         $generated_entry = factory(Entry::class)->create(['account_type'=>$generated_account_type->id]);
         $generated_tags_as_array = $this->generateTagsAndOutputAsArray($generated_entry);
         $generated_attachments_as_array = $this->generateAttachmentsAndOutputAsArray($generated_entry->id);
@@ -70,7 +70,7 @@ class GetEntryTest extends TestCase {
     public function testGetEntryDataWithNoAssociatedTags(){
         // GIVEN
         $generated_account = factory(Account::class)->create();
-        $generated_account_type = factory(AccountType::class)->create(['account_group'=>$generated_account->id]);
+        $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
         $generated_entry = factory(Entry::class)->create(['account_type'=>$generated_account_type->id]);
         $generated_attachments_as_array = $this->generateAttachmentsAndOutputAsArray($generated_entry->id);
 
@@ -91,7 +91,7 @@ class GetEntryTest extends TestCase {
     public function testGetEntryWithNoAssociatedAttachments(){
         // GIVEN
         $generated_account = factory(Account::class)->create();
-        $generated_account_type = factory(AccountType::class)->create(['account_group'=>$generated_account->id]);
+        $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
         $generated_entry = factory(Entry::class)->create(['account_type'=>$generated_account_type->id]);
         $generated_tags_as_array = $this->generateTagsAndOutputAsArray($generated_entry);
 
@@ -112,7 +112,7 @@ class GetEntryTest extends TestCase {
     public function testGetEntryWithNoAssociatedTagsAndAttachments(){
         // GIVEN
         $generated_account = factory(Account::class)->create();
-        $generated_account_type = factory(AccountType::class)->create(['account_group'=>$generated_account->id]);
+        $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
         $generated_entry = factory(Entry::class)->create(['account_type'=>$generated_account_type->id]);
 
         // WHEN
@@ -132,7 +132,7 @@ class GetEntryTest extends TestCase {
     public function testGetEntryThatIsMarkedDeleted(){
         // GIVEN
         $generated_account = factory(Account::class)->create();
-        $generated_account_type = factory(AccountType::class)->create(['account_group'=>$generated_account->id]);
+        $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
         $generated_entry = factory(Entry::class)->create(['deleted'=>1, 'account_type'=>$generated_account_type->id]);
 
         // WHEN
