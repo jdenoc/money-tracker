@@ -49,7 +49,7 @@ $factory->define(App\AccountType::class, function(Faker\Generator $faker){
         'type'=>$account_type,
         'last_digits'=>substr($bank_account_number, strlen($bank_account_number)-5, 4),
         'type_name'=>$faker->word.' '.$account_type,
-        'account_group'=>$faker->randomNumber(),
+        'account_id'=>$faker->randomNumber(),
         'disabled'=>false
     ];
 });

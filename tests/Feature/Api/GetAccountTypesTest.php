@@ -51,7 +51,7 @@ class GetAccountTypesTest extends TestCase {
             $this->assertArrayHasKey('type', $account_type_in_response);
             $this->assertArrayHasKey('last_digits', $account_type_in_response);
             $this->assertArrayHasKey('type_name', $account_type_in_response);
-            $this->assertArrayHasKey('account_group', $account_type_in_response);
+            $this->assertArrayHasKey('account_id', $account_type_in_response);
             $this->assertArrayHasKey('disabled', $account_type_in_response);
 
             $this->assertNotEmpty($generated_account_types[$account_type_in_response['id']]);

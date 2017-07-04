@@ -34,9 +34,9 @@ class GetAccountTest extends TestCase {
         // GIVEN
         $account_type_count = $this->_faker->randomDigitNotNull;
         $generated_account = factory(Account::class)->create();
-        $generated_account_types = factory(AccountType::class, $account_type_count)->create(['account_group'=>$generated_account->id]);
+        $generated_account_types = factory(AccountType::class, $account_type_count)->create(['account_id'=>$generated_account->id]);
         // These nodes are not in the response output. Lets hide them from the object collection
-        $generated_account_types->makeHidden(['account_group', 'last_updated']);
+        $generated_account_types->makeHidden(['account_id', 'last_updated']);
 
         // WHEN
         $response = $this->get($this->_base_uri.$generated_account->id);
@@ -52,12 +52,12 @@ class GetAccountTest extends TestCase {
         // GIVEN
         $account_type_count = $this->_faker->randomDigitNotNull;
         $generated_account = factory(Account::class)->create();
-        $generated_account_types = factory(AccountType::class, $account_type_count)->create(['account_group'=>$generated_account->id]);
-        $generated_disabled_account_type = factory(AccountType::class)->create(['account_group'=>$generated_account->id, 'disabled'=>true]);
+        $generated_account_types = factory(AccountType::class, $account_type_count)->create(['account_id'=>$generated_account->id]);
+        $generated_disabled_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id, 'disabled'=>true]);
         $account_type_count++;
         $generated_account_types->push($generated_disabled_account_type);
         // These nodes are not in the response output. Lets hide them from the object collection
-        $generated_account_types->makeHidden(['account_group', 'last_updated']);
+        $generated_account_types->makeHidden(['account_id', 'last_updated']);
 
         // WHEN
         $response = $this->get($this->_base_uri.$generated_account->id);
@@ -85,7 +85,7 @@ class GetAccountTest extends TestCase {
         // GIVEN
         $account_type_count = $this->_faker->randomDigitNotNull;
         $generated_account = factory(Account::class)->create();
-        factory(AccountType::class, $account_type_count)->create(['account_group'=>$generated_account->id, 'disabled'=>true]);
+        factory(AccountType::class, $account_type_count)->create(['account_id'=>$generated_account->id, 'disabled'=>true]);
 
         // WHEN
         $response = $this->get($this->_base_uri.$generated_account->id);

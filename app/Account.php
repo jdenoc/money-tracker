@@ -26,7 +26,7 @@ class Account extends BaseModel {
     }
 
     public function account_types(){
-        return $this->hasMany('App\AccountType', 'account_group');
+        return $this->hasMany('App\AccountType', 'account_id');
     }
 
     public function update_total($value){
