@@ -67,7 +67,8 @@ class GetInstitutionTest extends TestCase {
         $generated_account_count = $this->_faker->randomDigitNotNull;
         $generated_institution = factory(Institution::class)->create();
         $generated_accounts = factory(Account::class, $generated_account_count)->create(['institution_id'=>$generated_institution->id]);
-        $generated_accounts->makeHidden('institution_id');  // institution_id is not going to be present in the API output, so we'll hide it in the factory object
+        // These nodes are not in the response output. Lets hide them from the object collection.
+        $generated_accounts->makeHidden(['institution_id', 'disabled_stamp']);
 
         // WHEN
         $response = $this->get($this->_base_uri.$generated_institution->id);
