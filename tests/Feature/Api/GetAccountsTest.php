@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use Faker\Factory;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
@@ -16,8 +17,9 @@ class GetAccountsTest extends TestCase {
     private $_uri = '/api/accounts';
 
     public function testGetListOfAccountsWhenTheyAreAvailable(){
+        $faker = Factory::create();
         // GIVEN
-        $account_count = 2;
+        $account_count = $faker->randomDigitNotNull;
         $generated_accounts = factory(Account::class, $account_count)->create();
 
         // WHEN

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use Faker;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
@@ -14,13 +15,28 @@ class GetAccountTest extends TestCase {
 
     use DatabaseMigrations;
 
+    /**
+     * @var string
+     */
     private $_base_uri = '/api/account/';
+
+    /**
+     * @var Faker\Generator
+     */
+    private $_faker;
+
+    public function setUp(){
+        parent::setUp();
+        $this->_faker = Faker\Factory::create();
+    }
 
     public function testGetAccountData(){
         // GIVEN
-        $account_type_count = 2;
+        $account_type_count = $this->_faker->randomDigitNotNull;
         $generated_account = factory(Account::class)->create();
         $generated_account_types = factory(AccountType::class, $account_type_count)->create(['account_group'=>$generated_account->id]);
+        // These nodes are not in the response output. Lets hide them from the object collection
+        $generated_account_types->makeHidden(['account_group', 'last_updated']);
 
         // WHEN
         $response = $this->get($this->_base_uri.$generated_account->id);
@@ -34,12 +50,14 @@ class GetAccountTest extends TestCase {
 
     public function testGetAccountDataWhenAnAccountTypesRecordIsDisabled(){
         // GIVEN
-        $account_type_count = 2;
+        $account_type_count = $this->_faker->randomDigitNotNull;
         $generated_account = factory(Account::class)->create();
         $generated_account_types = factory(AccountType::class, $account_type_count)->create(['account_group'=>$generated_account->id]);
         $generated_disabled_account_type = factory(AccountType::class)->create(['account_group'=>$generated_account->id, 'disabled'=>true]);
         $account_type_count++;
         $generated_account_types->push($generated_disabled_account_type);
+        // These nodes are not in the response output. Lets hide them from the object collection
+        $generated_account_types->makeHidden(['account_group', 'last_updated']);
 
         // WHEN
         $response = $this->get($this->_base_uri.$generated_account->id);
@@ -65,9 +83,9 @@ class GetAccountTest extends TestCase {
 
     public function testGetAccountDataWhenOnlyDisabledAccountTypeRecordsExist(){
         // GIVEN
-        $account_type_count = 2;
+        $account_type_count = $this->_faker->randomDigitNotNull;
         $generated_account = factory(Account::class)->create();
-        factory(AccountType::class, $account_type_count)->create(['account_group'=>$generated_account->id, 'disabled'=>1]);
+        factory(AccountType::class, $account_type_count)->create(['account_group'=>$generated_account->id, 'disabled'=>true]);
 
         // WHEN
         $response = $this->get($this->_base_uri.$generated_account->id);
@@ -79,10 +97,9 @@ class GetAccountTest extends TestCase {
 
     public function testGetAccountDataWhenNoAccountDataExists(){
         // GIVEN - no database records are created
-        $account_id = 99999;
 
         // WHEN
-        $response = $this->get($this->_base_uri.$account_id);
+        $response = $this->get($this->_base_uri.$this->_faker->randomDigitNotNull);
 
         // THEN
         $response->assertStatus(Response::HTTP_NOT_FOUND);
@@ -108,8 +125,8 @@ class GetAccountTest extends TestCase {
         $this->assertEquals($response_as_array['institution_id'], $generated_account->institution_id);
         unset($response_as_array['institution_id']);
         $this->assertArrayHasKey('disabled', $response_as_array);
+        $this->assertTrue(is_bool($response_as_array['disabled']));
         $this->assertEquals($response_as_array['disabled'], $generated_account->disabled);
-        unset($response_as_array['disabled']);
         $this->assertArrayHasKey('total', $response_as_array);
         $this->assertEquals($response_as_array['total'], $generated_account->total);
         unset($response_as_array['total']);
@@ -117,6 +134,19 @@ class GetAccountTest extends TestCase {
         $this->assertTrue(is_array($response_as_array['account_types']));
         $this->assertCount($account_type_count, $response_as_array['account_types']);
         unset($response_as_array['account_types']);
+        $this->assertArrayHasKey('create_stamp', $response_as_array);
+        $this->assertDateFormat($response_as_array['create_stamp'], DATE_ATOM, $response_as_array['create_stamp']." not in correct format");
+        unset($response_as_array['create_stamp']);
+        $this->assertArrayHasKey('modified_stamp', $response_as_array);
+        $this->assertDateFormat($response_as_array['modified_stamp'], DATE_ATOM, $response_as_array['modified_stamp']." not in correct format");
+        unset($response_as_array['modified_stamp']);
+        $this->assertArrayHasKey('disabled_stamp', $response_as_array);
+        if($response_as_array['disabled']){
+            $this->assertDateFormat($response_as_array['disabled_stamp'], DATE_ATOM, $response_as_array['disabled_stamp']." not in correct format");
+        } else {
+            $this->assertNull($response_as_array['disabled_stamp']);
+        }
+        unset($response_as_array['disabled'], $response_as_array['disabled_stamp']);
         $this->assertEmpty($response_as_array, "Unknown nodes found in JSON:".json_encode($response_as_array));
     }
 
@@ -125,40 +155,16 @@ class GetAccountTest extends TestCase {
      * @param AccountType $generated_account_types
      */
     private function assertAccountTypesOK($account_types_in_response, $generated_account_types){
-        $account_types_array_count = 0;
-        $generated_account_types_as_array = [];
-        foreach($generated_account_types as $generated_account_type) {
-            $generated_account_types_as_array[$account_types_array_count]['id'] = $generated_account_type->id;
-            $generated_account_types_as_array[$account_types_array_count]['type'] = $generated_account_type->type;
-            $generated_account_types_as_array[$account_types_array_count]['type_name'] = $generated_account_type->type_name;
-            $generated_account_types_as_array[$account_types_array_count]['last_digits'] = $generated_account_type->last_digits;
-            $generated_account_types_as_array[$account_types_array_count]['disabled'] = $generated_account_type->disabled;
-            $account_types_array_count++;
-        }
-
+        $generated_account_types_as_array = $generated_account_types->toArray();
         foreach($account_types_in_response as $account_type_in_response){
-            $this->assertArrayHasKey('id', $account_type_in_response);
-            $this->assertArrayHasKey('type', $account_type_in_response);
-            $this->assertArrayHasKey('type_name', $account_type_in_response);
-            $this->assertArrayHasKey('last_digits', $account_type_in_response);
-            $this->assertArrayHasKey('disabled', $account_type_in_response);
-            $this->assertTrue(
-                in_array($account_type_in_response, $generated_account_types_as_array),
-                "Factory generate account in JSON: ".json_encode($generated_account_types_as_array)."\nResponse Body component:".json_encode($account_type_in_response)
-            );
+            $error_msg = "Factory generate account in JSON: ".json_encode($generated_account_types_as_array)."\nResponse Body component:".json_encode($account_type_in_response);
+            $this->assertArrayHasKey('id', $account_type_in_response, $error_msg);
+            $this->assertArrayHasKey('type', $account_type_in_response, $error_msg);
+            $this->assertArrayHasKey('type_name', $account_type_in_response, $error_msg);
+            $this->assertArrayHasKey('last_digits', $account_type_in_response, $error_msg);
+            $this->assertArrayHasKey('disabled', $account_type_in_response, $error_msg);
+            $this->assertTrue(in_array($account_type_in_response, $generated_account_types_as_array), $error_msg);
         }
-
-//        $disabled_account_type_as_array = [
-//            'id'=>$generated_disabled_account_type->id,
-//            'type'=>$generated_disabled_account_type->id,
-//            'type_name'=>$generated_disabled_account_type->type_name,
-//            'last_digits'=>$generated_disabled_account_type->last_digits,
-//            'last_updated'=>$generated_disabled_account_type->last_updated
-//        ];
-//        $this->assertTrue(
-//            !in_array($disabled_account_type_as_array, $response_body_as_array['account_types']),
-//            "Factory generate account in JSON: ".json_encode($disabled_account_type_as_array)."\nResponse Body:".$response->getContent()
-//        );
     }
 
 }

@@ -31,7 +31,10 @@ class InstitutionController extends Controller {
             return response([], HttpStatus::HTTP_NOT_FOUND);
         } else {
             $institution->accounts->makeHidden([
-                'institution_id'    // We already know what account this is. We don't need to re-show it.
+                'institution_id',    // We already know what account this is. We don't need to re-show it.
+                'create_stamp',
+                'modified_stamp',
+                'disabled_stamp'
             ]);
             return response($institution, HttpStatus::HTTP_OK);
         }

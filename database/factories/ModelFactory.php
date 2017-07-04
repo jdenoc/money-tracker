@@ -29,11 +29,13 @@ $factory->define(App\Institution::class, function(Faker\Generator $faker){
 $factory->define(App\Account::class, function(Faker\Generator $faker){
     $account_types = App\Helpers\DatabaseHelper::get_enum_values('account_types', 'type');
     $account_name = $faker->company.' '.$account_types[array_rand($account_types)];
+    $disabled = $faker->boolean;
     return [
         'name'=>$account_name,         // this is supposed to be a bank account name
         'institution_id'=>$faker->randomNumber(),
-        'disabled'=>$faker->boolean,
+        'disabled'=>$disabled,
         'total'=>$faker->randomFloat(2, -1000, 1000),   // -1000.00 < total < 1000.00
+        'disabled_stamp'=>$disabled ? $faker->date("Y-m-d H:i:s") : null
     ];
 });
 
@@ -55,7 +57,7 @@ $factory->define(App\AccountType::class, function(Faker\Generator $faker){
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 $factory->define(App\Entry::class, function(Faker\Generator $faker){
     return [
-        'entry_date'=>date("Y-m-d"),
+        'entry_date'=>$faker->date(),
         'account_type'=>$faker->randomNumber(),
         'entry_value'=>$faker->randomFloat(2, 0, 100),  // 0.00 < entry_value < 100.00
         'memo'=>$faker->words(3, true),

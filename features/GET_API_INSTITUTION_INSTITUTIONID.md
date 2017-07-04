@@ -55,11 +55,13 @@ _example output:_
     "accounts":[
         {
             "id":1,
-            "account":"test account 1",
+            "name":"test account 1",
+            "disabled": false,
             "total":"10.00"
         },{
             "id":2,
-            "account":"test account 2",
+            "name":"test account 2",
+            "disabled": false,
             "total":"-10.00"
         }
     ]

@@ -67,6 +67,7 @@ class GetInstitutionTest extends TestCase {
         $generated_account_count = $this->_faker->randomDigitNotNull;
         $generated_institution = factory(Institution::class)->create();
         $generated_accounts = factory(Account::class, $generated_account_count)->create(['institution_id'=>$generated_institution->id]);
+        $generated_accounts->makeHidden('institution_id');  // institution_id is not going to be present in the API output, so we'll hide it in the factory object
 
         // WHEN
         $response = $this->get($this->_base_uri.$generated_institution->id);
@@ -86,13 +87,20 @@ class GetInstitutionTest extends TestCase {
         }
     }
 
-    public function assertInstitutionNodesExist($response_body_as_array){
-        $this->assertArrayHasKey('id', $response_body_as_array);
-        $this->assertArrayHasKey('name', $response_body_as_array);
-        $this->assertArrayHasKey('active', $response_body_as_array);
-        $this->assertArrayHasKey('create_stamp', $response_body_as_array);
-        $this->assertArrayHasKey('modified_stamp', $response_body_as_array);
-        $this->assertArrayHasKey('accounts', $response_body_as_array);
+    public function assertInstitutionNodesExist($institute_in_response){
+        $this->assertArrayHasKey('id', $institute_in_response);
+        unset($institute_in_response['id']);
+        $this->assertArrayHasKey('name', $institute_in_response);
+        unset($institute_in_response['name']);
+        $this->assertArrayHasKey('active', $institute_in_response);
+        unset($institute_in_response['active']);
+        $this->assertArrayHasKey('create_stamp', $institute_in_response);
+        unset($institute_in_response['create_stamp']);
+        $this->assertArrayHasKey('modified_stamp', $institute_in_response);
+        unset($institute_in_response['modified_stamp']);
+        $this->assertArrayHasKey('accounts', $institute_in_response);
+        unset($institute_in_response['accounts']);
+        $this->assertEmpty($institute_in_response);
     }
 
     public function assertInstitutionNodesValuesExcludingRelationshipsOK($generated_institution, $response_body_as_array){
@@ -106,22 +114,14 @@ class GetInstitutionTest extends TestCase {
     }
 
     public function assertInstitutionAccountNodesOK($institution_account_in_response, $generated_accounts){
-        $account_array_count = 0;
-        $generated_accounts_as_array = [];
-        foreach($generated_accounts as $generated_account){
-            $generated_accounts_as_array[$account_array_count]['id'] = $generated_account->id;
-            $generated_accounts_as_array[$account_array_count]['account'] = $generated_account->account;
-            $generated_accounts_as_array[$account_array_count]['total'] = $generated_account->total;
-            $account_array_count++;
-        }
+        $generated_accounts_as_array = $generated_accounts->toArray();
+        $error_msg = "account in response:".json_encode($institution_account_in_response)."\ngenerated accounts:".json_encode($generated_accounts_as_array);
 
-        $this->assertArrayHasKey('id', $institution_account_in_response);
-        $this->assertArrayHasKey('account', $institution_account_in_response);
-        $this->assertArrayHasKey('total', $institution_account_in_response);
-        $this->assertTrue(
-            in_array($institution_account_in_response, $generated_accounts_as_array),
-            "account in response:".json_encode($institution_account_in_response)."\ngenerated accounts:".json_encode($generated_accounts_as_array)
-        );
+        $this->assertArrayHasKey('id', $institution_account_in_response, $error_msg);
+        $this->assertArrayHasKey('name', $institution_account_in_response, $error_msg);
+        $this->assertArrayHasKey('disabled', $institution_account_in_response, $error_msg);
+        $this->assertArrayHasKey('total', $institution_account_in_response, $error_msg);
+        $this->assertTrue(in_array($institution_account_in_response, $generated_accounts_as_array), $error_msg);
     }
 
 }

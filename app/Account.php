@@ -15,6 +15,11 @@ class Account extends BaseModel {
     protected $casts = [
         'disabled'=>'boolean'
     ];
+    protected $dates = [
+        'create_stamp',
+        'modified_stamp',
+        'disabled_stamp'
+    ];
 
     public function institution(){
         $this->belongsTo('App\Institution', 'institution_id');

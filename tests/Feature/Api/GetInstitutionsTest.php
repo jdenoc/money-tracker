@@ -72,6 +72,12 @@ class GetInstitutionsTest extends TestCase {
             $generated_institution = $generated_institutions[$institution_in_response['id']];
             // factory doesn't set timestamps, so we don't need to make sure they are NOT present
             $this->assertEquals($generated_institution->toArray(), $institution_in_response);
+            unset(
+                $institution_in_response['id'],
+                $institution_in_response['name'],
+                $institution_in_response['active']
+            );
+            $this->assertEmpty($institution_in_response);
         }
     }
 

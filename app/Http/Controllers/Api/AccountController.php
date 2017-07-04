@@ -19,6 +19,11 @@ class AccountController extends Controller {
         if(is_null($accounts) || $accounts->isEmpty()){
             return response([], Response::HTTP_NOT_FOUND);
         } else {
+            $accounts->makeHidden([
+                'create_stamp',
+                'modified_stamp',
+                'disabled_stamp'
+            ]);
             $accounts = $accounts->toArray();
             $accounts['count'] = Account::count();
 
