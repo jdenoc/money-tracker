@@ -9,13 +9,13 @@ class AccountType extends BaseModel {
         'type', 'last_digits', 'type_name', 'account_id', 'disabled'
     ];
     protected $guarded = [
-        'id', 'last_updated'
+        'id', 'modified_stamp'
     ];
     protected $casts = [
         'disabled'=>'boolean'
     ];
     protected $dates = [
-        'last_updated'
+        'create_stamp', 'modified_stamp', 'disabled_stamp'
     ];
     public $timestamps = false; // turns off default laravel time stamping
 

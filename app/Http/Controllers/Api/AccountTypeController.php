@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\AccountType;
-use Illuminate\Http\Request;
+use Carbon\Carbon;
 use App\Http\Controllers\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -14,7 +14,6 @@ class AccountTypeController extends Controller {
         if(is_null($account_types) || $account_types->isEmpty()){
             return response([], Response::HTTP_NOT_FOUND);
         } else {
-            $account_types->makeHidden('last_updated');
             return response($account_types, Response::HTTP_OK);
         }
     }
@@ -26,6 +25,7 @@ class AccountTypeController extends Controller {
         }
 
         $account_type->disabled = true;
+        $account_type->disabled_stamp = Carbon::now()->toDateTimeString();
         $account_type->save();
         return response('', Response::HTTP_NO_CONTENT);
     }
