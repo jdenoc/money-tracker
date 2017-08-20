@@ -50,7 +50,10 @@ $factory->define(App\AccountType::class, function(Faker\Generator $faker){
         'last_digits'=>substr($bank_account_number, strlen($bank_account_number)-5, 4),
         'type_name'=>$faker->word.' '.$account_type,
         'account_id'=>$faker->randomNumber(),
-        'disabled'=>false
+        'disabled'=>false,
+        'create_stamp'=>$faker->date("Y-m-d H:i:s"),
+        'modified_stamp'=>$faker->date("Y-m-d H:i:s"),
+        'disabled_stamp'=>null,
     ];
 });
 

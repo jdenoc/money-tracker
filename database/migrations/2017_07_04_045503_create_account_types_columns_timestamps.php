@@ -5,7 +5,9 @@ use Illuminate\Database\Migrations\Migration;
 class CreateAccountTypesColumnsTimestamps extends Migration {
 
     /**
-     * Run the migrations.
+     * Add column account_types.create_stamp
+     * Renamed account_types.last_updated to account_types.modified_stamp
+     * Add column account_types.disabled_stamp
      *
      * @return void
      */

@@ -163,6 +163,9 @@ class GetAccountTest extends TestCase {
             $this->assertArrayHasKey('type_name', $account_type_in_response, $error_msg);
             $this->assertArrayHasKey('last_digits', $account_type_in_response, $error_msg);
             $this->assertArrayHasKey('disabled', $account_type_in_response, $error_msg);
+            $this->assertArrayHasKey('create_stamp', $account_type_in_response, $error_msg);
+            $this->assertArrayHasKey('modified_stamp', $account_type_in_response, $error_msg);
+            $this->assertArrayHasKey('disabled_stamp', $account_type_in_response, $error_msg);
             $this->assertTrue(in_array($account_type_in_response, $generated_account_types_as_array), $error_msg);
         }
     }
