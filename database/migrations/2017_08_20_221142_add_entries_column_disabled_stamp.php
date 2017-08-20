@@ -15,8 +15,8 @@ class AddEntriesColumnDisabledStamp extends Migration {
     public function up(){
         Schema::table('entries', function (Blueprint $table) {
             $table->timestamp('disabled_stamp')->nullable();
-            DB::statement("UPDATE entries SET disabled_stamp=modified_stamp WHERE disabled=1");
         });
+        DB::statement("UPDATE entries SET disabled_stamp=modified_stamp WHERE disabled=1");
     }
 
     /**
