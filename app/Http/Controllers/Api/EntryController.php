@@ -36,7 +36,7 @@ class EntryController extends Controller {
         } else {
             // we're not going to show disabled entries,
             // so why bother telling someone that something that isn't disabled
-            $entry->makeHidden('disabled');
+            $entry->makeHidden(['disabled', 'disabled_stamp']);
             $entry->tags->makeHidden('pivot');  // this is an artifact left over from the relationship logic
             $entry->attachments->makeHidden('entry_id');    // we already know the attachment is associated with this entry, no need to repeat that
             return response($entry, HttpStatus::HTTP_OK);

@@ -8,7 +8,7 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Faker;
 
 use App\AccountType;
@@ -40,7 +40,7 @@ class GetEntryTest extends TestCase {
         $response = $this->get($this->_base_uri.$entry_id);
 
         // THEN
-        $response->assertStatus(Response::HTTP_NOT_FOUND);
+        $response->assertStatus(HttpStatus::HTTP_NOT_FOUND);
         $response_body_as_array = $this->getResponseAsArray($response);
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertEmpty($response_body_as_array);
@@ -58,7 +58,7 @@ class GetEntryTest extends TestCase {
         $response = $this->get($this->_base_uri.$generated_entry->id);
 
         // THEN
-        $response->assertStatus(Response::HTTP_OK);
+        $response->assertStatus(HttpStatus::HTTP_OK);
         $response_body_as_array = $this->getResponseAsArray($response);
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertParentNodesExist($response_body_as_array);
@@ -78,7 +78,7 @@ class GetEntryTest extends TestCase {
         $response = $this->get($this->_base_uri.$generated_entry->id);
 
         // THEN
-        $response->assertStatus(Response::HTTP_OK);
+        $response->assertStatus(HttpStatus::HTTP_OK);
         $response_body_as_array = $this->getResponseAsArray($response);
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertParentNodesExist($response_body_as_array);
@@ -99,7 +99,7 @@ class GetEntryTest extends TestCase {
         $response = $this->get($this->_base_uri.$generated_entry->id);
 
         // THEN
-        $response->assertStatus(Response::HTTP_OK);
+        $response->assertStatus(HttpStatus::HTTP_OK);
         $response_body_as_array = $this->getResponseAsArray($response);
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertParentNodesExist($response_body_as_array);
@@ -119,7 +119,7 @@ class GetEntryTest extends TestCase {
         $response = $this->get($this->_base_uri.$generated_entry->id);
 
         // THEN
-        $response->assertStatus(Response::HTTP_OK);
+        $response->assertStatus(HttpStatus::HTTP_OK);
         $response_body_as_array = $this->getResponseAsArray($response);
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertParentNodesExist($response_body_as_array);
@@ -139,7 +139,7 @@ class GetEntryTest extends TestCase {
         $response = $this->get($this->_base_uri.$generated_entry->id);
 
         // THEN
-        $response->assertStatus(Response::HTTP_NOT_FOUND);
+        $response->assertStatus(HttpStatus::HTTP_NOT_FOUND);
         $response_body_as_array = $this->getResponseAsArray($response);
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertEmpty($response_body_as_array);

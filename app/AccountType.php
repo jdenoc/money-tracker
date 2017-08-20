@@ -4,6 +4,9 @@ namespace App;
 
 class AccountType extends BaseModel {
 
+    const CREATED_AT = 'create_stamp';
+    const UPDATED_AT = 'modified_stamp';
+
     protected $table = 'account_types';
     protected $fillable = [
         'type', 'last_digits', 'type_name', 'account_id', 'disabled'
@@ -15,9 +18,8 @@ class AccountType extends BaseModel {
         'disabled'=>'boolean'
     ];
     protected $dates = [
-        'create_stamp', 'modified_stamp', 'disabled_stamp'
+        'disabled_stamp'
     ];
-    public $timestamps = false; // turns off default laravel time stamping
 
     public function account(){
         return $this->belongsTo('App\Account', 'account_id');

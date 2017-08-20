@@ -9,7 +9,7 @@ class Entry extends BaseModel {
 
     protected $table = 'entries';
     protected $fillable = [
-        'entry_date', 'account_type', 'entry_value', 'memo', 'expense', 'confirm', 'disabled'
+        'entry_date', 'account_type', 'entry_value', 'memo', 'expense', 'confirm', 'disabled', 'disabled_stamp'
     ];
     protected $guarded = [
         'id', 'create_stamp', 'modified_stamp'
@@ -18,6 +18,9 @@ class Entry extends BaseModel {
         'expense'=>'boolean',
         'confirm'=>'boolean',
         'disabled'=>'boolean'
+    ];
+    protected $dates = [
+        'disabled_stamp'
     ];
 
     private static $required_entry_fields = [
