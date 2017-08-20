@@ -47,18 +47,18 @@ class ListEntriesBase extends TestCase {
 
     /**
      * @param int $account_type_id
-     * @param bool $entry_deleted
+     * @param bool $entry_disabled
      * @param array $override_entry_components
      * @return Entry
      */
-    protected function generate_entry_record($account_type_id, $entry_deleted, $override_entry_components=[]){
-        $default_entry_data = ['account_type'=>$account_type_id, 'deleted'=>$entry_deleted];
+    protected function generate_entry_record($account_type_id, $entry_disabled, $override_entry_components=[]){
+        $default_entry_data = ['account_type'=>$account_type_id, 'disabled'=>$entry_disabled];
         $new_entry_data = array_merge($default_entry_data, $override_entry_components);
         unset($new_entry_data['tags']);
         unset($new_entry_data['has_attachments']);
         $generated_entry = factory(Entry::class)->create($new_entry_data);
 
-        if(!$entry_deleted){    // no sense cluttering up the database with test data for something that isn't supposed to appear anyway
+        if(!$entry_disabled){    // no sense cluttering up the database with test data for something that isn't supposed to appear anyway
             if(isset($override_entry_components['has_attachments']) && $override_entry_components['has_attachments'] == true){
                 $generate_attachment_count = 1;
             } elseif(isset($override_entry_components['has_attachments']) && $override_entry_components['has_attachments'] == false) {
@@ -126,9 +126,9 @@ class ListEntriesBase extends TestCase {
      * @param int $generate_entry_count
      * @param array $entries_in_response
      * @param array $generated_entries
-     * @param array $generated_deleted_entries
+     * @param array $generated_disabled_entries
      */
-    protected function runEntryListAssertions($generate_entry_count, $entries_in_response, $generated_entries, $generated_deleted_entries=[]){
+    protected function runEntryListAssertions($generate_entry_count, $entries_in_response, $generated_entries, $generated_disabled_entries=[]){
         $this->assertEquals($generate_entry_count, count($entries_in_response));
 
         foreach($entries_in_response as $entry_in_response){
@@ -136,8 +136,8 @@ class ListEntriesBase extends TestCase {
             $this->assertArrayHasKey('id', $entry_in_response);
             $this->assertNotContains(
                 $entry_in_response['id'],
-                $generated_deleted_entries,
-                'entry ID:'.$entry_in_response['id']."\ndeleted entries:".json_encode($generated_deleted_entries)."\nresponse entries:".json_encode($entries_in_response)
+                $generated_disabled_entries,
+                'entry ID:'.$entry_in_response['id']."\ndisabled entries:".json_encode($generated_disabled_entries)."\nresponse entries:".json_encode($entries_in_response)
             );
             foreach($generated_entries as $generated_entry){
                 if($entry_in_response['id'] == $generated_entry->id){

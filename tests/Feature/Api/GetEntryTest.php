@@ -129,11 +129,11 @@ class GetEntryTest extends TestCase {
         $this->assertEmpty($response_body_as_array['attachments']);
     }
 
-    public function testGetEntryThatIsMarkedDeleted(){
+    public function testGetEntryThatIsMarkedDisabled(){
         // GIVEN
         $generated_account = factory(Account::class)->create();
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
-        $generated_entry = factory(Entry::class)->create(['deleted'=>1, 'account_type'=>$generated_account_type->id]);
+        $generated_entry = factory(Entry::class)->create(['disabled'=>1, 'account_type'=>$generated_account_type->id]);
 
         // WHEN
         $response = $this->get($this->_base_uri.$generated_entry->id);
