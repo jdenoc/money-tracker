@@ -8,7 +8,7 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Faker;
 
 use App\AccountType;
@@ -40,7 +40,7 @@ class GetEntryTest extends TestCase {
         $response = $this->get($this->_base_uri.$entry_id);
 
         // THEN
-        $response->assertStatus(Response::HTTP_NOT_FOUND);
+        $response->assertStatus(HttpStatus::HTTP_NOT_FOUND);
         $response_body_as_array = $this->getResponseAsArray($response);
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertEmpty($response_body_as_array);
@@ -49,7 +49,7 @@ class GetEntryTest extends TestCase {
     public function testGetEntryData(){
         // GIVEN
         $generated_account = factory(Account::class)->create();
-        $generated_account_type = factory(AccountType::class)->create(['account_group'=>$generated_account->id]);
+        $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
         $generated_entry = factory(Entry::class)->create(['account_type'=>$generated_account_type->id]);
         $generated_tags_as_array = $this->generateTagsAndOutputAsArray($generated_entry);
         $generated_attachments_as_array = $this->generateAttachmentsAndOutputAsArray($generated_entry->id);
@@ -58,7 +58,7 @@ class GetEntryTest extends TestCase {
         $response = $this->get($this->_base_uri.$generated_entry->id);
 
         // THEN
-        $response->assertStatus(Response::HTTP_OK);
+        $response->assertStatus(HttpStatus::HTTP_OK);
         $response_body_as_array = $this->getResponseAsArray($response);
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertParentNodesExist($response_body_as_array);
@@ -70,7 +70,7 @@ class GetEntryTest extends TestCase {
     public function testGetEntryDataWithNoAssociatedTags(){
         // GIVEN
         $generated_account = factory(Account::class)->create();
-        $generated_account_type = factory(AccountType::class)->create(['account_group'=>$generated_account->id]);
+        $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
         $generated_entry = factory(Entry::class)->create(['account_type'=>$generated_account_type->id]);
         $generated_attachments_as_array = $this->generateAttachmentsAndOutputAsArray($generated_entry->id);
 
@@ -78,7 +78,7 @@ class GetEntryTest extends TestCase {
         $response = $this->get($this->_base_uri.$generated_entry->id);
 
         // THEN
-        $response->assertStatus(Response::HTTP_OK);
+        $response->assertStatus(HttpStatus::HTTP_OK);
         $response_body_as_array = $this->getResponseAsArray($response);
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertParentNodesExist($response_body_as_array);
@@ -91,7 +91,7 @@ class GetEntryTest extends TestCase {
     public function testGetEntryWithNoAssociatedAttachments(){
         // GIVEN
         $generated_account = factory(Account::class)->create();
-        $generated_account_type = factory(AccountType::class)->create(['account_group'=>$generated_account->id]);
+        $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
         $generated_entry = factory(Entry::class)->create(['account_type'=>$generated_account_type->id]);
         $generated_tags_as_array = $this->generateTagsAndOutputAsArray($generated_entry);
 
@@ -99,7 +99,7 @@ class GetEntryTest extends TestCase {
         $response = $this->get($this->_base_uri.$generated_entry->id);
 
         // THEN
-        $response->assertStatus(Response::HTTP_OK);
+        $response->assertStatus(HttpStatus::HTTP_OK);
         $response_body_as_array = $this->getResponseAsArray($response);
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertParentNodesExist($response_body_as_array);
@@ -112,14 +112,14 @@ class GetEntryTest extends TestCase {
     public function testGetEntryWithNoAssociatedTagsAndAttachments(){
         // GIVEN
         $generated_account = factory(Account::class)->create();
-        $generated_account_type = factory(AccountType::class)->create(['account_group'=>$generated_account->id]);
+        $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
         $generated_entry = factory(Entry::class)->create(['account_type'=>$generated_account_type->id]);
 
         // WHEN
         $response = $this->get($this->_base_uri.$generated_entry->id);
 
         // THEN
-        $response->assertStatus(Response::HTTP_OK);
+        $response->assertStatus(HttpStatus::HTTP_OK);
         $response_body_as_array = $this->getResponseAsArray($response);
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertParentNodesExist($response_body_as_array);
@@ -129,17 +129,17 @@ class GetEntryTest extends TestCase {
         $this->assertEmpty($response_body_as_array['attachments']);
     }
 
-    public function testGetEntryThatIsMarkedDeleted(){
+    public function testGetEntryThatIsMarkedDisabled(){
         // GIVEN
         $generated_account = factory(Account::class)->create();
-        $generated_account_type = factory(AccountType::class)->create(['account_group'=>$generated_account->id]);
-        $generated_entry = factory(Entry::class)->create(['deleted'=>1, 'account_type'=>$generated_account_type->id]);
+        $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
+        $generated_entry = factory(Entry::class)->create(['disabled'=>1, 'account_type'=>$generated_account_type->id]);
 
         // WHEN
         $response = $this->get($this->_base_uri.$generated_entry->id);
 
         // THEN
-        $response->assertStatus(Response::HTTP_NOT_FOUND);
+        $response->assertStatus(HttpStatus::HTTP_NOT_FOUND);
         $response_body_as_array = $this->getResponseAsArray($response);
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertEmpty($response_body_as_array);

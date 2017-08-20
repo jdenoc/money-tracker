@@ -6,6 +6,7 @@ php:
 git:
   depth: 1
 
+# trusty instance is needed so we can utilise MySQL 5.6
 dist: trusty
 sudo: required
 

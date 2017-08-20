@@ -90,7 +90,7 @@ class PostEntriesTest extends ListEntriesBase {
      */
     public function testPostEntriesThatDoNotExist($filter_details){
         // GIVEN - no entries exist
-        factory(AccountType::class)->create(['account_group'=>$this->_generated_account->id]);
+        factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
         $filter_details = $this->set_test_specific_filters($filter_details);
 
         $this->assertPostEntriesNotFound($filter_details);
@@ -103,28 +103,28 @@ class PostEntriesTest extends ListEntriesBase {
     public function testPostEntries($filter_details){
         // GIVEN
         $generate_entry_count = $this->_faker->numberBetween(4, 50);
-        $generated_account_type = factory(AccountType::class)->create(['account_group'=>$this->_generated_account->id]);
+        $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
         $filter_details = $this->set_test_specific_filters($filter_details);
 
         $generated_entries = [];
-        $generated_deleted_entries = [];
+        $generated_disabled_entries = [];
         for($i=0; $i<$generate_entry_count; $i++){
-            $entry_deleted = $this->_faker->boolean;
+            $entry_disabled = $this->_faker->boolean;
             $generated_entry = $this->generate_entry_record(
                 $generated_account_type->id,
-                $entry_deleted,
+                $entry_disabled,
                 $this->convert_filters_to_entry_components($filter_details)
             );
 
-            if($entry_deleted){
-                $generated_deleted_entries[] = $generated_entry->id;
+            if($entry_disabled){
+                $generated_disabled_entries[] = $generated_entry->id;
             } else {
                 $generated_entries[] = $generated_entry;
             }
         }
-        $generate_entry_count -= count($generated_deleted_entries);
+        $generate_entry_count -= count($generated_disabled_entries);
         if($generate_entry_count == 0){
-            // do this in case we ever generated nothing but "deleted" entries
+            // do this in case we ever generated nothing but "disabled" entries
             $generated_entries[] = $this->generate_entry_record($generated_account_type->id, false, $this->convert_filters_to_entry_components($filter_details));
             $generate_entry_count++;
         }
@@ -137,7 +137,7 @@ class PostEntriesTest extends ListEntriesBase {
         $response_as_array = $this->getResponseAsArray($response);
         $this->assertEquals($generate_entry_count, $response_as_array['count']);
         unset($response_as_array['count']);
-        $this->runEntryListAssertions($generate_entry_count, $response_as_array, $generated_entries, $generated_deleted_entries);
+        $this->runEntryListAssertions($generate_entry_count, $response_as_array, $generated_entries, $generated_disabled_entries);
     }
 
     /**
@@ -147,9 +147,9 @@ class PostEntriesTest extends ListEntriesBase {
     public function testPostEntriesByPage($filter_details){
         // GIVEN
         $generate_entry_count = $this->_faker->numberBetween(101, 150);
-        $generated_account_type = factory(AccountType::class)->create(['account_group'=>$this->_generated_account->id]);
+        $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
         $filter_details = $this->set_test_specific_filters($filter_details);
-        $generated_entries = $this->batch_generate_non_deleted_entries($generate_entry_count, $generated_account_type->id, $filter_details);
+        $generated_entries = $this->batch_generate_non_disabled_entries($generate_entry_count, $generated_account_type->id, $filter_details);
 
         $entries_in_response = [];
         for($i=0; $i<3; $i++){
@@ -188,8 +188,8 @@ class PostEntriesTest extends ListEntriesBase {
             'end_date'=>$end_date,
         ];
 
-        $generated_account_type = factory(AccountType::class)->create(['account_group'=>$this->_generated_account->id]);
-        $this->batch_generate_non_deleted_entries($this->_faker->numberBetween(4, 50), $generated_account_type->id, $filter_details);
+        $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
+        $this->batch_generate_non_disabled_entries($this->_faker->numberBetween(4, 50), $generated_account_type->id, $filter_details);
         $this->assertPostEntriesNotFound($filter_details);
     }
 
@@ -204,8 +204,8 @@ class PostEntriesTest extends ListEntriesBase {
             'entry_value_max'=>$max_value
         ];
 
-        $generated_account_type = factory(AccountType::class)->create(['account_group'=>$this->_generated_account->id]);
-        $this->batch_generate_non_deleted_entries($this->_faker->numberBetween(4, 50), $generated_account_type->id, $filter_details);
+        $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
+        $this->batch_generate_non_disabled_entries($this->_faker->numberBetween(4, 50), $generated_account_type->id, $filter_details);
         $this->assertPostEntriesNotFound($filter_details);
     }
 
@@ -292,7 +292,7 @@ class PostEntriesTest extends ListEntriesBase {
      * @param array $filter_details
      * @return array
      */
-    private function batch_generate_non_deleted_entries($generate_entry_count, $generated_account_type_id, $filter_details){
+    private function batch_generate_non_disabled_entries($generate_entry_count, $generated_account_type_id, $filter_details){
         $generated_entries = [];
         for($i=0; $i<$generate_entry_count; $i++){
             $generated_entries[] = $this->generate_entry_record(

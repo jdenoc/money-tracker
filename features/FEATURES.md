@@ -1,6 +1,10 @@
 # REST API Features
 
 - [GET /api/tags](GET_API_TAGS.md)
+- [GET /api/institutions](GET_API_INSTITUTIONS.md)
+- [GET /api/institutes](GET_API_INSTITUTIONS.md) (Alias of `GET /api/institutions`)
+- [GET /api/institution/{institution_id}](GET_API_INSTITUTION_INSTITUTIONID.md)
+- [GET /api/institute/{institute_id](GET_API_INSTITUTION_INSTITUTIONID.md) (Alias of `GET /api/institution/{institution_id}`)
 - [GET /api/accounts](GET_API_ACCOUNTS.md)
 - [GET /api/account/{account_id}](GET_API_ACCOUNT_ACCOUNTID.md)
 - [GET /api/account-types](GET_API_ACCOUNTTYPES.md)
