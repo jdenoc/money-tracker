@@ -8,7 +8,7 @@ use App\Tag;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Response as HttpStatus;
 
 use App\Entry;
 
@@ -27,26 +27,26 @@ class EntryController extends Controller {
     /**
      * GET /api/entry/{entry_id}
      * @param int $entry_id
-     * @return Response
+     * @return \Illuminate\Contracts\Routing\ResponseFactory
      */
     public function get_entry($entry_id){
         $entry = Entry::get_entry_with_tags_and_attachments($entry_id);
-        if(is_null($entry) || empty($entry) || $entry->deleted == 1){
-            return response([], Response::HTTP_NOT_FOUND);
+        if(is_null($entry) || empty($entry) || $entry->disabled == 1){
+            return response([], HttpStatus::HTTP_NOT_FOUND);
         } else {
-            // we're not going to show deleted entries,
-            // so why bother telling someone that something that isn't deleted
-            $entry->makeHidden('deleted');
+            // we're not going to show disabled entries,
+            // so why bother telling someone that something that isn't disabled
+            $entry->makeHidden(['disabled', 'disabled_stamp']);
             $entry->tags->makeHidden('pivot');  // this is an artifact left over from the relationship logic
             $entry->attachments->makeHidden('entry_id');    // we already know the attachment is associated with this entry, no need to repeat that
-            return response($entry, Response::HTTP_OK);
+            return response($entry, HttpStatus::HTTP_OK);
         }
     }
 
     /**
      * GET /api/entries/{page}
      * @param int $page_number
-     * @return Response
+     * @return \Illuminate\Contracts\Routing\ResponseFactory
      */
     public function get_paged_entries($page_number = 0){
         return $this->provide_paged_entries_response([], $page_number);
@@ -56,7 +56,7 @@ class EntryController extends Controller {
      * POST /api/entries/{page}
      * @param int $page_number
      * @param Request $request
-     * @return Response
+     * @return \Illuminate\Contracts\Routing\ResponseFactory
      */
     public function filter_paged_entries(Request $request, $page_number = 0){
         $post_body = $request->getContent();
@@ -67,7 +67,7 @@ class EntryController extends Controller {
         }
         $filter_validator = Validator::make($filter_data, self::get_filter_details());
         if($filter_validator->fails()){
-            return response(['error'=>'invalid filter provided'], Response::HTTP_BAD_REQUEST);
+            return response(['error'=>'invalid filter provided'], HttpStatus::HTTP_BAD_REQUEST);
         }
 
         return $this->provide_paged_entries_response($filter_data, $page_number);
@@ -76,23 +76,23 @@ class EntryController extends Controller {
     /**
      * DELETE /api/entry/{entry_id}
      * @param int $entry_id
-     * @return Response
+     * @return \Illuminate\Contracts\Routing\ResponseFactory
      */
     public function delete_entry($entry_id){
         $entry = Entry::find($entry_id);
         if(empty($entry)){
-            return response('', Response::HTTP_NOT_FOUND);
+            return response('', HttpStatus::HTTP_NOT_FOUND);
         } else {
-            $entry->deleted = true;
+            $entry->disabled = true;
             $entry->save();
-            return response('', Response::HTTP_NO_CONTENT);
+            return response('', HttpStatus::HTTP_NO_CONTENT);
         }
     }
 
     /**
      * POST /api/entry
      * @param Request $request
-     * @return Response
+     * @return \Illuminate\Contracts\Routing\ResponseFactory
      */
     public function create_entry(Request $request){
         $post_body = $request->getContent();
@@ -102,7 +102,7 @@ class EntryController extends Controller {
         if(empty($entry_data)){
             return response(
                 [self::RESPONSE_SAVE_KEY_ID=>self::ERROR_ENTRY_ID, self::RESPONSE_SAVE_KEY_ERROR=>self::ERROR_MSG_SAVE_ENTRY_NO_DATA],
-                Response::HTTP_BAD_REQUEST
+                HttpStatus::HTTP_BAD_REQUEST
             );
         }
 
@@ -112,7 +112,7 @@ class EntryController extends Controller {
         if(count($missing_properties) > 0){
             return response(
                 [self::RESPONSE_SAVE_KEY_ID=>self::ERROR_ENTRY_ID, self::RESPONSE_SAVE_KEY_ERROR=>sprintf(self::ERROR_MSG_SAVE_ENTRY_MISSING_PROPERTY, json_encode(array_keys($missing_properties)))],
-                Response::HTTP_BAD_REQUEST
+                HttpStatus::HTTP_BAD_REQUEST
             );
         }
 
@@ -121,7 +121,7 @@ class EntryController extends Controller {
         if(empty($account_type)){
             return response(
                 [self::RESPONSE_SAVE_KEY_ERROR=>self::ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE, self::RESPONSE_SAVE_KEY_ID=>self::ERROR_ENTRY_ID],
-                Response::HTTP_BAD_REQUEST
+                HttpStatus::HTTP_BAD_REQUEST
             );
         }
 
@@ -137,7 +137,7 @@ class EntryController extends Controller {
 
         return response(
             [self::RESPONSE_SAVE_KEY_ERROR=>self::ERROR_MSG_SAVE_ENTRY_NO_ERROR, self::RESPONSE_SAVE_KEY_ID=>$entry->id],
-            Response::HTTP_CREATED
+            HttpStatus::HTTP_CREATED
         );
     }
 
@@ -145,7 +145,7 @@ class EntryController extends Controller {
      * PUT /api/entry/{entry_id}
      * @param int $entry_id
      * @param Request $request
-     * @return Response
+     * @return \Illuminate\Contracts\Routing\ResponseFactory
      */
     public function update_entry($entry_id, Request $request){
         $put_body = $request->getContent();
@@ -155,7 +155,7 @@ class EntryController extends Controller {
         if(empty($entry_data)){
             return response(
                 [self::RESPONSE_SAVE_KEY_ID=>self::ERROR_ENTRY_ID, self::RESPONSE_SAVE_KEY_ERROR=>self::ERROR_MSG_SAVE_ENTRY_NO_DATA],
-                Response::HTTP_BAD_REQUEST
+                HttpStatus::HTTP_BAD_REQUEST
             );
         }
 
@@ -164,7 +164,7 @@ class EntryController extends Controller {
         if(is_null($existing_entry)){
             return response(
                 [self::RESPONSE_SAVE_KEY_ID=>self::ERROR_ENTRY_ID, self::RESPONSE_SAVE_KEY_ERROR=>self::ERROR_MSG_SAVE_ENTRY_DOES_NOT_EXIST],
-                Response::HTTP_NOT_FOUND
+                HttpStatus::HTTP_NOT_FOUND
             );
         }
 
@@ -174,7 +174,7 @@ class EntryController extends Controller {
             if(empty($account_type)){
                 return response(
                     [self::RESPONSE_SAVE_KEY_ERROR => self::ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE, self::RESPONSE_SAVE_KEY_ID => self::ERROR_ENTRY_ID],
-                    Response::HTTP_BAD_REQUEST
+                    HttpStatus::HTTP_BAD_REQUEST
                 );
             }
         }
@@ -192,7 +192,7 @@ class EntryController extends Controller {
 
         return response(
             [self::RESPONSE_SAVE_KEY_ERROR=>self::ERROR_MSG_SAVE_ENTRY_NO_ERROR, self::RESPONSE_SAVE_KEY_ID=>$existing_entry->id],
-            Response::HTTP_OK
+            HttpStatus::HTTP_OK
         );
     }
 
@@ -251,25 +251,25 @@ class EntryController extends Controller {
     /**
      * @param $filters
      * @param int $page_number
-     * @return Response
+     * @return \Illuminate\Contracts\Routing\ResponseFactory
      */
     private function provide_paged_entries_response($filters, $page_number=0){
-        $entries_collection = Entry::get_collection_of_non_deleted_entries(
+        $entries_collection = Entry::get_collection_of_non_disabled_entries(
             $filters,
             EntryController::MAX_ENTRIES_IN_RESPONSE,
             EntryController::MAX_ENTRIES_IN_RESPONSE*$page_number
         );
 
         if(is_null($entries_collection) || $entries_collection->isEmpty()){
-            return response([], Response::HTTP_NOT_FOUND);
+            return response([], HttpStatus::HTTP_NOT_FOUND);
         } else {
             foreach($entries_collection as $entry){
                 $entry->has_attachments = $entry->has_attachments();
                 $entry->tags = $entry->get_tag_ids();
             }
             $entries_as_array = $entries_collection->toArray();
-            $entries_as_array['count'] = Entry::count_non_deleted_entries($filters);
-            return response($entries_as_array, Response::HTTP_OK);
+            $entries_as_array['count'] = Entry::count_non_disabled_entries($filters);
+            return response($entries_as_array, HttpStatus::HTTP_OK);
         }
     }
 

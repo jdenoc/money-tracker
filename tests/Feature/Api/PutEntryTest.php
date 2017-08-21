@@ -28,7 +28,7 @@ class PutEntryTest extends TestCase {
         parent::setUp();
         // GIVEN - for all tests
         $this->_generated_account = factory(Account::class)->create();
-        $this->_generated_account_type = factory(AccountType::class)->create(['account_group'=>$this->_generated_account->id]);
+        $this->_generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
         $this->_generated_entry = factory(Entry::class)->create(['account_type'=>$this->_generated_account_type->id]);
     }
 
@@ -135,7 +135,7 @@ class PutEntryTest extends TestCase {
     public function testUpdateEntryAsDeletedAndConfirmValueRemovedFromAccountTotal(){
         // GIVEN - see setUp()
         $entry_data = [
-            'deleted'=>true
+            'disabled'=>true
         ];
 
         // WHEN
@@ -185,7 +185,7 @@ class PutEntryTest extends TestCase {
         $this->setUp();
 
         $required_entry_fields = Entry::get_fields_required_for_update();
-        unset($required_entry_fields[array_search('deleted', $required_entry_fields)]);
+        unset($required_entry_fields[array_search('disabled', $required_entry_fields)]);
         unset($required_entry_fields[array_search('entry_value', $required_entry_fields)]);
         unset($required_entry_fields[array_search('account_type', $required_entry_fields)]);
         $required_entry_fields = array_values($required_entry_fields);  // do this to reset array index after unset

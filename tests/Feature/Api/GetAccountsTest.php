@@ -2,10 +2,10 @@
 
 namespace Tests\Feature\Api;
 
+use Faker\Factory;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Symfony\Component\HttpFoundation\Response;
 
 use App\Account;
@@ -17,9 +17,12 @@ class GetAccountsTest extends TestCase {
     private $_uri = '/api/accounts';
 
     public function testGetListOfAccountsWhenTheyAreAvailable(){
+        $faker = Factory::create();
         // GIVEN
-        $account_count = 2;
+        $account_count = $faker->randomDigitNotNull;
         $generated_accounts = factory(Account::class, $account_count)->create();
+        // These nodes are not in the response output. Lets hide them from the object collection.
+        $generated_accounts->makeHidden(['disabled_stamp']);
 
         // WHEN
         $response = $this->get($this->_uri);
@@ -33,8 +36,16 @@ class GetAccountsTest extends TestCase {
         unset($response_body_as_array['count']);
         foreach($response_body_as_array as $account_in_response){
             $this->assertArrayHasKey('id', $account_in_response);
-            $this->assertArrayHasKey('account', $account_in_response);
+            unset($account_in_response['id']);
+            $this->assertArrayHasKey('name', $account_in_response);
+            unset($account_in_response['name']);
+            $this->assertArrayHasKey('institution_id', $account_in_response);
+            unset($account_in_response['institution_id']);
+            $this->assertArrayHasKey('disabled', $account_in_response);
+            unset($account_in_response['disabled']);
             $this->assertArrayHasKey('total', $account_in_response);
+            unset($account_in_response['total']);
+            $this->assertEmpty($account_in_response, "Unknown nodes found in JSON response:".json_encode($account_in_response));
         }
         foreach($generated_accounts as $generated_account){
             $this->assertTrue(

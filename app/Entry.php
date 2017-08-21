@@ -9,7 +9,7 @@ class Entry extends BaseModel {
 
     protected $table = 'entries';
     protected $fillable = [
-        'entry_date', 'account_type', 'entry_value', 'memo', 'expense', 'confirm', 'deleted'
+        'entry_date', 'account_type', 'entry_value', 'memo', 'expense', 'confirm', 'disabled', 'disabled_stamp'
     ];
     protected $guarded = [
         'id', 'create_stamp', 'modified_stamp'
@@ -17,13 +17,16 @@ class Entry extends BaseModel {
     protected $casts = [
         'expense'=>'boolean',
         'confirm'=>'boolean',
-        'deleted'=>'boolean'
+        'disabled'=>'boolean'
+    ];
+    protected $dates = [
+        'disabled_stamp'
     ];
 
     private static $required_entry_fields = [
         'account_type',
         'confirm',
-        'deleted',
+        'disabled',
         'entry_date',
         'entry_value',
         'expense',
@@ -62,7 +65,7 @@ class Entry extends BaseModel {
 
         $saved_entry = parent::save($options);
 
-        if(!$this->deleted){
+        if(!$this->disabled){
             // add new entry value to account total
             $actual_entry_value = (($this->expense) ? -1 : 1) * $this->entry_value;
             $this->account_type()->first()->account()->first()->update_total($actual_entry_value);
@@ -82,8 +85,8 @@ class Entry extends BaseModel {
      * @param int $offset
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public static function get_collection_of_non_deleted_entries($filters = [], $limit=10, $offset=0){
-        $entries_query = Entry::where('deleted', 0);
+    public static function get_collection_of_non_disabled_entries($filters = [], $limit=10, $offset=0){
+        $entries_query = Entry::where('disabled', 0);
         $entries_query = self::filter_entry_collection($entries_query, $filters);
         $entries_query->select("entries.*");    // this makes sure that the correct ID is present if a JOIN is required
         return $entries_query->offset($offset)->limit($limit)->get();
@@ -93,8 +96,8 @@ class Entry extends BaseModel {
      * @param array $filters
      * @return int
      */
-    public static function count_non_deleted_entries($filters = []){
-        $entries_query = Entry::where('deleted', 0);
+    public static function count_non_disabled_entries($filters = []){
+        $entries_query = Entry::where('disabled', 0);
         $entries_query = self::filter_entry_collection($entries_query, $filters);
         return $entries_query->count();
     }
@@ -190,9 +193,9 @@ class Entry extends BaseModel {
 
     public static function get_fields_required_for_creation(){
         $fields = self::$required_entry_fields;
-        unset($fields[array_search('deleted', $fields)]);
+        unset($fields[array_search('disabled', $fields)]);
         // using array_values here to reset the array index
-        // after we unset the "deleted" element
+        // after we unset the "disabled" element
         return array_values($fields);
     }
 

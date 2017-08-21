@@ -5,6 +5,7 @@ namespace Tests\Feature\Api;
 use App\Account;
 use App\AccountType;
 use App\Entry;
+use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
@@ -19,7 +20,7 @@ class DeleteEntryTest extends TestCase {
     public function testMarkingEntryDeleted(){
         // GIVEN
         $generated_account = factory(Account::class)->create();
-        $generated_account_type = factory(AccountType::class)->create(['account_group'=>$generated_account->id]);
+        $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
         $entry = factory(Entry::class)->create(['account_type'=>$generated_account_type->id]);
 
         // WHEN
@@ -28,9 +29,9 @@ class DeleteEntryTest extends TestCase {
         $get_response2 = $this->get($this->_base_uri.$entry->id);
 
         // THEN
-        $get_response1->assertStatus(200);
-        $delete_response->assertStatus(204);
-        $get_response2->assertStatus(404);
+        $get_response1->assertStatus(HttpStatus::HTTP_OK);
+        $delete_response->assertStatus(HttpStatus::HTTP_NO_CONTENT);
+        $get_response2->assertStatus(HttpStatus::HTTP_NOT_FOUND);
     }
 
     public function testMarkingEntryDeletedWhenEntryDoesNotExist(){
@@ -42,8 +43,8 @@ class DeleteEntryTest extends TestCase {
         $delete_response = $this->delete($this->_base_uri.$entry_id);
 
         // THEN
-        $get_response->assertStatus(404);
-        $delete_response->assertStatus(404);
+        $get_response->assertStatus(HttpStatus::HTTP_NOT_FOUND);
+        $delete_response->assertStatus(HttpStatus::HTTP_NOT_FOUND);
     }
 
 }

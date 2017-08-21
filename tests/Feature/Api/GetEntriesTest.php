@@ -6,7 +6,7 @@ use App\AccountType;
 use App\Entry;
 use App\Http\Controllers\Api\EntryController;
 use Illuminate\Support\Facades\DB;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Response as HttpStatus;
 
 class GetEntriesTest extends ListEntriesBase {
 
@@ -17,7 +17,7 @@ class GetEntriesTest extends ListEntriesBase {
         $response = $this->get($this->_uri);
 
         // THEN
-        $response->assertStatus(Response::HTTP_NOT_FOUND);
+        $response->assertStatus(HttpStatus::HTTP_NOT_FOUND);
         $response_body_as_array = $this->getResponseAsArray($response);
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertEmpty($response_body_as_array);
@@ -25,24 +25,24 @@ class GetEntriesTest extends ListEntriesBase {
 
     public function testGetEntries(){
         // GIVEN
-        $generated_account_type = factory(AccountType::class)->create(['account_group'=>$this->_generated_account->id]);
+        $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
 
         $generate_entry_count = $this->_faker->numberBetween(4, 50);
         $generated_entries = [];
-        $generated_deleted_entries = [];
+        $generated_disabled_entries = [];
         for($i=0; $i<$generate_entry_count; $i++){
-            $entry_deleted = $this->_faker->boolean;
-            $generated_entry = $this->generate_entry_record($generated_account_type->id, $entry_deleted);
+            $entry_disabled = $this->_faker->boolean;
+            $generated_entry = $this->generate_entry_record($generated_account_type->id, $entry_disabled);
 
-            if($entry_deleted){
-                $generated_deleted_entries[] = $generated_entry->id;
+            if($entry_disabled){
+                $generated_disabled_entries[] = $generated_entry->id;
             } else {
                 $generated_entries[] = $generated_entry;
             }
         }
-        $generate_entry_count -= count($generated_deleted_entries);
+        $generate_entry_count -= count($generated_disabled_entries);
         if($generate_entry_count == 0){
-            // do this in case we ever generated nothing but "deleted" entries
+            // do this in case we ever generated nothing but "disabled" entries
             $this->generate_entry_record($generated_account_type->id, false);
             $generate_entry_count++;
         }
@@ -51,19 +51,19 @@ class GetEntriesTest extends ListEntriesBase {
         $response = $this->get($this->_uri);
 
         // THEN
-        $response->assertStatus(Response::HTTP_OK);
+        $response->assertStatus(HttpStatus::HTTP_OK);
         $response_body_as_array = $this->getResponseAsArray($response);
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertArrayHasKey('count', $response_body_as_array);
         $this->assertEquals($generate_entry_count, $response_body_as_array['count']);
         unset($response_body_as_array['count']);
 
-        $this->runEntryListAssertions($generate_entry_count, $response_body_as_array, $generated_entries, $generated_deleted_entries);
+        $this->runEntryListAssertions($generate_entry_count, $response_body_as_array, $generated_entries, $generated_disabled_entries);
     }
 
     public function testGetEntriesByPage(){
         // GIVEN
-        $generated_account_type = factory(AccountType::class)->create(['account_group' => $this->_generated_account->id]);
+        $generated_account_type = factory(AccountType::class)->create(['account_id' => $this->_generated_account->id]);
         $generate_entry_count = $this->_faker->numberBetween(101, 150);
         $generated_entries = [];
         for($i = 0; $i < $generate_entry_count; $i++){
@@ -76,7 +76,7 @@ class GetEntriesTest extends ListEntriesBase {
             $response = $this->get($this->_uri.'/'.$i);
 
             // THEN
-            $response->assertStatus(Response::HTTP_OK);
+            $response->assertStatus(HttpStatus::HTTP_OK);
             $response_body_as_array = $this->getResponseAsArray($response);
 
             $this->assertTrue(is_array($response_body_as_array));
@@ -117,7 +117,7 @@ class GetEntriesTest extends ListEntriesBase {
     public function testLargeDataSets($entry_count){
         // GIVEN
         $table = with(new Entry)->getTable();
-        $generated_account_type = factory(AccountType::class)->create(['account_group'=>$this->_generated_account->id]);
+        $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
         $generated_entries = factory(Entry::class, EntryController::MAX_ENTRIES_IN_RESPONSE)->make(['account_type'=>$generated_account_type->id]);
         // generating entries in batches and using database insert methods because it's faster
         for($i=0; $i<($entry_count/EntryController::MAX_ENTRIES_IN_RESPONSE); $i++){
@@ -127,7 +127,7 @@ class GetEntriesTest extends ListEntriesBase {
         // WHEN
         $response = $this->get($this->_uri);
         // THEN
-        $response->assertStatus(Response::HTTP_OK); // this is the MOST IMPORTANT check. it confirms we were able to handle a large data set
+        $response->assertStatus(HttpStatus::HTTP_OK); // this is the MOST IMPORTANT check. it confirms we were able to handle a large data set
 
         $response_as_array = $this->getResponseAsArray($response);
         $this->assertEquals($entry_count, $response_as_array['count']);

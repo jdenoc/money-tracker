@@ -18,11 +18,24 @@ $factory->define(App\Tag::class, function(Faker\Generator $faker){
     ];
 });
 
+$factory->define(App\Institution::class, function(Faker\Generator $faker){
+    return [
+        'name'=>$faker->company,
+        'active'=>$faker->boolean
+    ];
+});
+
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 $factory->define(App\Account::class, function(Faker\Generator $faker){
+    $account_types = App\Helpers\DatabaseHelper::get_enum_values('account_types', 'type');
+    $account_name = $faker->company.' '.$account_types[array_rand($account_types)];
+    $disabled = $faker->boolean;
     return [
-        'account'=>$faker->company,         // this is supposed to be a bank name
+        'name'=>$account_name,         // this is supposed to be a bank account name
+        'institution_id'=>$faker->randomNumber(),
+        'disabled'=>$disabled,
         'total'=>$faker->randomFloat(2, -1000, 1000),   // -1000.00 < total < 1000.00
+        'disabled_stamp'=>$disabled ? $faker->date("Y-m-d H:i:s") : null
     ];
 });
 
@@ -36,15 +49,18 @@ $factory->define(App\AccountType::class, function(Faker\Generator $faker){
         'type'=>$account_type,
         'last_digits'=>substr($bank_account_number, strlen($bank_account_number)-5, 4),
         'type_name'=>$faker->word.' '.$account_type,
-        'account_group'=>$faker->randomNumber(),
-        'disabled'=>false
+        'account_id'=>$faker->randomNumber(),
+        'disabled'=>false,
+        'create_stamp'=>$faker->date("Y-m-d H:i:s"),
+        'modified_stamp'=>$faker->date("Y-m-d H:i:s"),
+        'disabled_stamp'=>null,
     ];
 });
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 $factory->define(App\Entry::class, function(Faker\Generator $faker){
     return [
-        'entry_date'=>date("Y-m-d"),
+        'entry_date'=>$faker->date(),
         'account_type'=>$faker->randomNumber(),
         'entry_value'=>$faker->randomFloat(2, 0, 100),  // 0.00 < entry_value < 100.00
         'memo'=>$faker->words(3, true),
