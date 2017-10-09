@@ -21,6 +21,7 @@
 
     <script type="text/javascript" src="js/loading.js"></script>
     <script type="text/javascript" src="js/home.js"></script>
+    <script type="text/javascript" src="js/institutions-pane.js"></script>
     <script type="text/javascript" src="js/accounts-pane.js"></script>
 </head>
 <body>
@@ -62,10 +63,11 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
-            <ul id="account-display-pane" class="nav nav-sidebar">
-                <li><h4>Accounts</h4></li>
-                {{--<li class="active" onclick="filter.reset();displayAccount([],2)"><a href="#">Overview <span class="is_filtered">(filtered)</span></a></li>--}}
-                <li class="active"><a href="#">Overview <span class="is_filtered">(filtered)</span></a></li>
+            <ul id="institution-display-pane" class="nav nav-sidebar">
+                <li><h4>Institutions</h4></li>
+                <li id="entry-overview" class="active" onclick="entries.load();institutionsPane.clearActiveState();$('#entry-overview').addClass('active');">
+                    <a href="#">Overview <span class="is_filtered">(filtered)</span></a>
+                </li>
             </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
