@@ -5,6 +5,7 @@ $(document).ready(function(){
     filterModal.init();
 
     tags.load();
+    institutions.load();
     accounts.load();
     accountTypes.load();
     entries.load();
@@ -83,6 +84,38 @@ var tags = {
     }
 };
 
+var institutions = {
+    uri: "/api/institutions",
+    value: [],
+    load: function(){
+        $.ajax({
+            url: institutions.uri,
+            dataType: "json",
+            beforeSend: loading.start,
+            statusCode: {
+                200: function(response){
+                    institutions.value = [];
+                    institutions.value = responseToData(response, 'institutions');
+                },
+                404: function(){
+                    institutions.value = [];
+                    notice.display(notice.typeInfo, "No institutions currently available");
+                },
+                500: function(){
+                    notice.display(notice.typeDanger, "Error occurred when attempting to retrieve institutions");
+                }
+            },
+            complete: function(){
+                institutions.display();
+            }
+        });
+    },
+    display: function(){
+        institutionsPane.clear();
+        institutionsPane.displayInstitutions();
+    }
+};
+
 var accounts = {
     uri: "/api/accounts",
     value: [],
@@ -110,8 +143,7 @@ var accounts = {
         });
     },
     display: function(){
-        accountsPane.clear();
-        accountsPane.displayAccounts();
+        institutionsPane.displayAccounts();
     }
 };
 
@@ -144,7 +176,7 @@ var accountTypes = {
     display: function(){
         entryModal.initAccountTypeSelect();
         filterModal.initAccountTypeSelect();
-        accountsPane.displayAccountType();
+        institutionsPane.displayAccountTypes();
     },
     getNameById: function (accountTypeId) {
         var accountTypeObjects = $.grep(accountTypes.value, function(element){
@@ -175,6 +207,11 @@ var entries = {
         });
     },
     filter: function(filterParameters){
+        $.each(filterParameters, function(parameter, value){
+            if(value === null){
+                delete filterParameters[parameter];
+            }
+        });
         $.ajax({
             url: entries.uri,
             type: 'POST',
@@ -374,7 +411,8 @@ function completeEntryUpdate(){
     } else {
         entries.load();
     }
-    accountsPane.displayed = false;
+    // TODO: rewrite below
+    institutions.load();
     accounts.load();
-    accountsPane.displayAccountType();
+    institutionsPane.displayAccountTypes();
 }
