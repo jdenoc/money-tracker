@@ -68,19 +68,32 @@ var filterModal = {
         var minValue = $('#filter-min-value').val();
         var maxValue = $('#filter-max-value').val();
 
-        var filterParameters = {};
-        if(startDate !== '') {          filterParameters['start_date'] = startDate;               }
-        if(endDate !== '') {            filterParameters['end_date'] = endDate;                   }
-        if(minValue !== ''){            filterParameters['min_value'] = parseFloat(minValue);     }
-        if(maxValue !== ''){            filterParameters['max_value'] = parseFloat(maxValue);     }
-        if(accountType !== ''){         filterParameters['account_type'] = parseInt(accountType); }
-        if(tags.length > 0){            filterParameters['tags'] = tags;                          }
-        if(expenseInputValue === 0){    filterParameters['expense'] = false;                      } // income
-        if(expenseInputValue === 1){    filterParameters['expense'] = true;                       } // expense
-        if(attachmentInputValue === 0){ filterParameters['attachments'] = false;                  } // no attachments
-        if(attachmentInputValue === 1){ filterParameters['attachments'] = true;                   } // has attachments
-        if(unconfirmed){                filterParameters['unconfirmed'] = true;                   }
+        var filterModalFilterParameters = filterParameters;
+        if(startDate !== '') {          filterModalFilterParameters.start_date = startDate;               }
+        if(endDate !== '') {            filterModalFilterParameters.end_date = endDate;                   }
+        if(minValue !== ''){            filterModalFilterParameters.min_value = parseFloat(minValue);     }
+        if(maxValue !== ''){            filterModalFilterParameters.max_value = parseFloat(maxValue);     }
+        if(accountType !== ''){         filterModalFilterParameters.account_type = parseInt(accountType); }
+        if(tags.length > 0){            filterModalFilterParameters.tags = tags;                          }
+        if(expenseInputValue === 0){    filterModalFilterParameters.expense = false;                      } // income
+        if(expenseInputValue === 1){    filterModalFilterParameters.expense = true;                       } // expense
+        if(attachmentInputValue === 0){ filterModalFilterParameters.attachments = false;                  } // no attachments
+        if(attachmentInputValue === 1){ filterModalFilterParameters.attachments = true;                   } // has attachments
+        if(unconfirmed){                filterModalFilterParameters.unconfirmed = true;                   }
 
-        entries.filter(filterParameters);
+        entries.filter(filterModalFilterParameters);
     }
+};
+
+var filterParameters = {
+    start_date: null,
+    end_date: null,
+    min_value: null,
+    max_value: null,
+    account: null,
+    account_type: null,
+    tags: null,
+    expense: null,
+    attachments: null,
+    unconfirmed: null,
 };
