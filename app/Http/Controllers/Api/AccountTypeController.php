@@ -14,7 +14,9 @@ class AccountTypeController extends Controller {
         if(is_null($account_types) || $account_types->isEmpty()){
             return response([], HttpStatus::HTTP_NOT_FOUND);
         } else {
-            return response($account_types, Response::HTTP_OK);
+            $account_types = $account_types->toArray();
+            $account_types['count'] = AccountType::count();
+            return response($account_types, HttpStatus::HTTP_OK);
         }
     }
 
