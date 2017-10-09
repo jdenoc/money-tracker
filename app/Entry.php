@@ -86,8 +86,7 @@ class Entry extends BaseModel {
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public static function get_collection_of_non_disabled_entries($filters = [], $limit=10, $offset=0){
-        $entries_query = Entry::where('disabled', 0);
-        $entries_query = self::filter_entry_collection($entries_query, $filters);
+        $entries_query = self::build_entry_query($filters);
         $entries_query->select("entries.*");    // this makes sure that the correct ID is present if a JOIN is required
         return $entries_query->offset($offset)->limit($limit)->get();
     }
@@ -97,40 +96,55 @@ class Entry extends BaseModel {
      * @return int
      */
     public static function count_non_disabled_entries($filters = []){
-        $entries_query = Entry::where('disabled', 0);
-        $entries_query = self::filter_entry_collection($entries_query, $filters);
+        $entries_query = self::build_entry_query($filters);
         return $entries_query->count();
+    }
+
+    /**
+     * @param array $filters
+     * @return mixed
+     */
+    private static function build_entry_query($filters){
+        $entries_query = Entry::where('entries.disabled', 0);
+        return self::filter_entry_collection($entries_query, $filters);
     }
 
     private static function filter_entry_collection($entries_query, $filters){
         foreach($filters as $filter_name => $filter_constraint){
             switch($filter_name){
                 case 'start_date':
-                    $entries_query->where('entry_date', '>=', $filter_constraint);
+                    $entries_query->where('entries.entry_date', '>=', $filter_constraint);
                     break;
                 case 'min_value':
-                    $entries_query->where('entry_value', '>=', $filter_constraint);
+                    $entries_query->where('entries.entry_value', '>=', $filter_constraint);
                     break;
                 case 'end_date':
-                    $entries_query->where('entry_date', '<=', $filter_constraint);
+                    $entries_query->where('entries.entry_date', '<=', $filter_constraint);
                     break;
                 case 'max_value':
-                    $entries_query->where('entry_value', '<=', $filter_constraint);
+                    $entries_query->where('entries.entry_value', '<=', $filter_constraint);
                     break;
                 case 'account_type':
-                    $entries_query->where('account_type', $filter_constraint);
+                    $entries_query->where('entries.account_type', $filter_constraint);
                     break;
                 case 'expense':
                     if($filter_constraint == true){
-                        $entries_query->where('expense', 1);
-                    } elseif($filter_constraint == false){
-                        $entries_query->where('expense', 0);
+                        $entries_query->where('entries.expense', 1);
+                    }
+                    elseif($filter_constraint == false) {
+                        $entries_query->where('entries.expense', 0);
                     }
                     break;
                 case 'unconfirmed':
                     if($filter_constraint == true){
-                        $entries_query->where('confirm', 0);
+                        $entries_query->where('entries.confirm', 0);
                     }
+                    break;
+                case 'account':
+                    $entries_query->join('account_types', function($join) use ($filter_constraint){
+                        $join->on('entries.account_type', '=', 'account_types.id')
+                            ->where('account_types.account_id', $filter_constraint);
+                    });
                     break;
                 case 'attachments':
                     // FIXME: displaying too many and duplicate entries

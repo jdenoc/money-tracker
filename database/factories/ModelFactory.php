@@ -27,7 +27,7 @@ $factory->define(App\Institution::class, function(Faker\Generator $faker){
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 $factory->define(App\Account::class, function(Faker\Generator $faker){
-    $account_types = App\Helpers\DatabaseHelper::get_enum_values('account_types', 'type');
+    $account_types = App\AccountType::get_enum_values('type');
     $account_name = $faker->company.' '.$account_types[array_rand($account_types)];
     $disabled = $faker->boolean;
     return [

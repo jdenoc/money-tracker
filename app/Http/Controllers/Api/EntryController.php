@@ -202,6 +202,7 @@ class EntryController extends Controller {
         return [
             'start_date'=>'date_format:Y-m-d',
             'end_date'=>'date_format:Y-m-d',
+            'account'=>'integer',
             'account_type'=>'integer',
             'tags'=>'array',
             'tags.*'=>'in:'.implode(',', $tag_ids),

@@ -29,6 +29,7 @@ class PostEntriesTest extends ListEntriesBase {
         $filter_details = [
             'start_date'=>$start_date,
             'end_date'=>$end_date,
+            'account'=>0,       // will be set later
             'account_type'=>0,  // will be set later
             'tags'=>[],         // will be set later
             'expense'=>$this->_faker->boolean,
@@ -235,6 +236,9 @@ class PostEntriesTest extends ListEntriesBase {
         if(key_exists('account_type', $filter_details)){
             $account_types = $this->_generated_account->account_types()->pluck('id')->toArray();
             $filter_details['account_type'] = $this->_faker->randomElement($account_types);
+        }
+        if(key_exists('account', $filter_details)){
+            $filter_details['account'] = $this->_generated_account->id;
         }
         return $filter_details;
     }
