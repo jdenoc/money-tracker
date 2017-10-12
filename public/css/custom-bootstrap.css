@@ -23,25 +23,6 @@
     text-align: center;
     width: 70px;
 }
-.nav>li>a:hover{
-    color: #4B4B4B;
-}
-.nav-sidebar li h4{
-    margin-left: 15px;
-}
-.nav-sidebar > .active > a:focus {
-    color: #fff;
-    background-color: #428bca;
-}
-.nav .panel{
-    margin-bottom: 0;
-}
-.nav .panel-heading{
-    border-bottom: 0;
-}
-.nav .panel-body{
-    padding: 0;
-}
 
 #user-menu{
     padding: 0 !important;
@@ -63,36 +44,6 @@
 }
 .modal-body label{
     display: block;
-}
-
-.institutions-pane-account{
-    padding: 5px 0 5px 30px;
-}
-
-.institutions-pane-account a:hover,
-.institutions-pane-account a:focus{
-    text-decoration: none;
-}
-
-.institutions-pane-account .tooltip-inner{
-    white-space:pre-wrap;
-    max-width: 100px;
-}
-
-.institutions-pane-account.active{
-    background-color: #428bca;
-}
-
-.institutions-pane-account.active:hover{
-    background-color: #eee;
-}
-
-.institutions-pane-account.active a{
-    color: #fff;
-}
-
-.institutions-pane-account.active a:hover{
-    color: #111;
 }
 
 .tooltip-inner{

@@ -11,6 +11,7 @@
     <link href="css/loading.css" rel="stylesheet" type="text/css"/>
     <link href="css/dashboard.css" rel="stylesheet" type="text/css"/>
     <link href="css/custom-bootstrap.css" rel="stylesheet" type="text/css"/>
+    <link href="css/institutions-pane.css" rel="stylesheet" type="text/css"/>
 
     <script type="text/javascript" src="components/jquery/dist/jquery.min.js"></script>
     <script type="text/javascript" src="components/bootstrap/dist/js/bootstrap.min.js"></script>
@@ -65,8 +66,14 @@
         <div class="col-sm-3 col-md-2 sidebar">
             <ul id="institution-display-pane" class="nav nav-sidebar">
                 <li><h4>Institutions</h4></li>
-                <li id="entry-overview" class="active" onclick="entries.load();institutionsPane.clearActiveState();$('#entry-overview').addClass('active');">
-                    <a href="#">Overview <span class="is_filtered">(filtered)</span></a>
+                <li id="entry-overview" class="active">
+                    <a >Overview <span class="is_filtered">(filtered)</span></a>
+                </li>
+                <li id="closed-accounts-parent" class="panel panel-default">
+                    <div id="closed-accounts" class="collapse panel-body institutions-pane-collapse"></div>
+                    <a data-toggle="collapse" data-target="#closed-accounts" data-parent="#institution-display-pane" class="panel-heading">
+                        <span class="panel-title">Closed Accounts <span class="glyphicon glyphicon-plus-sign"></span></span>
+                    </a>
                 </li>
             </ul>
         </div>
