@@ -4,7 +4,7 @@ namespace Tests\Feature\Api;
 
 use App\AccountType;
 use App\Http\Controllers\Api\EntryController;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Response as HttpStatus;
 
 class PostEntriesTest extends ListEntriesBase {
 
@@ -132,7 +132,7 @@ class PostEntriesTest extends ListEntriesBase {
         $response = $this->json("POST", $this->_uri, $filter_details);
 
         // THEN
-        $response->assertStatus(Response::HTTP_OK);
+        $response->assertStatus(HttpStatus::HTTP_OK);
         $response_as_array = $this->getResponseAsArray($response);
         $this->assertEquals($generate_entry_count, $response_as_array['count']);
         unset($response_as_array['count']);
@@ -156,7 +156,7 @@ class PostEntriesTest extends ListEntriesBase {
             $response = $this->json("POST", $this->_uri.'/'.$i, $filter_details);
 
             // THEN
-            $response->assertStatus(Response::HTTP_OK);
+            $response->assertStatus(HttpStatus::HTTP_OK);
             $response_body_as_array = $this->getResponseAsArray($response);
 
             $this->assertTrue(is_array($response_body_as_array));
@@ -216,7 +216,7 @@ class PostEntriesTest extends ListEntriesBase {
         $response = $this->json("POST", $this->_uri, $filter_details);
 
         // THEN
-        $response->assertStatus(Response::HTTP_NOT_FOUND);
+        $response->assertStatus(HttpStatus::HTTP_NOT_FOUND);
         $response_as_array = $this->getResponseAsArray($response);
         $this->assertTrue(is_array($response_as_array));
         $this->assertEmpty($response_as_array);
