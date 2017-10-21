@@ -36,6 +36,7 @@ var institutionsPane = {
 
                 // display account related entries on click
                 $('#account-id-'+accountObject.id).click(function(){
+                    filterModal.active = false;
                     var accountFilterParameters = $.extend(true, {}, defaultFilterParameters);
                     accountFilterParameters.account = accountObject.id;
                     entries.filter(accountFilterParameters);

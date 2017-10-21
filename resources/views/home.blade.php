@@ -64,10 +64,11 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
+            <!-- TODO: reset active institution/account after filter has been activated -->
             <ul id="institution-display-pane" class="nav nav-sidebar">
                 <li><h4>Institutions</h4></li>
                 <li id="entry-overview" class="active">
-                    <a >Overview <span class="is_filtered">(filtered)</span></a>
+                    <a >Overview <span class="is-filtered">(filtered)</span></a>
                 </li>
                 <li id="closed-accounts-parent" class="panel panel-default">
                     <div id="closed-accounts" class="collapse panel-body institutions-pane-collapse"></div>

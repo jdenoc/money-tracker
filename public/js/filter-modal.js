@@ -21,11 +21,33 @@ var filterModal = {
     init: function(){
         $('#filter-reset').click(filterModal.reset);
         $('#filter-set').click(filterModal.submit);
+        filterModal.toggleAccountOrAccountTypeSelect();
+    },
+    toggleAccountOrAccountTypeSelect: function(){
+        $('#filter-account-or-account-type .generated').remove();
+        var currentState = $('#filter-toggle-account-or-account-type').bootstrapSwitch('state');
+        // on/true = account; off/false = account_type; see bootstrapSwitchAccountOrAccountTypeObject
+        if(currentState){
+            filterModal.initAccountSelect();
+        } else {
+            filterModal.initAccountTypeSelect();
+        }
+    },
+    initAccountSelect: function(){
+        $("#filter-account-or-account-type").attr('name', 'filter-account');
+        filterModal.initAccountOrAccountTypeSelect(accounts.value);
     },
     initAccountTypeSelect: function(){
-        $.each(accountTypes.value, function(idx, accountTypeObject){
-            if(!accountTypeObject.disabled){
-                $("#filter-account-type").append('<option value="'+accountTypeObject.id+'">'+accountTypeObject.type_name+'</option>');
+        $("#filter-account-or-account-type").attr('name', 'filter-account-type');
+        filterModal.initAccountOrAccountTypeSelect(accountTypes.value);
+    },
+    initAccountOrAccountTypeSelect: function(accountOrAccountTypeValues){
+        $.each(accountOrAccountTypeValues, function(idx, accountOrAccountTypeObject){
+            if(!accountOrAccountTypeObject.disabled){
+                if(accountOrAccountTypeObject.hasOwnProperty('type_name')){
+                    accountOrAccountTypeObject.name = accountOrAccountTypeObject.type_name;
+                }
+                $("#filter-account-or-account-type").append('<option value="'+accountOrAccountTypeObject.id+'" class="generated">'+accountOrAccountTypeObject.name+'</option>');
             }
         });
     },
@@ -54,10 +76,19 @@ var filterModal = {
     },
     submit: function(){
         loading.start();
+        filterModal.active = true;
+        institutionsPane.clearActiveState();
+        $('.institutions-pane-collapse.in').collapse('hide');
 
         var startDate = $('#filter-start-date').val();
         var endDate = $('#filter-end-date').val();
-        var accountType = $('#filter-account-type').val();
+        var account = '';
+        var accountType = '';
+        if($('#filter-toggle-account-or-account-type').bootstrapSwitch('state')){
+            account = $('select[name="filter-account"]').val();
+        } else {
+            accountType = $('select[name="filter-account-type"]').val();
+        }
         var tags = [];
         $.each($('input[name="filter-tag"]:checked'), function(idx, tagInput){
             tags.push($(tagInput).val());
@@ -73,6 +104,7 @@ var filterModal = {
         if(endDate !== '') {            filterModalFilterParameters.end_date = endDate;                   }
         if(minValue !== ''){            filterModalFilterParameters.min_value = parseFloat(minValue);     }
         if(maxValue !== ''){            filterModalFilterParameters.max_value = parseFloat(maxValue);     }
+        if(account !== ''){             filterModalFilterParameters.account = parseInt(account);          }
         if(accountType !== ''){         filterModalFilterParameters.account_type = parseInt(accountType); }
         if(tags.length > 0){            filterModalFilterParameters.tags = tags;                          }
         if(expenseInputValue === 0){    filterModalFilterParameters.expense = false;                      } // income
@@ -84,6 +116,16 @@ var filterModal = {
         entries.filter(filterModalFilterParameters);
     }
 };
+
+var bootstrapSwitchAccountOrAccountTypeObject = $.extend({}, bootstrapSwitchObject, {
+    onText: "Account",
+    offText: "Account Type",
+    onColor: 'default',
+    offColor: 'default',
+    wrapperClass: ['pull-left'],
+    onSwitchChange: filterModal.toggleAccountOrAccountTypeSelect
+});
+$('#filter-toggle-account-or-account-type').bootstrapSwitch(bootstrapSwitchAccountOrAccountTypeObject);
 
 var defaultFilterParameters = {
     start_date: null,

@@ -217,7 +217,6 @@ var entries = {
             type: 'POST',
             beforeSend: function(){
                 loading.start();
-                filterModal.active = true;
             },
             data: JSON.stringify(filterParameters),
             dataType: 'json',
@@ -266,6 +265,7 @@ var entries = {
         }
     },
     ajaxCompleteProcessing: function(){
+        $('.is-filtered').toggle(filterModal.active);
         entries.display();
         loading.end();
     }
@@ -411,7 +411,7 @@ function completeEntryUpdate(){
     } else {
         entries.load();
     }
-    // TODO: rewrite below
+    // TODO: rewrite below... msybe?
     institutions.load();
     accounts.load();
     institutionsPane.displayAccountTypes();
