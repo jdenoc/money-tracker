@@ -87,7 +87,7 @@ class Entry extends BaseModel {
      */
     public static function get_collection_of_non_disabled_entries($filters = [], $limit=10, $offset=0){
         $entries_query = self::build_entry_query($filters);
-        $entries_query->select("entries.*");    // this makes sure that the correct ID is present if a JOIN is required
+        $entries_query->distinct()->select("entries.*");    // this makes sure that the correct ID is present if a JOIN is required
         return $entries_query->offset($offset)->limit($limit)->get();
     }
 
@@ -97,7 +97,7 @@ class Entry extends BaseModel {
      */
     public static function count_non_disabled_entries($filters = []){
         $entries_query = self::build_entry_query($filters);
-        return $entries_query->count();
+        return $entries_query->distinct()->count("entries.id");
     }
 
     /**
@@ -167,8 +167,9 @@ class Entry extends BaseModel {
                     // LEFT JOIN entry_tags
                     //   ON entry_tags.entry_id=entries.id
                     //   AND entry_tags.tag_id IN ($tags)
+                    // TODO: prevent duplicates from appearing
                     $tag_ids = (is_array($filters[$filter_name])) ? $filter_constraint : [$filter_constraint];
-                    $entries_query->leftJoin('entry_tags', function($join) use ($tag_ids){
+                    $entries_query->rightJoin('entry_tags', function($join) use ($tag_ids){
                         $join->on('entry_tags.entry_id', '=', 'entries.id')
                             ->whereIn('entry_tags.tag_id', $tag_ids);
                     });

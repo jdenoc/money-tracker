@@ -68,7 +68,7 @@ var filterModal = {
         var minValue = $('#filter-min-value').val();
         var maxValue = $('#filter-max-value').val();
 
-        var filterModalFilterParameters = filterParameters;
+        var filterModalFilterParameters = $.extend(true, {}, defaultFilterParameters);
         if(startDate !== '') {          filterModalFilterParameters.start_date = startDate;               }
         if(endDate !== '') {            filterModalFilterParameters.end_date = endDate;                   }
         if(minValue !== ''){            filterModalFilterParameters.min_value = parseFloat(minValue);     }
@@ -85,7 +85,7 @@ var filterModal = {
     }
 };
 
-var filterParameters = {
+var defaultFilterParameters = {
     start_date: null,
     end_date: null,
     min_value: null,
@@ -95,5 +95,5 @@ var filterParameters = {
     tags: null,
     expense: null,
     attachments: null,
-    unconfirmed: null,
+    unconfirmed: null
 };
