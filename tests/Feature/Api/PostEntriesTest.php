@@ -3,8 +3,9 @@
 namespace Tests\Feature\Api;
 
 use App\AccountType;
+use App\Tag;
 use App\Http\Controllers\Api\EntryController;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Response as HttpStatus;
 
 class PostEntriesTest extends ListEntriesBase {
 
@@ -132,7 +133,7 @@ class PostEntriesTest extends ListEntriesBase {
         $response = $this->json("POST", $this->_uri, $filter_details);
 
         // THEN
-        $response->assertStatus(Response::HTTP_OK);
+        $response->assertStatus(HttpStatus::HTTP_OK);
         $response_as_array = $this->getResponseAsArray($response);
         $this->assertEquals($generate_entry_count, $response_as_array['count']);
         unset($response_as_array['count']);
@@ -156,7 +157,7 @@ class PostEntriesTest extends ListEntriesBase {
             $response = $this->json("POST", $this->_uri.'/'.$i, $filter_details);
 
             // THEN
-            $response->assertStatus(Response::HTTP_OK);
+            $response->assertStatus(HttpStatus::HTTP_OK);
             $response_body_as_array = $this->getResponseAsArray($response);
 
             $this->assertTrue(is_array($response_body_as_array));
@@ -176,6 +177,29 @@ class PostEntriesTest extends ListEntriesBase {
         $this->runEntryListAssertions($generate_entry_count, $entries_in_response, $generated_entries);
     }
 
+    public function testPostEntriesFilterWithMultipleTagIdsAssignedToOneEntry(){
+        // GIVEN
+        $min_number_of_tags = 2;
+        while($this->_generated_tags->count() < $min_number_of_tags){
+            $this->_generated_tags = factory(Tag::class, $this->_faker->randomDigitNotNull)->create();
+        }
+        $tag_ids = $this->_generated_tags->pluck('id')->toArray();
+        $filter_details['tags'] = $this->_faker->randomElements($tag_ids, $this->_faker->numberBetween($min_number_of_tags, count($tag_ids)));
+        $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
+        $generated_entry = $this->generate_entry_record($generated_account_type->id, false, $filter_details);
+        $generated_entries = [$generated_entry];    // only generating a single entry. This has been created as a kind of "collection"
+
+        // WHEN
+        $response = $this->json("POST", $this->_uri, $filter_details);
+
+        // THEN
+        $response->assertStatus(HttpStatus::HTTP_OK);
+        $response_as_array = $this->getResponseAsArray($response);
+        $this->assertEquals(count($generated_entries), $response_as_array['count']);
+        unset($response_as_array['count']);
+        $this->runEntryListAssertions(count($generated_entries), $response_as_array, $generated_entries);
+    }
+
     public function testPostEntriesFilterWithStartDateGreaterThanEndDate(){
         // GIVEN
         $start_date = $this->_faker->date();
@@ -190,6 +214,32 @@ class PostEntriesTest extends ListEntriesBase {
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
         $this->batch_generate_non_disabled_entries($this->_faker->numberBetween(4, 50), $generated_account_type->id, $filter_details);
         $this->assertPostEntriesNotFound($filter_details);
+    }
+
+    public function testPostEntriesFilterWithEndDateGreaterThanStartDate(){
+        // GIVEN
+        $start_date = $this->_faker->date();
+        do{
+            $end_date = $this->_faker->date();
+        }while($start_date > $end_date);
+        $filter_details = [
+            'start_date'=>$start_date,
+            'end_date'=>$end_date,
+        ];
+
+        $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
+        $generated_entries_count = $this->_faker->numberBetween(4, 50);
+        $generated_entries = $this->batch_generate_non_disabled_entries($generated_entries_count, $generated_account_type->id, $filter_details);
+
+        // WHEN
+        $response = $this->json("POST", $this->_uri, $filter_details);
+
+        // THEN
+        $response->assertStatus(HttpStatus::HTTP_OK);
+        $response_as_array = $this->getResponseAsArray($response);
+        $this->assertEquals($generated_entries_count, $response_as_array['count']);
+        unset($response_as_array['count']);
+        $this->runEntryListAssertions($generated_entries_count, $response_as_array, $generated_entries);
     }
 
     public function testPostEntriesFilterWithMinValueGreaterThanMaxValue(){
@@ -208,6 +258,32 @@ class PostEntriesTest extends ListEntriesBase {
         $this->assertPostEntriesNotFound($filter_details);
     }
 
+    public function testPostEntriesFilterWithMaxValueGreaterThanMinValue(){
+        // GIVEN
+        $min_value = $this->_faker->randomFloat(2, 0, 50);
+        do{
+            $max_value = $this->_faker->randomFloat(2, 0, 50);
+        }while($min_value > $max_value);
+        $filter_details = [
+            'min_value'=>$min_value,
+            'max_value'=>$max_value
+        ];
+
+        $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
+        $generated_entries_count = $this->_faker->numberBetween(4, 50);
+        $generated_entries = $this->batch_generate_non_disabled_entries($generated_entries_count, $generated_account_type->id, $filter_details);
+
+        // WHEN
+        $response = $this->json("POST", $this->_uri, $filter_details);
+
+        // THEN
+        $response->assertStatus(HttpStatus::HTTP_OK);
+        $response_as_array = $this->getResponseAsArray($response);
+        $this->assertEquals($generated_entries_count, $response_as_array['count']);
+        unset($response_as_array['count']);
+        $this->runEntryListAssertions($generated_entries_count, $response_as_array, $generated_entries);
+    }
+
     /**
      * @param array $filter_details
      */
@@ -216,7 +292,7 @@ class PostEntriesTest extends ListEntriesBase {
         $response = $this->json("POST", $this->_uri, $filter_details);
 
         // THEN
-        $response->assertStatus(Response::HTTP_NOT_FOUND);
+        $response->assertStatus(HttpStatus::HTTP_NOT_FOUND);
         $response_as_array = $this->getResponseAsArray($response);
         $this->assertTrue(is_array($response_as_array));
         $this->assertEmpty($response_as_array);

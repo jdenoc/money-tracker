@@ -23,8 +23,8 @@
                 </div>
 
                 <div class="filter-modal-element center-block clearfix">
-                    <label for="filter-account-type" class="pull-left"><span>Account Type:</span></label>
-                    <select name="filter-account-type" id="filter-account-type" class="form-control pull-right">
+                    <input type="checkbox" id="filter-toggle-account-or-account-type" class="pull-right" />
+                    <select id="filter-account-or-account-type" class="form-control pull-right">
                         <option value="">[ ALL ]</option>
                     </select>
                 </div>

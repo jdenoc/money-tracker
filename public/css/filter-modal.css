@@ -14,6 +14,15 @@
     width: 200px;
 }
 
+/* adjust height of account/account type filter modal switch so it the same height as the select */
+.bootstrap-switch-id-filter-toggle-account-or-account-type,
+.bootstrap-switch-id-filter-toggle-account-or-account-type .bootstrap-switch-container,
+.bootstrap-switch-id-filter-toggle-account-or-account-type .bootstrap-switch-handle-off,
+.bootstrap-switch-id-filter-toggle-account-or-account-type .bootstrap-switch-handle-on,
+.bootstrap-switch-id-filter-toggle-account-or-account-type .bootstrap-switch-label{
+    height: 34px;
+}
+
 #filter-tags{
     margin-left: 5px;
 }
@@ -39,7 +48,7 @@
     background-color: #287c8a;
 }
 
-.is_filtered{
+.is-filtered{
     display: none;
     font-size: 10px;
     margin-left: 15px;

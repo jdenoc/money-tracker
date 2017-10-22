@@ -36,7 +36,8 @@ var institutionsPane = {
 
                 // display account related entries on click
                 $('#account-id-'+accountObject.id).click(function(){
-                    var accountFilterParameters = filterParameters;
+                    filterModal.active = false;
+                    var accountFilterParameters = $.extend(true, {}, defaultFilterParameters);
                     accountFilterParameters.account = accountObject.id;
                     entries.filter(accountFilterParameters);
                     // assign active class after click event occurs
