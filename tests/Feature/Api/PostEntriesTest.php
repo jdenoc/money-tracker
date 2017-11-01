@@ -351,9 +351,7 @@ class PostEntriesTest extends ListEntriesBase {
                     }
                     break;
                 case 'attachments':
-                    if($constraint == true){
-                        $entry_components['has_attachments'] = $constraint;
-                    }
+                    $entry_components['has_attachments'] = $constraint;
                     break;
                 case 'tags':
                     $entry_components[$filter_name] = [$this->_faker->randomElement($constraint)];
