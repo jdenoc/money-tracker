@@ -146,7 +146,6 @@ var entryModal = {
                 '<div id="attachment_'+attachmentObject.uuid+'" class="ajax-file-upload-statusbar">' +
                 '<div class="ajax-file-upload-filename">'+attachmentObject.attachment+'</div>' +
                 '<button type="button" class="btn btn-danger glyphicon glyphicon-trash pull-right" onclick="attachment.remove(\''+attachmentObject.uuid+'\', \''+attachmentObject.attachment+'\');"></button>' +
-                // FIXME: open attachment button
                 '<button type="button" class="btn btn-default glyphicon glyphicon-search pull-right" onclick="attachment.open(\''+attachmentObject.uuid+'\');"></button>' +
                 '<input type="hidden" name="entry-attachments[]" value="'+JSON.stringify(attachmentObject)+'" />'+
                 '</div>'

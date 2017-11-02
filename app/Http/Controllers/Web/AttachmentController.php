@@ -48,6 +48,10 @@ class AttachmentController extends Controller {
                 $display_headers = ['Content-Type'=>'image/gif'];
                 break;
 
+            case 'txt':
+                $display_headers = ['Content-Type'=>'text/plain'];
+                break;
+
             default:
                 $display_headers = [];
                 abort(HttpStatus::HTTP_UNSUPPORTED_MEDIA_TYPE, 'Could not display attachment');
