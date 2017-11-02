@@ -51,7 +51,7 @@
                 </label>
 
                 <div id="attachment-uploader">Upload</div>
-                <input type="hidden" name="entry-attachments" id="entry-attachments" />
+                <input type="hidden" name="entry-new-attachments" id="entry-new-attachments" value="[]" />
             </div>
 
             <div class="modal-footer">

@@ -32,14 +32,14 @@ $('#attachment-uploader').uploadFile({
     showProgress: true,
     showDelete: true,
     onSuccess: function(files, data, xhr){
-        $.each(files, function(idx, filename){
-            notice.display(notice.typeInfo, "uploaded: "+filename);
-        });
+        notice.display(notice.typeInfo, "uploaded: "+files[0]);
+        var newAttachmentsInput = $('#entry-new-attachments');
+        var recentlyAddedAttachments = JSON.parse(newAttachmentsInput.val());
+        recentlyAddedAttachments.push(data);
+        newAttachmentsInput.val(JSON.stringify(recentlyAddedAttachments));
     },
     onError: function(files, status, errorMsg){
-        $.each(files, function(idx, filename){
-            notice.display(notice.typeWarning, "file upload failure: "+errorMsg);
-        });
+        notice.display(notice.typeWarning, "file upload failure: "+errorMsg);
     },
     deleteCallback: function(attachment){
         $.ajax({
@@ -80,7 +80,11 @@ var entryModal = {
         });
 
         $('#entry-unlock').click(entryModal.unlockFields);
-        $('#entry-lock').click(entryModal.fillFields);      // reset all fields and then "locks" them // FIXME: every time this is run, the attachments are duplicated
+        $('#entry-lock').click(function(){
+            // reset all fields and then "locks" them
+            entryModal.clearAttachmentViews();  // clear attachment fields to prevent duplication when we call "fillFields()"
+            entryModal.fillFields();
+        });
         $('#entry-save').click(entryModal.submit);
         $('#entry-delete').click(entryModal.delete);
         entryModal.initEntryDate();
@@ -139,11 +143,10 @@ var entryModal = {
 
         $.each(entry.value.attachments, function(idx, attachmentObject){
             $('.ajax-file-upload-container').append(
-                '<div class="ajax-file-upload-statusbar">' +
+                '<div id="attachment_'+attachmentObject.uuid+'" class="ajax-file-upload-statusbar">' +
                 '<div class="ajax-file-upload-filename">'+attachmentObject.attachment+'</div>' +
-                // TODO: delete attachment button
-                '<button type="button" class="btn btn-danger glyphicon glyphicon-trash pull-right" onclick="attachment.remove(\''+attachmentObject.uuid+'\');"></button>' +
-                // TODO: open attachment button
+                '<button type="button" class="btn btn-danger glyphicon glyphicon-trash pull-right" onclick="attachment.remove(\''+attachmentObject.uuid+'\', \''+attachmentObject.attachment+'\');"></button>' +
+                // FIXME: open attachment button
                 '<button type="button" class="btn btn-default glyphicon glyphicon-search pull-right" onclick="attachment.open(\''+attachmentObject.uuid+'\');"></button>' +
                 '<input type="hidden" name="entry-attachments[]" value="'+JSON.stringify(attachmentObject)+'" />'+
                 '</div>'
@@ -170,7 +173,12 @@ var entryModal = {
             .bootstrapSwitch('state', true);
         $('#entry-tags').tagsinput('removeAll');
 
-        $('.ajax-file-upload-statusbar').remove(); // clear attachments from entry-modal
+        entryModal.clearAttachmentViews();
+        $('#entry-new-attachments').val('[]');
+    },
+    clearAttachmentViews: function(){
+        // clear attachment view elements from the entry modal
+        $('.ajax-file-upload-statusbar').remove();
     },
     lockFields: function(){
         entryModal.setLockStatus(true);
@@ -202,7 +210,8 @@ var entryModal = {
             memo: $('#entry-memo').val(),
             expense: $('input[name="expense-switch"]').prop('checked'),
             confirm: $('#entry-confirm').prop('checked'),
-            tags: $('#entry-tags').val().split()
+            tags: $('#entry-tags').val().split(),
+            attachments: JSON.parse($('#entry-new-attachments').val()),
         };
         entry.save(entrySaveData);
     },
