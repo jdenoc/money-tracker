@@ -9,24 +9,21 @@ $(document).ready(function(){
     accounts.load();
     accountTypes.load();
     entries.load();
+    paginate.init();
 });
 
 function responseToData(response, responseType){
-    var responseData = [];
-    var responseCount = 0;
+    var responseCount = parseInt(response.count);
+    delete response.count;
 
-    $.each(response, function(key, object){
-        if(key !== 'count'){
-            responseData.push(object);
-        } else {
-            responseCount = object;
+    response = $.map(response, function(el) { return el });
+    if(typeof responseType !== 'undefined'){
+        if(responseType !== 'entries' && responseCount !== response.length) {
+            // entries come in batches
+            notice.display(notice.typeWarning, "Not all " + responseType + " were downloaded");
         }
-    });
-
-    if(typeof responseType !== 'undefined' && responseCount !== responseData.length){
-        notice.display(notice.typeWarning, "Not all "+responseType+" were downloaded");
     }
-    return responseData;
+    return response;
 }
 
 var tags = {
@@ -194,9 +191,11 @@ var accountTypes = {
 var entries = {
     uri: "/api/entries",
     value: [],
-    load: function(){
+    total: 0,
+    load: function(pageNumber){
+        pageNumber = paginate.processPageNumber(pageNumber);
         $.ajax({
-            url: entries.uri,
+            url: entries.uri+'/'+pageNumber,
             dataType: "json",
             beforeSend: function() {
                 loading.start();
@@ -206,14 +205,16 @@ var entries = {
             complete: entries.ajaxCompleteProcessing
         });
     },
-    filter: function(filterParameters){
+
+    filter: function(filterParameters, pageNumber){
         $.each(filterParameters, function(parameter, value){
             if(value === null){
                 delete filterParameters[parameter];
             }
         });
+        pageNumber = paginate.processPageNumber(pageNumber);
         $.ajax({
-            url: entries.uri,
+            url: entries.uri+'/'+pageNumber,
             type: 'POST',
             beforeSend: function(){
                 loading.start();
@@ -253,6 +254,7 @@ var entries = {
     },
     ajaxStatusCodeProcessing: {
         200: function(responseData){
+            entries.total = responseData.count;
             entries.value = responseToData(responseData, 'entries');
         },
         404: function(){
@@ -267,7 +269,17 @@ var entries = {
     ajaxCompleteProcessing: function(){
         $('.is-filtered').toggle(filterModal.active);
         entries.display();
+        paginate.display.previous(paginate.current !== 0);
+        paginate.display.next(paginate.current < Math.ceil(entries.total/50)-1);
         loading.end();
+    },
+    reload: function(pageNumber){
+        pageNumber = paginate.processPageNumber(pageNumber);
+        if(filterModal.active){
+            entries.filter(filterModal.parameters, pageNumber);
+        } else {
+            entries.load(pageNumber);
+        }
     }
 };
 
@@ -323,7 +335,7 @@ var entry = {
                         notice.display(notice.typeError, "An error occurred while attempting to update entry ["+entryId+"]");
                     }
                 },
-                complete: completeEntryUpdate
+                complete: entry.completeEntryUpdate
             });
         } else {
             // new entry
@@ -344,7 +356,7 @@ var entry = {
                         notice.display(notice.typeError, "An error occurred while attempting to create an entry");
                     }
                 },
-                complete: completeEntryUpdate
+                complete: entry.completeEntryUpdate
             });
         }
     },
@@ -365,8 +377,18 @@ var entry = {
                     notice.display(notice.typeError, "An error occurred while attempting to delete entry ["+entryId+"]");
                 }
             },
-            complete: completeEntryUpdate
+            complete: entry.completeEntryUpdate
         });
+    },
+    completeEntryUpdate: function(){
+        if(filterModal.active){
+            filterModal.submit();
+        } else {
+            entries.reload(paginate.current);
+        }
+        institutions.load();
+        accounts.load();
+        institutionsPane.displayAccountTypes();
     }
 };
 
@@ -404,14 +426,3 @@ var attachment = {
         // TODO: delete recently uploaded file
     }
 };
-
-function completeEntryUpdate(){
-    if(filterModal.active){
-        filterModal.submit();
-    } else {
-        entries.load();
-    }
-    institutions.load();
-    accounts.load();
-    institutionsPane.displayAccountTypes();
-}
