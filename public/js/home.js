@@ -371,28 +371,28 @@ var entry = {
 };
 
 var attachment = {
+    uri: '/api/attachment/',
     open: function(uuid){
         var url = '/attachment/'+uuid;
         var win=window.open(url, '_blank');
         win.focus();
     },
-    remove: function(uuid){
-        var entryId = $('#entry_id').val();
+    remove: function(attachmentUuid, attachmentName){
         if(confirm('Are you sure you want to delete attachment: '+attachmentName)){
             $.ajax({
                 type: 'DELETE',
-                url: url+nocache(),
-                data: {
-                    type: 'delete_attachment',
-                    entry_id : entryId,
-                    id: attachmentId
-                },
+                url: attachment.uri+attachmentUuid,
                 beforeSend:function(){
                     notice.remove();
                 },
                 success:function(data){
-                    $('#attachment_'+attachmentId).remove();
-                    $('#entry_has_attachment').val( parseInt(data) );
+                    $.each(entry.value.attachments, function(idx, entryAttachment){
+                        if(entryAttachment.uuid === attachmentUuid){
+                            delete entry.value.attachments[idx];
+                        }
+                    });
+                    $('#attachment_'+attachmentUuid).remove();
+                    notice.display(notice.typeInfo, "Attachment has been deleted");
                 },
                 error:function(){
                     notice.display(notice.typeDanger, 'Could not delete attachment');
@@ -411,7 +411,6 @@ function completeEntryUpdate(){
     } else {
         entries.load();
     }
-    // TODO: rewrite below... msybe?
     institutions.load();
     accounts.load();
     institutionsPane.displayAccountTypes();

@@ -147,7 +147,6 @@ class Entry extends BaseModel {
                     });
                     break;
                 case 'attachments':
-                    // FIXME: displaying too many and duplicate entries
                     if($filter_constraint == true){
                         // to get COUNT(attachment.id) > 0 use:
                         // INNER JOIN attachments ON attachments.entry_id=entries.id
@@ -156,18 +155,15 @@ class Entry extends BaseModel {
                         // to get COUNT(attachments.id) == 0 use:
                         // LEFT JOIN attachments
                         //   ON attachments.entry_id=entries.id
-                        //   AND attachments.entry_id IS NULL
-                        $entries_query->leftJoin('attachments', function($join){
-                            $join->on('entries.id', '=', 'attachments.entry_id')
-                                ->whereNull('attachments.entry_id');
-                        });
+                        // WHERE attachments.entry_id IS NULL
+                        $entries_query->leftJoin('attachments', 'entries.id', '=', 'attachments.entry_id')
+                            ->whereNull('attachments.entry_id');
                     }
                     break;
                 case 'tags':
-                    // LEFT JOIN entry_tags
+                    // RIGHT JOIN entry_tags
                     //   ON entry_tags.entry_id=entries.id
                     //   AND entry_tags.tag_id IN ($tags)
-                    // TODO: prevent duplicates from appearing
                     $tag_ids = (is_array($filters[$filter_name])) ? $filter_constraint : [$filter_constraint];
                     $entries_query->rightJoin('entry_tags', function($join) use ($tag_ids){
                         $join->on('entry_tags.entry_id', '=', 'entries.id')

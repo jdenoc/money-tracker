@@ -64,7 +64,6 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
-            <!-- TODO: reset active institution/account after filter has been activated -->
             <ul id="institution-display-pane" class="nav nav-sidebar">
                 <li><h4>Institutions</h4></li>
                 <li id="entry-overview" class="active">

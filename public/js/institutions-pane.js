@@ -81,6 +81,7 @@ var institutionsPane = {
         institutionsPane.accountsDisplayed = false;
         institutionsPane.closedAccountsDisplayed = false;
         $('.institutions-pane-institution').remove();
+        $('.institutions-pane-account').remove();
     },
     clearActiveState: function(){
         $('#entry-overview').removeClass('active');

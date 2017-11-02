@@ -12,9 +12,6 @@ use Ramsey\Uuid\Uuid;
 
 class AttachmentController extends Controller {
 
-    const STORAGE_TMP_UPLOAD = 'tmp_uploads';
-    const STORAGE_ATTACHMENTS = 'attachments';
-
     public function display($uuid){
         if(!Uuid::isValid($uuid)){
             abort(HttpStatus::HTTP_NOT_FOUND, 'Attachment not found');
@@ -25,9 +22,8 @@ class AttachmentController extends Controller {
             abort(HttpStatus::HTTP_NOT_FOUND, 'Attachment not found');
         }
 
-        $storage_filename = self::STORAGE_ATTACHMENTS.DIRECTORY_SEPARATOR.$attachment->get_hashed_filename();
-        if(!Storage::exists($storage_filename)){
-            abort(HttpStatus::HTTP_NOT_FOUND, 'Attachment not found');
+        if(!$attachment->storage_exists()){
+            abort(HttpStatus::HTTP_NOT_FOUND, 'Attachment not found');  // TODO: build nicer "not found" page
         }
 
         // display attachment based on file extension
@@ -57,16 +53,18 @@ class AttachmentController extends Controller {
                 abort(HttpStatus::HTTP_UNSUPPORTED_MEDIA_TYPE, 'Could not display attachment');
         }
 
-        return Response::make(Storage::get($storage_filename), HttpStatus::HTTP_OK, $display_headers);
+        return Response::make(Storage::get($attachment->get_storage_file_path()), HttpStatus::HTTP_OK, $display_headers);
     }
 
     public function upload(Request $request){
         $upload_file_request = $request->file('attachment');
         if($upload_file_request->isValid()){
-            $new_filename = str_replace(' ', '_', $upload_file_request->getClientOriginalName());
-            $upload_file_request->storeAs(self::STORAGE_TMP_UPLOAD, $new_filename);
+            $attachment = new Attachment();
+            $attachment->uuid = Uuid::uuid4();
+            $attachment->attachment = $upload_file_request->getClientOriginalName();
+            $attachment->storage_store(file_get_contents($upload_file_request->getRealPath()), true);
             return response(
-                ['uuid'=>Uuid::uuid4(), 'attachment'=>$upload_file_request->getClientOriginalName(), 'tmp_filename'=>$new_filename],
+                ['uuid'=>$attachment->uuid, 'attachment'=>$attachment->attachment, 'tmp_filename'=>$attachment->get_tmp_filename()],
                 HttpStatus::HTTP_OK
             );
 
@@ -83,9 +81,10 @@ class AttachmentController extends Controller {
         if(empty($request->input('filename'))){
             return response('', HttpStatus::HTTP_BAD_REQUEST);
         } else {
-            $tmp_filepath = self::STORAGE_TMP_UPLOAD.DIRECTORY_SEPARATOR.$request->input('filename');
-            if(Storage::exists($tmp_filepath)){
-                Storage::delete($tmp_filepath);
+            $attachment = new Attachment();
+            $attachment->attachment = $request->input('filename');
+            if($attachment->storage_exists(true)){
+                $attachment->storage_delete(true);
                 return response('', HttpStatus::HTTP_NO_CONTENT);
             } else {
                 return response('', HttpStatus::HTTP_NOT_FOUND);
