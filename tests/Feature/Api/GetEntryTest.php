@@ -7,7 +7,6 @@ use Carbon\Carbon;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Faker;
 

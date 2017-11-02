@@ -202,15 +202,15 @@ class EntryController extends Controller {
         return [
             'start_date'=>'date_format:Y-m-d',
             'end_date'=>'date_format:Y-m-d',
+            'account'=>'integer',
             'account_type'=>'integer',
             'tags'=>'array',
             'tags.*'=>'in:'.implode(',', $tag_ids),
-            'income'=>'boolean',
             'expense'=>'boolean',
-            'has_attachments'=>'boolean',
-            'not_confirmed'=>'boolean',
-            'entry_value_min'=>'numeric',
-            'entry_value_max'=>'numeric',
+            'attachments'=>'boolean',
+            'min_value'=>'numeric',
+            'max_value'=>'numeric',
+            'unconfirmed'=>'boolean'
         ];
     }
 
@@ -239,11 +239,16 @@ class EntryController extends Controller {
                 if(!is_array($attachment_data)){
                     continue;
                 }
-                $new_attachment = new Attachment();
-                $new_attachment->uuid = $attachment_data['uuid'];
-                $new_attachment->attachment = $attachment_data['attachment'];
-                $new_attachment->entry_id = $entry->id;
-                $new_attachment->save();
+
+                $existing_attachment = Attachment::find($attachment_data['uuid']);
+                if(is_null($existing_attachment)){
+                    $new_attachment = new Attachment();
+                    $new_attachment->uuid = $attachment_data['uuid'];
+                    $new_attachment->attachment = $attachment_data['attachment'];
+                    $new_attachment->entry_id = $entry->id;
+                    $new_attachment->storage_move_from_tmp_to_main();
+                    $new_attachment->save();
+                }
             }
         }
     }

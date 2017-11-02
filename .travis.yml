@@ -21,7 +21,7 @@ addons:
     - money-tracker.jdenoc.dev
 
 env:
-  - APP_DEBUG=false APP_URL=http://money-tracker.jdenoc.dev DB_CONNECTION=mysql DB_DATABASE=money_tracker DB_HOST=localhost DB_PORT=3306 DB_USERNAME=jdenoc DB_PASSWORD=password
+  - APP_DEBUG=false APP_URL=http://money-tracker.jdenoc.dev DB_CONNECTION=mysql DB_HOST=localhost DB_DATABASE=money_tracker DB_PORT=3306 DB_USERNAME=jdenoc DB_PASSWORD=password
 
 services:
   - mysql
@@ -39,3 +39,8 @@ script: vendor/bin/phpunit --coverage-text
 after_script:
   - mysql -u root -e "DROP USER 'jdenoc'@'localhost';"
   - mysql -u root -e "DROP DATABASE money_tracker;"
+
+# make sure ONLY updates to the master branch cause a build
+branch:
+  only:
+    - master

@@ -4,7 +4,7 @@ namespace Tests\Feature\Api;
 
 use App\AccountType;
 use Faker\Factory;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
@@ -22,7 +22,7 @@ class GetAccountTypesTest extends TestCase {
         $response = $this->get($this->_uri);
 
         // THEN
-        $response->assertStatus(Response::HTTP_NOT_FOUND);
+        $response->assertStatus(HttpStatus::HTTP_NOT_FOUND);
         $this->assertTrue(is_array($response->json()));
         $this->assertEmpty($response->json());
     }
@@ -42,10 +42,13 @@ class GetAccountTypesTest extends TestCase {
         $response = $this->get($this->_uri);
 
         // THEN
-        $response->assertStatus(Response::HTTP_OK);
+        $response->assertStatus(HttpStatus::HTTP_OK);
         $response_as_array = $response->json();
         $this->assertTrue(is_array($response_as_array));
         $this->assertNotEmpty($response_as_array);
+        $this->assertArrayHasKey('count', $response_as_array);
+        $this->assertEquals($account_type_count, $response_as_array['count']);
+        unset($response_as_array['count']);
         foreach($response_as_array as $account_type_in_response){
             $this->assertArrayHasKey('id', $account_type_in_response);
             $this->assertArrayHasKey('type', $account_type_in_response);

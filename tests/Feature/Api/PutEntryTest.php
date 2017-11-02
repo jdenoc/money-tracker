@@ -13,7 +13,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class PutEntryTest extends TestCase {
 
@@ -302,6 +301,45 @@ class PutEntryTest extends TestCase {
         }
     }
 
+    public function testUpdateEntryWithAttachmentsAndAttachmentsAreAlreadyAttached(){
+        // GIVEN
+        $unattached_attachment = factory(Attachment::class)->make();
+        $put_entry_data = ['attachments'=>[
+            ['uuid'=>$unattached_attachment->uuid, 'attachment'=>$unattached_attachment->attachment]
+        ]];
+        $attached_attachments = factory(Attachment::class, 3)->create(['entry_id'=>$this->_generated_entry->id]);
+        foreach($attached_attachments as $attached_attachment){
+            $put_entry_data['attachments'][] = ['uuid'=>$attached_attachment->uuid, 'attachment'=>$attached_attachment->attachment];
+        }
+
+        // WHEN
+        $put_response = $this->json("PUT", $this->_base_uri.$this->_generated_entry->id, $put_entry_data);
+
+        // THEN
+        $put_response->assertStatus(Response::HTTP_OK);
+        $put_response_as_array = $this->getResponseAsArray($put_response);
+        $this->assertPutResponseHasCorrectKeys($put_response_as_array);
+        $this->assertSuccessPutResponse($put_response_as_array);
+
+        // WHEN
+        $get_response = $this->get($this->_base_uri.$this->_generated_entry->id);
+
+        // THEN
+        $get_response->assertStatus(Response::HTTP_OK);
+        $get_response_as_array = $this->getResponseAsArray($get_response);
+        $this->assertArrayHasKey('attachments', $get_response_as_array);
+        $this->assertTrue(is_array($get_response_as_array['attachments']));
+        $this->assertNotEmpty($get_response_as_array['attachments']);
+        foreach($get_response_as_array['attachments'] as $response_attachment){
+            $attachment_data = [
+                'uuid'=>$response_attachment['uuid'],
+                'attachment'=>$response_attachment['attachment']
+            ];
+            // This step really makes sure that entries have not been duplicated
+            $this->assertContains($attachment_data, $put_entry_data['attachments'], 'Generated attachments:'.json_encode($put_entry_data['attachments']));
+        }
+    }
+
     public function testUpdateEntryWithNoUpdates(){
         // GIVEN
         $put_entry_data = $this->_generated_entry->toArray();
@@ -327,6 +365,9 @@ class PutEntryTest extends TestCase {
         $this->assertEquals($put_entry_data['account_type'], $get_response_as_array['account_type'], $get_response->getContent());
     }
 
+    /**
+     * @param array $response_as_array
+     */
     private function assertPutResponseHasCorrectKeys($response_as_array){
         $failure_message = "PUT Response is ".json_encode($response_as_array);
         $this->assertTrue(is_array($response_as_array), $failure_message);
@@ -334,6 +375,10 @@ class PutEntryTest extends TestCase {
         $this->assertArrayHasKey(EntryController::RESPONSE_SAVE_KEY_ERROR, $response_as_array, $failure_message);
     }
 
+    /**
+     * @param array $response_as_array
+     * @param string $response_error_msg
+     */
     private function assertFailedPutResponse($response_as_array, $response_error_msg){
         $failure_message = "PUT response is ".json_encode($response_as_array);
         $this->assertEquals(EntryController::ERROR_ENTRY_ID, $response_as_array[EntryController::RESPONSE_SAVE_KEY_ID], $failure_message);
@@ -341,10 +386,14 @@ class PutEntryTest extends TestCase {
         $this->assertContains($response_error_msg, $response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR], $failure_message);
     }
 
+    /**
+     * @param array $response_as_array
+     */
     private function assertSuccessPutResponse($response_as_array){
         $failure_message = "PUT response is ".json_encode($response_as_array);
         $this->assertEmpty($response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR], $failure_message);
         $this->assertGreaterThan(EntryController::ERROR_ENTRY_ID, $response_as_array[EntryController::RESPONSE_SAVE_KEY_ID], $failure_message);
+        $this->assertEquals($this->_generated_entry->id, $response_as_array[EntryController::RESPONSE_SAVE_KEY_ID], $failure_message." while updating entry ID ".$this->_generated_entry->id);
     }
 
 }
