@@ -28,6 +28,7 @@ services:
 
 install:
   - composer install
+  - php artisan travis-ci --display-env
 
 before_script:
   - mysql -u root -e "CREATE DATABASE money_tracker;"
