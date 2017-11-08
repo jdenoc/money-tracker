@@ -35,7 +35,8 @@ before_script:
   - mysql -u root -e "CREATE USER 'jdenoc'@'localhost' IDENTIFIED BY 'password';"
   - mysql -u root -e "GRANT ALL ON money_tracker.* TO 'jdenoc'@'localhost';"
 
-script: vendor/bin/phpunit --coverage-text
+# Some tests take over 10 minutes to run. Using travis_wait to work around that.
+script: travis_wait vendor/bin/phpunit --coverage-text
 
 after_script:
   - mysql -u root -e "DROP USER 'jdenoc'@'localhost';"
