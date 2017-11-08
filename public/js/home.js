@@ -200,12 +200,12 @@ var entries = {
             beforeSend: function() {
                 loading.start();
                 filterModal.active = false;
+                paginate.filterState = {};
             },
             statusCode: entries.ajaxStatusCodeProcessing,
             complete: entries.ajaxCompleteProcessing
         });
     },
-
     filter: function(filterParameters, pageNumber){
         $.each(filterParameters, function(parameter, value){
             if(value === null){
@@ -218,6 +218,7 @@ var entries = {
             type: 'POST',
             beforeSend: function(){
                 loading.start();
+                paginate.filterState = filterParameters
             },
             data: JSON.stringify(filterParameters),
             dataType: 'json',
@@ -273,10 +274,10 @@ var entries = {
         paginate.display.next(paginate.current < Math.ceil(entries.total/50)-1);
         loading.end();
     },
-    reload: function(pageNumber){
+    reload: function(pageNumber, filterParameters){
         pageNumber = paginate.processPageNumber(pageNumber);
-        if(filterModal.active){
-            entries.filter(filterModal.parameters, pageNumber);
+        if(filterParameters){
+            entries.filter(filterParameters, pageNumber);
         } else {
             entries.load(pageNumber);
         }
