@@ -1,8 +1,3 @@
-var filterTags = $('#filter-tags');
-$.each(tags.value, function(idx, obj){
-    filterTags.append('<label class="btn btn-info"><input type="checkbox" value="'+obj.id+'"/>'+obj.tag+'</label>');
-});
-
 var bootstrapSwitchObject = {
     size: "small",
     handleWidth: 79,    // forces display width to 200px
@@ -62,17 +57,22 @@ var filterModal = {
         });
     },
     reset: function(){
+        // traditional inputs
         $('#filter-start-date').val('');
         $('#filter-end-date').val('');
-        $('#filter-account-type').val('');
+        $('#filter-min-value').val('');
+        $('#filter-max-value').val('');
+        $('#filter-account-or-account-type').val('');
+        // tags
         $('#filter-tags label').removeClass('active');
+        $('input[name="filter-tag"]').prop('checked', false);
+        // toggle/switches
         $('input[name="filter-expense').prop('checked', false)
             .bootstrapSwitch('state', false);
         $('input[name="filter-attachments"]').prop('checked', false)
             .bootstrapSwitch('state', false);
         $('#filter-unconfirmed').prop('checked', false)
             .bootstrapSwitch('state', false);
-        $('.is_filtered').hide();
     },
     submit: function(){
         loading.start();
