@@ -74,7 +74,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" id="filter-close">Close</button>
-                <button type="button" class="btn btn-warning" data-dismiss="modal" id="filter-reset"><span class="glyphicon glyphicon-repeat"></span> Reset</button>
+                <button type="button" class="btn btn-warning" id="filter-reset"><span class="glyphicon glyphicon-repeat"></span> Reset</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" id="filter-set"><span class="glyphicon glyphicon-search"></span> Set Filter</button>
             </div>
         </div>

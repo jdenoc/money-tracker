@@ -1,12 +1,13 @@
 var paginate = {
     current: 0,
+    filterState: {},
     init: function(){
         $("#next").click(paginate.next);
         $("#prev").click(paginate.previous);
     },
     next: function(){
         paginate.current++;
-        entries.reload(paginate.current);
+        entries.reload(paginate.current, paginate.filterState);
     },
     previous: function(){
         paginate.current--;
@@ -14,7 +15,7 @@ var paginate = {
             paginate.current = 0;
         }
 
-        entries.reload(paginate.current);
+        entries.reload(paginate.current, paginate.filterState);
     },
     processPageNumber: function(pageNumber){
         pageNumber = parseInt(pageNumber);

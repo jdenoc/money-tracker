@@ -36,7 +36,8 @@ var institutionsPane = {
 
                 // display account related entries on click
                 $('#account-id-'+accountObject.id).click(function(){
-                    filterModal.active = false;
+                    filterModal.active = false; // no longer filtering
+                    paginate.current = 0;   // reset current "page number"
                     var accountFilterParameters = $.extend(true, {}, defaultFilterParameters);
                     accountFilterParameters.account = accountObject.id;
                     entries.filter(accountFilterParameters);
@@ -103,6 +104,7 @@ $(document).ready(function(){
         });
 
     $("#entry-overview").click(function(){
+        paginate.current = 0;
         entries.load();
         institutionsPane.clearActiveState();
         $('#entry-overview').addClass('active');
