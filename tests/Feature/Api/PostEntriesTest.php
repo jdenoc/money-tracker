@@ -12,7 +12,11 @@ class PostEntriesTest extends ListEntriesBase {
     public function providerPostEntriesFilter(){
         // need to call setUp() before running through a data provider method
         // environment needs setting up and isn't until setUp() is called
-        $this->setUp();
+        //$this->setUp();
+        // We can no longer call setUp() as a work around
+        // it caused the database to populate and in doing so we caused some tests to fail.
+        // Said tests failed because they were testing the absence of database values.
+        $this->initialiseApplication();
 
         $filter = [];
         $filter['no filter'] = [[]];
@@ -41,11 +45,8 @@ class PostEntriesTest extends ListEntriesBase {
         ];
 
         // confirm all filters in EntryController are listed here
-        $current_filters = EntryController::get_filter_details();
+        $current_filters = EntryController::get_filter_details(false);
         foreach(array_keys($current_filters) as $existing_filter){
-            if(strpos('.*', $existing_filter) === false){
-                continue;
-            }
             $this->assertArrayHasKey($existing_filter, $filter_details);
         }
 

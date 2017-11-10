@@ -11,6 +11,16 @@ abstract class TestCase extends BaseTestCase {
 
     use CreatesApplication;
 
+    public function initialiseApplication(){
+        $this->app = $this->createApplication();
+    }
+
+    public function refreshApplication(){
+        if(!$this->app){
+            $this->initialiseApplication();
+        }
+    }
+
     public function tearDown(){
         $this->truncateDatabaseTables();
         parent::tearDown();
@@ -44,6 +54,16 @@ abstract class TestCase extends BaseTestCase {
         $expected_timestamp = strtotime($expected_datetime);
         $actual_timestamp = strtotime($actual_datetime);
         $this->assertTrue(abs($expected_timestamp - $actual_timestamp) <= 1, $assert_failure_message);
+    }
+
+    /**
+     * @param TestResponse|Response $response
+     * @param int $expected_status
+     */
+    protected function assertResponseStatus($response, $expected_status){
+        $actual_status = $response->getStatusCode();
+        $failure_message = "Expected status code ".$expected_status." but received ".$actual_status.". Response content: ".$response->getContent();
+        $this->assertTrue($actual_status === $expected_status, $failure_message);
     }
 
     /**

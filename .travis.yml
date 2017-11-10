@@ -28,19 +28,26 @@ services:
 
 install:
   - composer install
+  - php artisan travis-ci --display-env
 
 before_script:
+  - mysql -u root -e "SHOW DATABASES;"
   - mysql -u root -e "CREATE DATABASE money_tracker;"
   - mysql -u root -e "CREATE USER 'jdenoc'@'localhost' IDENTIFIED BY 'password';"
   - mysql -u root -e "GRANT ALL ON money_tracker.* TO 'jdenoc'@'localhost';"
+  - mysql -u root -e "SHOW DATABASES;"
 
-script: vendor/bin/phpunit --coverage-text
+# Some tests take over 10 minutes to run. Using travis_wait to work around that.
+script: travis_wait vendor/bin/phpunit --coverage-text
 
 after_script:
+  - mysql -u root -e "SHOW DATABASES;"
   - mysql -u root -e "DROP USER 'jdenoc'@'localhost';"
   - mysql -u root -e "DROP DATABASE money_tracker;"
+  - mysql -u root -e "SHOW DATABASES;"
 
-# make sure ONLY updates to the master branch cause a build
+# make sure ONLY updates to the master & develop branches cause a build
 branch:
   only:
     - master
+    - develop

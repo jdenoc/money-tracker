@@ -4,7 +4,7 @@ namespace Tests\Feature\Api;
 
 use App\Account;
 use App\AccountType;
-use Faker\Factory;
+use Faker\Factory as FakerFactory;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
@@ -18,15 +18,21 @@ class DeleteAccountTypeTest extends TestCase {
     private $_get_account_uri = '/api/account/';
 
     public function testDisableAccountTypeThatDoesNotExist(){
-        $faker = Factory::create();
+        $faker = FakerFactory::create();
         // GIVEN - account_type does not exist
-        $account_type_id = $faker->randomDigitNotNull;
+        $account_type_id = $faker->randomNumber();
 
         // WHEN
         $response = $this->delete($this->_disable_account_type_uri.$account_type_id);
 
         // THEN
-        $response->assertStatus(HttpStatus::HTTP_NOT_FOUND);
+        // confirm there are no database records
+        $account_type_collection = AccountType::all();
+        $this->assertTrue($account_type_collection->isEmpty(), $account_type_collection->toJson());
+
+        // confirm we got the right response
+        $this->assertResponseStatus($response, HttpStatus::HTTP_NOT_FOUND);
+        $this->assertEmpty($response->getContent());
     }
 
     public function testDisabledAccountType(){
@@ -40,9 +46,9 @@ class DeleteAccountTypeTest extends TestCase {
         $account_response2 = $this->get($this->_get_account_uri.$generated_account->id);    // make this call to confirm account type is disabled
 
         // THEN
-        $account_response1->assertStatus(HttpStatus::HTTP_OK);
-        $disabled_response->assertStatus(HttpStatus::HTTP_NO_CONTENT);
-        $account_response2->assertStatus(HttpStatus::HTTP_OK);
+        $this->assertResponseStatus($account_response1, HttpStatus::HTTP_OK);
+        $this->assertResponseStatus($disabled_response, HttpStatus::HTTP_NO_CONTENT);
+        $this->assertResponseStatus($account_response2, HttpStatus::HTTP_OK);
 
         $account_response1_as_array = $account_response1->json();
         $this->assertNotEmpty($account_response1_as_array, $account_response1->getContent());
@@ -55,6 +61,8 @@ class DeleteAccountTypeTest extends TestCase {
             $this->assertArrayHasKey('disabled', $account_type_in_response, $account_response1->getContent());
             $this->assertFalse($account_type_in_response['disabled'], $account_response1->getContent());
         }
+
+        $this->assertEmpty($disabled_response->getContent());
 
         $account_response2_as_array = $account_response2->json();
         $this->assertNotEmpty($account_response2_as_array, $account_response2->getContent());
