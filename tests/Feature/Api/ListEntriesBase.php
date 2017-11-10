@@ -7,7 +7,7 @@ use App\Attachment;
 use App\Entry;
 use App\Tag;
 use Carbon\Carbon;
-use Faker\Factory;
+use Faker\Factory as FakerFactory;
 use Faker\Generator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
@@ -38,9 +38,13 @@ class ListEntriesBase extends TestCase {
      */
     protected $_uri = '/api/entries';
 
-    public function setUp(){
+    public function __construct($name = null, array $data = [], $dataName = ''){
+        parent::__construct($name, $data, $dataName);
+        $this->_faker = FakerFactory::create();
+    }
+
+    protected function setUp(){
         parent::setUp();
-        $this->_faker = Factory::create();
         $this->_generated_account = factory(Account::class)->create();
         $this->_generated_tags = factory(Tag::class, $this->_faker->randomDigitNotNull)->create();
     }

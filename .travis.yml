@@ -46,7 +46,8 @@ after_script:
   - mysql -u root -e "DROP DATABASE money_tracker;"
   - mysql -u root -e "SHOW DATABASES;"
 
-# make sure ONLY updates to the master branch cause a build
+# make sure ONLY updates to the master & develop branches cause a build
 branch:
   only:
     - master
+    - develop
