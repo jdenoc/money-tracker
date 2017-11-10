@@ -8,7 +8,7 @@ use App\Attachment;
 use App\Entry;
 use App\Http\Controllers\Api\EntryController;
 use App\Tag;
-use Faker\Factory;
+use Faker\Factory as FakerFactory;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
@@ -37,7 +37,11 @@ class PostEntryTest extends TestCase {
     public function providerCreateEntryWithMissingData(){
         // PHPUnit data providers are called before setUp() and setUpBeforeClass() are called.
         // With that piece of information, we need to call setUp() earlier than we normally would so that we can use model factories
-        $this->setUp();
+        //$this->setUp();
+        // We can no longer call setUp() as a work around
+        // it caused the database to populate and in doing so we caused some tests to fail.
+        // Said tests failed because they were testing the absence of database values.
+        $this->initialiseApplication();
 
         $required_entry_fields = Entry::get_fields_required_for_creation();
 
@@ -154,7 +158,7 @@ class PostEntryTest extends TestCase {
     }
 
     public function testCreateEntryButTagDoesNotExist(){
-        $faker = Factory::create();
+        $faker = FakerFactory::create();
         // GIVEN
         do{
             $generate_tag_count = $faker->randomDigitNotNull;
@@ -207,7 +211,7 @@ class PostEntryTest extends TestCase {
     }
 
     public function testCreateEntryWithAttachments(){
-        $faker = Factory::create();
+        $faker = FakerFactory::create();
         // GIVEN
         do{
             $generated_attachment_count = $faker->randomDigitNotNull;

@@ -196,22 +196,31 @@ class EntryController extends Controller {
         );
     }
 
-    public static function get_filter_details(){
-        $tags = Tag::all();
-        $tag_ids = $tags->pluck('id')->toArray();
-        return [
+    /**
+     * @param bool $include_tag_ids
+     * @return array
+     */
+    public static function get_filter_details($include_tag_ids = true){
+        $filter_details = [
             'start_date'=>'date_format:Y-m-d',
             'end_date'=>'date_format:Y-m-d',
             'account'=>'integer',
             'account_type'=>'integer',
             'tags'=>'array',
-            'tags.*'=>'in:'.implode(',', $tag_ids),
             'expense'=>'boolean',
             'attachments'=>'boolean',
             'min_value'=>'numeric',
             'max_value'=>'numeric',
             'unconfirmed'=>'boolean'
         ];
+
+        if($include_tag_ids){
+            $tags = Tag::all();
+            $tag_ids = $tags->pluck('id')->toArray();
+            $filter_details['tags.*'] = 'in:'.implode(',', $tag_ids);
+        }
+
+        return $filter_details;
     }
 
     /**
