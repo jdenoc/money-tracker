@@ -107,38 +107,21 @@ class PostEntriesTest extends ListEntriesBase {
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
         $filter_details = $this->set_test_specific_filters($filter_details);
 
-        $generated_entries = [];
-        $generated_disabled_entries = [];
-        for($i=0; $i<$generate_entry_count; $i++){
-            $entry_disabled = $this->_faker->boolean;
-            $generated_entry = $this->generate_entry_record(
-                $generated_account_type->id,
-                $entry_disabled,
-                $this->convert_filters_to_entry_components($filter_details)
-            );
-
-            if($entry_disabled){
-                $generated_disabled_entries[] = $generated_entry->id;
-            } else {
-                $generated_entries[] = $generated_entry;
-            }
-        }
-        $generate_entry_count -= count($generated_disabled_entries);
-        if($generate_entry_count == 0){
-            // do this in case we ever generated nothing but "disabled" entries
-            $generated_entries[] = $this->generate_entry_record($generated_account_type->id, false, $this->convert_filters_to_entry_components($filter_details));
-            $generate_entry_count++;
-        }
+        $generated_entries = $this->batch_generate_entries($generate_entry_count, $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details), true);
+        $generated_disabled_entries = $generated_entries->where('disabled', 1);
+        $generated_entries = $generated_entries->sortByDesc('disabled') // sorting so disabled entries are at the start of the collection
+            ->splice($generated_disabled_entries->count()-1);
+        $generate_entry_count -= $generated_disabled_entries->count();
 
         // WHEN
         $response = $this->json("POST", $this->_uri, $filter_details);
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_OK);
-        $response_as_array = $this->getResponseAsArray($response);
+        $response_as_array = $response->json();
         $this->assertEquals($generate_entry_count, $response_as_array['count']);
         unset($response_as_array['count']);
-        $this->runEntryListAssertions($generate_entry_count, $response_as_array, $generated_entries, $generated_disabled_entries);
+        $this->runEntryListAssertions($generate_entry_count, $response_as_array, $generated_entries, $generated_disabled_entries->pluck('id'));
     }
 
     /**
@@ -146,28 +129,29 @@ class PostEntriesTest extends ListEntriesBase {
      * @param $filter_details
      */
     public function testPostEntriesByPage($filter_details){
+        $page_limit = 3;
         // GIVEN
-        $generate_entry_count = $this->_faker->numberBetween(101, 150);
+        $generate_entry_count = $this->_faker->numberBetween(($page_limit-1)*EntryController::MAX_ENTRIES_IN_RESPONSE+1, $page_limit*EntryController::MAX_ENTRIES_IN_RESPONSE);
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
         $filter_details = $this->set_test_specific_filters($filter_details);
-        $generated_entries = $this->batch_generate_non_disabled_entries($generate_entry_count, $generated_account_type->id, $filter_details);
+        $generated_entries = $this->batch_generate_entries($generate_entry_count, $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
 
         $entries_in_response = [];
-        for($i=0; $i<3; $i++){
+        for($i=0; $i<$page_limit; $i++){
             // WHEN
             $response = $this->json("POST", $this->_uri.'/'.$i, $filter_details);
 
             // THEN
-            $response->assertStatus(HttpStatus::HTTP_OK);
-            $response_body_as_array = $this->getResponseAsArray($response);
+            $this->assertResponseStatus($response, HttpStatus::HTTP_OK);
+            $response_body_as_array = $response->json();
 
             $this->assertTrue(is_array($response_body_as_array));
             $this->assertArrayHasKey('count', $response_body_as_array);
             $this->assertEquals($generate_entry_count, $response_body_as_array['count']);
             unset($response_body_as_array['count']);
 
-            if($i+1 == 3){
-                $this->assertEquals($generate_entry_count-(2*EntryController::MAX_ENTRIES_IN_RESPONSE), count($response_body_as_array));
+            if($i+1 == $page_limit){
+                $this->assertEquals($generate_entry_count-(($page_limit-1)*EntryController::MAX_ENTRIES_IN_RESPONSE), count($response_body_as_array));
             } else {
                 $this->assertEquals(EntryController::MAX_ENTRIES_IN_RESPONSE, count($response_body_as_array));
             }
@@ -187,15 +171,14 @@ class PostEntriesTest extends ListEntriesBase {
         $tag_ids = $this->_generated_tags->pluck('id')->toArray();
         $filter_details['tags'] = $this->_faker->randomElements($tag_ids, $this->_faker->numberBetween($min_number_of_tags, count($tag_ids)));
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
-        $generated_entry = $this->generate_entry_record($generated_account_type->id, false, $filter_details);
-        $generated_entries = [$generated_entry];    // only generating a single entry. This has been created as a kind of "collection"
+        $generated_entries = $this->batch_generate_entries(1, $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
 
         // WHEN
         $response = $this->json("POST", $this->_uri, $filter_details);
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_OK);
-        $response_as_array = $this->getResponseAsArray($response);
+        $response_as_array = $response->json();
         $this->assertEquals(count($generated_entries), $response_as_array['count']);
         unset($response_as_array['count']);
         $this->runEntryListAssertions(count($generated_entries), $response_as_array, $generated_entries);
@@ -205,7 +188,7 @@ class PostEntriesTest extends ListEntriesBase {
         // GIVEN
         $start_date = $this->_faker->date();
         do{
-            $end_date = $this->_faker->date();
+            $end_date = $this->_faker->date("Y-m-d", $start_date);  // second parameter guarantees $start_date is >= $end_date
         }while($start_date < $end_date);
         $filter_details = [
             'start_date'=>$start_date,
@@ -213,15 +196,15 @@ class PostEntriesTest extends ListEntriesBase {
         ];
 
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
-        $this->batch_generate_non_disabled_entries($this->_faker->numberBetween(4, 50), $generated_account_type->id, $filter_details);
+        $this->batch_generate_entries($this->_faker->numberBetween(4, 50), $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
         $this->assertPostEntriesNotFound($filter_details);
     }
 
     public function testPostEntriesFilterWithEndDateGreaterThanStartDate(){
         // GIVEN
-        $start_date = $this->_faker->date();
+        $end_date = $this->_faker->date();
         do{
-            $end_date = $this->_faker->date();
+            $start_date = $this->_faker->date("Y-m-d", $end_date); // second parameter guarantees $start_date is <= $end_date
         }while($start_date > $end_date);
         $filter_details = [
             'start_date'=>$start_date,
@@ -230,14 +213,14 @@ class PostEntriesTest extends ListEntriesBase {
 
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
         $generated_entries_count = $this->_faker->numberBetween(4, 50);
-        $generated_entries = $this->batch_generate_non_disabled_entries($generated_entries_count, $generated_account_type->id, $filter_details);
+        $generated_entries = $this->batch_generate_entries($generated_entries_count, $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
 
         // WHEN
         $response = $this->json("POST", $this->_uri, $filter_details);
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_OK);
-        $response_as_array = $this->getResponseAsArray($response);
+        $response_as_array = $response->json();
         $this->assertEquals($generated_entries_count, $response_as_array['count']);
         unset($response_as_array['count']);
         $this->runEntryListAssertions($generated_entries_count, $response_as_array, $generated_entries);
@@ -247,7 +230,7 @@ class PostEntriesTest extends ListEntriesBase {
         // GIVEN
         $min_value = $this->_faker->randomFloat(2, 0, 50);
         do{
-            $max_value = $this->_faker->randomFloat(2, 0, 50);
+            $max_value = $this->_faker->randomFloat(2, 0, $min_value);
         }while($min_value < $max_value);
         $filter_details = [
             'min_value'=>$min_value,
@@ -255,15 +238,15 @@ class PostEntriesTest extends ListEntriesBase {
         ];
 
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
-        $this->batch_generate_non_disabled_entries($this->_faker->numberBetween(4, 50), $generated_account_type->id, $filter_details);
+        $this->batch_generate_entries($this->_faker->numberBetween(4, 50), $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
         $this->assertPostEntriesNotFound($filter_details);
     }
 
     public function testPostEntriesFilterWithMaxValueGreaterThanMinValue(){
         // GIVEN
-        $min_value = $this->_faker->randomFloat(2, 0, 50);
+        $max_value = $this->_faker->randomFloat(2, 0, 50);
         do{
-            $max_value = $this->_faker->randomFloat(2, 0, 50);
+            $min_value = $this->_faker->randomFloat(2, 0, $max_value);
         }while($min_value > $max_value);
         $filter_details = [
             'min_value'=>$min_value,
@@ -272,14 +255,14 @@ class PostEntriesTest extends ListEntriesBase {
 
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
         $generated_entries_count = $this->_faker->numberBetween(4, 50);
-        $generated_entries = $this->batch_generate_non_disabled_entries($generated_entries_count, $generated_account_type->id, $filter_details);
+        $generated_entries = $this->batch_generate_entries($generated_entries_count, $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
 
         // WHEN
         $response = $this->json("POST", $this->_uri, $filter_details);
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_OK);
-        $response_as_array = $this->getResponseAsArray($response);
+        $response_as_array = $response->json();
         $this->assertEquals($generated_entries_count, $response_as_array['count']);
         unset($response_as_array['count']);
         $this->runEntryListAssertions($generated_entries_count, $response_as_array, $generated_entries);
@@ -294,7 +277,7 @@ class PostEntriesTest extends ListEntriesBase {
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_NOT_FOUND);
-        $response_as_array = $this->getResponseAsArray($response);
+        $response_as_array = $response->json();
         $this->assertTrue(is_array($response_as_array));
         $this->assertEmpty($response_as_array);
     }
@@ -360,24 +343,6 @@ class PostEntriesTest extends ListEntriesBase {
             }
         }
         return $entry_components;
-    }
-
-    /**
-     * @param int $generate_entry_count
-     * @param int $generated_account_type_id
-     * @param array $filter_details
-     * @return array
-     */
-    private function batch_generate_non_disabled_entries($generate_entry_count, $generated_account_type_id, $filter_details){
-        $generated_entries = [];
-        for($i=0; $i<$generate_entry_count; $i++){
-            $generated_entries[] = $this->generate_entry_record(
-                $generated_account_type_id,
-                false,
-                $this->convert_filters_to_entry_components($filter_details)
-            );
-        }
-        return $generated_entries;
     }
 
 }

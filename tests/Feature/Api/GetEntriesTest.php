@@ -28,47 +28,31 @@ class GetEntriesTest extends ListEntriesBase {
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
 
         $generate_entry_count = $this->_faker->numberBetween(4, 50);
-        $generated_entries = [];
-        $generated_disabled_entries = [];
-        for($i=0; $i<$generate_entry_count; $i++){
-            $entry_disabled = $this->_faker->boolean;
-            $generated_entry = $this->generate_entry_record($generated_account_type->id, $entry_disabled);
-
-            if($entry_disabled){
-                $generated_disabled_entries[] = $generated_entry->id;
-            } else {
-                $generated_entries[] = $generated_entry;
-            }
-        }
-        $generate_entry_count -= count($generated_disabled_entries);
-        if($generate_entry_count == 0){
-            // do this in case we ever generated nothing but "disabled" entries
-            $this->generate_entry_record($generated_account_type->id, false);
-            $generate_entry_count++;
-        }
+        $generated_entries = $this->batch_generate_entries($generate_entry_count, $generated_account_type->id, [], true);
+        $generated_disabled_entries = $generated_entries->where('disabled', 1);
+        $generated_entries = $generated_entries->sortByDesc('disabled') // sorting so disabled entries are at the start of the collection
+            ->splice($generated_disabled_entries->count()-1);
+        $generate_entry_count -= $generated_disabled_entries->count();
 
         // WHEN
         $response = $this->get($this->_uri);
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_OK);
-        $response_body_as_array = $this->getResponseAsArray($response);
+        $response_body_as_array = $response->json();
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertArrayHasKey('count', $response_body_as_array);
         $this->assertEquals($generate_entry_count, $response_body_as_array['count']);
         unset($response_body_as_array['count']);
 
-        $this->runEntryListAssertions($generate_entry_count, $response_body_as_array, $generated_entries, $generated_disabled_entries);
+        $this->runEntryListAssertions($generate_entry_count, $response_body_as_array, $generated_entries, $generated_disabled_entries->pluck('id'));
     }
 
     public function testGetEntriesByPage(){
         // GIVEN
         $generated_account_type = factory(AccountType::class)->create(['account_id' => $this->_generated_account->id]);
         $generate_entry_count = $this->_faker->numberBetween(101, 150);
-        $generated_entries = [];
-        for($i = 0; $i < $generate_entry_count; $i++){
-            $generated_entries[] = $this->generate_entry_record($generated_account_type->id, false);
-        }
+        $generated_entries = $this->batch_generate_entries($generate_entry_count, $generated_account_type->id);
 
         $entries_in_response = [];
         for($i=0; $i<3; $i++){
