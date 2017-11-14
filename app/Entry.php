@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Http\Controllers\Api\EntryController;
+
 class Entry extends BaseModel {
 
     const CREATED_AT = 'create_stamp';
@@ -112,22 +114,22 @@ class Entry extends BaseModel {
     private static function filter_entry_collection($entries_query, $filters){
         foreach($filters as $filter_name => $filter_constraint){
             switch($filter_name){
-                case 'start_date':
+                case EntryController::FILTER_KEY_START_DATE:
                     $entries_query->where('entries.entry_date', '>=', $filter_constraint);
                     break;
-                case 'min_value':
+                case EntryController::FILTER_KEY_MIN_VALUE:
                     $entries_query->where('entries.entry_value', '>=', $filter_constraint);
                     break;
-                case 'end_date':
+                case EntryController::FILTER_KEY_END_DATE:
                     $entries_query->where('entries.entry_date', '<=', $filter_constraint);
                     break;
-                case 'max_value':
+                case EntryController::FILTER_KEY_MAX_VALUE:
                     $entries_query->where('entries.entry_value', '<=', $filter_constraint);
                     break;
-                case 'account_type':
+                case EntryController::FILTER_KEY_ACCOUNT_TYPE:
                     $entries_query->where('entries.account_type', $filter_constraint);
                     break;
-                case 'expense':
+                case EntryController::FILTER_KEY_EXPENSE:
                     if($filter_constraint == true){
                         $entries_query->where('entries.expense', 1);
                     }
@@ -135,18 +137,18 @@ class Entry extends BaseModel {
                         $entries_query->where('entries.expense', 0);
                     }
                     break;
-                case 'unconfirmed':
+                case EntryController::FILTER_KEY_UNCONFIRMED:
                     if($filter_constraint == true){
                         $entries_query->where('entries.confirm', 0);
                     }
                     break;
-                case 'account':
+                case EntryController::FILTER_KEY_ACCOUNT:
                     $entries_query->join('account_types', function($join) use ($filter_constraint){
                         $join->on('entries.account_type', '=', 'account_types.id')
                             ->where('account_types.account_id', $filter_constraint);
                     });
                     break;
-                case 'attachments':
+                case EntryController::FILTER_KEY_ATTACHMENTS:
                     if($filter_constraint == true){
                         // to get COUNT(attachment.id) > 0 use:
                         // INNER JOIN attachments ON attachments.entry_id=entries.id
@@ -160,7 +162,7 @@ class Entry extends BaseModel {
                             ->whereNull('attachments.entry_id');
                     }
                     break;
-                case 'tags':
+                case EntryController::FILTER_KEY_TAGS:
                     // RIGHT JOIN entry_tags
                     //   ON entry_tags.entry_id=entries.id
                     //   AND entry_tags.tag_id IN ($tags)

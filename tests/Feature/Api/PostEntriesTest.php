@@ -22,26 +22,22 @@ class PostEntriesTest extends ListEntriesBase {
         $filter['no filter'] = [[]];
         $filter["filtering 'expense' & 'income'"] = [['income'=>true, 'expense'=>true]];
 
-        $start_date = $this->_faker->date();
-        do{
-            $end_date = $this->_faker->date();
-        }while($start_date > $end_date);
-        $min_value = $this->_faker->randomFloat(2, 0, 50);
-        do{
-            $max_value = $this->_faker->randomFloat(2, 0, 50);
-        }while($min_value > $max_value);
+        $end_date = $this->_faker->date();
+        $start_date = $this->_faker->date("Y-m-d", $end_date);
+        $max_value = $this->_faker->randomFloat(2, 0, 50);
+        $min_value = $this->_faker->randomFloat(2, 0, $max_value);
 
         $filter_details = [
-            'start_date'=>$start_date,
-            'end_date'=>$end_date,
-            'account'=>0,       // will be set later
-            'account_type'=>0,  // will be set later
-            'tags'=>[],         // will be set later
-            'expense'=>$this->_faker->boolean,
-            'attachments'=>$this->_faker->boolean,
-            'min_value'=>$min_value,
-            'max_value'=>$max_value,
-            'unconfirmed'=>$this->_faker->boolean
+            EntryController::FILTER_KEY_START_DATE=>$start_date,
+            EntryController::FILTER_KEY_END_DATE=>$end_date,
+            EntryController::FILTER_KEY_ACCOUNT=>0,       // will be set later
+            EntryController::FILTER_KEY_ACCOUNT_TYPE=>0,  // will be set later
+            EntryController::FILTER_KEY_TAGS=>[],         // will be set later
+            EntryController::FILTER_KEY_EXPENSE=>$this->_faker->boolean,
+            EntryController::FILTER_KEY_ATTACHMENTS=>$this->_faker->boolean,
+            EntryController::FILTER_KEY_MIN_VALUE=>$min_value,
+            EntryController::FILTER_KEY_MAX_VALUE=>$max_value,
+            EntryController::FILTER_KEY_UNCONFIRMED=>$this->_faker->boolean,
         ];
 
         // confirm all filters in EntryController are listed here
@@ -57,9 +53,9 @@ class PostEntriesTest extends ListEntriesBase {
 
             // adding a switch to catch all eventualities for boolean conditions
             switch($filter_name){
-                case 'expense':
-                case 'attachments':
-                case 'unconfirmed':
+                case EntryController::FILTER_KEY_EXPENSE:
+                case EntryController::FILTER_KEY_ATTACHMENTS:
+                case EntryController::FILTER_KEY_UNCONFIRMED:
                     $filter["filtering '".$filter_name.":true'"] = [
                         [$filter_name=>true]
                     ];
@@ -80,7 +76,6 @@ class PostEntriesTest extends ListEntriesBase {
 
         // all filter requests
         $filter["filtering '".implode("','", array_keys($filter_details))."'"] = [$filter_details];
-
 
         return $filter;
     }
@@ -103,7 +98,7 @@ class PostEntriesTest extends ListEntriesBase {
      */
     public function testPostEntries($filter_details){
         // GIVEN
-        $generate_entry_count = $this->_faker->numberBetween(4, 50);
+        $generate_entry_count = $this->_faker->numberBetween(4, EntryController::MAX_ENTRIES_IN_RESPONSE);
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
         $filter_details = $this->set_test_specific_filters($filter_details);
 
@@ -117,7 +112,7 @@ class PostEntriesTest extends ListEntriesBase {
         $response = $this->json("POST", $this->_uri, $filter_details);
 
         // THEN
-        $response->assertStatus(HttpStatus::HTTP_OK);
+        $this->assertResponseStatus($response, HttpStatus::HTTP_OK);
         $response_as_array = $response->json();
         $this->assertEquals($generate_entry_count, $response_as_array['count']);
         unset($response_as_array['count']);
@@ -169,7 +164,7 @@ class PostEntriesTest extends ListEntriesBase {
             $this->_generated_tags = factory(Tag::class, $this->_faker->randomDigitNotNull)->create();
         }
         $tag_ids = $this->_generated_tags->pluck('id')->toArray();
-        $filter_details['tags'] = $this->_faker->randomElements($tag_ids, $this->_faker->numberBetween($min_number_of_tags, count($tag_ids)));
+        $filter_details[EntryController::FILTER_KEY_TAGS] = $this->_faker->randomElements($tag_ids, $this->_faker->numberBetween($min_number_of_tags, count($tag_ids)));
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
         $generated_entries = $this->batch_generate_entries(1, $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
 
@@ -191,12 +186,12 @@ class PostEntriesTest extends ListEntriesBase {
             $end_date = $this->_faker->date("Y-m-d", $start_date);  // second parameter guarantees $start_date is >= $end_date
         }while($start_date < $end_date);
         $filter_details = [
-            'start_date'=>$start_date,
-            'end_date'=>$end_date,
+            EntryController::FILTER_KEY_START_DATE=>$start_date,
+            EntryController::FILTER_KEY_END_DATE=>$end_date,
         ];
 
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
-        $this->batch_generate_entries($this->_faker->numberBetween(4, 50), $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
+        $this->batch_generate_entries($this->_faker->numberBetween(4, EntryController::MAX_ENTRIES_IN_RESPONSE), $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
         $this->assertPostEntriesNotFound($filter_details);
     }
 
@@ -207,12 +202,12 @@ class PostEntriesTest extends ListEntriesBase {
             $start_date = $this->_faker->date("Y-m-d", $end_date); // second parameter guarantees $start_date is <= $end_date
         }while($start_date > $end_date);
         $filter_details = [
-            'start_date'=>$start_date,
-            'end_date'=>$end_date,
+            EntryController::FILTER_KEY_START_DATE=>$start_date,
+            EntryController::FILTER_KEY_END_DATE=>$end_date,
         ];
 
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
-        $generated_entries_count = $this->_faker->numberBetween(4, 50);
+        $generated_entries_count = $this->_faker->numberBetween(4, EntryController::MAX_ENTRIES_IN_RESPONSE);
         $generated_entries = $this->batch_generate_entries($generated_entries_count, $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
 
         // WHEN
@@ -233,12 +228,12 @@ class PostEntriesTest extends ListEntriesBase {
             $max_value = $this->_faker->randomFloat(2, 0, $min_value);
         }while($min_value < $max_value);
         $filter_details = [
-            'min_value'=>$min_value,
-            'max_value'=>$max_value
+            EntryController::FILTER_KEY_MIN_VALUE=>$min_value,
+            EntryController::FILTER_KEY_MAX_VALUE=>$max_value,
         ];
 
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
-        $this->batch_generate_entries($this->_faker->numberBetween(4, 50), $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
+        $this->batch_generate_entries($this->_faker->numberBetween(4, EntryController::MAX_ENTRIES_IN_RESPONSE), $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
         $this->assertPostEntriesNotFound($filter_details);
     }
 
@@ -249,12 +244,12 @@ class PostEntriesTest extends ListEntriesBase {
             $min_value = $this->_faker->randomFloat(2, 0, $max_value);
         }while($min_value > $max_value);
         $filter_details = [
-            'min_value'=>$min_value,
-            'max_value'=>$max_value
+            EntryController::FILTER_KEY_MIN_VALUE=>$min_value,
+            EntryController::FILTER_KEY_MAX_VALUE=>$max_value,
         ];
 
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
-        $generated_entries_count = $this->_faker->numberBetween(4, 50);
+        $generated_entries_count = $this->_faker->numberBetween(4, EntryController::MAX_ENTRIES_IN_RESPONSE);
         $generated_entries = $this->batch_generate_entries($generated_entries_count, $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
 
         // WHEN
@@ -289,16 +284,16 @@ class PostEntriesTest extends ListEntriesBase {
      * @return array
      */
     private function set_test_specific_filters($filter_details){
-        if(key_exists('tags', $filter_details)){
+        if(key_exists(EntryController::FILTER_KEY_TAGS, $filter_details)){
             $tag_ids = $this->_generated_tags->pluck('id')->toArray();
-            $filter_details['tags'] = $this->_faker->randomElements($tag_ids, $this->_faker->numberBetween(1, count($tag_ids)));
+            $filter_details[EntryController::FILTER_KEY_TAGS] = $this->_faker->randomElements($tag_ids, $this->_faker->numberBetween(1, count($tag_ids)));
         }
-        if(key_exists('account_type', $filter_details)){
+        if(key_exists(EntryController::FILTER_KEY_ACCOUNT_TYPE, $filter_details)){
             $account_types = $this->_generated_account->account_types()->pluck('id')->toArray();
-            $filter_details['account_type'] = $this->_faker->randomElement($account_types);
+            $filter_details[EntryController::FILTER_KEY_ACCOUNT_TYPE] = $this->_faker->randomElement($account_types);
         }
-        if(key_exists('account', $filter_details)){
-            $filter_details['account'] = $this->_generated_account->id;
+        if(key_exists(EntryController::FILTER_KEY_ACCOUNT, $filter_details)){
+            $filter_details[EntryController::FILTER_KEY_ACCOUNT] = $this->_generated_account->id;
         }
         return $filter_details;
     }
@@ -311,33 +306,33 @@ class PostEntriesTest extends ListEntriesBase {
         $entry_components = [];
         foreach($filters as $filter_name => $constraint){
             switch($filter_name){
-                case 'start_date':
-                case 'end_date':
+                case EntryController::FILTER_KEY_START_DATE:
+                case EntryController::FILTER_KEY_END_DATE:
                     $entry_components['entry_date'] = $constraint;
                     break;
-                case 'min_value':
-                case 'max_value':
+                case EntryController::FILTER_KEY_MIN_VALUE:
+                case EntryController::FILTER_KEY_MAX_VALUE:
                     $entry_components['entry_value'] = $constraint;
                     break;
-                case 'account_type':
+                case EntryController::FILTER_KEY_ACCOUNT_TYPE:
                     $entry_components[$filter_name] = $constraint;
                     break;
-                case 'expense':
+                case EntryController::FILTER_KEY_EXPENSE:
                     if($constraint == true){
                         $entry_components[$filter_name] = 1;
                     } elseif($constraint == false) {
                         $entry_components[$filter_name] = 0;
                     }
                     break;
-                case 'unconfirmed':
+                case EntryController::FILTER_KEY_UNCONFIRMED:
                     if($constraint == true){
                         $entry_components['confirm'] = 0;
                     }
                     break;
-                case 'attachments':
+                case EntryController::FILTER_KEY_ATTACHMENTS:
                     $entry_components['has_attachments'] = $constraint;
                     break;
-                case 'tags':
+                case EntryController::FILTER_KEY_TAGS:
                     $entry_components[$filter_name] = [$this->_faker->randomElement($constraint)];
                     break;
             }
