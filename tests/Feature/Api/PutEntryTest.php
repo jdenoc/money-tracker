@@ -69,8 +69,12 @@ class PutEntryTest extends TestCase {
     public function testUpdateEntryButEntryDoesNotExist(){
         $faker = FakerFactory::create();
         // GIVEN - entry does not exist
-        $entry_id = $faker->randomDigitNotNull;
-        $entry_data = factory(Entry::class)->make();
+        do{
+            // make sure randomly generated entry ID isn't associated
+            // with the pre-generated entry
+            $entry_id = $faker->randomNumber();
+        }while($entry_id == $this->_generated_entry->id);
+        $entry_data = factory(Entry::class)->make(['account_type'=>$this->_generated_account_type->id]);
         $entry_data = $entry_data->toArray();
 
         // WHEN
