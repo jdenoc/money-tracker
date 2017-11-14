@@ -28,7 +28,7 @@ class EntryController extends Controller {
     const FILTER_KEY_ATTACHMENTS = 'attachments';
     const FILTER_KEY_END_DATE = 'end_date';
     const FILTER_KEY_EXPENSE = 'expense';
-    const FILTER_KEY_MAX_VALUE = 'min_value';
+    const FILTER_KEY_MAX_VALUE = 'max_value';
     const FILTER_KEY_MIN_VALUE = 'min_value';
     const FILTER_KEY_START_DATE = 'start_date';
     const FILTER_KEY_TAGS = 'tags';

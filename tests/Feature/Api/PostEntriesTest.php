@@ -20,7 +20,6 @@ class PostEntriesTest extends ListEntriesBase {
 
         $filter = [];
         $filter['no filter'] = [[]];
-        $filter["filtering 'expense' & 'income'"] = [['income'=>true, 'expense'=>true]];
 
         $end_date = $this->_faker->date();
         $start_date = $this->_faker->date("Y-m-d", $end_date);
@@ -56,15 +55,15 @@ class PostEntriesTest extends ListEntriesBase {
                 case EntryController::FILTER_KEY_EXPENSE:
                 case EntryController::FILTER_KEY_ATTACHMENTS:
                 case EntryController::FILTER_KEY_UNCONFIRMED:
-                    $filter["filtering '".$filter_name.":true'"] = [
+                    $filter["filtering [".$filter_name.":true]"] = [
                         [$filter_name=>true]
                     ];
-                    $filter["filtering '".$filter_name.":false'"] = [
+                    $filter["filtering [".$filter_name.":false]"] = [
                         [$filter_name=>false]
                     ];
                     break;
                 default:
-                    $filter["filtering '".$filter_name."'"] = [
+                    $filter["filtering [".$filter_name."]"] = [
                         [$filter_name=>$filter_value]
                     ];
             }
@@ -72,10 +71,10 @@ class PostEntriesTest extends ListEntriesBase {
 
         // batch of filter requests
         $batched_filter_details = array_rand($filter_details, 3);
-        $filter["filtering '".implode("','", $batched_filter_details)."'"] = [array_intersect_key($filter_details, array_flip($batched_filter_details))];
+        $filter["filtering [".implode(",", $batched_filter_details).']'] = [array_intersect_key($filter_details, array_flip($batched_filter_details))];
 
         // all filter requests
-        $filter["filtering '".implode("','", array_keys($filter_details))."'"] = [$filter_details];
+        $filter["filtering [".implode(",", array_keys($filter_details)).']'] = [$filter_details];
 
         return $filter;
     }
@@ -271,7 +270,7 @@ class PostEntriesTest extends ListEntriesBase {
         $response = $this->json("POST", $this->_uri, $filter_details);
 
         // THEN
-        $response->assertStatus(HttpStatus::HTTP_NOT_FOUND);
+        $this->assertResponseStatus($response, HttpStatus::HTTP_NOT_FOUND);
         $response_as_array = $response->json();
         $this->assertTrue(is_array($response_as_array));
         $this->assertEmpty($response_as_array);

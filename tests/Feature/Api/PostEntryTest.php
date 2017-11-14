@@ -167,7 +167,7 @@ class PostEntryTest extends TestCase {
         $generated_tag_ids = $generated_tags->pluck('id')->toArray();
         do{
             $non_existent_tag_id = $faker->randomDigitNotNull;
-        } while(in_array($non_existent_tag_id, $generated_tag_ids));
+        }while(in_array($non_existent_tag_id, $generated_tag_ids));
 
         $generated_account = factory(Account::class)->create();
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
