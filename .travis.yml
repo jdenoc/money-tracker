@@ -31,16 +31,17 @@ install:
   - php artisan travis-ci --display-env
 
 before_script:
+  # SHOW DATABASES is here for piece of mind, to confirm that the database is created when it is supposed to be created
   - mysql -u root -e "SHOW DATABASES;"
   - mysql -u root -e "CREATE DATABASE money_tracker;"
   - mysql -u root -e "CREATE USER 'jdenoc'@'localhost' IDENTIFIED BY 'password';"
   - mysql -u root -e "GRANT ALL ON money_tracker.* TO 'jdenoc'@'localhost';"
   - mysql -u root -e "SHOW DATABASES;"
 
-# Some tests take over 10 minutes to run. Using travis_wait to work around that.
-script: travis_wait vendor/bin/phpunit --coverage-text
+script: vendor/bin/phpunit --coverage-text
 
 after_script:
+  # SHOW DATABASES is here for piece of mind, to confirm that the database is deleted when it is supposed to be deleted
   - mysql -u root -e "SHOW DATABASES;"
   - mysql -u root -e "DROP USER 'jdenoc'@'localhost';"
   - mysql -u root -e "DROP DATABASE money_tracker;"

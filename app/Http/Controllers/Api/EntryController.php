@@ -23,6 +23,16 @@ class EntryController extends Controller {
     const ERROR_MSG_SAVE_ENTRY_MISSING_PROPERTY = "Missing data: %s";
     const ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE = "Account type provided does not exist";
     const ERROR_MSG_SAVE_ENTRY_DOES_NOT_EXIST = "Entry does not exist";
+    const FILTER_KEY_ACCOUNT = 'account';
+    const FILTER_KEY_ACCOUNT_TYPE = 'account_type';
+    const FILTER_KEY_ATTACHMENTS = 'attachments';
+    const FILTER_KEY_END_DATE = 'end_date';
+    const FILTER_KEY_EXPENSE = 'expense';
+    const FILTER_KEY_MAX_VALUE = 'max_value';
+    const FILTER_KEY_MIN_VALUE = 'min_value';
+    const FILTER_KEY_START_DATE = 'start_date';
+    const FILTER_KEY_TAGS = 'tags';
+    const FILTER_KEY_UNCONFIRMED = 'unconfirmed';
 
     /**
      * GET /api/entry/{entry_id}
@@ -202,16 +212,16 @@ class EntryController extends Controller {
      */
     public static function get_filter_details($include_tag_ids = true){
         $filter_details = [
-            'start_date'=>'date_format:Y-m-d',
-            'end_date'=>'date_format:Y-m-d',
-            'account'=>'integer',
-            'account_type'=>'integer',
-            'tags'=>'array',
-            'expense'=>'boolean',
-            'attachments'=>'boolean',
-            'min_value'=>'numeric',
-            'max_value'=>'numeric',
-            'unconfirmed'=>'boolean'
+            self::FILTER_KEY_START_DATE=>'date_format:Y-m-d',
+            self::FILTER_KEY_END_DATE=>'date_format:Y-m-d',
+            self::FILTER_KEY_ACCOUNT=>'integer',
+            self::FILTER_KEY_ACCOUNT_TYPE=>'integer',
+            self::FILTER_KEY_TAGS=>'array',
+            self::FILTER_KEY_EXPENSE=>'boolean',
+            self::FILTER_KEY_ATTACHMENTS=>'boolean',
+            self::FILTER_KEY_MIN_VALUE=>'numeric',
+            self::FILTER_KEY_MAX_VALUE=>'numeric',
+            self::FILTER_KEY_UNCONFIRMED=>'boolean'
         ];
 
         if($include_tag_ids){
