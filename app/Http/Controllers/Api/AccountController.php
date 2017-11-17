@@ -43,7 +43,6 @@ class AccountController extends Controller {
         } else {
             $account->account_types->makeHidden([
                 'account_id',    // We already know what account this is. We don't need to re-show it.
-                'last_updated'
             ]);
             return response($account, Response::HTTP_OK);
         }

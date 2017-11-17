@@ -287,3 +287,188 @@ _example output:_
 ```json
 []
 ```
+
+- - -
+
+**Scenario:** attempt to retrieve a list of entries filtered by tag ID while an entry has multiple tags and the entries are not duplicates
+> **GIVEN:** a single entry exists  
+> **AND:** multiple tags are associated with entry  
+> **AND:** there is a filter combination containing a list of tag IDs of the tags associated with the generated entry  
+> **WHEN:** sending a POST request to /api/entries  
+> **AND:** a POST body is provided with JSON containing filter combinations  
+> **THEN:** receive a 200 response  
+> **AND:** a response with JSON that contains a list of entries that match the provided filter  
+> **AND:** the list of entries contains a single entry  
+> **AND:** the `count` node contains `1`  
+
+_example output:_
+```json
+{
+ "0": {
+    "id": 101,
+    "entry_date": "1970-01-01",
+    "entry_value": "0.01",
+    "memo": "test entry 101",
+    "expense": 1,
+    "confirm": 0,
+    "create_stamp": "1970-01-01 00:00:00",
+    "modified_stamp": "1970-01-01 00:00:00",
+    "has_attachments": true,
+    "account_type": 2,
+    "tags": [1, 3]
+  },
+  "count": 1
+}
+```
+
+- - -
+
+**Scenario:** attempt to retrieve a list of entries when `end_date` filter is greater than `start_date` filter
+> **GIVEN:** between 4 and 50 entries exist  
+> **AND:** for simplicities sake, none are marked deleted  
+> **AND:** an account_type associated with the entries exists  
+> **AND:** an account associated with the account_type exists  
+> **AND:** there is a filter combination containing `start_date` and `end_date`, where `end_date` is greater than `start_date`  
+> **WHEN:** sending a POST request to /api/entries  
+> **AND:** a POST body is provided with JSON containing filter combinations  
+> **THEN:** receive a 200 status  
+> **AND:** a response with json containing a list of between 4 and 50 non-deleted entries that match the provided filter combinations  
+> **AND:** within the json is a "count" node that contains the total number of non-deleted entries that match the provided filter combinations  
+> **AND:** entries nodes within json contain entry details including "has_attachments" and "tags"  
+> **AND:** entry tags node is an array  
+> **AND:** entry has_attachments node is a boolean  
+
+_example output:_
+```json
+{
+  "0": {
+    "id": 1,
+    "entry_date": "1970-01-01",
+    "entry_value": "0.01",
+    "memo": "test entry 1",
+    "expense": 1,
+    "confirm": 0,
+    "create_stamp": "1970-01-01 00:00:00",
+    "modified_stamp": "1970-01-01 00:00:00",
+    "has_attachments": true,
+    "account_type": 2,
+    "tags": [1, 2, 3]
+  },
+  "1": {
+    "id": 2,
+    "entry_date": "1970-01-01",
+    "entry_value": "0.01",
+    "memo": "test entry 2",
+    "expense": 0,
+    "confirm": 0,
+    "create_stamp": "1970-01-01 00:00:00",
+    "modified_stamp": "1970-01-01 00:00:00",
+    "has_attachments": false,
+    "account_type": 1,
+    "tags": [1, 2]
+  },
+  "3": {
+    "id": 2,
+    "entry_date": "1970-01-01",
+    "entry_value": "0.01",
+    "memo": "test entry 3",
+    "expense": 0,
+    "confirm": 0,
+    "create_stamp": "1970-01-01 00:00:00",
+    "modified_stamp": "1970-01-01 00:00:00",
+    "has_attachments": true,
+    "account_type": 2,
+    "tags": []
+  },
+  "5": {
+    "id": 2,
+    "entry_date": "1970-01-01",
+    "entry_value": "0.01",
+    "memo": "test entry 4",
+    "expense": 0,
+    "confirm": 0,
+    "create_stamp": "1970-01-01 00:00:00",
+    "modified_stamp": "1970-01-01 00:00:00",
+    "has_attachments": false,
+    "account_type": 1,
+    "tags": []
+  },
+  "count": 4
+}
+```      
+
+- - -
+
+**Scenario:** attempt to retrieve a list of entries when `entry_value_max` filter is greater than `entry_value_min` filter
+> **GIVEN:** between 4 and 50 entries exist  
+> **AND:** for simplicities sake, none are marked deleted  
+> **AND:** an account_type associated with the entries exists  
+> **AND:** an account associated with the account_type exists  
+> **AND:** there is a filter combination containing `entry_value_max` and `entry_value_min`, where `entry_value_max` is greater than `entry_value_min`  
+> **WHEN:** sending a POST request to /api/entries  
+> **AND:** a POST body is provided with JSON containing filter combinations  
+> **THEN:** receive a 200 status  
+> **AND:** a response with json containing a list of between 4 and 50 non-deleted entries that match the provided filter combinations  
+> **AND:** within the json is a "count" node that contains the total number of non-deleted entries that match the provided filter combinations  
+> **AND:** entries nodes within json contain entry details including "has_attachments" and "tags"  
+> **AND:** entry tags node is an array  
+> **AND:** entry has_attachments node is a boolean  
+
+_example output:_
+```json
+{
+  "0": {
+    "id": 1,
+    "entry_date": "1970-01-01",
+    "entry_value": "0.01",
+    "memo": "test entry 1",
+    "expense": 1,
+    "confirm": 0,
+    "create_stamp": "1970-01-01 00:00:00",
+    "modified_stamp": "1970-01-01 00:00:00",
+    "has_attachments": true,
+    "account_type": 2,
+    "tags": [1, 2, 3]
+  },
+  "1": {
+    "id": 2,
+    "entry_date": "1970-01-01",
+    "entry_value": "0.01",
+    "memo": "test entry 2",
+    "expense": 0,
+    "confirm": 0,
+    "create_stamp": "1970-01-01 00:00:00",
+    "modified_stamp": "1970-01-01 00:00:00",
+    "has_attachments": false,
+    "account_type": 1,
+    "tags": [1, 2]
+  },
+  "3": {
+    "id": 2,
+    "entry_date": "1970-01-01",
+    "entry_value": "0.01",
+    "memo": "test entry 3",
+    "expense": 0,
+    "confirm": 0,
+    "create_stamp": "1970-01-01 00:00:00",
+    "modified_stamp": "1970-01-01 00:00:00",
+    "has_attachments": true,
+    "account_type": 2,
+    "tags": []
+  },
+  "5": {
+    "id": 2,
+    "entry_date": "1970-01-01",
+    "entry_value": "0.01",
+    "memo": "test entry 4",
+    "expense": 0,
+    "confirm": 0,
+    "create_stamp": "1970-01-01 00:00:00",
+    "modified_stamp": "1970-01-01 00:00:00",
+    "has_attachments": false,
+    "account_type": 1,
+    "tags": []
+  },
+  "count": 4
+}
+```

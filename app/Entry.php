@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Http\Controllers\Api\EntryController;
+
 class Entry extends BaseModel {
 
     const CREATED_AT = 'create_stamp';
@@ -86,9 +88,8 @@ class Entry extends BaseModel {
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public static function get_collection_of_non_disabled_entries($filters = [], $limit=10, $offset=0){
-        $entries_query = Entry::where('disabled', 0);
-        $entries_query = self::filter_entry_collection($entries_query, $filters);
-        $entries_query->select("entries.*");    // this makes sure that the correct ID is present if a JOIN is required
+        $entries_query = self::build_entry_query($filters);
+        $entries_query->distinct()->select("entries.*");    // this makes sure that the correct ID is present if a JOIN is required
         return $entries_query->offset($offset)->limit($limit)->get();
     }
 
@@ -97,46 +98,57 @@ class Entry extends BaseModel {
      * @return int
      */
     public static function count_non_disabled_entries($filters = []){
-        $entries_query = Entry::where('disabled', 0);
-        $entries_query = self::filter_entry_collection($entries_query, $filters);
-        return $entries_query->count();
+        $entries_query = self::build_entry_query($filters);
+        return $entries_query->distinct()->count("entries.id");
+    }
+
+    /**
+     * @param array $filters
+     * @return mixed
+     */
+    private static function build_entry_query($filters){
+        $entries_query = Entry::where('entries.disabled', 0);
+        return self::filter_entry_collection($entries_query, $filters);
     }
 
     private static function filter_entry_collection($entries_query, $filters){
-        $expense_values = [];
         foreach($filters as $filter_name => $filter_constraint){
             switch($filter_name){
-                case 'start_date':
-                    $entries_query->where('entry_date', '>=', $filter_constraint);
+                case EntryController::FILTER_KEY_START_DATE:
+                    $entries_query->where('entries.entry_date', '>=', $filter_constraint);
                     break;
-                case 'entry_value_min':
-                    $entries_query->where('entry_value', '>=', $filter_constraint);
+                case EntryController::FILTER_KEY_MIN_VALUE:
+                    $entries_query->where('entries.entry_value', '>=', $filter_constraint);
                     break;
-                case 'end_date':
-                    $entries_query->where('entry_date', '<=', $filter_constraint);
+                case EntryController::FILTER_KEY_END_DATE:
+                    $entries_query->where('entries.entry_date', '<=', $filter_constraint);
                     break;
-                case 'entry_value_max':
-                    $entries_query->where('entry_value', '<=', $filter_constraint);
+                case EntryController::FILTER_KEY_MAX_VALUE:
+                    $entries_query->where('entries.entry_value', '<=', $filter_constraint);
                     break;
-                case 'account_type':
-                    $entries_query->where('account_type', $filter_constraint);
+                case EntryController::FILTER_KEY_ACCOUNT_TYPE:
+                    $entries_query->where('entries.account_type', $filter_constraint);
                     break;
-                case 'income':
+                case EntryController::FILTER_KEY_EXPENSE:
                     if($filter_constraint == true){
-                        $expense_values[] = 0;
+                        $entries_query->where('entries.expense', 1);
+                    }
+                    elseif($filter_constraint == false) {
+                        $entries_query->where('entries.expense', 0);
                     }
                     break;
-                case 'expense':
+                case EntryController::FILTER_KEY_UNCONFIRMED:
                     if($filter_constraint == true){
-                        $expense_values[] = 1;
+                        $entries_query->where('entries.confirm', 0);
                     }
                     break;
-                case 'not_confirmed':
-                    if($filter_constraint == true){
-                        $entries_query->where('confirm', 0);
-                    }
+                case EntryController::FILTER_KEY_ACCOUNT:
+                    $entries_query->join('account_types', function($join) use ($filter_constraint){
+                        $join->on('entries.account_type', '=', 'account_types.id')
+                            ->where('account_types.account_id', $filter_constraint);
+                    });
                     break;
-                case 'has_attachments':
+                case EntryController::FILTER_KEY_ATTACHMENTS:
                     if($filter_constraint == true){
                         // to get COUNT(attachment.id) > 0 use:
                         // INNER JOIN attachments ON attachments.entry_id=entries.id
@@ -145,28 +157,22 @@ class Entry extends BaseModel {
                         // to get COUNT(attachments.id) == 0 use:
                         // LEFT JOIN attachments
                         //   ON attachments.entry_id=entries.id
-                        //   AND attachments.entry_id IS NULL
-                        $entries_query->leftJoin('attachments', function($join){
-                            $join->on('entries.id', '=', 'attachments.entry_id')
-                                ->whereNull('attachments.entry_id');
-                        });
+                        // WHERE attachments.entry_id IS NULL
+                        $entries_query->leftJoin('attachments', 'entries.id', '=', 'attachments.entry_id')
+                            ->whereNull('attachments.entry_id');
                     }
                     break;
-                case 'tags':
-                    // LEFT JOIN entry_tags
+                case EntryController::FILTER_KEY_TAGS:
+                    // RIGHT JOIN entry_tags
                     //   ON entry_tags.entry_id=entries.id
                     //   AND entry_tags.tag_id IN ($tags)
                     $tag_ids = (is_array($filters[$filter_name])) ? $filter_constraint : [$filter_constraint];
-                    $entries_query->leftJoin('entry_tags', function($join) use ($tag_ids){
+                    $entries_query->rightJoin('entry_tags', function($join) use ($tag_ids){
                         $join->on('entry_tags.entry_id', '=', 'entries.id')
                             ->whereIn('entry_tags.tag_id', $tag_ids);
                     });
                     break;
             }
-        }
-
-        if(!empty($expense_values)){
-            $entries_query->whereIn('expense', $expense_values);
         }
 
         return $entries_query;

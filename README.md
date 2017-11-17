@@ -16,11 +16,10 @@ For a list of features currently available, what they're expected outcome is and
 
 ## Installation
 ### Database setup
-```
-mysql -e "CREATE DATABASE money_tracker;"   # The database can be named whatever you want. This is just an example.
-mysql -e "CREATE USER tracker@localhost;"   # Once again, you can use any database username you want. This is just an example.
-mysql -e "GRANT ALL PRIVILEGES ON money_tracker.* TO 'tracker'@'localhost';"
-mysql -e "FLUSH PRIVILEGES;"
+```bash
+mysql -e "CREATE DATABASE money_tracker;"                                # The database can be named whatever you want. This is just an example.
+mysql -e "CREATE USER 'jdenoc'@'localhost' IDENTIFIED BY 'password';"    # Once again, you can use any database username & password you want. This is just an example.
+mysql -e "GRANT ALL PRIVILEGES ON money_tracker.* TO 'jdenoc'@'localhost';"
 ```
 
 ### Code deployment
@@ -28,11 +27,9 @@ mysql -e "FLUSH PRIVILEGES;"
 git clone https://github.com/jdenoc/money-tracker.git
 cd money-tracker/
 composer install
-# if you're working with PhpStorm, be sure to run the following commands:
-php artisan ide-helper:generate
-php artisan ide-helper:meta
-php artisan optimize
-# these will generate Laravel Facades that PhpStorm can use
+# If you're working with PhpStorm, be sure to run the following commands.
+# They will generate Laravel Facades that PhpStorm can use
+composer ide-helper
 ```
 
 ### Environment variable setup
