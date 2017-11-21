@@ -14,7 +14,7 @@
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 $factory->define(App\Tag::class, function(Faker\Generator $faker){
     return [
-        'tag'=>$faker->word
+        'name'=>$faker->word
     ];
 });
 

@@ -7,7 +7,7 @@ class Tag extends BaseModel {
     protected $table = 'tags';
     public $timestamps = false; // turns off default laravel timestamping
     protected $fillable = [
-        'tag'
+        'name'
     ];
     protected $guarded = [
         'id'

@@ -49,11 +49,11 @@ var filterModal = {
     initTagsInput: function(){
         var filterTags = $('#filter-tags');
         var tagValues = tags.value.sort(function(a, b){
-            return a.tag.length-b.tag.length
+            return a.name.length-b.name.length
         });
 
         $.each(tagValues, function(idx, tagObj){
-            filterTags.append('<label class="btn btn-info label-tag"><input type="checkbox" name="filter-tag" value="'+tagObj.id+'" autocomplete="off"/>'+tagObj.tag+'</label>');
+            filterTags.append('<label class="btn btn-info label-tag"><input type="checkbox" name="filter-tag" value="'+tagObj.id+'" autocomplete="off"/>'+tagObj.name+'</label>');
         });
     },
     reset: function(){

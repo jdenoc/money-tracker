@@ -111,7 +111,7 @@ var entryModal = {
     initTagsInput: function(){
         $('#entry-tags').tagsinput({
             itemValue: 'id',
-            itemText: 'tag',
+            itemText: 'name',
             typeahead: {
                 source: tags.value,
                 afterSelect: function(val){
@@ -170,7 +170,9 @@ var entryModal = {
         $("#entry-account-type").val('');
         $("input[name='expense-switch']").prop('checked', true)
             .bootstrapSwitch('state', true);
+        // clear tags input
         $('#entry-tags').tagsinput('removeAll');
+        $('#entry-tags').parents('label').children('.bootstrap-tagsinput').children('input').val('');
 
         entryModal.clearAttachmentViews();
         $('#entry-new-attachments').val('[]');
