@@ -154,7 +154,7 @@ class GetEntryTest extends TestCase {
         $generated_attachment_i = 0;
         foreach($generated_attachments as $generated_attachment){
             $generated_attachments_as_array[$generated_attachment_i]['uuid'] = $generated_attachment->uuid;
-            $generated_attachments_as_array[$generated_attachment_i]['attachment'] = $generated_attachment->attachment;
+            $generated_attachments_as_array[$generated_attachment_i]['name'] = $generated_attachment->name;
             $generated_attachments_as_array[$generated_attachment_i]['stamp'] = $generated_attachment->stamp;
             $generated_attachment_i++;
         }
@@ -240,7 +240,7 @@ class GetEntryTest extends TestCase {
         $this->assertEquals($this->_generate_attachment_count, count($entry_attachments_node));
         foreach($entry_attachments_node as $attachment_in_response){
             $this->assertArrayHasKey('uuid', $attachment_in_response);
-            $this->assertArrayHasKey('attachment', $attachment_in_response);
+            $this->assertArrayHasKey('name', $attachment_in_response);
             $this->assertArrayHasKey('stamp', $attachment_in_response);
             $this->assertTrue(
                 in_array($attachment_in_response, $generated_attachments_as_array),

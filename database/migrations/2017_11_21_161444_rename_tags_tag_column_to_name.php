@@ -4,10 +4,10 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class RenameTagsTagColumnToName extends Migration
-{
+class RenameTagsTagColumnToName extends Migration {
+
     /**
-     * Run the migrations.
+     * Rename tags.tag to tags.name
      *
      * @return void
      */

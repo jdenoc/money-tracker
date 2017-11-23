@@ -13,7 +13,7 @@ class Attachment extends BaseModel {
     protected $primaryKey = 'uuid';
     public $incrementing = false;   // because attachments.uuid isn't an int and so can be incremented
     protected $fillable = [
-        'uuid', 'entry_id', 'attachment'
+        'uuid', 'entry_id', 'name'
     ];
     protected $guarded = [
         'stamp'
@@ -32,7 +32,7 @@ class Attachment extends BaseModel {
      * @return string
      */
     public function get_filename_extension(){
-        return pathinfo($this->attachment, PATHINFO_EXTENSION);
+        return pathinfo($this->name, PATHINFO_EXTENSION);
     }
 
     /**
@@ -41,14 +41,14 @@ class Attachment extends BaseModel {
      */
     public function get_hashed_filename(){
         $ext = $this->get_filename_extension();
-        return sha1($this->attachment.$this->uuid).'.'.$ext;
+        return sha1($this->name.$this->uuid).'.'.$ext;
     }
 
     /**
      * @return string
      */
     public function get_tmp_filename(){
-        return $this->uuid.'.'.str_replace(' ', '_', $this->attachment);
+        return $this->uuid.'.'.str_replace(' ', '_', $this->name);
     }
 
     /**

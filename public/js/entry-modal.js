@@ -144,8 +144,8 @@ var entryModal = {
         $.each(entry.value.attachments, function(idx, attachmentObject){
             $('.ajax-file-upload-container').append(
                 '<div id="attachment_'+attachmentObject.uuid+'" class="ajax-file-upload-statusbar">' +
-                '<div class="ajax-file-upload-filename">'+attachmentObject.attachment+'</div>' +
-                '<button type="button" class="btn btn-danger glyphicon glyphicon-trash pull-right" onclick="attachment.remove(\''+attachmentObject.uuid+'\', \''+attachmentObject.attachment+'\');"></button>' +
+                '<div class="ajax-file-upload-filename">'+attachmentObject.name+'</div>' +
+                '<button type="button" class="btn btn-danger glyphicon glyphicon-trash pull-right" onclick="attachment.remove(\''+attachmentObject.uuid+'\', \''+attachmentObject.name+'\');"></button>' +
                 '<button type="button" class="btn btn-default glyphicon glyphicon-search pull-right" onclick="attachment.open(\''+attachmentObject.uuid+'\');"></button>' +
                 '<input type="hidden" name="entry-attachments[]" value="'+JSON.stringify(attachmentObject)+'" />'+
                 '</div>'
@@ -171,8 +171,9 @@ var entryModal = {
         $("input[name='expense-switch']").prop('checked', true)
             .bootstrapSwitch('state', true);
         // clear tags input
-        $('#entry-tags').tagsinput('removeAll');
-        $('#entry-tags').parents('label').children('.bootstrap-tagsinput').children('input').val('');
+        var entryTagsInput = $('#entry-tags');
+        entryTagsInput.tagsinput('removeAll');
+        entryTagsInput.parents('label').children('.bootstrap-tagsinput').children('input').val('');
 
         entryModal.clearAttachmentViews();
         $('#entry-new-attachments').val('[]');

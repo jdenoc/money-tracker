@@ -73,7 +73,7 @@ $factory->define(App\Entry::class, function(Faker\Generator $faker){
 $factory->define(App\Attachment::class, function(Faker\Generator $faker){
     return [
         'uuid'=>$faker->uuid,
-        'attachment'=>$faker->word.'.'.$faker->fileExtension,
+        'name'=>$faker->word.'.'.$faker->fileExtension,
         'entry_id'=>$faker->randomNumber(),
         'stamp'=>date('Y-m-d H:i:s')
     ];

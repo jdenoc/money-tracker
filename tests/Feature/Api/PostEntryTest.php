@@ -220,7 +220,7 @@ class PostEntryTest extends TestCase {
         foreach($generated_attachments as $generated_attachment){
             $generated_entry_data['attachments'][] = [
                 'uuid'=>$generated_attachment->uuid,
-                'attachment'=>$generated_attachment->attachment
+                'name'=>$generated_attachment->name
             ];
         }
 
@@ -253,7 +253,7 @@ class PostEntryTest extends TestCase {
         foreach($get_response_as_array['attachments'] as $attachment){
             $attachment_data = [
                 'uuid'=>$attachment['uuid'],
-                'attachment'=>$attachment['attachment']
+                'name'=>$attachment['name']
             ];
             $this->assertContains($attachment_data, $generated_entry_data['attachments'], 'Generated attachments:'.json_encode($generated_entry_data['attachments']));
         }
