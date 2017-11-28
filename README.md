@@ -41,3 +41,20 @@ That being said, there are certainly variables that should be modified at this p
 - `DB_DATABASE`
 - `DB_USERNAME`
 - `DB_PASSWORD`
+
+## Testing
+This project has been setup to use [travis-ci](https://travis-ci.org/jdenoc/money-tracker) for continuous integration testing. If you wish to test locally, here are some steps to follow
+```bash
+# clear existsing data in database and reinstall table schemas
+php artsian migrate:refresh
+
+# run PHP unit tests
+vendor/bin/phpunit
+
+# run PHP unit tests with converage
+vendor/bin/phpunit --coverage-text
+
+# populate database with dummy data for  manual testing
+php artsian migrate:refresh
+php artisan db:seed --class=UiSampleDatabaseSeeder
+```
