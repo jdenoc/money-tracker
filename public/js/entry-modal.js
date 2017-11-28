@@ -111,7 +111,7 @@ var entryModal = {
     initTagsInput: function(){
         $('#entry-tags').tagsinput({
             itemValue: 'id',
-            itemText: 'tag',
+            itemText: 'name',
             typeahead: {
                 source: tags.value,
                 afterSelect: function(val){
@@ -144,8 +144,8 @@ var entryModal = {
         $.each(entry.value.attachments, function(idx, attachmentObject){
             $('.ajax-file-upload-container').append(
                 '<div id="attachment_'+attachmentObject.uuid+'" class="ajax-file-upload-statusbar">' +
-                '<div class="ajax-file-upload-filename">'+attachmentObject.attachment+'</div>' +
-                '<button type="button" class="btn btn-danger glyphicon glyphicon-trash pull-right" onclick="attachment.remove(\''+attachmentObject.uuid+'\', \''+attachmentObject.attachment+'\');"></button>' +
+                '<div class="ajax-file-upload-filename">'+attachmentObject.name+'</div>' +
+                '<button type="button" class="btn btn-danger glyphicon glyphicon-trash pull-right" onclick="attachment.remove(\''+attachmentObject.uuid+'\', \''+attachmentObject.name+'\');"></button>' +
                 '<button type="button" class="btn btn-default glyphicon glyphicon-search pull-right" onclick="attachment.open(\''+attachmentObject.uuid+'\');"></button>' +
                 '<input type="hidden" name="entry-attachments[]" value="'+JSON.stringify(attachmentObject)+'" />'+
                 '</div>'
@@ -170,7 +170,10 @@ var entryModal = {
         $("#entry-account-type").val('');
         $("input[name='expense-switch']").prop('checked', true)
             .bootstrapSwitch('state', true);
-        $('#entry-tags').tagsinput('removeAll');
+        // clear tags input
+        var entryTagsInput = $('#entry-tags');
+        entryTagsInput.tagsinput('removeAll');
+        entryTagsInput.parents('label').children('.bootstrap-tagsinput').children('input').val('');
 
         entryModal.clearAttachmentViews();
         $('#entry-new-attachments').val('[]');

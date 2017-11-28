@@ -21,7 +21,7 @@ var institutionsPane = {
         if(institutionsPane.institutionsDisplayed) {
             $.each(accounts.value, function(index, accountObject){
                 var accountDiv = '<div id="account-id-'+accountObject.id+'" class="institutions-pane-account">'
-                    + '<a data-toggle="tooltip">'
+                    + '<a data-toggle="tooltip" title="">'
                     + accountObject.name
                     + '</a></div>';
                 if(accountObject.disabled){
@@ -62,7 +62,7 @@ var institutionsPane = {
                     if(tooltipVal === undefined){
                         tooltipVal = '';
                     }
-                    tooltipVal += "- " + accountTypeObject.type_name + " (" + accountTypeObject.last_digits + ")\n";
+                    tooltipVal += "&bull; " + accountTypeObject.type_name + " (" + accountTypeObject.last_digits + ")<br/>\n";
                     accountElement.attr('title', tooltipVal);
                 }
             });
@@ -71,7 +71,7 @@ var institutionsPane = {
                 var lastNewlineIndex = accountTooltip.lastIndexOf("\n");
                 $(accountElement)
                     .attr('title', accountTooltip.substring(0, lastNewlineIndex))
-                    .tooltip({placement: "right"});
+                    .tooltip({placement: "right", html: true, container: 'body'});
             });
         } else {
             setTimeout(institutionsPane.displayAccountTypes, 100); // try again in 0.1 seconds

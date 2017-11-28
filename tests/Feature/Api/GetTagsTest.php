@@ -32,7 +32,7 @@ class GetTagsTest extends TestCase {
         unset($response_body_as_array['count']);
         foreach($response_body_as_array as $tag_in_response){
             $this->assertArrayHasKey('id', $tag_in_response);
-            $this->assertArrayHasKey('tag', $tag_in_response);
+            $this->assertArrayHasKey('name', $tag_in_response);
         }
         foreach($generated_tags as $generated_tag){
             $this->assertTrue(

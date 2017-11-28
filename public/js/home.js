@@ -57,21 +57,21 @@ var tags = {
     },
     getAllNames: function(){
         return $.map(tags.value, function(element, index){
-            return element.tag;
+            return element.name;
         });
     },
     getNamesById: function(tagIds){
         var tagNames = [];
         for(i=0; i<tags.value.length; i++){
             if($.inArray(tags.value[i]['id'], tagIds) !== -1){
-                tagNames.push(tags.value[i]['tag']);
+                tagNames.push(tags.value[i]['name']);
             }
         }
         return tagNames;
     },
     getIdByName: function(tagName){
         var tagObjects = $.grep(tags.value, function(element){
-            return element.tag === tagName;
+            return element.name === tagName;
         });
         if(tagObjects.length > 0){
             return tagObjects[0].id;

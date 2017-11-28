@@ -281,13 +281,13 @@ class PutEntryTest extends TestCase {
         $attachment_data = factory(Attachment::class)->make();
         $put_entry_data = ['attachments'=>[[
             'uuid'=>$attachment_data->uuid,
-            'attachment'=>$attachment_data->attachment
+            'name'=>$attachment_data->name
         ]]];
 
         // WHEN
         $put_response = $this->json("PUT", $this->_base_uri.$this->_generated_entry->id, $put_entry_data);
         // THEN
-        $put_response->assertStatus(HttpStatus::HTTP_OK);
+        $this->assertResponseStatus($put_response, HttpStatus::HTTP_OK);
         $put_response_as_array = $this->getResponseAsArray($put_response);
         $this->assertPutResponseHasCorrectKeys($put_response_as_array);
         $this->assertSuccessPutResponse($put_response_as_array);
@@ -295,7 +295,7 @@ class PutEntryTest extends TestCase {
         // WHEN
         $get_response = $this->get($this->_base_uri.$this->_generated_entry->id);
         // THEN
-        $get_response->assertStatus(HttpStatus::HTTP_OK);
+        $this->assertResponseStatus($get_response, HttpStatus::HTTP_OK);
         $get_response_as_array = $this->getResponseAsArray($get_response);
         $this->assertArrayHasKey('attachments', $get_response_as_array);
         $this->assertTrue(is_array($get_response_as_array['attachments']));
@@ -303,7 +303,7 @@ class PutEntryTest extends TestCase {
         foreach($get_response_as_array['attachments'] as $response_attachment){
             $attachment_data = [
                 'uuid'=>$response_attachment['uuid'],
-                'attachment'=>$response_attachment['attachment']
+                'name'=>$response_attachment['name']
             ];
             $this->assertContains($attachment_data, $put_entry_data['attachments'], 'Generated attachments:'.json_encode($put_entry_data['attachments']));
         }
@@ -313,18 +313,18 @@ class PutEntryTest extends TestCase {
         // GIVEN
         $unattached_attachment = factory(Attachment::class)->make();
         $put_entry_data = ['attachments'=>[
-            ['uuid'=>$unattached_attachment->uuid, 'attachment'=>$unattached_attachment->attachment]
+            ['uuid'=>$unattached_attachment->uuid, 'name'=>$unattached_attachment->name]
         ]];
         $attached_attachments = factory(Attachment::class, 3)->create(['entry_id'=>$this->_generated_entry->id]);
         foreach($attached_attachments as $attached_attachment){
-            $put_entry_data['attachments'][] = ['uuid'=>$attached_attachment->uuid, 'attachment'=>$attached_attachment->attachment];
+            $put_entry_data['attachments'][] = ['uuid'=>$attached_attachment->uuid, 'name'=>$attached_attachment->name];
         }
 
         // WHEN
         $put_response = $this->json("PUT", $this->_base_uri.$this->_generated_entry->id, $put_entry_data);
 
         // THEN
-        $put_response->assertStatus(HttpStatus::HTTP_OK);
+        $this->assertResponseStatus($put_response, HttpStatus::HTTP_OK);
         $put_response_as_array = $this->getResponseAsArray($put_response);
         $this->assertPutResponseHasCorrectKeys($put_response_as_array);
         $this->assertSuccessPutResponse($put_response_as_array);
@@ -333,7 +333,7 @@ class PutEntryTest extends TestCase {
         $get_response = $this->get($this->_base_uri.$this->_generated_entry->id);
 
         // THEN
-        $get_response->assertStatus(HttpStatus::HTTP_OK);
+        $this->assertResponseStatus($get_response, HttpStatus::HTTP_OK);
         $get_response_as_array = $this->getResponseAsArray($get_response);
         $this->assertArrayHasKey('attachments', $get_response_as_array);
         $this->assertTrue(is_array($get_response_as_array['attachments']));
@@ -341,7 +341,7 @@ class PutEntryTest extends TestCase {
         foreach($get_response_as_array['attachments'] as $response_attachment){
             $attachment_data = [
                 'uuid'=>$response_attachment['uuid'],
-                'attachment'=>$response_attachment['attachment']
+                'name'=>$response_attachment['name']
             ];
             // This step really makes sure that entries have not been duplicated
             $this->assertContains($attachment_data, $put_entry_data['attachments'], 'Generated attachments:'.json_encode($put_entry_data['attachments']));
