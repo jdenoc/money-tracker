@@ -48,7 +48,8 @@ class DeleteAccountTypeTest extends TestCase {
         // THEN
         $this->assertResponseStatus($account_response1, HttpStatus::HTTP_OK);
         $this->assertResponseStatus($disabled_response, HttpStatus::HTTP_NO_CONTENT);
-        $this->assertResponseStatus($account_response2, HttpStatus::HTTP_OK);
+        // $this->assertResponseStatus($account_response2, HttpStatus::HTTP_OK); // temperately disabling this so we can effectively test failure output
+        $this->assertResponseStatus($account_response2, HttpStatus::HTTP_BAD_GATEWAY);  // TODO: remove this line and reactivate the line above
 
         $account_response1_as_array = $account_response1->json();
         $this->assertNotEmpty($account_response1_as_array, $account_response1->getContent());
