@@ -40,10 +40,6 @@ before_script:
 
 script: vendor/bin/phpunit --coverage-text
 
-after_failure:
-  # give us a snapshot of the database after a failure
-  - mysqldump -u root -e money_tracker;
-
 after_script:
   # SHOW DATABASES is here for piece of mind, to confirm that the database is deleted when it is supposed to be deleted
   - mysql -u root -e "SHOW DATABASES;"
