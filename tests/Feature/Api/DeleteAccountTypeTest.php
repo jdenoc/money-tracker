@@ -17,6 +17,11 @@ class DeleteAccountTypeTest extends TestCase {
     private $_disable_account_type_uri = '/api/account-type/';
     private $_get_account_uri = '/api/account/';
 
+    public function setUp(){
+        $this->setDatabaseStateInjectionPermission(self::$ALLOW_INJECT_DATABASE_STATE_ON_EXCEPTION);
+        parent::setUp();
+    }
+
     public function testDisableAccountTypeThatDoesNotExist(){
         $faker = FakerFactory::create();
         // GIVEN - account_type does not exist
