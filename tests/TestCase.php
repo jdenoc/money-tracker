@@ -4,24 +4,22 @@ namespace Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Foundation\Testing\TestResponse;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 
 abstract class TestCase extends BaseTestCase {
 
     use CreatesApplication;
+    use DatabaseMigrations;
+    use InjectDatabaseStateIntoException;
 
-    public function initialiseApplication(){
-        $this->app = $this->createApplication();
-    }
-
-    public function refreshApplication(){
-        if(!$this->app){
-            $this->initialiseApplication();
-        }
-    }
+    private $_database_state = '';
 
     public function tearDown(){
+        if($this->isDatabaseStateInjectionAllowed()){
+            $this->_database_state = $this->getDatabaseState();
+        }
         $this->truncateDatabaseTables();
         parent::tearDown();
     }
@@ -79,6 +77,18 @@ abstract class TestCase extends BaseTestCase {
             }
             DB::table($table)->truncate();
         }
+    }
+
+    /**
+     * @param \Exception|\Throwable $unsuccessful_test_exception
+     * @throws \Exception
+     * @throws \Throwable
+     */
+    public function onNotSuccessfulTest($unsuccessful_test_exception){
+        $exception_message_to_inject = "Database state on failure:\n".$this->_database_state;
+        $unsuccessful_test_exception = $this->injectMessageIntoException($unsuccessful_test_exception, $exception_message_to_inject);
+
+        parent::onNotSuccessfulTest($unsuccessful_test_exception); // this needs to occur at the end of the method, or things won't get output.
     }
 
 }

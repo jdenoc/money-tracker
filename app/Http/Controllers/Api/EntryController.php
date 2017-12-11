@@ -273,7 +273,7 @@ class EntryController extends Controller {
     }
 
     /**
-     * @param $filters
+     * @param array $filters
      * @param int $page_number
      * @return \Illuminate\Contracts\Routing\ResponseFactory
      */

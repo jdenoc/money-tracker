@@ -4,14 +4,11 @@ namespace Tests\Feature\Api;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Symfony\Component\HttpFoundation\Response;
 
 Use App\Tag;
 
 class GetTagsTest extends TestCase {
-
-    use DatabaseMigrations;
 
     private $_uri = '/api/tags';
 
