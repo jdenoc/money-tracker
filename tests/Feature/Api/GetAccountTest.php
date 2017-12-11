@@ -5,15 +5,12 @@ namespace Tests\Feature\Api;
 use Faker;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Symfony\Component\HttpFoundation\Response;
 
 use App\Account;
 use App\AccountType;
 
 class GetAccountTest extends TestCase {
-
-    use DatabaseMigrations;
 
     /**
      * @var string

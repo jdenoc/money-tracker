@@ -9,11 +9,8 @@ use Faker;
 use Tests\TestCase;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class GetInstitutionTest extends TestCase {
-
-    use DatabaseMigrations;
 
     /**
      * @var string

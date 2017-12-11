@@ -5,14 +5,11 @@ namespace Tests\Feature\Api;
 use Faker\Factory;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Symfony\Component\HttpFoundation\Response;
 
 use App\Account;
 
 class GetAccountsTest extends TestCase {
-
-    use DatabaseMigrations;
 
     private $_uri = '/api/accounts';
 

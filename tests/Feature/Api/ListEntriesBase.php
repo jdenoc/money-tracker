@@ -10,13 +10,10 @@ use Carbon\Carbon;
 use Faker\Factory as FakerFactory;
 use Faker\Generator;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Tests\TestCase;
 
 class ListEntriesBase extends TestCase {
-
-    use DatabaseMigrations;
 
     /**
      * @var Generator

@@ -4,12 +4,14 @@ namespace Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Foundation\Testing\TestResponse;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 
 abstract class TestCase extends BaseTestCase {
 
     use CreatesApplication;
+    use DatabaseMigrations;
     use InjectDatabaseStateIntoException;
 
     private $_database_state = '';
