@@ -6,7 +6,6 @@ use App\Account;
 use Carbon\Carbon;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Faker;
 
@@ -16,8 +15,6 @@ use App\Entry;
 use App\Tag;
 
 class GetEntryTest extends TestCase {
-
-    use DatabaseMigrations;
 
     private $_generate_tag_count;
     private $_generate_attachment_count;

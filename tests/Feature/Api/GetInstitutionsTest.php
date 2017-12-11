@@ -6,12 +6,9 @@ use App\Institution;
 use Faker\Factory;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 
 class GetInstitutionsTest extends TestCase {
-
-    use DatabaseMigrations;
 
     protected $_base_uri = '/api/institutions';
 

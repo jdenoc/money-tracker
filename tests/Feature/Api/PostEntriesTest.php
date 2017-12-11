@@ -9,6 +9,11 @@ use Symfony\Component\HttpFoundation\Response as HttpStatus;
 
 class PostEntriesTest extends ListEntriesBase {
 
+    public function setUp(){
+        parent::setUp();
+        $this->setDatabaseStateInjectionPermission(self::$ALLOW_INJECT_DATABASE_STATE_ON_EXCEPTION);
+    }
+
     public function providerPostEntriesFilter(){
         // need to call setUp() before running through a data provider method
         // environment needs setting up and isn't until setUp() is called
