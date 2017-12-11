@@ -12,7 +12,12 @@ abstract class TestCase extends BaseTestCase {
     use CreatesApplication;
     use InjectDatabaseStateIntoException;
 
+    private $_database_state = '';
+
     public function tearDown(){
+        if($this->isDatabaseStateInjectionAllowed()){
+            $this->_database_state = $this->getDatabaseState();
+        }
         $this->truncateDatabaseTables();
         parent::tearDown();
     }
@@ -78,11 +83,8 @@ abstract class TestCase extends BaseTestCase {
      * @throws \Throwable
      */
     public function onNotSuccessfulTest($unsuccessful_test_exception){
-        if($this->isDatabaseStateInjectionAllowed()){
-            $database_state = $this->getDatabaseState();
-            $exception_message_to_inject = "Database state on failure:\n".$database_state;
-            $unsuccessful_test_exception = $this->injectMessageIntoException($unsuccessful_test_exception, $exception_message_to_inject);
-        }
+        $exception_message_to_inject = "Database state on failure:\n".$this->_database_state;
+        $unsuccessful_test_exception = $this->injectMessageIntoException($unsuccessful_test_exception, $exception_message_to_inject);
 
         parent::onNotSuccessfulTest($unsuccessful_test_exception); // this needs to occur at the end of the method, or things won't get output.
     }
