@@ -58,7 +58,7 @@ trait InjectDatabaseStateIntoException {
         if($this->isDatabaseStateInjectionAllowed()){
             $exception_message = $exception->getMessage()."\n".$injectable_message;
             $exception_name = get_class($exception);
-            return new $exception_name($exception_message);
+            return new $exception_name($exception_message, 0, $exception);
         } else {
             return $exception;
         }
