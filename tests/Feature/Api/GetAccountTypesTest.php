@@ -7,11 +7,8 @@ use Faker\Factory;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class GetAccountTypesTest extends TestCase {
-
-    use DatabaseMigrations;
 
     private $_uri = '/api/account-types';
 

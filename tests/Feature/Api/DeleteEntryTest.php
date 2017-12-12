@@ -9,11 +9,8 @@ use Faker\Factory as FakerFactory;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class DeleteEntryTest extends TestCase {
-
-    use DatabaseMigrations;
 
     private $_base_uri = '/api/entry/';
 

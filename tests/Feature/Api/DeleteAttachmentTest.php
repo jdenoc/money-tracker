@@ -9,13 +9,9 @@ use App\Entry;
 use Tests\TestCase;
 use Faker;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Symfony\Component\HttpFoundation\Response;
 
 class DeleteAttachmentTest extends TestCase {
-
-    use DatabaseMigrations;
 
     private $_attachment_base_uri = '/api/attachment/';
     private $_entry_base_uri = '/api/entry/';

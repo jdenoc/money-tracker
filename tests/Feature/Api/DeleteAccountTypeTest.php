@@ -8,14 +8,16 @@ use Faker\Factory as FakerFactory;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class DeleteAccountTypeTest extends TestCase {
 
-    use DatabaseMigrations;
-
     private $_disable_account_type_uri = '/api/account-type/';
     private $_get_account_uri = '/api/account/';
+
+    public function setUp(){
+        $this->setDatabaseStateInjectionPermission(self::$ALLOW_INJECT_DATABASE_STATE_ON_EXCEPTION);
+        parent::setUp();
+    }
 
     public function testDisableAccountTypeThatDoesNotExist(){
         $faker = FakerFactory::create();

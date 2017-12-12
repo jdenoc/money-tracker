@@ -14,7 +14,7 @@
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 $factory->define(App\Tag::class, function(Faker\Generator $faker){
     return [
-        'tag'=>$faker->word
+        'name'=>$faker->word
     ];
 });
 
@@ -27,8 +27,7 @@ $factory->define(App\Institution::class, function(Faker\Generator $faker){
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 $factory->define(App\Account::class, function(Faker\Generator $faker){
-    $account_types = App\AccountType::get_enum_values('type');
-    $account_name = $faker->company.' '.$account_types[array_rand($account_types)];
+    $account_name = $faker->company.' account';
     $disabled = $faker->boolean;
     return [
         'name'=>$account_name,         // this is supposed to be a bank account name
@@ -73,7 +72,7 @@ $factory->define(App\Entry::class, function(Faker\Generator $faker){
 $factory->define(App\Attachment::class, function(Faker\Generator $faker){
     return [
         'uuid'=>$faker->uuid,
-        'attachment'=>$faker->word.'.'.$faker->fileExtension,
+        'name'=>$faker->word.'.'.$faker->fileExtension,
         'entry_id'=>$faker->randomNumber(),
         'stamp'=>date('Y-m-d H:i:s')
     ];

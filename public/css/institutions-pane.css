@@ -43,15 +43,11 @@
 }
 
 .institutions-pane-account.active:hover{
-    background-color: #eee;
+    background-color: #999;
 }
 
 .institutions-pane-account.active a{
     color: #fff;
-}
-
-.institutions-pane-account.active a:hover{
-    color: #111;
 }
 
 #closed-accounts-parent{

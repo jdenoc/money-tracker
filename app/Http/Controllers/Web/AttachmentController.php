@@ -31,7 +31,7 @@ class AttachmentController extends Controller {
             case 'pdf':
                 $display_headers = [
                     'Content-Type' => 'application/pdf',
-                    'Content-Disposition' => 'inline; filename="'.$attachment->attachment.'"'
+                    'Content-Disposition' => 'inline; filename="'.$attachment->name.'"'
                 ];
                 break;
 
@@ -65,10 +65,10 @@ class AttachmentController extends Controller {
         if($upload_file_request->isValid()){
             $attachment = new Attachment();
             $attachment->uuid = Uuid::uuid4();
-            $attachment->attachment = $upload_file_request->getClientOriginalName();
+            $attachment->name = $upload_file_request->getClientOriginalName();
             $attachment->storage_store(file_get_contents($upload_file_request->getRealPath()), true);
             return response(
-                ['uuid'=>$attachment->uuid, 'attachment'=>$attachment->attachment, 'tmp_filename'=>$attachment->get_tmp_filename()],
+                ['uuid'=>$attachment->uuid, 'name'=>$attachment->name, 'tmp_filename'=>$attachment->get_tmp_filename()],
                 HttpStatus::HTTP_OK
             );
 
@@ -86,7 +86,7 @@ class AttachmentController extends Controller {
             return response('', HttpStatus::HTTP_BAD_REQUEST);
         } else {
             $attachment = new Attachment();
-            $attachment->attachment = $request->input('filename');
+            $attachment->name = $request->input('filename');
             if($attachment->storage_exists(true)){
                 $attachment->storage_delete(true);
                 return response('', HttpStatus::HTTP_NO_CONTENT);

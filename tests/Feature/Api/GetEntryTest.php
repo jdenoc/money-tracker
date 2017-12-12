@@ -6,7 +6,6 @@ use App\Account;
 use Carbon\Carbon;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Faker;
 
@@ -16,8 +15,6 @@ use App\Entry;
 use App\Tag;
 
 class GetEntryTest extends TestCase {
-
-    use DatabaseMigrations;
 
     private $_generate_tag_count;
     private $_generate_attachment_count;
@@ -154,7 +151,7 @@ class GetEntryTest extends TestCase {
         $generated_attachment_i = 0;
         foreach($generated_attachments as $generated_attachment){
             $generated_attachments_as_array[$generated_attachment_i]['uuid'] = $generated_attachment->uuid;
-            $generated_attachments_as_array[$generated_attachment_i]['attachment'] = $generated_attachment->attachment;
+            $generated_attachments_as_array[$generated_attachment_i]['name'] = $generated_attachment->name;
             $generated_attachments_as_array[$generated_attachment_i]['stamp'] = $generated_attachment->stamp;
             $generated_attachment_i++;
         }
@@ -172,7 +169,7 @@ class GetEntryTest extends TestCase {
         foreach($generated_tags as $generated_tag){
             $generated_entry->tags()->attach($generated_tag->id);
             $generated_tags_as_array[$generated_tag_i]['id'] = $generated_tag->id;
-            $generated_tags_as_array[$generated_tag_i]['tag'] = $generated_tag->tag;
+            $generated_tags_as_array[$generated_tag_i]['name'] = $generated_tag->name;
             $generated_tag_i++;
         }
         return $generated_tags_as_array;
@@ -223,7 +220,7 @@ class GetEntryTest extends TestCase {
         $this->assertEquals($this->_generate_tag_count, count($entry_tags_node));
         foreach($entry_tags_node as $tag_in_response){
             $this->assertArrayHasKey('id', $tag_in_response);
-            $this->assertArrayHasKey('tag', $tag_in_response);
+            $this->assertArrayHasKey('name', $tag_in_response);
             $this->assertTrue(
                 in_array($tag_in_response, $generated_tags_as_array),
                 "tag in response:".json_encode($tag_in_response)."\ngenerated tags:".json_encode($generated_tags_as_array)
@@ -240,7 +237,7 @@ class GetEntryTest extends TestCase {
         $this->assertEquals($this->_generate_attachment_count, count($entry_attachments_node));
         foreach($entry_attachments_node as $attachment_in_response){
             $this->assertArrayHasKey('uuid', $attachment_in_response);
-            $this->assertArrayHasKey('attachment', $attachment_in_response);
+            $this->assertArrayHasKey('name', $attachment_in_response);
             $this->assertArrayHasKey('stamp', $attachment_in_response);
             $this->assertTrue(
                 in_array($attachment_in_response, $generated_attachments_as_array),

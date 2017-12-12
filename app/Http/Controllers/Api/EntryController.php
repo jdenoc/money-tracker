@@ -263,7 +263,7 @@ class EntryController extends Controller {
                 if(is_null($existing_attachment)){
                     $new_attachment = new Attachment();
                     $new_attachment->uuid = $attachment_data['uuid'];
-                    $new_attachment->attachment = $attachment_data['attachment'];
+                    $new_attachment->name = $attachment_data['name'];
                     $new_attachment->entry_id = $entry->id;
                     $new_attachment->storage_move_from_tmp_to_main();
                     $new_attachment->save();
@@ -273,7 +273,7 @@ class EntryController extends Controller {
     }
 
     /**
-     * @param $filters
+     * @param array $filters
      * @param int $page_number
      * @return \Illuminate\Contracts\Routing\ResponseFactory
      */
