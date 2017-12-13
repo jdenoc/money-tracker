@@ -95,12 +95,19 @@ var entryModal = {
         $('#entry-account-type').change(function(){
             var accountTypeId = $(this).val();
             var account = accountTypes.getAccount(accountTypeId);
+            var accountNameParentElement = $('#entry-account-name');
             if(account.hasOwnProperty('name')){
-                $('#entry-account-name').removeClass('hidden');
+                accountNameParentElement.removeClass('hidden');
                 $('#entry-account-name span').text(account.name);
             } else {
-                $('#entry-account-name').addClass('hidden');
+                accountNameParentElement.addClass('hidden');
                 $('#entry-account-name span').text('');
+            }
+
+            if(account.hasOwnProperty('disabled') && account.disabled){
+                accountNameParentElement.removeClass('text-info').addClass('text-muted');
+            } else {
+                accountNameParentElement.removeClass('text-muted').addClass('text-info');
             }
         });
     },

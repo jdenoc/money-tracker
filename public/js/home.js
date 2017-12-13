@@ -29,6 +29,15 @@ function responseToData(response, responseType){
 var tags = {
     uri: "/api/tags",
     value: [],
+    find: function(id){
+        id = parseInt(id);
+        var foundTags = $.grep(tags.value, function(tag){ return tag.id === id });
+        if(foundTags.length > 0){
+            return foundTags[0];
+        } else {
+            return {};  // could not find a tag associated with the provided ID
+        }
+    },
     load: function(){
         $.ajax({
             url: tags.uri,
@@ -60,14 +69,9 @@ var tags = {
             return element.name;
         });
     },
-    getNamesById: function(tagIds){
-        var tagNames = [];
-        for(i=0; i<tags.value.length; i++){
-            if($.inArray(tags.value[i]['id'], tagIds) !== -1){
-                tagNames.push(tags.value[i]['name']);
-            }
-        }
-        return tagNames;
+    getNameById: function(id){
+        var tag = tags.find(id);
+        return (tag.hasOwnProperty('name')) ? tag.name : '';
     },
     getIdByName: function(tagName){
         var tagObjects = $.grep(tags.value, function(element){
@@ -117,7 +121,8 @@ var accounts = {
     uri: "/api/accounts",
     value: [],
     find: function(id){
-        var foundAccounts = $.grep(accounts.value, function(account){ return account.id == id });
+        id = parseInt(id);
+        var foundAccounts = $.grep(accounts.value, function(account){ return account.id === id });
         if(foundAccounts.length > 0){
             return foundAccounts[0];
         } else {
@@ -156,7 +161,8 @@ var accountTypes = {
     uri: "/api/account-types",
     value: [],
     find: function(id){
-        var foundAccountTypes = $.grep(accountTypes.value, function(accountType){ return accountType.id == id });
+        id = parseInt(id);
+        var foundAccountTypes = $.grep(accountTypes.value, function(accountType){ return accountType.id === id });
         if(foundAccountTypes.length > 0){
             return foundAccountTypes[0];
         } else {
@@ -251,8 +257,8 @@ var entries = {
         entries.clearDisplay();
         $.each(entries.value, function(index, entryObject){
             var displayTags = '';
-            $.each(tags.getNamesById(entryObject.tags), function(id, tagName){
-                displayTags += '<span class="label label-default entry-tag">'+tagName+'</span>';
+            $.each(entryObject.tags, function(id){
+                displayTags += '<span class="label label-default entry-tag">'+tags.getNameById(id)+'</span>';
             });
             $('#entries-display-pane tbody').append(
                 '<tr class="'+(!entryObject.confirm ? 'warning' : (entryObject.expense ? '' : 'success'))+'">' +
