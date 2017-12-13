@@ -257,8 +257,8 @@ var entries = {
         entries.clearDisplay();
         $.each(entries.value, function(index, entryObject){
             var displayTags = '';
-            $.each(entryObject.tags, function(id){
-                displayTags += '<span class="label label-default entry-tag">'+tags.getNameById(id)+'</span>';
+            $.each(entryObject.tags, function(id, tagId){
+                displayTags += '<span class="label label-default entry-tag">'+tags.getNameById(tagId)+'</span>';
             });
             $('#entries-display-pane tbody').append(
                 '<tr class="'+(!entryObject.confirm ? 'warning' : (entryObject.expense ? '' : 'success'))+'">' +
