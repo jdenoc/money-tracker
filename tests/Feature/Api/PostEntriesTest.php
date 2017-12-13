@@ -75,7 +75,7 @@ class PostEntriesTest extends ListEntriesBase {
         }
 
         // batch of filter requests
-        $batched_filter_details = array_rand($filter_details, 3);
+        $batched_filter_details = $this->_faker->randomElements($filter_details, 3);
         $filter["filtering [".implode(",", $batched_filter_details).']'] = [array_intersect_key($filter_details, array_flip($batched_filter_details))];
 
         // all filter requests
@@ -284,6 +284,7 @@ class PostEntriesTest extends ListEntriesBase {
     /**
      * Because the data provider method is called before the test, we are unlikely to have the same tags setup
      * This method is called at the start of each test and gathers the tags that are available, then assigns them to the "filter" array
+     * account_type and account IDs are also randomly selected and assigned to the "filter" array.
      * @param array $filter_details
      * @return array
      */

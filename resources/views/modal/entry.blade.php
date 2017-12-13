@@ -38,6 +38,10 @@
                     <select id="entry-account-type" name="entry-account-type" class="form-control">
                         <option></option>
                     </select>
+                    <div id="entry-account-name" class="text-info hidden text-right">
+                        <strong>Account Name:</strong>
+                        <span></span>
+                    </div>
                 </label>
 
                 <label><span id="entry-memo-label">Memo:</span><textarea id="entry-memo" name="entry-memo" class="form-control"></textarea></label>
