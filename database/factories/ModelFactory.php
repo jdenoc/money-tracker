@@ -77,3 +77,11 @@ $factory->define(App\Attachment::class, function(Faker\Generator $faker){
         'stamp'=>date('Y-m-d H:i:s')
     ];
 });
+
+/** @var \Illuminate\Database\Eloquent\Factory $factory */
+$factory->define(App\User::class, function (Faker\Generator $faker) {
+    return [
+        'name' => $faker->name,
+        'email' => $faker->safeEmail,
+    ];
+});
