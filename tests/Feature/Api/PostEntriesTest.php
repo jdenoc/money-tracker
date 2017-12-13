@@ -75,7 +75,7 @@ class PostEntriesTest extends ListEntriesBase {
         }
 
         // batch of filter requests
-        $batched_filter_details = $this->_faker->randomElements($filter_details, 3);
+        $batched_filter_details = array_rand($filter_details, 3);   // NOTE: this can't use the faker method. It will cause warnings in tests to occur.
         $filter["filtering [".implode(",", $batched_filter_details).']'] = [array_intersect_key($filter_details, array_flip($batched_filter_details))];
 
         // all filter requests
