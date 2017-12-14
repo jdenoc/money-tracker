@@ -92,6 +92,24 @@ var entryModal = {
             var value = $(this).val().replace(/[^0-9.]/g, '');
             $(this).val( parseFloat(value).toFixed(2) );
         });
+        $('#entry-account-type').change(function(){
+            var accountTypeId = $(this).val();
+            var account = accountTypes.getAccount(accountTypeId);
+            var accountNameParentElement = $('#entry-account-name');
+            if(account.hasOwnProperty('name')){
+                accountNameParentElement.removeClass('hidden');
+                $('#entry-account-name span').text(account.name);
+            } else {
+                accountNameParentElement.addClass('hidden');
+                $('#entry-account-name span').text('');
+            }
+
+            if(account.hasOwnProperty('disabled') && account.disabled){
+                accountNameParentElement.removeClass('text-info').addClass('text-muted');
+            } else {
+                accountNameParentElement.removeClass('text-muted').addClass('text-info');
+            }
+        });
     },
     initEntryDate: function(){
         var today = new Date();
@@ -132,7 +150,8 @@ var entryModal = {
         $("#entry-date").val(entry.value.entry_date);
         $("#entry-value").val(entry.value.entry_value);
         $("#entry-memo").val(entry.value.memo);
-        $("#entry-account-type").val(entry.value.account_type);
+        $("#entry-account-type").val(entry.value.account_type)
+            .trigger('change'); // show/update account name in modal
         $("input[name='expense-switch']")
             .prop('checked', entry.value.expense)
             .bootstrapSwitch('state', entry.value.expense);
@@ -167,7 +186,8 @@ var entryModal = {
         entryModal.initEntryDate();
         $("#entry-value").val('');
         $("#entry-memo").val('');
-        $("#entry-account-type").val('');
+        $("#entry-account-type").val('')
+            .trigger('change'); // hide/clear account name from display
         $("input[name='expense-switch']").prop('checked', true)
             .bootstrapSwitch('state', true);
         // clear tags input

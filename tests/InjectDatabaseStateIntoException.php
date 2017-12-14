@@ -50,17 +50,17 @@ trait InjectDatabaseStateIntoException {
     }
 
     /**
-     * @param \Exception $exception
+     * @param \Exception $original_exception
      * @param string $injectable_message
      * @return \Exception
      */
-    public function injectMessageIntoException($exception, $injectable_message){
+    public function injectMessageIntoException($original_exception, $injectable_message){
         if($this->isDatabaseStateInjectionAllowed()){
-            $exception_message = $exception->getMessage()."\n".$injectable_message;
-            $exception_name = get_class($exception);
-            return new $exception_name($exception_message, 0, $exception);
+            $exception_message = $original_exception->getMessage()."\n".$injectable_message;
+            $exception_name = get_class($original_exception);
+            return new $exception_name($exception_message, null, $original_exception);
         } else {
-            return $exception;
+            return $original_exception;
         }
     }
 

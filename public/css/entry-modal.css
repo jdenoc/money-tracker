@@ -27,6 +27,19 @@
     padding: 6px;
 }
 
+#entry-account-name{
+    font-weight: normal;
+    font-size: 11px;
+    line-height: 11px;
+    margin: 3px auto 5px;
+    padding-left: 87px;
+    width: 310px;
+}
+
+#entry-account-name span{
+    padding-left: 2px;
+}
+
 #entry-memo-label {
     vertical-align: top;
 }

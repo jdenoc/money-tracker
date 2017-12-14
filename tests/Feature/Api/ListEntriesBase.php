@@ -161,7 +161,7 @@ class ListEntriesBase extends TestCase {
                 $generated_disabled_entries,
                 'entry ID:'.$entry_in_response['id']."\ndisabled entries:".json_encode($generated_disabled_entries)."\nresponse entries:".json_encode($entries_in_response)
             );
-            $generated_entry = $generated_entries->where('id', $entry_in_response['id'])->pop();
+            $generated_entry = $generated_entries->where('id', $entry_in_response['id'])->first();
             $this->assertNotEmpty($generated_entry, "Entry in response: ".json_encode($entry_in_response)." not found in generated set: ".$generated_entries->toJson());
             $this->assertInstanceOf(Entry::class, $generated_entry);
             $this->assertEntryNodesExist($entry_in_response);

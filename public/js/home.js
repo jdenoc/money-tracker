@@ -29,6 +29,15 @@ function responseToData(response, responseType){
 var tags = {
     uri: "/api/tags",
     value: [],
+    find: function(id){
+        id = parseInt(id);
+        var foundTags = $.grep(tags.value, function(tag){ return tag.id === id });
+        if(foundTags.length > 0){
+            return foundTags[0];
+        } else {
+            return {};  // could not find a tag associated with the provided ID
+        }
+    },
     load: function(){
         $.ajax({
             url: tags.uri,
@@ -60,14 +69,9 @@ var tags = {
             return element.name;
         });
     },
-    getNamesById: function(tagIds){
-        var tagNames = [];
-        for(i=0; i<tags.value.length; i++){
-            if($.inArray(tags.value[i]['id'], tagIds) !== -1){
-                tagNames.push(tags.value[i]['name']);
-            }
-        }
-        return tagNames;
+    getNameById: function(id){
+        var tag = tags.find(id);
+        return (tag.hasOwnProperty('name')) ? tag.name : '';
     },
     getIdByName: function(tagName){
         var tagObjects = $.grep(tags.value, function(element){
@@ -116,6 +120,15 @@ var institutions = {
 var accounts = {
     uri: "/api/accounts",
     value: [],
+    find: function(id){
+        id = parseInt(id);
+        var foundAccounts = $.grep(accounts.value, function(account){ return account.id === id });
+        if(foundAccounts.length > 0){
+            return foundAccounts[0];
+        } else {
+            return {};  // couldn't find the account associated with the provided ID
+        }
+    },
     load: function(){
         $.ajax({
             url: accounts.uri,
@@ -147,6 +160,15 @@ var accounts = {
 var accountTypes = {
     uri: "/api/account-types",
     value: [],
+    find: function(id){
+        id = parseInt(id);
+        var foundAccountTypes = $.grep(accountTypes.value, function(accountType){ return accountType.id === id });
+        if(foundAccountTypes.length > 0){
+            return foundAccountTypes[0];
+        } else {
+            return {};
+        }
+    },
     load: function(){
         $.ajax({
             url: accountTypes.uri,
@@ -176,14 +198,19 @@ var accountTypes = {
         institutionsPane.displayAccountTypes();
     },
     getNameById: function (accountTypeId) {
-        var accountTypeObjects = $.grep(accountTypes.value, function(element){
-            return element.id === accountTypeId;
-        });
-
-        if(accountTypeObjects.length > 0){
-            return accountTypeObjects[0].type_name;
+        var accountType = accountTypes.find(accountTypeId);
+        if(accountType.hasOwnProperty('type_name')){
+            return accountType.type_name;
         } else {
             return '';
+        }
+    },
+    getAccount: function(accountTypeId){
+        var accountType = accountTypes.find(accountTypeId);
+        if(accountType.hasOwnProperty('account_id')){
+            return accounts.find(accountType.account_id);
+        } else {
+            return {};  // couldn't find the account_type associated with the provided ID
         }
     }
 };
@@ -230,8 +257,8 @@ var entries = {
         entries.clearDisplay();
         $.each(entries.value, function(index, entryObject){
             var displayTags = '';
-            $.each(tags.getNamesById(entryObject.tags), function(id, tagName){
-                displayTags += '<span class="label label-default entry-tag">'+tagName+'</span>';
+            $.each(entryObject.tags, function(id, tagId){
+                displayTags += '<span class="label label-default entry-tag">'+tags.getNameById(tagId)+'</span>';
             });
             $('#entries-display-pane tbody').append(
                 '<tr class="'+(!entryObject.confirm ? 'warning' : (entryObject.expense ? '' : 'success'))+'">' +
