@@ -112,6 +112,14 @@ class PostEntriesTest extends ListEntriesBase {
             ->splice($generated_disabled_entries->count()-1);
         $generate_entry_count -= $generated_disabled_entries->count();
 
+        if($generate_entry_count < 1){
+            // if we only generate entries that have been marked "disabled"
+            // then we should create at least one entry is NOT marked "disabled
+            $generated_entry = $this->generate_entry_record($generated_account_type->id, false, $this->convert_filters_to_entry_components($filter_details));
+            $generated_entries->push($generated_entry);
+            $generate_entry_count = 1;
+        }
+
         // WHEN
         $response = $this->json("POST", $this->_uri, $filter_details);
 

@@ -89,16 +89,16 @@ class ListEntriesBase extends TestCase {
      * @param int $generate_entry_count
      * @param int $generated_account_type_id
      * @param array $filter_details
-     * @param bool $is_random_disabled
-     * @param bool $is_disabled
+     * @param bool $randomly_mark_entries_disabled
+     * @param bool $mark_entries_disabled
      * @return Collection
      */
-    protected function batch_generate_entries($generate_entry_count, $generated_account_type_id, $filter_details=[], $is_random_disabled=false, $is_disabled=false){
+    protected function batch_generate_entries($generate_entry_count, $generated_account_type_id, $filter_details=[], $randomly_mark_entries_disabled=false, $mark_entries_disabled=false){
         $generated_entries = collect();
         for($i=0; $i<$generate_entry_count; $i++){
             $generated_entry = $this->generate_entry_record(
                 $generated_account_type_id,
-                ($is_random_disabled ? $this->_faker->boolean : $is_disabled),
+                ($randomly_mark_entries_disabled ? $this->_faker->boolean : $mark_entries_disabled),
                 $filter_details
             );
             $generated_entries->push($generated_entry);
