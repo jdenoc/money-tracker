@@ -224,15 +224,16 @@ var entryModal = {
         $('#entry-unlock').toggle(lockStatus);
     },
     submit: function(){
+        var entryTags = $('#entry-tags').val();
         var entrySaveData = {
             id: $('#entry-id').val(),
             entry_date: $('#entry-date').val(),
             entry_value: $('#entry-value').val(),
-            account_type: $('#entry-account-type').val(),
+            account_type: parseInt($('#entry-account-type').val()),
             memo: $('#entry-memo').val(),
             expense: $('input[name="expense-switch"]').prop('checked'),
             confirm: $('#entry-confirm').prop('checked'),
-            tags: $('#entry-tags').val().split(),
+            tags: (entryTags === '') ? [] : $.map(entryTags.split(','), Number),
             attachments: JSON.parse($('#entry-new-attachments').val()),
         };
         entry.save(entrySaveData);
