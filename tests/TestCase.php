@@ -57,10 +57,12 @@ abstract class TestCase extends BaseTestCase {
     /**
      * @param TestResponse|Response $response
      * @param int $expected_status
+     * @param string $error_message
      */
-    protected function assertResponseStatus($response, $expected_status){
+    protected function assertResponseStatus($response, $expected_status, $error_message=''){
         $actual_status = $response->getStatusCode();
-        $failure_message = "Expected status code ".$expected_status." but received ".$actual_status.". Response content: ".$response->getContent();
+        $failure_message = "Expected status code ".$expected_status." but received ".$actual_status.".\nResponse content: ".$response->getContent();
+        $failure_message .= (empty($error_message)) ? '': "\n".$error_message;
         $this->assertTrue($actual_status === $expected_status, $failure_message);
     }
 

@@ -116,7 +116,7 @@ class PostEntriesTest extends ListEntriesBase {
         $response = $this->json("POST", $this->_uri, $filter_details);
 
         // THEN
-        $this->assertResponseStatus($response, HttpStatus::HTTP_OK);
+        $this->assertResponseStatus($response, HttpStatus::HTTP_OK, "Filter:".json_encode($filter_details));
         $response_as_array = $response->json();
         $this->assertEquals($generate_entry_count, $response_as_array['count']);
         unset($response_as_array['count']);
@@ -141,7 +141,7 @@ class PostEntriesTest extends ListEntriesBase {
             $response = $this->json("POST", $this->_uri.'/'.$i, $filter_details);
 
             // THEN
-            $this->assertResponseStatus($response, HttpStatus::HTTP_OK);
+            $this->assertResponseStatus($response, HttpStatus::HTTP_OK, "Filter:".json_encode($filter_details));
             $response_body_as_array = $response->json();
 
             $this->assertTrue(is_array($response_body_as_array));
@@ -275,7 +275,7 @@ class PostEntriesTest extends ListEntriesBase {
         $response = $this->json("POST", $this->_uri, $filter_details);
 
         // THEN
-        $this->assertResponseStatus($response, HttpStatus::HTTP_NOT_FOUND);
+        $this->assertResponseStatus($response, HttpStatus::HTTP_NOT_FOUND, "Filter:".json_encode($filter_details));
         $response_as_array = $response->json();
         $this->assertTrue(is_array($response_as_array));
         $this->assertEmpty($response_as_array);
