@@ -154,7 +154,6 @@ class ListEntriesBase extends TestCase {
         $this->assertEquals($generate_entry_count, count($entries_in_response));
 
         foreach($entries_in_response as $entry_in_response){
-            $generated_entry = null;
             $this->assertArrayHasKey('id', $entry_in_response);
             $this->assertNotContains(
                 $entry_in_response['id'],
