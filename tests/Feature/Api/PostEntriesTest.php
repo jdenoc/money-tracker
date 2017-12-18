@@ -112,11 +112,19 @@ class PostEntriesTest extends ListEntriesBase {
             ->splice($generated_disabled_entries->count()-1);
         $generate_entry_count -= $generated_disabled_entries->count();
 
+        if($generate_entry_count < 1){
+            // if we only generate entries that have been marked "disabled"
+            // then we should create at least one entry is NOT marked "disabled
+            $generated_entry = $this->generate_entry_record($generated_account_type->id, false, $this->convert_filters_to_entry_components($filter_details));
+            $generated_entries->push($generated_entry);
+            $generate_entry_count = 1;
+        }
+
         // WHEN
         $response = $this->json("POST", $this->_uri, $filter_details);
 
         // THEN
-        $this->assertResponseStatus($response, HttpStatus::HTTP_OK);
+        $this->assertResponseStatus($response, HttpStatus::HTTP_OK, "Filter:".json_encode($filter_details));
         $response_as_array = $response->json();
         $this->assertEquals($generate_entry_count, $response_as_array['count']);
         unset($response_as_array['count']);
@@ -141,7 +149,7 @@ class PostEntriesTest extends ListEntriesBase {
             $response = $this->json("POST", $this->_uri.'/'.$i, $filter_details);
 
             // THEN
-            $this->assertResponseStatus($response, HttpStatus::HTTP_OK);
+            $this->assertResponseStatus($response, HttpStatus::HTTP_OK, "Filter:".json_encode($filter_details));
             $response_body_as_array = $response->json();
 
             $this->assertTrue(is_array($response_body_as_array));
@@ -275,7 +283,7 @@ class PostEntriesTest extends ListEntriesBase {
         $response = $this->json("POST", $this->_uri, $filter_details);
 
         // THEN
-        $this->assertResponseStatus($response, HttpStatus::HTTP_NOT_FOUND);
+        $this->assertResponseStatus($response, HttpStatus::HTTP_NOT_FOUND, "Filter:".json_encode($filter_details));
         $response_as_array = $response->json();
         $this->assertTrue(is_array($response_as_array));
         $this->assertEmpty($response_as_array);
