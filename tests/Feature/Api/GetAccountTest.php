@@ -157,7 +157,7 @@ class GetAccountTest extends TestCase {
             $error_msg = "Factory generate account in JSON: ".json_encode($generated_account_types_as_array)."\nResponse Body component:".json_encode($account_type_in_response);
             $this->assertArrayHasKey('id', $account_type_in_response, $error_msg);
             $this->assertArrayHasKey('type', $account_type_in_response, $error_msg);
-            $this->assertArrayHasKey('type_name', $account_type_in_response, $error_msg);
+            $this->assertArrayHasKey('name', $account_type_in_response, $error_msg);
             $this->assertArrayHasKey('last_digits', $account_type_in_response, $error_msg);
             $this->assertArrayHasKey('disabled', $account_type_in_response, $error_msg);
             $this->assertArrayHasKey('create_stamp', $account_type_in_response, $error_msg);

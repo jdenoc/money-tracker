@@ -199,8 +199,8 @@ var accountTypes = {
     },
     getNameById: function (accountTypeId) {
         var accountType = accountTypes.find(accountTypeId);
-        if(accountType.hasOwnProperty('type_name')){
-            return accountType.type_name;
+        if(accountType.hasOwnProperty('name')){
+            return accountType.name;
         } else {
             return '';
         }
