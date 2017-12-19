@@ -122,7 +122,7 @@ var entryModal = {
     initAccountTypeSelect: function(){
         $.each(accountTypes.value, function(idx, accountTypeObject){
             if(!accountTypeObject.disabled){
-                $("#entry-account-type").append('<option value="'+accountTypeObject.id+'">'+accountTypeObject.type_name+'</option>');
+                $("#entry-account-type").append('<option value="'+accountTypeObject.id+'">'+accountTypeObject.name+'</option>');
             }
         });
     },

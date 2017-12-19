@@ -9,7 +9,7 @@ class AccountType extends BaseModel {
 
     protected $table = 'account_types';
     protected $fillable = [
-        'type', 'last_digits', 'type_name', 'account_id', 'disabled'
+        'type', 'last_digits', 'name', 'account_id', 'disabled'
     ];
     protected $guarded = [
         'id', 'modified_stamp'

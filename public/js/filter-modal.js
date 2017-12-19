@@ -39,9 +39,6 @@ var filterModal = {
     initAccountOrAccountTypeSelect: function(accountOrAccountTypeValues){
         $.each(accountOrAccountTypeValues, function(idx, accountOrAccountTypeObject){
             if(!accountOrAccountTypeObject.disabled){
-                if(accountOrAccountTypeObject.hasOwnProperty('type_name')){
-                    accountOrAccountTypeObject.name = accountOrAccountTypeObject.type_name;
-                }
                 $("#filter-account-or-account-type").append('<option value="'+accountOrAccountTypeObject.id+'" class="generated">'+accountOrAccountTypeObject.name+'</option>');
             }
         });

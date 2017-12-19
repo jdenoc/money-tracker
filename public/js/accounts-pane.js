@@ -16,7 +16,7 @@ var accountsPane = {
             $.each(accountTypes.value, function (idx, accountTypeObject) {
                 if (!accountTypeObject.disabled) {
                     $('#account-id-' + accountTypeObject.account_group + ' #account-types-for-' + accountTypeObject.account_group).append(
-                        '<div class="account-pane-account-type"><a href="#">' + accountTypeObject.type_name + '</a></div>'
+                        '<div class="account-pane-account-type"><a href="#">' + accountTypeObject.name + '</a></div>'
                     );
                 }
             });
