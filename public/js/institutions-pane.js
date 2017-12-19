@@ -62,7 +62,7 @@ var institutionsPane = {
                     if(tooltipVal === undefined){
                         tooltipVal = '';
                     }
-                    tooltipVal += "&bull; " + accountTypeObject.type_name + " (" + accountTypeObject.last_digits + ")<br/>\n";
+                    tooltipVal += "&bull; " + accountTypeObject.name + " (" + accountTypeObject.last_digits + ")<br/>\n";
                     accountElement.attr('title', tooltipVal);
                 }
             });

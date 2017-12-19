@@ -47,7 +47,7 @@ $factory->define(App\AccountType::class, function(Faker\Generator $faker){
     return [
         'type'=>$account_type,
         'last_digits'=>substr($bank_account_number, strlen($bank_account_number)-5, 4),
-        'type_name'=>$faker->word.' '.$account_type,
+        'name'=>$faker->word.' '.$account_type,
         'account_id'=>$faker->randomNumber(),
         'disabled'=>false,
         'create_stamp'=>$faker->date("Y-m-d H:i:s"),

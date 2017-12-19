@@ -84,7 +84,7 @@ example output:
         {
             "id": 3,
             "type": "debit card",
-            "type_name": "account 1 debit card",
+            "name": "account 1 debit card",
             "last_digits": "1234"
         }
     ]
@@ -117,7 +117,7 @@ example output:
         {
             "id": 3,
             "type": "debit card",
-            "type_name": "account 1 debit card",
+            "name": "account 1 debit card",
             "last_digits": "1234"
         }
     ]

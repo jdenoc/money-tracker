@@ -26,7 +26,7 @@ _example output:_
         "id":1,
         "type":"checking",
         "last_digits":"1234",
-        "type_name":"type - checking",
+        "name":"type - checking",
         "account_id":1,
         "disabled":false
     },
@@ -34,7 +34,7 @@ _example output:_
         "id":2,
         "type":"debit card",
         "last_digits":"4321",
-        "type_name":"type - debit card",
+        "name":"type - debit card",
         "account_id":1,
         "disabled":true
     },
@@ -42,7 +42,7 @@ _example output:_
         "id":3,
         "type":"savings",
         "last_digits":"9876",
-        "type_name":"type - savings",
+        "name":"type - savings",
         "account_id":2,
         "disabled":false
     }

@@ -20,13 +20,13 @@ _example output:_
         {
             "id": 1,
             "type": "debit card",
-            "type_name": "account 1 debit card",
+            "name": "account 1 debit card",
             "last_digits": "1234",
             "disabled": false
         }, {
             "id": 2,
             "type": "checking",
-            "type_name": "account 1 checking",
+            "name": "account 1 checking",
             "last_digits": "4321",
             "disabled": false
         }
@@ -61,13 +61,13 @@ _example output:_
         {
             "id": 1,
             "type": "debit card",
-            "type_name": "account 1 debit card",
+            "name": "account 1 debit card",
             "last_digits": "1234",
             "disabled": false
         }, {
             "id": 2,
             "type": "checking",
-            "type_name": "account 1 checking",
+            "name": "account 1 checking",
             "last_digits": "4321",
             "disabled": false
         }
