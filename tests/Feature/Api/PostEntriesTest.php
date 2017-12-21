@@ -11,7 +11,7 @@ class PostEntriesTest extends ListEntriesBase {
 
     public function setUp(){
         parent::setUp();
-        $this->setDatabaseStateInjectionPermission(self::$DENY_INJECT_DATABASE_STATE_ON_EXCEPTION);
+        $this->setDatabaseStateInjectionPermission(self::$ALLOW_INJECT_DATABASE_STATE_ON_EXCEPTION);
     }
 
     public function providerPostEntriesFilter(){
