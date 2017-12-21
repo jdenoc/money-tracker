@@ -259,7 +259,7 @@ class PostEntryTest extends TestCase {
     private function generateEntryData(){
         $entry_data = factory(Entry::class)->make();
         return [
-            'account_type_id'=>$entry_data->account_type,
+            'account_type_id'=>$entry_data->account_type_id,
             'confirm'=>$entry_data->confirm,
             'entry_date'=>$entry_data->entry_date,
             'entry_value'=>$entry_data->entry_value,
