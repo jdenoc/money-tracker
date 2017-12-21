@@ -18,7 +18,7 @@ class DeleteEntryTest extends TestCase {
         // GIVEN
         $generated_account = factory(Account::class)->create();
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
-        $entry = factory(Entry::class)->create(['account_type'=>$generated_account_type->id]);
+        $entry = factory(Entry::class)->create(['account_type_id'=>$generated_account_type->id]);
 
         // WHEN
         $get_response1 = $this->get($this->_base_uri.$entry->id);

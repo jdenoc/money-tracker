@@ -25,7 +25,7 @@ class PutEntryTest extends TestCase {
         // GIVEN - for all tests
         $this->_generated_account = factory(Account::class)->create();
         $this->_generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
-        $this->_generated_entry = factory(Entry::class)->create(['account_type'=>$this->_generated_account_type->id]);
+        $this->_generated_entry = factory(Entry::class)->create(['account_type_id'=>$this->_generated_account_type->id]);
     }
 
     public function testUpdateEntryWithoutProvidingData(){
@@ -48,9 +48,9 @@ class PutEntryTest extends TestCase {
 
         $entry_data = factory(Entry::class)->make();
         $entry_data = $entry_data->toArray();
-        // make sure account_type value that does not exist
-        while($entry_data['account_type'] == $this->_generated_account_type->id){
-            $entry_data['account_type'] = $faker->randomDigitNotNull;
+        // make sure account_type_id value that does not exist
+        while($entry_data['account_type_id'] == $this->_generated_account_type->id){
+            $entry_data['account_type_id'] = $faker->randomDigitNotNull;
         }
 
         // WHEN
@@ -71,7 +71,7 @@ class PutEntryTest extends TestCase {
             // with the pre-generated entry
             $entry_id = $faker->randomNumber();
         }while($entry_id == $this->_generated_entry->id);
-        $entry_data = factory(Entry::class)->make(['account_type'=>$this->_generated_account_type->id]);
+        $entry_data = factory(Entry::class)->make(['account_type_id'=>$this->_generated_account_type->id]);
         $entry_data = $entry_data->toArray();
 
         // WHEN
@@ -191,7 +191,7 @@ class PutEntryTest extends TestCase {
         $required_entry_fields = Entry::get_fields_required_for_update();
         unset($required_entry_fields[array_search('disabled', $required_entry_fields)]);
         unset($required_entry_fields[array_search('entry_value', $required_entry_fields)]);
-        unset($required_entry_fields[array_search('account_type', $required_entry_fields)]);
+        unset($required_entry_fields[array_search('account_type_id', $required_entry_fields)]);
         $required_entry_fields = array_values($required_entry_fields);  // do this to reset array index after unset
         $generated_entry_data1 = factory(Entry::class)->make();
         $generated_entry_data2 = factory(Entry::class)->make();
@@ -367,7 +367,7 @@ class PutEntryTest extends TestCase {
         $this->assertEquals($put_entry_data['memo'], $get_response_as_array['memo'], $get_response->getContent());
         $this->assertEquals($put_entry_data['expense'], $get_response_as_array['expense'], $get_response->getContent());
         $this->assertEquals($put_entry_data['confirm'], $get_response_as_array['confirm'], $get_response->getContent());
-        $this->assertEquals($put_entry_data['account_type'], $get_response_as_array['account_type'], $get_response->getContent());
+        $this->assertEquals($put_entry_data['account_type_id'], $get_response_as_array['account_type_id'], $get_response->getContent());
     }
 
     /**

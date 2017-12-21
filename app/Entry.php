@@ -11,7 +11,7 @@ class Entry extends BaseModel {
 
     protected $table = 'entries';
     protected $fillable = [
-        'entry_date', 'account_type', 'entry_value', 'memo', 'expense', 'confirm', 'disabled', 'disabled_stamp'
+        'entry_date', 'account_type_id', 'entry_value', 'memo', 'expense', 'confirm', 'disabled', 'disabled_stamp'
     ];
     protected $guarded = [
         'id', 'create_stamp', 'modified_stamp'
@@ -26,7 +26,7 @@ class Entry extends BaseModel {
     ];
 
     private static $required_entry_fields = [
-        'account_type',
+        'account_type_id',
         'confirm',
         'disabled',
         'entry_date',
@@ -36,10 +36,10 @@ class Entry extends BaseModel {
     ];
 
     /**
-     * entries.account_type = account_types.id
+     * entries.account_type_id = account_types.id
      */
     public function account_type(){
-        return $this->belongsTo('App\AccountType', 'account_type');
+        return $this->belongsTo('App\AccountType', 'account_type_id');
     }
 
     /**
@@ -127,7 +127,7 @@ class Entry extends BaseModel {
                     $entries_query->where('entries.entry_value', '<=', $filter_constraint);
                     break;
                 case EntryController::FILTER_KEY_ACCOUNT_TYPE:
-                    $entries_query->where('entries.account_type', $filter_constraint);
+                    $entries_query->where('entries.account_type_id', $filter_constraint);
                     break;
                 case EntryController::FILTER_KEY_EXPENSE:
                     if($filter_constraint == true){
@@ -144,7 +144,7 @@ class Entry extends BaseModel {
                     break;
                 case EntryController::FILTER_KEY_ACCOUNT:
                     $entries_query->join('account_types', function($join) use ($filter_constraint){
-                        $join->on('entries.account_type', '=', 'account_types.id')
+                        $join->on('entries.account_type_id', '=', 'account_types.id')
                             ->where('account_types.account_id', $filter_constraint);
                     });
                     break;

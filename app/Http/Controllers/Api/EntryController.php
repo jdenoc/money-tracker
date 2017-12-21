@@ -126,8 +126,8 @@ class EntryController extends Controller {
             );
         }
 
-        // check validity of account_type value
-        $account_type = AccountType::find($entry_data['account_type']);
+        // check validity of account_type_id value
+        $account_type = AccountType::find($entry_data['account_type_id']);
         if(empty($account_type)){
             return response(
                 [self::RESPONSE_SAVE_KEY_ERROR=>self::ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE, self::RESPONSE_SAVE_KEY_ID=>self::ERROR_ENTRY_ID],
@@ -178,9 +178,9 @@ class EntryController extends Controller {
             );
         }
 
-        // check validity of account_type value
-        if(isset($entry_data['account_type'])){
-            $account_type = AccountType::find($entry_data['account_type']);
+        // check validity of account_type_id value
+        if(isset($entry_data['account_type_id'])){
+            $account_type = AccountType::find($entry_data['account_type_id']);
             if(empty($account_type)){
                 return response(
                     [self::RESPONSE_SAVE_KEY_ERROR => self::ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE, self::RESPONSE_SAVE_KEY_ID => self::ERROR_ENTRY_ID],

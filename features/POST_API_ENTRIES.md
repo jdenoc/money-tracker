@@ -45,7 +45,7 @@ _example output:_
     "create_stamp": "1970-01-01 00:00:00",
     "modified_stamp": "1970-01-01 00:00:00",
     "has_attachments": true,
-    "account_type": 2,
+    "account_type_id": 2,
     "tags": [1, 2, 3]
   },
   "1": {
@@ -58,7 +58,7 @@ _example output:_
     "create_stamp": "1970-01-01 00:00:00",
     "modified_stamp": "1970-01-01 00:00:00",
     "has_attachments": false,
-    "account_type": 1,
+    "account_type_id": 1,
     "tags": [1, 2]
   },
   "3": {
@@ -71,7 +71,7 @@ _example output:_
     "create_stamp": "1970-01-01 00:00:00",
     "modified_stamp": "1970-01-01 00:00:00",
     "has_attachments": true,
-    "account_type": 2,
+    "account_type_id": 2,
     "tags": []
   },
   "5": {
@@ -84,7 +84,7 @@ _example output:_
     "create_stamp": "1970-01-01 00:00:00",
     "modified_stamp": "1970-01-01 00:00:00",
     "has_attachments": false,
-    "account_type": 1,
+    "account_type_id": 1,
     "tags": []
   },
   "count": 4
@@ -124,7 +124,7 @@ _POST /api/entries/0 example output:_
     "create_stamp": "1970-01-01 00:00:00",
     "modified_stamp": "1970-01-01 00:00:00",
     "has_attachments": true,
-    "account_type": 2,
+    "account_type_id": 2,
     "tags": []
   },
   "1": {
@@ -137,7 +137,7 @@ _POST /api/entries/0 example output:_
     "create_stamp": "1970-01-01 00:00:00",
     "modified_stamp": "1970-01-01 00:00:00",
     "has_attachments": false,
-    "account_type": 1,
+    "account_type_id": 1,
     "tags": [1, 3]
   },
   ...
@@ -151,7 +151,7 @@ _POST /api/entries/0 example output:_
     "create_stamp": "1970-01-01 00:00:00",
     "modified_stamp": "1970-01-01 00:00:00",
     "has_attachments": true,
-    "account_type": 1,
+    "account_type_id": 1,
     "tags": [1, 3]
   },
   "count": 127
@@ -171,7 +171,7 @@ _POST /api/entries/1 example output:_
     "create_stamp": "1970-01-01 00:00:00",
     "modified_stamp": "1970-01-01 00:00:00",
     "has_attachments": true,
-    "account_type": 2,
+    "account_type_id": 2,
     "tags": []
   },
   "51": {
@@ -184,7 +184,7 @@ _POST /api/entries/1 example output:_
     "create_stamp": "1970-01-01 00:00:00",
     "modified_stamp": "1970-01-01 00:00:00",
     "has_attachments": false,
-    "account_type": 1,
+    "account_type_id": 1,
     "tags": [1, 3]
   },
   ...
@@ -198,7 +198,7 @@ _POST /api/entries/1 example output:_
     "create_stamp": "1970-01-01 00:00:00",
     "modified_stamp": "1970-01-01 00:00:00",
     "has_attachments": true,
-    "account_type": 1,
+    "account_type_id": 1,
     "tags": [1, 3]
   },
   "count": 127
@@ -218,7 +218,7 @@ _POST /api/entries/2 example output:_
     "create_stamp": "1970-01-01 00:00:00",
     "modified_stamp": "1970-01-01 00:00:00",
     "has_attachments": true,
-    "account_type": 2,
+    "account_type_id": 2,
     "tags": []
   },
   "101": {
@@ -231,7 +231,7 @@ _POST /api/entries/2 example output:_
     "create_stamp": "1970-01-01 00:00:00",
     "modified_stamp": "1970-01-01 00:00:00",
     "has_attachments": false,
-    "account_type": 1,
+    "account_type_id": 1,
     "tags": [1, 3]
   },
   ...
@@ -245,7 +245,7 @@ _POST /api/entries/2 example output:_
     "create_stamp": "1970-01-01 00:00:00",
     "modified_stamp": "1970-01-01 00:00:00",
     "has_attachments": true,
-    "account_type": 1,
+    "account_type_id": 1,
     "tags": [1, 3]
   },
   "count": 127
@@ -314,7 +314,7 @@ _example output:_
     "create_stamp": "1970-01-01 00:00:00",
     "modified_stamp": "1970-01-01 00:00:00",
     "has_attachments": true,
-    "account_type": 2,
+    "account_type_id": 2,
     "tags": [1, 3]
   },
   "count": 1
@@ -351,7 +351,7 @@ _example output:_
     "create_stamp": "1970-01-01 00:00:00",
     "modified_stamp": "1970-01-01 00:00:00",
     "has_attachments": true,
-    "account_type": 2,
+    "account_type_id": 2,
     "tags": [1, 2, 3]
   },
   "1": {
@@ -364,7 +364,7 @@ _example output:_
     "create_stamp": "1970-01-01 00:00:00",
     "modified_stamp": "1970-01-01 00:00:00",
     "has_attachments": false,
-    "account_type": 1,
+    "account_type_id": 1,
     "tags": [1, 2]
   },
   "3": {
@@ -377,7 +377,7 @@ _example output:_
     "create_stamp": "1970-01-01 00:00:00",
     "modified_stamp": "1970-01-01 00:00:00",
     "has_attachments": true,
-    "account_type": 2,
+    "account_type_id": 2,
     "tags": []
   },
   "5": {
@@ -390,7 +390,7 @@ _example output:_
     "create_stamp": "1970-01-01 00:00:00",
     "modified_stamp": "1970-01-01 00:00:00",
     "has_attachments": false,
-    "account_type": 1,
+    "account_type_id": 1,
     "tags": []
   },
   "count": 4
@@ -427,7 +427,7 @@ _example output:_
     "create_stamp": "1970-01-01 00:00:00",
     "modified_stamp": "1970-01-01 00:00:00",
     "has_attachments": true,
-    "account_type": 2,
+    "account_type_id": 2,
     "tags": [1, 2, 3]
   },
   "1": {
@@ -440,7 +440,7 @@ _example output:_
     "create_stamp": "1970-01-01 00:00:00",
     "modified_stamp": "1970-01-01 00:00:00",
     "has_attachments": false,
-    "account_type": 1,
+    "account_type_id": 1,
     "tags": [1, 2]
   },
   "3": {
@@ -453,7 +453,7 @@ _example output:_
     "create_stamp": "1970-01-01 00:00:00",
     "modified_stamp": "1970-01-01 00:00:00",
     "has_attachments": true,
-    "account_type": 2,
+    "account_type_id": 2,
     "tags": []
   },
   "5": {
@@ -466,7 +466,7 @@ _example output:_
     "create_stamp": "1970-01-01 00:00:00",
     "modified_stamp": "1970-01-01 00:00:00",
     "has_attachments": false,
-    "account_type": 1,
+    "account_type_id": 1,
     "tags": []
   },
   "count": 4
