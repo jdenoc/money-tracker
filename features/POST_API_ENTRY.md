@@ -101,7 +101,7 @@ example output:
   "memo": "entry test",
   "expense": 1,
   "confirm": 0,
-  "account_type": 3,
+  "account_type_id": 3,
   "tags": [],
   "attachments": [],
   "create_stamp": "1970-01-01T00:00:00+00:00",
@@ -158,12 +158,8 @@ example output:
   "memo": "entry test",
   "expense": 1,
   "confirm": 0,
-  "account_type": 3,
-  "tags": [
-    1,
-    2,
-    3
-  ],
+  "account_type_id": 3,
+  "tags": [1, 2, 3],
   "attachments": [],
   "create_stamp": "1970-01-01T00:00:00+00:00",
   "modified_stamp": "1970-01-01T00:00:01+00:00"
@@ -200,7 +196,7 @@ example output:
   "memo": "entry test",
   "expense": 1,
   "confirm": 0,
-  "account_type": 1,
+  "account_type_id": 1,
   "tags": [],
   "attachments": [
     {"attachment": "test1.txt", "uuid": "baa9302e-6ebc-437b-b5c7-32075e7a3ddd"},

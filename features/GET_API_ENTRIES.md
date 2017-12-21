@@ -24,7 +24,7 @@ _example output:_
 > **THEN:** receive a 200 status  
 > **AND:** get a json response containing a list of entries  
 > **AND:** in the json is a count of the entries  
-> **AND:** in the entry nodes there are entry details, including "has_attachments", "tags" and "account_type" nodes  
+> **AND:** in the entry nodes there are entry details, including "has_attachments", "tags" and "account_type_id" nodes  
 > **AND:** entry tags node is an array  
 > **AND:** entries marked as "deleted" do not appear
 
@@ -41,7 +41,7 @@ _example output:_
     "create_stamp": "1970-01-01 00:00:00",
     "modified_stamp": "1970-01-01 00:00:00",
     "has_attachments": true,
-    "account_type": 2,
+    "account_type_id": 2,
     "tags": [1, 2, 3]
   },
   "1": {
@@ -54,7 +54,7 @@ _example output:_
     "create_stamp": "1970-01-01 00:00:00",
     "modified_stamp": "1970-01-01 00:00:00",
     "has_attachments": false,
-    "account_type": 1,
+    "account_type_id": 1,
     "tags": [1, 2]
   },
   "2": {
@@ -67,7 +67,7 @@ _example output:_
     "create_stamp": "1970-01-01 00:00:00",
     "modified_stamp": "1970-01-01 00:00:00",
     "has_attachments": true,
-    "account_type": 2,
+    "account_type_id": 2,
     "tags": []
   },
   "3": {
@@ -80,7 +80,7 @@ _example output:_
     "create_stamp": "1970-01-01 00:00:00",
     "modified_stamp": "1970-01-01 00:00:00",
     "has_attachments": false,
-    "account_type": 1,
+    "account_type_id": 1,
     "tags": []
   },
   "count": 4
@@ -98,7 +98,7 @@ _example output:_
 > **THEN:** receive a 200 status  
 > **AND:** get a json response containing a list of entries  
 > **AND:** in the json is a count of the total non-deleted entries in the database  
-> **AND:** in the entry nodes there are entry details, including "has_attachments", "tags" and "account_type" nodes  
+> **AND:** in the entry nodes there are entry details, including "has_attachments", "tags" and "account_type_id" nodes  
 > **AND:** entry tags node is an array  
 
 _GET /api/entries/ example output:_
@@ -114,7 +114,7 @@ _GET /api/entries/ example output:_
     "create_stamp": "1970-01-01 00:00:00",
     "modified_stamp": "1970-01-01 00:00:00",
     "has_attachments": true,
-    "account_type": 2,
+    "account_type_id": 2,
     "tags": []
   },
   "1": {
@@ -127,7 +127,7 @@ _GET /api/entries/ example output:_
     "create_stamp": "1970-01-01 00:00:00",
     "modified_stamp": "1970-01-01 00:00:00",
     "has_attachments": false,
-    "account_type": 1,
+    "account_type_id": 1,
     "tags": [1, 3]
   },
   ...
@@ -141,7 +141,7 @@ _GET /api/entries/ example output:_
     "create_stamp": "1970-01-01 00:00:00",
     "modified_stamp": "1970-01-01 00:00:00",
     "has_attachments": true,
-    "account_type": 1,
+    "account_type_id": 1,
     "tags": [1, 3]
   },
   "count": 127
@@ -161,7 +161,7 @@ _GET /api/entries/1 example output:_
     "create_stamp": "1970-01-01 00:00:00",
     "modified_stamp": "1970-01-01 00:00:00",
     "has_attachments": true,
-    "account_type": 2,
+    "account_type_id": 2,
     "tags": []
   },
   "51": {
@@ -174,7 +174,7 @@ _GET /api/entries/1 example output:_
     "create_stamp": "1970-01-01 00:00:00",
     "modified_stamp": "1970-01-01 00:00:00",
     "has_attachments": false,
-    "account_type": 1,
+    "account_type_id": 1,
     "tags": [1, 3]
   },
   ...
@@ -188,7 +188,7 @@ _GET /api/entries/1 example output:_
     "create_stamp": "1970-01-01 00:00:00",
     "modified_stamp": "1970-01-01 00:00:00",
     "has_attachments": true,
-    "account_type": 1,
+    "account_type_id": 1,
     "tags": [1, 3]
   },
   "count": 127
@@ -208,7 +208,7 @@ _GET /api/entries/2 example output:_
     "create_stamp": "1970-01-01 00:00:00",
     "modified_stamp": "1970-01-01 00:00:00",
     "has_attachments": true,
-    "account_type": 2,
+    "account_type_id": 2,
     "tags": []
   },
   "101": {
@@ -221,7 +221,7 @@ _GET /api/entries/2 example output:_
     "create_stamp": "1970-01-01 00:00:00",
     "modified_stamp": "1970-01-01 00:00:00",
     "has_attachments": false,
-    "account_type": 1,
+    "account_type_id": 1,
     "tags": [1, 3]
   },
   ...
@@ -235,7 +235,7 @@ _GET /api/entries/2 example output:_
     "create_stamp": "1970-01-01 00:00:00",
     "modified_stamp": "1970-01-01 00:00:00",
     "has_attachments": true,
-    "account_type": 1,
+    "account_type_id": 1,
     "tags": [1, 3]
   },
   "count": 127

@@ -60,7 +60,7 @@ $factory->define(App\AccountType::class, function(Faker\Generator $faker){
 $factory->define(App\Entry::class, function(Faker\Generator $faker){
     return [
         'entry_date'=>$faker->date(),
-        'account_type'=>$faker->randomNumber(),
+        'account_type_id'=>$faker->randomNumber(),
         'entry_value'=>$faker->randomFloat(2, 0, 100),  // 0.00 < entry_value < 100.00
         'memo'=>$faker->words(3, true),
         'expense'=>$faker->boolean,

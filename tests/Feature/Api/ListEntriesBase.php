@@ -53,7 +53,7 @@ class ListEntriesBase extends TestCase {
      * @return Entry
      */
     protected function generate_entry_record($account_type_id, $entry_disabled, $override_entry_components=[]){
-        $default_entry_data = ['account_type'=>$account_type_id, 'disabled'=>$entry_disabled];
+        $default_entry_data = ['account_type_id'=>$account_type_id, 'disabled'=>$entry_disabled];
         $new_entry_data = array_merge($default_entry_data, $override_entry_components);
         unset($new_entry_data['tags']);
         unset($new_entry_data['has_attachments']);
@@ -113,7 +113,7 @@ class ListEntriesBase extends TestCase {
         $this->assertArrayHasKey('entry_date', $entry_nodes);
         $this->assertArrayHasKey('entry_value', $entry_nodes);
         $this->assertArrayHasKey('memo', $entry_nodes);
-        $this->assertArrayHasKey('account_type', $entry_nodes);
+        $this->assertArrayHasKey('account_type_id', $entry_nodes);
         $this->assertArrayHasKey('expense', $entry_nodes);
         $this->assertArrayHasKey('confirm', $entry_nodes);
         $this->assertArrayHasKey('create_stamp', $entry_nodes);
@@ -131,7 +131,7 @@ class ListEntriesBase extends TestCase {
         $this->assertEquals($generated_entry->entry_date, $entry_nodes['entry_date'], $failure_msg);
         $this->assertEquals($generated_entry->entry_value, $entry_nodes['entry_value'], $failure_msg);
         $this->assertEquals($generated_entry->memo, $entry_nodes['memo'], $failure_msg);
-        $this->assertEquals($generated_entry->account_type, $entry_nodes['account_type'], $failure_msg);
+        $this->assertEquals($generated_entry->account_type_id, $entry_nodes['account_type_id'], $failure_msg);
         $this->assertEquals($generated_entry->expense, $entry_nodes['expense'], $failure_msg);
         $this->assertEquals($generated_entry->confirm, $entry_nodes['confirm'], $failure_msg);
         $this->assertDateFormat($entry_nodes['create_stamp'], Carbon::ATOM, $failure_msg);

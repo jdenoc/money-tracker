@@ -26,7 +26,7 @@ class AccountType extends BaseModel {
     }
 
     public function entries(){
-        return $this->hasMany('App\Entry', 'account_type');
+        return $this->hasMany('App\Entry', 'account_type_id');
     }
 
 }

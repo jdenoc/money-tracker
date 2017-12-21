@@ -1,11 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class RenameAccountTypesTypeNameColumnToName extends Migration
-{
+class RenameAccountTypesTypeNameColumnToName extends Migration {
+
     /**
      * Rename account_types.type_name to account_types.name
      *

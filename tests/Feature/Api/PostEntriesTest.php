@@ -11,7 +11,7 @@ class PostEntriesTest extends ListEntriesBase {
 
     public function setUp(){
         parent::setUp();
-        $this->setDatabaseStateInjectionPermission(self::$ALLOW_INJECT_DATABASE_STATE_ON_EXCEPTION);
+        $this->setDatabaseStateInjectionPermission(self::$DENY_INJECT_DATABASE_STATE_ON_EXCEPTION);
     }
 
     public function providerPostEntriesFilter(){
@@ -330,7 +330,7 @@ class PostEntriesTest extends ListEntriesBase {
                     $entry_components['entry_value'] = $constraint;
                     break;
                 case EntryController::FILTER_KEY_ACCOUNT_TYPE:
-                    $entry_components[$filter_name] = $constraint;
+                    $entry_components['account_type_id'] = $constraint;
                     break;
                 case EntryController::FILTER_KEY_EXPENSE:
                     if($constraint == true){

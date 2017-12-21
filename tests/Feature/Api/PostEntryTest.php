@@ -107,7 +107,7 @@ class PostEntryTest extends TestCase {
         $generated_account = factory(Account::class)->create();
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
         $generated_entry_data = $this->generateEntryData();
-        $generated_entry_data['account_type'] = $generated_account_type->id;
+        $generated_entry_data['account_type_id'] = $generated_account_type->id;
 
         // WHEN
         $get_account_response1 = $this->get('/api/account/'.$generated_account->id);
@@ -140,7 +140,7 @@ class PostEntryTest extends TestCase {
         $this->assertEquals($generated_entry_data['memo'], $get_entry_response_as_array['memo']);
         $this->assertEquals($generated_entry_data['expense'], $get_entry_response_as_array['expense']);
         $this->assertEquals($generated_entry_data['confirm'], $get_entry_response_as_array['confirm']);
-        $this->assertEquals($generated_entry_data['account_type'], $get_entry_response_as_array['account_type']);
+        $this->assertEquals($generated_entry_data['account_type_id'], $get_entry_response_as_array['account_type_id']);
 
         // WHEN
         $get_account_response2 = $this->get('/api/account/'.$generated_account->id);
@@ -169,7 +169,7 @@ class PostEntryTest extends TestCase {
         $generated_entry_data = $this->generateEntryData();
         $generated_entry_data['tags'] = [$non_existent_tag_id];
         $generated_entry_data['tags'] = array_merge($generated_entry_data['tags'], $generated_tag_ids);
-        $generated_entry_data['account_type'] = $generated_account_type->id;
+        $generated_entry_data['account_type_id'] = $generated_account_type->id;
 
         // WHEN
         $post_response = $this->json('POST', $this->_base_uri, $generated_entry_data);
@@ -192,7 +192,7 @@ class PostEntryTest extends TestCase {
         $this->assertEquals($generated_entry_data['memo'], $get_response_as_array['memo'], $entry_failure_message);
         $this->assertEquals($generated_entry_data['expense'], $get_response_as_array['expense'], $entry_failure_message);
         $this->assertEquals($generated_entry_data['confirm'], $get_response_as_array['confirm'], $entry_failure_message);
-        $this->assertEquals($generated_entry_data['account_type'], $get_response_as_array['account_type'], $entry_failure_message);
+        $this->assertEquals($generated_entry_data['account_type_id'], $get_response_as_array['account_type_id'], $entry_failure_message);
         $this->assertTrue(is_array($get_response_as_array['tags']), $entry_failure_message);
         $this->assertNotEmpty($get_response_as_array['tags'], $entry_failure_message);
         $this->assertFalse(in_array($non_existent_tag_id, $get_response_as_array['tags']), $entry_failure_message);
@@ -212,7 +212,7 @@ class PostEntryTest extends TestCase {
         $generated_account = factory(Account::class)->create();
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
         $generated_entry_data = $this->generateEntryData();
-        $generated_entry_data['account_type'] = $generated_account_type->id;
+        $generated_entry_data['account_type_id'] = $generated_account_type->id;
         $generated_entry_data['attachments'] = [];
         foreach($generated_attachments as $generated_attachment){
             $generated_entry_data['attachments'][] = [
@@ -243,7 +243,7 @@ class PostEntryTest extends TestCase {
         $this->assertEquals($generated_entry_data['memo'], $get_response_as_array['memo']);
         $this->assertEquals($generated_entry_data['expense'], $get_response_as_array['expense']);
         $this->assertEquals($generated_entry_data['confirm'], $get_response_as_array['confirm']);
-        $this->assertEquals($generated_entry_data['account_type'], $get_response_as_array['account_type']);
+        $this->assertEquals($generated_entry_data['account_type_id'], $get_response_as_array['account_type_id']);
         $this->assertArrayHasKey('attachments', $get_response_as_array);
         $this->assertTrue(is_array($get_response_as_array['attachments']));
         $this->assertNotEmpty($get_response_as_array['attachments']);
@@ -259,7 +259,7 @@ class PostEntryTest extends TestCase {
     private function generateEntryData(){
         $entry_data = factory(Entry::class)->make();
         return [
-            'account_type'=>$entry_data->account_type,
+            'account_type_id'=>$entry_data->account_type,
             'confirm'=>$entry_data->confirm,
             'entry_date'=>$entry_data->entry_date,
             'entry_value'=>$entry_data->entry_value,

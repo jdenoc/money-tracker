@@ -150,7 +150,7 @@ var entryModal = {
         $("#entry-date").val(entry.value.entry_date);
         $("#entry-value").val(entry.value.entry_value);
         $("#entry-memo").val(entry.value.memo);
-        $("#entry-account-type").val(entry.value.account_type)
+        $("#entry-account-type").val(entry.value.account_type_id)
             .trigger('change'); // show/update account name in modal
         $("input[name='expense-switch']")
             .prop('checked', entry.value.expense)
@@ -229,7 +229,7 @@ var entryModal = {
             id: $('#entry-id').val(),
             entry_date: $('#entry-date').val(),
             entry_value: $('#entry-value').val(),
-            account_type: parseInt($('#entry-account-type').val()),
+            account_type_id: parseInt($('#entry-account-type').val()),
             memo: $('#entry-memo').val(),
             expense: $('input[name="expense-switch"]').prop('checked'),
             confirm: $('#entry-confirm').prop('checked'),

@@ -43,7 +43,7 @@ class UiSampleDatabaseSeeder extends Seeder {
 
         $entries = collect();
         for($entry_i=0; $entry_i<self::COUNT_ENTRY; $entry_i++){
-            $entry = factory(App\Entry::class)->create(['account_type'=>$faker->randomElement($account_type_ids)]);
+            $entry = factory(App\Entry::class)->create(['account_type_id'=>$faker->randomElement($account_type_ids)]);
             if($faker->boolean){    // randomly assign tags to entries
                 $entry_tag_ids = $faker->randomElements($tag_ids, $faker->numberBetween(1, self::COUNT_TAG));
                 $entry->tags()->attach($entry_tag_ids);
