@@ -102,7 +102,7 @@ class GetEntriesTest extends ListEntriesBase {
         // GIVEN
         $table = with(new Entry)->getTable();
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
-        $generated_entries = factory(Entry::class, EntryController::MAX_ENTRIES_IN_RESPONSE)->make(['account_type'=>$generated_account_type->id]);
+        $generated_entries = factory(Entry::class, EntryController::MAX_ENTRIES_IN_RESPONSE)->make(['account_type_id'=>$generated_account_type->id]);
         // generating entries in batches and using database insert methods because it's faster
         for($i=0; $i<($entry_count/EntryController::MAX_ENTRIES_IN_RESPONSE); $i++){
             DB::table($table)->insert($generated_entries->toArray());

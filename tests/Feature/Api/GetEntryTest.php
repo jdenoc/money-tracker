@@ -46,7 +46,7 @@ class GetEntryTest extends TestCase {
         // GIVEN
         $generated_account = factory(Account::class)->create();
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
-        $generated_entry = factory(Entry::class)->create(['account_type'=>$generated_account_type->id]);
+        $generated_entry = factory(Entry::class)->create(['account_type_id'=>$generated_account_type->id]);
         $generated_tags_as_array = $this->generateTagsAndOutputAsArray($generated_entry);
         $generated_attachments_as_array = $this->generateAttachmentsAndOutputAsArray($generated_entry->id);
 
@@ -67,7 +67,7 @@ class GetEntryTest extends TestCase {
         // GIVEN
         $generated_account = factory(Account::class)->create();
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
-        $generated_entry = factory(Entry::class)->create(['account_type'=>$generated_account_type->id]);
+        $generated_entry = factory(Entry::class)->create(['account_type_id'=>$generated_account_type->id]);
         $generated_attachments_as_array = $this->generateAttachmentsAndOutputAsArray($generated_entry->id);
 
         // WHEN
@@ -88,7 +88,7 @@ class GetEntryTest extends TestCase {
         // GIVEN
         $generated_account = factory(Account::class)->create();
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
-        $generated_entry = factory(Entry::class)->create(['account_type'=>$generated_account_type->id]);
+        $generated_entry = factory(Entry::class)->create(['account_type_id'=>$generated_account_type->id]);
         $generated_tags_as_array = $this->generateTagsAndOutputAsArray($generated_entry);
 
         // WHEN
@@ -109,7 +109,7 @@ class GetEntryTest extends TestCase {
         // GIVEN
         $generated_account = factory(Account::class)->create();
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
-        $generated_entry = factory(Entry::class)->create(['account_type'=>$generated_account_type->id]);
+        $generated_entry = factory(Entry::class)->create(['account_type_id'=>$generated_account_type->id]);
 
         // WHEN
         $response = $this->get($this->_base_uri.$generated_entry->id);
@@ -129,7 +129,7 @@ class GetEntryTest extends TestCase {
         // GIVEN
         $generated_account = factory(Account::class)->create();
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
-        $generated_entry = factory(Entry::class)->create(['disabled'=>1, 'account_type'=>$generated_account_type->id]);
+        $generated_entry = factory(Entry::class)->create(['disabled'=>1, 'account_type_id'=>$generated_account_type->id]);
 
         // WHEN
         $response = $this->get($this->_base_uri.$generated_entry->id);
@@ -185,7 +185,7 @@ class GetEntryTest extends TestCase {
         $this->assertArrayHasKey('memo', $entry_nodes);
         $this->assertArrayHasKey('expense', $entry_nodes);
         $this->assertArrayHasKey('confirm', $entry_nodes);
-        $this->assertArrayHasKey('account_type', $entry_nodes);
+        $this->assertArrayHasKey('account_type_id', $entry_nodes);
         $this->assertArrayHasKey('create_stamp', $entry_nodes);
         $this->assertArrayHasKey('modified_stamp', $entry_nodes);
         $this->assertArrayHasKey('tags', $entry_nodes);
@@ -204,7 +204,7 @@ class GetEntryTest extends TestCase {
         $this->assertEquals($generated_entry->memo, $response_body_as_array['memo'], $failure_message);
         $this->assertEquals($generated_entry->expense, $response_body_as_array['expense'], $failure_message);
         $this->assertEquals($generated_entry->confirm, $response_body_as_array['confirm'], $failure_message);
-        $this->assertEquals($generated_entry->account_type, $response_body_as_array['account_type'], $failure_message);
+        $this->assertEquals($generated_entry->account_type_id, $response_body_as_array['account_type_id'], $failure_message);
         $this->assertDateFormat($response_body_as_array['create_stamp'], Carbon::ATOM, $failure_message."\nfor these value to equal, PHP & MySQL timestamps must be the same");
         $this->assertDateFormat($response_body_as_array['modified_stamp'], Carbon::ATOM, $failure_message."\nfor these value to equal, PHP & MySQL timestamps must be the same");
         $this->assertDatetimeWithinOneSecond($generated_entry->create_stamp, $response_body_as_array['create_stamp'], $failure_message."\nfor these value to equal, PHP & MySQL timestamps must be the same");
