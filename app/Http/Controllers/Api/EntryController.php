@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Entry;
 use App\AccountType;
 use App\Attachment;
 use App\Tag;
@@ -9,8 +10,6 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
-
-use App\Entry;
 
 class EntryController extends Controller {
 
@@ -75,12 +74,26 @@ class EntryController extends Controller {
         if(empty($filter_data)){
             return $this->provide_paged_entries_response([], $page_number);
         }
+
+        if(empty($filter_data['sort']) || !is_array($filter_data['sort'])){
+            $sort_by = Entry::DEFAULT_SORT_PARAMETER;
+            $sort_direction = Entry::DEFAULT_SORT_DIRECTION;
+        } else {
+            $sort_by = empty($filter_data['sort']['parameter']) ? Entry::DEFAULT_SORT_PARAMETER : $filter_data['sort']['parameter'];
+            if(empty($filter_data['sort']['direction']) || !in_array($filter_data['sort']['direction'], [Entry::SORT_DIRECTION_ASC, Entry::SORT_DIRECTION_DESC])){
+                $sort_direction = Entry::DEFAULT_SORT_DIRECTION;
+            } else {
+                $sort_direction = $filter_data['sort']['direction'];
+            }
+            unset($filter_data['sort']);
+        }
+
         $filter_validator = Validator::make($filter_data, self::get_filter_details());
         if($filter_validator->fails()){
             return response(['error'=>'invalid filter provided'], HttpStatus::HTTP_BAD_REQUEST);
         }
 
-        return $this->provide_paged_entries_response($filter_data, $page_number);
+        return $this->provide_paged_entries_response($filter_data, $page_number, $sort_by, $sort_direction);
     }
 
     /**
@@ -275,13 +288,17 @@ class EntryController extends Controller {
     /**
      * @param array $filters
      * @param int $page_number
+     * @param string $sort_by
+     * @param string $sort_direction
      * @return \Illuminate\Contracts\Routing\ResponseFactory
      */
-    private function provide_paged_entries_response($filters, $page_number=0){
+    private function provide_paged_entries_response($filters, $page_number=0, $sort_by=Entry::DEFAULT_SORT_PARAMETER, $sort_direction=Entry::DEFAULT_SORT_DIRECTION){
         $entries_collection = Entry::get_collection_of_non_disabled_entries(
             $filters,
             EntryController::MAX_ENTRIES_IN_RESPONSE,
-            EntryController::MAX_ENTRIES_IN_RESPONSE*$page_number
+            EntryController::MAX_ENTRIES_IN_RESPONSE*$page_number,
+            $sort_by,
+            $sort_direction
         );
 
         if(is_null($entries_collection) || $entries_collection->isEmpty()){
@@ -291,9 +308,9 @@ class EntryController extends Controller {
                 $entry->has_attachments = $entry->has_attachments();
                 $entry->tags = $entry->get_tag_ids();
             }
-            $entries_as_array = $entries_collection->toArray();
-            $entries_as_array['count'] = Entry::count_non_disabled_entries($filters);
-            return response($entries_as_array, HttpStatus::HTTP_OK);
+            $entries_collection = $entries_collection->values();   // the use of values() here allows us to ignore the original keys of the collection after a sort
+            $entries_collection->put('count', Entry::count_non_disabled_entries($filters));
+            return response($entries_collection, HttpStatus::HTTP_OK);
         }
     }
 
