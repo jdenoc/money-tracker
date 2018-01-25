@@ -3,6 +3,7 @@
 namespace Tests\Feature\Api;
 
 use App\AccountType;
+use App\Entry;
 use App\Tag;
 use App\Http\Controllers\Api\EntryController;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
@@ -102,7 +103,7 @@ class PostEntriesTest extends ListEntriesBase {
      */
     public function testPostEntries($filter_details){
         // GIVEN
-        $generate_entry_count = $this->_faker->numberBetween(4, EntryController::MAX_ENTRIES_IN_RESPONSE);
+        $generate_entry_count = $this->_faker->numberBetween(self::MIN_TEST_ENTRIES, EntryController::MAX_ENTRIES_IN_RESPONSE);
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
         $filter_details = $this->set_test_specific_filters($filter_details);
 
@@ -135,7 +136,7 @@ class PostEntriesTest extends ListEntriesBase {
 
     /**
      * @dataProvider providerPostEntriesFilter
-     * @param $filter_details
+     * @param array $filter_details
      */
     public function testPostEntriesByPage($filter_details){
         $page_limit = 3;
@@ -205,7 +206,7 @@ class PostEntriesTest extends ListEntriesBase {
         ];
 
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
-        $this->batch_generate_entries($this->_faker->numberBetween(4, EntryController::MAX_ENTRIES_IN_RESPONSE), $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
+        $this->batch_generate_entries($this->_faker->numberBetween(self::MIN_TEST_ENTRIES, EntryController::MAX_ENTRIES_IN_RESPONSE), $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
         $this->assertPostEntriesNotFound($filter_details);
     }
 
@@ -221,7 +222,7 @@ class PostEntriesTest extends ListEntriesBase {
         ];
 
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
-        $generated_entries_count = $this->_faker->numberBetween(4, EntryController::MAX_ENTRIES_IN_RESPONSE);
+        $generated_entries_count = $this->_faker->numberBetween(self::MIN_TEST_ENTRIES, EntryController::MAX_ENTRIES_IN_RESPONSE);
         $generated_entries = $this->batch_generate_entries($generated_entries_count, $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
 
         // WHEN
@@ -247,7 +248,7 @@ class PostEntriesTest extends ListEntriesBase {
         ];
 
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
-        $this->batch_generate_entries($this->_faker->numberBetween(4, EntryController::MAX_ENTRIES_IN_RESPONSE), $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
+        $this->batch_generate_entries($this->_faker->numberBetween(self::MIN_TEST_ENTRIES, EntryController::MAX_ENTRIES_IN_RESPONSE), $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
         $this->assertPostEntriesNotFound($filter_details);
     }
 
@@ -263,7 +264,7 @@ class PostEntriesTest extends ListEntriesBase {
         ];
 
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
-        $generated_entries_count = $this->_faker->numberBetween(4, EntryController::MAX_ENTRIES_IN_RESPONSE);
+        $generated_entries_count = $this->_faker->numberBetween(self::MIN_TEST_ENTRIES, EntryController::MAX_ENTRIES_IN_RESPONSE);
         $generated_entries = $this->batch_generate_entries($generated_entries_count, $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
 
         // WHEN
@@ -275,6 +276,35 @@ class PostEntriesTest extends ListEntriesBase {
         $this->assertEquals($generated_entries_count, $response_as_array['count']);
         unset($response_as_array['count']);
         $this->runEntryListAssertions($generated_entries_count, $response_as_array, $generated_entries);
+    }
+
+    public function testPostEntriesFilterSort(){
+        // GIVEN
+        $generate_entry_count = $this->_faker->numberBetween(self::MIN_TEST_ENTRIES, EntryController::MAX_ENTRIES_IN_RESPONSE);
+        $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
+        $generated_entries = $this->batch_generate_entries($generate_entry_count, $generated_account_type->id, [], false);
+        // how we intend to sort
+        $sort_options = Entry::get_fields_required_for_creation();
+        unset($sort_options['memo']);   // can't and don't intend to sort by entry memo
+        $filter_details[EntryController::FILTER_KEY_SORT][EntryController::FILTER_KEY_SORT_PARAMETER] = $this->_faker->randomElement($sort_options);
+        $filter_details[EntryController::FILTER_KEY_SORT][EntryController::FILTER_KEY_SORT_DIRECTION] = $this->_faker->randomElement([Entry::SORT_DIRECTION_ASC, Entry::SORT_DIRECTION_DESC]);
+
+        // WHEN
+        $response = $this->json("POST", $this->_uri, $filter_details);
+
+        // THEN
+        $this->assertResponseStatus($response, HttpStatus::HTTP_OK, "Filter:".json_encode($filter_details));
+        $response_as_array = $response->json();
+        $this->assertEquals($generate_entry_count, $response_as_array['count']);
+        unset($response_as_array['count']);
+        $this->runEntryListAssertions(
+            $generate_entry_count,
+            $response_as_array,
+            $generated_entries,
+            [],
+            $filter_details[EntryController::FILTER_KEY_SORT][EntryController::FILTER_KEY_SORT_PARAMETER],
+            $filter_details[EntryController::FILTER_KEY_SORT][EntryController::FILTER_KEY_SORT_DIRECTION]
+        );
     }
 
     /**

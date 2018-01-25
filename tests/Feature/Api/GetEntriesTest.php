@@ -27,7 +27,7 @@ class GetEntriesTest extends ListEntriesBase {
         // GIVEN
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
 
-        $generate_entry_count = $this->_faker->numberBetween(4, 50);
+        $generate_entry_count = $this->_faker->numberBetween(self::MIN_TEST_ENTRIES, EntryController::MAX_ENTRIES_IN_RESPONSE);
         $generated_entries = $this->batch_generate_entries($generate_entry_count, $generated_account_type->id, [], true);
         $generated_disabled_entries = $generated_entries->where('disabled', 1);
         $generated_entries = $generated_entries->sortByDesc('disabled') // sorting so disabled entries are at the start of the collection
@@ -49,13 +49,14 @@ class GetEntriesTest extends ListEntriesBase {
     }
 
     public function testGetEntriesByPage(){
+        $page_limit = 3;
         // GIVEN
         $generated_account_type = factory(AccountType::class)->create(['account_id' => $this->_generated_account->id]);
-        $generate_entry_count = $this->_faker->numberBetween(101, 150);
+        $generate_entry_count = $this->_faker->numberBetween(($page_limit-1)*EntryController::MAX_ENTRIES_IN_RESPONSE+1, $page_limit*EntryController::MAX_ENTRIES_IN_RESPONSE);
         $generated_entries = $this->batch_generate_entries($generate_entry_count, $generated_account_type->id);
 
         $entries_in_response = [];
-        for($i=0; $i<3; $i++){
+        for($i=0; $i<$page_limit; $i++){
             // WHEN
             $response = $this->get($this->_uri.'/'.$i);
 
@@ -68,8 +69,8 @@ class GetEntriesTest extends ListEntriesBase {
             $this->assertEquals($generate_entry_count, $response_body_as_array['count']);
             unset($response_body_as_array['count']);
 
-            if($i+1 == 3){
-                $this->assertEquals($generate_entry_count-(2*EntryController::MAX_ENTRIES_IN_RESPONSE), count($response_body_as_array));
+            if($i+1 == $page_limit){
+                $this->assertEquals($generate_entry_count-(($page_limit-1)*EntryController::MAX_ENTRIES_IN_RESPONSE), count($response_body_as_array));
             } else {
                 $this->assertEquals(EntryController::MAX_ENTRIES_IN_RESPONSE, count($response_body_as_array));
             }

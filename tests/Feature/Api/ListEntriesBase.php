@@ -15,6 +15,8 @@ use Tests\TestCase;
 
 class ListEntriesBase extends TestCase {
 
+    const MIN_TEST_ENTRIES = 4;
+
     /**
      * @var Generator
      */
@@ -149,10 +151,13 @@ class ListEntriesBase extends TestCase {
      * @param array $entries_in_response
      * @param Collection $generated_entries
      * @param array $generated_disabled_entries
+     * @param string $sort_parameter
+     * @param string $sort_direction
      */
-    protected function runEntryListAssertions($generate_entry_count, $entries_in_response, $generated_entries, $generated_disabled_entries=[]){
+    protected function runEntryListAssertions($generate_entry_count, $entries_in_response, $generated_entries, $generated_disabled_entries=[], $sort_parameter=Entry::DEFAULT_SORT_PARAMETER, $sort_direction=Entry::DEFAULT_SORT_DIRECTION){
         $this->assertEquals($generate_entry_count, count($entries_in_response));
 
+        $previous_entry_in_response = null;
         foreach($entries_in_response as $entry_in_response){
             $this->assertArrayHasKey('id', $entry_in_response);
             $this->assertNotContains(
@@ -165,6 +170,16 @@ class ListEntriesBase extends TestCase {
             $this->assertInstanceOf(Entry::class, $generated_entry);
             $this->assertEntryNodesExist($entry_in_response);
             $this->assertEntryNodesMatchGeneratedEntry($entry_in_response, $generated_entry);
+
+            // testing sort order
+            if(!is_null($previous_entry_in_response)){
+                if($sort_direction == Entry::SORT_DIRECTION_DESC){
+                    $this->assertGreaterThanOrEqual($entry_in_response[$sort_parameter], $previous_entry_in_response[$sort_parameter]);
+                } elseif($sort_direction == Entry::SORT_DIRECTION_ASC){
+                    $this->assertLessThanOrEqual($entry_in_response[$sort_parameter], $previous_entry_in_response[$sort_parameter]);
+                }
+            }
+            $previous_entry_in_response = $entry_in_response;
         }
     }
 

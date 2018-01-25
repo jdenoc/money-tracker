@@ -32,6 +32,9 @@ class EntryController extends Controller {
     const FILTER_KEY_START_DATE = 'start_date';
     const FILTER_KEY_TAGS = 'tags';
     const FILTER_KEY_UNCONFIRMED = 'unconfirmed';
+    const FILTER_KEY_SORT = 'sort';
+    const FILTER_KEY_SORT_PARAMETER = 'parameter';
+    const FILTER_KEY_SORT_DIRECTION = 'direction';
 
     /**
      * GET /api/entry/{entry_id}
