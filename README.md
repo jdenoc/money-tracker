@@ -7,7 +7,21 @@ Money Tracker is a web portal dedicated to help record and manage income & expen
 For a list of features currently available, what they're expected outcome is and test cases, see the [Features](features/FEATURES.md)
 
 ## Requirements
-- PHP >= 5.6.4
+- NodeJS
+  ```bash
+  # confirm installation and version of NodeJS
+  nodejs -v
+  ```
+- NPM
+  ```bash
+  # confirm installation and version of NPM
+  npm -v
+  ```
+- 5.6.4 <= PHP < 7
+  ```bash
+  # confirm installation and version of PHP
+  php -v
+  ```
 - OpenSSL PHP Extension
 - PDO PHP Extension
 - Mbstring PHP Extension
@@ -22,14 +36,39 @@ mysql -e "CREATE USER 'jdenoc'@'localhost' IDENTIFIED BY 'password';"    # Once 
 mysql -e "GRANT ALL PRIVILEGES ON money_tracker.* TO 'jdenoc'@'localhost';"
 ```
 
-### Code deployment
+### Code deployment - development
 ```bash
-git clone https://github.com/jdenoc/money-tracker.git
+git clone https://github.com/jdenoc/money-tracker.git --branch=develop
 cd money-tracker/
+
+# setup composer packages
 composer install
-# If you're working with PhpStorm, be sure to run the following commands.
-# They will generate Laravel Facades that PhpStorm can use
+# If you're working with PhpStorm, be sure to run the following command.
+# It will generate Laravel Facades that PhpStorm can use.
 composer ide-helper
+
+# setup NodeJS/NPM/bower packages
+npm install
+node_modules/.bin/bower install
+```
+
+### Code deployment - production
+```bash
+# checkout the most recent git tag
+git clone https://github.com/jdenoc/money-tracker.git --depth=1 --no-checkout
+cd money-tracker/
+git fetch --tags
+MOST_RECENT_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
+git checkout -q tags/$MOST_RECENT_TAG
+
+# setup composer packages
+cp .env.example .env
+sed "s/APP_ENV=.*/APP_ENV=production/" .env
+composer install --no-dev
+
+# setup NodeJS/NPM/bower packages
+npm install --only=prod
+node_modules/.bin/bower install
 ```
 
 ### Environment variable setup
@@ -43,15 +82,15 @@ That being said, there are certainly variables that should be modified at this p
 - `DB_PASSWORD`
 
 ## Testing
-This project has been setup to use [travis-ci](https://travis-ci.org/jdenoc/money-tracker) for continuous integration testing. If you wish to test locally, here are some steps to follow
+This project has been setup to use [travis-ci](https://travis-ci.org/jdenoc/money-tracker) for continuous integration testing. If you wish to test locally, here are some steps to follow:
 ```bash
-# clear existsing data in database and reinstall table schemas
+# clear existing data in database and reinstall table schemas
 php artsian migrate:refresh
 
 # run PHP unit tests
 vendor/bin/phpunit
 
-# run PHP unit tests with converage
+# run PHP unit tests with coverage
 vendor/bin/phpunit --coverage-text
 
 # populate database with dummy data for  manual testing

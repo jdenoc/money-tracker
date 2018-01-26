@@ -9,6 +9,11 @@ class Entry extends BaseModel {
     const CREATED_AT = 'create_stamp';
     const UPDATED_AT = 'modified_stamp';
 
+    const DEFAULT_SORT_PARAMETER = 'id';
+    const DEFAULT_SORT_DIRECTION = 'desc';
+    const SORT_DIRECTION_ASC = 'asc';
+    const SORT_DIRECTION_DESC = 'desc';
+
     protected $table = 'entries';
     protected $fillable = [
         'entry_date', 'account_type_id', 'entry_value', 'memo', 'expense', 'confirm', 'disabled', 'disabled_stamp'
@@ -85,11 +90,14 @@ class Entry extends BaseModel {
      * @param array $filters
      * @param int $limit
      * @param int $offset
+     * @param string $sort_by
+     * @param string $sort_direction
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public static function get_collection_of_non_disabled_entries($filters = [], $limit=10, $offset=0){
+    public static function get_collection_of_non_disabled_entries($filters = [], $limit=10, $offset=0, $sort_by=self::DEFAULT_SORT_PARAMETER, $sort_direction=self::DEFAULT_SORT_DIRECTION){
         $entries_query = self::build_entry_query($filters);
         $entries_query->distinct()->select("entries.*");    // this makes sure that the correct ID is present if a JOIN is required
+        $entries_query->orderBy($sort_by, $sort_direction);
         return $entries_query->offset($offset)->limit($limit)->get();
     }
 
