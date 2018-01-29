@@ -1,12 +1,12 @@
 .idea
 .DS_Store
 
-node_modules
-vendor
 composer.lock
+vendor
+yarn.lock
+yarn-error.log
 public/components
 
 .env
-public/storage
 _ide_helper.php
 .phpstorm.meta.php
