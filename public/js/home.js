@@ -219,39 +219,15 @@ var entries = {
     uri: "/api/entries",
     value: [],
     total: 0,
+    sort: {
+        parameter: 'entry_date',
+        direction: 'desc'
+    },
     load: function(pageNumber){
-        pageNumber = paginate.processPageNumber(pageNumber);
-        $.ajax({
-            url: entries.uri+'/'+pageNumber,
-            dataType: "json",
-            beforeSend: function() {
-                loading.start();
-                filterModal.active = false;
-                paginate.filterState = {};
-            },
-            statusCode: entries.ajaxStatusCodeProcessing,
-            complete: entries.ajaxCompleteProcessing
-        });
+        entries.ajaxRequest(pageNumber, {});
     },
     filter: function(filterParameters, pageNumber){
-        $.each(filterParameters, function(parameter, value){
-            if(value === null){
-                delete filterParameters[parameter];
-            }
-        });
-        pageNumber = paginate.processPageNumber(pageNumber);
-        $.ajax({
-            url: entries.uri+'/'+pageNumber,
-            type: 'POST',
-            beforeSend: function(){
-                loading.start();
-                paginate.filterState = filterParameters
-            },
-            data: JSON.stringify(filterParameters),
-            dataType: 'json',
-            statusCode: entries.ajaxStatusCodeProcessing,
-            complete: entries.ajaxCompleteProcessing
-        });
+        entries.ajaxRequest(pageNumber, filterParameters);
     },
     display: function(){
         entries.clearDisplay();
@@ -293,6 +269,30 @@ var entries = {
             entries.value = [];
             notice.display(notice.typeDanger, "An error occurred while attempting to retrieve "+(filterModal.active?"filtered":"")+" entries");
         }
+    },
+    ajaxRequest: function(pageNumber, filterParameters){
+        pageNumber = paginate.processPageNumber(pageNumber);
+
+        $.each(filterParameters, function(parameter, value){
+            if(value === null){
+                delete filterParameters[parameter];
+            }
+        });
+        var requestParameters = $.extend({}, filterParameters, entries.sort);
+
+        $.ajax({
+            url: entries.uri+'/'+pageNumber,
+            type: 'POST',
+            beforeSend: function(){
+                loading.start();
+                filterModal.active = !$.isEmptyObject(filterParameters);
+                paginate.filterState = filterParameters;
+            },
+            data: JSON.stringify(requestParameters),
+            dataType: 'json',
+            statusCode: entries.ajaxStatusCodeProcessing,
+            complete: entries.ajaxCompleteProcessing
+        });
     },
     ajaxCompleteProcessing: function(){
         $('.is-filtered').toggle(filterModal.active);
