@@ -1,5 +1,6 @@
 *
+!public/
+!attachments/
 !.gitignore
-!public
 !attachments
 !tmp_uploads

@@ -1,20 +1,20 @@
-<link href="{{asset('components/bootstrap-material-design-icons/css/material-icons.min.css')}}" rel="stylesheet" type="text/css" />
-<link href="{{asset('css/entry-modal.css')}}" rel="stylesheet" type="text/css" />
+<link href="components/bootstrap-material-design-icons/css/material-icons.min.css" rel="stylesheet" type="text/css" />
+<link href="css/entry-modal.css" rel="stylesheet" type="text/css" />
 
-<link href="{{asset('components/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css')}}" rel="stylesheet" type="text/css" />
-<link href="{{asset('css/custom-bootstrap-switch.css')}}" rel="stylesheet" type="text/css" />
-<script type="text/javascript" src="{{asset('components/bootstrap-switch/dist/js/bootstrap-switch.min.js')}}"></script>
+<link href="components/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css" rel="stylesheet" type="text/css" />
+<link href="css/custom-bootstrap-switch.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="components/bootstrap-switch/dist/js/bootstrap-switch.min.js"></script>
 
-<link href="{{asset('components/bootstrap-tagsinput/dist/bootstrap-tagsinput.css')}}" rel="stylesheet" type="text/css" />
-<link href="{{asset('components/bootstrap-tagsinput/dist/bootstrap-tagsinput-typeahead.css')}}" rel="stylesheet" type="text/css" />
-<link href="{{asset('css/custom-bootstrap-tagsinput.css')}}" rel="stylesheet" type="text/css" />
-<script type="text/javascript" src="{{asset('components/bootstrap-3-typeahead/bootstrap3-typeahead.min.js')}}"></script>
-<script type="text/javascript" src="{{asset('components/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js')}}"></script>
+<link href="components/bootstrap-tagsinput/dist/bootstrap-tagsinput.css" rel="stylesheet" type="text/css" />
+<link href="components/bootstrap-tagsinput/dist/bootstrap-tagsinput-typeahead.css" rel="stylesheet" type="text/css" />
+<link href="css/custom-bootstrap-tagsinput.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="components/bootstrap3-typeahead/bootstrap3-typeahead.min.js"></script>
+<script type="text/javascript" src="components/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js"></script>
 
-<link href="{{asset('components/jquery-file-upload/css/uploadfile.css')}}" rel="stylesheet" type="text/css" />
-<link href="{{asset('css/custom-jquery-uploadfile.css')}}" rel="stylesheet" type="text/css" />
+<link href="components/jquery-uploadfile/css/uploadfile.css" rel="stylesheet" type="text/css" />
+<link href="css/custom-jquery-uploadfile.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript">var uploadToken = '{{ csrf_token() }}';</script>
-<script type="text/javascript" src="{{asset('components/jquery-file-upload/js/jquery.uploadfile.min.js')}}"></script>
+<script type="text/javascript" src="components/jquery-uploadfile/js/jquery.uploadfile.min.js"></script>
 
 <!-- Entry Modal -->
 <div class="modal fade" id="entry-modal" tabindex="-1" role="dialog" aria-labelledby="entry-title" aria-hidden="true" data-backdrop="static" data-keyboard="false">
@@ -71,4 +71,4 @@
 </div>
 <!-- END - Entry Modal -->
 
-<script type="text/javascript" src="{{asset('js/entry-modal.js')}}"></script>
+<script type="text/javascript" src="js/entry-modal.js"></script>
