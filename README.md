@@ -7,15 +7,15 @@ Money Tracker is a web portal dedicated to help record and manage income & expen
 For a list of features currently available, what they're expected outcome is and test cases, see the [Features](features/FEATURES.md)
 
 ## Requirements
-- NodeJS >= 6
+- NodeJS
   ```bash
   # confirm installation and version of NodeJS
-  node -v
+  nodejs -v
   ```
-- Yarn 1.3.2
+- NPM
   ```bash
-  # confirm installation and version of Yarn
-  yarn --version
+  # confirm installation and version of NPM
+  npm -v
   ```
 - 5.6.4 <= PHP < 7
   ```bash
@@ -47,8 +47,9 @@ composer install
 # It will generate Laravel Facades that PhpStorm can use.
 composer ide-helper
 
-# setup Yarn packages
-yarn install
+# setup NodeJS/NPM/bower packages
+npm install
+node_modules/.bin/bower install
 ```
 
 ### Code deployment - production
@@ -65,8 +66,9 @@ cp .env.example .env
 sed "s/APP_ENV=.*/APP_ENV=production/" .env
 composer install --no-dev
 
-# setup Yarn packages
-yarn install --prod
+# setup NodeJS/NPM/bower packages
+npm install --only=prod
+node_modules/.bin/bower install
 ```
 
 ### Environment variable setup
