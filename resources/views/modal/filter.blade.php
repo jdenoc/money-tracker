@@ -1,8 +1,8 @@
-<link href="components/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css" rel="stylesheet" type="text/css" />
-<link href="css/custom-bootstrap-switch.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript" src="components/bootstrap-switch/dist/js/bootstrap-switch.min.js"></script>
+<link href="{{asset('components/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css')}}" rel="stylesheet" type="text/css" />
+<link href="{{asset('css/custom-bootstrap-switch.css')}}" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="{{asset('components/bootstrap-switch/dist/js/bootstrap-switch.min.js')}}"></script>
 
-<link href="css/filter-modal.css" rel="stylesheet" type="text/css" />
+<link href="{{asset('css/filter-modal.css')}}" rel="stylesheet" type="text/css" />
 
 <!-- Filter Modal -->
 <div class="modal fade" id="filter-modal" tabindex="-1" role="dialog" aria-labelledby="filter-title" aria-hidden="true">
@@ -82,4 +82,4 @@
 </div>
 <!-- END - Filter Modal -->
 
-<script type="text/javascript" src="js/filter-modal.js"></script>
+<script type="text/javascript" src="{{asset('js/filter-modal.js')}}"></script>
