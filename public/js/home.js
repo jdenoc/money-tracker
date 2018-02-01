@@ -409,11 +409,7 @@ var entry = {
         });
     },
     completeEntryUpdate: function(){
-        if(filterModal.active){
-            filterModal.submit();
-        } else {
-            entries.reload(paginate.current);
-        }
+        entries.reload(paginate.current, paginate.filterState);
         institutions.load();
         accounts.load();
         institutionsPane.displayAccountTypes();
