@@ -410,7 +410,8 @@ var entry = {
     },
     completeEntryUpdate: function(){
         entries.reload(paginate.current, paginate.filterState);
-        institutions.load();
+        institutionsPane.clear();
+        institutionsPane.displayInstitutions();
         accounts.load();
         institutionsPane.displayAccountTypes();
     }
