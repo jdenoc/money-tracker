@@ -409,14 +409,22 @@ var entry = {
         });
     },
     completeEntryUpdate: function(){
-        if(filterModal.active){
-            filterModal.submit();
-        } else {
-            entries.reload(paginate.current);
-        }
-        institutions.load();
+        // re-display entries
+        entries.reload(paginate.current, paginate.filterState);
+        // re-display institutes-pane contents
+        institutionsPane.clear();
+        institutionsPane.displayInstitutions();
         accounts.load();
         institutionsPane.displayAccountTypes();
+
+        var intervalSetAccountActive = setInterval(function(){
+            // need to wait for the accounts to be re-displayed
+            if(institutionsPane.accountsDisplayed){
+                var accountId = ($.isEmptyObject(paginate.filterState)) ? '' : paginate.filterState.account;
+                institutionsPane.setActiveState(accountId);
+                clearInterval(intervalSetAccountActive);    // stops interval from running again
+            }
+        }, 50);
     }
 };
 
