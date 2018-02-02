@@ -158,7 +158,7 @@ class EntryController extends Controller {
         }
         $entry->save();
 
-        $this->attach_tags_to_entry($entry, $entry_data);
+        $this->update_entry_tags($entry, $entry_data['tags']);
         $this->attach_attachments_to_entry($entry, $entry_data);
 
         return response(
@@ -213,7 +213,7 @@ class EntryController extends Controller {
         }
         $existing_entry->save();
 
-        $this->attach_tags_to_entry($existing_entry, $entry_data);
+        $this->update_entry_tags($existing_entry, $entry_data['tags']);
         $this->attach_attachments_to_entry($existing_entry, $entry_data);
 
         return response(
@@ -251,15 +251,19 @@ class EntryController extends Controller {
 
     /**
      * @param Entry $entry
-     * @param array $entry_data
+     * @param int[] $new_tags
      */
-    private function attach_tags_to_entry($entry, $entry_data){
-        if(!empty($entry_data['tags']) && is_array($entry_data['tags'])){
-            foreach($entry_data['tags'] as $tag){
-                if(!is_array($entry_data['tags'])){
-                    continue;
+    private function update_entry_tags($entry, $new_tags){
+        if(!empty($new_tags) && is_array($new_tags)){
+            $currently_attached_tags = $entry->get_tag_ids();
+            foreach($new_tags as $new_tag){
+                if(!in_array($new_tag, $currently_attached_tags)){
+                    $entry->tags()->attach(intval($new_tag));
                 }
-                $entry->tags()->attach(intval($tag));
+            }
+            $tags_to_remove = array_diff($currently_attached_tags, $new_tags);
+            foreach($tags_to_remove as $tag_to_remove){
+                $entry->tags()->detach($tag_to_remove);
             }
         }
     }
