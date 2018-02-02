@@ -36,14 +36,13 @@ var institutionsPane = {
 
                 // display account related entries on click
                 $('#account-id-'+accountObject.id).click(function(){
-                    filterModal.active = false; // no longer filtering
                     paginate.current = 0;   // reset current "page number"
                     var accountFilterParameters = $.extend(true, {}, defaultFilterParameters);
                     accountFilterParameters.account = accountObject.id;
                     entries.filter(accountFilterParameters);
                     // assign active class after click event occurs
                     institutionsPane.clearActiveState();
-                    $(this).addClass('active');
+                    institutionsPane.setActiveState(accountFilterParameters.account);
                 });
             });
             institutionsPane.accountsDisplayed = true;
@@ -81,12 +80,22 @@ var institutionsPane = {
         institutionsPane.institutionsDisplayed = false;
         institutionsPane.accountsDisplayed = false;
         institutionsPane.closedAccountsDisplayed = false;
-        $('.institutions-pane-institution').remove();
         $('.institutions-pane-account').remove();
+        $('.institutions-pane-institution').remove();
     },
     clearActiveState: function(){
         $('#entry-overview').removeClass('active');
         $('.institutions-pane-account').removeClass('active');
+    },
+    setActiveState: function(accountId){
+        if(!$.isNumeric(accountId)){
+            $('#entry-overview').addClass('active');
+        } else {
+            $('#account-id-'+accountId)
+                .addClass('active')
+                .parents('.institutions-pane-collapse')
+                .collapse('show');
+        }
     }
 };
 
@@ -107,7 +116,7 @@ $(document).ready(function(){
         paginate.current = 0;
         entries.load();
         institutionsPane.clearActiveState();
-        $('#entry-overview').addClass('active');
+        institutionsPane.setActiveState();
         $('.institutions-pane-collapse.in').collapse('hide');
     });
 });

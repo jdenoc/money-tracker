@@ -1,6 +1,6 @@
 var paginate = {
     current: 0,
-    filterState: {},
+    filterState: {},    // see filter-modal.js:defaultFilterParameters for expected nodes
     init: function(){
         $("#next").click(paginate.next);
         $("#prev").click(paginate.previous);
