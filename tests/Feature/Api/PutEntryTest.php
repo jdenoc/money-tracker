@@ -102,7 +102,7 @@ class PutEntryTest extends TestCase {
         // WHEN
         $put_response = $this->json("PUT", $this->_base_uri.$this->_generated_entry->id, $entry_data);
         // THEN
-        $put_response->assertStatus(HttpStatus::HTTP_OK);
+        $this->assertResponseStatus($put_response, HttpStatus::HTTP_OK);
         $put_response_as_array = $this->getResponseAsArray($put_response);
         $this->assertPutResponseHasCorrectKeys($put_response_as_array);
         $this->assertSuccessPutResponse($put_response_as_array);

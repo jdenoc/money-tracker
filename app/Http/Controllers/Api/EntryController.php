@@ -158,7 +158,8 @@ class EntryController extends Controller {
         }
         $entry->save();
 
-        $this->update_entry_tags($entry, $entry_data['tags']);
+        $entry_tags_in_request = empty($entry_data['tags']) ? [] : $entry_data['tags'];
+        $this->update_entry_tags($entry, $entry_tags_in_request);
         $this->attach_attachments_to_entry($entry, $entry_data);
 
         return response(
@@ -213,7 +214,8 @@ class EntryController extends Controller {
         }
         $existing_entry->save();
 
-        $this->update_entry_tags($existing_entry, $entry_data['tags']);
+        $entry_tags_in_request = empty($entry_data['tags']) ? [] : $entry_data['tags'];
+        $this->update_entry_tags($existing_entry, $entry_tags_in_request);
         $this->attach_attachments_to_entry($existing_entry, $entry_data);
 
         return response(
