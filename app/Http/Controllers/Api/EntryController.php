@@ -121,50 +121,7 @@ class EntryController extends Controller {
      * @return \Illuminate\Contracts\Routing\ResponseFactory
      */
     public function create_entry(Request $request){
-        $post_body = $request->getContent();
-        $entry_data = json_decode($post_body, true);
-
-        // no data check
-        if(empty($entry_data)){
-            return response(
-                [self::RESPONSE_SAVE_KEY_ID=>self::ERROR_ENTRY_ID, self::RESPONSE_SAVE_KEY_ERROR=>self::ERROR_MSG_SAVE_ENTRY_NO_DATA],
-                HttpStatus::HTTP_BAD_REQUEST
-            );
-        }
-
-        // missing (required) data check
-        $required_fields = Entry::get_fields_required_for_creation();
-        $missing_properties = array_diff_key(array_flip($required_fields), $entry_data);
-        if(count($missing_properties) > 0){
-            return response(
-                [self::RESPONSE_SAVE_KEY_ID=>self::ERROR_ENTRY_ID, self::RESPONSE_SAVE_KEY_ERROR=>sprintf(self::ERROR_MSG_SAVE_ENTRY_MISSING_PROPERTY, json_encode(array_keys($missing_properties)))],
-                HttpStatus::HTTP_BAD_REQUEST
-            );
-        }
-
-        // check validity of account_type_id value
-        $account_type = AccountType::find($entry_data['account_type_id']);
-        if(empty($account_type)){
-            return response(
-                [self::RESPONSE_SAVE_KEY_ERROR=>self::ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE, self::RESPONSE_SAVE_KEY_ID=>self::ERROR_ENTRY_ID],
-                HttpStatus::HTTP_BAD_REQUEST
-            );
-        }
-
-        $required_fields = Entry::get_fields_required_for_creation();
-        $entry = new Entry();
-        foreach($required_fields as $entry_property){
-            $entry->$entry_property = $entry_data[$entry_property];
-        }
-        $entry->save();
-
-        $this->attach_tags_to_entry($entry, $entry_data);
-        $this->attach_attachments_to_entry($entry, $entry_data);
-
-        return response(
-            [self::RESPONSE_SAVE_KEY_ERROR=>self::ERROR_MSG_SAVE_ENTRY_NO_ERROR, self::RESPONSE_SAVE_KEY_ID=>$entry->id],
-            HttpStatus::HTTP_CREATED
-        );
+        return $this->modify_entry($request);
     }
 
     /**
@@ -174,8 +131,17 @@ class EntryController extends Controller {
      * @return \Illuminate\Contracts\Routing\ResponseFactory
      */
     public function update_entry($entry_id, Request $request){
-        $put_body = $request->getContent();
-        $entry_data = json_decode($put_body, true);
+        return $this->modify_entry($request, $entry_id);
+    }
+
+    /**
+     * @param Request $request
+     * @param int|false $update_id
+     * @return \Illuminate\Contracts\Routing\ResponseFactory
+     */
+    private function modify_entry($request, $update_id=false){
+        $request_body = $request->getContent();
+        $entry_data = json_decode($request_body, true);
 
         // no data check
         if(empty($entry_data)){
@@ -185,13 +151,32 @@ class EntryController extends Controller {
             );
         }
 
-        // check to make sure entry exists. if it doesn't then we can't update it
-        $existing_entry = Entry::find($entry_id);
-        if(is_null($existing_entry)){
-            return response(
-                [self::RESPONSE_SAVE_KEY_ID=>self::ERROR_ENTRY_ID, self::RESPONSE_SAVE_KEY_ERROR=>self::ERROR_MSG_SAVE_ENTRY_DOES_NOT_EXIST],
-                HttpStatus::HTTP_NOT_FOUND
-            );
+        if($update_id === false){
+            $successful_http_status_code = HttpStatus::HTTP_CREATED;
+            $required_fields = Entry::get_fields_required_for_creation();
+
+            // missing (required) data check
+            $missing_properties = array_diff_key(array_flip($required_fields), $entry_data);
+            if(count($missing_properties) > 0){
+                return response(
+                    [self::RESPONSE_SAVE_KEY_ID=>self::ERROR_ENTRY_ID, self::RESPONSE_SAVE_KEY_ERROR=>sprintf(self::ERROR_MSG_SAVE_ENTRY_MISSING_PROPERTY, json_encode(array_keys($missing_properties)))],
+                    HttpStatus::HTTP_BAD_REQUEST
+                );
+            }
+
+            $entry_being_modified = new Entry();
+        } else {
+            $successful_http_status_code = HttpStatus::HTTP_OK;
+            $required_fields = Entry::get_fields_required_for_update();
+
+            // check to make sure entry exists. if it doesn't then we can't update it
+            $entry_being_modified = Entry::find($update_id);
+            if(is_null($entry_being_modified)){
+                return response(
+                    [self::RESPONSE_SAVE_KEY_ID=>self::ERROR_ENTRY_ID, self::RESPONSE_SAVE_KEY_ERROR=>self::ERROR_MSG_SAVE_ENTRY_DOES_NOT_EXIST],
+                    HttpStatus::HTTP_NOT_FOUND
+                );
+            }
         }
 
         // check validity of account_type_id value
@@ -199,26 +184,26 @@ class EntryController extends Controller {
             $account_type = AccountType::find($entry_data['account_type_id']);
             if(empty($account_type)){
                 return response(
-                    [self::RESPONSE_SAVE_KEY_ERROR => self::ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE, self::RESPONSE_SAVE_KEY_ID => self::ERROR_ENTRY_ID],
+                    [self::RESPONSE_SAVE_KEY_ERROR=>self::ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE, self::RESPONSE_SAVE_KEY_ID=>self::ERROR_ENTRY_ID],
                     HttpStatus::HTTP_BAD_REQUEST
                 );
             }
         }
 
-        $required_fields = Entry::get_fields_required_for_update();
         foreach($entry_data as $property=>$value){
             if(in_array($property, $required_fields)){
-                $existing_entry->$property = $value;
+                $entry_being_modified->$property = $value;
             }
         }
-        $existing_entry->save();
+        $entry_being_modified->save();
 
-        $this->attach_tags_to_entry($existing_entry, $entry_data);
-        $this->attach_attachments_to_entry($existing_entry, $entry_data);
+        $entry_tags_in_request = empty($entry_data['tags']) ? [] : $entry_data['tags'];
+        $this->update_entry_tags($entry_being_modified, $entry_tags_in_request);
+        $this->attach_attachments_to_entry($entry_being_modified, $entry_data);
 
         return response(
-            [self::RESPONSE_SAVE_KEY_ERROR=>self::ERROR_MSG_SAVE_ENTRY_NO_ERROR, self::RESPONSE_SAVE_KEY_ID=>$existing_entry->id],
-            HttpStatus::HTTP_OK
+            [self::RESPONSE_SAVE_KEY_ERROR=>self::ERROR_MSG_SAVE_ENTRY_NO_ERROR, self::RESPONSE_SAVE_KEY_ID=>$entry_being_modified->id],
+            $successful_http_status_code
         );
     }
 
@@ -251,15 +236,19 @@ class EntryController extends Controller {
 
     /**
      * @param Entry $entry
-     * @param array $entry_data
+     * @param int[] $new_tags
      */
-    private function attach_tags_to_entry($entry, $entry_data){
-        if(!empty($entry_data['tags']) && is_array($entry_data['tags'])){
-            foreach($entry_data['tags'] as $tag){
-                if(!is_array($entry_data['tags'])){
-                    continue;
+    private function update_entry_tags($entry, $new_tags){
+        if(!empty($new_tags) && is_array($new_tags)){
+            $currently_attached_tags = $entry->get_tag_ids();
+            foreach($new_tags as $new_tag){
+                if(!in_array($new_tag, $currently_attached_tags)){
+                    $entry->tags()->attach(intval($new_tag));
                 }
-                $entry->tags()->attach(intval($tag));
+            }
+            $tags_to_remove = array_diff($currently_attached_tags, $new_tags);
+            foreach($tags_to_remove as $tag_to_remove){
+                $entry->tags()->detach($tag_to_remove);
             }
         }
     }
