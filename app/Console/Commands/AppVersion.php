@@ -19,15 +19,14 @@ class AppVersion extends Command {
      * @var string
      */
     protected $signature = 'app:version
-                            {version? : The applications new version number}
-                            {--git : Obtain version from git. This option takes precedence over the <version> argument.}';
+                            {version? : The applications new version number}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Set application version';
+    protected $description = 'Get/Set application version';
 
     /**
      * Create a new command instance.
@@ -50,11 +49,8 @@ class AppVersion extends Command {
             return;
         }
 
-        $get_git_version = $this->option('git');
         $version = $this->argument(self::ARG_NAME);
-        if($get_git_version) {
-            $version = $this->obtainVersionFromGit();
-        } elseif(empty($version)){
+        if(empty($version)){
             $current_version = config(self::CONFIG_PARAM);  // getting config value from memory
             $current_version = empty($current_version) ? 'NOT YET SET' : $current_version;
             $this->info(sprintf(self::INFO_STRING_GET_VERSION, $current_version));
@@ -65,13 +61,6 @@ class AppVersion extends Command {
         config([self::CONFIG_PARAM=>$version]);  // setting the config value in memory
         $this->info(sprintf(self::INFO_STRING_SET_VERSION, $version));
         return;
-    }
-
-    protected function obtainVersionFromGit(){
-        $git_version = '';
-        exec('git describe', $git_version);
-        $git_version = $git_version[0];
-        return $git_version;
     }
 
     /**

@@ -33,8 +33,12 @@ class AppVersionTest extends TestCase {
     }
 
     public function testSettingAppVersionViaArgument(){
+        // GIVEN - see setUp()
+
+        // WHEN
         Artisan::call($this->_command, [AppVersionCommand::ARG_NAME => $this->_test_version]);
 
+        // THEN
         $result_as_text = trim(Artisan::output());
         $this->assertEquals(
             sprintf(AppVersionCommand::INFO_STRING_SET_VERSION, $this->_test_version),
@@ -48,59 +52,16 @@ class AppVersionTest extends TestCase {
         );
     }
 
-    public function testSettingAppVersionViaGitOption(){
-        $git_version = $this->obtainVersionFromGit();
-        Artisan::call($this->_command, ['--git' => true]);
-
-        $result_as_text = trim(Artisan::output());
-        $this->assertEquals(
-            sprintf(AppVersionCommand::INFO_STRING_SET_VERSION, $git_version),
-            $result_as_text,
-            "command output invalid"
-        );
-        $this->assertEquals(
-            $git_version,
-            config(AppVersionCommand::CONFIG_PARAM),
-            "config value not updated"
-        );
-    }
-
-    public function testSettingAppVersionViaGitOptionAndArgument(){
-        $git_version = $this->obtainVersionFromGit();
-        Artisan::call($this->_command, [
-            AppVersionCommand::ARG_NAME => $this->_test_version,
-            '--git' => true
-        ]);
-
-        $result_as_text = trim(Artisan::output());
-        $this->assertEquals(
-            sprintf(AppVersionCommand::INFO_STRING_SET_VERSION, $git_version),
-            $result_as_text,
-            "command output invalid"
-        );
-        $this->assertEquals(
-            $git_version,
-            config(AppVersionCommand::CONFIG_PARAM),
-            "config value not updated"
-        );
-    }
-
     public function testGettingAppVersion(){
+        // GIVEN - see setUp()
+
+        // WHEN
         config([AppVersionCommand::CONFIG_PARAM=>$this->_test_version]);
         Artisan::call($this->_command);
 
+        // THEN
         $result_as_text = trim(Artisan::output());
         $this->assertEquals(sprintf(AppVersionCommand::INFO_STRING_GET_VERSION, $this->_test_version), $result_as_text);
     }
 
-    /**
-     * Taken from App\Console\Commands\AppVersion->obtainVersionFromGit()
-     * @return string
-     */
-    private function obtainVersionFromGit(){
-        $git_version = '';
-        exec('git describe', $git_version);
-        $git_version = $git_version[0];
-        return $git_version;
-    }
 }
