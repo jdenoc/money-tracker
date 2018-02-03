@@ -49,6 +49,8 @@
                     <ul class="dropdown-menu" role="menu" aria-labelledby="user_menu">
                         <li role="presentation" class="dropdown-header">TODO - name required from session</li>
                         <li role="presentation" class="divider"></li>
+                        <li role="presentation" class="menu-node-version"><a class="text-info">Version: <span id="app-version"></span></a></li>
+                        <li role="presentation" class="divider"></li>
                         <li><a href="stats"><span class="glyphicon glyphicon-stats"></span> Statistics</a></li>
                         <li><a href="settings"><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
                         <li role="presentation" class="divider"></li>

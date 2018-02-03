@@ -1,6 +1,8 @@
 $(document).ready(function(){
     loading.img = 'imgs/loader.gif';
 
+    version.load();
+
     entryModal.init();
     filterModal.init();
 
@@ -82,6 +84,27 @@ var tags = {
         } else {
             return -1;
         }
+    }
+};
+
+var version = {
+    uri: "/api/version",
+    value: "",
+    load: function(){
+        $.ajax({
+            url: version.uri,
+            statusCode: {
+                200: function(response){
+                    version.value = response;
+                }
+            },
+            complete: function(){
+                version.display();
+            }
+        });
+    },
+    display: function(){
+        $('#app-version').text(version.value);
     }
 };
 
