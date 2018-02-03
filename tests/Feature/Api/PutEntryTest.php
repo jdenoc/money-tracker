@@ -276,13 +276,17 @@ class PutEntryTest extends TestCase {
     public function testUpdateEntryWithTagsSoTheyAreNotDuplicated(){
         $faker = FakerFactory::create();
         // GIVEN - see setUp()
-        $generated_tags = factory(Tag::class, $faker->randomDigitNotNull)->create();
+        $generate_tag_count = $faker->numberBetween(2, 5);
+        $generated_tags = factory(Tag::class, $generate_tag_count)->create();
         $generated_tag_ids = $generated_tags->pluck('pivot.tag_id')->toArray();
         $attaching_tag_id = $faker->randomElement($generated_tag_ids);
         $this->_generated_entry->tags()->attach($attaching_tag_id);
         $put_entry_data = ['tags'=>[$attaching_tag_id]];
-        $put_entry_data['tags'] = array_merge($put_entry_data['tags'], [$attaching_tag_id]);
-        $put_entry_data['tags'] = array_merge($put_entry_data['tags'], $faker->randomElements($generated_tag_ids, 2));
+        $put_entry_data['tags'] = array_merge(
+            $put_entry_data['tags'],
+            [$attaching_tag_id],
+            $faker->randomElements($generated_tag_ids, 2)
+        );
 
         // WHEN
         $put_response = $this->json("PUT", $this->_base_uri.$this->_generated_entry->id, $put_entry_data);
