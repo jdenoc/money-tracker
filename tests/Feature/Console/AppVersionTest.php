@@ -16,6 +16,9 @@ use Illuminate\Foundation\Testing\WithoutMiddleware;
  */
 class AppVersionTest extends TestCase {
 
+    /**
+     * @var string
+     */
     private $_command = "app:version";
 
     /**
@@ -29,11 +32,6 @@ class AppVersionTest extends TestCase {
         $this->_test_version = $faker->randomDigitNotNull.'.'.$faker->randomDigitNotNull.'.'.$faker->randomDigitNotNull.'-test-'.$faker->word;
     }
 
-    /**
-     * A basic test example.
-     *
-     * @return void
-     */
     public function testSettingAppVersionViaArgument(){
         Artisan::call($this->_command, [AppVersionCommand::ARG_NAME => $this->_test_version]);
 
