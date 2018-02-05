@@ -96,6 +96,12 @@ var version = {
             statusCode: {
                 200: function(response){
                     version.value = response;
+                },
+                404: function(){
+                    version.value = "N/A";
+                },
+                500: function(){
+                    version.value = "N/A";
                 }
             },
             complete: function(){
