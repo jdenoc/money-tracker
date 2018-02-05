@@ -278,7 +278,9 @@ var entries = {
                 delete filterParameters[parameter];
             }
         });
-        var requestParameters = $.extend({}, filterParameters, entries.sort);
+        var requestParameters = $.extend({}, filterParameters);
+        requestParameters.sort = entries.sort;
+
 
         $.ajax({
             url: entries.uri+'/'+pageNumber,
