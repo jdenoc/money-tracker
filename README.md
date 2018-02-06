@@ -7,15 +7,15 @@ Money Tracker is a web portal dedicated to help record and manage income & expen
 For a list of features currently available, what they're expected outcome is and test cases, see the [Features](features/FEATURES.md)
 
 ## Requirements
-- NodeJS >= 6
+- NodeJS
   ```bash
   # confirm installation and version of NodeJS
-  node -v
+  nodejs -v
   ```
-- Yarn 1.3.2
+- NPM
   ```bash
-  # confirm installation and version of Yarn
-  yarn --version
+  # confirm installation and version of NPM
+  npm -v
   ```
 - 5.6.4 <= PHP < 7
   ```bash
@@ -41,14 +41,16 @@ mysql -e "GRANT ALL PRIVILEGES ON money_tracker.* TO 'jdenoc'@'localhost';"
 git clone https://github.com/jdenoc/money-tracker.git --branch=develop
 cd money-tracker/
 
-# setup composer packages
+# setup composer packages & environment variables
 composer install
 # If you're working with PhpStorm, be sure to run the following command.
 # It will generate Laravel Facades that PhpStorm can use.
 composer ide-helper
+php artisan app:version $MOST_RECENT_TAG
 
-# setup Yarn packages
-yarn install
+# setup NodeJS/NPM/bower packages
+npm install
+node_modules/.bin/bower install
 ```
 
 ### Code deployment - production
@@ -60,12 +62,32 @@ git fetch --tags
 MOST_RECENT_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
 git checkout -q tags/$MOST_RECENT_TAG
 
-# setup composer packages
+# setup composer packages & environment variables
 cp .env.example .env
 sed "s/APP_ENV=.*/APP_ENV=production/" .env
 composer install --no-dev
+php artisan app:version $MOST_RECENT_TAG
 
-# setup Yarn packages
+# setup NodeJS/NPM/bower packages
+npm install --only=prod
+node_modules/.bin/bower install
+```
+
+### Code deployment - updates
+```bash
+# while already in the application directory, i.e.: cd money-tracker/
+git fetch --tags
+MOST_RECENT_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
+git checkout -q tags/$MOST_RECENT_TAG
+php artisan app:version $MOST_RECENT_TAG
+
+
+# should it be required, i.e. new packages
+# development
+composer update
+yarn install
+# production
+composer update --no-dev
 yarn install --prod
 ```
 

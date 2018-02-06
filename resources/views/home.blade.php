@@ -7,24 +7,24 @@
     <title>Money Tracker | HOME</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="{{asset('components/bootstrap/dist/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css"/>
-    <link href="{{asset('css/loading.css')}}" rel="stylesheet" type="text/css"/>
-    <link href="{{asset('css/dashboard.css')}}" rel="stylesheet" type="text/css"/>
-    <link href="{{asset('css/custom-bootstrap.css')}}" rel="stylesheet" type="text/css"/>
-    <link href="{{asset('css/institutions-pane.css')}}" rel="stylesheet" type="text/css"/>
+    <link href="components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="css/loading.css" rel="stylesheet" type="text/css"/>
+    <link href="css/dashboard.css" rel="stylesheet" type="text/css"/>
+    <link href="css/custom-bootstrap.css" rel="stylesheet" type="text/css"/>
+    <link href="css/institutions-pane.css" rel="stylesheet" type="text/css"/>
 
-    <script type="text/javascript" src="{{asset('components/jquery/dist/jquery.min.js')}}"></script>
-    <script type="text/javascript" src="{{asset('components/bootstrap/dist/js/bootstrap.min.js')}}"></script>
+    <script type="text/javascript" src="components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="components/bootstrap/dist/js/bootstrap.min.js"></script>
 
-    <link href="{{asset('components/toastr/build/toastr.min.css')}}" rel="stylesheet" type="text/css"/>
-    <script type="text/javascript" src="{{asset('components/toastr/build/toastr.min.js')}}"></script>
-    <script type="text/javascript" src="{{asset('js/notice.js')}}"></script>
+    <link href="components/toastr/toastr.min.css" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="components/toastr//toastr.min.js"></script>
+    <script type="text/javascript" src="js/notice.js"></script>
 
-    <script type="text/javascript" src="{{asset('js/loading.js')}}"></script>
-    <script type="text/javascript" src="{{asset('js/paginate.js')}}"></script>
-    <script type="text/javascript" src="{{asset('js/home.js')}}"></script>
-    <script type="text/javascript" src="{{asset('js/institutions-pane.js')}}"></script>
-    <script type="text/javascript" src="{{asset('js/accounts-pane.js')}}"></script>
+    <script type="text/javascript" src="js/loading.js"></script>
+    <script type="text/javascript" src="js/paginate.js"></script>
+    <script type="text/javascript" src="js/home.js"></script>
+    <script type="text/javascript" src="js/institutions-pane.js"></script>
+    <script type="text/javascript" src="js/accounts-pane.js"></script>
 </head>
 <body>
 
@@ -48,6 +48,8 @@
                 <li><a href="#" data-toggle="dropdown" id="user-menu"><img src="/imgs/profile-placeholder.jpeg" alt="TODO - name required from session" class="img-circle" /></a>
                     <ul class="dropdown-menu" role="menu" aria-labelledby="user_menu">
                         <li role="presentation" class="dropdown-header">TODO - name required from session</li>
+                        <li role="presentation" class="divider"></li>
+                        <li role="presentation" class="menu-node-version"><a class="text-info">Version: <span id="app-version"></span></a></li>
                         <li role="presentation" class="divider"></li>
                         <li><a href="stats"><span class="glyphicon glyphicon-stats"></span> Statistics</a></li>
                         <li><a href="settings"><span class="glyphicon glyphicon-cog"></span> Settings</a></li>

@@ -76,6 +76,15 @@
     font-size: 12px;
 }
 
+/* Navbar */
+.menu-node-version{
+    margin: -7px 0;
+}
+.menu-node-version a.text-info{
+    font-style: italic;
+    color: #31708f; /* some other CSS overrides the value from this class. we need to re-declare it here for it to work */
+}
+
 /* Settings */
 .account_setting ul {
     margin-top: 5px;

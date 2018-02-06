@@ -17,6 +17,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::get('version', 'Api\VersionController@get');
 Route::get('institutions', 'Api\InstitutionController@get_institutions');                           // GET /api/institutions
 Route::get('institutes', 'Api\InstitutionController@get_institutions');                             // GET /api/institutes
 Route::get('institution/{institution_id}', 'Api\InstitutionController@get_institution');            // GET /api/institution/{institution_id}
