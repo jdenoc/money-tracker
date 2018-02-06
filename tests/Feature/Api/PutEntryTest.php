@@ -102,7 +102,7 @@ class PutEntryTest extends TestCase {
         // WHEN
         $put_response = $this->json("PUT", $this->_base_uri.$this->_generated_entry->id, $entry_data);
         // THEN
-        $put_response->assertStatus(HttpStatus::HTTP_OK);
+        $this->assertResponseStatus($put_response, HttpStatus::HTTP_OK);
         $put_response_as_array = $this->getResponseAsArray($put_response);
         $this->assertPutResponseHasCorrectKeys($put_response_as_array);
         $this->assertSuccessPutResponse($put_response_as_array);
@@ -271,6 +271,38 @@ class PutEntryTest extends TestCase {
             unset($get_response_as_array['tags'][$idx]);
         }
         $this->assertEmpty($get_response_as_array['tags']);
+    }
+
+    public function testUpdateEntryWithTagsSoTheyAreNotDuplicated(){
+        $faker = FakerFactory::create();
+        // GIVEN - see setUp()
+        $generate_tag_count = $faker->numberBetween(2, 5);
+        $generated_tags = factory(Tag::class, $generate_tag_count)->create();
+        $generated_tag_ids = $generated_tags->pluck('pivot.tag_id')->toArray();
+        $attaching_tag_id = $faker->randomElement($generated_tag_ids);
+        $this->_generated_entry->tags()->attach($attaching_tag_id);
+        $put_entry_data = ['tags'=>[$attaching_tag_id]];
+        $put_entry_data['tags'] = array_merge(
+            $put_entry_data['tags'],
+            [$attaching_tag_id],
+            $faker->randomElements($generated_tag_ids, 2)
+        );
+
+        // WHEN
+        $put_response = $this->json("PUT", $this->_base_uri.$this->_generated_entry->id, $put_entry_data);
+        // THEN
+        $this->assertResponseStatus($put_response, HttpStatus::HTTP_OK);
+        $put_response_as_array = $put_response->json();
+        $this->assertPutResponseHasCorrectKeys($put_response_as_array);
+        $this->assertSuccessPutResponse($put_response_as_array);
+
+        // WHEN
+        $get_response = $this->get($this->_base_uri.$this->_generated_entry->id);
+        // THEN
+        $this->assertResponseStatus($get_response, HttpStatus::HTTP_OK);
+        $get_response_as_array = $get_response->json();
+        $unique_tags_in_response = array_unique($get_response_as_array['tags'], SORT_REGULAR);
+        $this->assertCount(count($get_response_as_array['tags']), $unique_tags_in_response, $get_response->getContent());
     }
 
     public function testUpdateEntryWithAttachments(){
