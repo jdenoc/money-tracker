@@ -7,15 +7,15 @@ Money Tracker is a web portal dedicated to help record and manage income & expen
 For a list of features currently available, what they're expected outcome is and test cases, see the [Features](features/FEATURES.md)
 
 ## Requirements
-- NodeJS
+- NodeJS >= 6
   ```bash
   # confirm installation and version of NodeJS
-  nodejs -v
+  node -v
   ```
-- NPM
+- Yarn 1.3.2
   ```bash
-  # confirm installation and version of NPM
-  npm -v
+  # confirm installation and version of Yarn
+  yarn --version
   ```
 - 5.6.4 <= PHP < 7
   ```bash
@@ -48,9 +48,8 @@ composer install
 composer ide-helper
 php artisan app:version $MOST_RECENT_TAG
 
-# setup NodeJS/NPM/bower packages
-npm install
-node_modules/.bin/bower install
+# setup Yarn packages
+yarn install
 ```
 
 ### Code deployment - production
@@ -69,8 +68,7 @@ composer install --no-dev
 php artisan app:version $MOST_RECENT_TAG
 
 # setup NodeJS/NPM/bower packages
-npm install --only=prod
-node_modules/.bin/bower install
+yarn install --prod
 ```
 
 ### Code deployment - updates
