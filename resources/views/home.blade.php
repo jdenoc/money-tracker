@@ -4,7 +4,7 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     {{--<!--  TODO - <link rel="shortcut icon" href="../../assets/ico/favicon.ico">-->--}}
-    <title>Money Tracker | HOME</title>
+    <title>{{config("app.debug") ? '[DEV] ' : '' }}Money Tracker | HOME</title>
 
     <!-- Bootstrap core CSS -->
     <link href="{{asset('components/bootstrap/dist/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css"/>

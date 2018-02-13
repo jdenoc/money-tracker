@@ -187,6 +187,8 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        App\Providers\LogServiceProvider::class,    // sets level based log file logging
+        App\Providers\QueryLoggingServiceProvider::class,   // record queries to a log file
 
     ],
 
