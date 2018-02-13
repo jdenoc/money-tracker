@@ -47,7 +47,8 @@ $('#attachment-uploader').uploadFile({
             method: 'delete',
             data: {
                 _token: uploadToken,
-                filename: attachment.tmp_filename
+                uuid: attachment.uuid,
+                filename: attachment.name
             },
             dataType: "json",
             statusCode: {
@@ -57,6 +58,9 @@ $('#attachment-uploader').uploadFile({
                 400: function(){
                     notice.display(notice.typeWarning, "Error occurred while attempting to delete attachment");
                     return false;
+                },
+                401: function(){
+                    notice.display(notice.typeError, "Failed to delete attachment due to expired session. Refresh page.")
                 },
                 404: function(){
                     notice.display(notice.typeInfo, "Attachment not found");

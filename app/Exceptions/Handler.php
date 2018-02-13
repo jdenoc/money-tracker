@@ -4,7 +4,9 @@ namespace App\Exceptions;
 
 use Exception;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Session\TokenMismatchException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use \Symfony\Component\HttpFoundation\Response as HttpStatus;
 
 class Handler extends ExceptionHandler
 {
@@ -42,9 +44,13 @@ class Handler extends ExceptionHandler
      * @param  \Exception  $exception
      * @return \Illuminate\Http\Response
      */
-    public function render($request, Exception $exception)
-    {
-        return parent::render($request, $exception);
+    public function render($request, Exception $exception){
+        if ($exception instanceof TokenMismatchException || $request->is('attachment/upload')){
+            // handle TokenMismatchException's for attachment/upload
+            return response(['error'=>"token mis-match"],HttpStatus::HTTP_UNAUTHORIZED);
+        } else {
+            return parent::render($request, $exception);
+        }
     }
 
     /**
