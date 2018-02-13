@@ -372,14 +372,14 @@ var entry = {
     save: function(entryData){
         var entryId = parseInt(entryData.id);
         delete entryData.id;
-        var ajaxEntryData = JSON.stringify(entryData);
         if($.isNumeric(entryId)){
             // update entry
             $.ajax({
                 url: entry.uri+'/'+entryId,
                 method: 'PUT',
                 beforeSend: loading.start,
-                data: ajaxEntryData,
+                data: JSON.stringify(entryData),
+                dataType: 'json',
                 statusCode: {
                     200: function(){
                         notice.display(notice.typeSuccess, "Entry updated");
@@ -402,7 +402,8 @@ var entry = {
                 url: entry.uri,
                 method: 'POST',
                 beforeSend: loading.start,
-                data: ajaxEntryData,
+                data: JSON.stringify(entryData),
+                dataType: 'json',
                 statusCode: {
                     201: function(){
                         notice.display(notice.typeSuccess, "New entry created");
