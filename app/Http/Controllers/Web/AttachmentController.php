@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Web;
 
 use App\Attachment;
-use Response;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Ramsey\Uuid\Uuid;
@@ -82,10 +82,11 @@ class AttachmentController extends Controller {
     }
 
     public function deleteUpload(Request $request){
-        if(empty($request->input('filename'))){
+        if(empty($request->input('filename')) || empty($request->input('uuid'))){
             return response('', HttpStatus::HTTP_BAD_REQUEST);
         } else {
             $attachment = new Attachment();
+            $attachment->uuid = $request->input('uuid');
             $attachment->name = $request->input('filename');
             if($attachment->storage_exists(true)){
                 $attachment->storage_delete(true);
