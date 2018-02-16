@@ -23,13 +23,6 @@ class TravisCi extends Command {
     protected $description = 'Outputs details needed for travis-ci builds';
 
     /**
-     * Create a new command instance.
-     */
-    public function __construct(){
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
      */
     public function handle(){
