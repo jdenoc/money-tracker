@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Attachment;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Ramsey\Uuid\Uuid;
