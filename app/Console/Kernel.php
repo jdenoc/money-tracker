@@ -14,7 +14,8 @@ class Kernel extends ConsoleKernel {
      */
     protected $commands = [
         Commands\TravisCi::class,
-        Commands\AppVersion::class
+        Commands\AppVersion::class,
+        Commands\ClearTmpUploads::class,
     ];
 
     /**
@@ -24,8 +25,8 @@ class Kernel extends ConsoleKernel {
      * @return void
      */
     protected function schedule(Schedule $schedule){
-        // $schedule->command('inspire')
-        //          ->hourly();
+        // $schedule->command('inspire')->hourly();
+        $schedule->command('storage:clear-tmp-uploads')->daily();
     }
 
     /**
