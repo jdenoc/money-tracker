@@ -79,7 +79,6 @@ MOST_RECENT_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
 git checkout -q tags/$MOST_RECENT_TAG
 php artisan app:version $MOST_RECENT_TAG
 
-
 # should it be required, i.e. new packages
 # development
 composer update
@@ -98,6 +97,15 @@ That being said, there are certainly variables that should be modified at this p
 - `DB_DATABASE`
 - `DB_USERNAME`
 - `DB_PASSWORD`
+
+### Scheduled tasks Setup
+You will need to add the following Cron entry to your server.
+```bash
+* * * * * php /path-to-your-project/artisan schedule:run >> /dev/null 2>&1
+```
+This Cron will call the Laravel command scheduler every minute. When the `schedule:run` command is executed, Laravel will evaluate your scheduled tasks and runs the tasks that are due.  
+Here is a list of commands that will _scheduled_ as part of this setup:  
+- `artisan storage:clear-tmp-uploads`
 
 ## Testing
 This project has been setup to use [travis-ci](https://travis-ci.org/jdenoc/money-tracker) for continuous integration testing. If you wish to test locally, here are some steps to follow:
