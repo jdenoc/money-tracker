@@ -16,6 +16,7 @@ class Kernel extends ConsoleKernel {
         Commands\TravisCi::class,
         Commands\AppVersion::class,
         Commands\ClearTmpUploads::class,
+        Commands\AccountTotalSanityCheck::class,
     ];
 
     /**
