@@ -41,7 +41,6 @@ class AccountTotalSanityCheck extends Command {
                 ->orderBy(DB::raw('entries.entry_date desc, entries.id'), 'desc');
             // The above stuff is translated into MySQL here:
             // SELECT
-            //   @ACCOUNT_TOTAL as expected,
             //   IFNULL( SUM( IF( entries.expense=1, -1*entries.entry_value, entries.entry_value ) ), 0 ) as actual
             // FROM entries
             // INNER JOIN account_types

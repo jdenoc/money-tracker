@@ -13,10 +13,10 @@ class Kernel extends ConsoleKernel {
      * @var array
      */
     protected $commands = [
-        Commands\TravisCi::class,
+        Commands\AccountTotalSanityCheck::class,
         Commands\AppVersion::class,
         Commands\ClearTmpUploads::class,
-        Commands\AccountTotalSanityCheck::class,
+        Commands\TravisCi::class,
     ];
 
     /**
@@ -28,6 +28,7 @@ class Kernel extends ConsoleKernel {
     protected function schedule(Schedule $schedule){
         // $schedule->command('inspire')->hourly();
         $schedule->command('storage:clear-tmp-uploads')->daily();
+        $schedule->command("sanity-check:account-total")->dailyAt("03:17");
     }
 
     /**
