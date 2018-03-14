@@ -30,15 +30,25 @@ class GetEntriesTest extends ListEntriesBase {
         $generate_entry_count = $this->_faker->numberBetween(self::MIN_TEST_ENTRIES, EntryController::MAX_ENTRIES_IN_RESPONSE);
         $generated_entries = $this->batch_generate_entries($generate_entry_count, $generated_account_type->id, [], true);
         $generated_disabled_entries = $generated_entries->where('disabled', 1);
-        $generated_entries = $generated_entries->sortByDesc('disabled') // sorting so disabled entries are at the start of the collection
-            ->splice($generated_disabled_entries->count()-1);
-        $generate_entry_count -= $generated_disabled_entries->count();
+        if($generated_disabled_entries->count() > 0){   // if there are no disabled entries, then there is no need to do any fancy filtering
+            $generated_entries = $generated_entries->sortByDesc('disabled') // sorting so disabled entries are at the start of the collection
+                ->splice($generated_disabled_entries->count()-1);
+            $generate_entry_count -= $generated_disabled_entries->count();
+        }
+
+        if($generate_entry_count < 1){
+            // if we only generate entries that have been marked "disabled"
+            // then we should create at least one entry is NOT marked "disabled
+            $generated_entry = $this->generate_entry_record($generated_account_type->id, false, []);
+            $generated_entries->push($generated_entry);
+            $generate_entry_count = 1;
+        }
 
         // WHEN
         $response = $this->get($this->_uri);
 
         // THEN
-        $response->assertStatus(HttpStatus::HTTP_OK);
+        $this->assertResponseStatus($response, HttpStatus::HTTP_OK);
         $response_body_as_array = $response->json();
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertArrayHasKey('count', $response_body_as_array);
