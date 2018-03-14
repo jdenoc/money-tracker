@@ -65,9 +65,11 @@ class Entry extends BaseModel {
     public function save(array $options = []){
         if($this->exists){
             // if the entry already exists
-            // remove that original value from the account total
+            // remove that original value from the total of originally associated account
             $actual_entry_value = ($this->getOriginal('expense') ? -1 : 1)*$this->getOriginal('entry_value');
-            $this->account_type()->first()->account()->first()->update_total(-1*$actual_entry_value);
+            $original_account_type_id = $this->getOriginal('account_type_id');
+            $original_account_type = AccountType::find($original_account_type_id);
+            $original_account_type->account()->first()->update_total(-1*$actual_entry_value);
         }
 
         $saved_entry = parent::save($options);

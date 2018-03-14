@@ -132,6 +132,79 @@ class PutEntryTest extends TestCase {
         );
     }
 
+    public function testUpdateEntryAndChangeAccountTypeCausingAccountTotalsToUpdate(){
+        // GIVEN - see setUp()
+        $generated_account2 = factory(Account::class)->create();
+        $generated_account_type2 = factory(AccountType::class)->create(['account_id'=>$generated_account2->id]);
+        $entry_data = $this->_generated_entry->toArray();
+        $entry_data['account_type_id'] = $generated_account_type2->id;
+
+        // WHEN - checking account 1 original total
+        $get_account1_response1 = $this->get('/api/account/'.$this->_generated_account->id);
+        // THEN
+        $get_account1_response1->assertStatus(HttpStatus::HTTP_OK);
+        $get_account1_response1_as_array = $get_account1_response1->json();
+        $this->assertArrayHasKey('total', $get_account1_response1_as_array);
+        $account1_original_total = $get_account1_response1_as_array['total'];
+
+        // WHEN - checking account 2 original total
+        $get_account2_response1 = $this->get('/api/account/'.$generated_account2->id);
+        // THEN
+        $get_account2_response1->assertStatus(HttpStatus::HTTP_OK);
+        $get_account2_response1_as_array = $get_account2_response1->json();
+        $this->assertArrayHasKey('total', $get_account2_response1_as_array);
+        $account2_original_total = $get_account2_response1_as_array['total'];
+
+        // WHEN - updated entry.account_type_id
+        $update_entry_response = $this->json("PUT", $this->_base_uri.$this->_generated_entry->id, $entry_data);
+        // THEN
+        $this->assertResponseStatus($update_entry_response, HttpStatus::HTTP_OK);
+        $put_response_as_array = $update_entry_response->json();
+        $this->assertPutResponseHasCorrectKeys($put_response_as_array);
+        $this->assertSuccessPutResponse($put_response_as_array);
+
+        // WHEN - confirming entry.account_type_id was updated
+        $get_entry_response = $this->get($this->_base_uri.$this->_generated_entry->id);
+        // THEN
+        $this->assertResponseStatus($get_entry_response, HttpStatus::HTTP_OK);
+        $get_entry_response_as_array = $get_entry_response->json();
+        $this->assertArrayHasKey('account_type_id', $get_entry_response_as_array);
+        $this->assertEquals($entry_data['account_type_id'], $get_entry_response_as_array['account_type_id']);
+
+        // WHEN - checking account 1 new total
+        $get_account1_response2 = $this->get('/api/account/'.$this->_generated_account->id);
+        // THEN
+        $get_account1_response2->assertStatus(HttpStatus::HTTP_OK);
+        $get_account1_response2_as_array = $get_account1_response2->json();
+        $this->assertArrayHasKey('total', $get_account1_response2_as_array);
+        $account1_new_total = $get_account1_response2_as_array['total'];
+
+        // WHEN - checking account 2 new total
+        $get_account2_response2 = $this->get('/api/account/'.$generated_account2->id);
+        // THEN
+        $get_account2_response2->assertStatus(HttpStatus::HTTP_OK);
+        $get_account2_response2_as_array = $get_account2_response2->json();
+        $this->assertArrayHasKey('total', $get_account2_response2_as_array);
+        $account2_new_total = $get_account2_response2_as_array['total'];
+
+        // confirm account totals have been updated
+        $entry_value = ($this->_generated_entry->expense ? -1 : 1)*$this->_generated_entry->entry_value;
+        $error_message  = "\n - Entry value:".$entry_value;
+        $error_message .= "\n - Original total account1:".$account1_original_total."\n - New total account1:".$account1_new_total;
+        $error_message .= "\n - Original total account2:".$account2_original_total."\n - New total account2:".$account2_new_total;
+        $this->assertEquals(
+            $account1_original_total-$entry_value,
+            $account1_new_total,
+            "Account1 total comparison failing".$error_message
+        );
+        $this->assertEquals(
+            $account2_original_total+$entry_value,
+            $account2_new_total,
+            "Account2 total comparison failing".$error_message
+        );
+    }
+
+
     public function testUpdateEntryAsDeletedAndConfirmValueRemovedFromAccountTotal(){
         // GIVEN - see setUp()
         $entry_data = [
