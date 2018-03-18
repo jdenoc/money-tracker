@@ -27,7 +27,7 @@
     padding: 6px;
 }
 
-#entry-account-name{
+.account-type-meta{
     font-weight: normal;
     font-size: 11px;
     line-height: 11px;
@@ -36,7 +36,7 @@
     width: 310px;
 }
 
-#entry-account-name span{
+.account-type-meta span{
     padding-left: 2px;
 }
 
