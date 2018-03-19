@@ -46,7 +46,7 @@ var filterModal = {
     initTagsInput: function(){
         var filterTags = $('#filter-tags');
         var tagValues = tags.value.sort(function(a, b){
-            return a.name.length-b.name.length
+            return (a.name < b.name) ? -1 : (a.name > b.name) ? 1 : 0;
         });
 
         $.each(tagValues, function(idx, tagObj){
