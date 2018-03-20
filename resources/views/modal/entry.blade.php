@@ -38,8 +38,12 @@
                     <select id="entry-account-type" name="entry-account-type" class="form-control">
                         <option></option>
                     </select>
-                    <div id="entry-account-name" class="text-info hidden text-right">
+                    <div id="entry-account-name" class="text-info hidden text-right account-type-meta">
                         <strong>Account Name:</strong>
+                        <span></span>
+                    </div>
+                    <div id="entry-account-type-last-digits" class="text-info hidden text-right account-type-meta">
+                        <strong>Last 4 Digits:</strong>
                         <span></span>
                     </div>
                 </label>
