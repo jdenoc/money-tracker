@@ -98,20 +98,23 @@ var entryModal = {
         });
         $('#entry-account-type').change(function(){
             var accountTypeId = $(this).val();
+            var accountType = accountTypes.find(accountTypeId);
             var account = accountTypes.getAccount(accountTypeId);
-            var accountNameParentElement = $('#entry-account-name');
+            var accountTypeMetaParentElement = $('.account-type-meta');
             if(account.hasOwnProperty('name')){
-                accountNameParentElement.removeClass('hidden');
+                accountTypeMetaParentElement.removeClass('hidden');
                 $('#entry-account-name span').text(account.name);
+                $('#entry-account-type-last-digits span').text(accountType.last_digits);
             } else {
-                accountNameParentElement.addClass('hidden');
+                accountTypeMetaParentElement.addClass('hidden');
                 $('#entry-account-name span').text('');
+                $('#entry-account-type-last-digits span').text('');
             }
 
             if(account.hasOwnProperty('disabled') && account.disabled){
-                accountNameParentElement.removeClass('text-info').addClass('text-muted');
+                accountTypeMetaParentElement.removeClass('text-info').addClass('text-muted');
             } else {
-                accountNameParentElement.removeClass('text-muted').addClass('text-info');
+                accountTypeMetaParentElement.removeClass('text-muted').addClass('text-info');
             }
         });
     },
