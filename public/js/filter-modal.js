@@ -110,7 +110,8 @@ var filterModal = {
         if(attachmentInputValue === 1){ filterModalFilterParameters.attachments = true;                   } // has attachments
         if(unconfirmed){                filterModalFilterParameters.unconfirmed = true;                   }
 
-        entries.filter(filterModalFilterParameters);
+        paginate.current = 0;   // reset current page number
+        entries.filter(filterModalFilterParameters, paginate.current);
     }
 };
 
