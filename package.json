@@ -1,31 +1,24 @@
 {
   "private": true,
-  "dependencies": {
-    "bootstrap": "3.3.7",
-    "bootstrap-3-typeahead": "4.0.2",
-    "bootstrap-material-design-icons": "2.2.0",
-    "bootstrap-switch": "3.3.4",
-    "bootstrap-tagsinput": "^0.7.1",
-    "jquery": "3.1.1",
-    "jquery-file-upload": "4.0.2",
-    "toastr": "^2.1.4"
-  },
   "devDependencies": {
     "axios": "^0.16.2",
-    "bootstrap-sass": "^3.3.7",
     "cross-env": "^5.0.1",
-    "jquery": "^3.1.1",
     "laravel-mix": "^1.0",
     "lodash": "^4.17.4",
-    "vue": "^2.1.10"
+    "toastr": "^2.1.4",
+    "vue": "^2.1.10",
+    "vuex": "^3.0.1"
   },
   "scripts": {
-    "dev": "npm run development",
     "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
     "watch": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --watch --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
-    "watch-poll": "npm run watch -- --watch-poll",
-    "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
-    "prod": "npm run production",
     "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome": "^1.1.5",
+    "bulma": "^0.6.2",
+    "bulma-badge": "^1.0.1",
+    "bulma-tooltip": "^1.0.4",
+    "vue-bulma-collapse": "^1.0.3"
   }
 }

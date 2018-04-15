@@ -1,22 +1,33 @@
+import Vue from 'vue';
+import Store from './store'
+import InstitutionsPane from './components/institutions-pane';
 
-/**
- * First we will load all of this project's JavaScript dependencies which
- * includes Vue and other libraries. It is a great starting point when
- * building robust, powerful web applications using Vue and Laravel.
- */
+import { Accounts } from './accounts';
+import { AccountTypes } from "./account-types";
+import { Institutions } from './institutions';
+import { Tags } from './tags';
+import { Version } from './version';
 
-require('./bootstrap');
+new Vue({
+    el: "#app",
+    components: {
+        InstitutionsPane
+    },
+    store: Store,
+    mounted: function(){
+        let accounts = new Accounts();
+        accounts.fetch();
 
-window.Vue = require('vue');
+        let accountTypes = new AccountTypes();
+        accountTypes.fetch();
 
-/**
- * Next, we will create a fresh Vue application instance and attach it to
- * the page. Then, you may begin adding components to this application
- * or customize the JavaScript scaffolding to fit your unique needs.
- */
+        let tags = new Tags();
+        tags.fetch();
 
-Vue.component('example', require('./components/Example.vue'));
+        let institutions = new Institutions();
+        institutions.fetch();
 
-const app = new Vue({
-    el: '#app'
+        let version = new Version();
+        version.fetch();
+    }
 });
