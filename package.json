@@ -22,6 +22,7 @@
     "randomcolor": "^0.5.3",
     "toastr": "^2.1.4",
     "v-hotkey": "^0.3.0",
+    "vue-bulma-collapse": "^1.0.3",
     "vue-js-toggle-button": "^1.2.3",
     "vue-snotify": "^3.2.1",
     "vue-spinner-component": "^1.0.5",
@@ -30,11 +31,10 @@
   },
   "devDependencies": {
     "axios": "^0.16.2",
-    "bootstrap-sass": "^3.3.7",
     "cross-env": "^5.0.1",
-    "jquery": "^3.1.1",
     "laravel-mix": "^1.0",
     "lodash": "^4.17.4",
+    "toastr": "^2.1.4",
     "vue": "^2.1.10"
   }
 }
