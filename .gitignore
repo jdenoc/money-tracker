@@ -10,6 +10,9 @@ yarn.lock
 yarn-error.log
 public/components
 
+# laravel-mix
+mix-manifest.json
+
 .env
 _ide_helper.php
 .phpstorm.meta.php
