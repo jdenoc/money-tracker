@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  application:
+    build:
+      context: .. # interpreted as relative to the location of the Compose file
+      dockerfile: docker/app.dockerfile
+    container_name: "app.money-tracker"
+    ports:
+      - 80:80
+    volumes:
+      - ..:/var/www/money-tracker  # .. is interpreted as relative to the location of the Compose file
+    dns_search:
+      - money-tracker.docker
+
+  database:
+    image: mysql:5.6
+    container_name: "mysql.money-tracker"
+    volumes:
+      - db.money-tracker:/var/lib/mysql
+    environment:
+      # if you change any of these, be sure to change the corresponding values in .env.docker
+      - MYSQL_RANDOM_ROOT_PASSWORD=yes
+      - MYSQL_DATABASE=money_tracker
+      - MYSQL_USER=jdenoc
+      - MYSQL_PASSWORD=password
+
+volumes:
+  db.money-tracker:
