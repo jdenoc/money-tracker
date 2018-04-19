@@ -35,7 +35,8 @@ class AppVersion extends Command {
      */
     public function handle(){
         // make sure .env file exists
-        if(!File::exists(base_path('.env'))){
+        $dot_env_file_path = rtrim(app()->environmentPath(), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.app()->environmentFile();
+        if(!File::exists($dot_env_file_path)){
             $this->error(".env file does not exist.\nPlease create one before trying again.");
             return;
         }
@@ -48,7 +49,7 @@ class AppVersion extends Command {
             return;
         }
 
-        $this->writeNewEnvironmentFileWith($version);
+        $this->writeNewEnvironmentFileWith($dot_env_file_path, $version);
         config([self::CONFIG_PARAM=>$version]);  // setting the config value in memory
         $this->info(sprintf(self::INFO_STRING_SET_VERSION, $version));
         return;
@@ -58,14 +59,15 @@ class AppVersion extends Command {
      * Write a new environment file with the given key.
      *     Taken & modified from Illuminate\Foundation\Console\KeyGenerateCommand
      *
+     * @param string   $dot_env_file_path
      * @param  string  $version
      * @return void
      */
-    protected function writeNewEnvironmentFileWith($version){
-        file_put_contents(base_path('.env'), preg_replace(
+    protected function writeNewEnvironmentFileWith($dot_env_file_path, $version){
+        file_put_contents($dot_env_file_path, preg_replace(
             $this->versionReplacementPattern(),
             self::ENV_PARAM.'='.$version,
-            file_get_contents(base_path('.env'))
+            file_get_contents($dot_env_file_path)
         ));
     }
 
