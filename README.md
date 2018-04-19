@@ -205,10 +205,16 @@ Here is a list of commands that will _scheduled_ as part of this setup:
 ## Testing
 
 ### <a name="testing-travisci">Travis-ci</a>
-This project has been setup to use [travis-ci](https://travis-ci.org/jdenoc/money-tracker) for continuous integration testing.
+This project has been setup to use [travis-ci](https://travis-ci.org/jdenoc/money-tracker) for continuous integration testing.  
+
+**TODO:** `.travisci.yml` _MUST_ be updated to use our docker container setup, rather than travis-ci's setup.
 
 ### <a name="testing-docker">Docker</a>
-**TBD** Testing has not been conducted via Docker instances as of yet.
+Assuming we already have our docker environment already setup ([instructions here](#local-docker-environment)), performing the following commands should run the tests we want.
+```bash
+# Run PhpUnit Tests
+docker container exec -it app.money-tracker vendor/bin/phpunit
+```
 
 ### <a name="testing-locally">Local/Dev</a>
 If you wish to test locally (or on your dev environment), here are some steps to follow:
