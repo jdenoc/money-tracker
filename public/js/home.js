@@ -241,6 +241,11 @@ var accountTypes = {
         } else {
             return {};  // couldn't find the account_type associated with the provided ID
         }
+    },
+    valuesSortedByName: function(){
+        return accountTypes.value.slice().sort(function(a, b){
+            return a.name > b.name;
+        });
     }
 };
 
