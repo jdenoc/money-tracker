@@ -271,15 +271,13 @@ var entries = {
     },
     display: function(){
         entries.clearDisplay();
-        var currentDate = new Date();
-        currentDate = currentDate.getFullYear()+'-'+(currentDate.getMonth()+1)+'-'+currentDate.getDate();
         $.each(entries.value, function(index, entryObject){
             var displayTags = '';
             $.each(entryObject.tags, function(id, tagId){
                 displayTags += '<span class="label label-default entry-tag">'+tags.getNameById(tagId)+'</span>';
             });
             $('#entries-display-pane tbody').append(
-                '<tr class="'+(!entryObject.confirm ? 'warning' : (entryObject.expense ? '' : 'success'))+(entryObject.entry_date > currentDate ? ' text-muted':'')+'">' +
+                '<tr class="'+(!entryObject.confirm ? 'warning' : (entryObject.expense ? '' : 'success'))+(new Date(entryObject.entry_date) > new Date() ? ' text-muted':'')+'">' +
                 '<td class="check-col" data-toggle="modal" data-target="#entry-modal" onclick="entry.load('+entryObject.id+');">' +
                 "\t"+'<span class="glyphicon glyphicon-pencil"></span>' +
                 '</td>' +
