@@ -183,6 +183,17 @@ var accounts = {
     },
     display: function(){
         institutionsPane.displayAccounts();
+    },
+    valuesSortedBy: function(property){
+        return accounts.value.slice().sort(function(a, b){
+            if(a.hasOwnProperty(property) && b.hasOwnProperty(property)){
+                if(a[property] < b[property]) return -1;
+                if(a[property] > b[property]) return 1;
+                return 0;
+            } else {
+                return 0;
+            }
+        });
     }
 };
 

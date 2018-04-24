@@ -30,7 +30,7 @@ var filterModal = {
     },
     initAccountSelect: function(){
         $("#filter-account-or-account-type").attr('name', 'filter-account');
-        filterModal.initAccountOrAccountTypeSelect(accounts.value);
+        filterModal.initAccountOrAccountTypeSelect(accounts.valuesSortedBy('name'));
     },
     initAccountTypeSelect: function(){
         $("#filter-account-or-account-type").attr('name', 'filter-account-type');
