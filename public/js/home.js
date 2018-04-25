@@ -183,6 +183,17 @@ var accounts = {
     },
     display: function(){
         institutionsPane.displayAccounts();
+    },
+    valuesSortedBy: function(property){
+        return accounts.value.slice().sort(function(a, b){
+            if(a.hasOwnProperty(property) && b.hasOwnProperty(property)){
+                if(a[property] < b[property]) return -1;
+                if(a[property] > b[property]) return 1;
+                return 0;
+            } else {
+                return 0;
+            }
+        });
     }
 };
 
@@ -277,7 +288,7 @@ var entries = {
                 displayTags += '<span class="label label-default entry-tag">'+tags.getNameById(tagId)+'</span>';
             });
             $('#entries-display-pane tbody').append(
-                '<tr class="'+(!entryObject.confirm ? 'warning' : (entryObject.expense ? '' : 'success'))+'">' +
+                '<tr class="'+(!entryObject.confirm ? 'warning' : (entryObject.expense ? '' : 'success'))+(new Date(entryObject.entry_date) > new Date() ? ' text-muted':'')+'">' +
                 '<td class="check-col" data-toggle="modal" data-target="#entry-modal" onclick="entry.load('+entryObject.id+');">' +
                 "\t"+'<span class="glyphicon glyphicon-pencil"></span>' +
                 '</td>' +
