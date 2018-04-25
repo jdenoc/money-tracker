@@ -62,34 +62,34 @@ cd money-tracker/
 
 # Run composer install
 # we're using a deprecated docker image so we can be guaranteed that we can run php 5
-docker container run --rm -it --volume $PWD:/app composer/composer:php5-alpine install
+docker container run --rm -t --volume $PWD:/app composer/composer:php5-alpine install
 
 # ***OPTIONAL***
 # If you're working with PhpStorm, be sure to run the following command.
 # It will generate Laravel Facades that PhpStorm can use.
-docker container run --rm -it --volume $PWD:/app composer/composer:php5-alpine ide-helper
+docker container run --rm -t --volume $PWD:/app composer/composer:php5-alpine ide-helper
 
 # Run yarn install
-docker container run --rm -it --workdir /code --volume $PWD:/code node:6-slim yarn install
+docker container run --rm -t --workdir /code --volume $PWD:/code node:6-slim yarn install
 
 # Bring "up" application container(s)
 docker-compose -f docker/docker-compose.yml up -d
 
 # Set application version value
 # Note: you can replace `git describe` with any value you want
-docker container exec -it app.money-tracker artisan app:version `git describe`
+docker container exec -t app.money-tracker artisan app:version `git describe`
 
 # Setup database/clear existing database and re-initialise it empty
-docker container exec -it app.money-tracker artisan migrate:refresh
+docker container exec -t app.money-tracker artisan migrate:refresh
 
 # Load dummy data into database
-docker container exec -it app.money-tracker artisan migrate:refresh
-docker container exec -it app.money-tracker artisan db:seed --class=UiSampleDatabaseSeeder
+docker container exec -t app.money-tracker artisan migrate:refresh
+docker container exec -t app.money-tracker artisan db:seed --class=UiSampleDatabaseSeeder
 # ***OPTIONAL***
 # If you have a database dump file, you can load with this command
-docker container exec -it mysql.money-tracker mysql -u`cat .env.docker | grep DB_USERNAME | sed 's/DB_USERNAME=//'` \
-	-p`cat .env | grep DB_PASSWORD | sed 's/DB_PASSWORD=//'` \
-	`cat .env | grep DB_DATABASE | sed 's/DB_DATABASE=//'` \
+docker container exec -t mysql.money-tracker mysql -u`cat .env.docker | grep DB_USERNAME | sed 's/DB_USERNAME=//'` \
+	-p`cat .env.docker | grep DB_PASSWORD | sed 's/DB_PASSWORD=//'` \
+	`cat .env.docker | grep DB_DATABASE | sed 's/DB_DATABASE=//'` \
 	< /path/to/file.sql
 ```
 _**Note:** You MUST add_ `127.0.0.1  money-tracker.docker` _to the host machines host file._
