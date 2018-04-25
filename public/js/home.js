@@ -288,7 +288,7 @@ var entries = {
                 displayTags += '<span class="label label-default entry-tag">'+tags.getNameById(tagId)+'</span>';
             });
             $('#entries-display-pane tbody').append(
-                '<tr class="'+(!entryObject.confirm ? 'warning' : (entryObject.expense ? '' : 'success'))+'">' +
+                '<tr class="'+(!entryObject.confirm ? 'warning' : (entryObject.expense ? '' : 'success'))+(new Date(entryObject.entry_date) > new Date() ? ' text-muted':'')+'">' +
                 '<td class="check-col" data-toggle="modal" data-target="#entry-modal" onclick="entry.load('+entryObject.id+');">' +
                 "\t"+'<span class="glyphicon glyphicon-pencil"></span>' +
                 '</td>' +
