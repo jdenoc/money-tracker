@@ -52,3 +52,13 @@ branch:
   only:
     - master
     - develop
+
+notifications:
+  webhooks:
+    urls:
+      - https://discordapp.com/api/webhooks/439058887014875147/fTQW8mOALd77wBZN9q088BabXmteXEddelqWgoECZ5hkE-2h-5FnQnhxBQ-zcA5E742T
+    on_start: always
+    on_success: always
+    on_failure: always
+    on_cancel: always
+    on_error: always
