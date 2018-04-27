@@ -40,8 +40,20 @@ before_script:
 
 script: vendor/bin/phpunit --coverage-text
 
+after_success:
+  # these steps get allow travis-ci/discord integration
+  - wget https://raw.githubusercontent.com/jdenoc/travis-ci-discord-webhook/master/send.sh
+  - chmod +x send.sh
+  - ./send.sh success $WEBHOOK_URL
+
+after_failure:
+  # these steps get allow travis-ci/discord integration
+  - wget https://raw.githubusercontent.com/jdenoc/travis-ci-discord-webhook/master/send.sh
+  - chmod +x send.sh
+  - ./send.sh failure $WEBHOOK_URL
+
 after_script:
-  # SHOW DATABASES is here for piece of mind, to confirm that the database is deleted when it is supposed to be deleted
+  # SHOW DATABASES is here for piece of mind; to confirm that the database is deleted when it is supposed to be deleted
   - mysql -u root -e "SHOW DATABASES;"
   - mysql -u root -e "DROP USER 'jdenoc'@'localhost';"
   - mysql -u root -e "DROP DATABASE money_tracker;"
@@ -52,13 +64,3 @@ branch:
   only:
     - master
     - develop
-
-notifications:
-  webhooks:
-    urls:
-      - https://discordapp.com/api/webhooks/439058887014875147/fTQW8mOALd77wBZN9q088BabXmteXEddelqWgoECZ5hkE-2h-5FnQnhxBQ-zcA5E742T
-    on_start: always
-    on_success: always
-    on_failure: always
-    on_cancel: always
-    on_error: always
