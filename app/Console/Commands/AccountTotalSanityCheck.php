@@ -11,7 +11,8 @@ use Eklundkristoffer\DiscordWebhook\DiscordClient;
 
 class AccountTotalSanityCheck extends Command {
 
-    const ENV_DISCORD_WEBHOOK_URL = "DISCORD_WEBHOOK_URL";
+    const CONFIG_ENV = "app.env";
+    const CONFIG_DISCORD_WEBHOOK_URL ="services.discord.webhook_url";
     const OPTION_FORCE_FAILURE = 'force-failure';
     const OPTION_DONT_NOTIFY_DISCORD = 'dont-notify-discord';
     const OPTION_NOTIFY_SCREEN = "notify-screen";
@@ -51,56 +52,62 @@ class AccountTotalSanityCheck extends Command {
 
             $this->notify($sanity_check_object);
         } else {
-            $this->performSanityCheck();
+            $accounts = Account::all();
+            foreach($accounts as $account){
+                $sanity_check_object = $this->retrieveExpectedAccountTotalData($account);
+                $this->notify($sanity_check_object);
+            }
         }
         return;
     }
 
-    private function performSanityCheck(){
-        $accounts = Account::all();
-        foreach($accounts as $account){
-            $sanity_check_query = DB::table('entries')
-                ->select(DB::raw("IFNULL( SUM( IF( entries.expense=1, -1*entries.entry_value, entries.entry_value ) ), 0 ) as actual"))
-                ->join('account_types', function($join) use ($account){
-                    $join->on('entries.account_type_id', '=', 'account_types.id')
-                        ->where('account_types.account_id', $account->id);
-                })
-                ->where('entries.disabled', '0')
-                ->orderBy(DB::raw('entries.entry_date desc, entries.id'), 'desc');
-            /**
-             * The above stuff is translated into MySQL here:
-                SELECT
-                  IFNULL( SUM( IF( entries.expense=1, -1*entries.entry_value, entries.entry_value ) ), 0 ) as actual
-                FROM entries
-                INNER JOIN account_types
-                  ON entries.account_type_id = account_types.id
-                  AND account_types.account_id = $account->id
-                WHERE entries.disabled = 0
-                ORDER BY entries.entry_date DESC, entries.id DESC
-             */
+    /**
+     * make MySQL calls to retrieve data and perform account total sanity check
+     * @param Account $account
+     * @return SanityCheckAlertObject
+     */
+    private function retrieveExpectedAccountTotalData($account){
+        $sanity_check_query = DB::table('entries')
+            ->select(DB::raw("IFNULL( SUM( IF( entries.expense=1, -1*entries.entry_value, entries.entry_value ) ), 0 ) as actual"))
+            ->join('account_types', function($join) use ($account){
+                $join->on('entries.account_type_id', '=', 'account_types.id')
+                    ->where('account_types.account_id', $account->id);
+            })
+            ->where('entries.disabled', '0')
+            ->orderBy(DB::raw('entries.entry_date desc, entries.id'), 'desc');
+        /**
+         * The above stuff is translated into MySQL here:
+            SELECT
+              IFNULL( SUM( IF( entries.expense=1, -1*entries.entry_value, entries.entry_value ) ), 0 ) as actual
+            FROM entries
+            INNER JOIN account_types
+              ON entries.account_type_id = account_types.id
+              AND account_types.account_id = $account->id
+            WHERE entries.disabled = 0
+            ORDER BY entries.entry_date DESC, entries.id DESC
+         */
 
-            $this->notifyInternally("Checking account ID:".$account->id, "debug");
-            $sanity_check_result = $sanity_check_query->get();
-
-            $sanity_check_object = new SanityCheckAlertObject();
-            $sanity_check_object->actual = $sanity_check_result[0]->actual;
-            $sanity_check_object->expected = $account->total;
-            $sanity_check_object->account_id = $account->id;
-            $sanity_check_object->account_name = $account->name;
-
-            $this->notify($sanity_check_object);
-        }
+        $this->notifyInternally("Checking account ID:".$account->id, "debug");
+        $sanity_check_result = $sanity_check_query->get();
+        $sanity_check_object = new SanityCheckAlertObject();
+        $sanity_check_object->actual = $sanity_check_result[0]->actual;
+        $sanity_check_object->expected = $account->total;
+        $sanity_check_object->account_id = $account->id;
+        $sanity_check_object->account_name = $account->name;
+        return $sanity_check_object;
     }
 
+    /**
+     * Send a "notification" if there is a difference between actual and expected values
+     * @param SanityCheckAlertObject $sanity_check_object
+     */
     private function notify($sanity_check_object){
-        // If there is a difference between actual and expected values
-        // Then we will notify someone in some fashion
         if($sanity_check_object->diff() > 0){
             $this->notifyInternally("Sanity check has failed ".$sanity_check_object, 'emergency');
 
             // Attempt to notify Discord
             if(!$this->option(self::OPTION_DONT_NOTIFY_DISCORD)){
-                $discord_webhook_url = env(self::ENV_DISCORD_WEBHOOK_URL);
+                $discord_webhook_url = config(self::CONFIG_DISCORD_WEBHOOK_URL);
                 if(empty($discord_webhook_url)){
                     $this->notifyInternally("Discord webhook URL not set. Can not send notification to Discord", 'warning');
                 } else {
@@ -110,10 +117,15 @@ class AccountTotalSanityCheck extends Command {
         }
     }
 
+    /**
+     * Send "notification" to Discord Webhook
+     * @param SanityCheckAlertObject $sanity_check
+     * @param string $webhook_url
+     */
     private function notifyDiscord($sanity_check, $webhook_url){
         $webhook_data = [
             "embeds"=>[[
-                "title"=>"Account Total: Sanity Check | Failure",
+                "title"=>"`[".strtoupper(config(self::CONFIG_ENV))."]` Account Total: Sanity Check | Failure",
                 "description"=>"Sanity check has failed for account: _`".$sanity_check->account_name."`_ `[".$sanity_check->account_id."]`",
                 "color"=>15158332,  // RED
                 "fields"=>[
@@ -130,6 +142,12 @@ class AccountTotalSanityCheck extends Command {
         $discord->executeWebhook(self::WEBHOOK_ALIAS, $webhook_data);
     }
 
+    /**
+     * Log a message in a log file
+     * Or if option is enabled, to screen
+     * @param string $notification_message
+     * @param string $level
+     */
     private function notifyInternally($notification_message, $level='debug'){
         Log::log($level, $notification_message);
         if($this->option(self::OPTION_NOTIFY_SCREEN)){
