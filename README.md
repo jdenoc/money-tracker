@@ -46,7 +46,12 @@ composer install
 # If you're working with PhpStorm, be sure to run the following command.
 # It will generate Laravel Facades that PhpStorm can use.
 composer ide-helper
+
+# set the application version
 php artisan app:version $MOST_RECENT_TAG
+
+# construct the database tables
+php artisan migrate
 
 # setup Yarn packages
 yarn install
@@ -61,11 +66,12 @@ git fetch --tags
 MOST_RECENT_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
 git checkout -q tags/$MOST_RECENT_TAG
 
-# setup composer packages & environment variables
+# setup composer packages, database tables & environment variables
 cp .env.example .env
 sed "s/APP_ENV=.*/APP_ENV=production/" .env
 composer install --no-dev
 php artisan app:version $MOST_RECENT_TAG
+php artisan migrate
 
 # setup NodeJS/NPM/bower packages
 yarn install --prod
@@ -73,19 +79,21 @@ yarn install --prod
 
 ### Code deployment - updates
 ```bash
-# while already in the application directory, i.e.: cd money-tracker/
+# While already in the application directory, i.e.: cd money-tracker/
 git fetch --tags
 MOST_RECENT_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
 git checkout -q tags/$MOST_RECENT_TAG
 php artisan app:version $MOST_RECENT_TAG
 
-# should it be required, i.e. new packages
+# Should it be required, i.e. new packages
 # development
 composer update
 yarn install
+php artisan migrate
 # production
 composer update --no-dev
 yarn install --prod
+php artisan migrate 
 ```
 
 ### Environment variable setup
@@ -106,6 +114,7 @@ You will need to add the following Cron entry to your server.
 This Cron will call the Laravel command scheduler every minute. When the `schedule:run` command is executed, Laravel will evaluate your scheduled tasks and runs the tasks that are due.  
 Here is a list of commands that will _scheduled_ as part of this setup:  
 - `artisan storage:clear-tmp-uploads`
+- `artisan sanity-check:account-total`
 
 ## Testing
 This project has been setup to use [travis-ci](https://travis-ci.org/jdenoc/money-tracker) for continuous integration testing. If you wish to test locally, here are some steps to follow:
