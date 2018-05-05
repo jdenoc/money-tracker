@@ -79,7 +79,7 @@ $('#attachment-uploader').uploadFile({
 
 var entryModal = {
     init: function(){
-        $('#entry-modal').on('hidden.bs.modal', function (e) {
+        $('#entry-modal').on('hidden.bs.modal', function(e){
             entryModal.clearFields();
         });
 
@@ -128,9 +128,8 @@ var entryModal = {
     },
     initAccountTypeSelect: function(){
         $.each(accountTypes.valuesSortedBy('name'), function(idx, accountTypeObject){
-            if(!accountTypeObject.disabled){
-                $("#entry-account-type").append('<option value="'+accountTypeObject.id+'">'+accountTypeObject.name+'</option>');
-            }
+            var hideDisabledAccountTypes = accountTypeObject.disabled ? 'class="account-type-hidden"' : '';
+            $("#entry-account-type").append('<option value="'+accountTypeObject.id+'" '+hideDisabledAccountTypes+'>'+accountTypeObject.name+'</option>');
         });
     },
     initTagsInput: function(){
@@ -159,6 +158,7 @@ var entryModal = {
         $("#entry-memo").val(entry.value.memo);
         $("#entry-account-type").val(entry.value.account_type_id)
             .trigger('change'); // show/update account name in modal
+        $('#entry-modal .account-type-hidden').toggle( entry.value.confirm );   // show account-type options if the entry has been confirmed
         $("input[name='expense-switch']")
             .prop('checked', entry.value.expense)
             .bootstrapSwitch('state', entry.value.expense);

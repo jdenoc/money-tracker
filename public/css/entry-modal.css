@@ -27,6 +27,10 @@
     padding: 6px;
 }
 
+#entry-modal .account-type-hidden{
+    display: none;
+}
+
 .account-type-meta{
     font-weight: normal;
     font-size: 11px;
