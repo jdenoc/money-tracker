@@ -158,7 +158,6 @@ var entryModal = {
         $("#entry-memo").val(entry.value.memo);
         $("#entry-account-type").val(entry.value.account_type_id)
             .trigger('change'); // show/update account name in modal
-        $('#entry-modal .account-type-hidden').toggle( entry.value.confirm );   // show account-type options if the entry has been confirmed
         $("input[name='expense-switch']")
             .prop('checked', entry.value.expense)
             .bootstrapSwitch('state', entry.value.expense);
@@ -204,6 +203,10 @@ var entryModal = {
 
         entryModal.clearAttachmentViews();
         $('#entry-new-attachments').val('[]');
+    },
+    toggleAccountTypeDisplay: function(displayAccountType){
+        // show account-type options if the entry has been confirmed
+        $('#entry-modal .account-type-hidden').toggle(displayAccountType);
     },
     clearAttachmentViews: function(){
         // clear attachment view elements from the entry modal
