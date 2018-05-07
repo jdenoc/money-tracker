@@ -79,7 +79,7 @@ $('#attachment-uploader').uploadFile({
 
 var entryModal = {
     init: function(){
-        $('#entry-modal').on('hidden.bs.modal', function (e) {
+        $('#entry-modal').on('hidden.bs.modal', function(e){
             entryModal.clearFields();
         });
 
@@ -128,9 +128,8 @@ var entryModal = {
     },
     initAccountTypeSelect: function(){
         $.each(accountTypes.valuesSortedBy('name'), function(idx, accountTypeObject){
-            if(!accountTypeObject.disabled){
-                $("#entry-account-type").append('<option value="'+accountTypeObject.id+'">'+accountTypeObject.name+'</option>');
-            }
+            var hideDisabledAccountTypes = accountTypeObject.disabled ? 'class="account-type-hidden"' : '';
+            $("#entry-account-type").append('<option value="'+accountTypeObject.id+'" '+hideDisabledAccountTypes+'>'+accountTypeObject.name+'</option>');
         });
     },
     initTagsInput: function(){
@@ -204,6 +203,10 @@ var entryModal = {
 
         entryModal.clearAttachmentViews();
         $('#entry-new-attachments').val('[]');
+    },
+    toggleAccountTypeDisplay: function(displayAccountType){
+        // show account-type options if the entry has been confirmed
+        $('#entry-modal .account-type-hidden').toggle(displayAccountType);
     },
     clearAttachmentViews: function(){
         // clear attachment view elements from the entry modal
