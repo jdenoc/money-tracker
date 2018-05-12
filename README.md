@@ -1,4 +1,4 @@
-# Money Tracker  [![Build Status](https://travis-ci.org/jdenoc/money-tracker.svg?branch=master)](https://travis-ci.org/jdenoc/money-tracker)
+# Money Tracker  [![Build Status](https://travis-ci.org/jdenoc/money-tracker.svg?branch=master)](https://travis-ci.org/jdenoc/money-tracker) [![GitHub release](https://img.shields.io/github/release/jdenoc/money-tracker.svg)](https://github.com/jdenoc/money-tracker/releases/latest)
 
 ## About
 Money Tracker is a web portal dedicated to help record and manage income & expenses, built on the [Laravel framework](https://laravel.com/docs/5.4)
@@ -9,8 +9,8 @@ For a list of features currently available, what they're expected outcome is and
 ## Topics
 - [Requirements](#requirements)
 - [Installation/setup](#installation-/-setup)
-  - [Docker](#local-docker-environment)
-    - [Tear-down](#tear-down-local-docker-environment)
+  - [Docker](#docker-environment)
+    - [Tear-down](#tear-down)
   - [Local/Dev](#local/dev-environment)
     - [Database](#dev-database)
     - [Application](#dev-application)
@@ -53,55 +53,90 @@ For a list of features currently available, what they're expected outcome is and
     composer --version
     ```
 
+***
+
 ## Installation / Setup
-### Local Docker Environment
+### Docker Environment
+
+##### Host machine prep
+Add `127.0.0.1  money-tracker.docker` to the host machines host file.
+Host file locations can be found [here](https://en.wikipedia.org/wiki/Hosts_(file)#Location_in_the_file_system).
+
+Obtain Host machine IP address
+- Linux/Mac: `ifconfig` 
+- windows: `ipconfig /all`
+
+Set `DOCKER_HOST_IP` environment variable
+- Linux/Mac: `export DOCKER_HOST_IP="192.168.x.y"`
+- Windows: `setx DOCKER_HOST_IP="192.168.x.y"`
+
+##### Clone repo
 ```bash
-# Clone repo
 git clone https://github.com/jdenoc/money-tracker.git --branch=develop
 cd money-tracker/
+```
 
-# Run composer install
-# we're using a deprecated docker image so we can be guaranteed that we can run php 5
+##### Run composer install  
+_**Note:** We're using a deprecated docker image so we can be guaranteed that we can run php 5_.
+```bash
 docker container run --rm -t --volume $PWD:/app composer/composer:php5-alpine install
+```
 
-# ***OPTIONAL***
-# If you're working with PhpStorm, be sure to run the following command.
-# It will generate Laravel Facades that PhpStorm can use.
+<small>***OPTIONAL***</small>:
+If you're working with PhpStorm, be sure to run the following command:
+```bash
 docker container run --rm -t --volume $PWD:/app composer/composer:php5-alpine ide-helper
+```
+This will generate Laravel Facades that PhpStorm can use.  
 
-# Run yarn install
+##### Run yarn install
+```bash
 docker container run --rm -t --workdir /code --volume $PWD:/code node:6-slim yarn install
+```
 
-# Bring "up" application container(s)
+##### Bring "up" application container(s)
+```bash
 docker-compose -f docker/docker-compose.yml up -d
+```
 
-# Set application version value
-# Note: you can replace `git describe` with any value you want
+##### Set application version value
+_**Note:** you can replace_ `git describe` _with any value you want_
+```bash
 docker container exec -t app.money-tracker artisan app:version `git describe`
+```
 
-# Setup database/clear existing database and re-initialise it empty
+##### Setup database/clear existing database and re-initialise it empty
+```bash
 docker container exec -t app.money-tracker artisan migrate:refresh
+```
 
-# Load dummy data into database
+##### Load dummy data into database
+```bash
 docker container exec -t app.money-tracker artisan migrate:refresh
 docker container exec -t app.money-tracker artisan db:seed --class=UiSampleDatabaseSeeder
-# ***OPTIONAL***
-# If you have a database dump file, you can load with this command
+```
+
+<small>***OPTIONAL***</small>:
+If you have a database dump file, you can load it with this command:
+```bash
 docker container exec -t mysql.money-tracker mysql -u`cat .env.docker | grep DB_USERNAME | sed 's/DB_USERNAME=//'` \
 	-p`cat .env.docker | grep DB_PASSWORD | sed 's/DB_PASSWORD=//'` \
 	`cat .env.docker | grep DB_DATABASE | sed 's/DB_DATABASE=//'` \
 	< /path/to/file.sql
 ```
-_**Note:** You MUST add_ `127.0.0.1  money-tracker.docker` _to the host machines host file._
 
-### Tear-down Local Docker Environment 
+##### Tear-down 
 ```bash
 docker-compose -f docker/docker-compose.yml down
+```
 
-# Tears down docker instance and associated volumes
+_**Note:** You can tear down the docker containers and their associated volumes with this command:_
+```bash
 docker-compose -f docker/docker-compose.yml down -v
 ```
-_**Note:** You do not need to worry about "tearing down" the yarn and composer containers. They will "remove" themselves once they have completed their tasks._  
+_**Note:** You do not need to worry about "tearing down" the yarn and/or composer containers. They will "remove" themselves once they have completed their tasks._  
+
+***
 
 ### Local/Dev environment
 Sometimes, you just don't want to use Docker. That's fine and we support your decision. Here are some helpful steps on setup.
@@ -139,6 +174,8 @@ php artisan migrate
 yarn install
 ```
 
+***
+
 ### Production Environment
 
 #### <a name="prod-database">Database Setup</a>
@@ -164,6 +201,8 @@ php artisan migrate
 yarn install --prod
 ```
 
+***
+
 #### <a name="prod-updates">Updates</a>
 From time to time, there will be new updates released. Such updates will contain new features, bug fixes, general improvements ect. In order to allow such improvements to be usable on production deployments, you should follow these steps
 ```bash
@@ -180,6 +219,8 @@ yarn install --prod
 php artisan migrate 
 ```
 
+***
+
 ### Environment variable setup
 Be sure to edit the `.env` file generated during setup. A few of the default values should be fine to use. Modify those as needed.  
 That being said, there are certainly variables that should be modified at this point. They are: 
@@ -191,6 +232,8 @@ That being said, there are certainly variables that should be modified at this p
 - `DB_USERNAME`
 - `DB_PASSWORD`
 
+***
+
 ### Scheduled tasks Setup
 This is most likely an item to add to your production server, but is also potentially something you'll want running in the background for you dev environment.
 To set this up you will need to add the following Cron entry to your server.
@@ -201,6 +244,8 @@ This Cron will call the Laravel command scheduler every minute. When the `schedu
 Here is a list of commands that will _scheduled_ as part of this setup:  
 - `artisan storage:clear-tmp-uploads`
 - `artisan sanity-check:account-total`
+
+***
 
 ## Testing
 
@@ -232,6 +277,8 @@ vendor/bin/phpunit --coverage-text
 php artsian migrate:refresh
 php artisan db:seed --class=UiSampleDatabaseSeeder
 ```
+
+***
 
 ## Other Documentation
 - [Laravel](https://laravel.com/docs/5.4/)
