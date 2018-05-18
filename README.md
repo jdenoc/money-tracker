@@ -8,7 +8,7 @@ For a list of features currently available, what they're expected outcome is and
 
 ## Topics
 - [Requirements](#requirements)
-- [Installation/setup](#installation-/-setup)
+- [Installation/setup](#installation)
   - [Docker](#docker-environment)
     - [Tear-down](#tear-down)
   - [Local/Dev](#local/dev-environment)
@@ -55,7 +55,7 @@ For a list of features currently available, what they're expected outcome is and
 
 ***
 
-## Installation / Setup
+## <a name="installation">Installation / Setup</a>
 ### Docker Environment
 
 ##### Host machine prep
@@ -165,7 +165,7 @@ php artisan app:version `git describe`
 composer ide-helper
 
 # set the application version
-php artisan app:version $MOST_RECENT_TAG
+php artisan app:version `git describe`
 
 # construct the database tables
 php artisan migrate
@@ -226,6 +226,8 @@ Be sure to edit the `.env` file generated during setup. A few of the default val
 That being said, there are certainly variables that should be modified at this point. They are: 
 - `APP_ENV`
 - `APP_DEBUG`
+- `APP_LOG_LEVEL` (_log level values can be found [here](https://github.com/Seldaek/monolog/blob/1.23.0/doc/01-usage.md#log-levels)_)
+- `APP_NAME`
 - `APP_URL`
 - `DB_HOST`
 - `DB_DATABASE`
@@ -252,13 +254,11 @@ Here is a list of commands that will _scheduled_ as part of this setup:
 ### <a name="testing-travisci">Travis-ci</a>
 This project has been setup to use [travis-ci](https://travis-ci.org/jdenoc/money-tracker) for continuous integration testing.  
 
-**TODO:** `.travisci.yml` _MUST_ be updated to use our docker container setup, rather than travis-ci's setup.
-
 ### <a name="testing-docker">Docker</a>
 Assuming we already have our docker environment already setup ([instructions here](#local-docker-environment)), performing the following commands should run the tests we want.
 ```bash
 # Run PhpUnit Tests
-docker container exec -it app.money-tracker vendor/bin/phpunit
+docker container exec -t app.money-tracker vendor/bin/phpunit
 ```
 
 ### <a name="testing-locally">Local/Dev</a>
@@ -286,4 +286,5 @@ php artisan db:seed --class=UiSampleDatabaseSeeder
 - [Composer](https://getcomposer.org/doc/)
 - [Yarn](https://yarnpkg.com/en/docs)
 - [PhpUnit](https://phpunit.de/documentation.html)
+- [Travis CI](https://docs.travis-ci.com/user/languages/php/)
 - [git](https://git-scm.com/doc)
