@@ -24,9 +24,6 @@ RUN mkdir -p  $APACHE_DOCUMENT_ROOT \
 RUN echo '#!/bin/bash\nphp /var/www/money-tracker/artisan "$@"' > /usr/bin/artisan \
     && chmod +x /usr/bin/artisan
 
-# setting APP_ENV environment variable so we can use the .env.docker file
-ENV APP_ENV docker
-
 # set php timezone
 RUN echo 'date.timezone = "UTC"' >> $PHP_INI_DIR/conf.d/php-timezone.ini
 
