@@ -29,13 +29,14 @@ install:
   # start docker containers
   - docker-compose -f docker/docker-compose.travis.yml up -d
   - docker container ls
+  - docker volume ls
   # install travis-ci/discord integration script
   - wget https://raw.githubusercontent.com/jdenoc/travis-ci-discord-webhook/master/send.sh
   - chmod +x send.sh
 
 before_script:
   - docker container exec -t app.travis artisan travis-ci --display-env
-  - docker container exec -t mysql.travis mysql -uroot -e "SHOW DATABASES;"
+#  - docker container exec -t mysql.travis mysql -uroot -e "SHOW DATABASES;"
 
 script: docker container exec -t app.travis vendor/bin/phpunit --coverage-text
 
@@ -49,6 +50,7 @@ after_failure:
 after_script:
   - docker-compose -f docker/docker-compose.travis.yml down -v
   - docker container ls
+  - docker volume ls
 
 # make sure ONLY updates to the master & develop branches cause a build
 branches:
