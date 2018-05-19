@@ -26,6 +26,7 @@ install:
   - docker container run --rm -t --volume $PWD:/app composer/composer:php5-alpine install
   # start docker containers
   - docker-compose -f docker/docker-compose.travis.yml up -d
+  - docker container ls
   # install travis-ci/discord integration script
   - wget https://raw.githubusercontent.com/jdenoc/travis-ci-discord-webhook/master/send.sh
   - chmod +x send.sh
@@ -33,7 +34,6 @@ install:
 before_script:
   - docker container exec -t app.money-tracker artisan travis-ci --display-env
   - docker container exec -t mysql.money-tracker mysql -u root -e "SHOW DATABASES;"
-  - docker container ls
 
 script: docker container exec -t app.money-tracker vendor/bin/phpunit --coverage-text
 
