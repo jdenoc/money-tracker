@@ -5,7 +5,7 @@ services:
     build:
       context: .. # interpreted as relative to the location of the Compose file
       dockerfile: docker/app.dockerfile
-    container_name: "app.money-tracker"
+    container_name: "app.travis"
     ports:
       - 80:80
     volumes:
@@ -17,15 +17,15 @@ services:
 
   database:
     image: mysql:5.6
-    container_name: "mysql.money-tracker"
+    container_name: "mysql.travis"
     volumes:
-      - db.money-tracker:/var/lib/mysql
+      - db.travis:/var/lib/mysql
     environment:
       # if you change any of these, be sure to change the corresponding values in .env.travis
-      - MYSQL_ALLOW_EMPTY_PASSWORD=true
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
       - MYSQL_DATABASE=money_tracker
       - MYSQL_USER=travis
       - MYSQL_PASSWORD=password
 
 volumes:
-  db.money-tracker:
+  db.travis:
