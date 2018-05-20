@@ -12,7 +12,7 @@ services:
       - ..:/var/www/money-tracker  # .. is interpreted as relative to the location of the Compose file
     environment:
       - PHP_IDE_CONFIG="serverName=money-tracker.docker"
-      - APP_ENV="docker"
+      - APP_ENV=docker
     extra_hosts:
       - dockerhost:$DOCKER_HOST_IP
     dns_search:
