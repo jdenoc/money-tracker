@@ -35,8 +35,8 @@ install:
   - chmod +x send.sh
 
 before_script:
+  - docker container exec -t mysql.money-tracker iterate-mysql-health-check
   - docker container exec -t app.money-tracker artisan travis-ci --display-env
-#  - docker container exec -t mysql.money-tracker mysql -uroot -e "SHOW DATABASES;"
 
 script:
   - docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api

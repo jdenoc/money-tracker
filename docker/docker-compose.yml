@@ -19,7 +19,9 @@ services:
       - money-tracker.docker
 
   database:
-    image: mysql:5.6
+    build:
+      context: .. # interpreted as relative to the location of the Compose file
+      dockerfile: docker/mysql.dockerfile
     container_name: "mysql.money-tracker"
     volumes:
       - db.money-tracker:/var/lib/mysql

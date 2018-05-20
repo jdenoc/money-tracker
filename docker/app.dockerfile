@@ -21,8 +21,8 @@ RUN mkdir -p  $APACHE_DOCUMENT_ROOT \
 
 # alias for php artisan
 # allows us to call artisan without prefixing it with "php"
-RUN echo '#!/bin/bash\nphp /var/www/money-tracker/artisan "$@"' > /usr/bin/artisan \
-    && chmod +x /usr/bin/artisan
+RUN echo '#!/bin/bash\nphp /var/www/money-tracker/artisan "$@"' > /usr/local/bin/artisan \
+    && chmod +x /usr/local/bin/artisan
 
 # set php timezone
 RUN echo 'date.timezone = "UTC"' >> $PHP_INI_DIR/conf.d/php-timezone.ini
