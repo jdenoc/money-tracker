@@ -30,9 +30,11 @@ class TravisCi extends Command {
             switch($command_option){
                 case 'display-env':
                     $this->comment("Environment Variables:");
-                    $env_names = array_merge(array_keys($_ENV), $this->get_env_names_from_dotenv());
+                    $dot_env_file_path = app()->environmentFilePath();
+                    $env_names = array_merge(array_keys($_ENV), $this->get_env_names_from_dotenv($dot_env_file_path));
                     $env_names = array_unique($env_names);
                     $env_values = array_map([$this, 'output_environment_variable_and_value'], $env_names);
+                    $env_values[] = ['.env file path', $dot_env_file_path];
                     $this->table(['variable', 'value'], $env_values);
                     $this->line('');    // new line after output in case we have other output
                     break;
@@ -49,10 +51,10 @@ class TravisCi extends Command {
     }
 
     /**
+     * @param string $dot_env_file_path path to .env file
      * @return array
      */
-    private function get_env_names_from_dotenv(){
-        $dot_env_file_path = rtrim(app()->environmentPath(), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.app()->environmentFile();
+    private function get_env_names_from_dotenv($dot_env_file_path){
         $dot_env_variable_names = [];
         if(File::exists($dot_env_file_path)){
             try{
