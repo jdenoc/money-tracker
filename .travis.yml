@@ -16,6 +16,8 @@ addons:
 services:
   - docker
 
+env: DOCKER_HOST_IP=host.docker.internal
+
 before_install:
   - docker pull composer/composer:php5-alpine
   - docker-compose -f docker/docker-compose.yml pull
