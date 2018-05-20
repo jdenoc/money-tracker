@@ -24,12 +24,12 @@ before_install:
   - docker-compose -f docker/docker-compose.yml build
 
 install:
-  # composer install
-  - docker container run --rm -t --volume $PWD:/app composer/composer:php5-alpine install
   # start docker containers
   - docker-compose -f docker/docker-compose.yml up -d
   - docker container ls
   - docker volume ls
+  # composer install
+  - docker container run --rm -t --volume $PWD:/app composer/composer:php5-alpine install
   # install travis-ci/discord integration script
   - wget https://raw.githubusercontent.com/jdenoc/travis-ci-discord-webhook/master/send.sh
   - chmod +x send.sh

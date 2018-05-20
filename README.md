@@ -76,6 +76,11 @@ git clone https://github.com/jdenoc/money-tracker.git --branch=develop
 cd money-tracker/
 ```
 
+##### Bring "up" application container(s)
+```bash
+docker-compose -f docker/docker-compose.yml up -d
+```
+
 ##### Run composer install  
 _**Note:** We're using a deprecated docker image so we can be guaranteed that we can run php 5_.
 ```bash
@@ -92,11 +97,6 @@ This will generate Laravel Facades that PhpStorm can use.
 ##### Run yarn install
 ```bash
 docker container run --rm -t --workdir /code --volume $PWD:/code node:6-slim yarn install
-```
-
-##### Bring "up" application container(s)
-```bash
-docker-compose -f docker/docker-compose.yml up -d
 ```
 
 ##### Set application version value
