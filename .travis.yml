@@ -1,66 +1,64 @@
-language: php
-
-php:
-  - '5.6'
+language: generic
 
 git:
   depth: 1
 
-# trusty instance is needed so we can utilise MySQL 5.6
+# trusty instance & sudo are needed so we can utilise docker
 dist: trusty
 sudo: required
 
 addons:
   apt:
-    packages:
-      # install mysql 5.6
-      - mysql-server-5.6
-      - mysql-client-core-5.6
-      - mysql-client-5.6
+    update: true
   hosts:
-    - money-tracker.jdenoc.dev
-
-env:
-  - APP_DEBUG=false APP_URL=http://money-tracker.jdenoc.dev DB_CONNECTION=mysql DB_HOST=localhost DB_DATABASE=money_tracker DB_PORT=3306 DB_USERNAME=jdenoc DB_PASSWORD=password
+    - money-tracker.docker
 
 services:
-  - mysql
+  - docker
+
+env: DOCKER_HOST_IP=127.0.0.1
+
+before_install:
+  - docker pull composer/composer:php5-alpine
+  - docker-compose -f docker/docker-compose.yml pull
+  - docker-compose -f docker/docker-compose.yml build
 
 install:
-  - composer install
-  - php artisan travis-ci --display-env
-
-before_script:
-  # SHOW DATABASES is here for piece of mind, to confirm that the database is created when it is supposed to be created
-  - mysql -u root -e "SHOW DATABASES;"
-  - mysql -u root -e "CREATE DATABASE money_tracker;"
-  - mysql -u root -e "CREATE USER 'jdenoc'@'localhost' IDENTIFIED BY 'password';"
-  - mysql -u root -e "GRANT ALL ON money_tracker.* TO 'jdenoc'@'localhost';"
-  - mysql -u root -e "SHOW DATABASES;"
-
-script: vendor/bin/phpunit --coverage-text
-
-after_success:
-  # these steps get allow travis-ci/discord integration
+  # composer install
+  - docker container run --rm -t --volume $PWD:/app composer/composer:php5-alpine install
+  # start docker containers
+  - docker-compose -f docker/docker-compose.yml up -d
+  - docker container ls
+  - docker volume ls
+  # install travis-ci/discord integration script
   - wget https://raw.githubusercontent.com/jdenoc/travis-ci-discord-webhook/master/send.sh
   - chmod +x send.sh
+
+before_script:
+  - docker container exec -t mysql.money-tracker iterate-mysql-health-check
+  - docker container exec -t app.money-tracker artisan key:generate
+  - docker container exec -t app.money-tracker artisan travis-ci --display-env
+
+script:
+  - docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api
+  - docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite console
+  - docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite web
+  - docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite unit
+
+# $WEBHOOK_URL should be set in travis-ci settings
+after_success:
   - ./send.sh success $WEBHOOK_URL
 
 after_failure:
-  # these steps get allow travis-ci/discord integration
-  - wget https://raw.githubusercontent.com/jdenoc/travis-ci-discord-webhook/master/send.sh
-  - chmod +x send.sh
   - ./send.sh failure $WEBHOOK_URL
 
 after_script:
-  # SHOW DATABASES is here for piece of mind; to confirm that the database is deleted when it is supposed to be deleted
-  - mysql -u root -e "SHOW DATABASES;"
-  - mysql -u root -e "DROP USER 'jdenoc'@'localhost';"
-  - mysql -u root -e "DROP DATABASE money_tracker;"
-  - mysql -u root -e "SHOW DATABASES;"
+  - docker-compose -f docker/docker-compose.yml down -v
+  - docker container ls
+  - docker volume ls
 
 # make sure ONLY updates to the master & develop branches cause a build
-branch:
+branches:
   only:
     - master
     - develop

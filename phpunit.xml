@@ -7,21 +7,21 @@
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true"
          processIsolation="false"
-         stopOnFailure="false">
+         stopOnFailure="true">
     <testsuites>
-        <testsuite name="API Tests">
+        <testsuite name="api">
             <directory suffix="Test.php">./tests/Feature/Api</directory>
         </testsuite>
 
-        <testsuite name="Console Tests">
+        <testsuite name="console">
             <directory suffix="Test.php">./tests/Feature/Console</directory>
         </testsuite>
 
-        <testsuite name="Web Tests">
+        <testsuite name="web">
             <directory suffix="Test.php">./tests/Feature/Web</directory>
         </testsuite>
 
-        <testsuite name="Unit Tests">
+        <testsuite name="unit">
             <directory suffix="Test.php">./tests/Unit</directory>
         </testsuite>
     </testsuites>
