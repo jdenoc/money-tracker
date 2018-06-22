@@ -37,6 +37,11 @@
             institutionName: function(){
                 return this.name;
             },
+            inactiveAccounts: function(){
+                return this.accounts.retrieve.filter(function(account){
+                    return account.disabled
+                })
+            },
             activeAccounts: function(){
                 return this.accounts.retrieve.filter(function(account){
                     return !account.disabled
