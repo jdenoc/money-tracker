@@ -8,7 +8,7 @@
             <!--&gt;</span>-->
         <!--</a>-->
     <!--</li>-->
-    <a class="accordion-content panel-block" v-bind:id="'account-'+this.accountId">
+    <a class="account-node accordion-content panel-block" v-bind:id="'account-'+this.accountId">
         <span
             v-text="this.accountName"
             v-bind:class="{'badge is-badge-small is-badge-info is-badge-outlined': isAccountTotalVisable}"
@@ -57,5 +57,10 @@
     }
     .badge::after{
         margin: 9px 10px 0;
+    }
+    .account-node{
+        background-color: #FFF;
+        padding: 0.25em 0 0.25em 1.3em !important;
+        text-decoration: none !important;
     }
 </style>
