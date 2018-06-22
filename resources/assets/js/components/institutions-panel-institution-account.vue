@@ -1,11 +1,19 @@
 <template>
-    <a class="account-node accordion-content panel-block" v-bind:id="'account-'+this.accountId">
+    <!--<li v-bind:id="'account-'+this.accountId">-->
+        <!--<a class="tooltip is-tooltip-right is-tooltip-multiline" v-bind:data-tooltip="accountTypeTooltipList">-->
+            <!--<span-->
+                <!--v-text="this.accountName"-->
+                <!--v-bind:class="{'badge is-badge-small is-badge-info is-badge-outlined': isAccountTotalVisable}"-->
+                <!--v-bind:data-badge="'$'+parseFloat(accountTotal).toFixed(2)"-->
+            <!--&gt;</span>-->
+        <!--</a>-->
+    <!--</li>-->
+    <a class="accordion-content panel-block" v-bind:id="'account-'+this.accountId">
         <span
             v-text="this.accountName"
-            v-bind:class="{'badge is-badge-small is-badge-info is-badge-outlined': isAccountTotalVisable, 'tooltip is-tooltip-right is-tooltip-multiline' : hasAccountTypes}"
+            v-bind:class="{'badge is-badge-small is-badge-info is-badge-outlined': isAccountTotalVisable}"
             v-bind:data-badge="'$'+parseFloat(accountTotal).toFixed(2)"
-            v-bind:data-tooltip="accountTypeTooltipList"
-        ></span>
+            ></span>
     </a>
 </template>
 
@@ -28,17 +36,13 @@
             isAccountTotalVisable: function(){
                 return !isNaN(this.accountTotal);
             },
-            hasAccountTypes: function(){
-                let accountTypes = new Accounts().getAccountTypes(this.accountId);
-                return accountTypes.length > 0;
-            },
             accountTypeTooltipList: function(){
                 let accountTypes = new Accounts().getAccountTypes(this.accountId);
                 let tooltipList = "";
                 accountTypes.forEach(function(accountType){
                     tooltipList += "- "+accountType.name+" ("+accountType.last_digits+")\n"
                 });
-                return tooltipList.trim();
+                return tooltipList;
             },
         },
         methods: {
@@ -53,17 +57,5 @@
     }
     .badge::after{
         margin: 9px 10px 0;
-    }
-    .account-node{
-        background-color: #FFF;
-        padding: 0.25em 0 0.25em 1.1em !important;
-        text-decoration: none !important;
-    }
-    .tooltip:hover::after{
-        display: none;
-    }
-    .is-tooltip-multiline::before{
-        white-space: pre-line;
-        width: 175px;
     }
 </style>
