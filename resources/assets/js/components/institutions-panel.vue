@@ -13,6 +13,7 @@
                 v-bind:key="institution.id"
                 v-bind:id="institution.id"
                 v-bind:name="institution.name"
+                v-bind:total="account.total"
             ></institutions-panel-institution>
 
             <div class="accordion" v-show="inactiveAccountsAreAvailable">

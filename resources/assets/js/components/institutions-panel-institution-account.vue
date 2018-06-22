@@ -56,7 +56,7 @@
     }
     .account-node{
         background-color: #FFF;
-        padding: 0.25em 0 0.25em 1.1em !important;
+        padding: 0.25em 0 0.25em 1.3em !important;
         text-decoration: none !important;
     }
     .tooltip:hover::after{
