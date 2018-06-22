@@ -12,14 +12,16 @@
 
         <script src="https://cdn.jsdelivr.net/npm/vue@2.1.3/dist/vue.js"></script>
         <link href="{{asset('vue/css/app.css')}}" rel="stylesheet" type="text/css">
+        <link href="{{asset('vue/css/bulma-accordion.css')}}" rel="stylesheet" type="text/css">
     </head>
     <body>
         <h1>Vue testing</h1>
         <div id="app">
             <section class="section">
-                <institutions-pane></institutions-pane>
+                <institutions-panel></institutions-panel>
             </section>
         </div>
         <script type="text/javascript" src="{{asset('vue/js/app.js')}}"></script>
+        <script type="text/javascript" src="{{asset('vue/js/bulma-accordion.js')}}"></script>
     </body>
 </html>

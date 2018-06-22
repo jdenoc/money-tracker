@@ -12,4 +12,6 @@ let mix = require('laravel-mix');
  */
 
 mix.js('resources/assets/js/app.js', 'public/vue/js')
+    .js('node_modules/bulma-accordion/dist/bulma-accordion.js', 'public/vue/js')
+    .copy('node_modules/bulma-accordion/dist/bulma-accordion.min.css', 'public/vue/css/bulma-accordion.css')
     .sass('resources/assets/sass/app.scss', 'public/vue/css');

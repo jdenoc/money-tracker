@@ -1,20 +1,27 @@
 <template>
-    <li v-bind:id="'account-'+this.accountId">
-        <a class="tooltip is-tooltip-right is-tooltip-multiline" v-bind:data-tooltip="accountTypeTooltipList">
-            <span
-                v-text="this.accountName"
-                v-bind:class="{'badge is-badge-small is-badge-info is-badge-outlined': isAccountTotalVisable}"
-                v-bind:data-badge="'$'+parseFloat(accountTotal).toFixed(2)"
+    <!--<li v-bind:id="'account-'+this.accountId">-->
+        <!--<a class="tooltip is-tooltip-right is-tooltip-multiline" v-bind:data-tooltip="accountTypeTooltipList">-->
+            <!--<span-->
+                <!--v-text="this.accountName"-->
+                <!--v-bind:class="{'badge is-badge-small is-badge-info is-badge-outlined': isAccountTotalVisable}"-->
+                <!--v-bind:data-badge="'$'+parseFloat(accountTotal).toFixed(2)"-->
+            <!--&gt;</span>-->
+        <!--</a>-->
+    <!--</li>-->
+    <a class="accordion-content panel-block" v-bind:id="'account-'+this.accountId">
+        <span
+            v-text="this.accountName"
+            v-bind:class="{'badge is-badge-small is-badge-info is-badge-outlined': isAccountTotalVisable}"
+            v-bind:data-badge="'$'+parseFloat(accountTotal).toFixed(2)"
             ></span>
-        </a>
-    </li>
+    </a>
 </template>
 
 <script>
     import {Accounts} from "../accounts";
 
     export default {
-        name: "institutions-pane-institution-account",
+        name: "institutions-panel-institution-account",
         props: ['id', 'name', 'total'],
         computed: {
             accountId: function(){
@@ -49,6 +56,6 @@
         padding-right: 65px;
     }
     .badge::after{
-        margin: 6px 10px 0;
+        margin: 9px 10px 0;
     }
 </style>
