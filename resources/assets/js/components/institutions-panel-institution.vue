@@ -1,41 +1,33 @@
 <template>
-    <a class="panel-block" v-bind:id="'institution-id-' + this.institutionId">
-        <collapse-item v-bind:title="this.institutionName">
-            <ul>
-                <institutions-pane-institution-account
-                    v-for="account in activeInstitutionAccounts"
-                    v-bind:key="account.id"
-                    v-bind:id="account.id"
-                    v-bind:name="account.name"
-                    v-bind:total="account.total"
-                ></institutions-pane-institution-account>
-            </ul>
-        </collapse-item>
-    </a>
+    <div v-bind:id="'institution-id-'+this.institutionId" class="accordion">
+        <div class="panel-block accordion-header toggle">
+            <p v-text="this.institutionName"></p>
+        </div>
+        <div class="accordion-body panel">
+            <institutions-panel-institution-account
+                v-for="account in activeInstitutionAccounts"
+                v-bind:key="account.id"
+                v-bind:id="account.id"
+                v-bind:name="account.name"
+                v-bind:total="account.total"
+            ></institutions-panel-institution-account>
+        </div>
+    </div>
 </template>
 
 <script>
-    import { Item as CollapseItem } from 'vue-bulma-collapse'
     import {Accounts} from "../accounts";
-    import InstitutionsPaneInstitutionAccount from "./institutions-pane-institution-account";
+    import InstitutionsPanelInstitutionAccount from "./institutions-panel-institution-account";
 
     export default {
-        name: "institution-pane-institution",
+        name: "institutions-panel-institution",
         components: {
-            InstitutionsPaneInstitutionAccount,
-            CollapseItem,
+            InstitutionsPanelInstitutionAccount,
         },
         props: ['id', 'name'],
         data: function(){
             return {
-                displayed: false,
                 accounts: new Accounts(),
-                // TODO: remove test data
-                demoAccounts: [
-                    {id: 1, name: 'xxx', total: 0.01, disabled: false},
-                    {id: 2, name: 'yyy', total: 0.10, disabled: false},
-                    {id: 3, name: 'zzz', total: 1.00, disabled: false},
-                ]
             }
         },
         computed: {
@@ -67,7 +59,16 @@
 </script>
 
 <style scoped>
-
+    .panel-block.accordion-header{
+        background-color: initial;
+        color: #363636;
+        border-bottom: 0;
+    }
+    .accordion-content.panel-block{
+        background-color: #FFF;
+        padding: 0.25em 0 0.25em 1.3em !important;
+        text-decoration: none !important;
+    }
 </style>
 
 
