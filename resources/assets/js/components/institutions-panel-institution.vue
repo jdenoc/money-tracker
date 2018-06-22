@@ -1,6 +1,6 @@
 <template>
     <div v-bind:id="'institution-id-'+this.institutionId" class="accordion">
-        <div class="panel-block accordion-header toggle">
+        <div class="institution-node panel-block accordion-header toggle">
             <p v-text="this.institutionName"></p>
         </div>
         <div class="accordion-body panel">
@@ -37,11 +37,6 @@
             institutionName: function(){
                 return this.name;
             },
-            inactiveAccounts: function(){
-                return this.accounts.retrieve.filter(function(account){
-                    return account.disabled
-                })
-            },
             activeAccounts: function(){
                 return this.accounts.retrieve.filter(function(account){
                     return !account.disabled
@@ -59,15 +54,10 @@
 </script>
 
 <style scoped>
-    .panel-block.accordion-header{
-        background-color: initial;
-        color: #363636;
+    .institution-node{
+        background-color: initial !important;
+        color: #363636 !important;
         border-bottom: 0;
-    }
-    .accordion-content.panel-block{
-        background-color: #FFF;
-        padding: 0.25em 0 0.25em 1.3em !important;
-        text-decoration: none !important;
     }
 </style>
 
