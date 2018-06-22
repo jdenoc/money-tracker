@@ -5,7 +5,7 @@
             v-bind:class="{'badge is-badge-small is-badge-info is-badge-outlined': isAccountTotalVisable, 'tooltip is-tooltip-right is-tooltip-multiline' : hasAccountTypes}"
             v-bind:data-badge="'$'+parseFloat(accountTotal).toFixed(2)"
             v-bind:data-tooltip="accountTypeTooltipList"
-            ></span>
+        ></span>
     </a>
 </template>
 
@@ -28,10 +28,6 @@
             isAccountTotalVisable: function(){
                 return !isNaN(this.accountTotal);
             },
-            hasAccountTypes: function(){
-                let accountTypes = new Accounts().getAccountTypes(this.accountId);
-                return accountTypes.length > 0;
-            },
             accountTypeTooltipList: function(){
                 let accountTypes = new Accounts().getAccountTypes(this.accountId);
                 let tooltipList = "";
@@ -39,6 +35,10 @@
                     tooltipList += "- "+accountType.name+" ("+accountType.last_digits+")\n"
                 });
                 return tooltipList.trim();
+            },
+            hasAccountTypes: function(){
+                let accountTypes = new Accounts().getAccountTypes(this.accountId);
+                return accountTypes.length > 0;
             },
         },
         methods: {
