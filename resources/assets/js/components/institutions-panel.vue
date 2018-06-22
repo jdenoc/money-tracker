@@ -15,35 +15,42 @@
                     v-bind:id="institution.id"
                     v-bind:name="institution.name"
                 ></institutions-panel-institution>
+
+                <div class="accordion" v-show="inactiveAccountsAreAvailable">
+                    <div class="panel-block accordion-header toggle institution-node">
+                        <p>Closed Accounts</p>
+                    </div>
+                    <div class="accordion-body panel">
+                        <institutions-panel-institution-account
+                            v-for="account in inactiveAccounts"
+                            v-bind:key="account.id"
+                            v-bind:id="account.id"
+                            v-bind:name="account.name"
+                            v-bind:total="account.total"
+                        ></institutions-panel-institution-account>
+                    </div>
+                </div>
             </section>
 
-                <!--<collapse-item title="Closed Accounts" class="panel-block">-->
-                    <!--<ul>-->
-                        <!--<institutions-pane-institution-account-->
-                            <!--v-for="account in this.inactiveAccounts"-->
-                            <!--v-bind:key="account.id"-->
-                            <!--v-bind:id="account.id"-->
-                            <!--v-bind:name="account.name"-->
-                        <!--&gt;</institutions-pane-institution-account>-->
-                    <!--</ul>-->
-                <!--</collapse-item>-->
-            <!--</collapse>-->
         </nav>
     </div>
 </template>
 
 <script>
-    import {Institutions} from "../institutions";
     import {Accounts} from "../accounts";
+    import {Institutions} from "../institutions";
     import InstitutionsPanelInstitution from "./institutions-panel-institution";
+    import InstitutionsPanelInstitutionAccount from "./institutions-panel-institution-account";
 
     export default {
         name: "institutions-panel",
         components: {
             InstitutionsPanelInstitution,
+            InstitutionsPanelInstitutionAccount
         },
         data: function(){
             return {
+                accounts: new Accounts(),
                 institutions: new Institutions(),
             }
         },
@@ -52,7 +59,7 @@
                 return this.institutions.retrieve.length > 0;
             },
             accountsAreAvailable: function(){
-                return new Accounts().retrieve.length > 0;
+                return this.accounts.retrieve.length > 0;
             },
             activeInstitutions: function(){
                 return this.institutions.retrieve.filter(function(institution){
@@ -64,6 +71,14 @@
                     return !institution.active;
                 });
             },
+            inactiveAccounts: function(){
+                return this.accounts.retrieve.filter(function(account){
+                    return account.disabled
+                })
+            },
+            inactiveAccountsAreAvailable: function(){
+                return this.inactiveAccounts.length > 0;
+            }
         },
         methods: {
             fireAccordionReadyEvent: function(){
@@ -87,4 +102,12 @@
         display: none;
         margin: 0 0 5px 10px;
     }
+    .institution-node{
+        background-color: initial !important;
+        color: #363636 !important;
+        border-bottom: 0;
+    }
+    .panel-heading{
+        font-weight: bold;
+     }
 </style>
