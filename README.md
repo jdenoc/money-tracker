@@ -91,7 +91,8 @@ This will generate Laravel Facades that PhpStorm can use.
 
 ##### Run yarn install
 ```bash
-docker container run --rm -t --workdir /code --volume $PWD:/code node:6-slim yarn install
+docker/docker-yarn.sh install
+docker/docker-yarn.sh run development
 ```
 
 ##### Bring "up" application container(s)
