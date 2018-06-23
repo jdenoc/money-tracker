@@ -26,7 +26,6 @@
                             v-bind:key="account.id"
                             v-bind:id="account.id"
                             v-bind:name="account.name"
-                            v-bind:total="account.total"
                         ></institutions-panel-institution-account>
                     </div>
                 </div>
