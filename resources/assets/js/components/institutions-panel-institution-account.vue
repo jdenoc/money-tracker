@@ -28,6 +28,10 @@
             isAccountTotalVisable: function(){
                 return !isNaN(this.accountTotal);
             },
+            hasAccountTypes: function(){
+                let accountTypes = new Accounts().getAccountTypes(this.accountId);
+                return accountTypes.length > 0;
+            },
             accountTypeTooltipList: function(){
                 let accountTypes = new Accounts().getAccountTypes(this.accountId);
                 let tooltipList = "";
@@ -35,10 +39,6 @@
                     tooltipList += "- "+accountType.name+" ("+accountType.last_digits+")\n"
                 });
                 return tooltipList.trim();
-            },
-            hasAccountTypes: function(){
-                let accountTypes = new Accounts().getAccountTypes(this.accountId);
-                return accountTypes.length > 0;
             },
         },
         methods: {
@@ -56,7 +56,7 @@
     }
     .account-node{
         background-color: #FFF;
-        padding: 0.25em 0 0.25em 1.3em !important;
+        padding: 0.25em 0 0.25em 1.1em !important;
         text-decoration: none !important;
     }
     .tooltip:hover::after{
