@@ -13,7 +13,7 @@ export class Institutions extends ObjectBaseClass {
         if(error.response){
             switch(error.response.status){
                 case 404:
-                    this.set([]);
+                    this.assign = [];
                 // TODO: notify users
                 //  notice.display(notice.typeInfo, "No institutions currently available");
                 case 500:
