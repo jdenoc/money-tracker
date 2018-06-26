@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Store from './store'
+import Navbar from './components/navbar';
 import InstitutionsPanel from './components/institutions-panel';
 
 import { Accounts } from './accounts';
@@ -11,7 +12,8 @@ import { Version } from './version';
 new Vue({
     el: "#app",
     components: {
-        InstitutionsPanel
+        InstitutionsPanel,
+        Navbar
     },
     store: Store,
     mounted: function(){

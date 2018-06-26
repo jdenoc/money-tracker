@@ -12,6 +12,11 @@ let mix = require('laravel-mix');
  */
 
 mix.js('resources/assets/js/app.js', 'public/vue/js')
+    // font-awesome
+    .copy('node_modules/@fortawesome/fontawesome-free/css/all.css', 'public/vue/css/font-awesome.css')
+    .copy('node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.woff2', 'public/vue/webfonts/fa-solid-900.woff2')
+    // bulma-accordion
     .js('node_modules/bulma-accordion/dist/bulma-accordion.js', 'public/vue/js')
     .copy('node_modules/bulma-accordion/dist/bulma-accordion.min.css', 'public/vue/css/bulma-accordion.css')
+
     .sass('resources/assets/sass/app.scss', 'public/vue/css');
