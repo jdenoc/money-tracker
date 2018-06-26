@@ -77,15 +77,14 @@ cd money-tracker/
 ```
 
 ##### Run composer install  
-_**Note:** We're using a deprecated docker image so we can be guaranteed that we can run php 5_.
 ```bash
-docker container run --rm -t --volume $PWD:/app composer/composer:php5-alpine install
+docker/docker-composer.sh install
 ```
 
 <small>***OPTIONAL***</small>:
 If you're working with PhpStorm, be sure to run the following command:
 ```bash
-docker container run --rm -t --volume $PWD:/app composer/composer:php5-alpine ide-helper
+docker/docker-composer.sh ide-helper
 ```
 This will generate Laravel Facades that PhpStorm can use.  
 
