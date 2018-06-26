@@ -10,7 +10,7 @@ export class Version extends ObjectBaseClass {
     }
 
     axiosSuccess(response){
-        this.set(response);
+        this.assign = response.data;
     }
 
     axiosFailure(error){
