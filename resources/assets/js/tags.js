@@ -13,7 +13,7 @@ export class Tags extends ObjectBaseClass {
         if(error.response){
             switch(error.response.status){
                 case 404:
-                    this.set([]);
+                    this.assign = [];
                     break;
                 case 500:
                 default:
