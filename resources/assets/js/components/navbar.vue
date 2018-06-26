@@ -74,6 +74,8 @@
     }
     .navbar-item img{
         max-height: 2.25rem;
+        font-weight: bold;
+        font-size: 20px;
     }
     .fas{
         padding-right: 5px;
