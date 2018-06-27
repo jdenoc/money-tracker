@@ -1,12 +1,12 @@
 <template>
-    <nav class="navbar is-black is-transparent is-fixed-top" role="navigation" aria-label="dropdown navigation">
+    <nav class="navbar is-black is-transparent" role="navigation" aria-label="dropdown navigation">
         <div class="navbar-brand">
             <span class="navbar-item">Money Tracker</span>
         </div>
         <div class="navbar-menu">
             <div class="navbar-end">
-                <a class="navbar-item" v-on:click="clickAddEntry"><i class="fas fa-plus-circle"></i> Add Entry</a>
-                <a class="navbar-item" v-on:click="clickFilter"><i class="fas fa-filter"></i> Filter</a>
+                <a class="navbar-item" v-on:click="openAddEntryModal"><i class="fas fa-plus-circle"></i> Add Entry</a>
+                <a class="navbar-item" v-on:click="openFilterModal"><i class="fas fa-filter"></i> Filter</a>
 
                 <div class="navbar-item has-dropdown"
                     v-bind:class="{'is-active': hasNavbarAvatarImageBeenClicked}"
@@ -52,10 +52,10 @@
             }
         },
         methods: {
-            clickAddEntry: function(){
+            openAddEntryModal: function(){
                 this.modalNotAvailable();
             },
-            clickFilter: function(){
+            openFilterModal: function(){
                 this.modalNotAvailable();
             },
             clickNavbarAvatarImage: function(){
