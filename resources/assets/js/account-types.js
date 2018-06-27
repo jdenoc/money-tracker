@@ -28,12 +28,20 @@ export class AccountTypes extends ObjectBaseClass {
     }
 
     getAccount(accountTypeId){
-        accountTypeId = parseInt(accountTypeId);
         let accountType = this.find(accountTypeId);
         if(accountType.hasOwnProperty('account_id')){
             return new Accounts().find(accountType.account_id);
         } else {
             return {};  // couldn't find the account_type associated with the provided ID
+        }
+    }
+
+    getNameById(accountTypeId) {
+        let accountType = this.find(accountTypeId);
+        if(accountType.hasOwnProperty('name')){
+            return accountType.name;
+        } else {
+            return "";  // couldn't find the account_type.name associated with the provided ID
         }
     }
 }
@@ -42,13 +50,4 @@ export class AccountTypes extends ObjectBaseClass {
 //         entryModal.initAccountTypeSelect();
 //         filterModal.initAccountTypeSelect();
 //         institutionsPane.displayAccountTypes();
-//     },
-
-//     getNameById: function (accountTypeId) {
-//         var accountType = accountTypes.find(accountTypeId);
-//         if(accountType.hasOwnProperty('name')){
-//             return accountType.name;
-//         } else {
-//             return '';
-//         }
 //     },
