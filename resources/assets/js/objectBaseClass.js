@@ -56,7 +56,7 @@ export class ObjectBaseClass {
 
     find(id){
         id = parseInt(id);
-        let foundObjects = this.retrieve().filter(function(object){
+        let foundObjects = this.retrieve.filter(function(object){
             return id === object.id;
         });
         if(foundObjects.length > 0){
