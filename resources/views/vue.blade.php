@@ -22,7 +22,9 @@
                 <div class="level-left">
                     <institutions-panel></institutions-panel>
                 </div>
-                <div class="level-right"></div>
+                <div class="level-right">
+                    <entries-table></entries-table>
+                </div>
             </div>
         </div>
         <script type="text/javascript" src="{{asset('vue/js/app.js')}}"></script>
