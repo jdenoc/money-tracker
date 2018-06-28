@@ -38,14 +38,13 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <!-- TODO - create logo -->
-            <a class="navbar-brand" href="#">Money Tracker</a>
+            <span class="navbar-brand"><img src="{{asset('imgs/logo-white.png')}}" alt="Money Tracker"/></span>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="#" data-toggle="modal" data-target="#entry-modal" id="entry_add">Add Entry</a></li>
                 <li><a href="#" data-toggle="modal" data-target="#filter-modal">Filter</a></li>
-                <li><a href="#" data-toggle="dropdown" id="user-menu"><img src="/imgs/profile-placeholder.jpeg" alt="TODO - name required from session" class="img-circle" /></a>
+                <li><a href="#" data-toggle="dropdown" id="user-menu"><img src="{{asset('imgs/profile-placeholder.jpeg')}}" alt="TODO - name required from session" class="img-circle" /></a>
                     <ul class="dropdown-menu" role="menu" aria-labelledby="user_menu">
                         <li role="presentation" class="dropdown-header">TODO - name required from session</li>
                         <li role="presentation" class="divider"></li>
