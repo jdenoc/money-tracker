@@ -77,6 +77,12 @@
 }
 
 /* Navbar */
+.navbar-brand{
+    padding: 0 15px 0 7px;
+}
+.navbar-brand > img{
+    max-height: 50px;
+}
 .menu-node-version{
     margin: -7px 0;
 }
