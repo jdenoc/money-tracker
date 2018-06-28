@@ -1,9 +1,10 @@
 import Vue from 'vue';
-import Store from './store'
+import Store from './store';
+
 import EntriesTable from './components/entries-table';
 import EntriesTableEntryRow from './components/entries-table-entry-row';
-import Navbar from './components/navbar';
 import InstitutionsPanel from './components/institutions-panel';
+import Navbar from './components/navbar';
 
 import { Accounts } from './accounts';
 import { AccountTypes } from './account-types';
@@ -31,11 +32,11 @@ new Vue({
         let entries = new Entries();
         entries.fetch();
 
-        let tags = new Tags();
-        tags.fetch();
-
         let institutions = new Institutions();
         institutions.fetch();
+
+        let tags = new Tags();
+        tags.fetch();
 
         let version = new Version();
         version.fetch();
