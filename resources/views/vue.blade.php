@@ -18,14 +18,15 @@
     <body>
         <div id="app">
             <navbar></navbar>
-            <div class="level">
-                <div class="level-left">
+            <div class="columns is-gapless">
+                <div id="institutions-panel-column" class="column is-one-quarter">
                     <institutions-panel></institutions-panel>
                 </div>
-                <div class="level-right">
+                <div class="column">
                     <entries-table></entries-table>
                 </div>
             </div>
+
         </div>
         <script type="text/javascript" src="{{asset('vue/js/app.js')}}"></script>
         <script type="text/javascript" src="{{asset('vue/js/bulma-accordion.js')}}"></script>

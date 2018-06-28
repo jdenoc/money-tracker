@@ -1,7 +1,7 @@
 <template>
     <tr
         v-bind:class="{'has-background-warning': confirm && expense, 'has-background-success': confirm && !expense, 'has-text-grey-light' : isFutureEntry}">
-        <td><button class="button is-inverted is-info fas fa-edit" v-on:click="openEditEntryModal(id)"></button></td>
+        <td><button class="button is-inverted is-info fas fa-edit edit-entry-button" v-on:click="openEditEntryModal(id)"></button></td>
         <td v-text="date"></td>
         <td v-text="memo"></td>
         <td class="has-text-right">
@@ -15,7 +15,7 @@
         <td v-text="accountTypeName"></td>
         <td><i v-bind:class="{ 'far fa-square': !hasAttachments, 'fas fa-check-square': hasAttachments }"></i></td>
         <td><div class="tags">
-            <span class="tag is-rounded" v-for="tagId in tagIds" v-text="getTagName(tagId)"></span>
+            <span class="tag is-rounded is-dark" v-for="tagId in tagIds" v-text="getTagName(tagId)"></span>
         </div></td>
     </tr>
 </template>
@@ -58,5 +58,8 @@
 <style scoped>
     .tags{
         max-width: 250px;
+    }
+    .edit-entry-button{
+        padding: 5px 10px 5px 14px;
     }
 </style>
