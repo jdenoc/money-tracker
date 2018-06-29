@@ -1,7 +1,7 @@
 <template>
     <nav class="navbar is-black is-transparent" role="navigation" aria-label="dropdown navigation">
         <div class="navbar-brand">
-            <span class="navbar-item">Money Tracker</span>
+            <span class="navbar-item"><img src="imgs/logo-white.png" alt="Money Tracker" /></span>
         </div>
         <div class="navbar-menu">
             <div class="navbar-end">
@@ -70,8 +70,10 @@
 
 <style scoped>
     .navbar-brand .navbar-item{
-        font-weight: bold;
-        font-size: 20px;
+        padding: 5px 16px;
+    }
+    .navbar-item img{
+        max-height: 2.25rem;
     }
     .fas{
         padding-right: 5px;
