@@ -60,14 +60,14 @@
                 <div class="filter-modal-element center-block clearfix">
                     <label for="filter-min-value" class="pull-left">Min Range:</label>
                     <div class="input-group filter-min-max-input-group pull-right">
-                        <div class="input-group-addon">$</div>
+                        <div class="input-group-addon filter-modal-currency"></div>
                         <input type="text" id="filter-min-value" name="filter-min-value" class="form-control" placeholder="0.00">
                     </div>
                 </div>
                 <div class="filter-modal-element center-block clearfix">
                     <label for="filter-max-value" class="pull-left">Max Range:</label>
                     <div class="input-group filter-min-max-input-group pull-right">
-                        <div class="input-group-addon">$</div>
+                        <div class="input-group-addon filter-modal-currency"></div>
                         <input type="text" id="filter-max-value" name="filter-max-value" class="form-control" placeholder="100.00">
                     </div>
                 </div>

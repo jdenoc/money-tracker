@@ -110,4 +110,15 @@
     display: none;
     font-size: 15px;
 }
+
+.entry-modal-currency::after,
+.entry-modal-currency.USD::after{
+    content: "$";
+}
+.entry-modal-currency.EUR::after{
+    content: "€";
+}
+.entry-modal-currency.GBP::after{
+    content: "£";
+}
 /* END - New/Edit entry page */
