@@ -183,6 +183,7 @@ var accounts = {
     },
     display: function(){
         institutionsPane.displayAccounts();
+        filterModal.initAccountSelect();
     },
     valuesSortedBy: function(property){
         return accounts.value.slice().sort(function(a, b){
@@ -234,7 +235,6 @@ var accountTypes = {
     },
     display: function(){
         entryModal.initAccountTypeSelect();
-        filterModal.initAccountTypeSelect();
         institutionsPane.displayAccountTypes();
     },
     getNameById: function (accountTypeId) {
