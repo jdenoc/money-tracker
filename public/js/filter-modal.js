@@ -21,11 +21,11 @@ var filterModal = {
     toggleAccountOrAccountTypeSelect: function(){
         $('#filter-account-or-account-type .generated').remove();
         var currentState = $('#filter-toggle-account-or-account-type').bootstrapSwitch('state');
-        // on/true = account; off/false = account_type; see bootstrapSwitchAccountOrAccountTypeObject
+        // on/true = account_type; off/false = account; see bootstrapSwitchAccountOrAccountTypeObject
         if(currentState){
-            filterModal.initAccountSelect();
-        } else {
             filterModal.initAccountTypeSelect();
+        } else {
+            filterModal.initAccountSelect();
         }
     },
     initAccountSelect: function(){
@@ -116,8 +116,8 @@ var filterModal = {
 };
 
 var bootstrapSwitchAccountOrAccountTypeObject = $.extend({}, bootstrapSwitchObject, {
-    onText: "Account",
-    offText: "Account Type",
+    onText: "Account Type",
+    offText: "Account",
     onColor: 'default',
     offColor: 'default',
     wrapperClass: ['pull-left'],
