@@ -27,6 +27,7 @@ $factory->define(App\Institution::class, function(Faker\Generator $faker){
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 $factory->define(App\Account::class, function(Faker\Generator $faker){
+    $faker->addProvider(new App\Providers\Faker\ProjectCurrencyCodeProvider($faker));
     $account_name = $faker->company.' account';
     $disabled = $faker->boolean;
     return [
@@ -34,7 +35,7 @@ $factory->define(App\Account::class, function(Faker\Generator $faker){
         'institution_id'=>$faker->randomNumber(),
         'disabled'=>$disabled,
         'total'=>$faker->randomFloat(2, -1000, 1000),   // -1000.00 < total < 1000.00
-        'currency'=>$faker->randomElement(['USD', 'GBP', 'EUR']),   // faker has currencyCode for a more robust selection, but this project will only focus on 3 currencies
+        'currency'=>$faker->currencyCode,
         'disabled_stamp'=>$disabled ? $faker->date("Y-m-d H:i:s") : null
     ];
 });
