@@ -16,6 +16,17 @@ var filterModal = {
     init: function(){
         $('#filter-reset').click(filterModal.reset);
         $('#filter-set').click(filterModal.submit);
+        $("#filter-account-or-account-type").change(function(){
+            var accountOrAccountTypeId = $(this).val();
+            var account = null;
+            if($(this).attr('name') === 'filter-account'){
+                account = accounts.find(accountOrAccountTypeId);
+            }
+            if($(this).attr('name') === 'filter-account-type'){
+                account = accountTypes.getAccount(accountOrAccountTypeId);
+            }
+            filterModal.updateRangeCurrency(account.currency);
+        });
         filterModal.toggleAccountOrAccountTypeSelect();
     },
     toggleAccountOrAccountTypeSelect: function(){
@@ -53,13 +64,24 @@ var filterModal = {
             filterTags.append('<label class="btn btn-info label-tag"><input type="checkbox" name="filter-tag" value="'+tagObj.id+'" autocomplete="off"/>'+tagObj.name+'</label>');
         });
     },
+    updateRangeCurrency: function(accountCurrency){
+        var filterModalRangeCurrencyElement = $('.filter-modal-currency');
+        var elementClasses = filterModalRangeCurrencyElement.attr('class').split(' ');
+        elementClasses = elementClasses.filter(function(className){
+            return $.inArray(className, ['input-group-addon', 'filter-modal-currency']) === -1;
+        });
+        $.each(elementClasses, function(idx, className){
+            filterModalRangeCurrencyElement.removeClass(className);
+        });
+        filterModalRangeCurrencyElement.addClass(accountCurrency);
+    },
     reset: function(){
         // traditional inputs
         $('#filter-start-date').val('');
         $('#filter-end-date').val('');
         $('#filter-min-value').val('');
         $('#filter-max-value').val('');
-        $('#filter-account-or-account-type').val('');
+        $('#filter-account-or-account-type').val('').trigger('change');
         // tags
         $('#filter-tags label').removeClass('active');
         $('input[name="filter-tag"]').prop('checked', false);

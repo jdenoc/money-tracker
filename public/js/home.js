@@ -300,8 +300,9 @@ var entries = {
                 '</td>' +
                 '<td>'+entryObject.entry_date+'</td>' +
                 '<td>'+entryObject.memo+'</td>' +
-                '<td class="value-col">'+(entryObject.expense ? '' : '$'+entryObject.entry_value)+'</td>' +
-                '<td class="value-col">'+(entryObject.expense ? '$'+entryObject.entry_value : '')+'</td>' +
+                // TODO: consider some how prefixing value with account currency symbol
+                '<td class="value-col">'+(entryObject.expense ? '' : entryObject.entry_value)+'</td>' +
+                '<td class="value-col">'+(entryObject.expense ? entryObject.entry_value : '')+'</td>' +
                 '<td>'+accountTypes.getNameById(entryObject.account_type_id)+'</td>' +
                 '<td><span class="glyphicon glyphicon-'+(entryObject.has_attachments ? 'check' : 'unchecked')+'" aria-hidden="true"></span></td>' +
                 '<td>'+displayTags+'</td>' +

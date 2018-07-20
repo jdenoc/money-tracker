@@ -30,7 +30,7 @@
 
                 <label for="entry-value" id="entry-value-label">Value:</label>
                 <div id="entry-value-input-group" class="input-group">
-                    <div class="input-group-addon">$</div>
+                    <div class="input-group-addon entry-modal-currency"></div>
                     <input type="text" id="entry-value" name="entry-value" class="form-control" placeholder="9.99">
                 </div>
 
