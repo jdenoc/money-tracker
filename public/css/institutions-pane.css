@@ -59,3 +59,21 @@
 #closed-accounts-parent .glyphicon{
     font-size: 12px;
 }
+
+.institutions-pane-currency::after{
+    /* unknown currency */
+    content: "?"
+}
+
+.institutions-pane-currency.USD::after,
+.institutions-pane-currency.CAD::after{
+    content: "$";
+}
+
+.institutions-pane-currency.EUR::after{
+    content: "€";
+}
+
+.institutions-pane-currency.GBP::after{
+    content: "£";
+}

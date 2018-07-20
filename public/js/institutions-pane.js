@@ -31,7 +31,7 @@ var institutionsPane = {
                 } else {
                     // add account to institution collapse
                     $('#institution-id-' + accountObject.institution_id + ' #accounts-for-institution' + accountObject.institution_id).append(accountDiv);
-                    $('#account-id-'+accountObject.id+' a').append('<br/>$'+accountObject.total)
+                    $('#account-id-'+accountObject.id+' a').append('<br/><span class="institutions-pane-currency '+accountObject.currency+'"></span>'+accountObject.total)
                 }
 
                 // display account related entries on click

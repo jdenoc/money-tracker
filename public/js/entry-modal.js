@@ -98,24 +98,9 @@ var entryModal = {
         });
         $('#entry-account-type').change(function(){
             var accountTypeId = $(this).val();
-            var accountType = accountTypes.find(accountTypeId);
             var account = accountTypes.getAccount(accountTypeId);
-            var accountTypeMetaParentElement = $('.account-type-meta');
-            if(account.hasOwnProperty('name')){
-                accountTypeMetaParentElement.removeClass('hidden');
-                $('#entry-account-name span').text(account.name);
-                $('#entry-account-type-last-digits span').text(accountType.last_digits);
-            } else {
-                accountTypeMetaParentElement.addClass('hidden');
-                $('#entry-account-name span').text('');
-                $('#entry-account-type-last-digits span').text('');
-            }
-
-            if(account.hasOwnProperty('disabled') && account.disabled){
-                accountTypeMetaParentElement.removeClass('text-info').addClass('text-muted');
-            } else {
-                accountTypeMetaParentElement.removeClass('text-muted').addClass('text-info');
-            }
+            entryModal.updateAccountTypeMeta(account, accountTypes.find(accountTypeId));
+            entryModal.updateAccountCurrency(account.currency);
         });
     },
     initEntryDate: function(){
@@ -207,6 +192,35 @@ var entryModal = {
     toggleAccountTypeDisplay: function(displayAccountType){
         // show account-type options if the entry has been confirmed
         $('#entry-modal .account-type-hidden').toggle(displayAccountType);
+    },
+    updateAccountTypeMeta: function(accountObject, accountTypeObject){
+        var accountTypeMetaParentElement = $('.account-type-meta');
+        if(accountObject.hasOwnProperty('name')){
+            accountTypeMetaParentElement.removeClass('hidden');
+            $('#entry-account-name span').text(accountObject.name);
+            $('#entry-account-type-last-digits span').text(accountTypeObject.last_digits);
+        } else {
+            accountTypeMetaParentElement.addClass('hidden');
+            $('#entry-account-name span').text('');
+            $('#entry-account-type-last-digits span').text('');
+        }
+
+        if(accountObject.hasOwnProperty('disabled') && accountObject.disabled){
+            accountTypeMetaParentElement.removeClass('text-info').addClass('text-muted');
+        } else {
+            accountTypeMetaParentElement.removeClass('text-muted').addClass('text-info');
+        }
+    },
+    updateAccountCurrency: function(accountCurrency){
+        var entryModalCurrencyElement = $('.entry-modal-currency');
+        var elementClasses = entryModalCurrencyElement.attr('class').split(' ');
+        elementClasses = elementClasses.filter(function(className){
+            return $.inArray(className, ['input-group-addon', 'entry-modal-currency']) === -1;
+        });
+        $.each(elementClasses, function(idx, className){
+            entryModalCurrencyElement.removeClass(className);
+        });
+        entryModalCurrencyElement.addClass(accountCurrency);
     },
     clearAttachmentViews: function(){
         // clear attachment view elements from the entry modal

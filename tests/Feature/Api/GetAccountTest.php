@@ -112,38 +112,65 @@ class GetAccountTest extends TestCase {
      */
     private function assertAccountDetailsOK($response_as_array, $generated_account, $account_type_count){
         $this->assertTrue(is_array($response_as_array));
-        $this->assertArrayHasKey('id', $response_as_array);
-        $this->assertEquals($response_as_array['id'], $generated_account->id);
-        unset($response_as_array['id']);
-        $this->assertArrayHasKey('name', $response_as_array);
-        $this->assertEquals($response_as_array['name'], $generated_account->name);
-        unset($response_as_array['name']);
-        $this->assertArrayHasKey('institution_id', $response_as_array);
-        $this->assertEquals($response_as_array['institution_id'], $generated_account->institution_id);
-        unset($response_as_array['institution_id']);
-        $this->assertArrayHasKey('disabled', $response_as_array);
-        $this->assertTrue(is_bool($response_as_array['disabled']));
-        $this->assertEquals($response_as_array['disabled'], $generated_account->disabled);
-        $this->assertArrayHasKey('total', $response_as_array);
-        $this->assertEquals($response_as_array['total'], $generated_account->total);
-        unset($response_as_array['total']);
-        $this->assertArrayHasKey('account_types', $response_as_array);
-        $this->assertTrue(is_array($response_as_array['account_types']));
-        $this->assertCount($account_type_count, $response_as_array['account_types']);
-        unset($response_as_array['account_types']);
-        $this->assertArrayHasKey('create_stamp', $response_as_array);
-        $this->assertDateFormat($response_as_array['create_stamp'], DATE_ATOM, $response_as_array['create_stamp']." not in correct format");
-        unset($response_as_array['create_stamp']);
-        $this->assertArrayHasKey('modified_stamp', $response_as_array);
-        $this->assertDateFormat($response_as_array['modified_stamp'], DATE_ATOM, $response_as_array['modified_stamp']." not in correct format");
-        unset($response_as_array['modified_stamp']);
-        $this->assertArrayHasKey('disabled_stamp', $response_as_array);
+
+        $element = 'id';
+        $this->assertArrayHasKey($element, $response_as_array);
+        $this->assertEquals($response_as_array[$element], $generated_account->id);
+        unset($response_as_array[$element]);
+
+        $element = 'name';
+        $this->assertArrayHasKey($element, $response_as_array);
+        $this->assertEquals($response_as_array[$element], $generated_account->name);
+        unset($response_as_array[$element]);
+
+        $element = 'institution_id';
+        $this->assertArrayHasKey($element, $response_as_array);
+        $this->assertEquals($response_as_array[$element], $generated_account->institution_id);
+        unset($response_as_array[$element]);
+
+        $element = 'disabled';
+        $this->assertArrayHasKey($element, $response_as_array);
+        $this->assertTrue(is_bool($response_as_array[$element]));
+        $this->assertEquals($response_as_array[$element], $generated_account->disabled);
+        // Can't unset the 'disabled' element until the end
+
+        $element = 'total';
+        $this->assertArrayHasKey($element, $response_as_array);
+        $this->assertEquals($response_as_array[$element], $generated_account->total);
+        unset($response_as_array[$element]);
+
+        $element = 'currency';
+        $this->assertArrayHasKey($element, $response_as_array);
+        $this->assertEquals(3, strlen($response_as_array[$element]));
+        $this->assertTrue(in_array($response_as_array[$element], ['CAD', 'EUR', 'GBP', 'USD']));
+        $this->assertEquals($response_as_array[$element], $generated_account->currency);
+        unset($response_as_array[$element]);
+
+        $element = 'account_types';
+        $this->assertArrayHasKey($element, $response_as_array);
+        $this->assertTrue(is_array($response_as_array[$element]));
+        $this->assertCount($account_type_count, $response_as_array[$element]);
+        unset($response_as_array[$element]);
+
+        $element = 'create_stamp';
+        $this->assertArrayHasKey($element, $response_as_array);
+        $this->assertDateFormat($response_as_array[$element], DATE_ATOM, $response_as_array[$element]." not in correct format");
+        unset($response_as_array[$element]);
+
+        $element = 'modified_stamp';
+        $this->assertArrayHasKey($element, $response_as_array);
+        $this->assertDateFormat($response_as_array[$element], DATE_ATOM, $response_as_array[$element]." not in correct format");
+        unset($response_as_array[$element]);
+
+        $element = 'disabled_stamp';
+        $this->assertArrayHasKey($element, $response_as_array);
         if($response_as_array['disabled']){
-            $this->assertDateFormat($response_as_array['disabled_stamp'], DATE_ATOM, $response_as_array['disabled_stamp']." not in correct format");
+            $this->assertDateFormat($response_as_array[$element], DATE_ATOM, $response_as_array[$element]." not in correct format");
         } else {
-            $this->assertNull($response_as_array['disabled_stamp']);
+            $this->assertNull($response_as_array[$element]);
         }
-        unset($response_as_array['disabled'], $response_as_array['disabled_stamp']);
+        unset($response_as_array['disabled'], $response_as_array[$element]);
+
         $this->assertEmpty($response_as_array, "Unknown nodes found in JSON:".json_encode($response_as_array));
     }
 

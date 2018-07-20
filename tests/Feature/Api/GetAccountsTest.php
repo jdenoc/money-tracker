@@ -42,6 +42,8 @@ class GetAccountsTest extends TestCase {
             unset($account_in_response['disabled']);
             $this->assertArrayHasKey('total', $account_in_response);
             unset($account_in_response['total']);
+            $this->assertArrayHasKey('currency', $account_in_response);
+            unset($account_in_response['currency']);
             $this->assertEmpty($account_in_response, "Unknown nodes found in JSON response:".json_encode($account_in_response));
         }
         foreach($generated_accounts as $generated_account){
