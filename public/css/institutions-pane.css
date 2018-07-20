@@ -65,7 +65,8 @@
     content: "?"
 }
 
-.institutions-pane-currency.USD::after{
+.institutions-pane-currency.USD::after,
+.institutions-pane-currency.CAD::after{
     content: "$";
 }
 

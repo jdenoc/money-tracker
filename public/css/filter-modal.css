@@ -62,7 +62,8 @@
 }
 
 #filter-modal .input-group-addon.filter-modal-currency::after,
-#filter-modal .input-group-addon.filter-modal-currency.USD::after{
+#filter-modal .input-group-addon.filter-modal-currency.USD::after,
+#filter-modal .input-group-addon.filter-modal-currency.CAD::after{
     content: "$";
 }
 #filter-modal .input-group-addon.filter-modal-currency.EUR::after{

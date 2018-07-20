@@ -112,7 +112,8 @@
 }
 
 .entry-modal-currency::after,
-.entry-modal-currency.USD::after{
+.entry-modal-currency.USD::after,
+.entry-modal-currency.CAD::after{
     content: "$";
 }
 .entry-modal-currency.EUR::after{

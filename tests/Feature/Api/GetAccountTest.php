@@ -142,7 +142,7 @@ class GetAccountTest extends TestCase {
         $element = 'currency';
         $this->assertArrayHasKey($element, $response_as_array);
         $this->assertEquals(3, strlen($response_as_array[$element]));
-        $this->assertTrue(in_array($response_as_array[$element], ['USD', 'EUR', 'GBP']));
+        $this->assertTrue(in_array($response_as_array[$element], ['CAD', 'EUR', 'GBP', 'USD']));
         $this->assertEquals($response_as_array[$element], $generated_account->currency);
         unset($response_as_array[$element]);
 
