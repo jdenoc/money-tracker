@@ -104,9 +104,9 @@ var filterModal = {
         var account = '';
         var accountType = '';
         if($('#filter-toggle-account-or-account-type').bootstrapSwitch('state')){
-            account = $('select[name="filter-account"]').val();
-        } else {
             accountType = $('select[name="filter-account-type"]').val();
+        } else {
+            account = $('select[name="filter-account"]').val();
         }
         var tags = [];
         $.each($('input[name="filter-tag"]:checked'), function(idx, tagInput){
