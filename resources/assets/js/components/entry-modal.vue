@@ -63,12 +63,20 @@
                 <!-- TODO: "entry.expense" should be some sort of switch -->
                 <!--<div id="entry-expense-switch-container"><input type="checkbox" name="expense-switch" checked /></div>-->
 
-                <!-- TODO: tags-input field with auto-fill/typeahead -->
                 <!--<a id="entry-tags-info" class="glyphicon glyphicon-info-sign text-info pull-right"></a>-->
-                <!--<label>-->
-                    <!--<span id="entry-tag-value">Tags:</span>-->
-                    <!--<input id="entry-tags" name="entry-tags" type="text" class="form-control" />-->
-                <!--</label>-->
+                <div class="field is-horizontal">
+                    <div class="field-label is-normal"><label class="label">Tags:</label></div>
+                    <div class="field-body"><div class="field"><div class="control">
+                        <voerro-tags-input
+                            element-id="entry-tags"
+                            v-model="tagsInput.selectedTags"
+                            v-bind:existing-tags="tagsInput.autocompleteItems"
+                            v-bind:only-existing-tags="true"
+                            v-bind:typeahead="true"
+                            v-bind:typeahead-max-results="5"
+                        ></voerro-tags-input>
+                    </div></div></div>
+                </div>
 
                 <!-- TODO: attachment uploader should be a drag-n-drop field -->
                 <!--<div id="attachment-uploader">Upload</div>-->
@@ -97,8 +105,13 @@
 </template>
 
 <script>
+    import VoerroTagsInput from '@voerro/vue-tagsinput';
+
     export default {
         name: "entry-modal",
+        components: {
+            VoerroTagsInput
+        },
         data: function(){
             return {
                 tagsInput: {

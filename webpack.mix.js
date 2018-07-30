@@ -26,5 +26,7 @@ mix.js('resources/assets/js/app.js', jsDirectory)
     .copy(nodeDirectory+'/bulma-accordion/dist/bulma-accordion.min.css', cssDirectory+'/bulma-accordion.css')
     // bulma-checkradio
     .copy(nodeDirectory+'/bulma-checkradio/dist/css/bulma-checkradio.min.css', cssDirectory+'/bulma-checkradio.css')
+    // tags-input
+    .copy(nodeDirectory+'/@voerro/vue-tagsinput/dist/style.css', cssDirectory+'/tags-input.css')
 
     .sass('resources/assets/sass/app.scss', cssDirectory);
