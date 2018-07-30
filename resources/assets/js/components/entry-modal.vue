@@ -6,7 +6,11 @@
                 <p class="modal-card-title">Entry: <span id="entry-id-display">new</span></p>
                 <input type="hidden" name="entry-id" id="entry-id" />
 
-                <!-- TODO: build a confirmed button -->
+                <div class="control">
+                    <input class="is-checkradio is-block is-success" id="entry-confirm" type="checkbox" name="entry-confirm" v-model="entryData.confirmed" >
+                    <label for="entry-confirm" v-bind:class="{'has-text-grey-light': !isConfirmed, 'has-text-white': isConfirmed}">Confirmed</label>
+                </div>
+
                 <button class="delete" aria-label="close" v-on:click="closeModal"></button>
             </header>
 
@@ -207,6 +211,10 @@
 </script>
 
 <style scoped>
+    .is-checkradio[type=checkbox].is-block+label::after,
+    .is-checkradio[type=checkbox].is-block+label:after{
+        top: 0.4rem;
+    }
     .field-label.is-normal{
         font-size: 13px;
     }

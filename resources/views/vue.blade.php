@@ -13,6 +13,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vue@2.1.3/dist/vue.js"></script>
     <link href="{{asset('vue/css/app.css')}}" rel="stylesheet" type="text/css">
     <link href="{{asset('vue/css/bulma-accordion.css')}}" rel="stylesheet" type="text/css">
+    <link href="{{asset('vue/css/bulma-checkradio.css')}}" rel="stylesheet" type="text/css">
     <link href="{{asset('vue/css/font-awesome.css')}}" rel="stylesheet" type="text/css">
 </head>
 <body>
