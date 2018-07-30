@@ -11,13 +11,18 @@ let mix = require('laravel-mix');
  |
  */
 
-mix.js('resources/assets/js/app.js', 'public/vue/js')
-    // font-awesome
-    .copy('node_modules/@fortawesome/fontawesome-free/css/all.css', 'public/vue/css/font-awesome.css')
-    .copy('node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.woff2', 'public/vue/webfonts/fa-solid-900.woff2')
-    .copy('node_modules/@fortawesome/fontawesome-free/webfonts/fa-regular-400.woff2', 'public/vue/webfonts/fa-regular-400.woff2')
-    // bulma-accordion
-    .js('node_modules/bulma-accordion/dist/bulma-accordion.js', 'public/vue/js')
-    .copy('node_modules/bulma-accordion/dist/bulma-accordion.min.css', 'public/vue/css/bulma-accordion.css')
+let cssDirectory     = 'public/vue/css';
+let nodeDirectory    = 'node_modules';
+let jsDirectory      = 'public/vue/js';
+let webFontDirectory = 'public/vue/webfonts';
 
-    .sass('resources/assets/sass/app.scss', 'public/vue/css');
+mix.js('resources/assets/js/app.js', jsDirectory)
+    // font-awesome
+    .copy(nodeDirectory+'/@fortawesome/fontawesome-free/css/all.css', cssDirectory+'/font-awesome.css')
+    .copy(nodeDirectory+'/@fortawesome/fontawesome-free/webfonts/fa-solid-900.woff2', webFontDirectory+'/fa-solid-900.woff2')
+    .copy(nodeDirectory+'/@fortawesome/fontawesome-free/webfonts/fa-regular-400.woff2', webFontDirectory+'/fa-regular-400.woff2')
+    // bulma-accordion
+    .js(nodeDirectory+'/bulma-accordion/dist/bulma-accordion.js', jsDirectory)
+    .copy(nodeDirectory+'/bulma-accordion/dist/bulma-accordion.min.css', cssDirectory+'/bulma-accordion.css')
+
+    .sass('resources/assets/sass/app.scss', cssDirectory);
