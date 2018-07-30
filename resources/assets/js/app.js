@@ -3,7 +3,6 @@ import Store from './store';
 
 import EntryModal from './components/entry-modal';
 import EntriesTable from './components/entries-table';
-import EntriesTableEntryRow from './components/entries-table-entry-row';
 import InstitutionsPanel from './components/institutions-panel';
 import Navbar from './components/navbar';
 
@@ -19,7 +18,6 @@ new Vue({
     components: {
         EntryModal,
         EntriesTable,
-        EntriesTableEntryRow,
         InstitutionsPanel,
         Navbar
     },
