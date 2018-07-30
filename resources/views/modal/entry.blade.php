@@ -25,6 +25,7 @@
                 <h4 class="modal-title" id="entry-title">Entry: <span id="entry-id-display">new</span></h4>
                 <input type="checkbox" id="entry-confirm" name="entry-confirm" />
             </div>
+
             <div class="modal-body">
                 <label><span>Date:</span><input type="date" id="entry-date" name="entry-date" class="form-control"/></label>
 
