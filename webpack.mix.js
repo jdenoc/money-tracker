@@ -28,5 +28,7 @@ mix.js('resources/assets/js/app.js', jsDirectory)
     .copy(nodeDirectory+'/@fortawesome/fontawesome-free/webfonts/fa-regular-400.woff2', webFontDirectory+'/fa-regular-400.woff2')
     // tags-input
     .copy(nodeDirectory+'/@voerro/vue-tagsinput/dist/style.css', cssDirectory+'/tags-input.css')
+    // bulma-checkradio
+    .copy(nodeDirectory+'/bulma-checkradio/dist/css/bulma-checkradio.min.css', cssDirectory+'/bulma-checkradio.css')
 
     .sass('resources/assets/sass/app.scss', cssDirectory);
