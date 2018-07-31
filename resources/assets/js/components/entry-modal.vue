@@ -78,8 +78,12 @@
                     </div></div></div>
                 </div>
 
-                <!-- TODO: attachment uploader should be a drag-n-drop field -->
-                <!--<div id="attachment-uploader">Upload</div>-->
+                <div class="field"><div class="control">
+                    <vue-dropzone ref="entryModalFileUpload" id="entry-modal-file-upload"
+                        v-bind:options="dropzoneOptions"
+                    ></vue-dropzone>
+                </div></div>
+
             </section>
 
             <footer class="modal-card-foot">
@@ -106,13 +110,28 @@
 
 <script>
     import VoerroTagsInput from '@voerro/vue-tagsinput';
+    import vue2Dropzone from 'vue2-dropzone';
 
     export default {
         name: "entry-modal",
         components: {
-            VoerroTagsInput
+            VoerroTagsInput,
+            VueDropzone: vue2Dropzone,
         },
         data: function(){
+            // TODO: include default entry data that can be used to overwrite current data when modal closes
+            // TODO: verify these default values are OK
+            let defaultData = {
+                id: null,
+                entry_date: "",
+                account_type_id: null,
+                entry_value: "",
+                memo: "",
+                expense: true,
+                confirm: false,
+                tags: [],
+                attachments: []
+            };
             return {
                 tagsInput: {
                     // TODO: replace this with real data
@@ -143,19 +162,15 @@
                     confirmed: false,
                     tags: []
                 },
-                // TODO: include default entry data that can be used to overwrite current data when modal closes
-                // TODO: verify these default values are OK
-                defaultData: {
-                    id: null,
-                    entry_date: "",
-                    account_type_id: null,
-                    entry_value: "",
-                    memo: "",
-                    expense: true,
-                    confirm: false,
-                    tags: [],
-                    attachments: []
-                }
+
+                dropzoneOptions: {
+                    url: '/attachment/upload',
+                    method: 'post',
+                    addRemoveLinks: true,
+                    paramName: 'attachment',
+                    params: {_token: uploadToken},
+                    dictDefaultMessage: '<span class="icon"><i class="fas fa-cloud-upload-alt"></i></span><br/>Drag & Drop'
+                },
             }
         },
         // TODO: when not onFocus for the entry value, convert to number decimal (2 places)
@@ -177,7 +192,9 @@
                 // TODO: only return true if account-type value != ''
                 return true;
             },
-
+            getAttachmentUploadUrl: function(){
+                return this.dropzoneOptions.url;
+            }
         },
         methods: {
             // TODO: toggle "locking" entry-modal
@@ -186,7 +203,6 @@
             // TODO: init input tags auto-complete
 
             // TODO: update account-type help info when account-type is changed
-
 
             openModal: function(){
                 this.isVisible = true;
