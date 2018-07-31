@@ -7,7 +7,7 @@
                 <input type="hidden" name="entry-id" id="entry-id" />
 
                 <div class="control">
-                    <input class="is-checkradio is-block is-success" id="entry-confirm" type="checkbox" name="entry-confirm" v-model="entryData.confirmed" >
+                    <input class="is-checkradio is-block is-success" id="entry-confirm" type="checkbox" name="entry-confirm" v-model="entryData.confirm" >
                     <label for="entry-confirm" v-bind:class="{'has-text-grey-light': !isConfirmed, 'has-text-white': isConfirmed}">Confirmed</label>
                 </div>
 
@@ -36,18 +36,28 @@
                     <div class="field-label is-normal"><label class="label" for="entry-account-type">Account Type:</label></div>
                     <div class="field-body"><div class="field">
                         <div class="control"><div class="select" v-bind:class="{'is-loading': !areAccountTypesSet}">
-                            <select name="entry-account-type" id="entry-account-type">
+                            <select name="entry-account-type" id="entry-account-type"
+                                v-model="entryData.account_type_id"
+                                v-on:change="updateAccountTypeMeta"
+                                >
                                 <option></option>
+                                <option
+                                    v-for="accountType in listAccountTypes"
+                                    v-bind:key="accountType.id"
+                                    v-bind:value="accountType.id"
+                                    v-text="accountType.name"
+                                    v-show="!accountType.disabled"
+                                ></option>
                             </select>
                         </div></div>
                         <div class="help has-text-info" v-bind:class="{'is-hidden': !hasAccountTypeBeenSelected}">
                             <p>
                                 <span class="has-text-weight-semibold has-padding-right">Account Name:</span>
-                                <span id="entry-account-type-meta-account-name"></span>
+                                <span id="entry-account-type-meta-account-name" v-text="accountTypeMeta.accountName"></span>
                             </p>
                             <p>
                                 <span class="has-text-weight-semibold has-padding-right">Last 4 Digits:</span>
-                                <span class="entry-account-type-meta-last-digits"></span>
+                                <span class="entry-account-type-meta-last-digits" v-text="accountTypeMeta.lastDigits"></span>
                             </p>
                         </div>
                     </div></div>
@@ -108,6 +118,7 @@
 </template>
 
 <script>
+    import {AccountTypes} from "../account-types";
     import {Tags} from '../tags';
     import VoerroTagsInput from '@voerro/vue-tagsinput';
     import vue2Dropzone from 'vue2-dropzone';
@@ -121,25 +132,33 @@
         data: function(){
             // TODO: include default entry data that can be used to overwrite current data when modal closes
             // TODO: verify these default values are OK
-            let defaultData = {
-                id: null,
-                entry_date: "",
-                account_type_id: null,
-                entry_value: "",
-                memo: "",
-                expense: true,
-                confirm: false,
-                tags: [],
-                attachments: []
-            };
             return {
-                tags: new Tags(),
+                accountTypesObject: new AccountTypes(),
+                tagsObject: new Tags(),
+
+                accountTypeMeta: {
+                    accountName: "",
+                    lastDigits: ""
+                },
 
                 isVisible: true,
                 isLocked: true,
                 entryData: {
-                    confirmed: false,
+                    account_type_id: '',
+                    confirm: false,
                     tags: []
+                },
+
+                defaultData: {
+                    id: null,
+                    entry_date: "",
+                    account_type_id: "",
+                    entry_value: "",
+                    memo: "",
+                    expense: true,
+                    confirm: false,
+                    tags: [],
+                    attachments: []
                 },
 
                 dropzoneOptions: {
@@ -155,39 +174,51 @@
         // TODO: when not onFocus for the entry value, convert to number decimal (2 places)
         computed: {
             isConfirmed: function(){
-                return this.entryData.confirmed;
+                return this.entryData.confirm;
             },
             isDeletable: function(){
                 // TODO: true ONLY if an existing entry
                 return true;
             },
             areAccountTypesSet: function(){
-                // TODO: figure out how to set account-type values in entry modal
-                // TODO: return true after account-type values are set
-                return false;
+                return this.listAccountTypes.length > 0;
             },
             hasAccountTypeBeenSelected: function(){
-                // TODO: figure out how to change this value based on entry-account-type selection
-                // TODO: only return true if account-type value != ''
-                return true;
+                return this.entryData.account_type_id !== '';
             },
             getAttachmentUploadUrl: function(){
                 return this.dropzoneOptions.url;
             },
             listTags: function(){
-                return this.tags.retrieve.reduce(function(result, item){
+                return this.tagsObject.retrieve.reduce(function(result, item){
                     result[item.id] = item.name;
                     return result;
                 }, {});
+            },
+            listAccountTypes: function(){
+                return this.accountTypesObject.retrieve.sort(function(a, b){
+                    // sorts account-type objects by name
+                    let comparison = 0;
+                    if(a.name > b.name){
+                        comparison = 1;
+                    } else if(b.name > a.name){
+                        comparison = -1;
+                    }
+                    return comparison;
+                });
+            },
+            todaysDate: function(){
+                let today = new Date();
+                return today.getFullYear()+'-'
+                    +(today.getMonth()<9?'0':'')+(today.getMonth()+1)+'-'	// months in JavaScript start from 0=January
+                    +(today.getDate()<10?'0':'')+today.getDate();
             }
         },
         methods: {
             // TODO: toggle "locking" entry-modal
             // TODO: set all fields to read-only when entry-modal "locked"
 
-            // TODO: init input tags auto-complete
-
-            // TODO: update account-type help info when account-type is changed
+            // TODO: set modal date to current date on init
 
             openModal: function(){
                 this.isVisible = true;
@@ -203,8 +234,8 @@
                 // TODO: set modal date to current date on close
                 this.warningAlert();
                 this.isLocked = true;
-                this.entryData.confirmed = false;
                 this.isVisible = false;
+                this.resetEntryData();
             },
             saveEntry: function(){
                 // TODO: save an entry
@@ -219,8 +250,18 @@
             },
             warningAlert: function(){
                 alert("WARNING: This feature is still in beta. Expect unintended consequences.");
+            },
+            updateAccountTypeMeta: function(){
+                let account = this.accountTypesObject.getAccount(this.entryData.account_type_id);
+                this.accountTypeMeta.accountName = account.name;
+                let accountType = this.accountTypesObject.find(this.entryData.account_type_id);
+                this.accountTypeMeta.lastDigits = accountType.last_digits;
+            },
+            resetEntryData: function(){
+                this.defaultData.entry_date = this.todaysDate;
+                this.entryData = this.defaultData;
             }
-        }
+        },
     }
 </script>
 
