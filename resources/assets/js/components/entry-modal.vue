@@ -194,17 +194,6 @@
         data: function(){
             // TODO: include default entry data that can be used to overwrite current data when modal closes
             // TODO: verify these default values are OK
-            let defaultData = {
-                id: null,
-                entry_date: "",
-                account_type_id: null,
-                entry_value: "",
-                memo: "",
-                expense: true,
-                confirm: false,
-                tags: [],
-                attachments: []
-            };
             return {
                 accountTypesObject: new AccountTypes(),
                 entriesObject: new Entries(),
