@@ -16,6 +16,8 @@
     <link href="{{asset('vue/css/bulma-checkradio.css')}}" rel="stylesheet" type="text/css">
     <link href="{{asset('vue/css/font-awesome.css')}}" rel="stylesheet" type="text/css">
     <link href="{{asset('vue/css/tags-input.css')}}" rel="stylesheet" type="text/css">
+    <link href="{{asset('vue/css/vue-dropzone.css')}}" rel="stylesheet" type="text/css">
+    <script type="text/javascript">var uploadToken = '{{ csrf_token() }}';</script>
 </head>
 <body>
     <div id="app">
