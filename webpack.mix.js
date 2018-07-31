@@ -20,8 +20,6 @@ mix.js('resources/assets/js/app.js', jsDirectory)
     // bulma-accordion
     .js(nodeDirectory+'/bulma-accordion/dist/bulma-accordion.js', jsDirectory)
     .copy(nodeDirectory+'/bulma-accordion/dist/bulma-accordion.min.css', cssDirectory+'/bulma-accordion.css')
-    // bulma-checkradio
-    .copy(nodeDirectory+'/bulma-checkradio/dist/css/bulma-checkradio.min.css', cssDirectory+'/bulma-checkradio.css')
     // dropzone
     .copy(nodeDirectory+'/vue2-dropzone/dist/vue2Dropzone.css', cssDirectory+'/vue-dropzone.css')
     // font-awesome
