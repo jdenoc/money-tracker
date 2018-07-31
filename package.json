@@ -21,6 +21,7 @@
     "bulma-accordion": "^1.0.1",
     "bulma-badge": "^1.0.1",
     "bulma-checkradio": "^2.1.0",
-    "bulma-tooltip": "^1.0.4"
+    "bulma-tooltip": "^1.0.4",
+    "vue2-dropzone": "^3.2.2"
   }
 }
