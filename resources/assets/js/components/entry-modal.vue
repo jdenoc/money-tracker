@@ -63,14 +63,13 @@
                 <!-- TODO: "entry.expense" should be some sort of switch -->
                 <!--<div id="entry-expense-switch-container"><input type="checkbox" name="expense-switch" checked /></div>-->
 
-                <!--<a id="entry-tags-info" class="glyphicon glyphicon-info-sign text-info pull-right"></a>-->
                 <div class="field is-horizontal">
                     <div class="field-label is-normal"><label class="label">Tags:</label></div>
                     <div class="field-body"><div class="field"><div class="control">
                         <voerro-tags-input
                             element-id="entry-tags"
-                            v-model="tagsInput.selectedTags"
-                            v-bind:existing-tags="tagsInput.autocompleteItems"
+                            v-model="entryData.tags"
+                            v-bind:existing-tags="listTags"
                             v-bind:only-existing-tags="true"
                             v-bind:typeahead="true"
                             v-bind:typeahead-max-results="5"
@@ -109,6 +108,7 @@
 </template>
 
 <script>
+    import {Tags} from '../tags';
     import VoerroTagsInput from '@voerro/vue-tagsinput';
     import vue2Dropzone from 'vue2-dropzone';
 
@@ -133,28 +133,7 @@
                 attachments: []
             };
             return {
-                tagsInput: {
-                    // TODO: replace this with real data
-                    // TODO: fill with data from tags.value when available
-                    autocompleteItems: {
-                        1: "tax",
-                        2: "car",
-                        3: "check",
-                        4: "utilities",
-                        5: "home",
-                        6: "doctor",
-                        7: "dentist",
-                        8: "medication",
-                        9: "vet",
-                        10: "work",
-                        11: "demo",
-                        12: "door",
-                        13: "dog",
-                        14: "cat"
-                    },
-                    // TODO: make this mirror entryData.tags
-                    selectedTags: [],
-                },
+                tags: new Tags(),
 
                 isVisible: true,
                 isLocked: true,
@@ -194,6 +173,12 @@
             },
             getAttachmentUploadUrl: function(){
                 return this.dropzoneOptions.url;
+            },
+            listTags: function(){
+                return this.tags.retrieve.reduce(function(result, item){
+                    result[item.id] = item.name;
+                    return result;
+                }, {});
             }
         },
         methods: {
