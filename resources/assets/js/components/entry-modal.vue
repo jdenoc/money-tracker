@@ -70,8 +70,18 @@
                     </div></div></div>
                 </div>
 
-                <!-- TODO: "entry.expense" should be some sort of switch -->
-                <!--<div id="entry-expense-switch-container"><input type="checkbox" name="expense-switch" checked /></div>-->
+                <div class="field">
+                    <div class="control has-text-centered">
+                        <toggle-button
+                            id="entry-expense"
+                            v-model="entryData.expense"
+                            v-bind:color="toggleButtonProperties.colors"
+                            v-bind:labels="toggleButtonProperties.labels"
+                            v-bind:height="toggleButtonProperties.height"
+                            v-bind:width="toggleButtonProperties.width"
+                        />
+                    </div>
+                </div>
 
                 <div class="field is-horizontal">
                     <div class="field-label is-normal"><label class="label">Tags:</label></div>
@@ -120,12 +130,14 @@
 <script>
     import {AccountTypes} from "../account-types";
     import {Tags} from '../tags';
+    import ToggleButton from 'vue-js-toggle-button/src/Button'
     import VoerroTagsInput from '@voerro/vue-tagsinput';
     import vue2Dropzone from 'vue2-dropzone';
 
     export default {
         name: "entry-modal",
         components: {
+            ToggleButton,
             VoerroTagsInput,
             VueDropzone: vue2Dropzone,
         },
@@ -146,7 +158,8 @@
                 entryData: {
                     account_type_id: '',
                     confirm: false,
-                    tags: []
+                    tags: [],
+                    expense: true
                 },
 
                 defaultData: {
@@ -159,6 +172,13 @@
                     confirm: false,
                     tags: [],
                     attachments: []
+                },
+
+                toggleButtonProperties: {
+                    colors: {'checked': '#ffcc00', 'unchecked': '#00d1b2'},
+                    height: 40,
+                    labels: {'checked': 'Expense', 'unchecked': 'Income'},
+                    width: 200,
                 },
 
                 dropzoneOptions: {
@@ -276,7 +296,7 @@
     #entry-account-type{
         min-width: 200px;
     }
-    .has-padding-right{
-        padding-right: 5px;
+    .vue-js-switch#entry-expense{
+        font-size: 1.25rem;
     }
 </style>
