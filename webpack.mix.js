@@ -23,7 +23,7 @@ mix.js('resources/assets/js/app.js', jsDirectory)
     // dropzone
     .copy(nodeDirectory+'/vue2-dropzone/dist/vue2Dropzone.css', cssDirectory+'/vue-dropzone.css')
     // font-awesome
-    .copy(nodeDirectory+'/@fortawesome/fontawesome-free/css/all.css', cssDirectory+'/font-awesome.css')
+    .copy(nodeDirectory+'/@fortawesome/fontawesome-free/css/all.min.css', cssDirectory+'/font-awesome.css')
     .copy(nodeDirectory+'/@fortawesome/fontawesome-free/webfonts/fa-solid-900.woff2', webFontDirectory+'/fa-solid-900.woff2')
     .copy(nodeDirectory+'/@fortawesome/fontawesome-free/webfonts/fa-regular-400.woff2', webFontDirectory+'/fa-regular-400.woff2')
     // tags-input
