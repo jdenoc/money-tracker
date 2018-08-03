@@ -192,8 +192,6 @@
             VueDropzone: vue2Dropzone,
         },
         data: function(){
-            // TODO: include default entry data that can be used to overwrite current data when modal closes
-            // TODO: verify these default values are OK
             return {
                 accountTypesObject: new AccountTypes(),
                 entriesObject: new Entries(),
@@ -387,6 +385,7 @@
             warningAlert: function(){
                 alert("WARNING: This feature is still in beta. Expect unintended consequences.");
             },
+            // TODO: update currency used in entry when account-type is changed
             updateAccountTypeMeta: function(){
                 let account = this.accountTypesObject.getAccount(this.entryData.account_type_id);
                 this.accountTypeMeta.accountName = account.name;
