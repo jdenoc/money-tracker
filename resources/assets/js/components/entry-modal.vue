@@ -14,20 +14,21 @@
                 <button class="delete" aria-label="close" v-on:click="closeModal"></button>
             </header>
 
-            <!-- TODO: finish building entry-modal -->
-
             <section class="modal-card-body">
                 <div class="field is-horizontal">
                     <div class="field-label is-normal"><label class="label" for="entry-date">Date:</label></div>
                     <div class="field-body"><div class="field"><div class="control">
-                        <input class="input" id="entry-date" name="entry-date" type="date"/>
+                        <input class="input" id="entry-date" name="entry-date" type="date" v-model="entryData.entry_date"/>
                     </div></div></div>
                 </div>
 
                 <div class="field is-horizontal">
                     <div class="field-label is-normal"><label class="label" for="entry-value">Value:</label></div>
                     <div class="field-body"><div class="field"><div class="control has-icons-left">
-                        <input class="input" id="entry-value" name="entry-value" type="text" placeholder="999.99"/>
+                        <input class="input" id="entry-value" name="entry-value" type="text" placeholder="999.99"
+                           v-model="entryData.entry_value"
+                           v-on:change="decimaliseEntryValue"
+                        />
                         <span class="icon is-left"><i class="fas fa-dollar-sign"></i></span>
                     </div></div></div>
                 </div>
@@ -66,7 +67,7 @@
                 <div class="field is-horizontal">
                     <div class="field-label is-normal"><label class="label" for="entry-memo">Memo:</label></div>
                     <div class="field-body"><div class="field"><div class="control">
-                        <textarea id="entry-memo" name="entry-memo" class="textarea"></textarea>
+                        <textarea id="entry-memo" name="entry-memo" class="textarea" v-model="entryData.memo"></textarea>
                     </div></div></div>
                 </div>
 
@@ -78,6 +79,8 @@
                             v-bind:color="toggleButtonProperties.colors"
                             v-bind:labels="toggleButtonProperties.labels"
                             v-bind:height="toggleButtonProperties.height"
+                            v-bind:value="entryData.expense"
+                            v-bind:sync="true"
                             v-bind:width="toggleButtonProperties.width"
                         />
                     </div>
@@ -102,7 +105,6 @@
                         v-bind:options="dropzoneOptions"
                     ></vue-dropzone>
                 </div></div>
-
             </section>
 
             <footer class="modal-card-foot">
@@ -142,8 +144,6 @@
             VueDropzone: vue2Dropzone,
         },
         data: function(){
-            // TODO: include default entry data that can be used to overwrite current data when modal closes
-            // TODO: verify these default values are OK
             return {
                 accountTypesObject: new AccountTypes(),
                 tagsObject: new Tags(),
@@ -155,12 +155,8 @@
 
                 isVisible: true,
                 isLocked: true,
-                entryData: {
-                    account_type_id: '',
-                    confirm: false,
-                    tags: [],
-                    expense: true
-                },
+
+                entryData: {}, // this gets filled with values from defaultData
 
                 defaultData: {
                     id: null,
@@ -191,7 +187,6 @@
                 },
             }
         },
-        // TODO: when not onFocus for the entry value, convert to number decimal (2 places)
         computed: {
             isConfirmed: function(){
                 return this.entryData.confirm;
@@ -236,9 +231,15 @@
         },
         methods: {
             // TODO: toggle "locking" entry-modal
-            // TODO: set all fields to read-only when entry-modal "locked"
+            // TODO: set all fields to read-only/disabled when entry-modal "locked"
+            // TODO: "Save Changes" button should not be visible when "locked"
 
-            // TODO: set modal date to current date on init
+            decimaliseEntryValue: function(){
+                if(this.entryData.entry_value != ''){
+                    let cleanedEntryValue = this.entryData.entry_value.replace(/[^0-9.]/g, '');
+                    this.entryData.entry_value = parseFloat(cleanedEntryValue).toFixed(2);
+                }
+            },
 
             openModal: function(){
                 this.isVisible = true;
@@ -271,6 +272,7 @@
             warningAlert: function(){
                 alert("WARNING: This feature is still in beta. Expect unintended consequences.");
             },
+            // TODO: update currency used in entry when account-type is changed
             updateAccountTypeMeta: function(){
                 let account = this.accountTypesObject.getAccount(this.entryData.account_type_id);
                 this.accountTypeMeta.accountName = account.name;
@@ -282,6 +284,9 @@
                 this.entryData = this.defaultData;
             }
         },
+        mounted: function(){
+            this.resetEntryData();
+        }
     }
 </script>
 
@@ -294,7 +299,7 @@
         font-size: 13px;
     }
     #entry-account-type{
-        min-width: 200px;
+        min-width: 250px;
     }
     .vue-js-switch#entry-expense{
         font-size: 1.25rem;
