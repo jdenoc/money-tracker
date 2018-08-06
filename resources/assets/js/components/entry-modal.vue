@@ -29,7 +29,7 @@
                            v-model="entryData.entry_value"
                            v-on:change="decimaliseEntryValue"
                         />
-                        <span class="icon is-left"><i class="fas fa-dollar-sign"></i></span>
+                        <span class="icon is-left"><i class="fas" v-bind:class="accountTypeMeta.currencyClass"></i></span>
                     </div></div></div>
                 </div>
 
@@ -130,6 +130,7 @@
 </template>
 
 <script>
+    import _ from 'lodash';
     import {AccountTypes} from "../account-types";
     import {Tags} from '../tags';
     import ToggleButton from 'vue-js-toggle-button/src/Button'
@@ -150,7 +151,8 @@
 
                 accountTypeMeta: {
                     accountName: "",
-                    lastDigits: ""
+                    currencyClass:"fa-dollar-sign",
+                    lastDigits: "",
                 },
 
                 isVisible: true,
@@ -211,16 +213,8 @@
                 }, {});
             },
             listAccountTypes: function(){
-                return this.accountTypesObject.retrieve.sort(function(a, b){
-                    // sorts account-type objects by name
-                    let comparison = 0;
-                    if(a.name > b.name){
-                        comparison = 1;
-                    } else if(b.name > a.name){
-                        comparison = -1;
-                    }
-                    return comparison;
-                });
+                let accountTypes = this.accountTypesObject.retrieve;
+                return _.orderBy(accountTypes, 'name');
             },
             todaysDate: function(){
                 let today = new Date();
@@ -235,7 +229,7 @@
             // TODO: "Save Changes" button should not be visible when "locked"
 
             decimaliseEntryValue: function(){
-                if(this.entryData.entry_value != ''){
+                if(!_.isEmpty(this.entryData.entry_value)){
                     let cleanedEntryValue = this.entryData.entry_value.replace(/[^0-9.]/g, '');
                     this.entryData.entry_value = parseFloat(cleanedEntryValue).toFixed(2);
                 }
@@ -272,12 +266,26 @@
             warningAlert: function(){
                 alert("WARNING: This feature is still in beta. Expect unintended consequences.");
             },
-            // TODO: update currency used in entry when account-type is changed
             updateAccountTypeMeta: function(){
                 let account = this.accountTypesObject.getAccount(this.entryData.account_type_id);
                 this.accountTypeMeta.accountName = account.name;
                 let accountType = this.accountTypesObject.find(this.entryData.account_type_id);
                 this.accountTypeMeta.lastDigits = accountType.last_digits;
+
+                switch(account.currency){
+                    case 'EUR':
+                        this.accountTypeMeta.currencyClass = "fa-euro-sign";
+                        break;
+
+                    case 'GBP':
+                        this.accountTypeMeta.currencyClass = "fa-pound-sign";
+                        break;
+
+                    case 'USD':
+                    case 'CAD':
+                    default:
+                        this.accountTypeMeta.currencyClass = 'fa-dollar-sign';
+                }
             },
             resetEntryData: function(){
                 this.defaultData.entry_date = this.todaysDate;
