@@ -53,7 +53,7 @@
         },
         methods: {
             openAddEntryModal: function(){
-                this.modalNotAvailable();
+                this.$eventHub.broadcast(this.$eventHub.EVENT_OPEN_ENTRY_MODAL);
             },
             openFilterModal: function(){
                 this.modalNotAvailable();

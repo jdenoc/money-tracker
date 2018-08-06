@@ -13,6 +13,22 @@ import { Institutions } from './institutions';
 import { Tags } from './tags';
 import { Version } from './version';
 
+Vue.prototype.$eventHub = new Vue({
+    computed: {
+        EVENT_OPEN_ENTRY_MODAL: function(){
+            return 'open-entry-modal';
+        }
+    },
+    methods: {
+        broadcast(event, data = null){
+            this.$emit(event, data);
+        },
+        listen(event, callback){
+            this.$on(event, callback);
+        }
+    }
+});
+
 new Vue({
     el: "#app",
     components: {
