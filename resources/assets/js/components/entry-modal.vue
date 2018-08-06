@@ -155,7 +155,7 @@
                     lastDigits: "",
                 },
 
-                isVisible: true,
+                isVisible: false,
                 isLocked: true,
 
                 entryData: {}, // this gets filled with values from defaultData
@@ -235,19 +235,14 @@
                 }
             },
 
-            openModal: function(){
-                this.isVisible = true;
-                this.warningAlert();
-                // TODO: trigger opening this modal from a different component (i.e.: event)
-
+            openModal: function(entryData = []){
                 // TODO: open modal with entry data displayed, if any
-
-                // TODO: open modal with default value if none provided
+                if(_.isEmpty(entryData)){
+                    this.entryData = entryData;
+                }
+                this.isVisible = true;
             },
             closeModal: function(){
-                // TODO: closing modal causes entryData to be overwritten with default data
-                // TODO: set modal date to current date on close
-                this.warningAlert();
                 this.isLocked = true;
                 this.isVisible = false;
                 this.resetEntryData();
@@ -291,6 +286,9 @@
                 this.defaultData.entry_date = this.todaysDate;
                 this.entryData = this.defaultData;
             }
+        },
+        created: function(){
+            this.$eventHub.listen(this.$eventHub.EVENT_OPEN_ENTRY_MODAL, this.openModal);
         },
         mounted: function(){
             this.resetEntryData();
