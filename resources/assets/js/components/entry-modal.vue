@@ -385,7 +385,6 @@
             warningAlert: function(){
                 alert("WARNING: This feature is still in beta. Expect unintended consequences.");
             },
-            // TODO: update currency used in entry when account-type is changed
             updateAccountTypeMeta: function(){
                 let account = this.accountTypesObject.getAccount(this.entryData.account_type_id);
                 this.accountTypeMeta.accountName = account.name;
