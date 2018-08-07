@@ -132,6 +132,7 @@
 <script>
     import _ from 'lodash';
     import {AccountTypes} from "../account-types";
+    import {Entries} from "../entries"
     import {Tags} from '../tags';
     import ToggleButton from 'vue-js-toggle-button/src/Button'
     import VoerroTagsInput from '@voerro/vue-tagsinput';
@@ -147,6 +148,7 @@
         data: function(){
             return {
                 accountTypesObject: new AccountTypes(),
+                entriesObject: new Entries(),
                 tagsObject: new Tags(),
 
                 accountTypeMeta: {
@@ -216,7 +218,7 @@
                 let accountTypes = this.accountTypesObject.retrieve;
                 return _.orderBy(accountTypes, 'name');
             },
-            todaysDate: function(){
+            currentDate: function(){
                 let today = new Date();
                 return today.getFullYear()+'-'
                     +(today.getMonth()<9?'0':'')+(today.getMonth()+1)+'-'	// months in JavaScript start from 0=January
@@ -235,9 +237,20 @@
                 }
             },
 
-            openModal: function(entryData = []){
-                // TODO: open modal with entry data displayed, if any
-                if(_.isEmpty(entryData)){
+            openModal: function(entryId = null){
+                if(!_.isEmpty(entryId) || _.isNumber(entryId)){ // isNumber is used to handle isEmpty() reading numbers as empty
+                    let entryData = {};
+                    if(_.isObject(entryId)){
+                        // entryId was passed as part of an event payload
+                        entryData = this.entriesObject.find(entryId[0]);
+                    } else {
+                        entryData = this.entriesObject.find(entryId);
+                    }
+                    // our input-tags field requires that tag values are strings
+                    entryData = _.cloneDeep(entryData);
+                    entryData.tags = entryData.tags.map(function(tag){
+                        return tag.toString();
+                    });
                     this.entryData = entryData;
                 }
                 this.isVisible = true;
@@ -283,7 +296,7 @@
                 }
             },
             resetEntryData: function(){
-                this.defaultData.entry_date = this.todaysDate;
+                this.defaultData.entry_date = this.currentDate;
                 this.entryData = this.defaultData;
             }
         },

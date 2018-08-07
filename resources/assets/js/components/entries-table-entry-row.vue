@@ -46,7 +46,7 @@
                 return new Tags().getNameById(tagId);
             },
             openEditEntryModal: function(entryId){
-                this.modalNotAvailable(entryId);
+                this.$eventHub.broadcast(this.$eventHub.EVENT_OPEN_ENTRY_MODAL, entryId);
             },
             modalNotAvailable: function(entryId){
                 alert("Modal not currently available\nEntry "+entryId+" can't be modified at this time");
