@@ -253,12 +253,14 @@
                     });
                     this.entryData = entryData;
                 }
+                this.updateAccountTypeMeta();
                 this.isVisible = true;
             },
             closeModal: function(){
                 this.isLocked = true;
                 this.isVisible = false;
                 this.resetEntryData();
+                this.updateAccountTypeMeta();
             },
             saveEntry: function(){
                 // TODO: save an entry
