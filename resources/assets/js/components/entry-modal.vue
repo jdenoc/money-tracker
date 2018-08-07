@@ -320,6 +320,7 @@
                     });
                     this.entryData = entryData;
                 }
+                this.updateAccountTypeMeta();
                 this.isVisible = true;
                 this.updateAccountTypeMeta();
             },
@@ -374,6 +375,7 @@
             unlockModal: function(){
                 this.isLocked = false;
                 this.dropzoneRef.enable();
+                this.updateAccountTypeMeta();
             },
             saveEntry: function(){
                 // TODO: save an entry
