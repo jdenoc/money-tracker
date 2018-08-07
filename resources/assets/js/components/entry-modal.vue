@@ -303,18 +303,22 @@
                     this.entryData.entry_value = parseFloat(cleanedEntryValue).toFixed(2);
                 }
             },
-            openModal: function(entryData = {}){
-                if(!_.isEmpty(entryData)){
-                    this.entryData = _.clone(entryData);
+
+            openModal: function(entryId = null){
+                if(!_.isEmpty(entryId) || _.isNumber(entryId)){ // isNumber is used to handle isEmpty() reading numbers as empty
+                    let entryData = {};
+                    if(_.isObject(entryId)){
+                        // entryId was passed as part of an event payload
+                        entryData = this.entriesObject.find(entryId[0]);
+                    } else {
+                        entryData = this.entriesObject.find(entryId);
+                    }
                     // our input-tags field requires that tag values are strings
-                    this.entryData.tags = this.entryData.tags.map(function(tag){
-                        return tag.id.toString();
+                    entryData = _.cloneDeep(entryData);
+                    entryData.tags = entryData.tags.map(function(tag){
+                        return tag.toString();
                     });
-                    this.entryData.confirm ? this.lockModal() : this.unlockModal();
-                    this.isDeletable = true;
-                } else {
-                    this.resetEntryData();
-                    this.isDeletable = false;
+                    this.entryData = entryData;
                 }
                 this.isVisible = true;
                 this.updateAccountTypeMeta();
