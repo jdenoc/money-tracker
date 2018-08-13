@@ -299,7 +299,7 @@
             },
             resetEntryData: function(){
                 this.defaultData.entry_date = this.currentDate;
-                this.entryData = this.defaultData;
+                this.entryData = _.clone(this.defaultData);
             }
         },
         created: function(){
