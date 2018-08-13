@@ -3,8 +3,8 @@
         <div class="modal-background"></div>
         <div class="modal-card">
             <header class="modal-card-head">
-                <p class="modal-card-title">Entry: <span id="entry-id-display">new</span></p>
-                <input type="hidden" name="entry-id" id="entry-id" />
+                <p class="modal-card-title">Entry: <span v-if="entryData.id" v-text="entryData.id"></span><span v-else>new</span></p>
+                <input type="hidden" name="entry-id" id="entry-id" v-model="entryData.id" />
 
                 <div class="control">
                     <input class="is-checkradio is-block is-success" id="entry-confirm" type="checkbox" name="entry-confirm" v-model="entryData.confirm" >
