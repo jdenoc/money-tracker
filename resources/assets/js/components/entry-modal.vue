@@ -111,13 +111,21 @@
                             v-bind:only-existing-tags="true"
                             v-bind:typeahead="true"
                             v-bind:typeahead-max-results="5"
+                            v-show="!isLocked"
                         ></voerro-tags-input>
+<<<<<<< HEAD
                         <div class="box" v-show="isLocked"><div class="tags">
                             <span class="tag"
                                 v-for="tag in displayReadOnlyTags"
                                 v-text="tag"
                             ></span>
                         </div></div>
+=======
+                        <input type="text" class="input has-text-grey-dark" readonly
+                           v-model="displayReadOnlyTags"
+                           v-show="isLocked"
+                        />
+>>>>>>> Applied a toggled locking feature to the entry-modal for previously saved & confirmed entries.
                     </div></div></div>
                 </div>
 
@@ -126,6 +134,9 @@
                         v-bind:options="dropzoneOptions"
                         v-show="!isLocked"
                     ></vue-dropzone>
+                    <!-- TODO: list attachments associated with entry -->
+                    <!-- TODO: associated attachments should have a "display" button to open attachment in a new tab -->
+                    <!-- TODO: associated attachments should have a "delete" button to delete said attachment -->
                 </div></div>
 
                 <div class="field">
@@ -319,8 +330,11 @@
                         return tag.toString();
                     });
                     this.entryData = entryData;
+                    this.entryData.confirm ? this.lockModal() : this.unlockModal();
+                    this.isDeletable = true;
+                } else {
+                    this.isDeletable = false;
                 }
-                this.updateAccountTypeMeta();
                 this.isVisible = true;
                 this.updateAccountTypeMeta();
             },
@@ -376,6 +390,21 @@
                 this.isLocked = false;
                 this.dropzoneRef.enable();
                 this.updateAccountTypeMeta();
+            },
+            toggleLockState: function(){
+                if(this.isLocked){
+                    this.unlockModal();
+                } else {
+                    this.lockModal();
+                }
+            },
+            lockModal: function(){
+                this.isLocked = true;
+                this.dropzoneRef.disable();
+            },
+            unlockModal: function(){
+                this.isLocked = false;
+                this.dropzoneRef.enable();
             },
             saveEntry: function(){
                 // TODO: save an entry
