@@ -7,8 +7,13 @@
                 <input type="hidden" name="entry-id" id="entry-id" v-model="entryData.id" />
 
                 <div class="control">
-                    <input class="is-checkradio is-block is-success" id="entry-confirm" type="checkbox" name="entry-confirm" v-model="entryData.confirm" >
-                    <label for="entry-confirm" v-bind:class="{'has-text-grey-light': !isConfirmed, 'has-text-white': isConfirmed}">Confirmed</label>
+                    <input class="is-checkradio is-block is-success" id="entry-confirm" type="checkbox" name="entry-confirm"
+                        v-model="entryData.confirm"
+                        v-bind:disabled="isLocked"
+                    >
+                    <label for="entry-confirm"
+                        v-bind:class="{'has-text-grey-light': !entryData.confirm, 'has-text-white': entryData.confirm}"
+                        >Confirmed</label>
                 </div>
 
                 <button class="delete" aria-label="close" v-on:click="closeModal"></button>
@@ -18,15 +23,19 @@
                 <div class="field is-horizontal">
                     <div class="field-label is-normal"><label class="label" for="entry-date">Date:</label></div>
                     <div class="field-body"><div class="field"><div class="control">
-                        <input class="input" id="entry-date" name="entry-date" type="date" v-model="entryData.entry_date"/>
+                        <input class="input has-text-grey-dark" id="entry-date" name="entry-date" type="date"
+                            v-model="entryData.entry_date"
+                            v-bind:readonly="isLocked"
+                        />
                     </div></div></div>
                 </div>
 
                 <div class="field is-horizontal">
                     <div class="field-label is-normal"><label class="label" for="entry-value">Value:</label></div>
                     <div class="field-body"><div class="field"><div class="control has-icons-left">
-                        <input class="input" id="entry-value" name="entry-value" type="text" placeholder="999.99"
+                        <input class="input has-text-grey-dark" id="entry-value" name="entry-value" type="text" placeholder="999.99"
                            v-model="entryData.entry_value"
+                           v-bind:readonly="isLocked"
                            v-on:change="decimaliseEntryValue"
                         />
                         <span class="icon is-left"><i class="fas" v-bind:class="accountTypeMeta.currencyClass"></i></span>
@@ -37,9 +46,10 @@
                     <div class="field-label is-normal"><label class="label" for="entry-account-type">Account Type:</label></div>
                     <div class="field-body"><div class="field">
                         <div class="control"><div class="select" v-bind:class="{'is-loading': !areAccountTypesSet}">
-                            <select name="entry-account-type" id="entry-account-type"
+                            <select name="entry-account-type" id="entry-account-type" class="has-text-grey-dark"
                                 v-model="entryData.account_type_id"
                                 v-on:change="updateAccountTypeMeta"
+                                v-bind:disabled="isLocked"
                                 >
                                 <option></option>
                                 <option
@@ -67,7 +77,10 @@
                 <div class="field is-horizontal">
                     <div class="field-label is-normal"><label class="label" for="entry-memo">Memo:</label></div>
                     <div class="field-body"><div class="field"><div class="control">
-                        <textarea id="entry-memo" name="entry-memo" class="textarea" v-model="entryData.memo"></textarea>
+                        <textarea id="entry-memo" name="entry-memo" class="textarea has-text-grey-dark"
+                            v-model="entryData.memo"
+                            v-bind:readonly="isLocked"
+                        ></textarea>
                     </div></div></div>
                 </div>
 
@@ -77,6 +90,7 @@
                             id="entry-expense"
                             v-model="entryData.expense"
                             v-bind:color="toggleButtonProperties.colors"
+                            v-bind:disabled="isLocked"
                             v-bind:labels="toggleButtonProperties.labels"
                             v-bind:height="toggleButtonProperties.height"
                             v-bind:value="entryData.expense"
@@ -96,14 +110,23 @@
                             v-bind:only-existing-tags="true"
                             v-bind:typeahead="true"
                             v-bind:typeahead-max-results="5"
+                            v-show="!isLocked"
                         ></voerro-tags-input>
+                        <input type="text" class="input has-text-grey-dark" readonly
+                           v-model="displayReadOnlyTags"
+                           v-show="isLocked"
+                        />
                     </div></div></div>
                 </div>
 
                 <div class="field"><div class="control">
                     <vue-dropzone ref="entryModalFileUpload" id="entry-modal-file-upload"
                         v-bind:options="dropzoneOptions"
+                        v-show="!isLocked"
                     ></vue-dropzone>
+                    <!-- TODO: list attachments associated with entry -->
+                    <!-- TODO: associated attachments should have a "display" button to open attachment in a new tab -->
+                    <!-- TODO: associated attachments should have a "delete" button to delete said attachment -->
                 </div></div>
             </section>
 
@@ -111,16 +134,24 @@
                 <div class="container">
                     <div class="field is-grouped">
                         <div class="control is-expanded">
-                            <button type="button" class="button is-danger" v-bind:class="{'is-hidden': isDeletable}" v-on:click="deleteEntry">
+                            <button type="button" class="button is-danger"
+                                v-bind:class="{'is-hidden': !isDeletable}"
+                                v-on:click="deleteEntry"
+                                >
                                 <i class="fas fa-trash-alt has-padding-right"></i>Delete
                             </button>
                         </div>
                         <div class="control">
-                            <button type="button" class="button" v-bind:class="{'is-hidden': !isConfirmed}">
+                            <button type="button" class="button"
+                                v-bind:class="{'is-hidden': !isConfirmed}"
+                                v-on:click="toggleLockState"
+                                >
                                 <i class="fas" v-bind:class="{'fa-unlock-alt': isLocked, 'fa-lock': !isLocked}"></i>
                             </button>
                             <button type="button" class="button" v-on:click="closeModal">Cancel</button>
-                            <button type="button" class="button is-success"><i class="fas fa-check has-padding-right"></i>Save changes</button>
+                            <button type="button" class="button is-success" v-show="!isLocked">
+                                <i class="fas fa-check has-padding-right"></i>Save changes
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -157,8 +188,9 @@
                     lastDigits: "",
                 },
 
+                isDeletable: false,
+                isLocked: false,
                 isVisible: false,
-                isLocked: true,
 
                 entryData: {}, // this gets filled with values from defaultData
 
@@ -193,11 +225,7 @@
         },
         computed: {
             isConfirmed: function(){
-                return this.entryData.confirm;
-            },
-            isDeletable: function(){
-                // TODO: true ONLY if an existing entry
-                return true;
+                return this.entryData.confirm && this.entryData.id;
             },
             areAccountTypesSet: function(){
                 return this.listAccountTypes.length > 0;
@@ -214,6 +242,11 @@
                     return result;
                 }, {});
             },
+            displayReadOnlyTags: function(){
+                let currentTags = typeof this.entryData.tags == 'undefined' ? [] : this.entryData.tags;
+                let displayTags = currentTags.map(function(item){ return this.listTags[item]; }.bind(this));
+                return displayTags.join(', ');
+            },
             listAccountTypes: function(){
                 let accountTypes = this.accountTypesObject.retrieve;
                 return _.orderBy(accountTypes, 'name');
@@ -223,13 +256,12 @@
                 return today.getFullYear()+'-'
                     +(today.getMonth()<9?'0':'')+(today.getMonth()+1)+'-'	// months in JavaScript start from 0=January
                     +(today.getDate()<10?'0':'')+today.getDate();
+            },
+            dropzoneRef: function(){
+                return this.$refs.entryModalFileUpload;
             }
         },
         methods: {
-            // TODO: toggle "locking" entry-modal
-            // TODO: set all fields to read-only/disabled when entry-modal "locked"
-            // TODO: "Save Changes" button should not be visible when "locked"
-
             decimaliseEntryValue: function(){
                 if(!_.isEmpty(this.entryData.entry_value)){
                     let cleanedEntryValue = this.entryData.entry_value.replace(/[^0-9.]/g, '');
@@ -252,15 +284,35 @@
                         return tag.toString();
                     });
                     this.entryData = entryData;
+                    this.entryData.confirm ? this.lockModal() : this.unlockModal();
+                    this.isDeletable = true;
+                } else {
+                    this.isDeletable = false;
                 }
-                this.updateAccountTypeMeta();
                 this.isVisible = true;
+                this.updateAccountTypeMeta();
             },
             closeModal: function(){
-                this.isLocked = true;
+                this.isDeletable = false;
                 this.isVisible = false;
                 this.resetEntryData();
+                this.unlockModal();
                 this.updateAccountTypeMeta();
+            },
+            toggleLockState: function(){
+                if(this.isLocked){
+                    this.unlockModal();
+                } else {
+                    this.lockModal();
+                }
+            },
+            lockModal: function(){
+                this.isLocked = true;
+                this.dropzoneRef.disable();
+            },
+            unlockModal: function(){
+                this.isLocked = false;
+                this.dropzoneRef.enable();
             },
             saveEntry: function(){
                 // TODO: save an entry
