@@ -112,10 +112,12 @@
                             v-bind:typeahead-max-results="5"
                             v-show="!isLocked"
                         ></voerro-tags-input>
-                        <input type="text" class="input has-text-grey-dark" readonly
-                           v-model="displayReadOnlyTags"
-                           v-show="isLocked"
-                        />
+                        <div class="box" v-show="isLocked"><div class="tags">
+                            <span class="tag"
+                                v-for="tag in displayReadOnlyTags"
+                                v-text="tag"
+                            ></span>
+                        </div></div>
                     </div></div></div>
                 </div>
 
@@ -245,7 +247,7 @@
             displayReadOnlyTags: function(){
                 let currentTags = typeof this.entryData.tags == 'undefined' ? [] : this.entryData.tags;
                 let displayTags = currentTags.map(function(item){ return this.listTags[item]; }.bind(this));
-                return displayTags.join(', ');
+                return displayTags;
             },
             listAccountTypes: function(){
                 let accountTypes = this.accountTypesObject.retrieve;
