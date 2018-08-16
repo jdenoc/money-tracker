@@ -114,18 +114,24 @@
                             v-show="!isLocked"
                         ></voerro-tags-input>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> Rather than an input for "readonly" tags within the entry-modal, we're going to use `.box` and `.tag` class elements.
                         <div class="box" v-show="isLocked"><div class="tags">
                             <span class="tag"
                                 v-for="tag in displayReadOnlyTags"
                                 v-text="tag"
                             ></span>
                         </div></div>
+<<<<<<< HEAD
 =======
                         <input type="text" class="input has-text-grey-dark" readonly
                            v-model="displayReadOnlyTags"
                            v-show="isLocked"
                         />
 >>>>>>> Applied a toggled locking feature to the entry-modal for previously saved & confirmed entries.
+=======
+>>>>>>> Rather than an input for "readonly" tags within the entry-modal, we're going to use `.box` and `.tag` class elements.
                     </div></div></div>
                 </div>
 
