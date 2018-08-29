@@ -104,13 +104,13 @@
                     <div class="field-label is-normal"><label class="label">Tags:</label></div>
                     <div class="field-body"><div class="field"><div class="control">
                         <voerro-tags-input
+                            v-show="!isLocked"
                             element-id="entry-tags"
                             v-model="entryData.tags"
                             v-bind:existing-tags="listTags"
                             v-bind:only-existing-tags="true"
                             v-bind:typeahead="true"
                             v-bind:typeahead-max-results="5"
-                            v-show="!isLocked"
                         ></voerro-tags-input>
                         <div class="box" v-show="isLocked"><div class="tags">
                             <span class="tag"
@@ -130,6 +130,15 @@
                     <!-- TODO: associated attachments should have a "display" button to open attachment in a new tab -->
                     <!-- TODO: associated attachments should have a "delete" button to delete said attachment -->
                 </div></div>
+
+                <div class="field">
+                    <entry-modal-attachment
+                        v-for="entryAttachment in entryData.attachments"
+                        v-bind:key="entryAttachment.uuid"
+                        v-bind:id="entryAttachment.uuid"
+                        v-bind:name="entryAttachment.name"
+                    ></entry-modal-attachment>
+                </div>
             </section>
 
             <footer class="modal-card-foot">
@@ -166,7 +175,9 @@
     import _ from 'lodash';
     import {AccountTypes} from "../account-types";
     import {Entries} from "../entries"
+    import {Entry} from "../entry"
     import {Tags} from '../tags';
+    import EntryModalAttachment from "./entry-modal-attachment";
     import ToggleButton from 'vue-js-toggle-button/src/Button'
     import VoerroTagsInput from '@voerro/vue-tagsinput';
     import vue2Dropzone from 'vue2-dropzone';
@@ -174,6 +185,7 @@
     export default {
         name: "entry-modal",
         components: {
+            EntryModalAttachment,
             ToggleButton,
             VoerroTagsInput,
             VueDropzone: vue2Dropzone,
@@ -182,6 +194,7 @@
             return {
                 accountTypesObject: new AccountTypes(),
                 entriesObject: new Entries(),
+                entryObject: new Entry(),
                 tagsObject: new Tags(),
 
                 accountTypeMeta: {
@@ -246,8 +259,7 @@
             },
             displayReadOnlyTags: function(){
                 let currentTags = typeof this.entryData.tags == 'undefined' ? [] : this.entryData.tags;
-                let displayTags = currentTags.map(function(item){ return this.listTags[item]; }.bind(this));
-                return displayTags;
+                return currentTags.map(function(item){ return this.listTags[item]; }.bind(this));
             },
             listAccountTypes: function(){
                 let accountTypes = this.accountTypesObject.retrieve;
@@ -270,22 +282,13 @@
                     this.entryData.entry_value = parseFloat(cleanedEntryValue).toFixed(2);
                 }
             },
-
-            openModal: function(entryId = null){
-                if(!_.isEmpty(entryId) || _.isNumber(entryId)){ // isNumber is used to handle isEmpty() reading numbers as empty
-                    let entryData = {};
-                    if(_.isObject(entryId)){
-                        // entryId was passed as part of an event payload
-                        entryData = this.entriesObject.find(entryId[0]);
-                    } else {
-                        entryData = this.entriesObject.find(entryId);
-                    }
+            openModal: function(entryData = {}){
+                this.entryData = _.clone(entryData);
+                if(!_.isEmpty(this.entryData)){
                     // our input-tags field requires that tag values are strings
-                    entryData = _.cloneDeep(entryData);
-                    entryData.tags = entryData.tags.map(function(tag){
-                        return tag.toString();
+                    this.entryData.tags = this.entryData.tags.map(function(tag){
+                        return tag.id.toString();
                     });
-                    this.entryData = entryData;
                     this.entryData.confirm ? this.lockModal() : this.unlockModal();
                     this.isDeletable = true;
                 } else {
@@ -300,6 +303,36 @@
                 this.resetEntryData();
                 this.unlockModal();
                 this.updateAccountTypeMeta();
+            },
+            primeDataForModal: function(entryId = null){
+                if(!_.isEmpty(entryId) || _.isNumber(entryId)){ // isNumber is used to handle isEmpty() reading numbers as empty
+                    if(_.isObject(entryId)){
+                        // entryId was passed as part of an event payload
+                        entryId = entryId[0];
+                    }
+                    new Promise(function(resolve, reject){
+                        let entryData = this.entryObject.find(entryId);
+                        if(this.entryObject.isEntryCurrent(entryData)){
+                            resolve(entryData);
+                        } else {
+                            reject(entryId);
+                        }
+                    }.bind(this))
+                        .then(this.openModal)
+                        .catch(function(entryId){
+                            this.entryObject.fetch(entryId)
+                                .then(function(){
+                                    let entryData = this.entryObject.find(entryId);
+                                    this.openModal(entryData);
+                                }.bind(this))
+                                .catch(function(){
+                                    // TODO: display notification error
+                                    this.openModal({});
+                                }.bind(this));
+                        }.bind(this));
+                } else {
+                    this.openModal({});
+                }
             },
             toggleLockState: function(){
                 if(this.isLocked){
@@ -357,7 +390,7 @@
             }
         },
         created: function(){
-            this.$eventHub.listen(this.$eventHub.EVENT_OPEN_ENTRY_MODAL, this.openModal);
+            this.$eventHub.listen(this.$eventHub.EVENT_OPEN_ENTRY_MODAL, this.primeDataForModal);
         },
         mounted: function(){
             this.resetEntryData();
