@@ -111,7 +111,6 @@
                             v-bind:only-existing-tags="true"
                             v-bind:typeahead="true"
                             v-bind:typeahead-max-results="5"
-                            v-show="!isLocked"
                         ></voerro-tags-input>
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -320,22 +319,13 @@
                     this.entryData.entry_value = parseFloat(cleanedEntryValue).toFixed(2);
                 }
             },
-
-            openModal: function(entryId = null){
-                if(!_.isEmpty(entryId) || _.isNumber(entryId)){ // isNumber is used to handle isEmpty() reading numbers as empty
-                    let entryData = {};
-                    if(_.isObject(entryId)){
-                        // entryId was passed as part of an event payload
-                        entryData = this.entriesObject.find(entryId[0]);
-                    } else {
-                        entryData = this.entriesObject.find(entryId);
-                    }
+            openModal: function(entryData = {}){
+                this.entryData = _.clone(entryData);
+                if(!_.isEmpty(this.entryData)){
                     // our input-tags field requires that tag values are strings
-                    entryData = _.cloneDeep(entryData);
-                    entryData.tags = entryData.tags.map(function(tag){
-                        return tag.toString();
+                    this.entryData.tags = this.entryData.tags.map(function(tag){
+                        return tag.id.toString();
                     });
-                    this.entryData = entryData;
                     this.entryData.confirm ? this.lockModal() : this.unlockModal();
                     this.isDeletable = true;
                 } else {
