@@ -58,6 +58,24 @@ export class Entries extends ObjectBaseClass {
         }
     }
 
+    processSuccessfulResponseData(responseData){
+        let responseCount = parseInt(responseData.count);
+        delete responseData.count;
+
+        // convert responseData object into an array
+        let entriesInResponse = Object.values(responseData).map(function(entry){
+            // add a fetchStamp property to each entry
+            entry.fetchStamp = null;
+            return entry;
+        });
+        if(responseCount !== entriesInResponse.length) {
+            // FIXME: add error checking for request count values
+            // notice.display(notice.typeWarning, "Not all "+storeType+" were downloaded");
+        }
+
+        return entriesInResponse;
+    }
+
 }
 
 // var entries = {
@@ -129,30 +147,7 @@ export class Entries extends ObjectBaseClass {
 // var entry = {
 //     uri: "/api/entry",
 //     value: [],
-//     load: function(entryId){
-//         $.ajax({
-//             url: entry.uri+'/'+entryId,
-//             dataType: "json",
-//             beforeSend: loading.start,
-//             statusCode: {
-//                 200: function(response){
-//                     entry.value = response;
-//                 },
-//                 404: function(){
-//                     entry.value = [];
-//                     notice.display(notice.typeWarning, "Entry does not exist");
-//                 },
-//                 500: function(){
-//                     entry.value = [];
-//                     notice.display(notice.typeDanger, 'Error occurred while attempting to retrieve entries');
-//                 }
-//             },
-//             complete: function(){
-//                 entryModal.fillFields();
-//                 loading.end();
-//             }
-//         });
-//     },
+
 //     save: function(entryData){
 //         var entryId = parseInt(entryData.id);
 //         delete entryData.id;
@@ -202,6 +197,7 @@ export class Entries extends ObjectBaseClass {
 //             });
 //         }
 //     },
+
 //     delete: function(entryId){
 //         $.ajax({
 //             url: entry.uri+'/'+entryId,
@@ -222,6 +218,7 @@ export class Entries extends ObjectBaseClass {
 //             complete: entry.completeEntryUpdate
 //         });
 //     },
+
 //     completeEntryUpdate: function(){
 //         // re-display entries
 //         entries.reload(paginate.current, paginate.filterState);
