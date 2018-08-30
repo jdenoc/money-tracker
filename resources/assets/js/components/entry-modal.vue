@@ -139,9 +139,6 @@
                         v-bind:options="dropzoneOptions"
                         v-show="!isLocked"
                     ></vue-dropzone>
-                    <!-- TODO: list attachments associated with entry -->
-                    <!-- TODO: associated attachments should have a "display" button to open attachment in a new tab -->
-                    <!-- TODO: associated attachments should have a "delete" button to delete said attachment -->
                 </div></div>
 
                 <div class="field">
