@@ -1,6 +1,6 @@
 <template>
     <tr
-        v-bind:class="{'has-background-warning': confirm && expense, 'has-background-success': confirm && !expense, 'has-text-grey-light' : isFutureEntry}">
+        v-bind:class="{'has-background-warning': !confirm, 'has-background-success': confirm && !expense, 'has-text-grey' : isFutureEntry}">
         <td><button class="button is-inverted is-info fas fa-edit edit-entry-button" v-on:click="openEditEntryModal(id)"></button></td>
         <td v-text="date"></td>
         <td v-text="memo"></td>
@@ -55,11 +55,37 @@
     }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
     .tags{
         max-width: 250px;
     }
     .edit-entry-button{
         padding: 5px 10px 5px 14px;
+    }
+
+    $warning-bg: rgb(255, 221, 87);
+    $success-bg: rgb(35, 209, 96);
+    $hover-opacity: 0.25;
+    $stripe-odd-opacity: 0.1;
+    $stripe-even-opacity: 0.15;
+
+    @mixin set-background-color($background-color){
+        background-color: rgba($background-color, $stripe-odd-opacity);
+        &:nth-child(even){
+            background-color: rgba($background-color, $stripe-even-opacity) !important;
+        }
+        &:hover {
+            background-color: rgba($background-color, $hover-opacity) !important;
+        }
+        .edit-entry-button:hover{
+            background-color: rgba($background-color, $hover-opacity) !important;
+        }
+    }
+
+    tr.has-background-warning{
+        @include set-background-color($warning-bg);
+    }
+    tr.has-background-success{
+        @include set-background-color($success-bg);
     }
 </style>
