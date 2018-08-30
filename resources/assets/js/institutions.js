@@ -14,8 +14,8 @@ export class Institutions extends ObjectBaseClass {
             switch(error.response.status){
                 case 404:
                     this.assign = [];
-                // TODO: notify users
-                //  notice.display(notice.typeInfo, "No institutions currently available");
+                    // TODO: notify users
+                    //  notice.display(notice.typeInfo, "No institutions currently available");
                 case 500:
                 default:
                     // TODO: notify users of issue
