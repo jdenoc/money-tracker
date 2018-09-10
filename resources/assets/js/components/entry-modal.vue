@@ -157,7 +157,11 @@
                                 <i class="fas" v-bind:class="{'fa-unlock-alt': isLocked, 'fa-lock': !isLocked}"></i>
                             </button>
                             <button type="button" class="button" v-on:click="closeModal">Cancel</button>
-                            <button type="button" class="button is-success" v-show="!isLocked">
+                            <button type="button" class="button is-success"
+                                v-show="!isLocked"
+                                v-on:click="saveEntry"
+                                v-bind:disabled="!canSave"
+                                >
                                 <i class="fas fa-check has-padding-right"></i>Save changes
                             </button>
                         </div>
@@ -270,7 +274,27 @@
             },
             dropzoneRef: function(){
                 return this.$refs.entryModalFileUpload;
-            }
+            },
+            canSave: function(){
+                if(isNaN(Date.parse(this.entryData.entry_date))){
+                    return false;
+                }
+                let entryValue = _.toNumber(this.entryData.entry_value);
+                if(this.entryData.entry_value === "" || isNaN(entryValue) || !_.isNumber(entryValue)){
+                    return false;
+                }
+                if(!_.isNumber(this.entryData.account_type_id)){
+                    return false;
+                }
+                if(_.isEmpty(this.entryData.memo)){
+                    return false;
+                }
+                if(!_.isBoolean(this.entryData.expense)){
+                    return false;
+                }
+
+                return true;
+            },
         },
         methods: {
             decimaliseEntryValue: function(){
@@ -280,8 +304,8 @@
                 }
             },
             openModal: function(entryData = {}){
-                this.entryData = _.clone(entryData);
-                if(!_.isEmpty(this.entryData)){
+                if(!_.isEmpty(entryData)){
+                    this.entryData = _.clone(entryData);
                     // our input-tags field requires that tag values are strings
                     this.entryData.tags = this.entryData.tags.map(function(tag){
                         return tag.id.toString();
@@ -289,6 +313,7 @@
                     this.entryData.confirm ? this.lockModal() : this.unlockModal();
                     this.isDeletable = true;
                 } else {
+                    this.resetEntryData();
                     this.isDeletable = false;
                 }
                 this.isVisible = true;
@@ -403,8 +428,14 @@
     .field-label.is-normal{
         font-size: 13px;
     }
+    #entry-value{
+        padding-left: 1.75rem;
+    }
     #entry-account-type{
         min-width: 250px;
+    }
+    #entry-memo{
+        padding: 0.25rem 0.5rem;
     }
     .vue-js-switch#entry-expense{
         font-size: 1.25rem;
