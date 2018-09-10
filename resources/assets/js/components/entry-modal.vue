@@ -317,8 +317,8 @@
                 }
             },
             openModal: function(entryData = {}){
-                this.entryData = _.clone(entryData);
-                if(!_.isEmpty(this.entryData)){
+                if(!_.isEmpty(entryData)){
+                    this.entryData = _.clone(entryData);
                     // our input-tags field requires that tag values are strings
                     this.entryData.tags = this.entryData.tags.map(function(tag){
                         return tag.id.toString();
@@ -326,6 +326,7 @@
                     this.entryData.confirm ? this.lockModal() : this.unlockModal();
                     this.isDeletable = true;
                 } else {
+                    this.resetEntryData();
                     this.isDeletable = false;
                 }
                 this.isVisible = true;
