@@ -23,6 +23,7 @@
         </td>
         <td v-text="accountTypeName"></td>
         <td><i v-bind:class="{ 'far fa-square': !hasAttachments, 'fas fa-check-square': hasAttachments }"></i></td>
+        <td><i class="far fa-square"></i></td> <!-- TODO: update when entry transfers are a thing -->
         <td><div class="tags">
             <span class="tag is-rounded is-dark" v-for="tagId in tagIds" v-text="getTagName(tagId)"></span>
         </div></td>
