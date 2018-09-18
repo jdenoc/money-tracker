@@ -6,6 +6,7 @@
         <div class="navbar-menu">
             <div class="navbar-end">
                 <a id="nav-entry-modal" class="navbar-item" v-on:click="openAddEntryModal"><i class="fas fa-plus-circle"></i> Add Entry</a>
+                <a class="navbar-item" v-on:click="openTransferModal"><i class="fas fa-exchange-alt"></i> Add Transfer</a>
                 <a id="nav-filter-modal" class="navbar-item" v-on:click="openFilterModal"><i class="fas fa-filter"></i> Filter</a>
 
                 <div class="navbar-item has-dropdown"
@@ -56,6 +57,9 @@
                 this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_MODAL_OPEN);
             },
             openFilterModal: function(){
+                this.modalNotAvailable();
+            },
+            openTransferModal: function(){
                 this.modalNotAvailable();
             },
             clickNavbarAvatarImage: function(){
