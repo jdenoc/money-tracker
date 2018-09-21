@@ -14,6 +14,7 @@ import InstitutionsPanel from './components/institutions-panel';
 import LoadingModal from './components/loading-modal';
 import Navbar from './components/navbar';
 import Notification from './components/notification';
+import TransferModal from './components/transfer-modal';
 
 import { Accounts } from './accounts';
 import { AccountTypes } from './account-types';
@@ -69,7 +70,8 @@ new Vue({
         InstitutionsPanel,
         LoadingModal,
         Navbar,
-        Notification
+        Notification,
+        TransferModal
     },
     store: Store,
     methods: {
