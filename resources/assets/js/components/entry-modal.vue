@@ -1,5 +1,5 @@
 <template>
-    <div class="modal" v-bind:class="{'is-active': isVisible}">
+    <div id="entry-modal" class="modal" v-bind:class="{'is-active': isVisible}">
         <div class="modal-background"></div>
         <div class="modal-card">
             <header class="modal-card-head">
@@ -102,7 +102,7 @@
 
                 <div class="field is-horizontal">
                     <div class="field-label is-normal"><label class="label">Tags:</label></div>
-                    <div class="field-body"><div class="field"><div class="control">
+                    <div class="field-body"><div class="field"><div class="control" v-bind:class="{'is-loading': !areTagsSet}">
                         <voerro-tags-input
                             v-show="!isLocked"
                             element-id="entry-tags"
@@ -141,7 +141,7 @@
                     ></vue-dropzone>
                 </div></div>
 
-                <div class="field">
+                <div id="existing-entry-attachments" class="field">
                     <entry-modal-attachment
                         v-for="entryAttachment in entryData.attachments"
                         v-bind:key="entryAttachment.uuid"
@@ -155,7 +155,7 @@
                 <div class="container">
                     <div class="field is-grouped">
                         <div class="control is-expanded">
-                            <button type="button" class="button is-danger"
+                            <button type="button" id="entry-delete-btn" class="button is-danger"
                                 v-bind:class="{'is-hidden': !isDeletable}"
                                 v-on:click="deleteEntry"
                                 >
@@ -163,14 +163,14 @@
                             </button>
                         </div>
                         <div class="control">
-                            <button type="button" class="button"
+                            <button type="button" id="entry-lock-btn" class="button"
                                 v-bind:class="{'is-hidden': !isConfirmed}"
                                 v-on:click="toggleLockState"
                                 >
                                 <i class="fas" v-bind:class="{'fa-unlock-alt': isLocked, 'fa-lock': !isLocked}"></i>
                             </button>
-                            <button type="button" class="button" v-on:click="closeModal">Cancel</button>
-                            <button type="button" class="button is-success"
+                            <button type="button" id="entry-cancel-btn" class="button" v-on:click="closeModal">Cancel</button>
+                            <button type="button" id="entry-save-btn" class="button is-success"
                                 v-show="!isLocked"
                                 v-on:click="saveEntry"
                                 v-bind:disabled="!canSave"
@@ -270,6 +270,9 @@
                     result[item.id] = item.name;
                     return result;
                 }, {});
+            },
+            areTagsSet: function(){
+                return !_.isEmpty(this.listTags);
             },
             displayReadOnlyTags: function(){
                 let currentTags = typeof this.entryData.tags == 'undefined' ? [] : this.entryData.tags;
