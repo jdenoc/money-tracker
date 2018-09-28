@@ -32,5 +32,13 @@ services:
       - MYSQL_USER=jdenoc
       - MYSQL_PASSWORD=password
 
+  selenium: # needed for e2e (End-to-End) testing
+    image: selenium/standalone-chrome:latest
+    container_name: "selenium.money-tracker"
+    links:
+    - application:money-tracker.docker
+    volumes:
+    - /dev/shm:/dev/shm
+
 volumes:
   db.money-tracker:
