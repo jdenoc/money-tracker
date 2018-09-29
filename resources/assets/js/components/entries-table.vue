@@ -47,8 +47,7 @@
             listOfEntries: function(){
                 return this.entries.retrieve;
             }
-        },
-
+        }
     }
 </script>
 
