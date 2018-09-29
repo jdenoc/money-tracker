@@ -247,7 +247,7 @@
                     method: 'post',
                     addRemoveLinks: true,
                     paramName: 'attachment',
-                    params: {_token: uploadToken},
+                    params: {_token: this.uploadToken},
                     dictDefaultMessage: '<span class="icon"><i class="fas fa-cloud-upload-alt"></i></span><br/>Drag & Drop'
                 },
             }
@@ -311,6 +311,9 @@
 
                 return true;
             },
+            uploadToken: function(){
+                return document.querySelector("meta[name='csrf-token']").getAttribute('content');
+            }
         },
         methods: {
             decimaliseEntryValue: function(){
