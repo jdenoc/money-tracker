@@ -116,5 +116,5 @@
     }
     .panel-heading{
         font-weight: bold;
-     }
+    }
 </style>
