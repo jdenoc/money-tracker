@@ -1,6 +1,15 @@
 <template>
     <tr
-        v-bind:class="{'has-background-warning': !confirm, 'has-background-success': confirm && !expense, 'has-text-grey' : isFutureEntry}">
+        v-bind:class="{
+            'has-background-warning': !confirm,
+            'has-background-success': confirm && !expense,
+            'has-text-grey': isFutureEntry,
+            'is-confirmed': confirm,
+            'is-expense': expense,
+            'is-income': !expense,
+            'has-attachments': hasAttachments,
+            'has-tags': tagIds.length > 0
+            }">
         <td><button class="button is-inverted is-info fas fa-edit edit-entry-button" v-on:click="openEditEntryModal(id)"></button></td>
         <td v-text="date"></td>
         <td v-text="memo"></td>
