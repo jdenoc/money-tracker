@@ -1,5 +1,5 @@
 <template>
-    <table class="table is-narrow is-striped is-hoverable is-fullwidth">
+    <table id="entry-table" class="table is-narrow is-striped is-hoverable is-fullwidth">
         <thead>
             <tr>
                 <th></th>

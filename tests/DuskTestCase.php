@@ -45,4 +45,10 @@ abstract class DuskTestCase extends BaseTestCase {
         return $account_types;
     }
 
+    public function getApiEntry($entry_id){
+        $entry_response = $this->get("/api/entry/".$entry_id);
+        $entry = $entry_response->json();
+        return $entry;
+    }
+
 }

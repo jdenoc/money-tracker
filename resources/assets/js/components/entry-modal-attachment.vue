@@ -1,5 +1,5 @@
 <template>
-    <div class="box field is-grouped">
+    <div class="existing-attachment box field is-grouped">
         <div class="control is-expanded">
             <div class="attachment-name" v-text="name"></div>
         </div>
