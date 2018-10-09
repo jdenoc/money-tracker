@@ -6,7 +6,7 @@ class UiSampleDatabaseSeeder extends Seeder {
 
     const COUNT_ACCOUNT = 2;
     const COUNT_ACCOUNT_TYPE = 3;
-    const COUNT_ATTACHMENT = 5;
+    const COUNT_ATTACHMENT = 3;
     const COUNT_ENTRY = 5;
     const COUNT_INSTITUTION = 2;
     const COUNT_MIN = 1;
@@ -45,17 +45,21 @@ class UiSampleDatabaseSeeder extends Seeder {
             $entries = $this->addEntryToCollection($entries, ['account_type_id'=>$account_type_id, 'disabled'=>false], $faker);
         }
         $entries = $this->addEntryToCollection($entries, ['account_type_id'=>$faker->randomElement($account_type_ids), 'disabled'=>true], $faker);
-        $entry_ids = $entries->pluck('id')->toArray();
 
         foreach($entries as $entry){
             if($faker->boolean){    // randomly assign tags to entries
-                $entry_tag_ids = $faker->randomElements($tag_ids, $faker->numberBetween(self::COUNT_MIN, self::COUNT_TAG));
-                $entry->tags()->attach($entry_tag_ids);
+                $this->attachTagToEntry($faker, $tag_ids, $entry);
             }
         }
+        // just in case we missed an entry necessary for testing, we're going to assign tags to a random confirmed & unconfirmed entries
+        $this->attachTagToEntry($faker, $tag_ids, $entries->where('confirm', 0)->random(1)->first());
+        $this->attachTagToEntry($faker, $tag_ids, $entries->where('confirm', 1)->random(1)->first());
 
+        $entry_income_ids = $entries->where('expense', 1)->pluck('id')->toArray();
+        $entry_expense_ids = $entries->where('expense', 0)->pluck('id')->toArray();
         for($attachment_i=0; $attachment_i<self::COUNT_ATTACHMENT; $attachment_i++){
-            factory(App\Attachment::class)->create(['entry_id'=>$faker->randomElement($entry_ids)]);
+            factory(App\Attachment::class)->create(['entry_id'=>$faker->randomElement($entry_income_ids)]);
+            factory(App\Attachment::class)->create(['entry_id'=>$faker->randomElement($entry_expense_ids)]);
         }
     }
 
@@ -98,6 +102,16 @@ class UiSampleDatabaseSeeder extends Seeder {
     private function addToCollection($collection, $type_class, $data, $count=1){
         $object = factory($type_class, $count)->create($data);  // when passing a count value to a factory, a collection is ALWAYS returned
         return $collection->merge($object);
+    }
+
+    /**
+     * @param Faker\Generator $faker
+     * @param int[] $tag_ids
+     * @param \App\Entry $entry
+     */
+    private function attachTagToEntry($faker, $tag_ids, $entry){
+        $entry_tag_ids = $faker->randomElements($tag_ids, $faker->numberBetween(self::COUNT_MIN, self::COUNT_TAG));
+        $entry->tags()->attach($entry_tag_ids);
     }
 
 }
