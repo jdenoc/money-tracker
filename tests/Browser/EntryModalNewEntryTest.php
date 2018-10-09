@@ -8,8 +8,6 @@ use Laravel\Dusk\Browser;
 
 class EntryModalNewEntryTest extends DuskTestCase {
 
-    const WAIT_SECONDS = 10;
-
     private $_selector_modal = "@entry-modal";
 
     private $_selector_modal_head = "#entry-modal .modal-card-head";
