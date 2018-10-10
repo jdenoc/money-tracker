@@ -210,6 +210,10 @@ yarn install --prod
 From time to time, there will be new updates released. Such updates will contain new features, bug fixes, general improvements ect. In order to allow such improvements to be usable on production deployments, you should follow these steps
 ```bash
 # While already in the application directory, i.e.: cd money-tracker/
+
+# put site into maintenance mode
+php artisan down
+
 git fetch --tags
 MOST_RECENT_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
 git checkout -q tags/$MOST_RECENT_TAG
@@ -220,6 +224,9 @@ php artisan app:version $MOST_RECENT_TAG
 composer update --no-dev
 yarn install --prod
 php artisan migrate 
+
+# take site out if maintenance mode
+php artisan up
 ```
 
 ***
@@ -260,8 +267,12 @@ This project has been setup to use [travis-ci](https://travis-ci.org/jdenoc/mone
 ### <a name="testing-docker">Docker</a>
 Assuming we already have our docker environment already setup ([instructions here](#local-docker-environment)), performing the following commands should run the tests we want.
 ```bash
-# Run PhpUnit Tests
-docker container exec -t app.money-tracker vendor/bin/phpunit
+# Run PhpUnit tests
+docker container exec -t app.money-tracker vendor/bin/phpunit --stop-on-failure
+# Run Dusk tests
+docker container exec -t app.money-tracker artisan migrate:refresh
+docker container exec -t app.money-tracker artisan db:seed --class=UiSampleDatabaseSeeder
+docker container exec -t app.money-tracker artisan dusk --stop-on-failure
 ```
 
 ### <a name="testing-locally">Local/Dev</a>
@@ -271,14 +282,15 @@ If you wish to test locally (or on your dev environment), here are some steps to
 php artsian migrate:refresh
 
 # run PHP unit tests
-vendor/bin/phpunit
+vendor/bin/phpunit --stop-on-failure
 
 # run PHP unit tests with coverage
-vendor/bin/phpunit --coverage-text
+vendor/bin/phpunit --coverage-text --stop-on-failure
 
-# populate database with dummy data for  manual testing
+# run Dusk tests
 php artsian migrate:refresh
 php artisan db:seed --class=UiSampleDatabaseSeeder
+php artisan dusk --stop-on-failure
 ```
 
 ***
@@ -289,5 +301,6 @@ php artisan db:seed --class=UiSampleDatabaseSeeder
 - [Composer](https://getcomposer.org/doc/)
 - [Yarn](https://yarnpkg.com/en/docs)
 - [PhpUnit](https://phpunit.de/documentation.html)
+- [Laravel Dusk](https://laravel.com/docs/5.4/dusk)
 - [Travis CI](https://docs.travis-ci.com/user/languages/php/)
 - [git](https://git-scm.com/doc)
