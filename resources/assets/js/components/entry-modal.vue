@@ -241,15 +241,6 @@
                     labels: {'checked': 'Expense', 'unchecked': 'Income'},
                     width: 200,
                 },
-
-                dropzoneOptions: {
-                    url: '/attachment/upload',
-                    method: 'post',
-                    addRemoveLinks: true,
-                    paramName: 'attachment',
-                    params: {_token: this.uploadToken},
-                    dictDefaultMessage: '<span class="icon"><i class="fas fa-cloud-upload-alt"></i></span><br/>Drag & Drop'
-                },
             }
         },
         computed: {
@@ -290,6 +281,16 @@
             },
             dropzoneRef: function(){
                 return this.$refs.entryModalFileUpload;
+            },
+            dropzoneOptions: function(){
+                return {
+                    url: '/attachment/upload',
+                    method: 'post',
+                    addRemoveLinks: true,
+                    paramName: 'attachment',
+                    params: {_token: this.uploadToken},
+                    dictDefaultMessage: '<span class="icon"><i class="fas fa-cloud-upload-alt"></i></span><br/>Drag & Drop'
+                }
             },
             canSave: function(){
                 if(isNaN(Date.parse(this.entryData.entry_date))){
