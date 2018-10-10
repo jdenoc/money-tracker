@@ -35,6 +35,9 @@ class EntryModalNewEntryTest extends DuskTestCase {
 
     private $_label_account_type_meta_account_name = "Account Name:";
     private $_label_account_type_meta_last_digits = "Last 4 Digits:";
+    private $_label_btn_confirmed = "Confirmed";
+    private $_label_switch_expense = "Expense";
+    private $_label_switch_income = "Income";
 
     public function testEntryModalIsNotVisibleByDefault(){
         $this->browse(function (Browser $browser) {
@@ -62,11 +65,11 @@ class EntryModalNewEntryTest extends DuskTestCase {
                     $entry_modal_head
                         ->assertSee("Entry: new")
                         ->assertNotChecked($this->_selector_modal_head_confirmed)
-                        ->assertSee("Confirmed")
+                        ->assertSee($this->_label_btn_confirmed)
                         ->assertVisible($this->_selector_modal_head_close_btn);
 
                     $entry_confirm_class = $entry_modal_head->attribute($this->_selector_modal_head_confirmed_label, 'class');
-                    $this->assertEquals('has-text-grey-light', $entry_confirm_class);
+                    $this->assertContains('has-text-grey-light', $entry_confirm_class);
                 });
         });
     }
@@ -90,7 +93,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
                 ->openNewEntryModal()
                 ->with($this->_selector_modal_head, function($entry_modal_head){
                     $entry_modal_head
-                        ->assertSee("Confirmed")
+                        ->assertSee($this->_label_btn_confirmed)
                         ->click($this->_selector_modal_head_confirmed_label)
                         ->assertChecked($this->_selector_modal_head_confirmed);
 
@@ -123,8 +126,8 @@ class EntryModalNewEntryTest extends DuskTestCase {
                         ->assertVisible($this->_selector_modal_body_memo)
 
                         ->assertVisible($this->_selector_modal_body_expense)
-                        ->assertSee("Expense")
-                        ->assertDontSee("Income")
+                        ->assertSee($this->_label_switch_expense)
+                        ->assertDontSee($this->_label_switch_income)
 
                         ->assertSee('Tags:')
                         ->assertVisible($this->_selector_modal_body_tags)  // auto-complete tags-input field
@@ -167,18 +170,10 @@ class EntryModalNewEntryTest extends DuskTestCase {
                         ->assertMissing($this->_selector_modal_foot_delete_btn)   // delete button
                         ->assertMissing($this->_selector_modal_foot_lock_btn)     // lock/unlock button
                         ->assertVisible($this->_selector_modal_foot_cancel_btn)   // cancel button
-                        ->assertVisible($this->_selector_modal_foot_save_btn);    // save button
+                        ->assertSee("Cancel")
+                        ->assertVisible($this->_selector_modal_foot_save_btn)     // save button
+                        ->assertSee("Save changes");
 
-                    $this->assertEquals(
-                        "Cancel",
-                        $entry_modal_foot->text($this->_selector_modal_foot_cancel_btn),
-                        "Cancel button text does not match"
-                    );
-                    $this->assertEquals(
-                        "Save changes",
-                        $entry_modal_foot->text($this->_selector_modal_foot_save_btn),
-                        "Save button text does not match"
-                    );
                     $this->assertEquals(
                         'true',
                         $entry_modal_foot->attribute($this->_selector_modal_foot_save_btn, 'disabled'),
@@ -240,7 +235,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
                         ->assertDontSee($this->_label_account_type_meta_last_digits);
                         // TODO: currency icon in input#entry-value is "$"
                 })
-                ->waitUntilMissing($this->_selector_modal_body_account_type_is_loading, self::WAIT_SECONDS)
+                ->waitUntilMissing($this->_selector_modal_body_account_type_is_loading, HomePage::WAIT_SECONDS)
                 ->with($this->_selector_modal_body, function($entry_modal_body) use ($account_type){
                     $entry_modal_body
                         ->assertVisible($this->_selector_modal_body_account_type)
@@ -260,16 +255,17 @@ class EntryModalNewEntryTest extends DuskTestCase {
         });
     }
 
-    public function testClickingExpenseIncomeButton(){
+    public function testClickingExpenseIncomeSwitch(){
         $this->browse(function(Browser $browser){
             $browser
                 ->visit(new HomePage())
                 ->openNewEntryModal()
                 ->with($this->_selector_modal_body, function($entry_modal_body){
                     $entry_modal_body
+                        ->assertSee($this->_label_switch_expense)
                         ->click($this->_selector_modal_body_expense)
-                        ->assertSee("Income")
-                        ->assertDontSee("Expense");
+                        ->assertSee($this->_label_switch_income)
+                        ->assertDontSee($this->_label_switch_expense);
                 });
         });
     }
@@ -313,7 +309,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
                     );
                 })
 
-                ->waitUntilMissing($this->_selector_modal_body_account_type_is_loading, self::WAIT_SECONDS)
+                ->waitUntilMissing($this->_selector_modal_body_account_type_is_loading, HomePage::WAIT_SECONDS)
                 ->with($this->_selector_modal_body, function($entry_modal_body) use ($account_type){
                     $entry_modal_body
                         ->select($this->_selector_modal_body_account_type, $account_type['id'])
@@ -359,6 +355,10 @@ class EntryModalNewEntryTest extends DuskTestCase {
         });
     }
 
+    public function testUploadAttachment(){
+        $this->markTestIncomplete("TODO: build");
+    }
+
     public function testTagsInputAutoComplete(){
         // select tag at random and input the first character into the tags-input field
         $tags = $this->getApiTags();
@@ -371,7 +371,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
                 ->with($this->_selector_modal_body, function ($entry_modal_body) use ($tag){
                     $first_char = substr($tag, 0, 1);
                     $entry_modal_body
-                        ->waitUntilMissing($this->_selector_modal_body_tags_container_is_loading, self::WAIT_SECONDS)
+                        ->waitUntilMissing($this->_selector_modal_body_tags_container_is_loading, HomePage::WAIT_SECONDS)
                         ->keys($this->_selector_modal_body_tags, $first_char)
                         ->waitFor($this->_selector_modal_body_tag_autocomplete_options)
                         ->assertSee($tag);

@@ -44,7 +44,7 @@ class HomePage extends Page {
     public function openNewEntryModal(Browser $browser){
         $browser->with('@navbar', function($navbar){
             $navbar->click('@new-entry-modal-btn');
-        });
+        })->waitFor('@entry-modal', self::WAIT_SECONDS);
     }
 
     public function openExistingEntryModal(Browser $browser, $entry_table_selector){

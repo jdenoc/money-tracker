@@ -16,7 +16,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     private $_selector_confirmed_income = 'tr.has-background-success.is-confirmed.is-income';
 
     // entry-modal
-    private $_selector_entry_modal = "#entry-modal";
+    private $_selector_entry_modal = "@entry-modal";
     private $_selector_modal_head = ".modal-card-head";
     private $_selector_modal_body = ".modal-card-body";
     private $_selector_modal_foot = ".modal-card-foot";
@@ -52,7 +52,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     private $_label_head_entry_new = "Entry: new";
     private $_label_head_entry_not_new = "Entry: ";
     private $_label_head_btn_confirmed = "Confirmed";
-    private $_label_body_meta_account_name = "Account Type:";
+    private $_label_body_meta_account_name = "Account Name:";
     private $_label_body_meta_last_digits = "Last 4 Digits:";
     private $_label_body_expense = "Expense";
     private $_label_body_income = "Income";
@@ -329,9 +329,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     public function testClickingOnEntryTableEditButtonOfEntryWithAttachments(){
         $this->browse(function(Browser $browser){
-            $entry_selectors = [$this->randomConfirmedEntrySelector(), $this->randomUnconfirmedEntrySelector()];
-            $entry_selector = $entry_selectors[array_rand($entry_selectors, 1)];
-            $entry_selector .= '.'.$this->_class_has_attachments;
+            $entry_selector = $this->randomEntrySelector().'.'.$this->_class_has_attachments;
             $browser->visit(new HomePage())
                 ->openExistingEntryModal($entry_selector)
                 ->with($this->_selector_entry_modal, function($entry_modal){
@@ -345,8 +343,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     public function testOpensWhenClickingOnEntryTableEditButtonOfConfirmedEntryWithTags(){
         $this->browse(function(Browser $browser){
-            $entry_selector = $this->randomConfirmedEntrySelector();
-            $entry_selector .= '.'.$this->_class_has_tags;
+            $entry_selector = $this->randomConfirmedEntrySelector().'.'.$this->_class_has_tags;
             $browser->visit(new HomePage())
                 ->openExistingEntryModal($entry_selector)
                 ->with($this->_selector_entry_modal, function($entry_modal) use ($entry_selector){
@@ -360,8 +357,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     public function testOpensWhenClickingOnEntryTableEditButtonOfUnconfirmedEntryWithTags(){
         $this->browse(function(Browser $browser){
-            $entry_selector = $this->randomUnconfirmedEntrySelector();
-            $entry_selector .= '.'.$this->_class_has_tags;
+            $entry_selector = $this->randomUnconfirmedEntrySelector().'.'.$this->_class_has_tags;
             $browser->visit(new HomePage())
                 ->openExistingEntryModal($entry_selector)
                 ->with($this->_selector_entry_modal, function($entry_modal) use ($entry_selector){
@@ -369,6 +365,91 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
                     $elements = $entry_modal->driver->findElements(WebDriverBy::cssSelector($this->_selector_tags_input_tag));
                     $this->assertGreaterThan(0, count($elements), "Selector:\"".$entry_selector."\" opened entry-modal, but tags not present");
+                });
+        });
+    }
+
+    public function testUploadAttachmentToExistingEntry(){
+        $this->markTestIncomplete("TODO: build");
+    }
+
+    public function testUpdateExistingEntry(){
+        $this->markTestIncomplete("TODO: build");
+    }
+
+    public function testOpenExistingEntryInModalThenOpenCloseModalAndOpenNewEntryModal(){
+        $this->browse(function(Browser $browser){
+            $entry_selector = $this->randomEntrySelector();
+            $browser->visit(new HomePage())
+                // open existing entry in modal and confirm fields are filled
+                ->openExistingEntryModal($entry_selector)
+                ->with($this->_selector_entry_modal, function($entry_modal){
+                    $entry_modal
+                        ->with($this->_selector_modal_head, function($modal_head){
+                            $modal_head
+                                ->assertDontSee($this->_label_head_entry_new)
+                                ->assertSee($this->_label_head_entry_not_new)
+                                ->assertSee($this->_label_head_btn_confirmed);
+                        })
+
+                        ->with($this->_selector_modal_body, function($modal_body){
+                            $modal_body
+                                ->assertSee($this->_label_body_meta_account_name)
+                                ->assertSee($this->_label_body_meta_last_digits);
+
+                            $this->assertNotEmpty($modal_body->value($this->_selector_field_date));
+                            $this->assertNotEmpty($modal_body->value($this->_selector_field_value));
+                            $this->assertNotEmpty($modal_body->value($this->_selector_field_account_type));
+                            $this->assertNotEmpty($modal_body->value($this->_selector_field_memo));
+                        })
+
+                        ->with($this->_selector_modal_foot, function($modal_foot){
+                            $modal_foot
+                                ->assertVisible($this->_selector_btn_delete)
+                                ->assertVisible($this->_selector_btn_cancel)
+                                // close entry-modal
+                                ->click($this->_selector_btn_cancel);
+                        });
+                })
+                ->waitUntilMissing($this->_selector_entry_modal)
+
+                // open entry-modal from navbar; fields should be empty
+                ->openNewEntryModal()
+                ->with($this->_selector_modal_head, function($modal_head){
+                    $modal_head
+                        ->assertSee($this->_label_head_entry_new)
+                        ->assertSee($this->_label_head_btn_confirmed)
+                        ->assertNotChecked($this->_selector_btn_confirmed);
+
+                    $entry_confirm_class = $modal_head->attribute($this->_selector_btn_confirmed_label, 'class');
+                    $this->assertContains($this->_class_light_grey_text, $entry_confirm_class);
+                })
+
+                ->with($this->_selector_modal_body, function($modal_body){
+                    $modal_body
+                        ->assertDontSee($this->_label_body_meta_account_name)
+                        ->assertDontSee($this->_label_body_meta_last_digits);
+
+                    $entry_date = $modal_body->value($this->_selector_field_date);
+                    $this->assertNotEmpty($entry_date, $this->_selector_field_date." is empty");
+                    $this->assertEquals(date("Y-m-d"), $entry_date, $this->_selector_field_date." value is not correct");
+
+                    $this->assertEmpty($modal_body->value($this->_selector_field_value), $this->_selector_field_value." is not empty");
+                    $this->assertEmpty($modal_body->value($this->_selector_field_account_type), $this->_selector_field_account_type." is not empty");
+                    $this->assertEmpty($modal_body->value($this->_selector_field_memo), $this->_selector_field_memo." is not empty");
+                })
+
+                ->with($this->_selector_modal_foot, function($modal_foot){
+                    $modal_foot
+                            ->assertMissing($this->_selector_btn_delete)   // delete button
+                            ->assertMissing($this->_selector_btn_lock)     // lock/unlock button
+                            ->assertVisible($this->_selector_btn_save);    // save button
+
+                        $this->assertEquals(
+                            'true',
+                            $modal_foot->attribute($this->_selector_btn_save, 'disabled'),
+                            "Save button is NOT disabled by default"
+                        );
                 });
         });
     }
@@ -381,6 +462,11 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     private function randomUnconfirmedEntrySelector(){
         $unconfirmed_entry_selectors = [$this->_selector_unconfirmed_expense, $this->_selector_unconfirmed_income];
         return $unconfirmed_entry_selectors[array_rand($unconfirmed_entry_selectors, 1)];
+    }
+
+    private function randomEntrySelector(){
+        $entry_selectors = [$this->randomConfirmedEntrySelector(), $this->randomUnconfirmedEntrySelector()];
+        return $entry_selectors[array_rand($entry_selectors, 1)];
     }
 
 }
