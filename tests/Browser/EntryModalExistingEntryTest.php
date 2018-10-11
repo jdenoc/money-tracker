@@ -369,10 +369,6 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         });
     }
 
-    public function testUploadAttachmentToExistingEntry(){
-        $this->markTestIncomplete("TODO: build");
-    }
-
     public function testUpdateExistingEntry(){
         $this->markTestIncomplete("TODO: build");
     }
