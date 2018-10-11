@@ -27,6 +27,13 @@ class EntryModalNewEntryTest extends DuskTestCase {
     private $_selector_modal_body_tag_autocomplete_options = ".typeahead span";
     private $_selector_modal_body_file_upload = "#entry-modal-file-upload";
 
+    private $_selector_dropzone_upload_thumbnail = "#entry-modal-file-upload .dz-complete:last-child";
+    private $_selector_dropzone_hidden_file_input = "#dz-hidden-file-input";
+    private $_selector_dropzone_progress = ".dz-progress";
+    private $_selector_dropzone_error_mark = ".dz-error-mark";
+    private $_selector_dropzone_error_message = ".dz-error-message";
+    private $_selector_dropzone_remove_btn = ".dz-remove";
+
     private $_selector_modal_foot = "#entry-modal .modal-card-foot";
     private $_selector_modal_foot_delete_btn = "button#entry-delete-btn";
     private $_selector_modal_foot_lock_btn = "button#entry-lock-btn";
@@ -38,6 +45,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
     private $_label_btn_confirmed = "Confirmed";
     private $_label_switch_expense = "Expense";
     private $_label_switch_income = "Income";
+    private $_label_btn_dropzone_remove_file = "REMOVE FILE";
 
     public function testEntryModalIsNotVisibleByDefault(){
         $this->browse(function (Browser $browser) {
@@ -355,8 +363,33 @@ class EntryModalNewEntryTest extends DuskTestCase {
         });
     }
 
-    public function testUploadAttachment(){
-        $this->markTestIncomplete("TODO: build");
+    public function testUploadAttachmentToNewEntry(){
+        $this->browse(function(Browser $browser){
+            $browser
+                ->visit(new HomePage())
+                ->openNewEntryModal()
+                ->with($this->_selector_modal_body, function($entry_modal_body){
+                    $upload_file_path = storage_path(parent::TEST_STORAGE_FILE_PATH);
+
+                    $this->assertFileExists($upload_file_path);
+                    $entry_modal_body
+                        ->assertVisible($this->_selector_modal_body_file_upload)
+                        ->attach($this->_selector_dropzone_hidden_file_input, $upload_file_path)
+                        ->waitFor($this->_selector_dropzone_upload_thumbnail)
+                        ->with($this->_selector_dropzone_upload_thumbnail, function($upload_thumbnail) use ($upload_file_path){
+                            $upload_thumbnail
+                                ->waitUntilMissing($this->_selector_dropzone_progress)
+                                ->assertMissing($this->_selector_dropzone_error_mark)
+                                ->mouseover("") // hover over current element
+                                ->assertSee(basename($upload_file_path))
+                                ->assertMissing($this->_selector_dropzone_error_message)
+                                ->assertVisible($this->_selector_dropzone_remove_btn)
+                                ->assertSee($this->_label_btn_dropzone_remove_file)
+                                ->click($this->_selector_dropzone_remove_btn);
+                        })
+                        ->assertMissing($this->_selector_dropzone_upload_thumbnail);
+                });
+        });
     }
 
     public function testTagsInputAutoComplete(){

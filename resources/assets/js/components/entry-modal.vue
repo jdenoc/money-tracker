@@ -276,7 +276,10 @@
                     addRemoveLinks: true,
                     paramName: 'attachment',
                     params: {_token: this.uploadToken},
-                    dictDefaultMessage: '<span class="icon"><i class="fas fa-cloud-upload-alt"></i></span><br/>Drag & Drop'
+                    dictDefaultMessage: '<span class="icon"><i class="fas fa-cloud-upload-alt"></i></span><br/>Drag & Drop',
+                    init: function(){
+                        document.querySelector('.dz-hidden-input').setAttribute('id', 'dz-hidden-file-input')
+                    }
                 }
             },
             canSave: function(){

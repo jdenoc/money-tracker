@@ -10,6 +10,8 @@ abstract class DuskTestCase extends BaseTestCase {
 
     use CreatesApplication;
 
+    const TEST_STORAGE_FILE_PATH = "app/test/download.jpg";
+
     /**
      * Prepare for Dusk test execution.
      *
