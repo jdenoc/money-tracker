@@ -2,8 +2,8 @@ FROM php:5.6-apache
 
 # install php extensions
 RUN apt-get update \
-	&& apt-get install -y libmcrypt-dev mysql-client --no-install-recommends \
-    && docker-php-ext-install mcrypt pdo_mysql \
+	&& apt-get install -y libmcrypt-dev mysql-client zlib1g-dev --no-install-recommends \
+    && docker-php-ext-install mcrypt pdo_mysql zip \
 	&& pecl install xdebug-2.5.5 \
     && docker-php-ext-enable xdebug
 
