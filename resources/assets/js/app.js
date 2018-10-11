@@ -14,9 +14,9 @@ import { Tags } from './tags';
 import { Version } from './version';
 
 Vue.prototype.$eventHub = new Vue({
-    computed: {
-        EVENT_OPEN_ENTRY_MODAL: function(){
-            return 'open-entry-modal';
+    data: function(){
+        return {
+            EVENT_OPEN_ENTRY_MODAL: "open-entry-modal",
         }
     },
     methods: {
