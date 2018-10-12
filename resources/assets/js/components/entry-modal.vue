@@ -145,7 +145,7 @@
                     <entry-modal-attachment
                         v-for="entryAttachment in entryData.attachments"
                         v-bind:key="entryAttachment.uuid"
-                        v-bind:id="entryAttachment.uuid"
+                        v-bind:uuid="entryAttachment.uuid"
                         v-bind:name="entryAttachment.name"
                     ></entry-modal-attachment>
                 </div>

@@ -34,6 +34,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     private $_selector_tags_tag = ".tags .tag";
     private $_selector_field_file_upload = "#entry-modal-file-upload";
     private $_selector_existing_attachments = "#existing-entry-attachments";
+    private $_selector_existing_attachments_view_btn = "button.view-attachment";
+    private $_selector_existing_attachments_delete_btn = "button.delete-attachment";
     private $_selector_btn_delete = "#entry-delete-btn";
     private $_selector_btn_lock = "#entry-lock-btn";
     private $_selector_btn_lock_icon = "#entry-lock-btn i";
@@ -61,58 +63,25 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     private $_label_foot_btn_delete = "Delete";
     private $_label_foot_btn_save = "Save changes";
 
-    public function testClickingOnEntryTableEditButtonOfUnconfirmedExpense(){
-        $this->browse(function(Browser $browser){
-            $browser->visit(new HomePage())
-                ->openExistingEntryModal($this->_selector_unconfirmed_expense)
-                ->with($this->_selector_entry_modal, function($entry_modal){
-                    $entry_id = $entry_modal->value($this->_selector_field_entry_id);
-                    $this->assertNotEmpty($entry_id);
-                    $entry_data = $this->getApiEntry($entry_id);
-
-                    $entry_modal
-                        ->with($this->_selector_modal_head, function($modal_head){
-                            $modal_head
-                                ->assertDontSee($this->_label_head_entry_new)
-                                ->assertSee($this->_label_head_entry_not_new)
-                                ->assertSee($this->_label_head_btn_confirmed);
-                            $entry_confirm_class = $modal_head->attribute($this->_selector_btn_confirmed_label, 'class');
-                            $this->assertContains($this->_class_light_grey_text, $entry_confirm_class);
-                        })
-
-                        ->with($this->_selector_modal_body, function($modal_body) use ($entry_data){
-                            $modal_body
-                                ->assertSee($this->_label_body_meta_account_name)
-                                ->assertSee($this->_label_body_meta_last_digits)
-                                ->assertSee($this->_label_body_expense);
-
-                            $this->assertEquals($entry_data['entry_date'], $modal_body->value($this->_selector_field_date));
-                            $this->assertEquals($entry_data['entry_value'], $modal_body->value($this->_selector_field_value));
-                            $this->assertEquals($entry_data['account_type_id'], $modal_body->value($this->_selector_field_account_type));
-                            $this->assertEquals($entry_data['memo'], $modal_body->value($this->_selector_field_memo));
-                        })
-
-                        ->with($this->_selector_modal_foot, function($modal_foot){
-                            $modal_foot
-                                ->assertVisible($this->_selector_btn_delete)
-                                ->assertSee($this->_label_foot_btn_delete)
-                                ->assertMissing($this->_selector_btn_lock)
-                                ->assertVisible($this->_selector_btn_cancel)
-                                ->assertSee($this->_label_foot_btn_cancel)
-                                ->assertVisible($this->_selector_btn_save)
-                                ->assertSee($this->_label_foot_btn_save);
-
-                            $this->assertNotEquals("true", $modal_foot->attribute($this->_selector_btn_save, "disabled"));
-                        });
-                });
-        });
+    public function providerUnconfirmedEntry(){
+        return [
+            "Expense"=>[$this->_selector_unconfirmed_expense, $this->_label_body_expense],
+            "Income"=>[$this->_selector_unconfirmed_income, $this->_label_body_income],
+        ];
     }
 
-    public function testClickingOnEntryTableEditButtonOfUnconfirmedIncome(){
-        $this->browse(function(Browser $browser){
+    /**
+     * @dataProvider providerUnconfirmedEntry
+     * @param string $data_entry_selector
+     * @param string $data_expense_switch_label
+     *
+     * @throws \Throwable
+     */
+    public function testClickingOnEntryTableEditButtonOfUnconfirmedEntry($data_entry_selector, $data_expense_switch_label){
+        $this->browse(function(Browser $browser) use ($data_entry_selector, $data_expense_switch_label){
             $browser->visit(new HomePage())
-                ->openExistingEntryModal($this->_selector_unconfirmed_income)
-                ->with($this->_selector_entry_modal, function($entry_modal){
+                ->openExistingEntryModal($data_entry_selector)
+                ->with($this->_selector_entry_modal, function($entry_modal) use ($data_expense_switch_label){
                     $entry_id = $entry_modal->value($this->_selector_field_entry_id);
                     $this->assertNotEmpty($entry_id);
                     $entry_data = $this->getApiEntry($entry_id);
@@ -127,16 +96,15 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                             $this->assertEquals($this->_class_light_grey_text, $entry_confirm_class);
                         })
 
-                        ->with($this->_selector_modal_body, function($modal_body) use ($entry_data){
+                        ->with($this->_selector_modal_body, function($modal_body) use ($entry_data, $data_expense_switch_label){
                             $modal_body
+                                ->assertInputValue($this->_selector_field_date, $entry_data['entry_date'])
+                                ->assertInputValue($this->_selector_field_value, $entry_data['entry_value'])
+                                ->assertSelected($this->_selector_field_account_type, $entry_data['account_type_id'])
+                                ->assertInputValue($this->_selector_field_memo, $entry_data['memo'])
                                 ->assertSee($this->_label_body_meta_account_name)
                                 ->assertSee($this->_label_body_meta_last_digits)
-                                ->assertSee($this->_label_body_income);
-
-                            $this->assertEquals($entry_data['entry_date'], $modal_body->value($this->_selector_field_date));
-                            $this->assertEquals($entry_data['entry_value'], $modal_body->value($this->_selector_field_value));
-                            $this->assertEquals($entry_data['account_type_id'], $modal_body->value($this->_selector_field_account_type));
-                            $this->assertEquals($entry_data['memo'], $modal_body->value($this->_selector_field_memo));
+                                ->assertSee($data_expense_switch_label);
                         })
 
                         ->with($this->_selector_modal_foot, function($modal_foot){
@@ -148,79 +116,31 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                                 ->assertSee($this->_label_foot_btn_cancel)
                                 ->assertVisible($this->_selector_btn_save)
                                 ->assertSee($this->_label_foot_btn_save);
-
-                            $this->assertNotEquals("true", $modal_foot->attribute($this->_selector_btn_save, "disabled"));
                         });
-                });
+                })
+                ->assertEntryModalSaveButtonIsNotDisabled();
         });
     }
 
-    public function testClickingOnEntryTableEditButtonOfConfirmedIncome(){
-        $this->browse(function(Browser $browser){
-            $browser->visit(new HomePage())
-                ->openExistingEntryModal($this->_selector_confirmed_income)
-                ->with($this->_selector_entry_modal, function($entry_modal){
-                    $entry_id = $entry_modal->value($this->_selector_field_entry_id);
-                    $this->assertNotEmpty($entry_id);
-                    $entry_data = $this->getApiEntry($entry_id);
-
-                    $entry_modal
-                        ->with($this->_selector_modal_head, function($modal_head){
-                            $modal_head
-                                ->assertDontSee($this->_label_head_entry_new)
-                                ->assertSee($this->_label_head_entry_not_new)
-                                ->assertSee($this->_label_head_btn_confirmed);
-
-                             $classes = $modal_head->attribute($this->_selector_btn_confirmed_label, "class");
-                             $this->assertContains($this->_class_white_text, $classes);
-                             $this->assertNotContains($this->_class_light_grey_text, $classes);
-                             $this->assertEquals("true", $modal_head->attribute($this->_selector_btn_confirmed, "disabled"));
-                        })
-
-                        ->with($this->_selector_modal_body, function($modal_body) use ($entry_data){
-                            $modal_body
-                                ->assertSee($this->_label_body_meta_account_name)
-                                ->assertSee($this->_label_body_meta_last_digits)
-                                ->assertSee($this->_label_body_income)
-                                ->assertMissing($this->_selector_field_file_upload)
-                                ->assertDontSee($this->_label_body_file_upload);
-
-                            $this->assertEquals($entry_data['entry_date'], $modal_body->value($this->_selector_field_date));
-                            $this->assertEquals("true", $modal_body->attribute($this->_selector_field_date, "readonly"));
-                            $this->assertEquals($entry_data['entry_value'], $modal_body->value($this->_selector_field_value));
-                            $this->assertEquals("true", $modal_body->attribute($this->_selector_field_value, "readonly"));
-                            $this->assertEquals($entry_data['account_type_id'], $modal_body->value($this->_selector_field_account_type));
-                            $this->assertEquals("true", $modal_body->attribute($this->_selector_field_account_type, "disabled"));
-                            $this->assertEquals($entry_data['memo'], $modal_body->value($this->_selector_field_memo));
-                            $this->assertEquals("true", $modal_body->attribute($this->_selector_field_memo, "readonly"));
-
-                            $classes = $modal_body->attribute($this->_selector_field_expense, "class");
-                            $this->assertContains($this->_class_disabled, $classes);
-                        })
-
-                        ->with($this->_selector_modal_foot, function($modal_foot){
-                            $modal_foot
-                                ->assertVisible($this->_selector_btn_delete)
-                                ->assertSee($this->_label_foot_btn_delete)
-                                ->assertVisible($this->_selector_btn_lock)
-                                ->assertVisible($this->_selector_btn_cancel)
-                                ->assertSee($this->_label_foot_btn_cancel)
-                                ->assertMissing($this->_selector_btn_save)
-                                ->assertDontSee($this->_label_foot_btn_save);
-
-                            $classes = $modal_foot->attribute($this->_selector_btn_lock_icon, 'class');
-                            $this->assertContains($this->_class_unlock, $classes);
-                            $this->assertNotEquals("true", $modal_foot->attribute($this->_selector_btn_save, "disabled"));
-                        });
-                });
-        });
+    public function providerConfirmedEntry(){
+        return [
+            "Expense"=>[$this->_selector_confirmed_expense, $this->_label_body_expense],
+            "Income"=>[$this->_selector_confirmed_income, $this->_label_body_income],
+        ];
     }
 
-    public function testClickingOnEntryTableEditButtonOfConfirmedExpense(){
-        $this->browse(function(Browser $browser){
+    /**
+     * @dataProvider providerConfirmedEntry
+     * @param string $data_entry_selector
+     * @param string $data_expense_switch_label
+     *
+     * @throws \Throwable
+     */
+    public function testClickingOnEntryTableEditButtonOfConfirmedEntry($data_entry_selector, $data_expense_switch_label){
+        $this->browse(function(Browser $browser) use ($data_entry_selector, $data_expense_switch_label){
             $browser->visit(new HomePage())
-                ->openExistingEntryModal($this->_selector_confirmed_expense)
-                ->with($this->_selector_entry_modal, function($entry_modal){
+                ->openExistingEntryModal($data_entry_selector)
+                ->with($this->_selector_entry_modal, function($entry_modal) use ($data_expense_switch_label){
                     $entry_id = $entry_modal->value($this->_selector_field_entry_id);
                     $this->assertNotEmpty($entry_id);
                     $entry_data = $this->getApiEntry($entry_id);
@@ -238,21 +158,21 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                             $this->assertEquals("true", $modal_head->attribute($this->_selector_btn_confirmed, "disabled"));
                         })
 
-                        ->with($this->_selector_modal_body, function($modal_body) use ($entry_data){
+                        ->with($this->_selector_modal_body, function($modal_body) use ($entry_data, $data_expense_switch_label){
                             $modal_body
+                                ->assertInputValue($this->_selector_field_date, $entry_data['entry_date'])
+                                ->assertInputValue($this->_selector_field_value, $entry_data['entry_value'])
+                                ->assertSelected($this->_selector_field_account_type, $entry_data['account_type_id'])
                                 ->assertSee($this->_label_body_meta_account_name)
                                 ->assertSee($this->_label_body_meta_last_digits)
-                                ->assertSee($this->_label_body_expense)
+                                ->assertInputValue($this->_selector_field_memo, $entry_data['memo'])
+                                ->assertSee($data_expense_switch_label)
                                 ->assertMissing($this->_selector_field_file_upload)
                                 ->assertDontSee($this->_label_body_file_upload);
 
-                            $this->assertEquals($entry_data['entry_date'], $modal_body->value($this->_selector_field_date));
                             $this->assertEquals("true", $modal_body->attribute($this->_selector_field_date, "readonly"));
-                            $this->assertEquals($entry_data['entry_value'], $modal_body->value($this->_selector_field_value));
                             $this->assertEquals("true", $modal_body->attribute($this->_selector_field_value, "readonly"));
-                            $this->assertEquals($entry_data['account_type_id'], $modal_body->value($this->_selector_field_account_type));
                             $this->assertEquals("true", $modal_body->attribute($this->_selector_field_account_type, "disabled"));
-                            $this->assertEquals($entry_data['memo'], $modal_body->value($this->_selector_field_memo));
                             $this->assertEquals("true", $modal_body->attribute($this->_selector_field_memo, "readonly"));
 
                             $classes = $modal_body->attribute($this->_selector_field_expense, "class");
@@ -271,9 +191,9 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
                             $classes = $modal_foot->attribute($this->_selector_btn_lock_icon, 'class');
                             $this->assertContains($this->_class_unlock, $classes);
-                            $this->assertNotEquals("true", $modal_foot->attribute($this->_selector_btn_save, "disabled"));
                         });
-                });
+                })
+                ->assertEntryModalSaveButtonIsNotDisabled();
         });
     }
 
@@ -341,31 +261,55 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         });
     }
 
-    public function testOpensWhenClickingOnEntryTableEditButtonOfConfirmedEntryWithTags(){
-        $this->browse(function(Browser $browser){
-            $entry_selector = $this->randomConfirmedEntrySelector().'.'.$this->_class_has_tags;
-            $browser->visit(new HomePage())
-                ->openExistingEntryModal($entry_selector)
-                ->with($this->_selector_entry_modal, function($entry_modal) use ($entry_selector){
-                    $entry_modal->assertVisible($this->_selector_tags);
+    public function providerEntryWithTags(){
+        return [
+            "Confirmed"=>[$this->randomConfirmedEntrySelector().'.'.$this->_class_has_tags, $this->_selector_tags, $this->_selector_tags_tag],
+            "Unconfirmed"=>[$this->randomUnconfirmedEntrySelector().'.'.$this->_class_has_tags, $this->_selector_tags_input, $this->_selector_tags_input_tag],
+        ];
+    }
 
-                    $elements = $entry_modal->driver->findElements(WebDriverBy::cssSelector($this->_selector_tags_tag));
-                    $this->assertGreaterThan(0, count($elements), "Selector:\"".$entry_selector."\" opened entry-modal, but tags not present");
+    /**
+     * @dataProvider providerEntryWithTags
+     * @param string $data_entry_selector
+     * @param string $data_tags_container_selector
+     * @param string $data_tag_selector
+     *
+     * @throws \Throwable
+     */
+    public function testClickingOnEntryTableEditButtonOfEntryWithTags($data_entry_selector, $data_tags_container_selector, $data_tag_selector){
+        $this->browse(function(Browser $browser) use ($data_entry_selector, $data_tags_container_selector, $data_tag_selector){
+            $browser->visit(new HomePage())
+                ->openExistingEntryModal($data_entry_selector)
+                ->with($this->_selector_entry_modal, function($entry_modal) use ($data_entry_selector, $data_tags_container_selector, $data_tag_selector){
+                    $entry_modal->assertVisible($data_tags_container_selector);
+
+                    $elements = $entry_modal->driver->findElements(WebDriverBy::cssSelector($data_tag_selector));
+                    $this->assertGreaterThan(0, count($elements), "Selector:\"".$data_entry_selector."\" opened entry-modal, but tags not present");
                 });
         });
     }
 
-    public function testOpensWhenClickingOnEntryTableEditButtonOfUnconfirmedEntryWithTags(){
+    public function testOpenAttachment(){
         $this->browse(function(Browser $browser){
-            $entry_selector = $this->randomUnconfirmedEntrySelector().'.'.$this->_class_has_tags;
+            $entry_selector = $this->randomEntrySelector().'.'.$this->_class_has_attachments;
             $browser->visit(new HomePage())
                 ->openExistingEntryModal($entry_selector)
-                ->with($this->_selector_entry_modal, function($entry_modal) use ($entry_selector){
-                    $entry_modal->assertVisible($this->_selector_tags_input);
-
-                    $elements = $entry_modal->driver->findElements(WebDriverBy::cssSelector($this->_selector_tags_input_tag));
-                    $this->assertGreaterThan(0, count($elements), "Selector:\"".$entry_selector."\" opened entry-modal, but tags not present");
+                ->with($this->_selector_entry_modal, function($entry_modal){
+                    $entry_modal
+                        ->assertVisible($this->_selector_existing_attachments)
+                        ->with($this->_selector_existing_attachments, function($existing_attachment){
+                            $existing_attachment
+                                ->assertVisible($this->_selector_existing_attachments_view_btn)
+                                ->click($this->_selector_existing_attachments_view_btn);
+                        });
                 });
+
+            // Get the last opened tab
+            $window = collect($browser->driver->getWindowHandles())->last();
+            // Switch to the tab
+            $browser->driver->switchTo()->window($window);
+            // Check if the path is correct
+            $browser->assertPathBeginsWith('/attachment/');
         });
     }
 
@@ -373,7 +317,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         $this->markTestIncomplete("TODO: build");
     }
 
-    public function testOpenExistingEntryInModalThenOpenCloseModalAndOpenNewEntryModal(){
+    public function testOpenExistingEntryInModalThenCloseModalAndOpenNewEntryModal(){
         $this->browse(function(Browser $browser){
             $entry_selector = $this->randomEntrySelector();
             $browser->visit(new HomePage())
@@ -390,13 +334,12 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
                         ->with($this->_selector_modal_body, function($modal_body){
                             $modal_body
+                                ->assertInputValueIsNot($this->_selector_field_date, "")
+                                ->assertInputValueIsNot($this->_selector_field_value, "")
+                                ->assertNotSelected($this->_selector_field_account_type, "")
                                 ->assertSee($this->_label_body_meta_account_name)
-                                ->assertSee($this->_label_body_meta_last_digits);
-
-                            $this->assertNotEmpty($modal_body->value($this->_selector_field_date));
-                            $this->assertNotEmpty($modal_body->value($this->_selector_field_value));
-                            $this->assertNotEmpty($modal_body->value($this->_selector_field_account_type));
-                            $this->assertNotEmpty($modal_body->value($this->_selector_field_memo));
+                                ->assertSee($this->_label_body_meta_last_digits)
+                                ->assertInputValueIsNot($this->_selector_field_memo, "");
                         })
 
                         ->with($this->_selector_modal_foot, function($modal_foot){
@@ -407,7 +350,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                                 ->click($this->_selector_btn_cancel);
                         });
                 })
-                ->waitUntilMissing($this->_selector_entry_modal)
+                ->waitUntilMissing($this->_selector_entry_modal, HomePage::WAIT_SECONDS)
 
                 // open entry-modal from navbar; fields should be empty
                 ->openNewEntryModal()
@@ -423,16 +366,12 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
                 ->with($this->_selector_modal_body, function($modal_body){
                     $modal_body
+                        ->assertInputValue($this->_selector_field_date, date("Y-m-d"))
+                        ->assertInputValue($this->_selector_field_value, "")
+                        ->assertSelected($this->_selector_field_account_type, "")
                         ->assertDontSee($this->_label_body_meta_account_name)
-                        ->assertDontSee($this->_label_body_meta_last_digits);
-
-                    $entry_date = $modal_body->value($this->_selector_field_date);
-                    $this->assertNotEmpty($entry_date, $this->_selector_field_date." is empty");
-                    $this->assertEquals(date("Y-m-d"), $entry_date, $this->_selector_field_date." value is not correct");
-
-                    $this->assertEmpty($modal_body->value($this->_selector_field_value), $this->_selector_field_value." is not empty");
-                    $this->assertEmpty($modal_body->value($this->_selector_field_account_type), $this->_selector_field_account_type." is not empty");
-                    $this->assertEmpty($modal_body->value($this->_selector_field_memo), $this->_selector_field_memo." is not empty");
+                        ->assertDontSee($this->_label_body_meta_last_digits)
+                        ->assertInputValue($this->_selector_field_memo, "");
                 })
 
                 ->with($this->_selector_modal_foot, function($modal_foot){
@@ -440,13 +379,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                             ->assertMissing($this->_selector_btn_delete)   // delete button
                             ->assertMissing($this->_selector_btn_lock)     // lock/unlock button
                             ->assertVisible($this->_selector_btn_save);    // save button
-
-                        $this->assertEquals(
-                            'true',
-                            $modal_foot->attribute($this->_selector_btn_save, 'disabled'),
-                            "Save button is NOT disabled by default"
-                        );
-                });
+                })
+                ->assertEntryModalSaveButtonIsDisabled();
         });
     }
 

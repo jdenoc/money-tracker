@@ -121,17 +121,21 @@ class EntryModalNewEntryTest extends DuskTestCase {
                     $entry_modal_body
                         ->assertSee('Date:')
                         ->assertVisible($this->_selector_modal_body_date)
+                        ->assertInputValue($this->_selector_modal_body_date, date("Y-m-d"))
 
                         ->assertSee('Value:')
                         ->assertVisible($this->_selector_modal_body_value)
+                        ->assertInputValue($this->_selector_modal_body_value, "")
 
                         ->assertSee('Account Type:')
                         ->assertVisible($this->_selector_modal_body_account_type)
+                        ->assertSelected($this->_selector_modal_body_account_type, "")
                         ->assertDontSee($this->_label_account_type_meta_account_name)
                         ->assertDontSee($this->_label_account_type_meta_last_digits)
 
                         ->assertSee('Memo:')
                         ->assertVisible($this->_selector_modal_body_memo)
+                        ->assertInputValue($this->_selector_modal_body_memo, "")
 
                         ->assertVisible($this->_selector_modal_body_expense)
                         ->assertSee($this->_label_switch_expense)
@@ -139,6 +143,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
 
                         ->assertSee('Tags:')
                         ->assertVisible($this->_selector_modal_body_tags)  // auto-complete tags-input field
+                        ->assertInputValue($this->_selector_modal_body_tags, "")
 
                         ->assertVisible($this->_selector_modal_body_file_upload) // drag-n-drop file upload field
                         ->with($this->_selector_modal_body_file_upload, function($file_upload){
@@ -150,20 +155,12 @@ class EntryModalNewEntryTest extends DuskTestCase {
                         $entry_modal_body->attribute($this->_selector_modal_body_date, 'type'),
                         $this->_selector_modal_body_date.' is not type="date"'
                     );
-                    $entry_date = $entry_modal_body->value($this->_selector_modal_body_date);
-                    $this->assertNotEmpty($entry_date, $this->_selector_modal_body_date." is empty");
-                    $this->assertEquals(date("Y-m-d"), $entry_date, $this->_selector_modal_body_date." value is not correct");
 
                     $this->assertEquals(
                         'text',
                         $entry_modal_body->attribute($this->_selector_modal_body_value, 'type'),
                         $this->_selector_modal_body_value.' is not type="text"'
                     );
-                    $this->assertEmpty($entry_modal_body->value($this->_selector_modal_body_value), $this->_selector_modal_body_value." is not empty");
-
-                    $this->assertEmpty($entry_modal_body->value($this->_selector_modal_body_account_type), $this->_selector_modal_body_account_type." is not empty");
-
-                    $this->assertEmpty($entry_modal_body->value($this->_selector_modal_body_memo), $this->_selector_modal_body_memo." is not empty");
                 });
         });
     }
@@ -182,17 +179,13 @@ class EntryModalNewEntryTest extends DuskTestCase {
                         ->assertVisible($this->_selector_modal_foot_save_btn)     // save button
                         ->assertSee("Save changes");
 
-                    $this->assertEquals(
-                        'true',
-                        $entry_modal_foot->attribute($this->_selector_modal_foot_save_btn, 'disabled'),
-                        "Save button is NOT disabled by default"
-                    );
                     $this->assertContains(
                         'is-success',
                         $entry_modal_foot->attribute($this->_selector_modal_foot_save_btn, 'class'),
                         "Save button should have 'is-success' class"
                     );
-                });
+                })
+                ->assertEntryModalSaveButtonIsDisabled();
         });
     }
 
@@ -216,13 +209,8 @@ class EntryModalNewEntryTest extends DuskTestCase {
                 ->with($this->_selector_modal_body, function($entry_modal_body){
                     $entry_modal_body
                         ->type($this->_selector_modal_body_value, "F15sae.92fwfw")
-                        ->click($this->_selector_modal_body_date);
-
-                    $this->assertEquals(
-                        "15.92",
-                        $entry_modal_body->value($this->_selector_modal_body_value),
-                        $this->_selector_modal_body_value." value not correct"
-                    );
+                        ->click($this->_selector_modal_body_date)
+                        ->assertInputValue($this->_selector_modal_body_value, "15.92");
                 });
         });
     }
@@ -283,39 +271,20 @@ class EntryModalNewEntryTest extends DuskTestCase {
         $account_type = $account_types[array_rand($account_types, 1)];
 
         $this->browse(function(Browser $browser) use ($account_type){
-            $not_disabled_save_btn_message = "Save button is NOT disabled by default after %s filled in.";
-            $disabled_save_btn_message = "Save button IS disabled by default after %s filled in.";
-            $is_disabled = "true";
-            $attribute_disabled = "disabled";
-
             $browser
                 ->visit(new HomePage())
                 ->openNewEntryModal()
 
                 ->with($this->_selector_modal_body, function($entry_modal_body){
                     // The date field should already be filled in. No need to fill it in again.
-                    $entry_date = $entry_modal_body->value($this->_selector_modal_body_date);
-                    $this->assertNotEmpty($entry_date, $this->_selector_modal_body_date." is empty");
-                    $this->assertEquals(date("Y-m-d"), $entry_date, $this->_selector_modal_body_date." value is not correct");
+                    $entry_modal_body->assertInputValue($this->_selector_modal_body_date, date("Y-m-d"));
                 })
-                ->with($this->_selector_modal_foot, function($entry_modal_foot) use ($not_disabled_save_btn_message, $is_disabled, $attribute_disabled){
-                    $this->assertEquals(
-                        $is_disabled,
-                        $entry_modal_foot->attribute($this->_selector_modal_foot_save_btn, $attribute_disabled),
-                        sprintf($not_disabled_save_btn_message, $this->_selector_modal_body_date)
-                    );
-                })
+                ->assertEntryModalSaveButtonIsDisabled()
 
                 ->with($this->_selector_modal_body, function($entry_modal_body){
                     $entry_modal_body->type($this->_selector_modal_body_value, "9.99");
                 })
-                ->with($this->_selector_modal_foot, function($entry_modal_foot) use ($not_disabled_save_btn_message, $is_disabled, $attribute_disabled){
-                    $this->assertEquals(
-                        $is_disabled,
-                        $entry_modal_foot->attribute($this->_selector_modal_foot_save_btn, $attribute_disabled),
-                        sprintf($not_disabled_save_btn_message, $this->_selector_modal_body_value)
-                    );
-                })
+                ->assertEntryModalSaveButtonIsDisabled()
 
                 ->waitUntilMissing($this->_selector_modal_body_account_type_is_loading, HomePage::WAIT_SECONDS)
                 ->with($this->_selector_modal_body, function($entry_modal_body) use ($account_type){
@@ -324,26 +293,14 @@ class EntryModalNewEntryTest extends DuskTestCase {
                         ->assertSee($this->_label_account_type_meta_account_name)
                         ->assertSee($this->_label_account_type_meta_last_digits);
                 })
-                ->with($this->_selector_modal_foot, function($entry_modal_foot) use ($not_disabled_save_btn_message, $is_disabled, $attribute_disabled){
-                    $this->assertEquals(
-                        $is_disabled,
-                        $entry_modal_foot->attribute($this->_selector_modal_foot_save_btn, $attribute_disabled),
-                        sprintf($not_disabled_save_btn_message, $this->_selector_modal_body_account_type)
-                    );
-                })
+                ->assertEntryModalSaveButtonIsDisabled()
 
                 ->with($this->_selector_modal_body, function($entry_modal_body){
                     $entry_modal_body
                         ->type($this->_selector_modal_body_memo, "Test entry")
                         ->click($this->_selector_modal_body_date);
                 })
-                ->with($this->_selector_modal_foot, function($entry_modal_foot) use ($disabled_save_btn_message, $is_disabled, $attribute_disabled){
-                    $this->assertNotEquals(
-                        $is_disabled,
-                        $entry_modal_foot->attribute($this->_selector_modal_foot_save_btn, $attribute_disabled),
-                        sprintf($disabled_save_btn_message, $this->_selector_modal_body_memo)
-                    );
-                })
+                ->assertEntryModalSaveButtonIsNotDisabled()
 
                 ->with($this->_selector_modal_body, function($entry_modal_body){
                     // laravel dusk has an issue typing into input[type="date"] fields
@@ -353,13 +310,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
                         $entry_modal_body->keys($this->_selector_modal_body_date, "{backspace}");
                     }
                 })
-                ->with($this->_selector_modal_foot, function($entry_modal_foot) use ($not_disabled_save_btn_message, $is_disabled, $attribute_disabled){
-                    $this->assertEquals(
-                        $is_disabled,
-                        $entry_modal_foot->attribute($this->_selector_modal_foot_save_btn, $attribute_disabled),
-                        sprintf($not_disabled_save_btn_message, $this->_selector_modal_body_date)
-                    );
-                });
+                ->assertEntryModalSaveButtonIsDisabled();
         });
     }
 
@@ -375,10 +326,10 @@ class EntryModalNewEntryTest extends DuskTestCase {
                     $entry_modal_body
                         ->assertVisible($this->_selector_modal_body_file_upload)
                         ->attach($this->_selector_dropzone_hidden_file_input, $upload_file_path)
-                        ->waitFor($this->_selector_dropzone_upload_thumbnail)
+                        ->waitFor($this->_selector_dropzone_upload_thumbnail, HomePage::WAIT_SECONDS)
                         ->with($this->_selector_dropzone_upload_thumbnail, function($upload_thumbnail) use ($upload_file_path){
                             $upload_thumbnail
-                                ->waitUntilMissing($this->_selector_dropzone_progress)
+                                ->waitUntilMissing($this->_selector_dropzone_progress, HomePage::WAIT_SECONDS)
                                 ->assertMissing($this->_selector_dropzone_error_mark)
                                 ->mouseover("") // hover over current element
                                 ->assertSee(basename($upload_file_path))
@@ -412,7 +363,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
         });
     }
 
-    public function testSaveEntry(){
+    public function testCreateEntry(){
         $this->markTestIncomplete("TODO: build");
     }
 
