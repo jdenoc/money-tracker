@@ -6,7 +6,7 @@ class UiSampleDatabaseSeeder extends Seeder {
 
     const COUNT_ACCOUNT = 2;
     const COUNT_ACCOUNT_TYPE = 3;
-    const COUNT_ATTACHMENT = 3;
+    const COUNT_ATTACHMENT = 6;
     const COUNT_ENTRY = 5;
     const COUNT_INSTITUTION = 2;
     const COUNT_MIN = 1;
