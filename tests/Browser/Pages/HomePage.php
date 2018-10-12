@@ -3,6 +3,7 @@
 namespace Tests\Browser\Pages;
 
 use Laravel\Dusk\Browser;
+use PHPUnit\Framework\Assert as PHPUnit;
 
 class HomePage extends Page {
 
@@ -37,6 +38,7 @@ class HomePage extends Page {
             '@navbar'=>'.navbar',
             '@new-entry-modal-btn'=>'#nav-entry-modal',
             '@entry-modal'=>'#entry-modal',
+            '@entry-modal-save-btn'=>"#entry-modal button#entry-save-btn",
             '@edit-existing-entry-modal-btn'=>"button.button.edit-entry-button"
         ];
     }
@@ -53,6 +55,22 @@ class HomePage extends Page {
             ->with($entry_table_selector, function($table_body){
             $table_body->click('@edit-existing-entry-modal-btn');
         })->waitFor('@entry-modal', self::WAIT_SECONDS);
+    }
+
+    public function assertEntryModalSaveButtonIsDisabled(Browser $browser){
+        PHPUnit::assertEquals(
+            'true',
+            $browser->attribute("@entry-modal-save-btn", 'disabled'),
+            "Entry-modal save button is NOT disabled"
+        );
+    }
+
+    public function assertEntryModalSaveButtonIsNotDisabled(Browser $browser){
+        PHPUnit::assertNotEquals(
+            'true',
+            $browser->attribute("@entry-modal-save-btn", 'disabled'),
+            "Entry-modal save button IS disabled"
+        );
     }
 
 }

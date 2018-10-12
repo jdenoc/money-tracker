@@ -4,8 +4,8 @@
             <div class="attachment-name" v-text="name"></div>
         </div>
         <div class="control">
-            <button class="button" v-on:click="viewEntryAttachment"><i class="fas fa-search"></i></button>
-            <button class="button is-danger" v-on:click="deleteEntryAttachment"><i class="fas fa-trash-alt"></i></button>
+            <button class="view-attachment button" v-on:click="viewEntryAttachment"><i class="fas fa-search"></i></button>
+            <button class="delete-attachment button is-danger" v-on:click="deleteEntryAttachment"><i class="fas fa-trash-alt"></i></button>
         </div>
     </div>
 </template>
@@ -16,8 +16,7 @@
         props: [ 'uuid','name'],
         methods: {
             viewEntryAttachment: function(){
-                // TODO: open attachment in new tab
-                this.notAvailable()
+                window.open("/attachment/"+this.uuid, "_blank");
             },
             deleteEntryAttachment: function(){
                 // TODO: sent DELETE request to delete attachment
