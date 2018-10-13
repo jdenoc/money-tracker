@@ -11,9 +11,16 @@
 </template>
 
 <script>
+    import {Entry} from "../entry"
+
     export default {
         name: "entry-modal-attachment",
-        props: [ 'uuid','name'],
+        props: [ 'uuid','name', 'entryId'],
+        data: function(){
+            return {
+                entryObject: new Entry()
+            }
+        },
         methods: {
             viewEntryAttachment: function(){
                 window.open("/attachment/"+this.uuid, "_blank");

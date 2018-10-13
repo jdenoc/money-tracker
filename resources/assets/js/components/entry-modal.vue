@@ -147,6 +147,7 @@
                         v-bind:key="entryAttachment.uuid"
                         v-bind:uuid="entryAttachment.uuid"
                         v-bind:name="entryAttachment.name"
+                        v-bind:entryId="entryData.id"
                     ></entry-modal-attachment>
                 </div>
             </section>
@@ -452,6 +453,7 @@
         },
         created: function(){
             this.$eventHub.listen(this.$eventHub.EVENT_OPEN_ENTRY_MODAL, this.primeDataForModal);
+            this.$eventHub.listen(this.$eventHub.EVENT_UPDATE_ENTRY_MODAL_DATA, this.openModal);
         },
         mounted: function(){
             this.resetEntryData();
