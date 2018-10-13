@@ -58,7 +58,7 @@ export class Entry extends ObjectBaseClass {
 
     processSuccessfulResponseData(responseData){
         if(!_.isEmpty(responseData)){
-            responseData.fetchStamp = new Date().getTime();
+            responseData = this.updateEntryFetchStamp(responseData)
         }
         return responseData;
     }
@@ -70,6 +70,11 @@ export class Entry extends ObjectBaseClass {
         } else {
             return false;
         }
+    }
+
+    updateEntryFetchStamp(entryData){
+        entryData.fetchStamp = new Date().getTime();
+        return entryData;
     }
 
 }
