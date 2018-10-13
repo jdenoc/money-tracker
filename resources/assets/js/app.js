@@ -14,10 +14,15 @@ import { Tags } from './tags';
 import { Version } from './version';
 
 Vue.prototype.$eventHub = new Vue({
-    data: function(){
-        return {
-            EVENT_OPEN_ENTRY_MODAL: "open-entry-modal",
-        }
+    computed: {
+        /**
+         * @returns {string}
+         */
+        EVENT_OPEN_ENTRY_MODAL: function(){ return "open-entry-modal";},
+        /**
+         * @returns {string}
+         */
+        EVENT_UPDATE_ENTRY_MODAL_DATA: function(){ return "update-data-in-entry-modal"; }
     },
     methods: {
         broadcast(event, data = null){
