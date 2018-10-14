@@ -19,19 +19,19 @@ Vue.prototype.$eventHub = new Vue({
         /**
          * @returns {string}
          */
-        EVENT_SHOW_LOADING: function(){ return "loading-true"; },
+        EVENT_LOADING_SHOW: function(){ return "loading-true"; },
         /**
          * @returns {string}
          */
-        EVENT_STOP_LOADING: function(){ return "loading-false"; },
+        EVENT_LOADING_HIDE: function(){ return "loading-false"; },
         /**
          * @returns {string}
          */
-        EVENT_OPEN_ENTRY_MODAL: function(){ return "open-entry-modal";},
+        EVENT_ENTRY_MODAL_OPEN: function(){ return "open-entry-modal";},
         /**
          * @returns {string}
          */
-        EVENT_UPDATE_ENTRY_MODAL_DATA: function(){ return "update-data-in-entry-modal"; }
+        EVENT_ENTRY_MODAL_UPDATE_DATA: function(){ return "update-data-in-entry-modal"; }
     },
     methods: {
         broadcast(event, data = null){
@@ -55,7 +55,7 @@ new Vue({
     store: Store,
     mounted: function(){
         // TODO: probably going to remove this...
-        this.$eventHub.broadcast(this.$eventHub.EVENT_SHOW_LOADING);
+        this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
 
         let accounts = new Accounts();
         accounts.fetch();
@@ -65,7 +65,7 @@ new Vue({
 
         let entries = new Entries();
         entries.fetch().then(function(){
-            this.$eventHub.broadcast(this.$eventHub.EVENT_STOP_LOADING);
+            this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
         }.bind(this));
 
         let institutions = new Institutions();
