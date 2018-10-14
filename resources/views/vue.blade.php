@@ -30,6 +30,7 @@
                 <entries-table></entries-table>
             </div>
         </div>
+        <loading-modal></loading-modal>
         <entry-modal></entry-modal>
     </div>
     <script type="text/javascript" src="{{asset('vue/js/app.js')}}"></script>
