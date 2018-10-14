@@ -342,7 +342,7 @@
                 }
                 this.isVisible = true;
                 this.updateAccountTypeMeta();
-                this.$eventHub.broadcast(this.$eventHub.EVENT_STOP_LOADING);
+                this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
             },
             closeModal: function(){
                 this.isDeletable = false;
@@ -352,7 +352,7 @@
                 this.updateAccountTypeMeta();
             },
             primeDataForModal: function(entryId = null){
-                this.$eventHub.broadcast(this.$eventHub.EVENT_SHOW_LOADING);
+                this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
                 if(!_.isEmpty(entryId) || _.isNumber(entryId)){ // isNumber is used to handle isEmpty() reading numbers as empty
                     if(_.isObject(entryId)){
                         // entryId was passed as part of an event payload
@@ -455,8 +455,8 @@
             }
         },
         created: function(){
-            this.$eventHub.listen(this.$eventHub.EVENT_OPEN_ENTRY_MODAL, this.primeDataForModal);
-            this.$eventHub.listen(this.$eventHub.EVENT_UPDATE_ENTRY_MODAL_DATA, this.openModal);
+            this.$eventHub.listen(this.$eventHub.EVENT_ENTRY_MODAL_OPEN, this.primeDataForModal);
+            this.$eventHub.listen(this.$eventHub.EVENT_ENTRY_MODAL_UPDATE_DATA, this.openModal);
         },
         mounted: function(){
             this.resetEntryData();

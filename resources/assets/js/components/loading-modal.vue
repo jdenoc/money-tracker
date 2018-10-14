@@ -47,8 +47,8 @@
             }
         },
         created: function(){
-            this.$eventHub.listen(this.$eventHub.EVENT_SHOW_LOADING, this.showLoading);
-            this.$eventHub.listen(this.$eventHub.EVENT_STOP_LOADING, this.stopLoading);
+            this.$eventHub.listen(this.$eventHub.EVENT_LOADING_SHOW, this.showLoading);
+            this.$eventHub.listen(this.$eventHub.EVENT_LOADING_HIDE, this.stopLoading);
         },
     }
 </script>
