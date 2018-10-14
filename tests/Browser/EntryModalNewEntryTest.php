@@ -51,6 +51,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
         $this->browse(function (Browser $browser) {
             $browser
                 ->visit(new HomePage())
+                ->waitForLoadingToStop()
                 ->assertMissing($this->_selector_modal);
         });
     }
@@ -59,6 +60,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
         $this->browse(function(Browser $browser){
             $browser
                 ->visit(new HomePage())
+                ->waitForLoadingToStop()
                 ->openNewEntryModal()
                 ->assertVisible($this->_selector_modal);
         });
@@ -68,6 +70,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
         $this->browse(function(Browser $browser){
             $browser
                 ->visit(new HomePage())
+                ->waitForLoadingToStop()
                 ->openNewEntryModal()
                 ->with($this->_selector_modal_head, function($entry_modal_head){
                     $entry_modal_head
@@ -86,6 +89,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
         $this->browse(function(Browser $browser){
             $browser
                 ->visit(new HomePage())
+                ->waitForLoadingToStop()
                 ->openNewEntryModal()
                 ->with($this->_selector_modal_head, function($entry_modal_head){
                     $entry_modal_head->click($this->_selector_modal_head_close_btn);
@@ -98,6 +102,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
         $this->browse(function(Browser $browser){
             $browser
                 ->visit(new HomePage())
+                ->waitForLoadingToStop()
                 ->openNewEntryModal()
                 ->with($this->_selector_modal_head, function($entry_modal_head){
                     $entry_modal_head
@@ -116,6 +121,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
         $this->browse(function(Browser $browser){
             $browser
                 ->visit(new HomePage())
+                ->waitForLoadingToStop()
                 ->openNewEntryModal()
                 ->with($this->_selector_modal_body, function($entry_modal_body){
                     $entry_modal_body
@@ -169,6 +175,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
         $this->browse(function(Browser $browser){
             $browser
                 ->visit(new HomePage())
+                ->waitForLoadingToStop()
                 ->openNewEntryModal()
                 ->with($this->_selector_modal_foot, function($entry_modal_foot){
                     $entry_modal_foot
@@ -193,6 +200,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
         $this->browse(function(Browser $browser){
             $browser
                 ->visit(new HomePage())
+                ->waitForLoadingToStop()
                 ->openNewEntryModal()
                 ->with($this->_selector_modal_foot, function($entry_modal_foot){
                     $entry_modal_foot->click($this->_selector_modal_foot_cancel_btn);
@@ -205,6 +213,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
         $this->browse(function(Browser $browser){
             $browser
                 ->visit(new HomePage())
+                ->waitForLoadingToStop()
                 ->openNewEntryModal()
                 ->with($this->_selector_modal_body, function($entry_modal_body){
                     $entry_modal_body
@@ -223,10 +232,10 @@ class EntryModalNewEntryTest extends DuskTestCase {
         $this->browse(function(Browser $browser) use ($account_type){
             $browser
                 ->visit(new HomePage())
+                ->waitForLoadingToStop()
                 ->openNewEntryModal()
                 ->with($this->_selector_modal_body, function($entry_modal_body){
                     $entry_modal_body
-                        ->assertVisible($this->_selector_modal_body_account_type_is_loading)
                         ->assertDontSee($this->_label_account_type_meta_account_name)
                         ->assertDontSee($this->_label_account_type_meta_last_digits);
                         // TODO: currency icon in input#entry-value is "$"
@@ -255,6 +264,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
         $this->browse(function(Browser $browser){
             $browser
                 ->visit(new HomePage())
+                ->waitForLoadingToStop()
                 ->openNewEntryModal()
                 ->with($this->_selector_modal_body, function($entry_modal_body){
                     $entry_modal_body
@@ -273,6 +283,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
         $this->browse(function(Browser $browser) use ($account_type){
             $browser
                 ->visit(new HomePage())
+                ->waitForLoadingToStop()
                 ->openNewEntryModal()
 
                 ->with($this->_selector_modal_body, function($entry_modal_body){
@@ -318,6 +329,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
         $this->browse(function(Browser $browser){
             $browser
                 ->visit(new HomePage())
+                ->waitForLoadingToStop()
                 ->openNewEntryModal()
                 ->with($this->_selector_modal_body, function($entry_modal_body){
                     $upload_file_path = storage_path(parent::TEST_STORAGE_FILE_PATH);
@@ -351,6 +363,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
         $this->browse(function(Browser $browser) use ($tag){
             $browser
                 ->visit(new HomePage())
+                ->waitForLoadingToStop()
                 ->openNewEntryModal()
                 ->with($this->_selector_modal_body, function ($entry_modal_body) use ($tag){
                     $first_char = substr($tag, 0, 1);

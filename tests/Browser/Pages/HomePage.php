@@ -37,10 +37,17 @@ class HomePage extends Page {
         return [
             '@navbar'=>'.navbar',
             '@new-entry-modal-btn'=>'#nav-entry-modal',
+            '@loading'=>'#loading-modal',
             '@entry-modal'=>'#entry-modal',
             '@entry-modal-save-btn'=>"#entry-modal button#entry-save-btn",
             '@edit-existing-entry-modal-btn'=>"button.button.edit-entry-button"
         ];
+    }
+
+    public function waitForLoadingToStop(Browser $browser){
+        $browser
+            ->assertVisible('@loading')
+            ->waitUntilMissing('@loading', self::WAIT_SECONDS);
     }
 
     public function openNewEntryModal(Browser $browser){
@@ -53,8 +60,10 @@ class HomePage extends Page {
         $browser
             ->waitFor($entry_table_selector, self::WAIT_SECONDS)
             ->with($entry_table_selector, function($table_body){
-            $table_body->click('@edit-existing-entry-modal-btn');
-        })->waitFor('@entry-modal', self::WAIT_SECONDS);
+                $table_body->click('@edit-existing-entry-modal-btn');
+            })
+            ->waitForLoadingToStop()
+            ->waitFor('@entry-modal', self::WAIT_SECONDS);
     }
 
     public function assertEntryModalSaveButtonIsDisabled(Browser $browser){
