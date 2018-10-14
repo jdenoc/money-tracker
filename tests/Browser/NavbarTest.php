@@ -24,6 +24,7 @@ class NavbarTest extends DuskTestCase {
         $this->browse(function(Browser $browser){
             $browser
                 ->visit(new HomePage())
+                ->waitForLoadingToStop()
                 ->with($this->_selector_navbar, function($navbar){
                     $navbar->assertVisible($this->_selector_navbar_brand);
                 });
@@ -34,6 +35,7 @@ class NavbarTest extends DuskTestCase {
         $this->browse(function(Browser $browser){
             $browser
                 ->visit(new HomePage())
+                ->waitForLoadingToStop()
                 ->with($this->_selector_navbar, function($navbar){
                     $navbar->assertSee($this->_label_add_entry);
                 });
@@ -44,6 +46,7 @@ class NavbarTest extends DuskTestCase {
         $this->browse(function(Browser $browser){
             $browser
                 ->visit(new HomePage())
+                ->waitForLoadingToStop()
                 ->with($this->_selector_navbar, function($navbar){
                     $navbar->assertSee($this->_label_filter);
                 });
@@ -54,6 +57,7 @@ class NavbarTest extends DuskTestCase {
         $this->browse(function(Browser $browser){
             $browser
                 ->visit(new HomePage())
+                ->waitForLoadingToStop()
                 ->with($this->_selector_navbar, function($navbar){
                     $navbar_dropdown_selector = $this->_selector_navbar_dropdown;
                     $navbar

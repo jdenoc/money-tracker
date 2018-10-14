@@ -387,6 +387,7 @@
             saveEntry: function(){
                 // TODO: save an entry
                 this.notAvailable();
+                // TODO: on entry-modal save, update entries-table component display
             },
             deleteEntry: function(){
                 // TODO: delete entry, but ONLY if entry does not already exist
