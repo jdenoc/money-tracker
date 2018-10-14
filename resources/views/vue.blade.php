@@ -29,8 +29,13 @@
             <div class="column">
                 <entries-table></entries-table>
             </div>
-            <loading-modal></loading-modal>
             <entry-modal></entry-modal>
+            <!--
+            loading-modal must ALWAYS be on the bottom.
+            This way if the loading-modal is active and another modal is active,
+            then it will look like the loading-modal is still active.
+            -->
+            <loading-modal></loading-modal>
         </div>
         <script type="text/javascript" src="{{asset('vue/js/app.js')}}"></script>
         <script type="text/javascript" src="{{asset('vue/js/bulma-accordion.js')}}"></script>

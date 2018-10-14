@@ -80,6 +80,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     public function testClickingOnEntryTableEditButtonOfUnconfirmedEntry($data_entry_selector, $data_expense_switch_label){
         $this->browse(function(Browser $browser) use ($data_entry_selector, $data_expense_switch_label){
             $browser->visit(new HomePage())
+                ->waitForLoadingToStop()
                 ->openExistingEntryModal($data_entry_selector)
                 ->with($this->_selector_entry_modal, function($entry_modal) use ($data_expense_switch_label){
                     $entry_id = $entry_modal->value($this->_selector_field_entry_id);
@@ -139,6 +140,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     public function testClickingOnEntryTableEditButtonOfConfirmedEntry($data_entry_selector, $data_expense_switch_label){
         $this->browse(function(Browser $browser) use ($data_entry_selector, $data_expense_switch_label){
             $browser->visit(new HomePage())
+                ->waitForLoadingToStop()
                 ->openExistingEntryModal($data_entry_selector)
                 ->with($this->_selector_entry_modal, function($entry_modal) use ($data_expense_switch_label){
                     $entry_id = $entry_modal->value($this->_selector_field_entry_id);
@@ -201,6 +203,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         $this->browse(function(Browser $browser){
             $confirmed_entry_selector = $this->randomConfirmedEntrySelector();
             $browser->visit(new HomePage())
+                ->waitForLoadingToStop()
                 ->openExistingEntryModal($confirmed_entry_selector)
                 ->click($this->_selector_btn_lock)
                 ->with($this->_selector_modal_head, function($modal_head){
@@ -251,6 +254,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         $this->browse(function(Browser $browser){
             $entry_selector = $this->randomEntrySelector().'.'.$this->_class_has_attachments;
             $browser->visit(new HomePage())
+                ->waitForLoadingToStop()
                 ->openExistingEntryModal($entry_selector)
                 ->with($this->_selector_entry_modal, function($entry_modal){
                     $entry_modal->assertVisible($this->_selector_existing_attachments);
@@ -279,6 +283,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     public function testClickingOnEntryTableEditButtonOfEntryWithTags($data_entry_selector, $data_tags_container_selector, $data_tag_selector){
         $this->browse(function(Browser $browser) use ($data_entry_selector, $data_tags_container_selector, $data_tag_selector){
             $browser->visit(new HomePage())
+                ->waitForLoadingToStop()
                 ->openExistingEntryModal($data_entry_selector)
                 ->with($this->_selector_entry_modal, function($entry_modal) use ($data_entry_selector, $data_tags_container_selector, $data_tag_selector){
                     $entry_modal->assertVisible($data_tags_container_selector);
@@ -293,6 +298,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         $this->browse(function(Browser $browser){
             $entry_selector = $this->randomEntrySelector().'.'.$this->_class_has_attachments;
             $browser->visit(new HomePage())
+                ->waitForLoadingToStop()
                 ->openExistingEntryModal($entry_selector)
                 ->with($this->_selector_entry_modal, function($entry_modal){
                     $entry_modal
@@ -321,6 +327,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         $this->browse(function(Browser $browser){
             $entry_selector = $this->randomEntrySelector();
             $browser->visit(new HomePage())
+                ->waitForLoadingToStop()
                 // open existing entry in modal and confirm fields are filled
                 ->openExistingEntryModal($entry_selector)
                 ->with($this->_selector_entry_modal, function($entry_modal){
