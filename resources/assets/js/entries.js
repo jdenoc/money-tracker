@@ -35,7 +35,7 @@ export class Entries extends ObjectBaseClass {
 //         });
 
         console.log("URL:"+this.uri+'/'+pageNumber+";\nfilter:"+requestParameters);
-        Axios.post(this.uri+'/'+pageNumber, requestParameters)
+        return Axios.post(this.uri+'/'+pageNumber, requestParameters)
             .then(this.axiosSuccess.bind(this))
             .catch(this.axiosFailure);
     }

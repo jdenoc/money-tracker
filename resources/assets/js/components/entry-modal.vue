@@ -342,6 +342,7 @@
                 }
                 this.isVisible = true;
                 this.updateAccountTypeMeta();
+                this.$eventHub.broadcast(this.$eventHub.EVENT_STOP_LOADING);
             },
             closeModal: function(){
                 this.isDeletable = false;
@@ -351,6 +352,7 @@
                 this.updateAccountTypeMeta();
             },
             primeDataForModal: function(entryId = null){
+                this.$eventHub.broadcast(this.$eventHub.EVENT_SHOW_LOADING);
                 if(!_.isEmpty(entryId) || _.isNumber(entryId)){ // isNumber is used to handle isEmpty() reading numbers as empty
                     if(_.isObject(entryId)){
                         // entryId was passed as part of an event payload
