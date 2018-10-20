@@ -23,6 +23,17 @@ export class Entry extends ObjectBaseClass {
             .catch(this.axiosFailure);
     }
 
+    delete(entryId){
+        return Axios
+            .delete(this.uri+entryId, {validateStatus: function(status){
+                return status === 204;
+            }})
+            .then(function(response){
+                // TODO: send notice of successful deletion
+                //   notice.display(notice.typeSuccess, "Entry was deleted");
+            }).catch(this.axiosFailure);
+    }
+
     set assign(newValue){
         if(newValue !== []){
             let entries = this.retrieve;
@@ -43,13 +54,17 @@ export class Entry extends ObjectBaseClass {
         if(error.response){
             switch(error.response.status){
                 case 404:
-                    // TODO: send a notice
+                    // TODO: send a notice - get entry
                     // notice.display(notice.typeWarning, "Entry does not exist");
+                    // TODO: send a notice - delete entry
+                    // notice.display(notice.typeWarning, "Entry ["+entryId+"] does not exist and cannot be deleted");
                     break;
                 case 500:
                 default:
-                    // TODO: send a notice
+                    // TODO: send a notice - get entry
                     // notice.display(notice.typeDanger, 'Error occurred while attempting to retrieve entries');
+                    // TODO: send a notice - delete entry
+                    // notice.display(notice.typeError, "An error occurred while attempting to delete entry ["+entryId+"]");
                     break;
             }
         }

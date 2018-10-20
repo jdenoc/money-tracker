@@ -8,6 +8,7 @@ use PHPUnit\Framework\Assert as PHPUnit;
 class HomePage extends Page {
 
     const WAIT_SECONDS = 10;
+    const WAIT_SECONDS_LONG = 30;
 
     /**
      * Get the URL for the page.
@@ -47,7 +48,7 @@ class HomePage extends Page {
     public function waitForLoadingToStop(Browser $browser){
         $browser
             ->assertVisible('@loading')
-            ->waitUntilMissing('@loading', self::WAIT_SECONDS);
+            ->waitUntilMissing('@loading', self::WAIT_SECONDS_LONG);
     }
 
     public function openNewEntryModal(Browser $browser){

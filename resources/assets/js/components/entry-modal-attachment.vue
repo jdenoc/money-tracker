@@ -11,14 +11,16 @@
 </template>
 
 <script>
-    import {Entry} from "../entry"
+    import {Attachment} from "../attachment";
+    import {Entry} from "../entry";
 
     export default {
         name: "entry-modal-attachment",
         props: [ 'uuid','name', 'entryId'],
         data: function(){
             return {
-                entryObject: new Entry()
+                attachmentObject: new Attachment(),
+                entryObject: new Entry(),
             }
         },
         methods: {
@@ -26,11 +28,21 @@
                 window.open("/attachment/"+this.uuid, "_blank");
             },
             deleteEntryAttachment: function(){
-                // TODO: sent DELETE request to delete attachment
-                this.notAvailable();
-            },
-            notAvailable: function(){
-                alert("This feature is not currently available");
+                if(confirm('Are you sure you want to delete attachment: '+this.name)){
+                    this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
+
+                    this.attachmentObject
+                        .delete(this.uuid, this.entryId)
+                        .then(function(newEntryData){
+                            if(!_.isEmpty(newEntryData)){
+                                // update entryData in entry-modal component
+                                this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_MODAL_UPDATE_DATA, newEntryData);
+                            }
+                        }.bind(this))
+                        .finally(function(){
+                            this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
+                        }.bind(this));
+                }
             },
         }
     }

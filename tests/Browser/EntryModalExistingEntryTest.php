@@ -319,6 +319,38 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         });
     }
 
+    public function testDeleteAttachmentFromExistingEntry(){
+        $this->browse(function(Browser $browser){
+            $entry_selector = $this->randomEntrySelector().'.'.$this->_class_has_attachments;
+            // initialising this variable here, then pass it as a reference so that we can update its value.
+            $attachment_count = 0;
+
+            $browser->visit(new HomePage())
+                ->waitForLoadingToStop()
+                ->openExistingEntryModal($entry_selector)
+                ->with($this->_selector_entry_modal, function($entry_modal) use (&$attachment_count){
+                    $entry_modal->assertVisible($this->_selector_existing_attachments);
+
+                    $attachments = $entry_modal->driver->findElements(WebDriverBy::className($this->_class_existing_attachment));
+                    $attachment_count = count($attachments);
+
+                    $entry_modal->with($this->_selector_existing_attachments, function($existing_attachment){
+                        $attachment_name = trim($existing_attachment->text('.'.$this->_class_existing_attachment));
+                        $existing_attachment
+                            ->assertVisible($this->_selector_existing_attachments_delete_btn)
+                            ->click($this->_selector_existing_attachments_delete_btn)
+                            ->assertDialogOpened("Are you sure you want to delete attachment: ".$attachment_name)
+                            ->acceptDialog();
+                    });
+                })
+                ->waitForLoadingToStop()
+                ->with($this->_selector_entry_modal, function($entry_modal) use (&$attachment_count){
+                    $attachments = $entry_modal->driver->findElements(WebDriverBy::className($this->_class_existing_attachment));
+                    $this->assertEquals($attachment_count-1, count($attachments), "Attachment was NOT removed from UI");
+                });
+        });
+    }
+
     public function testUpdateExistingEntry(){
         $this->markTestIncomplete("TODO: build");
     }
