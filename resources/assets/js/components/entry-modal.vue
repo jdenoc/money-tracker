@@ -419,8 +419,9 @@
                 // TODO: on entry-modal save, update entries-table component display
             },
             deleteEntry: function(){
-                // TODO: delete entry, but ONLY if entry does not already exist
-                this.notAvailable();
+                this.entryObject
+                    .delete(this.entryData.id)
+                    .then(this.closeModal.bind(this));
             },
             notAvailable: function(){
                 alert("This feature is not currently available");
