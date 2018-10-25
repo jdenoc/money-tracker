@@ -332,8 +332,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
                 ->waitForLoadingToStop()
                 ->openNewEntryModal()
                 ->with($this->_selector_modal_body, function($entry_modal_body){
-                    $upload_file_path = storage_path(parent::TEST_STORAGE_FILE_PATH);
-
+                    $upload_file_path = storage_path($this->getRandomTestFilePath());
                     $this->assertFileExists($upload_file_path);
                     $entry_modal_body
                         ->assertVisible($this->_selector_modal_body_file_upload)
