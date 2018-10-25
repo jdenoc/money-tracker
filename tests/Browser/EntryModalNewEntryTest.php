@@ -9,6 +9,7 @@ use Laravel\Dusk\Browser;
 class EntryModalNewEntryTest extends DuskTestCase {
 
     private $_selector_modal = "@entry-modal";
+    private $_selector_table = "#entry-table";
 
     private $_selector_modal_head = "#entry-modal .modal-card-head";
     private $_selector_modal_head_confirmed = "#entry-confirm";
@@ -354,6 +355,31 @@ class EntryModalNewEntryTest extends DuskTestCase {
         });
     }
 
+    public function testUploadAttachmentAndAttachmentIsNotPresentAfterClosingAndReopeningModal(){
+        $this->browse(function(Browser $browser){
+            $browser
+                ->visit(new HomePage())
+                ->waitForLoadingToStop()
+                ->openNewEntryModal()
+                ->with($this->_selector_modal_body, function($modal_body){
+                    $upload_file_path = storage_path($this->getRandomTestFilePath());
+                    $this->assertFileExists($upload_file_path);
+                    $modal_body
+                        ->assertVisible($this->_selector_modal_body_file_upload)
+                        ->attach($this->_selector_dropzone_hidden_file_input, $upload_file_path)
+                        ->waitFor($this->_selector_dropzone_upload_thumbnail, HomePage::WAIT_SECONDS);
+                })
+                ->with($this->_selector_modal_foot, function($modal_foot){
+                    $modal_foot->click($this->_selector_modal_foot_cancel_btn);
+                })
+                ->waitUntilMissing($this->_selector_modal)
+                ->openNewEntryModal()
+                ->with($this->_selector_modal_body, function($modal_body){
+                    $modal_body->assertMissing($this->_selector_dropzone_upload_thumbnail);
+                });
+        });
+    }
+
     public function testTagsInputAutoComplete(){
         // select tag at random and input the first character into the tags-input field
         $tags = $this->getApiTags();
@@ -375,8 +401,215 @@ class EntryModalNewEntryTest extends DuskTestCase {
         });
     }
 
-    public function testCreateEntry(){
-        $this->markTestIncomplete("TODO: build");
+    public function testCreateEntryWithMinimumRequirementsExpense(){
+        $account_types = $this->getApiAccountTypes();
+        $account_type = $account_types[array_rand($account_types, 1)];
+
+        $this->browse(function(Browser $browser) use ($account_type){
+            $memo_field = "Test entry - save requirements - expense";
+            $browser
+                ->visit(new HomePage())
+                ->waitForLoadingToStop()
+                ->openNewEntryModal()
+                ->with($this->_selector_modal_body, function($modal_body) use ($account_type, $memo_field){
+                    $modal_body
+                        ->type($this->_selector_modal_body_value, "9.99")
+                        ->waitUntilMissing($this->_selector_modal_body_account_type_is_loading, HomePage::WAIT_SECONDS)
+                        ->select($this->_selector_modal_body_account_type, $account_type['id'])
+                        ->type($this->_selector_modal_body_memo, $memo_field);
+                })
+                ->with($this->_selector_modal_foot, function($modal_foot){
+                    $modal_foot->click($this->_selector_modal_foot_save_btn);
+                })
+                ->waitForLoadingToStop()
+                ->assertMissing($this->_selector_modal)
+                ->with($this->_selector_table.' .has-background-warning.is-expense', function($table_row) use ($memo_field){
+                    $table_row->assertSee($memo_field);
+                });
+        });
+    }
+
+    public function testCreateEntryWithMinimumRequirementsIncome(){
+        $account_types = $this->getApiAccountTypes();
+        $account_type = $account_types[array_rand($account_types, 1)];
+
+        $this->browse(function(Browser $browser) use ($account_type){
+            $memo_field = "Test entry - save requirements - income";
+            $browser
+                ->visit(new HomePage())
+                ->waitForLoadingToStop()
+                ->openNewEntryModal()
+                ->with($this->_selector_modal_body, function($modal_body) use ($account_type, $memo_field){
+                    $modal_body
+                        ->type($this->_selector_modal_body_value, "9.99")
+                        ->waitUntilMissing($this->_selector_modal_body_account_type_is_loading, HomePage::WAIT_SECONDS)
+                        ->select($this->_selector_modal_body_account_type, $account_type['id'])
+                        ->type($this->_selector_modal_body_memo, $memo_field)
+                        ->click($this->_selector_modal_body_expense);
+                })
+                ->with($this->_selector_modal_foot, function($modal_foot){
+                    $modal_foot->click($this->_selector_modal_foot_save_btn);
+                })
+                ->waitForLoadingToStop()
+                ->assertMissing($this->_selector_modal)
+                ->with($this->_selector_table.' .has-background-warning.is-income', function($table_row) use ($memo_field){
+                    $table_row->assertSee($memo_field);
+                });
+        });
+    }
+
+    public function testCreateConfirmedEntry(){
+        $account_types = $this->getApiAccountTypes();
+        $account_type = $account_types[array_rand($account_types, 1)];
+
+        $this->browse(function(Browser $browser) use ($account_type){
+            $memo_field = "Test entry - confirmed";
+            $browser
+                ->visit(new HomePage())
+                ->waitForLoadingToStop()
+                ->openNewEntryModal()
+                ->with($this->_selector_modal_head, function($modal_head){
+                    $modal_head->click($this->_selector_modal_head_confirmed_label);
+                })
+                ->with($this->_selector_modal_body, function($modal_body) use ($account_type, $memo_field){
+                    $modal_body
+                        ->type($this->_selector_modal_body_value, "9.99")
+                        ->waitUntilMissing($this->_selector_modal_body_account_type_is_loading, HomePage::WAIT_SECONDS)
+                        ->select($this->_selector_modal_body_account_type, $account_type['id'])
+                        ->type($this->_selector_modal_body_memo, $memo_field);
+                })
+                ->with($this->_selector_modal_foot, function($modal_foot){
+                    $modal_foot->click($this->_selector_modal_foot_save_btn);
+                })
+                ->waitForLoadingToStop()
+                ->assertMissing($this->_selector_modal)
+                ->with($this->_selector_table.' .is-confirmed', function($table_row) use ($memo_field){
+                    $table_row->assertSee($memo_field);
+                });
+        });
+    }
+
+    public function testCreateEntryWithAttachments(){
+        $account_types = $this->getApiAccountTypes();
+        $account_type = $account_types[array_rand($account_types, 1)];
+
+        $this->browse(function(Browser $browser) use ($account_type){
+            $memo_field = "Test entry - attachments";
+            $selector_row_has_attachments = $this->_selector_table.' .has-background-warning.has-attachments';
+            $browser
+                ->visit(new HomePage())
+                ->waitForLoadingToStop()
+                ->openNewEntryModal()
+                ->with($this->_selector_modal_body, function($modal_body) use ($account_type, $memo_field){
+                    $upload_file_path = storage_path($this->getRandomTestFilePath());
+                    $modal_body
+                        ->type($this->_selector_modal_body_value, "9.99")
+                        ->waitUntilMissing($this->_selector_modal_body_account_type_is_loading, HomePage::WAIT_SECONDS)
+                        ->select($this->_selector_modal_body_account_type, $account_type['id'])
+                        ->type($this->_selector_modal_body_memo, $memo_field)
+                        ->attach($this->_selector_dropzone_hidden_file_input, $upload_file_path)
+                        ->waitFor($this->_selector_dropzone_upload_thumbnail, HomePage::WAIT_SECONDS);
+                })
+                ->with($this->_selector_modal_foot, function($modal_foot){
+                    $modal_foot->click($this->_selector_modal_foot_save_btn);
+                })
+                ->waitForLoadingToStop()
+                ->assertMissing($this->_selector_modal)
+                ->with($selector_row_has_attachments, function($table_row) use ($memo_field){
+                    $table_row->assertSee($memo_field);
+                })
+                // make sure dropzone field is cleared after saving
+                ->openExistingEntryModal($selector_row_has_attachments)
+                ->with($this->_selector_modal_body, function($modal_body){
+                    $modal_body
+                        ->assertVisible($this->_selector_modal_body_file_upload)
+                        ->assertMissing($this->_selector_dropzone_upload_thumbnail);
+                });
+        });
+    }
+
+    public function testCreateEntryWithTags(){
+        $account_types = $this->getApiAccountTypes();
+        $account_type = $account_types[array_rand($account_types, 1)];
+
+        $tags = $this->getApiTags();
+        $tag = $tags[array_rand($tags, 1)]['name'];
+
+        $this->browse(function(Browser $browser) use ($account_type, $tag){
+            $memo_field = "Test entry - tags";
+            $browser
+                ->visit(new HomePage())
+                ->waitForLoadingToStop()
+                ->openNewEntryModal()
+                ->with($this->_selector_modal_body, function($modal_body) use ($account_type, $tag, $memo_field){
+                    $first_char = substr($tag, 0, 1);
+                    $second_char = substr($tag, 1, 2);
+                    $modal_body
+                        ->type($this->_selector_modal_body_value, "9.99")
+                        ->waitUntilMissing($this->_selector_modal_body_account_type_is_loading, HomePage::WAIT_SECONDS)
+                        ->select($this->_selector_modal_body_account_type, $account_type['id'])
+                        ->type($this->_selector_modal_body_memo, $memo_field)
+
+                        ->waitUntilMissing($this->_selector_modal_body_tags_container_is_loading, HomePage::WAIT_SECONDS)
+                        ->keys($this->_selector_modal_body_tags, $first_char)
+                        ->keys($this->_selector_modal_body_tags, $second_char)
+                        ->waitFor($this->_selector_modal_body_tag_autocomplete_options)
+                        ->assertSee($tag)
+                        ->click($this->_selector_modal_body_tag_autocomplete_options);
+                })
+                ->with($this->_selector_modal_foot, function($modal_foot){
+                    $modal_foot->click($this->_selector_modal_foot_save_btn);
+                })
+                ->waitForLoadingToStop()
+                ->assertMissing($this->_selector_modal)
+                ->with($this->_selector_table.' .has-background-warning.has-tags', function($table_row) use ($memo_field){
+                    $table_row->assertSee($memo_field);
+                });
+        });
+    }
+
+    public function testCreateEntryWithTagsAndAttachments(){
+        $account_types = $this->getApiAccountTypes();
+        $account_type = $account_types[array_rand($account_types, 1)];
+
+        $tags = $this->getApiTags();
+        $tag = $tags[array_rand($tags, 1)]['name'];
+
+        $this->browse(function(Browser $browser) use ($account_type, $tag){
+            $memo_field = "Test entry - tags + attachments";
+            $browser
+                ->visit(new HomePage())
+                ->waitForLoadingToStop()
+                ->openNewEntryModal()
+                ->with($this->_selector_modal_body, function($modal_body) use ($account_type, $tag, $memo_field){
+                    $upload_file_path = storage_path($this->getRandomTestFilePath());
+                    $first_char = substr($tag, 0, 1);
+                    $second_char = substr($tag, 1, 2);
+                    $modal_body
+                        ->type($this->_selector_modal_body_value, "9.99")
+                        ->waitUntilMissing($this->_selector_modal_body_account_type_is_loading, HomePage::WAIT_SECONDS)
+                        ->select($this->_selector_modal_body_account_type, $account_type['id'])
+                        ->type($this->_selector_modal_body_memo, $memo_field)
+
+                        ->waitUntilMissing($this->_selector_modal_body_tags_container_is_loading, HomePage::WAIT_SECONDS)
+                        ->keys($this->_selector_modal_body_tags, $first_char)
+                        ->keys($this->_selector_modal_body_tags, $second_char)
+                        ->waitFor($this->_selector_modal_body_tag_autocomplete_options)
+                        ->assertSee($tag)
+                        ->click($this->_selector_modal_body_tag_autocomplete_options)
+
+                        ->attach($this->_selector_dropzone_hidden_file_input, $upload_file_path)
+                        ->waitFor($this->_selector_dropzone_upload_thumbnail, HomePage::WAIT_SECONDS);
+                })
+                ->with($this->_selector_modal_foot, function($modal_foot){
+                    $modal_foot->click($this->_selector_modal_foot_save_btn);
+                })
+                ->waitForLoadingToStop()
+                ->assertMissing($this->_selector_modal)
+                ->with($this->_selector_table.' .has-background-warning.has-attachments.has-tags', function($table_row) use ($memo_field){
+                    $table_row->assertSee($memo_field);
+                });
+        });
     }
 
 }

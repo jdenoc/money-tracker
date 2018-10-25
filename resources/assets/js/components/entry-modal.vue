@@ -137,6 +137,8 @@
                 <div class="field"><div class="control">
                     <vue-dropzone ref="entryModalFileUpload" id="entry-modal-file-upload"
                         v-bind:options="dropzoneOptions"
+                        v-on:vdropzone-success="dropzoneSuccessfulUpload"
+                        v-on:vdropzone-removed-file="dropzoneRemoveUpload"
                         v-show="!isLocked"
                     ></vue-dropzone>
                 </div></div>
@@ -144,6 +146,7 @@
                 <div id="existing-entry-attachments" class="field">
                     <entry-modal-attachment
                         v-for="entryAttachment in entryData.attachments"
+                        v-if="!entryAttachment.tmp_filename"
                         v-bind:key="entryAttachment.uuid"
                         v-bind:uuid="entryAttachment.uuid"
                         v-bind:name="entryAttachment.name"
@@ -292,7 +295,7 @@
                     params: {_token: this.uploadToken},
                     dictDefaultMessage: '<span class="icon"><i class="fas fa-cloud-upload-alt"></i></span><br/>Drag & Drop',
                     init: function(){
-                        document.querySelector('.dz-hidden-input').setAttribute('id', 'dz-hidden-file-input')
+                        document.querySelector('.dz-hidden-input').setAttribute('id', 'dz-hidden-file-input');
                     }
                 }
             },
@@ -414,9 +417,69 @@
                 this.dropzoneRef.enable();
             },
             saveEntry: function(){
-                // TODO: save an entry
-                this.notAvailable();
-                // TODO: on entry-modal save, update entries-table component display
+                this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
+                // validate inputs
+                let newEntryData = {};
+                // id
+                if(_.isNumber(this.entryData.id) || _.isNull(this.entryData.id)){
+                    newEntryData.id = this.entryData.id;
+                }
+                // confirm
+                if(_.isBoolean(this.entryData.confirm)){
+                    newEntryData.confirm = this.entryData.confirm;
+                }
+                // entry_date
+                if(!isNaN(Date.parse(this.entryData.entry_date))){
+                    newEntryData.entry_date = this.entryData.entry_date;
+                }
+                // entry_value
+                let entryValue = _.toNumber(this.entryData.entry_value);
+                if(this.entryData.entry_value !== "" || !isNaN(entryValue) || _.isNumber(entryValue)){
+                    newEntryData.entry_value = entryValue;
+                }
+                // account_type_id
+                if(_.isNumber(this.entryData.account_type_id)){
+                    newEntryData.account_type_id = this.entryData.account_type_id;
+                }
+                // memo
+                if(!_.isEmpty(this.entryData.memo)){
+                    newEntryData.memo = this.entryData.memo;
+                }
+                // expense
+                if(_.isBoolean(this.entryData.expense)){
+                    newEntryData.expense = this.entryData.expense;
+                }
+                // tags
+                if(_.isArray(this.entryData.tags)){
+                    newEntryData.tags = [];
+                    this.entryData.tags.forEach(function(tagId){
+                        // each "tag" MUST be an int
+                        if(!_.isArray(tagId) && _.isNumber(parseInt(tagId))){
+                            newEntryData.tags.push(tagId);
+                        }
+                    });
+                }
+                // attachments
+                if(_.isArray(this.entryData.attachments)){
+                    newEntryData.attachments = [];
+                    this.entryData.attachments.forEach(function(attachment){
+                        if(
+                            // each "attachment" MUST be an array
+                            (_.isArray(attachment) || _.isObject(attachment))
+                            // each "attachment" MUST have a "uuid"
+                            && (!_.isEmpty(attachment.uuid) && _.isString(attachment.uuid))
+                            // each "attachment" MUST have a "name"
+                            && (!_.isEmpty(attachment.name) && _.isString(attachment.name))
+                        ){
+                            newEntryData.attachments.push(attachment);
+                        }
+                    });
+                }
+
+                this.entryObject.save(newEntryData).finally(function(){
+                    this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE);
+                    this.closeModal();
+                }.bind(this));
             },
             deleteEntry: function(){
                 this.entryObject
@@ -451,8 +514,19 @@
                 }
             },
             resetEntryData: function(){
+                this.dropzoneRef.removeAllFiles();
                 this.defaultData.entry_date = this.currentDate;
+                this.defaultData.attachments = [];  // for whatever reason clonedObject.push() also pushes to the original. This is a work around.
                 this.entryData = _.clone(this.defaultData);
+            },
+            dropzoneSuccessfulUpload(file, response){
+                this.entryData.attachments.push(response);
+            },
+            dropzoneRemoveUpload(file){
+                let removedeAttachmentObject = JSON.parse(file.xhr.response);
+                this.entryData.attachments = this.entryData.attachments.filter(function(attachment){
+                    return attachment.uuid !== removedeAttachmentObject.uuid;
+                });
             }
         },
         created: function(){
