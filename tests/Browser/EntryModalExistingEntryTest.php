@@ -351,9 +351,107 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         });
     }
 
-    public function testUpdateExistingEntry(){
-        $this->markTestIncomplete("TODO: build");
+    public function testUpdateExistingEntryDate(){
+        $this->markTestIncomplete("TODO: figure out how to select the same row");
+        $this->browse(function(Browser $browser){
+            // TODO: figure out how to select the same row
+            $entry_selector = $this->randomUnconfirmedEntrySelector();
+            $old_value = "";
+            $new_value = date("Y-m-d", strtotime("-90 days"));
+
+            $browser->visit(new HomePage())
+                ->waitForLoadingToStop()
+                ->openExistingEntryModal($entry_selector)
+                ->with($this->_selector_modal_body, function($modal_body) use (&$old_value, $new_value){
+                    $old_value = $modal_body->value($this->_selector_field_date);
+                    // clear input[type="date"]
+                    for($i=0; $i<strlen($old_value); $i++){
+                        $modal_body->keys($this->_selector_field_date, "{backspace}");
+                    }
+                    $modal_body->keys($this->_selector_field_date, $new_value);
+                })
+                ->with($this->_selector_modal_foot, function($modal_foot){
+                    $modal_foot->click($this->_selector_btn_save);
+                })
+                ->waitForLoadingToStop()
+                ->openExistingEntryModal($entry_selector)
+                ->with($this->_selector_modal_body, function($modal_body) use (&$old_value, $new_value){
+                    $this->assertNotEquals($old_value, $modal_body->value($this->_selector_field_date));
+                    $this->assertEquals($new_value, $modal_body->value($this->_selector_field_date));
+                });
+        });
     }
+
+    public function testUpdateExistingEntryAccountType(){
+        $account_types = $this->getApiAccountTypes();
+        $account_type = $account_types[array_rand($account_types, 1)];
+        $this->browse(function(Browser $browser) use ($account_type){
+            $entry_selector = $this->randomUnconfirmedEntrySelector();
+            $old_value = "";
+            $new_value = $account_type['id'];
+
+            $browser->visit(new HomePage())
+                ->waitForLoadingToStop()
+                ->openExistingEntryModal($entry_selector)
+                ->with($this->_selector_modal_body, function($modal_body) use (&$old_value, $new_value){
+                    $old_value = $modal_body->value($this->_selector_field_account_type);
+                    $modal_body->select($this->_selector_field_account_type, $new_value);
+                })
+                ->with($this->_selector_modal_foot, function($modal_foot){
+                    $modal_foot->click($this->_selector_btn_save);
+                })
+                ->waitForLoadingToStop()
+                ->openExistingEntryModal($entry_selector)
+                ->with($this->_selector_modal_body, function($modal_body) use (&$old_value, $new_value){
+                    $this->assertNotEquals($old_value, $modal_body->value($this->_selector_field_account_type));
+                    $this->assertEquals($new_value, $modal_body->value($this->_selector_field_account_type));
+                });
+        });
+    }
+
+    public function providerUpdateEntry(){
+        return [
+            'entry_value'=>[$this->_selector_field_value, 0.01],
+            'memo'=>[$this->_selector_field_memo, "hfrsighesiugbeusigbweuisgbeisugsebuibseiugbg"],
+        ];
+    }
+
+    /**
+     * @dataProvider providerUpdateEntry
+     * @param string $field_selector
+     * @param $new_value
+     *
+     * @throws \Throwable
+     */
+    public function testUpdateExistingEntryValue($field_selector, $new_value){
+        $this->browse(function(Browser $browser) use ($field_selector, $new_value){
+            $entry_selector = $this->randomUnconfirmedEntrySelector();
+            $old_value = "";
+
+            $browser->visit(new HomePage())
+                ->waitForLoadingToStop()
+                ->openExistingEntryModal($entry_selector)
+                ->with($this->_selector_modal_body, function($modal_body) use ($field_selector, &$old_value, $new_value){
+                    $old_value = $modal_body->value($field_selector);
+                    $modal_body->clear($field_selector);
+                    $modal_body->type($field_selector, $new_value);
+                })
+                ->with($this->_selector_modal_foot, function($modal_foot){
+                    $modal_foot->click($this->_selector_btn_save);
+                })
+                ->waitForLoadingToStop()
+                ->openExistingEntryModal($entry_selector)
+                ->with($this->_selector_modal_body, function($modal_body) use ($field_selector, &$old_value, $new_value){
+                    $this->assertNotEquals($old_value, $modal_body->value($field_selector));
+                    $this->assertEquals($new_value, $modal_body->value($field_selector));
+                });
+        });
+    }
+
+    // TODO: write test to test toggling confirm switch
+    // TODO: write test to test toggling expense switch
+    // TODO: write test for changing tags input values
+    // TODO: write test to add attachment
 
     public function testOpenExistingEntryInModalThenCloseModalAndOpenNewEntryModal(){
         $this->browse(function(Browser $browser){
