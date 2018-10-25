@@ -9,7 +9,6 @@ import Navbar from './components/navbar';
 
 import { Accounts } from './accounts';
 import { AccountTypes } from './account-types';
-import { Entries } from './entries';
 import { Institutions } from './institutions';
 import { Tags } from './tags';
 import { Version } from './version';
@@ -24,6 +23,10 @@ Vue.prototype.$eventHub = new Vue({
          * @returns {string}
          */
         EVENT_LOADING_HIDE: function(){ return "loading-false"; },
+        /**
+         * @returns {string}
+         */
+        EVENT_ENTRY_TABLE_UPDATE: function(){ return "update-entry-table"; },
         /**
          * @returns {string}
          */
@@ -54,7 +57,6 @@ new Vue({
     },
     store: Store,
     mounted: function(){
-        // TODO: probably going to remove this...
         this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
 
         let accounts = new Accounts();
@@ -63,10 +65,7 @@ new Vue({
         let accountTypes = new AccountTypes();
         accountTypes.fetch();
 
-        let entries = new Entries();
-        entries.fetch().then(function(){
-            this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
-        }.bind(this));
+        this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE);
 
         let institutions = new Institutions();
         institutions.fetch();

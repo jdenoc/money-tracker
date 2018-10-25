@@ -10,7 +10,10 @@ abstract class DuskTestCase extends BaseTestCase {
 
     use CreatesApplication;
 
-    const TEST_STORAGE_FILE_PATH = "app/test/download.jpg";
+    const TEST_STORAGE_FILE1_PATH = "app/test/nature-thunderstorm.jpg";
+    const TEST_STORAGE_FILE2_PATH = "app/test/space-blackhole-with-jet.jpg";
+    const TEST_STORAGE_FILE3_PATH = "app/test/test-pattern.png";
+    const TEST_STORAGE_FILE4_PATH = "app/test/test-triangle.png";
 
     /**
      * Prepare for Dusk test execution.
@@ -51,6 +54,17 @@ abstract class DuskTestCase extends BaseTestCase {
         $entry_response = $this->get("/api/entry/".$entry_id);
         $entry = $entry_response->json();
         return $entry;
+    }
+
+    public function getRandomTestFilePath(){
+        $test_file_paths = [
+            self::TEST_STORAGE_FILE1_PATH,
+            self::TEST_STORAGE_FILE2_PATH,
+            self::TEST_STORAGE_FILE3_PATH,
+            self::TEST_STORAGE_FILE4_PATH,
+        ];
+
+        return $test_file_paths[array_rand($test_file_paths, 1)];
     }
 
 }
