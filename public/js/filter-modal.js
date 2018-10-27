@@ -27,10 +27,11 @@ var filterModal = {
             }
             filterModal.updateRangeCurrency(account.currency);
         });
-        filterModal.toggleAccountOrAccountTypeSelect();
+        filterModal.clearAccountOrAccountTypeSelect();
+        filterModal.initAccountSelect();
     },
     toggleAccountOrAccountTypeSelect: function(){
-        $('#filter-account-or-account-type .generated').remove();
+        filterModal.clearAccountOrAccountTypeSelect();
         var currentState = $('#filter-toggle-account-or-account-type').bootstrapSwitch('state');
         // on/true = account_type; off/false = account; see bootstrapSwitchAccountOrAccountTypeObject
         if(currentState){
@@ -53,6 +54,9 @@ var filterModal = {
                 $("#filter-account-or-account-type").append('<option value="'+accountOrAccountTypeObject.id+'" class="generated">'+accountOrAccountTypeObject.name+'</option>');
             }
         });
+    },
+    clearAccountOrAccountTypeSelect: function(){
+        $('#filter-account-or-account-type .generated').remove();
     },
     initTagsInput: function(){
         var filterTags = $('#filter-tags');

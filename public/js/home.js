@@ -177,13 +177,11 @@ var accounts = {
                 }
             },
             complete: function(){
-                accounts.display();
+                institutionsPane.displayAccounts();
+                filterModal.clearAccountOrAccountTypeSelect();
+                filterModal.initAccountSelect();
             }
         });
-    },
-    display: function(){
-        institutionsPane.displayAccounts();
-        filterModal.initAccountSelect();
     },
     valuesSortedBy: function(property){
         return accounts.value.slice().sort(function(a, b){
