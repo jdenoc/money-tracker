@@ -19,7 +19,7 @@ export class Version extends ObjectBaseClass {
                 case 404:
                 case 500:
                 default:
-                    this.set("N/A");
+                    this.assign = "N/A";
                     break;
             }
         }
