@@ -1,4 +1,5 @@
 import { ObjectBaseClass } from './objectBaseClass';
+import { SnotifyStyle } from 'vue-snotify';
 import Store from './store';
 
 export class Tags extends ObjectBaseClass {
@@ -17,9 +18,7 @@ export class Tags extends ObjectBaseClass {
                     break;
                 case 500:
                 default:
-                    // TODO: notify users of issue
-                    // notice.display(notice.typeDanger, "Error occurred when attempting to retrieve tags");
-                    break;
+                    return {type: SnotifyStyle.error, message: "An error occurred while attempting to retrieve tags"};
             }
         }
     }

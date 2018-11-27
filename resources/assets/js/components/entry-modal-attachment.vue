@@ -34,6 +34,11 @@
                     this.attachmentObject
                         .delete(this.uuid, this.entryId)
                         .then(function(newEntryData){
+                            if(!_.isEmpty(newEntryData.notification) && _.isObject(newEntryData.notification)){
+                                // inform user of attachment deletion
+                                this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, {type: newEntryData.notification.type, message: newEntryData.notification.message.replace("%s", this.entryId)});
+                                delete newEntryData.notification;
+                            }
                             if(!_.isEmpty(newEntryData)){
                                 // update entryData in entry-modal component
                                 this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_MODAL_UPDATE_DATA, newEntryData);
