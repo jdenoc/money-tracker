@@ -1,6 +1,9 @@
 import Vue from 'vue';
 import Store from './store';
 
+import Snotify, { SnotifyStyle } from 'vue-snotify';
+Vue.use(Snotify, {toast: {timeout: 5000}});
+
 import EntryModal from './components/entry-modal';
 import EntriesTable from './components/entries-table';
 import InstitutionsPanel from './components/institutions-panel';
@@ -26,6 +29,10 @@ Vue.prototype.$eventHub = new Vue({
         /**
          * @returns {string}
          */
+        EVENT_NOTIFICATION: function(){ return "notification"; },
+        /**
+         * @returns {string}
+         */
         EVENT_ENTRY_TABLE_UPDATE: function(){ return "update-entry-table"; },
         /**
          * @returns {string}
@@ -35,6 +42,8 @@ Vue.prototype.$eventHub = new Vue({
          * @returns {string}
          */
         EVENT_ENTRY_MODAL_UPDATE_DATA: function(){ return "update-data-in-entry-modal"; }
+
+        // TODO: EVENT_UPDATE_ACCOUNTS: update accounts in institutions panel when there is an entry update
     },
     methods: {
         broadcast(event, data = null){
@@ -56,22 +65,46 @@ new Vue({
         Navbar
     },
     store: Store,
+    methods: {
+        displayNotification: function(notification){
+            if(!_.isEmpty(notification)){
+                switch(notification.type){
+                    case SnotifyStyle.error:
+                        this.$snotify.error(notification.message);
+                        break;
+                    case SnotifyStyle.info:
+                    default:
+                        this.$snotify.info(notification.message);
+                        break;
+                    case SnotifyStyle.success:
+                        this.$snotify.success(notification.message);
+                        break;
+                    case SnotifyStyle.warning:
+                        this.$snotify.warning(notification.message);
+                        break;
+                }
+            }
+        }
+    },
+    created: function(){
+        this.$eventHub.listen(this.$eventHub.EVENT_NOTIFICATION, this.displayNotification);
+    },
     mounted: function(){
         this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
 
         let accounts = new Accounts();
-        accounts.fetch();
+        accounts.fetch().then(this.displayNotification.bind(this));
 
         let accountTypes = new AccountTypes();
-        accountTypes.fetch();
+        accountTypes.fetch().then(this.displayNotification.bind(this));
 
         this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE);
 
         let institutions = new Institutions();
-        institutions.fetch();
+        institutions.fetch().then(this.displayNotification.bind(this));
 
         let tags = new Tags();
-        tags.fetch();
+        tags.fetch().then(this.displayNotification.bind(this));
 
         let version = new Version();
         version.fetch();

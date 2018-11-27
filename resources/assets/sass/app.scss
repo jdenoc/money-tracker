@@ -12,3 +12,12 @@
 @import "~bulma-badge/dist/bulma-badge.sass";
 @import "~bulma-checkradio/dist/css/bulma-checkradio.sass";
 @import "~bulma-tooltip/dist/bulma-tooltip.sass";
+
+// Snotify
+@import "~vue-snotify/styles/material";
+.snotifyToast__body{
+  font-size: 1.1em;
+}
+.snotify-success .snotifyToast__body{
+  color: #e1f1e1;
+}

@@ -179,8 +179,8 @@
 <script>
     import _ from 'lodash';
     import {AccountTypes} from "../account-types";
-    import {Entries} from "../entries"
-    import {Entry} from "../entry"
+    import {Entries} from "../entries";
+    import {Entry} from "../entry";
     import {Tags} from '../tags';
     import EntryModalAttachment from "./entry-modal-attachment";
     import ToggleButton from 'vue-js-toggle-button/src/Button'
@@ -356,16 +356,21 @@
                             reject(entryId);
                         }
                     }.bind(this))
-                        .then(this.openModal)
-                        .catch(function(entryId){
+                        .then(this.openModal)       // resolve
+                        .catch(function(entryId){   // reject
                             this.entryObject.fetch(entryId)
-                                .then(function(){
-                                    let entryData = this.entryObject.find(entryId);
-                                    this.openModal(entryData);
-                                }.bind(this))
-                                .catch(function(){
-                                    // TODO: display notification error
-                                    this.openModal({});
+                                .then(function(fetchResult){
+                                    let freshlyFetchedEntryData = {};
+                                    if(fetchResult.fetched){
+                                        freshlyFetchedEntryData = this.entryObject.find(entryId);
+                                    }
+                                    this.openModal(freshlyFetchedEntryData);
+                                    if(!_.isEmpty(fetchResult.notification)){
+                                        this.$eventHub.broadcast(
+                                            this.$eventHub.EVENT_NOTIFICATION,
+                                            {type: fetchResult.notification.type, message: fetchResult.notification.message}
+                                        );
+                                    }
                                 }.bind(this));
                         }.bind(this));
                 } else {
@@ -387,21 +392,6 @@
                 this.isLocked = false;
                 this.dropzoneRef.enable();
                 this.updateAccountTypeMeta();
-            },
-            toggleLockState: function(){
-                if(this.isLocked){
-                    this.unlockModal();
-                } else {
-                    this.lockModal();
-                }
-            },
-            lockModal: function(){
-                this.isLocked = true;
-                this.dropzoneRef.disable();
-            },
-            unlockModal: function(){
-                this.isLocked = false;
-                this.dropzoneRef.enable();
             },
             saveEntry: function(){
                 this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
@@ -462,16 +452,37 @@
                         }
                     });
                 }
-
-                this.entryObject.save(newEntryData).finally(function(){
+                this.entryObject.save(newEntryData).then(function(notification){
+                    if(!_.isEmpty(notification)){
+                        this.$eventHub.broadcast(
+                            this.$eventHub.EVENT_NOTIFICATION,
+                            {type: notification.type, message: notification.message.replace('%s', this.entryData.id)}
+                        );
+                    }
                     this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE);
                     this.closeModal();
                 }.bind(this));
             },
             deleteEntry: function(){
+                this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
                 this.entryObject
                     .delete(this.entryData.id)
-                    .then(this.closeModal.bind(this));
+                    .then(function(deleteResult){
+                        if(!_.isEmpty(deleteResult.notification)){
+                            this.$eventHub.broadcast(
+                                this.$eventHub.EVENT_NOTIFICATION,
+                                {type: deleteResult.notification.type, message: deleteResult.notification.message.replace('%s', this.entryData.id)}
+                            );
+                        }
+                        this.closeModal();
+                        if(deleteResult.deleted){
+                            this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE);
+                            // don't need to broadcast an event to hide the loading modal here
+                            // already taken care of at the end of the entry-table update event process
+                        } else {
+                            this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
+                        }
+                    }.bind(this));
             },
             notAvailable: function(){
                 alert("This feature is not currently available");
@@ -510,9 +521,9 @@
                 this.entryData.attachments.push(response);
             },
             dropzoneRemoveUpload(file){
-                let removedeAttachmentObject = JSON.parse(file.xhr.response);
+                let removedAttachmentObject = JSON.parse(file.xhr.response);
                 this.entryData.attachments = this.entryData.attachments.filter(function(attachment){
-                    return attachment.uuid !== removedeAttachmentObject.uuid;
+                    return attachment.uuid !== removedAttachmentObject.uuid;
                 });
             }
         },
