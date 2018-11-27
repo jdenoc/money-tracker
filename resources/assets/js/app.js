@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Store from './store';
 
-import Snotify, { SnotifyStyle } from 'vue-snotify';
+import Snotify from 'vue-snotify';
 Vue.use(Snotify, {toast: {timeout: 5000}});
 
 import EntryModal from './components/entry-modal';
@@ -9,6 +9,7 @@ import EntriesTable from './components/entries-table';
 import InstitutionsPanel from './components/institutions-panel';
 import LoadingModal from './components/loading-modal';
 import Navbar from './components/navbar';
+import Notification from './components/notification';
 
 import { Accounts } from './accounts';
 import { AccountTypes } from './account-types';
@@ -62,32 +63,14 @@ new Vue({
         EntriesTable,
         InstitutionsPanel,
         LoadingModal,
-        Navbar
+        Navbar,
+        Notification
     },
     store: Store,
     methods: {
         displayNotification: function(notification){
-            if(!_.isEmpty(notification)){
-                switch(notification.type){
-                    case SnotifyStyle.error:
-                        this.$snotify.error(notification.message);
-                        break;
-                    case SnotifyStyle.info:
-                    default:
-                        this.$snotify.info(notification.message);
-                        break;
-                    case SnotifyStyle.success:
-                        this.$snotify.success(notification.message);
-                        break;
-                    case SnotifyStyle.warning:
-                        this.$snotify.warning(notification.message);
-                        break;
-                }
-            }
+            this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, notification);
         }
-    },
-    created: function(){
-        this.$eventHub.listen(this.$eventHub.EVENT_NOTIFICATION, this.displayNotification);
     },
     mounted: function(){
         this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);

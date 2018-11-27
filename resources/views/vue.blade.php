@@ -36,7 +36,7 @@
             -->
             <loading-modal></loading-modal>
             <!-- notifications are the only exception -->
-            <vue-snotify></vue-snotify>
+            <notification></notification>
         </div>
     </div>
     <script type="text/javascript" src="{{asset('vue/js/app.js')}}"></script>
