@@ -11,15 +11,15 @@ let mix = require('laravel-mix');
  |
  */
 
-let cssDirectory     = 'public/vue/css';
-let nodeDirectory    = 'node_modules';
-let jsDirectory      = 'public/vue/js';
-let webFontDirectory = 'public/vue/webfonts';
+let cssDirectory            = 'public/vue/css';
+let nodeDirectory           = 'node_modules';
+let jsDirectory             = 'public/vue/js';
+let webFontDirectory        = 'public/vue/webfonts';
+let resourceAssetsDirectory = 'resources/assets';
 
 mix.js('resources/assets/js/app.js', jsDirectory)
     // bulma-accordion
-    .js(nodeDirectory+'/bulma-accordion/dist/bulma-accordion.js', jsDirectory)
-    .copy(nodeDirectory+'/bulma-accordion/dist/bulma-accordion.min.css', cssDirectory+'/bulma-accordion.css')
+    .js(nodeDirectory+'/bulma-accordion/dist/bulma-accordion.min.js', jsDirectory+'/bulma-accordion.js')
     // dropzone
     .copy(nodeDirectory+'/vue2-dropzone/dist/vue2Dropzone.css', cssDirectory+'/vue-dropzone.css')
     // font-awesome
@@ -28,7 +28,5 @@ mix.js('resources/assets/js/app.js', jsDirectory)
     .copy(nodeDirectory+'/@fortawesome/fontawesome-free/webfonts/fa-regular-400.woff2', webFontDirectory+'/fa-regular-400.woff2')
     // tags-input
     .copy(nodeDirectory+'/@voerro/vue-tagsinput/dist/style.css', cssDirectory+'/tags-input.css')
-    // bulma-checkradio
-    .copy(nodeDirectory+'/bulma-checkradio/dist/css/bulma-checkradio.min.css', cssDirectory+'/bulma-checkradio.css')
 
-    .sass('resources/assets/sass/app.scss', cssDirectory);
+    .sass(resourceAssetsDirectory+'/sass/app.scss', cssDirectory);
