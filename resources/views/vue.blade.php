@@ -14,7 +14,6 @@
     <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
 
     <link href="{{asset('vue/css/app.css')}}" rel="stylesheet" type="text/css">
-    <link href="{{asset('vue/css/bulma-accordion.css')}}" rel="stylesheet" type="text/css">
     <link href="{{asset('vue/css/font-awesome.css')}}" rel="stylesheet" type="text/css">
     <link href="{{asset('vue/css/tags-input.css')}}" rel="stylesheet" type="text/css">
     <link href="{{asset('vue/css/vue-dropzone.css')}}" rel="stylesheet" type="text/css">

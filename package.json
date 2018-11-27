@@ -1,14 +1,5 @@
 {
   "private": true,
-  "devDependencies": {
-    "axios": "^0.16.2",
-    "cross-env": "^5.0.1",
-    "laravel-mix": "^1.0",
-    "lodash": "^4.17.4",
-    "toastr": "^2.1.4",
-    "vue": "^2.1.10",
-    "vuex": "^3.0.1"
-  },
   "scripts": {
     "build-dev": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
     "build-dev-watch": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --watch --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
@@ -17,13 +8,21 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.1.0",
     "@voerro/vue-tagsinput": "^1.8.0",
+    "axios": "^0.16.2",
     "bulma": "^0.6.2",
     "bulma-accordion": "^1.0.1",
     "bulma-badge": "^1.0.1",
     "bulma-checkradio": "^2.1.0",
     "bulma-tooltip": "^1.0.4",
+    "cross-env": "^5.0.1",
     "randomcolor": "^0.5.3",
+    "laravel-mix": "^1.0",
+    "lodash": "^4.17.4",
+    "toastr": "^2.1.4",
+    "vue": "^2.1.10",
+    "vuex": "^3.0.1",
     "vue-js-toggle-button": "^1.2.3",
+    "vue-snotify": "^3.2.1",
     "vue-spinner-component": "^1.0.5",
     "vue2-dropzone": "^3.2.2"
   }
