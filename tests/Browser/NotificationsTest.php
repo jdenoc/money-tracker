@@ -57,7 +57,7 @@ class NotificationsTest extends DuskTestCase {
 
     public function testNotificationFetchAccounts404(){
         // FORCE 404 from `GET /api/accounts`
-        DB::statement("DELETE FROM accounts");
+        DB::statement("TRUNCATE accounts");
 
         $this->browse(function (Browser $browser) {
             $browser->visit(new HomePage())
@@ -69,21 +69,7 @@ class NotificationsTest extends DuskTestCase {
     }
 
     public function testNotificationFetchAccounts500(){
-        // This query is accurate as of migration:
-        // 2018_07_17_160556_add_accounts_column_currency.php
-        $recreate_table_query = <<<MYSQL
-CREATE TABLE accounts (
-  id             int(10)  unsigned   PRIMARY KEY  auto_increment,
-  name           varchar(100),
-  institution_id int(10) unsigned,
-  disabled       tinyint(3) unsigned DEFAULT 0,
-  total          decimal(10,2)       DEFAULT 0.00,
-  currency       char(3)             DEFAULT "USD",
-  create_stamp   timestamp           NULL DEFAULT NULL,
-  modified_stamp timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  disabled_stamp timestamp           NULL DEFAULT NULL
-);
-MYSQL;
+        $recreate_table_query = $this->getTableRecreationQuery('accounts');
 
         $this->browse(function (Browser $browser) use ($recreate_table_query){
             // FORCE 500 from `GET /api/accounts`
@@ -101,7 +87,7 @@ MYSQL;
 
     public function testNotificationFetchAccountTypes404(){
         // FORCE 404 from `GET /api/account-types`
-        DB::statement("DELETE FROM account_types");
+        DB::statement("TRUNCATE account_types");
 
         $this->browse(function (Browser $browser) {
             $browser->visit(new HomePage())
@@ -113,21 +99,7 @@ MYSQL;
     }
 
     public function testNotificationFetchAccountTypes500(){
-        // This query is accurate as of migration:
-        // 2018_09_25_011033_update_account_types_column_type.php
-        $recreate_table_query = <<<MYSQL
-CREATE TABLE account_types (
-  id             int(10)  unsigned   PRIMARY KEY  auto_increment,
-  type           enum('checking','savings','credit card','debit card','loan'),
-  last_digits    varchar(4),
-  name           varchar(100),
-  account_id int(10) unsigned,
-  disabled       tinyint(3) unsigned DEFAULT 0,
-  create_stamp   timestamp           NULL DEFAULT NULL,
-  modified_stamp timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-  disabled_stamp timestamp           NULL DEFAULT NULL
-);
-MYSQL;
+        $recreate_table_query = $this->getTableRecreationQuery('account_types');
 
         $this->browse(function (Browser $browser) use ($recreate_table_query){
             // FORCE 500 from `GET /api/account-types`
@@ -194,11 +166,8 @@ MYSQL;
     }
 
     public function testNotificationFetchEntries404(){
-        // TODO: see note: -----------------VVV-----------------
-        $this->markTestIncomplete("Can't do this right now. Need to move notifications into their own component");
-
         // FORCE 404 from `GET /api/entries`
-        DB::statement("DELETE FROM entries");
+        DB::statement("TRUNCATE entries");
 
         $this->browse(function (Browser $browser) {
             $browser->visit(new HomePage())
@@ -210,26 +179,7 @@ MYSQL;
     }
 
     public function testNotificationFetchEntries500(){
-        // TODO: see note: -----------------VVV-----------------
-        $this->markTestIncomplete("Can't do this right now. Need to move notifications into their own component");
-
-        // This query is accurate as of migration:
-        // 2017_11_21_161444_rename_tags_tag_column_to_name.php
-        $recreate_table_query = <<<MYSQL
-CREATE TABLE entries (
-  id               int(10) unsigned      PRIMARY KEY  auto_increment,
-  entry_date       date,
-  account_type_id  int(10) unsigned,
-  entry_value      decimal(10,2),
-  memo             text,
-  expense          tinyint(3) unsigned,
-  confirm          tinyint(3) unsigned,
-  disabled         tinyint(1)            DEFAULT 0,
-  create_stamp     timestamp             NULL DEFAULT NULL,
-  modified_stamp   timestamp             NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  disabled_stamp   timestamp             NULL DEFAULT NULL 
-);
-MYSQL;
+        $recreate_table_query = $this->getTableRecreationQuery('entries');
 
         $this->browse(function (Browser $browser) use ($recreate_table_query){
             // FORCE 500 from `GET /api/entries`
@@ -241,8 +191,6 @@ MYSQL;
                 ->waitUntilMissing($this->_selector_notification.$this->_selector_notification_error, HomePage::WAIT_SECONDS);
 
             DB::statement($recreate_table_query);
-
-
         });
     }
 
@@ -467,7 +415,7 @@ MYSQL;
 
     public function testNotificationFetchInstitutions404(){
         // FORCE 404 from `GET /api/institutions`
-        DB::statement("DELETE FROM institutions");
+        DB::statement("TRUNCATE institutions");
 
         $this->browse(function (Browser $browser) {
             $browser->visit(new HomePage())
@@ -479,17 +427,7 @@ MYSQL;
     }
 
     public function testNotificationFetchInstitutions500(){
-        // This query is accurate as of migration:
-        // 2017_06_26_170141_create_institutions_table.php
-        $recreate_table_query = <<<MYSQL
-CREATE TABLE institutions (
-  id             int(10) unsigned  PRIMARY KEY  auto_increment,
-  name           varchar(50),
-  active         tinyint(4)        DEFAULT 1,
-  create_stamp   timestamp         NULL DEFAULT NULL,
-  modified_stamp timestamp         NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-MYSQL;
+        $recreate_table_query = $this->getTableRecreationQuery('institutions');
 
         $this->browse(function (Browser $browser) use ($recreate_table_query){
             // FORCE 500 from `GET /api/institutions`
@@ -507,7 +445,7 @@ MYSQL;
 
     public function testNotificationFetchTags404(){
         // FORCE 404 from `GET /api/tags`
-        DB::statement("DELETE FROM tags");
+        DB::statement("TRUNCATE tags");
 
         $this->browse(function (Browser $browser) {
             $browser->visit(new HomePage())
@@ -517,14 +455,7 @@ MYSQL;
     }
 
     public function testNotificationFetchTags500(){
-        // This query is accurate as of migration:
-        // 2017_11_21_161444_rename_tags_tag_column_to_name.php
-        $recreate_table_query = <<<MYSQL
-CREATE TABLE tags (
-  id    int(10) unsigned  PRIMARY KEY  auto_increment,
-  name  varchar(50)
-);
-MYSQL;
+        $recreate_table_query = $this->getTableRecreationQuery('tags');
 
         $this->browse(function (Browser $browser) use ($recreate_table_query){
             // FORCE 500 from `GET /api/tags`
@@ -538,6 +469,11 @@ MYSQL;
 
             DB::statement($recreate_table_query);
         });
+    }
+
+    private function getTableRecreationQuery($table_name){
+        $create_query = DB::select("SHOW CREATE TABLE ".$table_name);
+        return $create_query[0]->{"Create Table"};
     }
 
 }

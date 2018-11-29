@@ -50,9 +50,13 @@
         },
         methods: {
             updateEntriesTable: function(){
-                this.entries.fetch().finally(function(){
-                    this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
-                }.bind(this));
+                this.entries.fetch()
+                    .then(function(notification){
+                        this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, notification);
+                    }.bind(this))
+                    .finally(function(){
+                        this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
+                    }.bind(this));
             }
         },
         created: function(){
