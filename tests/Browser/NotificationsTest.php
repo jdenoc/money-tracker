@@ -13,24 +13,19 @@ class NotificationsTest extends DuskTestCase {
 
     use DatabaseMigrations;
 
-    private $_selector_notification = ".snotifyToast";
-    private $_selector_notification_info = ".snotify-info";
-    private $_selector_notification_error = ".snotify-error";
-    private $_selector_notification_success = ".snotify-success";
-
-    private $_message_error_occurred = "An error occurred while attempting to retrieve %s";
-    private $_message_not_found = "No %s currently available";
-
     private $_selector_modal = "@entry-modal";
     private $_selector_modal_body = "#entry-modal .modal-card-body";
     private $_selector_modal_body_value = "input#entry-value";
     private $_selector_modal_body_account_type = "select#entry-account-type";
     private $_selector_modal_body_account_type_is_loading = ".select.is-loading select#entry-account-type";
     private $_selector_modal_body_memo = "textarea#entry-memo";
-
     private $_selector_modal_foot = "#entry-modal .modal-card-foot";
     private $_selector_modal_foot_save_btn = "button#entry-save-btn";
 
+    private $_selector_notification = "@notification";
+
+    private $_message_error_occurred = "An error occurred while attempting to retrieve %s";
+    private $_message_not_found = "No %s currently available";
 
     public function setUp(){
         parent::setUp();
@@ -61,10 +56,7 @@ class NotificationsTest extends DuskTestCase {
 
         $this->browse(function (Browser $browser) {
             $browser->visit(new HomePage())
-                ->waitFor($this->_selector_notification, HomePage::WAIT_SECONDS_LONG)
-                ->assertVisible($this->_selector_notification.$this->_selector_notification_info)
-                ->assertSee(sprintf($this->_message_not_found, "accounts"))
-                ->waitUntilMissing($this->_selector_notification.$this->_selector_notification_info, HomePage::WAIT_SECONDS);
+                ->assertNotification(HomePage::NOTIFICATION_INFO, sprintf($this->_message_not_found, "accounts"));
         });
     }
 
@@ -76,10 +68,7 @@ class NotificationsTest extends DuskTestCase {
             DB::statement("DROP TABLE accounts");
 
             $browser->visit(new HomePage())
-                ->waitFor($this->_selector_notification, HomePage::WAIT_SECONDS)
-                ->assertVisible($this->_selector_notification.$this->_selector_notification_error)
-                ->assertSee(sprintf($this->_message_error_occurred, "accounts"))
-                ->waitUntilMissing($this->_selector_notification.$this->_selector_notification_error, HomePage::WAIT_SECONDS);
+                ->assertNotification(HomePage::NOTIFICATION_ERROR, sprintf($this->_message_error_occurred, "accounts"));
 
             DB::statement($recreate_table_query);
         });
@@ -91,10 +80,7 @@ class NotificationsTest extends DuskTestCase {
 
         $this->browse(function (Browser $browser) {
             $browser->visit(new HomePage())
-                ->waitFor($this->_selector_notification, HomePage::WAIT_SECONDS)
-                ->assertVisible($this->_selector_notification.$this->_selector_notification_info)
-                ->assertSee(sprintf($this->_message_not_found, "account types"))
-                ->waitUntilMissing($this->_selector_notification.$this->_selector_notification_info, HomePage::WAIT_SECONDS);
+                ->assertNotification(HomePage::NOTIFICATION_INFO, sprintf($this->_message_not_found, "account types"));
         });
     }
 
@@ -106,10 +92,7 @@ class NotificationsTest extends DuskTestCase {
             DB::statement("DROP TABLE account_types");
 
             $browser->visit(new HomePage())
-                ->waitFor($this->_selector_notification, HomePage::WAIT_SECONDS)
-                ->assertVisible($this->_selector_notification.$this->_selector_notification_error)
-                ->assertSee(sprintf($this->_message_error_occurred, "account types"))
-                ->waitUntilMissing($this->_selector_notification.$this->_selector_notification_error, HomePage::WAIT_SECONDS);
+                ->assertNotification(HomePage::NOTIFICATION_ERROR, sprintf($this->_message_error_occurred, "account types"));
 
             DB::statement($recreate_table_query);
         });
@@ -171,10 +154,7 @@ class NotificationsTest extends DuskTestCase {
 
         $this->browse(function (Browser $browser) {
             $browser->visit(new HomePage())
-                ->waitFor($this->_selector_notification, HomePage::WAIT_SECONDS)
-                ->assertVisible($this->_selector_notification.$this->_selector_notification_info)
-                ->assertSee("No entries were found")
-                ->waitUntilMissing($this->_selector_notification.$this->_selector_notification_info, HomePage::WAIT_SECONDS);
+                ->assertNotification(HomePage::NOTIFICATION_INFO, "No entries were found");
         });
     }
 
@@ -185,10 +165,8 @@ class NotificationsTest extends DuskTestCase {
             // FORCE 500 from `GET /api/entries`
             DB::statement("DROP TABLE entries");
 
-            $browser->visit(new HomePage())->waitFor($this->_selector_notification, HomePage::WAIT_SECONDS)
-                ->assertVisible($this->_selector_notification.$this->_selector_notification_error)
-                ->assertSee(sprintf($this->_message_error_occurred, "entries"))
-                ->waitUntilMissing($this->_selector_notification.$this->_selector_notification_error, HomePage::WAIT_SECONDS);
+            $browser->visit(new HomePage())
+                ->assertNotification(HomePage::NOTIFICATION_ERROR, sprintf($this->_message_error_occurred, "entries"));
 
             DB::statement($recreate_table_query);
         });
@@ -214,10 +192,7 @@ class NotificationsTest extends DuskTestCase {
                 ->with($this->_selector_modal_foot, function($modal_foot){
                     $modal_foot->click($this->_selector_modal_foot_save_btn);
                 })
-                ->waitFor($this->_selector_notification, HomePage::WAIT_SECONDS_LONG)
-                ->assertVisible($this->_selector_notification.$this->_selector_notification_success)
-                ->assertSee("New entry created")
-                ->waitUntilMissing($this->_selector_notification.$this->_selector_notification_success, HomePage::WAIT_SECONDS);
+                ->assertNotification(HomePage::NOTIFICATION_SUCCESS, "New entry created");
         });
     }
 
@@ -419,10 +394,7 @@ class NotificationsTest extends DuskTestCase {
 
         $this->browse(function (Browser $browser) {
             $browser->visit(new HomePage())
-                ->waitFor($this->_selector_notification, HomePage::WAIT_SECONDS)
-                ->assertVisible($this->_selector_notification.$this->_selector_notification_info)
-                ->assertSee(sprintf($this->_message_not_found, "institutions"))
-                ->waitUntilMissing($this->_selector_notification.$this->_selector_notification_info, HomePage::WAIT_SECONDS);
+                ->assertNotification(HomePage::NOTIFICATION_INFO, sprintf($this->_message_not_found, "institutions"));
         });
     }
 
@@ -434,10 +406,7 @@ class NotificationsTest extends DuskTestCase {
             DB::statement("DROP TABLE institutions");
 
             $browser->visit(new HomePage())
-                ->waitFor($this->_selector_notification, HomePage::WAIT_SECONDS)
-                ->assertVisible($this->_selector_notification.$this->_selector_notification_error)
-                ->assertSee(sprintf($this->_message_error_occurred, "institutions"))
-                ->waitUntilMissing($this->_selector_notification.$this->_selector_notification_error, HomePage::WAIT_SECONDS);
+                ->assertNotification(HomePage::NOTIFICATION_ERROR, sprintf($this->_message_error_occurred, "institutions"));
 
             DB::statement($recreate_table_query);
         });
@@ -462,10 +431,7 @@ class NotificationsTest extends DuskTestCase {
             DB::statement("DROP TABLE tags");
 
             $browser->visit(new HomePage())
-                ->waitFor($this->_selector_notification, HomePage::WAIT_SECONDS)
-                ->assertVisible($this->_selector_notification.$this->_selector_notification_error)
-                ->assertSee(sprintf($this->_message_error_occurred, "tags"))
-                ->waitUntilMissing($this->_selector_notification.$this->_selector_notification_error, HomePage::WAIT_SECONDS);
+                ->assertNotification(HomePage::NOTIFICATION_ERROR, sprintf($this->_message_error_occurred, "tags"));
 
             DB::statement($recreate_table_query);
         });
