@@ -17,6 +17,8 @@ services:
       - dockerhost:$DOCKER_HOST_IP
     dns_search:
       - money-tracker.docker
+    networks:
+      - net.money-tracker
 
   database:
     build:
@@ -31,14 +33,21 @@ services:
       - MYSQL_DATABASE=money_tracker
       - MYSQL_USER=jdenoc
       - MYSQL_PASSWORD=password
+    networks:
+      - net.money-tracker
 
   selenium: # needed for e2e (End-to-End) testing
     image: selenium/standalone-chrome:latest
     container_name: "selenium.money-tracker"
     links:
-    - application:money-tracker.docker
+      - application:money-tracker.docker
     volumes:
-    - /dev/shm:/dev/shm
+      - /dev/shm:/dev/shm
+    networks:
+      - net.money-tracker
 
 volumes:
   db.money-tracker:
+
+networks:
+  net.money-tracker:
