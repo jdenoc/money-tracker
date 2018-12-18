@@ -91,7 +91,7 @@ This will generate Laravel Facades that PhpStorm can use.
 ##### Run yarn install
 ```bash
 docker/docker-yarn.sh install
-docker/docker-yarn.sh run development
+docker/docker-yarn.sh run build-dev
 ```
 
 ##### Bring "up" application container(s)
@@ -175,6 +175,7 @@ php artisan migrate
 
 # setup Yarn packages
 yarn install
+yarn run build-dev
 ```
 
 ***
@@ -202,6 +203,7 @@ php artisan migrate
 
 # setup Yarn packages
 yarn install --prod
+yarn run build-prod
 ```
 
 ***
@@ -219,13 +221,17 @@ MOST_RECENT_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
 git checkout -q tags/$MOST_RECENT_TAG
 php artisan app:version $MOST_RECENT_TAG
 
-# Should it be required, i.e. new packages.
-# Note: check update release notes. Notice of new packages will be listed there. 
+# New/Updates to composer/yarn packages
+# Note: check update release notes. 
 composer update --no-dev
 yarn install --prod
+yarn run build-prod
+
+# Database updates
+# Note: check update release notes.
 php artisan migrate 
 
-# take site out if maintenance mode
+# take site out of maintenance mode
 php artisan up
 ```
 
@@ -287,9 +293,7 @@ vendor/bin/phpunit --stop-on-failure
 # run PHP unit tests with coverage
 vendor/bin/phpunit --coverage-text --stop-on-failure
 
-# run Dusk tests
-php artsian migrate:refresh
-php artisan db:seed --class=UiSampleDatabaseSeeder
+# run end-2-end Laravel Dusk tests
 php artisan dusk --stop-on-failure
 ```
 
@@ -297,6 +301,7 @@ php artisan dusk --stop-on-failure
 
 ## Other Documentation
 - [Laravel](https://laravel.com/docs/5.4/)
+- [VueJS](https://vuejs.org/v2/guide/)
 - [Docker](https://docs.docker.com/)
 - [Composer](https://getcomposer.org/doc/)
 - [Yarn](https://yarnpkg.com/en/docs)
