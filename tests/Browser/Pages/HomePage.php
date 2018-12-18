@@ -10,6 +10,11 @@ class HomePage extends Page {
     const WAIT_SECONDS = 10;
     const WAIT_SECONDS_LONG = 30;
 
+    const NOTIFICATION_ERROR = 'error';
+    const NOTIFICATION_INFO = 'info';
+    const NOTIFICATION_SUCCESS = 'success';
+    const NOTIFICATION_WARNING = 'warning';
+
     /**
      * Get the URL for the page.
      *
@@ -36,12 +41,21 @@ class HomePage extends Page {
      */
     public function elements(){
         return [
+            // navbar
             '@navbar'=>'.navbar',
             '@new-entry-modal-btn'=>'#nav-entry-modal',
+            // loading-modal
             '@loading'=>'#loading-modal',
+            // entry-modal
             '@entry-modal'=>'#entry-modal',
             '@entry-modal-save-btn'=>"#entry-modal button#entry-save-btn",
-            '@edit-existing-entry-modal-btn'=>"button.button.edit-entry-button"
+            '@edit-existing-entry-modal-btn'=>"button.button.edit-entry-button",
+            // notification-modal
+            '@notification'=>".snotifyToast",
+            '@notification-error'=>".snotifyToast.snotify-error",
+            '@notification-info'=>".snotifyToast.snotify-info",
+            '@notification-success'=>".snotifyToast.snotify-success",
+            '@notification-warning'=>".snotifyToast.snotify-warning", // TODO: confirm this is correct
         ];
     }
 
@@ -81,6 +95,34 @@ class HomePage extends Page {
             $browser->attribute("@entry-modal-save-btn", 'disabled'),
             "Entry-modal save button IS disabled"
         );
+    }
+
+    public function assertNotification(Browser $browser, $notification_type, $notification_message){
+        switch($notification_type){
+            case self::NOTIFICATION_ERROR:
+                $notification_type_selector = '@notification-error';
+                break;
+            case self::NOTIFICATION_INFO:
+            default:
+                $notification_type_selector = '@notification-info';
+                break;
+            case self::NOTIFICATION_SUCCESS:
+                $notification_type_selector = '@notification-success';
+                break;
+            case self::NOTIFICATION_WARNING:
+                $notification_type_selector = '@notification-warning';
+                break;
+        }
+
+        $browser
+            ->waitFor('@notification', self::WAIT_SECONDS)
+            ->assertVisible($notification_type_selector)
+            ->assertSee($notification_message)
+            // Selenium has issues on some tests.
+            // We need to mouse over the navbar to make sure that notification continues its progress of dismissal.
+            ->mouseover('@navbar')
+            ->waitUntilMissing($notification_type_selector, self::WAIT_SECONDS)
+            ->pause(250);    // give the element another 0.25 seconds to fully disappear;
     }
 
 }

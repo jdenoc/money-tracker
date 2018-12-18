@@ -4,6 +4,7 @@
 
 import { Entry } from './entry';
 import { ObjectBaseClass } from './objectBaseClass';
+import { SnotifyStyle } from 'vue-snotify';
 import Axios from "axios";
 
 export class Attachment extends ObjectBaseClass {
@@ -35,8 +36,8 @@ export class Attachment extends ObjectBaseClass {
         entry = this.entryObject.updateEntryFetchStamp(entry);
         this.entryObject.assign = entry;
 
-        // TODO: inform user of attachment deletion
-        // notice.display(notice.typeInfo, "Attachment has been deleted");
+        // inform user of attachment deletion
+        entry.notification = {type: SnotifyStyle.info, message: "Attachment has been deleted"};
         return entry;
     }
 
@@ -44,14 +45,10 @@ export class Attachment extends ObjectBaseClass {
         if(error.response){
             switch(error.response.status){
                 case 404:
-                    // TODO: inform user of error
-                    // notice.display(notice.typeDanger, 'Could not delete attachment');
-                    break;
+                    return {notification: {type: SnotifyStyle.warning, message: "Could not delete attachment"}};
                 case 500:
                 default:
-                    // TODO: send a notice - delete entry
-                    // notice.display(notice.typeError, "An error occurred while attempting to delete entry attachment ["+entryId+"]");
-                    break;
+                    return {notification: {type: SnotifyStyle.error, message: "An error occurred while attempting to delete entry attachment [%s]"}};
             }
         }
     }

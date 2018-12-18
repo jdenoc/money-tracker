@@ -14,7 +14,6 @@
     <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
 
     <link href="{{asset('vue/css/app.css')}}" rel="stylesheet" type="text/css">
-    <link href="{{asset('vue/css/bulma-accordion.css')}}" rel="stylesheet" type="text/css">
     <link href="{{asset('vue/css/font-awesome.css')}}" rel="stylesheet" type="text/css">
     <link href="{{asset('vue/css/tags-input.css')}}" rel="stylesheet" type="text/css">
     <link href="{{asset('vue/css/vue-dropzone.css')}}" rel="stylesheet" type="text/css">
@@ -36,9 +35,11 @@
             then it will look like the loading-modal is still active.
             -->
             <loading-modal></loading-modal>
+            <!-- notifications are the only exception -->
+            <notification></notification>
         </div>
-        <script type="text/javascript" src="{{asset('vue/js/app.js')}}"></script>
-        <script type="text/javascript" src="{{asset('vue/js/bulma-accordion.js')}}"></script>
     </div>
+    <script type="text/javascript" src="{{asset('vue/js/app.js')}}"></script>
+    <script type="text/javascript" src="{{asset('vue/js/bulma-accordion.js')}}"></script>
 </body>
 </html>

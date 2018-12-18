@@ -1,4 +1,5 @@
 import { ObjectBaseClass } from './objectBaseClass';
+import { SnotifyStyle } from 'vue-snotify';
 import Axios from "axios";
 import Store from './store';
 
@@ -7,7 +8,7 @@ export class Entries extends ObjectBaseClass {
     constructor(){
         super();
         this.storeType = Store.getters.STORE_TYPE_ENTRIES;
-        this.uri = '/api/entries';
+        this.uri = '/api/entries/';
         this.sort = {parameter: 'entry_date', direction: 'desc'};
     }
 
@@ -34,10 +35,10 @@ export class Entries extends ObjectBaseClass {
 //             complete: entries.ajaxCompleteProcessing
 //         });
 
-        console.log("URL:"+this.uri+'/'+pageNumber+";\nfilter:"+requestParameters);
-        return Axios.post(this.uri+'/'+pageNumber, requestParameters)
+        console.log("URL:"+this.uri+pageNumber+";\nfilter:"+requestParameters);
+        return Axios.post(this.uri+pageNumber, requestParameters)
             .then(this.axiosSuccess.bind(this))
-            .catch(this.axiosFailure);
+            .catch(this.axiosFailure.bind(this));
     }
 
     axiosFailure(error){
@@ -45,15 +46,12 @@ export class Entries extends ObjectBaseClass {
             switch(error.response.status){
                 case 404:
                     this.assign = [];
-                    // TODO: notify user
-                    // notice.display(notice.typeInfo, "No entries were found");
-                    break;
+                    return {type: SnotifyStyle.info, message: "No entries were found"};
                 case 500:
                 default:
-                    // TODO: notify user of issue
                     this.assign = [];
-                    // notice.display(notice.typeDanger, "An error occurred while attempting to retrieve "+(filterModal.active?"filtered":"")+" entries");
-                    break;
+                    // return {type: SnotifyStyle.error, message: "An error occurred while attempting to retrieve "+(filterModal.active?"filtered":"")+" entries"};    // TODO: after filtering is in place
+                    return {type: SnotifyStyle.error, message: "An error occurred while attempting to retrieve entries"};
             }
         }
     }
@@ -81,14 +79,6 @@ export class Entries extends ObjectBaseClass {
 // var entries = {
 //     value: [],
 //     total: 0,
-
-//     load: function(pageNumber){
-//         entries.ajaxRequest(pageNumber, {});
-//     },
-
-//     filter: function(filterParameters, pageNumber){
-//         entries.ajaxRequest(pageNumber, filterParameters);
-//     },
 
 //     display: function(){
 //         entries.clearDisplay();

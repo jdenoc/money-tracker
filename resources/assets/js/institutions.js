@@ -1,4 +1,5 @@
 import { ObjectBaseClass } from './objectBaseClass';
+import { SnotifyStyle } from 'vue-snotify';
 import Store from './store';
 
 export class Institutions extends ObjectBaseClass {
@@ -14,13 +15,10 @@ export class Institutions extends ObjectBaseClass {
             switch(error.response.status){
                 case 404:
                     this.assign = [];
-                    // TODO: notify users
-                    //  notice.display(notice.typeInfo, "No institutions currently available");
+                    return {type: SnotifyStyle.info, message: "No institutions currently available"};
                 case 500:
                 default:
-                    // TODO: notify users of issue
-                    //  notice.display(notice.typeDanger, "Error occurred when attempting to retrieve institutions");
-                    break;
+                    return {type: SnotifyStyle.error, message: "An error occurred while attempting to retrieve institutions"};
             }
         }
     }

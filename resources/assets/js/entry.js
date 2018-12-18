@@ -4,6 +4,7 @@
 
 import _ from 'lodash';
 import { ObjectBaseClass } from './objectBaseClass';
+import { SnotifyStyle } from 'vue-snotify';
 import Axios from "axios";
 import Store from './store';
 
@@ -69,23 +70,13 @@ export class Entry extends ObjectBaseClass {
         switch(response.config.method.toUpperCase()){
             case 'GET':
                 this.assign = this.processSuccessfulResponseData(response.data);
-                this.fetched = true;
-                break;
-
+                return {fetched: true, notification: {}};
             case "POST":
-                // TODO: send notice of successful entry creation
-                // notice.display(notice.typeSuccess, "New entry created");
-                break;
-
+                return {type: SnotifyStyle.success, message: "New entry created"};
             case "PUT":
-                // TODO: send notice of successful entry update
-                // notice.display(notice.typeSuccess, "Entry updated");
-                break;
-
+                return {type: SnotifyStyle.success, message: "Entry updated"};
             case "DELETE":
-                // TODO: send notice of successful deletion
-                // notice.display(notice.typeSuccess, "Entry was deleted");
-                break;
+                return {deleted: true, notification: {type: SnotifyStyle.success, message: "Entry was deleted"}}
         }
     }
 
@@ -95,56 +86,36 @@ export class Entry extends ObjectBaseClass {
                 case "GET":
                     switch(error.response.status){
                         case 404:
-                            // TODO: send a notice
-                            // notice.display(notice.typeWarning, "Entry does not exist");
-                            break;
+                            return {fetched: false, notification: {type: SnotifyStyle.warning, message: "Entry does not exist"}};
                         case 500:
                         default:
-                            // TODO: send a notice
-                            // notice.display(notice.typeDanger, 'Error occurred while attempting to retrieve entries');
+                            return {fetched: false, notification: {type: SnotifyStyle.error, message: "An error occurred while attempting to retrieve entry"}};
                     }
-                    this.fetched = true;
-                    break;
-
                 case "POST":
                     switch(error.response.status){
                         case 400:
-                            // TODO: send a notice
-                            // notice.display(notice.typeWarning, error.response.error);
-                            break;
+                            return {type: SnotifyStyle.warning, message: error.response.data.error};
                         case 500:
                         default:
-                            // TODO: send a notice
-                            // notice.display(notice.typeError, "An error occurred while attempting to create an entry");
+                            return {type: SnotifyStyle.error, message: "An error occurred while attempting to create an entry"};
                     }
-                    break;
-
                 case "PUT":
                     switch(error.response.status){
                         case 400:
                         case 404:
-                            // TODO: send a notice
-                            // notice.display(notice.typeWarning, error.response.error);
-                            break;
+                            return {type: SnotifyStyle.warning, message: error.response.data.error};
                         case 500:
                         default:
-                            // TODO: send a notice
-                            // notice.display(notice.typeError, "An error occurred while attempting to update entry ["+entryId+"]");
+                            return {type: SnotifyStyle.error, message: "An error occurred while attempting to update entry [%s]"};
                     }
-                    break;
-
                 case "DELETE":
                     switch(error.response.status){
                         case 404:
-                            // TODO: send a notice - delete entry
-                            // notice.display(notice.typeWarning, "Entry ["+entryId+"] does not exist and cannot be deleted");
-                            break;
+                            return {deleted: false, notification: {type: SnotifyStyle.warning, message: "Entry [%s] does not exist and cannot be deleted"}};
                         case 500:
                         default:
-                            // TODO: send a notice - delete entry
-                            // notice.display(notice.typeError, "An error occurred while attempting to delete entry ["+entryId+"]");
+                            return {deleted: false, notification: {type: SnotifyStyle.error, message: "An error occurred while attempting to delete entry [%s]"}};
                     }
-                    break;
             }
         }
     }

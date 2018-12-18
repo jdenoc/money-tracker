@@ -2,11 +2,14 @@
 
 namespace Tests\Browser;
 
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskTestCase;
 use Laravel\Dusk\Browser;
 
 class NavbarTest extends DuskTestCase {
+
+    use DatabaseMigrations;
 
     private $_selector_navbar = '@navbar';
     private $_selector_navbar_brand = ".navbar-brand";
