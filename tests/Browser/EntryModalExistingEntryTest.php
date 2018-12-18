@@ -3,11 +3,15 @@
 namespace Tests\Browser;
 
 use Facebook\WebDriver\WebDriverBy;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Support\Facades\Artisan;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskTestCase;
 use Laravel\Dusk\Browser;
 
 class EntryModalExistingEntryTest extends DuskTestCase {
+
+    use DatabaseMigrations;
 
     // entry-table
     private $_selector_unconfirmed_expense = "tr.has-background-warning.is-expense";
@@ -62,6 +66,13 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     private $_label_foot_btn_cancel = "Cancel";
     private $_label_foot_btn_delete = "Delete";
     private $_label_foot_btn_save = "Save changes";
+
+    private $_account_types;
+
+    public function setUp(){
+        parent::setUp();
+        Artisan::call('db:seed', ['--class'=>'UiSampleDatabaseSeeder']);
+    }
 
     public function providerUnconfirmedEntry(){
         return [
@@ -344,6 +355,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                     });
                 })
                 ->waitForLoadingToStop()
+                ->assertNotification(HomePage::NOTIFICATION_INFO, "Attachment has been deleted")
                 ->with($this->_selector_entry_modal, function($entry_modal) use (&$attachment_count){
                     $attachments = $entry_modal->driver->findElements(WebDriverBy::className($this->_class_existing_attachment));
                     $this->assertEquals($attachment_count-1, count($attachments), "Attachment was NOT removed from UI");
@@ -383,18 +395,21 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     }
 
     public function testUpdateExistingEntryAccountType(){
-        $account_types = $this->getApiAccountTypes();
-        $account_type = $account_types[array_rand($account_types, 1)];
-        $this->browse(function(Browser $browser) use ($account_type){
+        $this->_account_types = $this->getApiAccountTypes();
+        $this->browse(function(Browser $browser){
             $entry_selector = $this->randomUnconfirmedEntrySelector();
             $old_value = "";
-            $new_value = $account_type['id'];
+            $new_value = "";
 
             $browser->visit(new HomePage())
                 ->waitForLoadingToStop()
                 ->openExistingEntryModal($entry_selector)
-                ->with($this->_selector_modal_body, function($modal_body) use (&$old_value, $new_value){
+                ->with($this->_selector_modal_body, function($modal_body) use (&$old_value, &$new_value){
                     $old_value = $modal_body->value($this->_selector_field_account_type);
+                    do{
+                        $account_type = $this->randomAccountType();
+                        $new_value = $account_type['id'];
+                    }while($old_value == $new_value);
                     $modal_body->select($this->_selector_field_account_type, $new_value);
                 })
                 ->with($this->_selector_modal_foot, function($modal_foot){
@@ -402,7 +417,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                 })
                 ->waitForLoadingToStop()
                 ->openExistingEntryModal($entry_selector)
-                ->with($this->_selector_modal_body, function($modal_body) use (&$old_value, $new_value){
+                ->with($this->_selector_modal_body, function($modal_body) use ($old_value, $new_value){
                     $this->assertNotEquals($old_value, $modal_body->value($this->_selector_field_account_type));
                     $this->assertEquals($new_value, $modal_body->value($this->_selector_field_account_type));
                 });
@@ -534,6 +549,10 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     private function randomEntrySelector(){
         $entry_selectors = [$this->randomConfirmedEntrySelector(), $this->randomUnconfirmedEntrySelector()];
         return $entry_selectors[array_rand($entry_selectors, 1)];
+    }
+
+    private function randomAccountType(){
+        return $this->_account_types[array_rand($this->_account_types, 1)];
     }
 
 }

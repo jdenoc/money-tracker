@@ -10,7 +10,7 @@
                     <input class="is-checkradio is-block is-success" id="entry-confirm" type="checkbox" name="entry-confirm"
                         v-model="entryData.confirm"
                         v-bind:disabled="isLocked"
-                    >
+                    />
                     <label for="entry-confirm"
                         v-bind:class="{'has-text-grey-light': !entryData.confirm, 'has-text-white': entryData.confirm}"
                         >Confirmed</label>
@@ -125,6 +125,7 @@
                     <vue-dropzone ref="entryModalFileUpload" id="entry-modal-file-upload"
                         v-bind:options="dropzoneOptions"
                         v-on:vdropzone-success="dropzoneSuccessfulUpload"
+                        v-on:vdropzone-error="dropzoneUploadError"
                         v-on:vdropzone-removed-file="dropzoneRemoveUpload"
                         v-show="!isLocked"
                     ></vue-dropzone>
@@ -181,6 +182,7 @@
     import {AccountTypes} from "../account-types";
     import {Entries} from "../entries";
     import {Entry} from "../entry";
+    import {SnotifyStyle} from 'vue-snotify';
     import {Tags} from '../tags';
     import EntryModalAttachment from "./entry-modal-attachment";
     import ToggleButton from 'vue-js-toggle-button/src/Button'
@@ -518,7 +520,13 @@
                 this.entryData = _.clone(this.defaultData);
             },
             dropzoneSuccessfulUpload(file, response){
+                // response: {'uuid', 'name', 'tmp_filename'}
                 this.entryData.attachments.push(response);
+                this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, {type: SnotifyStyle.info, message: "uploaded: "+response.name});
+            },
+            dropzoneUploadError(file, message, xhr){
+                // response: {'error'}
+                this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, {type: SnotifyStyle.warning, message: "file upload failure: "+message.error});
             },
             dropzoneRemoveUpload(file){
                 let removedAttachmentObject = JSON.parse(file.xhr.response);

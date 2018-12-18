@@ -13,6 +13,9 @@ class NotificationsTest extends DuskTestCase {
 
     use DatabaseMigrations;
 
+    private $_selector_unconfirmed_expense = "tr.has-background-warning.is-expense";
+    private $_selector_unconfirmed_income = 'tr.has-background-warning.is-income';
+
     private $_selector_modal = "@entry-modal";
     private $_selector_modal_body = "#entry-modal .modal-card-body";
     private $_selector_modal_body_value = "input#entry-value";
@@ -21,6 +24,7 @@ class NotificationsTest extends DuskTestCase {
     private $_selector_modal_body_memo = "textarea#entry-memo";
     private $_selector_modal_foot = "#entry-modal .modal-card-foot";
     private $_selector_modal_foot_save_btn = "button#entry-save-btn";
+    private $_selector_modal_foot_delete_btn = "button#entry-delete-btn";
 
     private $_selector_notification = "@notification";
 
@@ -98,22 +102,6 @@ class NotificationsTest extends DuskTestCase {
         });
     }
 
-    public function testNotificationDeleteAttachment204(){
-        // TODO: write me...
-        $this->markTestIncomplete();
-        $this->browse(function (Browser $browser) {
-            $browser->visit(new HomePage());
-            // TODO: wait for loading to stop
-            // TODO: select an existing entry with an attachment from the entries-table
-            // TODO: open said entry in an entry-modal
-            // TODO: click the "delete" attachment button
-            // TODO: wait for notification to pop up
-            // TODO: notification is type:info
-            // TODO: notification text:"Attachment has been deleted"
-            // TODO: wait 5 seconds for notification to disappear
-        });
-    }
-
     public function testNotificationDeleteAttachment404(){
         // TODO: write me...
         $this->markTestIncomplete();
@@ -172,30 +160,6 @@ class NotificationsTest extends DuskTestCase {
         });
     }
 
-    public function testNotificationSaveNewEntry201(){
-        $account_types = $this->getApiAccountTypes();
-        $account_type = $account_types[array_rand($account_types, 1)];
-
-        $this->browse(function(Browser $browser) use ($account_type){
-            $memo_field = "Test entry - new save - notification";
-            $browser
-                ->visit(new HomePage())
-                ->waitForLoadingToStop()
-                ->openNewEntryModal()
-                ->with($this->_selector_modal_body, function($modal_body) use ($account_type, $memo_field){
-                    $modal_body
-                        ->type($this->_selector_modal_body_value, "9.87")
-                        ->waitUntilMissing($this->_selector_modal_body_account_type_is_loading, HomePage::WAIT_SECONDS)
-                        ->select($this->_selector_modal_body_account_type, $account_type['id'])
-                        ->type($this->_selector_modal_body_memo, $memo_field);
-                })
-                ->with($this->_selector_modal_foot, function($modal_foot){
-                    $modal_foot->click($this->_selector_modal_foot_save_btn);
-                })
-                ->assertNotification(HomePage::NOTIFICATION_SUCCESS, "New entry created");
-        });
-    }
-
     public function testNotificationSaveNewEntry400(){
         $this->markTestIncomplete();
         $this->browse(function (Browser $browser) {
@@ -231,17 +195,6 @@ class NotificationsTest extends DuskTestCase {
         });
     }
 
-    public function testNotificationFetchEntry200(){
-        $this->markTestIncomplete();
-        $this->browse(function (Browser $browser) {
-            $browser->visit(new HomePage());
-            // TODO: wait for loading to hide
-            // TODO: select an existing entry from the entries-table
-            // TODO: open said entry in an entry-modal
-            // TODO: make sure no notification pops up
-        });
-    }
-
     public function testNotificationFetchEntry404(){
         $this->markTestIncomplete();
         $this->browse(function (Browser $browser) {
@@ -258,17 +211,18 @@ class NotificationsTest extends DuskTestCase {
     }
 
     public function testNotificationFetchEntry500(){
-        $this->markTestIncomplete();
-        $this->browse(function (Browser $browser) {
-            $browser->visit(new HomePage());
-            // TODO: wait for loading to hide
-            // TODO: select an existing entry from the entries-table
-            // TODO: open said entry in an entry-modal
-            // TODO: FORCE 500 from `GET /api/entries`
-            // TODO: wait for notification to pop up
-            // TODO: notification is type:error
-            // TODO: notification text:"Error occurred while attempting to retrieve entry"
-            // TODO: wait 5 seconds for notification to disappear
+        $recreate_table_query = $this->getTableRecreationQuery("entries");
+        $this->browse(function(Browser $browser) use ($recreate_table_query){
+            $entry_table_row_selector = $this->getEntryTableRowSelector();
+            $browser->visit(new HomePage())
+                ->waitForLoadingToStop();
+
+            DB::statement("DROP TABLE entries");
+
+            $browser
+                ->openExistingEntryModal($entry_table_row_selector)
+                ->assertNotification(HomePage::NOTIFICATION_ERROR, sprintf($this->_message_error_occurred, "entry"));
+            DB::statement($recreate_table_query);
         });
     }
 
@@ -339,18 +293,13 @@ class NotificationsTest extends DuskTestCase {
     }
 
     public function testNotificationDeleteEntry200(){
-        // TODO: write me...
-        $this->markTestIncomplete();
         $this->browse(function (Browser $browser) {
-            $browser->visit(new HomePage());
-            // TODO: wait for loading to hide
-            // TODO: select and existing entry from the entries-table
-            // TODO: open said entry in an entry-modal
-            // TODO: click the "delete" entry button in the modal footer
-            // TODO: wait for notification to pop up
-            // TODO: notification is type:success
-            // TODO: notification text:"Entry was deleted"
-            // TODO: wait 5 seconds for notification to disappear
+            $entry_table_row_selector = $this->getEntryTableRowSelector();
+            $browser->visit(new HomePage())
+                ->waitForLoadingToStop()
+                ->openExistingEntryModal($entry_table_row_selector)
+                ->click($this->_selector_modal_foot_delete_btn)
+                ->assertNotification(HomePage::NOTIFICATION_SUCCESS, "Entry was deleted");
         });
     }
 
@@ -372,19 +321,23 @@ class NotificationsTest extends DuskTestCase {
     }
 
     public function testNotificationDeleteEntry500(){
-        // TODO: write me...
-        $this->markTestIncomplete();
         $this->browse(function (Browser $browser) {
             $browser->visit(new HomePage());
-            // TODO: wait for loading to hide
-            // TODO: select and existing entry from the entries-table
-            // TODO: open said entry in an entry-modal
-            // TODO: click the "delete" entry button in the modal footer
-            // TODO: FORCE 500 from `GET /api/entry/{entry_id}`
-            // TODO: wait for notification to pop up
-            // TODO: notification is type:error
-            // TODO: notification text:"An error occurred while attempting to delete entry [%s]"
-            // TODO: wait 5 seconds for notification to disappear
+            $recreate_table_query = $this->getTableRecreationQuery('entries');
+
+            $this->browse(function (Browser $browser) use ($recreate_table_query){
+                $entry_table_row_selector = $this->getEntryTableRowSelector();
+                $browser->visit(new HomePage())
+                    ->waitForLoadingToStop()
+                    ->openExistingEntryModal($entry_table_row_selector);
+
+                DB::statement("DROP TABLE entries");
+
+                $browser
+                    ->click($this->_selector_modal_foot_delete_btn)
+                    ->assertNotification(HomePage::NOTIFICATION_ERROR, "An error occurred while attempting to delete entry [");
+                DB::statement($recreate_table_query);
+            });
         });
     }
 
@@ -440,6 +393,11 @@ class NotificationsTest extends DuskTestCase {
     private function getTableRecreationQuery($table_name){
         $create_query = DB::select("SHOW CREATE TABLE ".$table_name);
         return $create_query[0]->{"Create Table"};
+    }
+
+    private function getEntryTableRowSelector(){
+        $unconfirmed_entry_selectors = [$this->_selector_unconfirmed_expense, $this->_selector_unconfirmed_income];
+        return $unconfirmed_entry_selectors[array_rand($unconfirmed_entry_selectors, 1)];
     }
 
 }
