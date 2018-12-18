@@ -89,7 +89,7 @@ export class Entry extends ObjectBaseClass {
                             return {fetched: false, notification: {type: SnotifyStyle.warning, message: "Entry does not exist"}};
                         case 500:
                         default:
-                            return {fetched: false, notification: {type: SnotifyStyle.error, message: "Error occurred while attempting to retrieve entry"}};
+                            return {fetched: false, notification: {type: SnotifyStyle.error, message: "An error occurred while attempting to retrieve entry"}};
                     }
                 case "POST":
                     switch(error.response.status){

@@ -55,7 +55,7 @@ class HomePage extends Page {
             '@notification-error'=>".snotifyToast.snotify-error",
             '@notification-info'=>".snotifyToast.snotify-info",
             '@notification-success'=>".snotifyToast.snotify-success",
-            '@notification-warning'=>"TBD", // TODO: find selector
+            '@notification-warning'=>".snotifyToast.snotify-warning", // TODO: confirm this is correct
         ];
     }
 
@@ -118,7 +118,11 @@ class HomePage extends Page {
             ->waitFor('@notification', self::WAIT_SECONDS)
             ->assertVisible($notification_type_selector)
             ->assertSee($notification_message)
-            ->waitUntilMissing($notification_type_selector, self::WAIT_SECONDS);
+            // Selenium has issues on some tests.
+            // We need to mouse over the navbar to make sure that notification continues its progress of dismissal.
+            ->mouseover('@navbar')
+            ->waitUntilMissing($notification_type_selector, self::WAIT_SECONDS)
+            ->pause(250);    // give the element another 0.25 seconds to fully disappear;
     }
 
 }

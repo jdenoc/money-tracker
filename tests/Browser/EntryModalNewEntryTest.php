@@ -2,11 +2,15 @@
 
 namespace Tests\Browser;
 
+use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Support\Facades\Artisan;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskTestCase;
 use Laravel\Dusk\Browser;
 
 class EntryModalNewEntryTest extends DuskTestCase {
+
+    use DatabaseMigrations;
 
     private $_selector_modal = "@entry-modal";
     private $_selector_table = "#entry-table";
@@ -47,6 +51,11 @@ class EntryModalNewEntryTest extends DuskTestCase {
     private $_label_switch_expense = "Expense";
     private $_label_switch_income = "Income";
     private $_label_btn_dropzone_remove_file = "REMOVE FILE";
+
+    public function setUp(){
+        parent::setUp();
+        Artisan::call('db:seed', ['--class'=>'UiSampleDatabaseSeeder']);
+    }
 
     public function testEntryModalIsNotVisibleByDefault(){
         $this->browse(function (Browser $browser) {
@@ -422,6 +431,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
                     $modal_foot->click($this->_selector_modal_foot_save_btn);
                 })
                 ->waitForLoadingToStop()
+                ->assertNotification(HomePage::NOTIFICATION_SUCCESS, "New entry created")
                 ->assertMissing($this->_selector_modal)
                 ->with($this->_selector_table.' .has-background-warning.is-expense', function($table_row) use ($memo_field){
                     $table_row->assertSee($memo_field);
@@ -451,6 +461,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
                     $modal_foot->click($this->_selector_modal_foot_save_btn);
                 })
                 ->waitForLoadingToStop()
+                ->assertNotification(HomePage::NOTIFICATION_SUCCESS, "New entry created")
                 ->assertMissing($this->_selector_modal)
                 ->with($this->_selector_table.' .has-background-warning.is-income', function($table_row) use ($memo_field){
                     $table_row->assertSee($memo_field);
@@ -482,6 +493,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
                     $modal_foot->click($this->_selector_modal_foot_save_btn);
                 })
                 ->waitForLoadingToStop()
+                ->assertNotification(HomePage::NOTIFICATION_SUCCESS, "New entry created")
                 ->assertMissing($this->_selector_modal)
                 ->with($this->_selector_table.' .is-confirmed', function($table_row) use ($memo_field){
                     $table_row->assertSee($memo_field);
@@ -496,12 +508,12 @@ class EntryModalNewEntryTest extends DuskTestCase {
         $this->browse(function(Browser $browser) use ($account_type){
             $memo_field = "Test entry - attachments";
             $selector_row_has_attachments = $this->_selector_table.' .has-background-warning.has-attachments';
+            $upload_file_path = storage_path($this->getRandomTestFilePath());
             $browser
                 ->visit(new HomePage())
                 ->waitForLoadingToStop()
                 ->openNewEntryModal()
-                ->with($this->_selector_modal_body, function($modal_body) use ($account_type, $memo_field){
-                    $upload_file_path = storage_path($this->getRandomTestFilePath());
+                ->with($this->_selector_modal_body, function($modal_body) use ($account_type, $memo_field, $upload_file_path){
                     $modal_body
                         ->type($this->_selector_modal_body_value, "9.99")
                         ->waitUntilMissing($this->_selector_modal_body_account_type_is_loading, HomePage::WAIT_SECONDS)
@@ -510,10 +522,12 @@ class EntryModalNewEntryTest extends DuskTestCase {
                         ->attach($this->_selector_dropzone_hidden_file_input, $upload_file_path)
                         ->waitFor($this->_selector_dropzone_upload_thumbnail, HomePage::WAIT_SECONDS);
                 })
+                ->assertNotification(HomePage::NOTIFICATION_INFO, sprintf("uploaded: %s", basename($upload_file_path)))
                 ->with($this->_selector_modal_foot, function($modal_foot){
                     $modal_foot->click($this->_selector_modal_foot_save_btn);
                 })
                 ->waitForLoadingToStop()
+                ->assertNotification(HomePage::NOTIFICATION_SUCCESS, "New entry created")
                 ->assertMissing($this->_selector_modal)
                 ->with($selector_row_has_attachments, function($table_row) use ($memo_field){
                     $table_row->assertSee($memo_field);
@@ -561,6 +575,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
                     $modal_foot->click($this->_selector_modal_foot_save_btn);
                 })
                 ->waitForLoadingToStop()
+                ->assertNotification(HomePage::NOTIFICATION_SUCCESS, "New entry created")
                 ->assertMissing($this->_selector_modal)
                 ->with($this->_selector_table.' .has-background-warning.has-tags', function($table_row) use ($memo_field){
                     $table_row->assertSee($memo_field);
@@ -605,6 +620,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
                     $modal_foot->click($this->_selector_modal_foot_save_btn);
                 })
                 ->waitForLoadingToStop()
+                ->assertNotification(HomePage::NOTIFICATION_SUCCESS, "New entry created")
                 ->assertMissing($this->_selector_modal)
                 ->with($this->_selector_table.' .has-background-warning.has-attachments.has-tags', function($table_row) use ($memo_field){
                     $table_row->assertSee($memo_field);
