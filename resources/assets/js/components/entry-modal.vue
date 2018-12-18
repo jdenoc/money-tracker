@@ -133,7 +133,7 @@
 
                 <div id="existing-entry-attachments" class="field">
                     <entry-modal-attachment
-                        v-for="entryAttachment in entryData.attachments"
+                        v-for="entryAttachment in orderedAttachments"
                         v-if="!entryAttachment.tmp_filename"
                         v-bind:key="entryAttachment.uuid"
                         v-bind:uuid="entryAttachment.uuid"
@@ -310,6 +310,9 @@
             },
             uploadToken: function(){
                 return document.querySelector("meta[name='csrf-token']").getAttribute('content');
+            },
+            orderedAttachments: function(){
+                return _.orderBy(this.entryData.attachments, 'name')
             }
         },
         methods: {
