@@ -4,6 +4,9 @@ import Store from './store';
 import Snotify from 'vue-snotify';
 Vue.use(Snotify, {toast: {timeout: 5000}});
 
+import VueHotkey from 'v-hotkey';
+Vue.use(VueHotkey);
+
 import EntryModal from './components/entry-modal';
 import EntriesTable from './components/entries-table';
 import InstitutionsPanel from './components/institutions-panel';

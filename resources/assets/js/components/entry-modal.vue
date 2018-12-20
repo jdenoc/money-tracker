@@ -1,5 +1,5 @@
 <template>
-    <div id="entry-modal" class="modal" v-bind:class="{'is-active': isVisible}">
+    <div id="entry-modal" class="modal" v-bind:class="{'is-active': isVisible}" v-hotkey="keymap">
         <div class="modal-background"></div>
         <div class="modal-card">
             <header class="modal-card-head">
@@ -307,6 +307,14 @@
                 }
 
                 return true;
+            },
+            keymap: function(){
+                return {
+                    'ctrl+esc': function(){
+                        console.log('ctrl+esc');
+                        this.closeModal();
+                    }.bind(this)
+                };
             },
             uploadToken: function(){
                 return document.querySelector("meta[name='csrf-token']").getAttribute('content');

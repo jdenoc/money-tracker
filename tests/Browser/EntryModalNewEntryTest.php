@@ -219,6 +219,17 @@ class EntryModalNewEntryTest extends DuskTestCase {
         });
     }
 
+    public function testCloseEntryModalWithHotkey(){
+        $this->browse(function(Browser $browser){
+            $browser
+                ->visit(new HomePage())
+                ->waitForLoadingToStop()
+                ->openNewEntryModal()
+                ->keys('', "{control}", "{escape}") // ["{control}", "{escape}"] didn't work
+                ->assertMissing($this->_selector_modal);
+        });
+    }
+
     public function testEntryValueConvertsIntoDecimalOfTwoPlaces(){
         $this->browse(function(Browser $browser){
             $browser
