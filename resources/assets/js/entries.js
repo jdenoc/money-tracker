@@ -1,4 +1,5 @@
 import { ObjectBaseClass } from './objectBaseClass';
+import { SnotifyStyle } from 'vue-snotify';
 import Axios from "axios";
 import Store from './store';
 
@@ -7,7 +8,7 @@ export class Entries extends ObjectBaseClass {
     constructor(){
         super();
         this.storeType = Store.getters.STORE_TYPE_ENTRIES;
-        this.uri = '/api/entries';
+        this.uri = '/api/entries/';
         this.sort = {parameter: 'entry_date', direction: 'desc'};
     }
 
@@ -34,10 +35,10 @@ export class Entries extends ObjectBaseClass {
 //             complete: entries.ajaxCompleteProcessing
 //         });
 
-        console.log("URL:"+this.uri+'/'+pageNumber+";\nfilter:"+requestParameters);
-        Axios.post(this.uri+'/'+pageNumber, requestParameters)
+        console.log("URL:"+this.uri+pageNumber+";\nfilter:"+requestParameters);
+        return Axios.post(this.uri+pageNumber, requestParameters)
             .then(this.axiosSuccess.bind(this))
-            .catch(this.axiosFailure);
+            .catch(this.axiosFailure.bind(this));
     }
 
     axiosFailure(error){
@@ -45,17 +46,32 @@ export class Entries extends ObjectBaseClass {
             switch(error.response.status){
                 case 404:
                     this.assign = [];
-                    // TODO: notify user
-                    // notice.display(notice.typeInfo, "No entries were found");
-                    break;
+                    return {type: SnotifyStyle.info, message: "No entries were found"};
                 case 500:
                 default:
-                    // TODO: notify user of issue
                     this.assign = [];
-                    // notice.display(notice.typeDanger, "An error occurred while attempting to retrieve "+(filterModal.active?"filtered":"")+" entries");
-                    break;
+                    // return {type: SnotifyStyle.error, message: "An error occurred while attempting to retrieve "+(filterModal.active?"filtered":"")+" entries"};    // TODO: after filtering is in place
+                    return {type: SnotifyStyle.error, message: "An error occurred while attempting to retrieve entries"};
             }
         }
+    }
+
+    processSuccessfulResponseData(responseData){
+        let responseCount = parseInt(responseData.count);
+        delete responseData.count;
+
+        // convert responseData object into an array
+        let entriesInResponse = Object.values(responseData).map(function(entry){
+            // add a fetchStamp property to each entry
+            entry.fetchStamp = null;
+            return entry;
+        });
+        if(responseCount !== entriesInResponse.length) {
+            // FIXME: add error checking for request count values
+            // notice.display(notice.typeWarning, "Not all "+storeType+" were downloaded");
+        }
+
+        return entriesInResponse;
     }
 
 }
@@ -63,14 +79,6 @@ export class Entries extends ObjectBaseClass {
 // var entries = {
 //     value: [],
 //     total: 0,
-
-//     load: function(pageNumber){
-//         entries.ajaxRequest(pageNumber, {});
-//     },
-
-//     filter: function(filterParameters, pageNumber){
-//         entries.ajaxRequest(pageNumber, filterParameters);
-//     },
 
 //     display: function(){
 //         entries.clearDisplay();
@@ -121,123 +129,5 @@ export class Entries extends ObjectBaseClass {
 //         } else {
 //             entries.load(pageNumber);
 //         }
-//     }
-// };
-
-
-
-// var entry = {
-//     uri: "/api/entry",
-//     value: [],
-//     load: function(entryId){
-//         $.ajax({
-//             url: entry.uri+'/'+entryId,
-//             dataType: "json",
-//             beforeSend: loading.start,
-//             statusCode: {
-//                 200: function(response){
-//                     entry.value = response;
-//                 },
-//                 404: function(){
-//                     entry.value = [];
-//                     notice.display(notice.typeWarning, "Entry does not exist");
-//                 },
-//                 500: function(){
-//                     entry.value = [];
-//                     notice.display(notice.typeDanger, 'Error occurred while attempting to retrieve entries');
-//                 }
-//             },
-//             complete: function(){
-//                 entryModal.fillFields();
-//                 loading.end();
-//             }
-//         });
-//     },
-//     save: function(entryData){
-//         var entryId = parseInt(entryData.id);
-//         delete entryData.id;
-//         var ajaxEntryData = JSON.stringify(entryData);
-//         if($.isNumeric(entryId)){
-//             // update entry
-//             $.ajax({
-//                 url: entry.uri+'/'+entryId,
-//                 method: 'PUT',
-//                 beforeSend: loading.start,
-//                 data: ajaxEntryData,
-//                 statusCode: {
-//                     200: function(){
-//                         notice.display(notice.typeSuccess, "Entry updated");
-//                     },
-//                     400: function(responseObject){
-//                         notice.display(notice.typeWarning, responseObject.responseJSON.error);
-//                     },
-//                     404: function(responseObject){
-//                         notice.display(notice.typeWarning, responseObject.responseJSON.error);
-//                     },
-//                     500: function(){
-//                         notice.display(notice.typeError, "An error occurred while attempting to update entry ["+entryId+"]");
-//                     }
-//                 },
-//                 complete: entry.completeEntryUpdate
-//             });
-//         } else {
-//             // new entry
-//             $.ajax({
-//                 url: entry.uri,
-//                 method: 'POST',
-//                 beforeSend: loading.start,
-//                 data: ajaxEntryData,
-//                 statusCode: {
-//                     201: function(){
-//                         notice.display(notice.typeSuccess, "New entry created");
-//                     },
-//                     400: function(responseObject){
-//                         notice.display(notice.typeWarning, responseObject.responseJSON.error);
-//                     },
-//                     500: function(){
-//                         notice.display(notice.typeError, "An error occurred while attempting to create an entry");
-//                     }
-//                 },
-//                 complete: entry.completeEntryUpdate
-//             });
-//         }
-//     },
-//     delete: function(entryId){
-//         $.ajax({
-//             url: entry.uri+'/'+entryId,
-//             method: 'delete',
-//             beforeSend: loading.start,
-//             dataType: 'json',
-//             statusCode: {
-//                 204: function(){
-//                     notice.display(notice.typeSuccess, "Entry was deleted");
-//                 },
-//                 404: function(){
-//                     notice.display(notice.typeWarning, "Entry ["+entryId+"] does not exist and cannot be deleted");
-//                 },
-//                 500: function(){
-//                     notice.display(notice.typeError, "An error occurred while attempting to delete entry ["+entryId+"]");
-//                 }
-//             },
-//             complete: entry.completeEntryUpdate
-//         });
-//     },
-//     completeEntryUpdate: function(){
-//         // re-display entries
-//         entries.reload(paginate.current, paginate.filterState);
-//         // re-display institutes-pane contents
-//         institutionsPane.clear();
-//         institutionsPane.displayInstitutions();
-//         accounts.load();
-//         institutionsPane.displayAccountTypes();
-//
-//         var intervalSetAccountActive = setInterval(function(){
-//             // need to wait for the accounts to be re-displayed
-//             if(institutionsPane.accountsDisplayed){
-//                 var accountId = ($.isEmptyObject(paginate.filterState)) ? '' : paginate.filterState.account;
-//                 institutionsPane.setActiveState(accountId);
-//                 clearInterval(intervalSetAccountActive);    // stops interval from running again
-//             }
-//         }, 50);
 //     }
 // };

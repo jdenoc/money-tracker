@@ -91,7 +91,7 @@ This will generate Laravel Facades that PhpStorm can use.
 ##### Run yarn install
 ```bash
 docker/docker-yarn.sh install
-docker/docker-yarn.sh run development
+docker/docker-yarn.sh run build-dev
 ```
 
 ##### Bring "up" application container(s)
@@ -175,6 +175,7 @@ php artisan migrate
 
 # setup Yarn packages
 yarn install
+yarn run build-dev
 ```
 
 ***
@@ -202,6 +203,7 @@ php artisan migrate
 
 # setup Yarn packages
 yarn install --prod
+yarn run build-prod
 ```
 
 ***
@@ -210,16 +212,27 @@ yarn install --prod
 From time to time, there will be new updates released. Such updates will contain new features, bug fixes, general improvements ect. In order to allow such improvements to be usable on production deployments, you should follow these steps
 ```bash
 # While already in the application directory, i.e.: cd money-tracker/
+
+# put site into maintenance mode
+php artisan down
+
 git fetch --tags
 MOST_RECENT_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
 git checkout -q tags/$MOST_RECENT_TAG
 php artisan app:version $MOST_RECENT_TAG
 
-# Should it be required, i.e. new packages.
-# Note: check update release notes. Notice of new packages will be listed there. 
+# New/Updates to composer/yarn packages
+# Note: check update release notes. 
 composer update --no-dev
 yarn install --prod
+yarn run build-prod
+
+# Database updates
+# Note: check update release notes.
 php artisan migrate 
+
+# take site out of maintenance mode
+php artisan up
 ```
 
 ***
@@ -260,8 +273,12 @@ This project has been setup to use [travis-ci](https://travis-ci.org/jdenoc/mone
 ### <a name="testing-docker">Docker</a>
 Assuming we already have our docker environment already setup ([instructions here](#local-docker-environment)), performing the following commands should run the tests we want.
 ```bash
-# Run PhpUnit Tests
-docker container exec -t app.money-tracker vendor/bin/phpunit
+# Run PhpUnit tests
+docker container exec -t app.money-tracker vendor/bin/phpunit --stop-on-failure
+# Run Dusk tests
+docker container exec -t app.money-tracker artisan migrate:refresh
+docker container exec -t app.money-tracker artisan db:seed --class=UiSampleDatabaseSeeder
+docker container exec -t app.money-tracker artisan dusk --stop-on-failure
 ```
 
 ### <a name="testing-locally">Local/Dev</a>
@@ -271,23 +288,24 @@ If you wish to test locally (or on your dev environment), here are some steps to
 php artsian migrate:refresh
 
 # run PHP unit tests
-vendor/bin/phpunit
+vendor/bin/phpunit --stop-on-failure
 
 # run PHP unit tests with coverage
-vendor/bin/phpunit --coverage-text
+vendor/bin/phpunit --coverage-text --stop-on-failure
 
-# populate database with dummy data for  manual testing
-php artsian migrate:refresh
-php artisan db:seed --class=UiSampleDatabaseSeeder
+# run end-2-end Laravel Dusk tests
+php artisan dusk --stop-on-failure
 ```
 
 ***
 
 ## Other Documentation
 - [Laravel](https://laravel.com/docs/5.4/)
+- [VueJS](https://vuejs.org/v2/guide/)
 - [Docker](https://docs.docker.com/)
 - [Composer](https://getcomposer.org/doc/)
 - [Yarn](https://yarnpkg.com/en/docs)
 - [PhpUnit](https://phpunit.de/documentation.html)
+- [Laravel Dusk](https://laravel.com/docs/5.4/dusk)
 - [Travis CI](https://docs.travis-ci.com/user/languages/php/)
 - [git](https://git-scm.com/doc)

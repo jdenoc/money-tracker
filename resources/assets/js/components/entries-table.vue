@@ -1,5 +1,5 @@
 <template>
-    <table class="table is-narrow is-striped is-hoverable is-fullwidth">
+    <table id="entry-table" class="table is-narrow is-striped is-hoverable is-fullwidth">
         <thead>
             <tr>
                 <th></th>
@@ -48,7 +48,20 @@
                 return this.entries.retrieve;
             }
         },
-
+        methods: {
+            updateEntriesTable: function(){
+                this.entries.fetch()
+                    .then(function(notification){
+                        this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, notification);
+                    }.bind(this))
+                    .finally(function(){
+                        this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
+                    }.bind(this));
+            }
+        },
+        created: function(){
+            this.$eventHub.listen(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, this.updateEntriesTable);
+        }
     }
 </script>
 

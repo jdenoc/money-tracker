@@ -5,14 +5,14 @@
         </div>
         <div class="navbar-menu">
             <div class="navbar-end">
-                <a class="navbar-item" v-on:click="openAddEntryModal"><i class="fas fa-plus-circle"></i> Add Entry</a>
-                <a class="navbar-item" v-on:click="openFilterModal"><i class="fas fa-filter"></i> Filter</a>
+                <a id="nav-entry-modal" class="navbar-item" v-on:click="openAddEntryModal"><i class="fas fa-plus-circle"></i> Add Entry</a>
+                <a id="nav-filter-modal" class="navbar-item" v-on:click="openFilterModal"><i class="fas fa-filter"></i> Filter</a>
 
                 <div class="navbar-item has-dropdown"
                     v-bind:class="{'is-active': hasNavbarAvatarImageBeenClicked}"
                     v-on:click="clickNavbarAvatarImage"
                     >
-                    <a class="navbar-link"><img src="imgs/profile-placeholder.jpeg" alt="AVATAR"/></a>
+                    <a id="profile-nav-link" class="navbar-link"><img src="imgs/profile-placeholder.jpeg" alt="AVATAR"/></a>
 
                     <div class="navbar-dropdown is-boxed is-right">
                         <div class="navbar-item">TODO: NAME</div>
@@ -53,7 +53,7 @@
         },
         methods: {
             openAddEntryModal: function(){
-                this.modalNotAvailable();
+                this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_MODAL_OPEN);
             },
             openFilterModal: function(){
                 this.modalNotAvailable();

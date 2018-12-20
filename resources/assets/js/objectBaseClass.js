@@ -10,9 +10,9 @@ export class ObjectBaseClass {
 
     fetch(){
         console.log(this.uri);
-        Axios.get(this.uri)
+        return Axios.get(this.uri)
             .then(this.axiosSuccess.bind(this))
-            .catch(this.axiosFailure);
+            .catch(this.axiosFailure.bind(this));
     }
 
     axiosSuccess(response){
