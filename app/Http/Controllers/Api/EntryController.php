@@ -197,8 +197,7 @@ class EntryController extends Controller {
         }
         $entry_being_modified->save();
 
-        $entry_tags_in_request = empty($entry_data['tags']) ? [] : $entry_data['tags'];
-        $this->update_entry_tags($entry_being_modified, $entry_tags_in_request);
+        $this->update_entry_tags($entry_being_modified, $entry_data);
         $this->attach_attachments_to_entry($entry_being_modified, $entry_data);
 
         return response(
@@ -236,10 +235,11 @@ class EntryController extends Controller {
 
     /**
      * @param Entry $entry
-     * @param int[] $new_tags
+     * @param array $entry_data
      */
-    private function update_entry_tags($entry, $new_tags){
-        if(!empty($new_tags) && is_array($new_tags)){
+    private function update_entry_tags($entry, $entry_data){
+        if(!empty($entry_data['tags']) && is_array($entry_data['tags'])){
+            $new_tags = $entry_data['tags'];
             $currently_attached_tags = $entry->get_tag_ids();
             foreach($new_tags as $new_tag){
                 if(!in_array($new_tag, $currently_attached_tags)){
