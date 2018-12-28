@@ -66,7 +66,8 @@ $factory->define(App\Entry::class, function(Faker\Generator $faker){
         'entry_value'=>$faker->randomFloat(2, 0, 100),  // 0.00 < entry_value < 100.00
         'memo'=>$faker->words(3, true),
         'expense'=>$faker->boolean,
-        'confirm'=>$faker->boolean
+        'confirm'=>$faker->boolean,
+        'transfer_entry_id'=>null
     ];
 });
 

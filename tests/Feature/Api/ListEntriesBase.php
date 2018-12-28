@@ -112,16 +112,20 @@ class ListEntriesBase extends TestCase {
      * @param array $entry_nodes
      */
     protected function assertEntryNodesExist($entry_nodes){
+        $this->assertArrayHasKey('id', $entry_nodes);
         $this->assertArrayHasKey('entry_date', $entry_nodes);
         $this->assertArrayHasKey('entry_value', $entry_nodes);
         $this->assertArrayHasKey('memo', $entry_nodes);
         $this->assertArrayHasKey('account_type_id', $entry_nodes);
         $this->assertArrayHasKey('expense', $entry_nodes);
         $this->assertArrayHasKey('confirm', $entry_nodes);
+        $this->assertArrayHasKey('disabled', $entry_nodes);
         $this->assertArrayHasKey('create_stamp', $entry_nodes);
         $this->assertArrayHasKey('modified_stamp', $entry_nodes);
+        $this->assertArrayHasKey('disabled_stamp', $entry_nodes);
         $this->assertArrayHasKey('has_attachments', $entry_nodes);
         $this->assertArrayHasKey('tags', $entry_nodes);
+        $this->assertArrayHasKey('is_transfer', $entry_nodes);
     }
 
     /**
@@ -136,14 +140,18 @@ class ListEntriesBase extends TestCase {
         $this->assertEquals($generated_entry->account_type_id, $entry_nodes['account_type_id'], $failure_msg);
         $this->assertEquals($generated_entry->expense, $entry_nodes['expense'], $failure_msg);
         $this->assertEquals($generated_entry->confirm, $entry_nodes['confirm'], $failure_msg);
+        $this->assertFalse($entry_nodes['disabled'], $failure_msg);    // this will always be false because we only display non-disabled entries
         $this->assertDateFormat($entry_nodes['create_stamp'], Carbon::ATOM, $failure_msg);
         $this->assertDatetimeWithinOneSecond($generated_entry->create_stamp, $entry_nodes['create_stamp'], $failure_msg);
         $this->assertDateFormat($entry_nodes['modified_stamp'], Carbon::ATOM, $failure_msg);
         $this->assertDatetimeWithinOneSecond($generated_entry->modified_stamp, $entry_nodes['modified_stamp'], $failure_msg);
+        $this->assertNull($entry_nodes['disabled_stamp'], $failure_msg);    // this will always be null because we only display non-disabled entries
         $this->assertTrue(is_bool($entry_nodes['has_attachments']), $failure_msg);
         $this->assertEquals($generated_entry->has_attachments(), $entry_nodes['has_attachments'], $failure_msg);
         $this->assertTrue(is_array($entry_nodes['tags']), $failure_msg);
         $this->assertEquals($generated_entry->get_tag_ids(), $entry_nodes['tags'], $failure_msg);
+        $this->assertTrue(is_bool($entry_nodes['is_transfer']), $failure_msg);
+        $this->assertEquals(!is_null($generated_entry['transfer_entry_id']), $entry_nodes['is_transfer'], $failure_msg);
     }
 
     /**

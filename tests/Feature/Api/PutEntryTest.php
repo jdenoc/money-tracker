@@ -204,7 +204,6 @@ class PutEntryTest extends TestCase {
         );
     }
 
-
     public function testUpdateEntryAsDeletedAndConfirmValueRemovedFromAccountTotal(){
         // GIVEN - see setUp()
         $entry_data = [
@@ -310,6 +309,33 @@ class PutEntryTest extends TestCase {
         foreach($entry_data as $property=>$value){
             $this->assertEquals($value, $get_response_as_array[$property], "Entry data:".json_encode($entry_data)."\nGet Request:".$get_response->getContent());
         }
+    }
+
+    public function testUpdateEntryToHaveTransferEntryCounterpart(){
+        $faker = FakerFactory::create();
+        // GIVEN - see setup()
+        $entry_data = ['transfer_entry_id'=>$faker->randomDigitNotNull];
+
+        // WHEN
+        $get_response = $this->get($this->_base_uri.$this->_generated_entry->id);
+        // THEN
+        $get_response_as_array = $get_response->json();
+        $original_transfer_entry_id = $get_response_as_array['transfer_entry_id'];
+        $this->assertNull($original_transfer_entry_id);
+
+        // WHEN
+        $put_response = $this->json("PUT", $this->_base_uri.$this->_generated_entry->id, $entry_data);
+        // THEN
+        $this->assertPutResponseHasCorrectKeys($put_response->json());
+        $this->assertSuccessPutResponse($put_response->json());
+
+        // WHEN
+        $get_response = $this->get($this->_base_uri.$this->_generated_entry->id);
+        // THEN
+        $get_response_as_array = $get_response->json();
+        $this->assertNotNull($get_response_as_array['transfer_entry_id']);
+        $this->assertNotEquals($original_transfer_entry_id, $get_response_as_array['transfer_entry_id']);
+        $this->assertEquals($entry_data['transfer_entry_id'], $get_response_as_array['transfer_entry_id']);
     }
 
     public function testUpdateEntryWithTagThatDoesNotExist(){

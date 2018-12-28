@@ -141,6 +141,7 @@ class PostEntryTest extends TestCase {
         $this->assertEquals($generated_entry_data['expense'], $get_entry_response_as_array['expense']);
         $this->assertEquals($generated_entry_data['confirm'], $get_entry_response_as_array['confirm']);
         $this->assertEquals($generated_entry_data['account_type_id'], $get_entry_response_as_array['account_type_id']);
+        $this->assertNull($get_entry_response_as_array['transfer_entry_id']);
 
         // WHEN
         $get_account_response2 = $this->get('/api/account/'.$generated_account->id);
@@ -186,16 +187,17 @@ class PostEntryTest extends TestCase {
         // THEN
         $this->assertResponseStatus($get_response, HttpStatus::HTTP_OK);
         $get_response_as_array = $this->getResponseAsArray($get_response);
-        $entry_failure_message = "Generated entry:".$get_response->getContent();
-        $this->assertEquals($generated_entry_data['entry_date'], $get_response_as_array['entry_date'], $entry_failure_message);
-        $this->assertEquals($generated_entry_data['entry_value'], $get_response_as_array['entry_value'], $entry_failure_message);
-        $this->assertEquals($generated_entry_data['memo'], $get_response_as_array['memo'], $entry_failure_message);
-        $this->assertEquals($generated_entry_data['expense'], $get_response_as_array['expense'], $entry_failure_message);
-        $this->assertEquals($generated_entry_data['confirm'], $get_response_as_array['confirm'], $entry_failure_message);
-        $this->assertEquals($generated_entry_data['account_type_id'], $get_response_as_array['account_type_id'], $entry_failure_message);
-        $this->assertTrue(is_array($get_response_as_array['tags']), $entry_failure_message);
-        $this->assertNotEmpty($get_response_as_array['tags'], $entry_failure_message);
-        $this->assertFalse(in_array($non_existent_tag_id, $get_response_as_array['tags']), $entry_failure_message);
+        $failure_message = "Response does not match generated data.\n\$generated_entry_data:".print_r($generated_entry_data, true)."\nResponse:".$get_response->getContent();
+        $this->assertEquals($generated_entry_data['entry_date'], $get_response_as_array['entry_date'], $failure_message);
+        $this->assertEquals($generated_entry_data['entry_value'], $get_response_as_array['entry_value'], $failure_message);
+        $this->assertEquals($generated_entry_data['memo'], $get_response_as_array['memo'], $failure_message);
+        $this->assertEquals($generated_entry_data['expense'], $get_response_as_array['expense'], $failure_message);
+        $this->assertEquals($generated_entry_data['confirm'], $get_response_as_array['confirm'], $failure_message);
+        $this->assertEquals($generated_entry_data['account_type_id'], $get_response_as_array['account_type_id'], $failure_message);
+        $this->assertNull($get_response_as_array['transfer_entry_id'], $failure_message);
+        $this->assertTrue(is_array($get_response_as_array['tags']), $failure_message);
+        $this->assertNotEmpty($get_response_as_array['tags'], $failure_message);
+        $this->assertFalse(in_array($non_existent_tag_id, $get_response_as_array['tags']), $failure_message);
         foreach($get_response_as_array['tags'] as $entry_tag){
             $this->assertContains(
                 $entry_tag['id'],
@@ -244,6 +246,7 @@ class PostEntryTest extends TestCase {
         $this->assertEquals($generated_entry_data['expense'], $get_response_as_array['expense']);
         $this->assertEquals($generated_entry_data['confirm'], $get_response_as_array['confirm']);
         $this->assertEquals($generated_entry_data['account_type_id'], $get_response_as_array['account_type_id']);
+        $this->assertNull($get_response_as_array['transfer_entry_id']);
         $this->assertArrayHasKey('attachments', $get_response_as_array);
         $this->assertTrue(is_array($get_response_as_array['attachments']));
         $this->assertNotEmpty($get_response_as_array['attachments']);
@@ -254,6 +257,43 @@ class PostEntryTest extends TestCase {
             ];
             $this->assertContains($attachment_data, $generated_entry_data['attachments'], 'Generated attachments:'.json_encode($generated_entry_data['attachments']));
         }
+    }
+
+    public function testCreateEntryWithRelatedTransferEntryId(){
+        // GIVEN
+        $generated_account = factory(Account::class)->create();
+        $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
+        $generated_entry_data = $this->generateEntryData();
+        $generated_entry_data['account_type_id'] = $generated_account_type->id;
+        $generated_transfer_entry = factory(Entry::class)->create($generated_entry_data);
+        $generated_entry_data['transfer_entry_id'] = $generated_transfer_entry->id;
+
+        // WHEN
+        $post_response = $this->json("POST", $this->_base_uri, $generated_entry_data);
+
+        // THEN
+        $this->assertResponseStatus($post_response, HttpStatus::HTTP_CREATED);
+        $post_response_as_array = $this->getResponseAsArray($post_response);
+        $this->assertPostResponseHasCorrectKeys($post_response_as_array);
+        $this->assertEmpty($post_response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR]);
+        $created_entry_id = $post_response_as_array[EntryController::RESPONSE_SAVE_KEY_ID];
+        $this->assertGreaterThan(EntryController::ERROR_ENTRY_ID, $created_entry_id);
+
+        // WHEN
+        $get_response = $this->get($this->_base_uri.'/'.$created_entry_id);
+
+        // THEN
+        $this->assertResponseStatus($get_response, HttpStatus::HTTP_OK);
+        $get_response_as_array = $this->getResponseAsArray($get_response);
+        $failure_message = "Response does not match generated data.\n\$generated_entry_data:".print_r($generated_entry_data, true)."\nResponse:".$get_response->getContent();
+        $this->assertEquals($generated_entry_data['entry_date'], $get_response_as_array['entry_date'], $failure_message);
+        $this->assertEquals($generated_entry_data['entry_value'], $get_response_as_array['entry_value'], $failure_message);
+        $this->assertEquals($generated_entry_data['memo'], $get_response_as_array['memo'], $failure_message);
+        $this->assertEquals($generated_entry_data['expense'], $get_response_as_array['expense'], $failure_message);
+        $this->assertEquals($generated_entry_data['confirm'], $get_response_as_array['confirm'], $failure_message);
+        $this->assertEquals($generated_entry_data['account_type_id'], $get_response_as_array['account_type_id'], $failure_message);
+        $this->assertNotNull($get_response_as_array['transfer_entry_id'], $failure_message);
+        $this->assertEquals($generated_entry_data['transfer_entry_id'], $get_response_as_array['transfer_entry_id'], $failure_message);
     }
 
     private function generateEntryData(){
