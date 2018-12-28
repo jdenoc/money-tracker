@@ -27,6 +27,7 @@ class EntryController extends Controller {
     const FILTER_KEY_ATTACHMENTS = 'attachments';
     const FILTER_KEY_END_DATE = 'end_date';
     const FILTER_KEY_EXPENSE = 'expense';
+    const FILTER_KEY_IS_TRANSFER = 'is_transfer';
     const FILTER_KEY_MAX_VALUE = 'max_value';
     const FILTER_KEY_MIN_VALUE = 'min_value';
     const FILTER_KEY_START_DATE = 'start_date';
@@ -195,6 +196,9 @@ class EntryController extends Controller {
                 $entry_being_modified->$property = $value;
             }
         }
+        if(isset($entry_data['transfer_entry_id'])){
+            $entry_being_modified->transfer_entry_id = $entry_data['transfer_entry_id'];
+        }
         $entry_being_modified->save();
 
         $this->update_entry_tags($entry_being_modified, $entry_data);
@@ -221,7 +225,8 @@ class EntryController extends Controller {
             self::FILTER_KEY_ATTACHMENTS=>'boolean',
             self::FILTER_KEY_MIN_VALUE=>'numeric',
             self::FILTER_KEY_MAX_VALUE=>'numeric',
-            self::FILTER_KEY_UNCONFIRMED=>'boolean'
+            self::FILTER_KEY_UNCONFIRMED=>'boolean',
+            self::FILTER_KEY_IS_TRANSFER=>'boolean'
         ];
 
         if($include_tag_ids){
@@ -299,6 +304,8 @@ class EntryController extends Controller {
             foreach($entries_collection as $entry){
                 $entry->has_attachments = $entry->has_attachments();
                 $entry->tags = $entry->get_tag_ids();
+                $entry->is_transfer = !is_null($entry->transfer_entry_id);
+                unset($entry->transfer_entry_id);
             }
             $entries_collection = $entries_collection->values();   // the use of values() here allows us to ignore the original keys of the collection after a sort
             $entries_collection->put('count', Entry::count_non_disabled_entries($filters));
