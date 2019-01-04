@@ -140,7 +140,7 @@ class EntryController extends Controller {
      * @param int|false $update_id
      * @return \Illuminate\Contracts\Routing\ResponseFactory
      */
-    private function modify_entry($request, $update_id=false){
+    private function modify_entry(Request $request, $update_id=false){
         $request_body = $request->getContent();
         $entry_data = json_decode($request_body, true);
 
@@ -201,8 +201,11 @@ class EntryController extends Controller {
         }
         $entry_being_modified->save();
 
-        $this->update_entry_tags($entry_being_modified, $entry_data);
-        $this->attach_attachments_to_entry($entry_being_modified, $entry_data);
+        $entry_tags = !empty($entry_data['tags']) && is_array($entry_data['tags']) ? $entry_data['tags'] : [];
+        $this->update_entry_tags($entry_being_modified, $entry_tags);
+
+        $entry_attachments = !empty($entry_data['attachments']) && is_array($entry_data['attachments']) ? $entry_data['attachments'] : [];
+        $this->attach_attachments_to_entry($entry_being_modified, $entry_attachments);
 
         return response(
             [self::RESPONSE_SAVE_KEY_ERROR=>self::ERROR_MSG_SAVE_ENTRY_NO_ERROR, self::RESPONSE_SAVE_KEY_ID=>$entry_being_modified->id],
@@ -240,44 +243,39 @@ class EntryController extends Controller {
 
     /**
      * @param Entry $entry
-     * @param array $entry_data
+     * @param int[] $new_entry_tags
      */
-    private function update_entry_tags($entry, $entry_data){
-        if(!empty($entry_data['tags']) && is_array($entry_data['tags'])){
-            $new_tags = $entry_data['tags'];
-            $currently_attached_tags = $entry->get_tag_ids();
-            foreach($new_tags as $new_tag){
-                if(!in_array($new_tag, $currently_attached_tags)){
-                    $entry->tags()->attach(intval($new_tag));
-                }
+    private function update_entry_tags($entry, $new_entry_tags){
+        $currently_attached_tags = $entry->get_tag_ids();
+        foreach($new_entry_tags as $new_tag){
+            if(!in_array($new_tag, $currently_attached_tags)){
+                $entry->tags()->attach(intval($new_tag));
             }
-            $tags_to_remove = array_diff($currently_attached_tags, $new_tags);
-            foreach($tags_to_remove as $tag_to_remove){
-                $entry->tags()->detach($tag_to_remove);
-            }
+        }
+        $tags_to_remove = array_diff($currently_attached_tags, $new_entry_tags);
+        foreach($tags_to_remove as $tag_to_remove){
+            $entry->tags()->detach($tag_to_remove);
         }
     }
 
     /**
      * @param Entry $entry
-     * @param array $entry_data
+     * @param array $entry_attachments
      */
-    private function attach_attachments_to_entry($entry, $entry_data){
-        if(!empty($entry_data['attachments']) && is_array($entry_data['attachments'])){
-            foreach($entry_data['attachments'] as $attachment_data){
-                if(!is_array($attachment_data)){
-                    continue;
-                }
+    private function attach_attachments_to_entry($entry, $entry_attachments){
+        foreach($entry_attachments as $attachment_data){
+            if(!is_array($attachment_data)){
+                continue;
+            }
 
-                $existing_attachment = Attachment::find($attachment_data['uuid']);
-                if(is_null($existing_attachment)){
-                    $new_attachment = new Attachment();
-                    $new_attachment->uuid = $attachment_data['uuid'];
-                    $new_attachment->name = $attachment_data['name'];
-                    $new_attachment->entry_id = $entry->id;
-                    $new_attachment->storage_move_from_tmp_to_main();
-                    $new_attachment->save();
-                }
+            $existing_attachment = Attachment::find($attachment_data['uuid']);
+            if(is_null($existing_attachment)){
+                $new_attachment = new Attachment();
+                $new_attachment->uuid = $attachment_data['uuid'];
+                $new_attachment->name = $attachment_data['name'];
+                $new_attachment->entry_id = $entry->id;
+                $new_attachment->storage_move_from_tmp_to_main();
+                $new_attachment->save();
             }
         }
     }
