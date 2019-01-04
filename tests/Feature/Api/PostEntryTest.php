@@ -155,7 +155,7 @@ class PostEntryTest extends TestCase {
         $this->assertEquals($original_account_total+$entry_value, $new_account_total);
     }
 
-    public function testCreateEntryButTagDoesNotExist(){
+    public function testCreateEntryWithTagsButOneTagDoesNotExist(){
         $faker = FakerFactory::create();
         // GIVEN
         $generate_tag_count = 3;
