@@ -73,9 +73,10 @@ $factory->define(App\Entry::class, function(Faker\Generator $faker){
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 $factory->define(App\Attachment::class, function(Faker\Generator $faker){
+    $faker->addProvider(new App\Providers\Faker\ProjectFilenameProvider($faker));
     return [
         'uuid'=>$faker->uuid,
-        'name'=>$faker->word.'.'.$faker->fileExtension,
+        'name'=>$faker->filename,
         'entry_id'=>$faker->randomNumber(),
         'stamp'=>date('Y-m-d H:i:s')
     ];

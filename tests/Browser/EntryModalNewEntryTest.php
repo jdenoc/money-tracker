@@ -353,7 +353,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
                 ->waitForLoadingToStop()
                 ->openNewEntryModal()
                 ->with($this->_selector_modal_body, function($entry_modal_body){
-                    $upload_file_path = storage_path($this->getRandomTestFilePath());
+                    $upload_file_path = storage_path($this->getRandomTestFileStoragePath());
                     $this->assertFileExists($upload_file_path);
                     $entry_modal_body
                         ->assertVisible($this->_selector_modal_body_file_upload)
@@ -382,7 +382,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
                 ->waitForLoadingToStop()
                 ->openNewEntryModal()
                 ->with($this->_selector_modal_body, function($modal_body){
-                    $upload_file_path = storage_path($this->getRandomTestFilePath());
+                    $upload_file_path = storage_path($this->getRandomTestFileStoragePath());
                     $this->assertFileExists($upload_file_path);
                     $modal_body
                         ->assertVisible($this->_selector_modal_body_file_upload)
@@ -519,7 +519,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
         $this->browse(function(Browser $browser) use ($account_type){
             $memo_field = "Test entry - attachments";
             $selector_row_has_attachments = $this->_selector_table.' .has-background-warning.has-attachments';
-            $upload_file_path = storage_path($this->getRandomTestFilePath());
+            $upload_file_path = storage_path($this->getRandomTestFileStoragePath());
             $browser
                 ->visit(new HomePage())
                 ->waitForLoadingToStop()
@@ -608,7 +608,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
                 ->waitForLoadingToStop()
                 ->openNewEntryModal()
                 ->with($this->_selector_modal_body, function($modal_body) use ($account_type, $tag, $memo_field){
-                    $upload_file_path = storage_path($this->getRandomTestFilePath());
+                    $upload_file_path = storage_path($this->getRandomTestFileStoragePath());
                     $first_char = substr($tag, 0, 1);
                     $second_char = substr($tag, 1, 2);
                     $modal_body
