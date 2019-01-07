@@ -88,7 +88,7 @@ class Attachment extends BaseModel {
     /**
      * @return string
      */
-    private function get_tmp_file_path(){
+    public function get_tmp_file_path(){
         return self::STORAGE_TMP_UPLOAD.DIRECTORY_SEPARATOR.$this->get_tmp_filename();
     }
 
