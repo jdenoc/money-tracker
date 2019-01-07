@@ -71,6 +71,9 @@ Route::put('entry/{entry_id}', 'Api\EntryController@update_entry')
 // DELETE /api/entry/{entry_id}
 Route::delete('entry/{entry_id}', 'Api\EntryController@delete_entry')
     ->name('entry.delete');
+// POST /api/entry/transfer
+Route::post('entry/transfer', 'Api\EntryController@create_transfer_entries')
+    ->name('entry.transfer');
 // DELETE /api/attachment/{uuid}
 Route::delete('attachment/{uuid}', 'Api\AttachmentController@delete_attachment')
     ->name('attachment.delete');
