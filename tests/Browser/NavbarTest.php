@@ -18,6 +18,7 @@ class NavbarTest extends DuskTestCase {
 
     private $_label_add_entry = "Add Entry";
     private $_label_filter = "Filter";
+    private $_label_transfer = "Add Transfer";
     private $_label_version = "Version:";
     private $_label_stats = "Statistics";
     private $_label_settings = "Settings";
@@ -41,6 +42,17 @@ class NavbarTest extends DuskTestCase {
                 ->waitForLoadingToStop()
                 ->with($this->_selector_navbar, function($navbar){
                     $navbar->assertSee($this->_label_add_entry);
+                });
+        });
+    }
+
+    public function testAddTransferButtonExists(){
+        $this->browse(function(Browser $browser){
+            $browser
+                ->visit(new HomePage())
+                ->waitForLoadingToStop()
+                ->with($this->_selector_navbar, function($navbar){
+                    $navbar->assertSee($this->_label_transfer);
                 });
         });
     }

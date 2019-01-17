@@ -45,6 +45,12 @@ export class Entry extends ObjectBaseClass {
         }
     }
 
+    saveTransfer(transferData){
+        return Axios.post(this.uri+'transfer', transferData)
+            .then(this.axiosSuccessTransfer)
+            .catch(this.axiosFailure);
+    }
+
     delete(entryId){
         return Axios
             .delete(this.uri+entryId, {validateStatus: function(status){
@@ -78,6 +84,10 @@ export class Entry extends ObjectBaseClass {
             case "DELETE":
                 return {deleted: true, notification: {type: SnotifyStyle.success, message: "Entry was deleted"}}
         }
+    }
+
+    axiosSuccessTransfer(response){
+        return {type: SnotifyStyle.success, message: "Transfer entry created"};
     }
 
     axiosFailure(error){

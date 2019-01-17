@@ -23,7 +23,7 @@ export class Entries extends ObjectBaseClass {
             }
         }
         requestParameters.sort = this.sort;
-
+        // TODO: fetch a filtered request
 //         $.ajax({
 //             beforeSend: function(){
 //                 loading.start();

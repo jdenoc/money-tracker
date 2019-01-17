@@ -47,7 +47,11 @@ Vue.prototype.$eventHub = new Vue({
         /**
          * @returns {string}
          */
-        EVENT_ENTRY_MODAL_UPDATE_DATA: function(){ return "update-data-in-entry-modal"; }
+        EVENT_ENTRY_MODAL_UPDATE_DATA: function(){ return "update-data-in-entry-modal"; },
+        /**
+         * @returns {string}
+         */
+        EVENT_TRANSFER_MODAL_OPEN: function(){ return "open-transfer-model"; }
 
         // TODO: EVENT_UPDATE_ACCOUNTS: update accounts in institutions panel when there is an entry update
     },
