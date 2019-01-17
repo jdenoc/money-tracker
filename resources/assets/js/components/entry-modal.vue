@@ -281,8 +281,9 @@
                     paramName: 'attachment',
                     params: {_token: this.uploadToken},
                     dictDefaultMessage: '<span class="icon"><i class="fas fa-cloud-upload-alt"></i></span><br/>Drag & Drop',
+                    hiddenInputContainer: '#entry-modal',
                     init: function(){
-                        document.querySelector('.dz-hidden-input').setAttribute('id', 'dz-hidden-file-input');
+                        document.querySelector('#entry-modal .dz-hidden-input').setAttribute('id', 'entry-modal-hidden-file-input');
                     }
                 }
             },
@@ -309,7 +310,7 @@
             keymap: function(){
                 return {
                     'ctrl+esc': function(){
-                        console.log('ctrl+esc');
+                        console.log('entry:ctrl+esc');
                         this.closeModal();
                     }.bind(this)
                 };
