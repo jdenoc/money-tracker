@@ -180,7 +180,6 @@
 <script>
     import _ from 'lodash';
     import {AccountTypes} from "../account-types";
-    import {Entries} from "../entries";
     import {Entry} from "../entry";
     import {SnotifyStyle} from 'vue-snotify';
     import {Tags} from '../tags';
@@ -200,7 +199,6 @@
         data: function(){
             return {
                 accountTypesObject: new AccountTypes(),
-                entriesObject: new Entries(),
                 entryObject: new Entry(),
                 tagsObject: new Tags(),
 
