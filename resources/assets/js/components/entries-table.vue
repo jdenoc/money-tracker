@@ -27,6 +27,7 @@
                 v-bind:confirm="entry.confirm"
                 v-bind:disabled="entry.disabled"
                 v-bind:hasAttachments="entry.has_attachments"
+                v-bind:isTransfer="entry.is_transfer"
                 v-bind:tagIds="entry.tags"
             ></entries-table-entry-row>
         </tbody>

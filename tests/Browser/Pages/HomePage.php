@@ -44,12 +44,16 @@ class HomePage extends Page {
             // navbar
             '@navbar'=>'.navbar',
             '@new-entry-modal-btn'=>'#nav-entry-modal',
+            '@add-transfer-btn'=>'#nav-transfer-modal',
             // loading-modal
             '@loading'=>'#loading-modal',
             // entry-modal
             '@entry-modal'=>'#entry-modal',
             '@entry-modal-save-btn'=>"#entry-modal button#entry-save-btn",
             '@edit-existing-entry-modal-btn'=>"button.button.edit-entry-button",
+            // transfer-modal
+            '@transfer-modal'=>'#transfer-modal',
+            '@transfer-modal-save-btn'=>"#transfer-modal button#transfer-save-btn",
             // notification-modal
             '@notification'=>".snotifyToast",
             '@notification-error'=>".snotifyToast.snotify-error",
@@ -66,9 +70,17 @@ class HomePage extends Page {
     }
 
     public function openNewEntryModal(Browser $browser){
-        $browser->with('@navbar', function($navbar){
-            $navbar->click('@new-entry-modal-btn');
-        })->waitFor('@entry-modal', self::WAIT_SECONDS);
+        $this->openModalFromNavbar($browser, '@new-entry-modal-btn', '@entry-modal');
+    }
+
+    public function openTransferModal(Browser $browser){
+        $this->openModalFromNavbar($browser, "@add-transfer-btn", '@transfer-modal');
+    }
+
+    public function openModalFromNavbar(Browser $browser, $selector_btn, $selector_modal){
+        $browser->with('@navbar', function($navbar) use ($selector_btn){
+            $navbar->click($selector_btn);
+        })->waitFor($selector_modal, self::WAIT_SECONDS);
     }
 
     public function openExistingEntryModal(Browser $browser, $entry_table_selector){
@@ -89,11 +101,27 @@ class HomePage extends Page {
         );
     }
 
+    public function assertTransferModalSaveButtonIsDisabled(Browser $browser){
+        PHPUnit::assertEquals(
+            'true',
+            $browser->attribute("@transfer-modal-save-btn", 'disabled'),
+            "transfer-modal save button is NOT disabled"
+        );
+    }
+
     public function assertEntryModalSaveButtonIsNotDisabled(Browser $browser){
         PHPUnit::assertNotEquals(
             'true',
             $browser->attribute("@entry-modal-save-btn", 'disabled'),
             "Entry-modal save button IS disabled"
+        );
+    }
+
+    public function assertTransferModalSaveButtonIsNotDisabled(Browser $browser){
+        PHPUnit::assertNotEquals(
+            'true',
+            $browser->attribute("@transfer-modal-save-btn", 'disabled'),
+            "transfer-modal save button IS disabled"
         );
     }
 

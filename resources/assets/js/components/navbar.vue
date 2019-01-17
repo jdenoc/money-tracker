@@ -60,7 +60,7 @@
                 this.modalNotAvailable();
             },
             openTransferModal: function(){
-                this.modalNotAvailable();
+                this.$eventHub.broadcast(this.$eventHub.EVENT_TRANSFER_MODAL_OPEN);
             },
             clickNavbarAvatarImage: function(){
                 this.navbarAvatarImageClicked = !this.navbarAvatarImageClicked;

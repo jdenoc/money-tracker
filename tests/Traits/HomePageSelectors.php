@@ -7,7 +7,6 @@
 
 namespace Tests\Traits;
 
-
 trait HomePageSelectors {
 
     // ###*** SELECTORS ***###
@@ -53,6 +52,27 @@ trait HomePageSelectors {
     private $_selector_modal_entry_btn_lock_icon = "#entry-lock-btn i";
     private $_selector_modal_entry_btn_cancel = "button#entry-cancel-btn";
     private $_selector_modal_entry_btn_save = "button#entry-save-btn";
+
+    // transfer-modal
+    private $_selector_modal_transfer = "@transfer-modal";
+    private $_selector_modal_transfer_field_date = "#transfer-date";
+    private $_selector_modal_transfer_field_value = "#transfer-value";
+    private $_selector_modal_transfer_field_from = "select#from-account-type";
+    private $_selector_modal_transfer_field_from_is_loading = ".select.is-loading select#from-account-type";
+    private $_selector_modal_transfer_meta_account_name_from = "#from-account-type-meta-account-name";
+    private $_selector_modal_transfer_meta_last_digits_from = "#from-account-type-meta-last-digits";
+    private $_selector_modal_transfer_field_to = "select#to-account-type";
+    private $_selector_modal_transfer_field_to_is_loading = ".select.is-loading select#to-account-type";
+    private $_selector_modal_transfer_meta_account_name_to = "#to-account-type-meta-account-name";
+    private $_selector_modal_transfer_meta_last_digits_to = "#to-account-type-meta-last-digits";
+    private $_selector_modal_transfer_field_memo = "#transfer-memo";
+    private $_selector_modal_transfer_field_tags_container_is_loading = ".field:nth-child(6) .control.is-loading";
+    private $_selector_modal_transfer_field_tags = ".tags-input input";
+    private $_selector_modal_transfer_field_upload = "#transfer-modal-file-upload";
+    private $_selector_modal_transfer_dropzone_hidden_file_input = "#transfer-modal-hidden-file-input";
+    private $_selector_modal_transfer_dropzone_upload_thumbnail = "#transfer-modal-file-upload .dz-complete:last-child";
+    private $_selector_modal_transfer_btn_cancel = "#transfer-cancel-btn";
+    private $_selector_modal_transfer_btn_save = "#transfer-save-btn";
 
     // entries-table
     private $_selector_table = "#entry-table";
