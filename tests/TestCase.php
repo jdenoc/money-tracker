@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use Tests\Traits\InjectDatabaseStateIntoException;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Foundation\Testing\TestResponse;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
