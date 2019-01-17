@@ -11,7 +11,7 @@ trait StorageTestFiles {
         "app/test/space-blackhole-with-jet.jpg",
         "app/test/test-pattern.png",
         "app/test/test-triangle.png",
-        "app/test/digital-rain-animation.gif",
+        "app/test/crab-nebula.gif",
         "app/test/gravitational-wave.gif",
         "app/test/ipsum-lorem.txt",
         "app/test/lorem-ipsum.txt",
