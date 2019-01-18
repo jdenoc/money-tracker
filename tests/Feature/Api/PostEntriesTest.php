@@ -43,6 +43,7 @@ class PostEntriesTest extends ListEntriesBase {
             EntryController::FILTER_KEY_MIN_VALUE=>$min_value,
             EntryController::FILTER_KEY_MAX_VALUE=>$max_value,
             EntryController::FILTER_KEY_UNCONFIRMED=>$this->_faker->boolean,
+            EntryController::FILTER_KEY_IS_TRANSFER=>$this->_faker->boolean,
         ];
 
         // confirm all filters in EntryController are listed here
@@ -61,6 +62,7 @@ class PostEntriesTest extends ListEntriesBase {
                 case EntryController::FILTER_KEY_EXPENSE:
                 case EntryController::FILTER_KEY_ATTACHMENTS:
                 case EntryController::FILTER_KEY_UNCONFIRMED:
+                case EntryController::FILTER_KEY_IS_TRANSFER:
                     $filter["filtering [".$filter_name.":true]"] = [
                         [$filter_name=>true]
                     ];
@@ -379,6 +381,13 @@ class PostEntriesTest extends ListEntriesBase {
                     break;
                 case EntryController::FILTER_KEY_TAGS:
                     $entry_components[$filter_name] = [$this->_faker->randomElement($constraint)];
+                    break;
+                case EntryController::FILTER_KEY_IS_TRANSFER:
+                    if($constraint == true){
+                        $entry_components['transfer_entry_id'] = $this->_faker->randomDigitNotNull;
+                    } elseif($constraint == false) {
+                        $entry_components['transfer_entry_id'] = null;
+                    }
                     break;
             }
         }

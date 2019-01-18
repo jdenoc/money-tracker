@@ -66,15 +66,17 @@ $factory->define(App\Entry::class, function(Faker\Generator $faker){
         'entry_value'=>$faker->randomFloat(2, 0, 100),  // 0.00 < entry_value < 100.00
         'memo'=>$faker->words(3, true),
         'expense'=>$faker->boolean,
-        'confirm'=>$faker->boolean
+        'confirm'=>$faker->boolean,
+        'transfer_entry_id'=>null
     ];
 });
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 $factory->define(App\Attachment::class, function(Faker\Generator $faker){
+    $faker->addProvider(new App\Providers\Faker\ProjectFilenameProvider($faker));
     return [
         'uuid'=>$faker->uuid,
-        'name'=>$faker->word.'.'.$faker->fileExtension,
+        'name'=>$faker->filename,
         'entry_id'=>$faker->randomNumber(),
         'stamp'=>date('Y-m-d H:i:s')
     ];

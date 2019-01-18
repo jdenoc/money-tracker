@@ -37,6 +37,7 @@
             <loading-modal></loading-modal>
             <!-- notifications are the only exception -->
             <notification></notification>
+            <transfer-modal></transfer-modal>
         </div>
     </div>
     <script type="text/javascript" src="{{asset('vue/js/app.js')}}"></script>

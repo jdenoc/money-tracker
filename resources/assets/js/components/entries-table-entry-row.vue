@@ -8,6 +8,7 @@
             'is-expense': expense,
             'is-income': !expense,
             'has-attachments': hasAttachments,
+            'is-transfer': isTransfer,
             'has-tags': tagIds.length > 0
             }">
         <td><button class="button is-inverted is-info fas fa-edit edit-entry-button" v-on:click="openEditEntryModal(id)"></button></td>
@@ -23,6 +24,7 @@
         </td>
         <td v-text="accountTypeName"></td>
         <td><i v-bind:class="{ 'far fa-square': !hasAttachments, 'fas fa-check-square': hasAttachments }"></i></td>
+        <td><i v-bind:class="{ 'far fa-square': !isTransfer, 'fas fa-check-square': isTransfer }"></i></td>
         <td><div class="tags">
             <span class="tag is-rounded is-dark" v-for="tagId in tagIds" v-text="getTagName(tagId)"></span>
         </div></td>
@@ -35,7 +37,7 @@
 
     export default {
         name: "entries-table-entry-row",
-        props: ['id', 'date', 'accountTypeId', 'value', 'memo', 'expense', 'confirm', 'disabled', 'hasAttachments', 'tagIds'],
+        props: ['id', 'date', 'accountTypeId', 'value', 'memo', 'expense', 'confirm', 'disabled', 'hasAttachments', 'isTransfer', 'tagIds'],
         data: function(){
             return {
                 millisecondsPerMinute: 60000

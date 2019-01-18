@@ -9,10 +9,12 @@
                 <th class="has-text-right">Expense</th>
                 <th>Type</th>
                 <th><i class="fas fa-paperclip"></i></th>
+                <th><i class="fas fa-exchange-alt"></i></th>
                 <th><i class="fas fa-tags"></i></th>
             </tr>
         </thead>
         <tbody>
+            <!-- TODO: update entry transfers are a thing -->
             <entries-table-entry-row
                 v-for="entry in listOfEntries"
                 v-bind:key="entry.id"
@@ -25,6 +27,7 @@
                 v-bind:confirm="entry.confirm"
                 v-bind:disabled="entry.disabled"
                 v-bind:hasAttachments="entry.has_attachments"
+                v-bind:isTransfer="entry.is_transfer"
                 v-bind:tagIds="entry.tags"
             ></entries-table-entry-row>
         </tbody>

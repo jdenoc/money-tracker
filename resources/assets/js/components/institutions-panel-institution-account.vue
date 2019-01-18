@@ -5,7 +5,7 @@
             v-bind:class="{'badge is-badge-small is-badge-info is-badge-outlined': isAccountTotalVisable, 'tooltip is-tooltip-right is-tooltip-multiline' : hasAccountTypes}"
             v-bind:data-badge="'$'+parseFloat(accountTotal).toFixed(2)"
             v-bind:data-tooltip="accountTypeTooltipList"
-        ></span>
+            ></span>
     </a>
 </template>
 

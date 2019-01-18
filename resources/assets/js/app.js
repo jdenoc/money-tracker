@@ -9,10 +9,12 @@ Vue.use(VueHotkey);
 
 import EntryModal from './components/entry-modal';
 import EntriesTable from './components/entries-table';
+import EntriesTableEntryRow from './components/entries-table-entry-row';
 import InstitutionsPanel from './components/institutions-panel';
 import LoadingModal from './components/loading-modal';
 import Navbar from './components/navbar';
 import Notification from './components/notification';
+import TransferModal from './components/transfer-modal';
 
 import { Accounts } from './accounts';
 import { AccountTypes } from './account-types';
@@ -45,7 +47,11 @@ Vue.prototype.$eventHub = new Vue({
         /**
          * @returns {string}
          */
-        EVENT_ENTRY_MODAL_UPDATE_DATA: function(){ return "update-data-in-entry-modal"; }
+        EVENT_ENTRY_MODAL_UPDATE_DATA: function(){ return "update-data-in-entry-modal"; },
+        /**
+         * @returns {string}
+         */
+        EVENT_TRANSFER_MODAL_OPEN: function(){ return "open-transfer-model"; }
 
         // TODO: EVENT_UPDATE_ACCOUNTS: update accounts in institutions panel when there is an entry update
     },
@@ -64,10 +70,12 @@ new Vue({
     components: {
         EntryModal,
         EntriesTable,
+        EntriesTableEntryRow,
         InstitutionsPanel,
         LoadingModal,
         Navbar,
-        Notification
+        Notification,
+        TransferModal
     },
     store: Store,
     methods: {
