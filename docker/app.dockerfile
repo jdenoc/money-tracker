@@ -25,7 +25,7 @@ RUN mkdir -p  $APACHE_DOCUMENT_ROOT \
 RUN echo '#!/bin/bash\nphp /var/www/money-tracker/artisan "$@"' > /usr/local/bin/artisan \
     && chmod +x /usr/local/bin/artisan
 
-# select a php.ini file
+# select a php.ini config file; we use php.ini-development as it has "display_errors = On"
 RUN cp $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini \
 	&& sed -i "s/;always_populate_raw_post_data = -1/always_populate_raw_post_data = -1/" $PHP_INI_DIR/php.ini
 
