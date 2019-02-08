@@ -55,8 +55,8 @@ trait HomePageSelectors {
 
     // transfer-modal
     private $_selector_modal_transfer = "@transfer-modal";
-    private $_selector_modal_transfer_field_date = "#transfer-date";
-    private $_selector_modal_transfer_field_value = "#transfer-value";
+    private $_selector_modal_transfer_field_date = "input#transfer-date";
+    private $_selector_modal_transfer_field_value = "input#transfer-value";
     private $_selector_modal_transfer_field_from = "select#from-account-type";
     private $_selector_modal_transfer_field_from_is_loading = ".select.is-loading select#from-account-type";
     private $_selector_modal_transfer_meta_account_name_from = "#from-account-type-meta-account-name";
@@ -84,7 +84,8 @@ trait HomePageSelectors {
     private $_selector_table_row_attachment_checkbox = "td:nth-last-child(3)";
     private $_selector_table_is_checked_checkbox = ".fas.fa-check-square";
     private $_selector_table_unchecked_checkbox = "far fa-square";
-
+    private $_selector_pagination_btn_next = "button#paginate-btn-next";
+    private $_selector_pagination_btn_prev = "button#paginate-btn-prev";
 
     // ###*** LABELS ***###
     private $_label_entry_new = "Entry: new";

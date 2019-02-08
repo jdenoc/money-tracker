@@ -26,6 +26,11 @@ class DuskServiceProvider extends DuskServiceProviderBase {
             return $browser_locale[0];
         });
 
+        Browser::macro('getDateFromLocale', function($locale, $date){
+            $formatter = new \IntlDateFormatter($locale, \IntlDateFormatter::SHORT, \IntlDateFormatter::NONE);
+            return $formatter->format(new \DateTime($date));
+        });
+
         Browser::macro('getBrowserLocaleDate', function(){
             $browser_locale_date = $this->script('return new Date().toLocaleDateString()');
             return $browser_locale_date[0];
