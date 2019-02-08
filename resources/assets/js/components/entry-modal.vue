@@ -184,6 +184,7 @@
     import {SnotifyStyle} from 'vue-snotify';
     import {Tags} from '../tags';
     import EntryModalAttachment from "./entry-modal-attachment";
+    import Store from '../store';
     import ToggleButton from 'vue-js-toggle-button/src/Button'
     import VoerroTagsInput from '@voerro/vue-tagsinput';
     import vue2Dropzone from 'vue2-dropzone';
@@ -235,6 +236,9 @@
             }
         },
         computed: {
+            currentPage: function(){
+                return Store.getters.currentPage;
+            },
             isConfirmed: function(){
                 return this.entryData.confirm && this.entryData.id;
             },
@@ -471,7 +475,7 @@
                             {type: notification.type, message: notification.message.replace('%s', this.entryData.id)}
                         );
                     }
-                    this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE);
+                    this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, this.currentPage);
                     this.closeModal();
                 }.bind(this));
             },
@@ -488,7 +492,7 @@
                         }
                         this.closeModal();
                         if(deleteResult.deleted){
-                            this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE);
+                            this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, this.currentPage);
                             // don't need to broadcast an event to hide the loading modal here
                             // already taken care of at the end of the entry-table update event process
                         } else {

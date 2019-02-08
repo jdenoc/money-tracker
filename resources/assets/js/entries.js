@@ -10,6 +10,7 @@ export class Entries extends ObjectBaseClass {
         this.storeType = Store.getters.STORE_TYPE_ENTRIES;
         this.uri = '/api/entries/';
         this.sort = {parameter: 'entry_date', direction: 'desc'};
+        this.count = 0;
     }
 
     fetch(pageNumber, filterParameters = {}){
@@ -57,7 +58,7 @@ export class Entries extends ObjectBaseClass {
     }
 
     processSuccessfulResponseData(responseData){
-        let responseCount = parseInt(responseData.count);
+        this.count = parseInt(responseData.count);
         delete responseData.count;
 
         // convert responseData object into an array
@@ -66,7 +67,7 @@ export class Entries extends ObjectBaseClass {
             entry.fetchStamp = null;
             return entry;
         });
-        if(responseCount !== entriesInResponse.length) {
+        if(this.count !== entriesInResponse.length) {
             // FIXME: add error checking for request count values
             // notice.display(notice.typeWarning, "Not all "+storeType+" were downloaded");
         }

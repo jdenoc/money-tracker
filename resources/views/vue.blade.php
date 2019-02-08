@@ -28,7 +28,9 @@
             <div class="column">
                 <entries-table></entries-table>
             </div>
+            <!-- modal components -->
             <entry-modal></entry-modal>
+            <transfer-modal></transfer-modal>
             <!--
             loading-modal must ALWAYS be on the bottom.
             This way if the loading-modal is active and another modal is active,
@@ -37,7 +39,6 @@
             <loading-modal></loading-modal>
             <!-- notifications are the only exception -->
             <notification></notification>
-            <transfer-modal></transfer-modal>
         </div>
     </div>
     <script type="text/javascript" src="{{asset('vue/js/app.js')}}"></script>
