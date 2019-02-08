@@ -180,8 +180,7 @@ class TransferModalTest extends DuskTestCase {
 
         $this->browse(function(Browser $browser) use ($account_types){
             // get locale date string from browser
-            $browser_locale_date = $this->getBrowserLocaleDate($browser);
-            $browser_locale_date = $this->processLocaleDateForTyping($browser_locale_date);
+            $browser_locale_date = $browser->processLocaleDateForTyping($browser->getBrowserLocaleDate());
 
             $browser
                 ->visit(new HomePage())
@@ -300,8 +299,7 @@ class TransferModalTest extends DuskTestCase {
 
         $this->browse(function(Browser $browser) use ($account_types, $faker, $has_tags, $has_attachments){
             // get locale date string from browser
-            $browser_locale_date = $this->getBrowserLocaleDate($browser);
-            $browser_locale_date = $this->processLocaleDateForTyping($browser_locale_date);
+            $browser_locale_date = $browser->processLocaleDateForTyping($browser->getBrowserLocaleDate());
 
             $browser
                 ->visit(new HomePage())
@@ -405,11 +403,11 @@ class TransferModalTest extends DuskTestCase {
             }
 
             // get locale date string from browser
-            $browser_locale_date = $this->getBrowserLocaleDate($browser);
+            $browser_locale_date = $browser->getBrowserLocaleDate();
+            $browser_locale_date_for_typing = $browser->processLocaleDateForTyping($browser_locale_date);
 
             // generate some test values
             $transfer_entry_data = [
-                'date'=>$this->processLocaleDateForTyping($browser_locale_date),
                 'memo'=>"Test transfer - save".($has_tags?" w/ tags":'').($has_attachments?" w/ attachments":'').' - '.$faker->uuid,
                 'value'=>$faker->randomFloat(2, 0, 100),
                 'from_account_type_id'=>($is_from_account_external ? EntryController::TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID : $account_types[0]['id']),
@@ -421,8 +419,9 @@ class TransferModalTest extends DuskTestCase {
             $browser->visit(new HomePage())
                 ->waitForLoadingToStop()
                 ->openTransferModal()
-                ->with($this->_selector_modal_transfer, function($modal) use ($transfer_entry_data){
-                    $modal->type($this->_selector_modal_transfer_field_date, $transfer_entry_data['date'])
+                ->with($this->_selector_modal_transfer, function($modal) use ($transfer_entry_data, $browser_locale_date_for_typing){
+                    $modal
+                        ->type($this->_selector_modal_transfer_field_date, $browser_locale_date_for_typing)
                         ->type($this->_selector_modal_transfer_field_value, $transfer_entry_data['value'])
                         ->waitUntilMissing($this->_selector_modal_transfer_field_from_is_loading)
                         ->select($this->_selector_modal_transfer_field_from, $transfer_entry_data['from_account_type_id'])
@@ -431,15 +430,16 @@ class TransferModalTest extends DuskTestCase {
                         ->type($this->_selector_modal_transfer_field_memo, $transfer_entry_data['memo']);
                 });
 
-                if($has_tags){
-                    $this->fillTagsInputUsingAutocomplete($browser, $transfer_entry_data['tag']);
-                }
+            if($has_tags){
+                $this->fillTagsInputUsingAutocomplete($browser, $transfer_entry_data['tag']);
+            }
 
-                if($has_attachments){
-                    $this->attachFile($browser, $transfer_entry_data['attachment_path']);
-                }
+            if($has_attachments){
+                $this->attachFile($browser, $transfer_entry_data['attachment_path']);
+            }
 
-                $browser->with($this->_selector_modal_transfer, function($modal){
+            $browser
+                ->with($this->_selector_modal_transfer, function($modal){
                     $modal->click($this->_selector_modal_transfer_btn_save);
                 })
                 ->waitForLoadingToStop()
@@ -472,32 +472,6 @@ class TransferModalTest extends DuskTestCase {
                 );
             }
         });
-    }
-
-    /**
-     * @param Browser $browser
-     * @return string
-     */
-    private function getBrowserLocaleDate(Browser $browser){
-        $browser_locale_date = $browser->script('return new Date().toLocaleDateString()');
-        return $browser_locale_date[0];
-    }
-
-    /**
-     * @param string $locale_date
-     * @return string
-     */
-    private function processLocaleDateForTyping($locale_date){
-        $locale_date_components = [];
-        if(strpos($locale_date, '/') !== false){
-            $locale_date_components = explode('/', $locale_date);
-        }elseif(strpos($locale_date, '-') !== false){
-            $locale_date_components = explode('-', $locale_date);
-        }
-        foreach($locale_date_components as $key=>$date_component){
-            $locale_date_components[$key] = ($date_component < 10) ? '0'.$date_component : $date_component;
-        }
-        return implode('', $locale_date_components);
     }
 
     private function fillTagsInputUsingAutocomplete(Browser $browser, $tag){
