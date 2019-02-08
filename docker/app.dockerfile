@@ -24,6 +24,10 @@ RUN mkdir -p  $APACHE_DOCUMENT_ROOT \
 RUN echo '#!/bin/bash\nphp /var/www/money-tracker/artisan "$@"' > /usr/local/bin/artisan \
     && chmod +x /usr/local/bin/artisan
 
+# select a php.ini file
+RUN cp $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini \
+	&& sed -i "s/;always_populate_raw_post_data = -1/always_populate_raw_post_data = -1/" $PHP_INI_DIR/php.ini
+
 # set php timezone
 RUN echo 'date.timezone = "UTC"' >> $PHP_INI_DIR/conf.d/php-timezone.ini
 
