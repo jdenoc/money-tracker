@@ -72,7 +72,7 @@
                 return this.entries.retrieve;
             },
             isNextButtonVisible: function(){
-                return this.entries.count > this.pageMax && this.pageMax*(this.currentPage+1) < this.entries.responseCount
+                return this.entries.count > this.pageMax && this.pageMax*(this.currentPage+1) < this.entries.count
             },
             isPrevButtonVisible: function(){
                 return this.currentPage !== 0;
