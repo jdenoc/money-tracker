@@ -205,6 +205,15 @@ class Entry extends BaseModel {
         return $this->attachments()->count() > 0;
     }
 
+    public function has_tags(){
+        try{
+            return $this->tags()->count() > 0;
+        } catch(\Exception $e){
+            error_log($e);
+            return false;
+        }
+    }
+
     /**
      * @return array
      */

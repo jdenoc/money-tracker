@@ -17,6 +17,9 @@ class PaginationTest extends DuskTestCase {
     use DatabaseMigrations;
     use HomePageSelectors;
 
+    const RESIZE_WIDTH_PX = 1400;
+    const RESIZE_HEIGHT_PX = 2500;
+
     const PAGE_NUMBER_ZERO = 0;
     const PAGE_NUMBER_ONE = 1;
     const PAGE_NUMBER_TWO = 2;
@@ -40,6 +43,7 @@ class PaginationTest extends DuskTestCase {
             $browser
                 ->visit(new HomePage())
                 ->waitForLoadingToStop()
+                ->resize(self::RESIZE_WIDTH_PX, self::RESIZE_HEIGHT_PX)
                 ->assertMissing($this->_selector_pagination_btn_next)
                 ->assertMissing($this->_selector_pagination_btn_prev);
         });
@@ -54,6 +58,7 @@ class PaginationTest extends DuskTestCase {
             $browser
                 ->visit(new HomePage())
                 ->waitForLoadingToStop()
+                ->resize(self::RESIZE_WIDTH_PX, self::RESIZE_HEIGHT_PX)
                 ->assertMissing($this->_selector_pagination_btn_prev)
                 ->assertVisible($this->_selector_pagination_btn_next);
         });
@@ -73,6 +78,7 @@ class PaginationTest extends DuskTestCase {
             $browser
                 ->visit(new HomePage())
                 ->waitForLoadingToStop()
+                ->resize(self::RESIZE_WIDTH_PX, self::RESIZE_HEIGHT_PX)
                 ->assertVisible($this->_selector_pagination_btn_next)
                 ->click($this->_selector_pagination_btn_next)
                 ->waitForLoadingToStop()
@@ -100,6 +106,7 @@ class PaginationTest extends DuskTestCase {
             $browser
                 ->visit(new HomePage())
                 ->waitForLoadingToStop()
+                ->resize(self::RESIZE_WIDTH_PX, self::RESIZE_HEIGHT_PX)
                 ->assertVisible($this->_selector_pagination_btn_next);
 
             $this->assertEntriesDisplayed($browser, $entries);
@@ -123,6 +130,7 @@ class PaginationTest extends DuskTestCase {
             $browser
                 ->visit(new HomePage())
                 ->waitForLoadingToStop()
+                ->resize(self::RESIZE_WIDTH_PX, self::RESIZE_HEIGHT_PX)
                 ->click($this->_selector_pagination_btn_next)
                 ->waitForLoadingToStop();
 
@@ -170,6 +178,7 @@ class PaginationTest extends DuskTestCase {
             $browser
                 ->visit(new HomePage())
                 ->waitForLoadingToStop()
+                ->resize(self::RESIZE_WIDTH_PX, self::RESIZE_HEIGHT_PX)
                 ->click($this->_selector_pagination_btn_next)
                 ->waitForLoadingToStop();
 
@@ -204,7 +213,6 @@ class PaginationTest extends DuskTestCase {
      * @param array $entries
      */
     private function assertEntriesDisplayed(Browser $browser, $entries){
-        $browser->resize(1400, 2500);
         foreach($entries as $entry){
             $browser
                 ->assertSeeIn($this->_selector_table, $entry['entry_date'])
