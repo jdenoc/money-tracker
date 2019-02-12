@@ -85,20 +85,20 @@ class EntryController extends Controller {
             return $this->provide_paged_entries_response([], $page_number);
         }
 
-        if(empty($filter_data['sort']) || !is_array($filter_data['sort'])){
+        if(empty($filter_data[self::FILTER_KEY_SORT]) || !is_array($filter_data[self::FILTER_KEY_SORT])){
             $sort_by = Entry::DEFAULT_SORT_PARAMETER;
             $sort_direction = Entry::DEFAULT_SORT_DIRECTION;
         } else {
-            $sort_by = empty($filter_data['sort']['parameter']) ? Entry::DEFAULT_SORT_PARAMETER : $filter_data['sort']['parameter'];
-            if(empty($filter_data['sort']['direction']) || !in_array($filter_data['sort']['direction'], [Entry::SORT_DIRECTION_ASC, Entry::SORT_DIRECTION_DESC])){
+            $sort_by = empty($filter_data[self::FILTER_KEY_SORT][self::FILTER_KEY_SORT_PARAMETER]) ? Entry::DEFAULT_SORT_PARAMETER : $filter_data[self::FILTER_KEY_SORT][self::FILTER_KEY_SORT_PARAMETER];
+            if(empty($filter_data[self::FILTER_KEY_SORT][self::FILTER_KEY_SORT_DIRECTION]) || !in_array($filter_data[self::FILTER_KEY_SORT][self::FILTER_KEY_SORT_DIRECTION], [Entry::SORT_DIRECTION_ASC, Entry::SORT_DIRECTION_DESC])){
                 $sort_direction = Entry::DEFAULT_SORT_DIRECTION;
             } else {
-                $sort_direction = $filter_data['sort']['direction'];
+                $sort_direction = $filter_data[self::FILTER_KEY_SORT][self::FILTER_KEY_SORT_DIRECTION];
             }
-            unset($filter_data['sort']);
+            unset($filter_data[self::FILTER_KEY_SORT]);
         }
 
-        $filter_validator = Validator::make($filter_data, self::get_filter_details());
+        $filter_validator = Validator::make($filter_data, self::get_filter_details(isset($filter_data[self::FILTER_KEY_TAGS])));
         if($filter_validator->fails()){
             return response(['error'=>'invalid filter provided'], HttpStatus::HTTP_BAD_REQUEST);
         }
@@ -470,7 +470,7 @@ class EntryController extends Controller {
         } else {
             foreach($entries_collection as $entry){
                 $entry->has_attachments = $entry->has_attachments();
-                $entry->tags = $entry->get_tag_ids();
+                $entry->tags = ($entry->has_tags()) ? $entry->tags = $entry->get_tag_ids() : [];
                 $entry->is_transfer = !is_null($entry->transfer_entry_id);
                 unset($entry->transfer_entry_id);
             }

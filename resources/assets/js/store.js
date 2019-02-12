@@ -9,6 +9,7 @@ export default new Vuex.Store({
 
     state: {
         // token: '',
+        currentPage: 0,
         version: '',
         tags: [],
         institutions: [],
@@ -25,11 +26,36 @@ export default new Vuex.Store({
         //     return state.token;
         // }
 
+        /**
+         * @returns {number}
+         */
+        currentPage: function(state){
+            return state.currentPage;
+        },
+
+        /**
+         * @returns {string}
+         */
         STORE_TYPE_ACCOUNTS: function(){ return 'accounts' },
+        /**
+         * @returns {string}
+         */
         STORE_TYPE_ACCOUNT_TYPES: function(){ return 'accountTypes' },
+        /**
+         * @returns {string}
+         */
         STORE_TYPE_ENTRIES: function(){ return 'entries' },
+        /**
+         * @returns {string}
+         */
         STORE_TYPE_INSTITUTIONS: function(){ return 'institutions' },
+        /**
+         * @returns {string}
+         */
         STORE_TYPE_TAGS: function(){ return 'tags' },
+        /**
+         * @returns {string}
+         */
         STORE_TYPE_VERSION: function(){ return 'version' },
 
         getStateOf: function(state, getters){
@@ -63,7 +89,9 @@ export default new Vuex.Store({
         // unauthenticate: function(state){
         //     state.token = '';
         // }
-
+        currentPage: function(state, pageNumber){
+            state.currentPage = (pageNumber < 0) ? 0 : pageNumber
+        },
         setStateOf: function(state, payload){
             let storeTypes = this.getters.getAllStoreTypes;
             if(storeTypes.indexOf(payload.type) >= 0){
@@ -78,11 +106,12 @@ export default new Vuex.Store({
         // unauthenticate: function(context){
         //     context.commit('unauthenticate');
         // }
-
+        currentPage: function(context, payload){
+            context.commit('currentPage', payload);
+        },
         setStateOf: function(context, payload){
             context.commit('setStateOf', payload);
         }
-
     },
     plugins: [
         // createPersistedState()  // allows us to store state locally

@@ -24,7 +24,7 @@ class AppServiceProvider extends ServiceProvider {
         // IDE Helper
         if ($this->app->environment() !== 'production') {
             $this->app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
-            $this->app->register(\Laravel\Dusk\DuskServiceProvider::class);
+            $this->app->register(DuskServiceProvider::class);
         }
     }
 }

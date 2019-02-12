@@ -152,6 +152,7 @@
     import {Entry} from "../entry";
     import {SnotifyStyle} from 'vue-snotify';
     import {Tags} from '../tags';
+    import Store from '../store';
     import VoerroTagsInput from '@voerro/vue-tagsinput';
     import vue2Dropzone from 'vue2-dropzone';
 
@@ -217,6 +218,9 @@
             },
             canShowToAccountTypeMeta: function(){
                 return this.canShowAccountTypeMeta(this.transferData.to_account_type_id);
+            },
+            currentPage: function(){
+                return Store.getters.currentPage;
             },
             hasValidFromAccountTypeBeenSelected: function(){
                 return this.hasValidAccountTypeBeenSelected(this.transferData.from_account_type_id);
@@ -363,7 +367,7 @@
                             {type: notification.type, message: notification.message}
                         );
                     }
-                    this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE);
+                    this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, this.currentPage);
                     this.closeModal();
                 }.bind(this));
             },
