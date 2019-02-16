@@ -57,16 +57,13 @@
                 this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_MODAL_OPEN);
             },
             openFilterModal: function(){
-                this.modalNotAvailable();
+                this.$eventHub.broadcast(this.$eventHub.EVENT_FILTER_MODAL_OPEN);
             },
             openTransferModal: function(){
                 this.$eventHub.broadcast(this.$eventHub.EVENT_TRANSFER_MODAL_OPEN);
             },
             clickNavbarAvatarImage: function(){
                 this.navbarAvatarImageClicked = !this.navbarAvatarImageClicked;
-            },
-            modalNotAvailable: function(){
-                alert("Modal not currently available");
             }
         }
     }

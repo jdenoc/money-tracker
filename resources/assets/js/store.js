@@ -9,7 +9,10 @@ export default new Vuex.Store({
 
     state: {
         // token: '',
-        currentPage: 0,
+        pagination: {
+            currentPage: 0,
+            currentFilter: {}
+        },
         version: '',
         tags: [],
         institutions: [],
@@ -30,7 +33,14 @@ export default new Vuex.Store({
          * @returns {number}
          */
         currentPage: function(state){
-            return state.currentPage;
+            return state.pagination.currentPage;
+        },
+
+        /**
+         * @returns {state.pagination.currentFilter|{}}
+         */
+        currentFilter: function(state){
+            return state.pagination.currentFilter;
         },
 
         /**
@@ -90,7 +100,10 @@ export default new Vuex.Store({
         //     state.token = '';
         // }
         currentPage: function(state, pageNumber){
-            state.currentPage = (pageNumber < 0) ? 0 : pageNumber
+            state.pagination.currentPage = (pageNumber < 0) ? 0 : pageNumber
+        },
+        currentFilter: function(state, filter){
+            state.pagination.currentFilter = filter;
         },
         setStateOf: function(state, payload){
             let storeTypes = this.getters.getAllStoreTypes;
@@ -108,6 +121,9 @@ export default new Vuex.Store({
         // }
         currentPage: function(context, payload){
             context.commit('currentPage', payload);
+        },
+        currentFilter: function(context, payload){
+            context.commit('currentFilter', payload);
         },
         setStateOf: function(context, payload){
             context.commit('setStateOf', payload);

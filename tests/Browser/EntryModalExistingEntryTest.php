@@ -60,7 +60,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                                 ->assertSee($this->_label_entry_not_new)
                                 ->assertSee($this->_label_btn_confirmed);
                             $entry_confirm_class = $modal_head->attribute($this->_selector_modal_entry_btn_confirmed_label, 'class');
-                            $this->assertEquals($this->_class_light_grey_text, $entry_confirm_class);
+                            $this->assertContains($this->_class_light_grey_text, $entry_confirm_class);
                         })
 
                         ->with($this->_selector_modal_body, function($modal_body) use ($entry_data, $data_expense_switch_label){

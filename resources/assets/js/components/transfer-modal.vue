@@ -371,12 +371,6 @@
                     this.closeModal();
                 }.bind(this));
             },
-            notAvailable: function(){
-                alert("This feature is not currently available");
-            },
-            warningAlert: function(){
-                alert("WARNING: This feature is still in beta. Expect unintended consequences.");
-            },
             updateAccountTypeMeta: function(accountTypeSelect){
                 let account = this.accountTypesObject.getAccount(this.transferData[accountTypeSelect+'_account_type_id']);
                 this.accountTypeMeta[accountTypeSelect].accountName = account.name;
@@ -424,10 +418,6 @@
 </script>
 
 <style scoped>
-    .is-checkradio[type=checkbox].is-block+label::after,
-    .is-checkradio[type=checkbox].is-block+label:after{
-        top: 0.4rem;
-    }
     .field-label.is-normal{
         font-size: 0.875rem;
     }

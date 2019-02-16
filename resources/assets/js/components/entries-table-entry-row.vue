@@ -12,20 +12,20 @@
             'has-tags': tagIds.length > 0
             }">
         <td><button class="button is-inverted is-info fas fa-edit edit-entry-button" v-on:click="openEditEntryModal(id)"></button></td>
-        <td v-text="date"></td>
-        <td v-text="memo"></td>
-        <td class="has-text-right">
+        <td v-text="date" class="row-entry-date"></td>
+        <td v-text="memo" class="row-entry-memo"></td>
+        <td class="has-text-right" v-bind:class="{'row-entry-value': !expense}">
             <span v-if="expense"></span>
-            <span v-else>${{value}}</span>
+            <span v-else>{{value}}</span>
         </td>
-        <td class="has-text-right">
-            <span v-if="expense">${{value}}</span>
+        <td class="has-text-right" v-bind:class="{'row-entry-value': expense}">
+            <span v-if="expense">{{value}}</span>
             <span v-else></span>
         </td>
-        <td v-text="accountTypeName"></td>
-        <td><i v-bind:class="{ 'far fa-square': !hasAttachments, 'fas fa-check-square': hasAttachments }"></i></td>
-        <td><i v-bind:class="{ 'far fa-square': !isTransfer, 'fas fa-check-square': isTransfer }"></i></td>
-        <td><div class="tags">
+        <td class="row-entry-account-type" v-text="accountTypeName"></td>
+        <td class="row-entry-attachment-checkbox"><i v-bind:class="{ 'far fa-square': !hasAttachments, 'fas fa-check-square': hasAttachments }"></i></td>
+        <td class="row-entry-transfer-checkbox"><i v-bind:class="{ 'far fa-square': !isTransfer, 'fas fa-check-square': isTransfer }"></i></td>
+        <td class="row-entry-tags"><div class="tags">
             <span class="tag is-rounded is-dark" v-for="tagId in tagIds" v-text="getTagName(tagId)"></span>
         </div></td>
     </tr>

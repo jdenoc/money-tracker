@@ -13,6 +13,7 @@ trait HomePageSelectors {
 
     // generic - modal
     private $_selector_modal_head = ".modal-card-head";
+    private $_selector_modal_title = ".modal-card-title";
     private $_selector_modal_body = ".modal-card-body";
     private $_selector_modal_foot = ".modal-card-foot";
     private $_selector_modal_btn_close = "button.delete";
@@ -26,7 +27,7 @@ trait HomePageSelectors {
     private $_selector_modal_dropzone_btn_remove = ".dz-remove";
 
     // entry-modal
-    private $_selector_modal_entry = "@entry-modal";
+    private $_selector_modal_entry = "@entry-modal";  // see Browser\Pages\HomePage.php
     private $_selector_modal_entry_btn_confirmed = "#entry-confirm";
     private $_selector_modal_entry_btn_confirmed_label = "#entry-confirm + label";
     private $_selector_modal_entry_field_entry_id = "#entry-id";
@@ -54,7 +55,7 @@ trait HomePageSelectors {
     private $_selector_modal_entry_btn_save = "button#entry-save-btn";
 
     // transfer-modal
-    private $_selector_modal_transfer = "@transfer-modal";
+    private $_selector_modal_transfer = "@transfer-modal";  // see Browser\Pages\HomePage.php
     private $_selector_modal_transfer_field_date = "input#transfer-date";
     private $_selector_modal_transfer_field_value = "input#transfer-value";
     private $_selector_modal_transfer_field_from = "select#from-account-type";
@@ -74,14 +75,42 @@ trait HomePageSelectors {
     private $_selector_modal_transfer_btn_cancel = "#transfer-cancel-btn";
     private $_selector_modal_transfer_btn_save = "#transfer-save-btn";
 
+    // filter-modal
+    private $_selector_modal_filter = "@filter-modal";  // see Browser\Pages\HomePage.php
+    private $_selector_modal_filter_field_start_date = "#filter-start-date";
+    private $_selector_modal_filter_field_end_date = "#filter-end-date";
+    private $_selector_modal_filter_field_switch_account_and_account_type = "#filter-account-account-types";
+    private $_selector_modal_filter_field_account_and_account_type = "#filter-account-or-account-types-id";
+    private $_selector_modal_filter_field_tags= "#filter-tags";
+    private $_selector_modal_filter_field_switch_income = "#filter-is-income";
+    private $_selector_modal_filter_field_switch_expense = "#filter-is-expense";
+    private $_selector_modal_filter_field_switch_has_attachment = "#filter-has-attachment";
+    private $_selector_modal_filter_field_switch_no_attachment = "#filter-no-attachment";
+    private $_selector_modal_filter_field_switch_transfer = "#filter-is-transfer";
+    private $_selector_modal_filter_field_switch_unconfirmed = "#filter-unconfirmed";
+    private $_selector_modal_filter_field_min_value = "#filter-min-value";
+    private $_selector_modal_filter_field_max_value = "#filter-max-value";
+    private $_selector_modal_filter_field_min_value_icon = "#filter-min-value+span i";
+    private $_selector_modal_filter_field_max_value_icon = "#filter-max-value+span i";
+    private $_selector_modal_filter_btn_cancel = "#filter-cancel-btn";
+    private $_selector_modal_filter_btn_reset = "#filter-reset-btn";
+    private $_selector_modal_filter_btn_filter = "#filter-btn";
+
     // entries-table
     private $_selector_table = "#entry-table";
+    private $_selector_table_head = 'thead';
+    private $_selector_table_body = 'tbody';
     private $_selector_table_unconfirmed_expense = "tr.has-background-warning.is-expense";
     private $_selector_table_unconfirmed_income = 'tr.has-background-warning.is-income';
     private $_selector_table_confirmed_expense = 'tr.is-confirmed.is-expense';
     private $_selector_table_confirmed_income = 'tr.has-background-success.is-confirmed.is-income';
-    private $_selector_table_row_transfer_checkbox = "td:nth-last-child(2)";
-    private $_selector_table_row_attachment_checkbox = "td:nth-last-child(3)";
+    private $_selector_table_row_date = 'td.row-entry-date';
+    private $_selector_table_row_memo = 'td.row-entry-memo';
+    private $_selector_table_row_value = 'td.row-entry-value';
+    private $_selector_table_row_account_type = 'td.row-entry-account-type';
+    private $_selector_table_row_transfer_checkbox = "td.row-entry-transfer-checkbox";
+    private $_selector_table_row_attachment_checkbox = "td.row-entry-attachment-checkbox";
+    private $_selector_table_row_tags = "td.row-entry-tags";
     private $_selector_table_is_checked_checkbox = ".fas.fa-check-square";
     private $_selector_table_unchecked_checkbox = "far fa-square";
     private $_selector_pagination_btn_next = "button#paginate-btn-next";
@@ -95,13 +124,31 @@ trait HomePageSelectors {
     private $_label_account_type_meta_last_digits = "Last 4 Digits:";
     private $_label_expense_switch_expense = "Expense";
     private $_label_expense_switch_income = "Income";
+    private $_label_switch_enabled = "Enabled";
+    private $_label_switch_disabled = "Disabled";
+    private $_label_select_option_filter_default = "[ ALL ]";
     private $_label_file_upload = "Drag & Drop";
     private $_label_btn_dropzone_remove_file = "REMOVE FILE";
     private $_label_btn_cancel = "Cancel";
     private $_label_btn_delete = "Delete";
     private $_label_btn_save = "Save changes";
+    private $_label_btn_reset = "Reset";
+    private $_label_btn_filter = "Filter";
     private $_label_notification_file_upload_success = "uploaded: %s";
     private $_label_notification_transfer_saved = "Transfer entry created";
     private $_label_notification_new_entry_created = "New entry created";
+
+    // ###*** COLOURS ***###
+    private $_color_expense_switch_expense = "#ffcc00";
+    private $_color_expense_switch_income = "#00d1b2";
+    private $_color_filter_switch_default = "#B5B5B5";
+    private $_color_filter_switch_active = "#209CEE";
+    private $_color_filter_btn_tag_default = "#f5f5f5";
+    private $_color_filter_btn_tag_active = "#209CEE";
+
+    private $_class_switch_core = ".v-switch-core";
+    private $_class_icon_euro = "fa-euro-sign";
+    private $_class_icon_dollar = "fa-dollar-sign";
+    private $_class_icon_pound = "fa-pound-sign";
 
 }

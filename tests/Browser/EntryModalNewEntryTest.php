@@ -99,12 +99,24 @@ class EntryModalNewEntryTest extends DuskTestCase {
                     $entry_modal_body
                         ->assertSee('Date:')
                         ->assertVisible($this->_selector_modal_entry_field_date)
-                        ->assertInputValue($this->_selector_modal_entry_field_date, date("Y-m-d"))
+                        ->assertInputValue($this->_selector_modal_entry_field_date, date("Y-m-d"));
+                    $this->assertEquals(
+                        'date',
+                        $entry_modal_body->attribute($this->_selector_modal_entry_field_date, 'type'),
+                        $this->_selector_modal_entry_field_date.' is not type="date"'
+                    );
 
+                    $entry_modal_body
                         ->assertSee('Value:')
                         ->assertVisible($this->_selector_modal_entry_field_value)
-                        ->assertInputValue($this->_selector_modal_entry_field_value, "")
+                        ->assertInputValue($this->_selector_modal_entry_field_value, "");
+                    $this->assertEquals(
+                        'text',
+                        $entry_modal_body->attribute($this->_selector_modal_entry_field_value, 'type'),
+                        $this->_selector_modal_entry_field_value.' is not type="text"'
+                    );
 
+                    $entry_modal_body
                         ->assertSee('Account Type:')
                         ->assertVisible($this->_selector_modal_entry_field_account_type)
                         ->assertSelected($this->_selector_modal_entry_field_account_type, "")
@@ -117,6 +129,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
 
                         ->assertVisible($this->_selector_modal_entry_field_expense)
                         ->assertSee($this->_label_expense_switch_expense)
+                        ->assertElementColour($this->_selector_modal_entry_field_expense.' '.$this->_class_switch_core, $this->_color_expense_switch_expense)
                         ->assertDontSee($this->_label_expense_switch_income)
 
                         ->assertSee('Tags:')
@@ -127,18 +140,6 @@ class EntryModalNewEntryTest extends DuskTestCase {
                         ->with($this->_selector_modal_entry_field_upload, function($file_upload){
                             $file_upload->assertSee($this->_label_file_upload);
                         });
-
-                    $this->assertEquals(
-                        'date',
-                        $entry_modal_body->attribute($this->_selector_modal_entry_field_date, 'type'),
-                        $this->_selector_modal_entry_field_date.' is not type="date"'
-                    );
-
-                    $this->assertEquals(
-                        'text',
-                        $entry_modal_body->attribute($this->_selector_modal_entry_field_value, 'type'),
-                        $this->_selector_modal_entry_field_value.' is not type="text"'
-                    );
                 });
         });
     }
@@ -252,8 +253,11 @@ class EntryModalNewEntryTest extends DuskTestCase {
                 ->with($this->_selector_modal_body, function($entry_modal_body){
                     $entry_modal_body
                         ->assertSee($this->_label_expense_switch_expense)
+                        ->assertElementColour($this->_selector_modal_entry_field_expense.' '.$this->_class_switch_core, $this->_color_expense_switch_expense)
                         ->click($this->_selector_modal_entry_field_expense)
+                        ->pause(500) // 0.5 seconds - need to wait for the transition to complete after click
                         ->assertSee($this->_label_expense_switch_income)
+                        ->assertElementColour($this->_selector_modal_entry_field_expense.' '.$this->_class_switch_core, $this->_color_expense_switch_income)
                         ->assertDontSee($this->_label_expense_switch_expense);
                 });
         });

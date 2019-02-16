@@ -15,6 +15,7 @@
                 v-bind:name="institution.name"
             ></institutions-panel-institution>
 
+            <!-- TODO: replace all of this with something better... -->
             <div class="accordion" v-show="inactiveAccountsAreAvailable">
                 <div class="panel-block accordion-header toggle institution-node">
                     <p>Closed Accounts</p>
