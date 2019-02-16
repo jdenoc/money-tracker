@@ -12,6 +12,8 @@ class UiSampleDatabaseSeeder extends Seeder {
     const COUNT_MIN = 1;
     const COUNT_TAG = 5;
 
+    const OUTPUT_PREFIX = "<info>".__CLASS__.":</info> ";
+
     /**
      * Run the database seeds.
      *
@@ -22,9 +24,11 @@ class UiSampleDatabaseSeeder extends Seeder {
 
         $tags = factory(App\Tag::class, self::COUNT_TAG)->create();
         $tag_ids = $tags->pluck('id')->toArray();
+        $this->command->line(self::OUTPUT_PREFIX."Tags seeded");
 
         $institutions = factory(App\Institution::class, self::COUNT_INSTITUTION)->create(['active'=>1]);
         $institution_ids = $institutions->pluck('id')->toArray();
+        $this->command->line(self::OUTPUT_PREFIX."Institutions seeded");
 
         $accounts = collect();
         foreach($institution_ids as $institution_id){
@@ -32,6 +36,7 @@ class UiSampleDatabaseSeeder extends Seeder {
         }
         $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$faker->randomElement($institution_ids), 'disabled'=>true]);
         $account_ids = $accounts->pluck('id')->toArray();
+        $this->command->line(self::OUTPUT_PREFIX."Accounts seeded");
 
         $account_types = collect();
         foreach($account_ids as $account_id){
@@ -39,12 +44,14 @@ class UiSampleDatabaseSeeder extends Seeder {
         }
         $account_types = $this->addAccountTypeToCollection($account_types, ['account_id'=>$faker->randomElement($account_ids), 'disabled'=>true], $faker);
         $account_type_ids = $account_types->pluck('id')->toArray();
+        $this->command->line(self::OUTPUT_PREFIX."Account-types seeded");
 
         $entries = collect();
         foreach($account_type_ids as $account_type_id){
             $entries = $this->addEntryToCollection($entries, ['account_type_id'=>$account_type_id, 'disabled'=>false], $faker);
         }
         $entries = $this->addEntryToCollection($entries, ['account_type_id'=>$faker->randomElement($account_type_ids), 'disabled'=>true], $faker);
+        $this->command->line(self::OUTPUT_PREFIX."Entries seeded");
 
         foreach($entries as $entry){
             if($faker->boolean){    // randomly assign tags to entries
@@ -54,6 +61,7 @@ class UiSampleDatabaseSeeder extends Seeder {
         // just in case we missed an entry necessary for testing, we're going to assign tags to a random confirmed & unconfirmed entries
         $this->attachTagToEntry($faker, $tag_ids, $entries->where('confirm', 0)->random(1)->first());
         $this->attachTagToEntry($faker, $tag_ids, $entries->where('confirm', 1)->random(1)->first());
+        $this->command->line(self::OUTPUT_PREFIX."Randomly assigned tags to entries");
 
         // no point in selecting disabled entries. they're not going to be tested.
         $entry_income_ids = $entries->where('expense', 1)->where('disabled', 0)->pluck('id')->toArray();
@@ -70,6 +78,7 @@ class UiSampleDatabaseSeeder extends Seeder {
             $transfer_to_entry->transfer_entry_id = $transfer_from_entry_ids[$transfer_i];
             $transfer_to_entry->save();
         }
+        $this->command->line(self::OUTPUT_PREFIX."Randomly marked entries as transfers");
 
         // assign attachments to entries. if entry is a "transfer", then add an attachment of the same name to its counterpart
         for($attachment_i=0; $attachment_i<self::COUNT_ATTACHMENT; $attachment_i++){
@@ -91,6 +100,7 @@ class UiSampleDatabaseSeeder extends Seeder {
                 factory(App\Attachment::class)->create(['entry_id'=>$random_entry_expense_id]);
             }
         }
+        $this->command->line(self::OUTPUT_PREFIX."Randomly assigned Attachments to entries");
     }
 
     /**
@@ -119,7 +129,7 @@ class UiSampleDatabaseSeeder extends Seeder {
      * @return \Illuminate\Support\Collection
      */
     private function addEntryToCollection($entry_collection, $data, $faker){
-        return $this->addToCollection($entry_collection, App\Entry::class, $data, $faker->numberBetween(self::COUNT_MIN, self::COUNT_ENTRY));
+        return $this->addToCollection($entry_collection, App\Entry::class, $data, $faker->numberBetween(self::COUNT_MIN, self::COUNT_ENTRY*2));
     }
 
     /**

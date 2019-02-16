@@ -38,9 +38,12 @@ abstract class DuskTestCase extends BaseTestCase {
      */
     public function getApiTags(){
         $tags_response = $this->get("/api/tags");
-        $tags = $tags_response->json();
-        unset($tags['count']);
-        return $tags;
+        return $this->removeCountFromApiResponse($tags_response->json());
+    }
+
+    public function getApiAccounts(){
+        $accounts_response = $this->get("/api/accounts");
+        return $this->removeCountFromApiResponse($accounts_response->json());
     }
 
     /**
@@ -48,9 +51,7 @@ abstract class DuskTestCase extends BaseTestCase {
      */
     public function getApiAccountTypes(){
         $account_types_response = $this->get("/api/account-types");
-        $account_types = $account_types_response->json();
-        unset($account_types['count']);
-        return $account_types;
+        return $this->removeCountFromApiResponse($account_types_response->json());
     }
 
     /**
@@ -59,8 +60,12 @@ abstract class DuskTestCase extends BaseTestCase {
      */
     public function getApiEntry($entry_id){
         $entry_response = $this->get("/api/entry/".$entry_id);
-        $entry = $entry_response->json();
-        return $entry;
+        return $this->removeCountFromApiResponse($entry_response->json());
+    }
+
+    private function removeCountFromApiResponse($api_call_response){
+        unset($api_call_response['count']);
+        return $api_call_response;
     }
 
     /**

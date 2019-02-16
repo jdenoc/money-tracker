@@ -31,6 +31,7 @@
             <!-- modal components -->
             <entry-modal></entry-modal>
             <transfer-modal></transfer-modal>
+            <filter-modal></filter-modal>
             <!--
             loading-modal must ALWAYS be on the bottom.
             This way if the loading-modal is active and another modal is active,

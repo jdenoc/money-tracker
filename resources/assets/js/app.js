@@ -10,6 +10,7 @@ Vue.use(VueHotkey);
 import EntryModal from './components/entry-modal';
 import EntriesTable from './components/entries-table';
 import EntriesTableEntryRow from './components/entries-table-entry-row';
+import FilterModal from "./components/filter-modal";
 import InstitutionsPanel from './components/institutions-panel';
 import LoadingModal from './components/loading-modal';
 import Navbar from './components/navbar';
@@ -51,6 +52,14 @@ Vue.prototype.$eventHub = new Vue({
         /**
          * @returns {string}
          */
+        EVENT_FILTER_MODAL_OPEN: function(){ return "open-filter-modal"; },
+        /**
+         * @returns {string}
+         */
+        EVENT_FILTER_MODAL_CLOSE: function(){ return "close-filter-modal"; },
+        /**
+         * @returns {string}
+         */
         EVENT_TRANSFER_MODAL_OPEN: function(){ return "open-transfer-model"; }
 
         // TODO: EVENT_UPDATE_ACCOUNTS: update accounts in institutions panel when there is an entry update
@@ -71,6 +80,7 @@ new Vue({
         EntryModal,
         EntriesTable,
         EntriesTableEntryRow,
+        FilterModal,
         InstitutionsPanel,
         LoadingModal,
         Navbar,
@@ -92,7 +102,7 @@ new Vue({
         let accountTypes = new AccountTypes();
         accountTypes.fetch().then(this.displayNotification.bind(this));
 
-        this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE);
+        this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, 0);
 
         let institutions = new Institutions();
         institutions.fetch().then(this.displayNotification.bind(this));

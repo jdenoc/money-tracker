@@ -47,8 +47,6 @@ script:
   - docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite web
   - docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite unit
   # Laravel Dusk (UI) testing
-  - docker container exec -t app.money-tracker artisan migrate:refresh
-  - docker container exec -t app.money-tracker artisan db:seed --class=UiSampleDatabaseSeeder
   - docker container exec -t app.money-tracker artisan dusk --stop-on-failure
 
 # $WEBHOOK_URL should be set in travis-ci settings

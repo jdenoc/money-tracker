@@ -8,10 +8,12 @@ use Illuminate\Support\Facades\DB;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskTestCase;
 use Laravel\Dusk\Browser;
+use Tests\Traits\InjectDatabaseStateIntoException;
 
 class NotificationsTest extends DuskTestCase {
 
     use DatabaseMigrations;
+    use InjectDatabaseStateIntoException;
 
     private $_selector_unconfirmed_expense = "tr.has-background-warning.is-expense";
     private $_selector_unconfirmed_income = 'tr.has-background-warning.is-income';
@@ -34,6 +36,7 @@ class NotificationsTest extends DuskTestCase {
     public function setUp(){
         parent::setUp();
         Artisan::call('db:seed', ['--class'=>'UiSampleDatabaseSeeder']);
+        $this->setDatabaseStateInjectionPermission(self::$ALLOW_INJECT_DATABASE_STATE_ON_EXCEPTION);
     }
 
     /**

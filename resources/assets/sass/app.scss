@@ -1,13 +1,18 @@
-.has-padding-right{
-  padding-right: 5px;
-}
-
 #institutions-panel-column{
   background-color: whitesmoke;
 }
 
 .has-padding-right{
   padding-right: 0.375rem;
+}
+
+.no-padding-top{
+  padding-top: 0;
+}
+
+.is-checkradio[type=checkbox].is-block+label.checkbox-adjusted-top::after,
+.is-checkradio[type=checkbox].is-block+label.checkbox-adjusted-top:after{
+  top: 0.4rem;
 }
 
 /* additional styling for voerro-tags-input component */

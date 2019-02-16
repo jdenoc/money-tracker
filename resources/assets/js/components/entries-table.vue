@@ -68,6 +68,9 @@
             currentPage: function(){
                 return Store.getters.currentPage;
             },
+            currentFilter: function(){
+                return Store.getters.currentFilter;
+            },
             listOfEntries: function(){
                 return this.entries.retrieve;
             },
@@ -75,12 +78,24 @@
                 return this.entries.count > this.pageMax && this.pageMax*(this.currentPage+1) < this.entries.count
             },
             isPrevButtonVisible: function(){
-                return this.currentPage !== 0;
+                return this.currentPage !== 0 && !_.isNull(this.currentPage);
             }
         },
         methods: {
-            updateEntriesTable: function(pageNumber){
-                this.entries.fetch(pageNumber)
+            updateEntriesTableEventHandler: function(payload){
+                if(_.isNull(payload)){
+                    this.setPageNumber(0);
+                }
+                if(!_.isObject(payload)){
+                    this.setPageNumber(payload);
+                } else {
+                    Store.dispatch('currentFilter', payload.filterParameters);
+                    this.setPageNumber(payload.pageNumber);
+                }
+                this.updateEntriesTable(this.currentPage, this.currentFilter);
+            },
+            updateEntriesTable: function(pageNumber, filterParameters){
+                this.entries.fetch(pageNumber, filterParameters)
                     .then(function(notification){
                         this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, notification);
                     }.bind(this))
@@ -89,19 +104,20 @@
                     }.bind(this));
             },
             nextPage: function(){
-                this.setPage(this.currentPage+1);
+                this.setPageNumber(this.currentPage+1);
+                this.updateEntriesTable(this.currentPage, this.currentFilter);
             },
             prevPage: function(){
-                this.setPage(this.currentPage-1);
+                this.setPageNumber(this.currentPage-1);
+                this.updateEntriesTable(this.currentPage, this.currentFilter);
             },
-            setPage: function(newPageNumber){
+            setPageNumber: function(newPageNumber){
                 this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
                 Store.dispatch('currentPage', newPageNumber);
-                this.updateEntriesTable(this.currentPage);
             }
         },
         created: function(){
-            this.$eventHub.listen(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, this.updateEntriesTable);
+            this.$eventHub.listen(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, this.updateEntriesTableEventHandler);
         }
     }
 </script>

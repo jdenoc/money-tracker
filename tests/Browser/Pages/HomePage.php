@@ -45,6 +45,7 @@ class HomePage extends Page {
             '@navbar'=>'.navbar',
             '@new-entry-modal-btn'=>'#nav-entry-modal',
             '@add-transfer-btn'=>'#nav-transfer-modal',
+            '@open-filter-btn'=>'#nav-filter-modal',
             // loading-modal
             '@loading'=>'#loading-modal',
             // entry-modal
@@ -54,6 +55,8 @@ class HomePage extends Page {
             // transfer-modal
             '@transfer-modal'=>'#transfer-modal',
             '@transfer-modal-save-btn'=>"#transfer-modal button#transfer-save-btn",
+            // filter-modal
+            '@filter-modal'=>'#filter-modal',
             // notification-modal
             '@notification'=>".snotifyToast",
             '@notification-error'=>".snotifyToast.snotify-error",
@@ -77,6 +80,10 @@ class HomePage extends Page {
         $this->openModalFromNavbar($browser, "@add-transfer-btn", '@transfer-modal');
     }
 
+    public function openFilterModal(Browser $browser){
+        $this->openModalFromNavbar($browser, "@open-filter-btn", "@filter-modal");
+    }
+
     public function openModalFromNavbar(Browser $browser, $selector_btn, $selector_modal){
         $browser->with('@navbar', function($navbar) use ($selector_btn){
             $navbar->click($selector_btn);
@@ -94,34 +101,34 @@ class HomePage extends Page {
     }
 
     public function assertEntryModalSaveButtonIsDisabled(Browser $browser){
-        PHPUnit::assertEquals(
-            'true',
-            $browser->attribute("@entry-modal-save-btn", 'disabled'),
-            "Entry-modal save button is NOT disabled"
-        );
+        $this->assertModalSaveButtonIsDisabled($browser, "@entry-modal-save-btn", "entry-modal save button is NOT disabled");
     }
 
     public function assertTransferModalSaveButtonIsDisabled(Browser $browser){
+        $this->assertModalSaveButtonIsDisabled($browser, "@transfer-modal-save-btn", "transfer-modal save button is NOT disabled");
+    }
+
+    protected function assertModalSaveButtonIsDisabled(Browser $browser, $modal_save_btn_selector, $fail_message){
         PHPUnit::assertEquals(
             'true',
-            $browser->attribute("@transfer-modal-save-btn", 'disabled'),
-            "transfer-modal save button is NOT disabled"
+            $browser->attribute($modal_save_btn_selector, 'disabled'),
+            $fail_message
         );
     }
 
     public function assertEntryModalSaveButtonIsNotDisabled(Browser $browser){
-        PHPUnit::assertNotEquals(
-            'true',
-            $browser->attribute("@entry-modal-save-btn", 'disabled'),
-            "Entry-modal save button IS disabled"
-        );
+        $this->assertModalSaveButtonIsNotDisabled($browser, "@entry-modal-save-btn", "entry-modal save button IS disabled");
     }
 
     public function assertTransferModalSaveButtonIsNotDisabled(Browser $browser){
+        $this->assertModalSaveButtonIsNotDisabled($browser, "@transfer-modal-save-btn", "transfer-modal save button IS disabled");
+    }
+
+    protected function assertModalSaveButtonIsNotDisabled(Browser $browser, $modal_save_btn_selector, $fail_message){
         PHPUnit::assertNotEquals(
             'true',
-            $browser->attribute("@transfer-modal-save-btn", 'disabled'),
-            "transfer-modal save button IS disabled"
+            $browser->attribute($modal_save_btn_selector, 'disabled'),
+            $fail_message
         );
     }
 
@@ -151,6 +158,34 @@ class HomePage extends Page {
             ->mouseover('@navbar')
             ->waitUntilMissing($notification_type_selector, self::WAIT_SECONDS)
             ->pause(250);    // give the element another 0.25 seconds to fully disappear;
+    }
+
+    /**
+     * @param Browser $browser
+     * @param string $element_selector
+     * @param string $expected_colour
+     * @param string $element_pseudo_selector
+     */
+    public function assertElementColour(Browser $browser, $element_selector, $expected_colour, $element_pseudo_selector=''){
+        $element_hex_colour = $browser->script([
+            'css_color = window.getComputedStyle(document.querySelector("'.$element_selector.'"), "'.$element_pseudo_selector.'").getPropertyValue("background-color");',
+            'rgb = css_color.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);',
+            'if(rgb === null){
+            hex = css_color;    // assuming that the CSS color returned is HEX
+        } else {
+            r = (parseInt(rgb[1]) < 16 ? "0" : "")+parseInt(rgb[1]).toString(16);
+            g = (parseInt(rgb[2]) < 16 ? "0" : "")+parseInt(rgb[2]).toString(16);
+            b = (parseInt(rgb[3]) < 16 ? "0" : "")+parseInt(rgb[3]).toString(16);
+            hex = "#"+r+g+b;
+        }',
+            'return hex;'
+        ]);
+
+        PHPUnit::assertEquals(
+            strtoupper($expected_colour),
+            strtoupper($element_hex_colour[3]),
+            "Expected colour [$expected_colour] does not match actual colour [".$element_hex_colour[3]."] of element [$element_selector]"
+        );
     }
 
 }

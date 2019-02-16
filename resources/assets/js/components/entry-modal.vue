@@ -11,7 +11,7 @@
                         v-model="entryData.confirm"
                         v-bind:disabled="isLocked"
                     />
-                    <label for="entry-confirm"
+                    <label for="entry-confirm" class="checkbox-adjusted-top"
                         v-bind:class="{'has-text-grey-light': !entryData.confirm, 'has-text-white': entryData.confirm}"
                         >Confirmed</label>
                 </div>
@@ -185,7 +185,7 @@
     import {Tags} from '../tags';
     import EntryModalAttachment from "./entry-modal-attachment";
     import Store from '../store';
-    import ToggleButton from 'vue-js-toggle-button/src/Button'
+    import { ToggleButton } from 'vue-js-toggle-button';
     import VoerroTagsInput from '@voerro/vue-tagsinput';
     import vue2Dropzone from 'vue2-dropzone';
 
@@ -227,10 +227,17 @@
                     attachments: []
                 },
 
+                currency: {
+                    euro:     {label: "EUR", class: "fa-euro-sign"},
+                    dollarUs: {label: "USD", class: "fa-dollar-sign"},
+                    dollarCa: {label: "CAD", class: "fa-dollar-sign"},
+                    pound:    {label: "GBP", class: "fa-pound-sign"}
+                },
+
                 toggleButtonProperties: {
-                    colors: {'checked': '#ffcc00', 'unchecked': '#00d1b2'},
+                    colors: {checked: '#ffcc00', unchecked: '#00d1b2'},
                     height: 40,
-                    labels: {'checked': 'Expense', 'unchecked': 'Income'},
+                    labels: {checked: 'Expense', unchecked: 'Income'},
                     width: 200,
                 },
             }
@@ -500,12 +507,6 @@
                         }
                     }.bind(this));
             },
-            notAvailable: function(){
-                alert("This feature is not currently available");
-            },
-            warningAlert: function(){
-                alert("WARNING: This feature is still in beta. Expect unintended consequences.");
-            },
             updateAccountTypeMeta: function(){
                 let account = this.accountTypesObject.getAccount(this.entryData.account_type_id);
                 this.accountTypeMeta.accountName = account.name;
@@ -513,18 +514,21 @@
                 this.accountTypeMeta.lastDigits = accountType.last_digits;
 
                 switch(account.currency){
-                    case 'EUR':
-                        this.accountTypeMeta.currencyClass = "fa-euro-sign";
+                    case this.currency.euro.label:
+                        this.accountTypeMeta.currencyClass = this.currency.euro.class;
                         break;
 
-                    case 'GBP':
-                        this.accountTypeMeta.currencyClass = "fa-pound-sign";
+                    case this.currency.pound.label:
+                        this.accountTypeMeta.currencyClass = this.currency.pound.class;
                         break;
 
-                    case 'USD':
-                    case 'CAD':
+                    case this.currency.dollarCa.label:
+                        this.accountTypeMeta.currencyClass = this.currency.dollarCa.class;
+                        break;
+
+                    case this.currency.dollarUs.label:
                     default:
-                        this.accountTypeMeta.currencyClass = 'fa-dollar-sign';
+                        this.accountTypeMeta.currencyClass = this.currency.dollarUs.class;
                 }
             },
             resetEntryData: function(){
@@ -560,10 +564,6 @@
 </script>
 
 <style scoped>
-    .is-checkradio[type=checkbox].is-block+label::after,
-    .is-checkradio[type=checkbox].is-block+label:after{
-        top: 0.4rem;
-    }
     .field-label.is-normal{
         font-size: 13px;
     }

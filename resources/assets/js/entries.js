@@ -19,24 +19,20 @@ export class Entries extends ObjectBaseClass {
 
         let requestParameters = {};
         for(let parameter in filterParameters){
-            if(filterParameters.hasOwnProperty(parameter) && filterParameters[parameter] !== null){
-                requestParameters.parameter = filterParameters[parameter];
+            if(filterParameters.hasOwnProperty(parameter)
+                && !_.isNull(filterParameters[parameter])
+                && (
+                    !_.isEmpty(filterParameters[parameter])
+                    || _.isBoolean(filterParameters[parameter])
+                    || (_.isNumber(filterParameters[parameter]) && filterParameters[parameter] !== 0)
+                )
+            ){
+                requestParameters[parameter] = filterParameters[parameter];
             }
         }
         requestParameters.sort = this.sort;
-        // TODO: fetch a filtered request
-//         $.ajax({
-//             beforeSend: function(){
-//                 loading.start();
-//                 filterModal.active = !$.isEmptyObject(filterParameters);
-//                 paginate.filterState = filterParameters;
-//             },
-//             data: JSON.stringify(requestParameters),
-//             dataType: 'json',
-//             complete: entries.ajaxCompleteProcessing
-//         });
 
-        console.log("URL:"+this.uri+pageNumber+";\nfilter:"+requestParameters);
+        console.log("URL:"+this.uri+pageNumber+";\nfilter:"+JSON.stringify(requestParameters));
         return Axios.post(this.uri+pageNumber, requestParameters)
             .then(this.axiosSuccess.bind(this))
             .catch(this.axiosFailure.bind(this));
