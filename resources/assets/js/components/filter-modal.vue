@@ -1,5 +1,5 @@
 <template>
-    <div id="filter-modal" class="modal" v-bind:class="{'is-active': isVisible}" v-hotkey="keymap">
+    <div id="filter-modal" class="modal" v-bind:class="{'is-active': isVisible}">
         <div class="modal-background"></div>
         <div class="modal-card">
             <header class="modal-card-head">
@@ -235,6 +235,7 @@
     import {AccountTypes} from '../account-types';
     import {Tags} from '../tags';
     import { ToggleButton } from 'vue-js-toggle-button'
+    import Store from '../store';
 
     export default {
         name: "filter-modal",
@@ -313,15 +314,15 @@
             }
         },
         methods: {
-            keymap: function(){
-                return {
-                    'ctrl+esc': this.closeModal
-                }
+            setModalState: function(modal){
+                Store.dispatch('currentModal', modal);
             },
             openModal: function(){
+                this.setModalState(Store.getters.STORE_MODAL_FILTER);
                 this.isVisible = true;
             },
             closeModal: function(){
+                this.setModalState(Store.getters.STORE_MODAL_NONE);
                 this.isVisible = false;
             },
             updateAccountCurrency: function(){

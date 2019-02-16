@@ -1,5 +1,5 @@
 <template>
-    <div id="entry-modal" class="modal" v-bind:class="{'is-active': isVisible}" v-hotkey="keymap">
+    <div id="entry-modal" class="modal" v-bind:class="{'is-active': isVisible}">
         <div class="modal-background"></div>
         <div class="modal-card">
             <header class="modal-card-head">
@@ -318,14 +318,6 @@
 
                 return true;
             },
-            keymap: function(){
-                return {
-                    'ctrl+esc': function(){
-                        console.log('entry:ctrl+esc');
-                        this.closeModal();
-                    }.bind(this)
-                };
-            },
             uploadToken: function(){
                 return document.querySelector("meta[name='csrf-token']").getAttribute('content');
             },
@@ -340,7 +332,11 @@
                     this.entryData.entry_value = parseFloat(cleanedEntryValue).toFixed(2);
                 }
             },
+            setModalState: function(modal){
+                Store.dispatch('currentModal', modal);
+            },
             openModal: function(entryData = {}){
+                this.setModalState(Store.getters.STORE_MODAL_ENTRY);
                 if(!_.isEmpty(entryData)){
                     this.entryData = _.clone(entryData);
                     // our input-tags field requires that tag values are strings
@@ -358,6 +354,7 @@
                 this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
             },
             closeModal: function(){
+                this.setModalState(Store.getters.STORE_MODAL_NONE);
                 this.isDeletable = false;
                 this.isVisible = false;
                 this.resetEntryData();
@@ -556,6 +553,7 @@
         created: function(){
             this.$eventHub.listen(this.$eventHub.EVENT_ENTRY_MODAL_OPEN, this.primeDataForModal);
             this.$eventHub.listen(this.$eventHub.EVENT_ENTRY_MODAL_UPDATE_DATA, this.openModal);
+            this.$eventHub.listen(this.$eventHub.EVENT_ENTRY_MODAL_CLOSE, this.closeModal);
         },
         mounted: function(){
             this.resetEntryData();

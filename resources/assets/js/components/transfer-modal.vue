@@ -1,5 +1,5 @@
 <template>
-    <div id="transfer-modal" class="modal" v-bind:class="{'is-active': isVisible}" v-hotkey="keymap">
+    <div id="transfer-modal" class="modal" v-bind:class="{'is-active': isVisible}">
         <div class="modal-background"></div>
         <div class="modal-card">
             <header class="modal-card-head">
@@ -292,13 +292,18 @@
                     this.transferData.value = parseFloat(cleanedEntryValue).toFixed(2);
                 }
             },
+            setModalState: function(modal){
+                Store.dispatch('currentModal', modal);
+            },
             openModal: function(){
+                this.setModalState(Store.getters.STORE_MODAL_TRANSFER);
                 this.isVisible = true;
                 this.resetData();
                 this.updateAccountTypeMeta('from');
                 this.updateAccountTypeMeta('to');
             },
             closeModal: function(){
+                this.setModalState(Store.getters.STORE_MODAL_NONE);
                 this.isVisible = false;
                 this.resetData();
                 this.updateAccountTypeMeta('from');
@@ -384,14 +389,6 @@
                 this.accountTypeMeta.from = _.clone(this.accountTypeMeta.default);
                 this.accountTypeMeta.to = _.clone(this.accountTypeMeta.default);
             },
-            keymap: function(){
-                return {
-                    'ctrl+esc': function(){
-                        console.log('transfer:ctrl+esc');
-                        this.closeModal();
-                    }.bind(this)
-                };
-            },
             dropzoneSuccessfulUpload(file, response){
                 // response: {'uuid', 'name', 'tmp_filename'}
                 this.transferData.attachments.push(response);
@@ -410,6 +407,7 @@
         },
         created: function(){
             this.$eventHub.listen(this.$eventHub.EVENT_TRANSFER_MODAL_OPEN, this.openModal);
+            this.$eventHub.listen(this.$eventHub.EVENT_TRANSFER_MODAL_CLOSE, this.closeModal);
         },
         mounted: function(){
             this.resetData();
