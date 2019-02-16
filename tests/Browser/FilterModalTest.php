@@ -256,6 +256,17 @@ class FilterModalTest extends DuskTestCase {
         });
     }
 
+    public function testCloseFilterModalWithHotkey(){
+        $this->browse(function(Browser $browser){
+            $browser
+                ->visit(new HomePage())
+                ->waitForLoadingToStop()
+                ->openFilterModal()
+                ->keys('', "{control}", "{escape}") // ["{control}", "{escape}"] didn't work
+                ->assertMissing($this->_selector_modal_transfer);
+        });
+    }
+
     public function testFlipAccountAndAccountTypeSwitch(){
         $accounts = $this->getApiAccounts();
         $account_types = $this->getApiAccountTypes();

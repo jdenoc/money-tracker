@@ -13,6 +13,7 @@ export default new Vuex.Store({
             currentPage: 0,
             currentFilter: {}
         },
+        modal: '',
         version: '',
         tags: [],
         institutions: [],
@@ -28,6 +29,13 @@ export default new Vuex.Store({
         // token: function(state){
         //     return state.token;
         // }
+
+        /**
+         * @returns {string}
+         */
+        currentModal: function(state){
+            return state.modal;
+        },
 
         /**
          * @returns {number}
@@ -68,6 +76,23 @@ export default new Vuex.Store({
          */
         STORE_TYPE_VERSION: function(){ return 'version' },
 
+        /**
+         * @returns {string}
+         */
+        STORE_MODAL_ENTRY: function(){ return 'modal-entry'; },
+        /**
+         * @returns {string}
+         */
+        STORE_MODAL_TRANSFER: function(){ return 'modal-transfer'; },
+        /**
+         * @returns {string}
+         */
+        STORE_MODAL_FILTER: function(){ return 'modal-filter'; },
+        /**
+         * @returns {string}
+         */
+        STORE_MODAL_NONE: function(){ return ''; },
+
         getStateOf: function(state, getters){
             return function(storeType){
                 let storeTypes = getters.getAllStoreTypes;
@@ -89,6 +114,14 @@ export default new Vuex.Store({
                 getters.STORE_TYPE_VERSION,
             ];
         },
+        getAllStoreModals: function(state, getters){
+            return [
+                getters.STORE_MODAL_ENTRY,
+                getters.STORE_MODAL_TRANSFER,
+                getters.STORE_MODAL_FILTER,
+                getters.STORE_MODAL_NONE
+            ]
+        }
     },
     mutations: {
         // authenticate: function(state, payload){
@@ -99,6 +132,13 @@ export default new Vuex.Store({
         // unauthenticate: function(state){
         //     state.token = '';
         // }
+        currentModal: function(state, {modal, acceptableModals, fallbackModal}){
+            if(acceptableModals.indexOf(modal) !== -1){
+                state.modal = modal;
+            } else {
+                state.modal = fallbackModal;
+            }
+        },
         currentPage: function(state, pageNumber){
             state.pagination.currentPage = (pageNumber < 0) ? 0 : pageNumber
         },
@@ -119,6 +159,13 @@ export default new Vuex.Store({
         // unauthenticate: function(context){
         //     context.commit('unauthenticate');
         // }
+        currentModal: function(context, payload){
+            context.commit('currentModal', {
+                modal: payload,
+                acceptableModals: context.getters.getAllStoreModals,
+                fallbackModal: context.getters.STORE_MODAL_NONE
+            });
+        },
         currentPage: function(context, payload){
             context.commit('currentPage', payload);
         },
