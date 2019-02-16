@@ -147,7 +147,7 @@ class TransferModalTest extends DuskTestCase {
     }
 
     public function testCloseTransferModalWithHotkey(){
-        $this->markTestSkipped("hotkey not working on transfer-modal yet");
+        $this->markTestSkipped("FIXME: hotkey not working on transfer-modal yet");
         $this->browse(function(Browser $browser){
             $browser
                 ->visit(new HomePage())
@@ -520,9 +520,9 @@ class TransferModalTest extends DuskTestCase {
         $browser
             ->with($table_row_selector, function($table_row) use ($transfer_entry_data, $entry_modal_date_input_value, $has_tags, $has_attachments){
                 $table_row
-                    ->assertSee($entry_modal_date_input_value)
-                    ->assertSee($transfer_entry_data['memo'])
-                    ->assertSee($transfer_entry_data['value'])
+                    ->assertSeeIn($this->_selector_table_row_date, $entry_modal_date_input_value)
+                    ->assertSeeIn($this->_selector_table_row_memo, $transfer_entry_data['memo'])
+                    ->assertSeeIn($this->_selector_table_row_value, $transfer_entry_data['value'])
                     ->assertVisible($this->_selector_table_row_transfer_checkbox.' '.$this->_selector_table_is_checked_checkbox);
                 if($has_tags){
                     $table_row->assertSee($transfer_entry_data['tag']);
