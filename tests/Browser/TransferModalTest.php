@@ -147,7 +147,6 @@ class TransferModalTest extends DuskTestCase {
     }
 
     public function testCloseTransferModalWithHotkey(){
-        $this->markTestSkipped("FIXME: hotkey not working on transfer-modal yet");
         $this->browse(function(Browser $browser){
             $browser
                 ->visit(new HomePage())

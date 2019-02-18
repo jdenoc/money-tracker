@@ -48,6 +48,10 @@ Vue.prototype.$eventHub = new Vue({
         /**
          * @returns {string}
          */
+        EVENT_ENTRY_MODAL_CLOSE: function(){ return "close-entry-modal"; },
+        /**
+         * @returns {string}
+         */
         EVENT_ENTRY_MODAL_UPDATE_DATA: function(){ return "update-data-in-entry-modal"; },
         /**
          * @returns {string}
@@ -60,7 +64,11 @@ Vue.prototype.$eventHub = new Vue({
         /**
          * @returns {string}
          */
-        EVENT_TRANSFER_MODAL_OPEN: function(){ return "open-transfer-model"; }
+        EVENT_TRANSFER_MODAL_OPEN: function(){ return "open-transfer-model"; },
+        /**
+         * @returns {string}
+         */
+        EVENT_TRANSFER_MODAL_CLOSE: function(){ return "close-transfer-model"; }
 
         // TODO: EVENT_UPDATE_ACCOUNTS: update accounts in institutions panel when there is an entry update
     },
@@ -88,10 +96,35 @@ new Vue({
         TransferModal
     },
     store: Store,
+    computed:{
+        keymap: function(){
+            return {
+                'ctrl+esc': function(){ // close modal
+                    switch(Store.getters.currentModal){
+                        case Store.getters.STORE_MODAL_ENTRY:
+                            console.log('entry:ctrl+esc');
+                            this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_MODAL_CLOSE);
+                            break;
+                        case Store.getters.STORE_MODAL_TRANSFER:
+                            console.log('transfer:ctrl+esc');
+                            this.$eventHub.broadcast(this.$eventHub.EVENT_TRANSFER_MODAL_CLOSE);
+                            break;
+                        case Store.getters.STORE_MODAL_FILTER:
+                            console.log('filter:ctrl+esc');
+                            this.$eventHub.broadcast(this.$eventHub.EVENT_FILTER_MODAL_CLOSE);
+                            break;
+                        default:
+                            console.log("ctrl+esc");
+                    }
+                }.bind(this)
+            };
+        },
+    },
     methods: {
         displayNotification: function(notification){
             this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, notification);
-        }
+        },
+
     },
     mounted: function(){
         this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
