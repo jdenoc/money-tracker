@@ -80,6 +80,7 @@ trait HomePageSelectors {
     private $_selector_modal_filter_field_start_date = "#filter-start-date";
     private $_selector_modal_filter_field_end_date = "#filter-end-date";
     private $_selector_modal_filter_field_switch_account_and_account_type = "#filter-account-account-types";
+    private $_selector_modal_filter_field_checkbox_show_disabled = "#filter-show-disabled-checkbox";
     private $_selector_modal_filter_field_account_and_account_type = "#filter-account-or-account-types-id";
     private $_selector_modal_filter_field_tags= "#filter-tags";
     private $_selector_modal_filter_field_switch_income = "#filter-is-income";
@@ -124,6 +125,7 @@ trait HomePageSelectors {
     private $_label_account_type_meta_last_digits = "Last 4 Digits:";
     private $_label_expense_switch_expense = "Expense";
     private $_label_expense_switch_income = "Income";
+    private $_label_checkbox_show_disabled = "Show Disabled";
     private $_label_switch_enabled = "Enabled";
     private $_label_switch_disabled = "Disabled";
     private $_label_select_option_filter_default = "[ ALL ]";

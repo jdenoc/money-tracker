@@ -3,10 +3,12 @@
 namespace Tests\Browser;
 
 use App\Account;
+use App\AccountType;
 use Facebook\WebDriver\WebDriverBy;
 use Faker\Factory as FakerFactory;
 use Faker\Generator;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskTestCase;
 use Laravel\Dusk\Browser;
@@ -92,7 +94,7 @@ class FilterModalTest extends DuskTestCase {
                         ->assertSelected($this->_selector_modal_filter_field_account_and_account_type, "")
                         ->assertSeeIn($this->_selector_modal_filter_field_account_and_account_type, $this->_label_select_option_filter_default)
                         ->assertSelectHasOption($this->_selector_modal_filter_field_account_and_account_type, "")
-                        ->assertSelectHasOptions($this->_selector_modal_filter_field_account_and_account_type, collect($accounts)->pluck('id')->toArray())
+                        ->assertSelectHasOptions($this->_selector_modal_filter_field_account_and_account_type, collect($accounts)->where('disabled', false)->pluck('id')->toArray())
 
                         // tags - button(s)
                         ->assertSee("Tags:")
@@ -267,27 +269,78 @@ class FilterModalTest extends DuskTestCase {
         });
     }
 
-    public function testFlipAccountAndAccountTypeSwitch(){
+    public function providerFlipAccountAndAccountTypeSwitch(){
+        return [
+            // [account.disabled, account-type.disabled]
+            ['account'=>false, 'account-type'=>true],
+            ['account'=>false, 'account-type'=>false],
+            ['account'=>true, 'account-type'=>false],
+            ['account'=>true, 'account-type'=>true],
+        ];
+    }
+
+    /**
+     * @dataProvider providerFlipAccountAndAccountTypeSwitch
+     * @param boolean $has_disabled_account
+     * @param boolean $has_disabled_account_type
+     *
+     * @throws \Throwable
+     */
+    public function testFlipAccountAndAccountTypeSwitch($has_disabled_account, $has_disabled_account_type){
+        DB::statement("TRUNCATE accounts");
+        DB::statement("TRUNCATE account_types");
+
+        $institutions = $this->getApiInstitutions();
+        $institution_id = collect($institutions)->pluck('id')->random(1)->first();
+
+        factory(Account::class, 3)->create(['disabled'=>0, 'institution_id'=>$institution_id]);
+        if($has_disabled_account){
+            factory(Account::class, 1)->create(['disabled'=>1, 'institution_id'=>$institution_id]);
+        }
         $accounts = $this->getApiAccounts();
+
+        factory(AccountType::class, 3)->create(['disabled'=>0, 'account_id'=>collect($accounts)->pluck('id')->random(1)->first()]);
+        if($has_disabled_account_type){
+            factory(AccountType::class, 1)->create(['disabled'=>1, 'account_id'=>collect($accounts)->pluck('id')->random(1)->first()]);
+        }
         $account_types = $this->getApiAccountTypes();
 
-        $this->browse(function(Browser $browser) use ($accounts, $account_types){
+        $this->browse(function(Browser $browser) use ($has_disabled_account, $has_disabled_account_type, $accounts, $account_types){
             $browser
                 ->visit(new HomePage())
                 ->waitForLoadingToStop()
                 ->openFilterModal()
-                ->with($this->_selector_modal_filter, function($modal) use ($accounts, $account_types){
+                ->with($this->_selector_modal_filter.' '.$this->_selector_modal_body, function($modal) use ($has_disabled_account, $has_disabled_account_type, $accounts, $account_types){
                     $modal
                         ->assertVisible($this->_selector_modal_filter_field_switch_account_and_account_type)
                         ->assertVisible($this->_selector_modal_filter_field_account_and_account_type)
 
                         ->assertSeeIn($this->_selector_modal_filter_field_switch_account_and_account_type, "Account")
-                        ->assertElementColour($this->_selector_modal_filter_field_switch_account_and_account_type.' '.$this->_class_switch_core, $this->_color_filter_switch_default)
+                        ->assertElementColour($this->_selector_modal_filter_field_switch_account_and_account_type.' '.$this->_class_switch_core, $this->_color_filter_switch_default);
 
+                    if($has_disabled_account){
+                        $modal
+                            ->assertVisible($this->_selector_modal_filter_field_checkbox_show_disabled."+label")
+                            ->assertSeeIn($this->_selector_modal_filter_field_checkbox_show_disabled."+label", $this->_label_checkbox_show_disabled);
+                    } else {
+                        $modal->assertMissing($this->_selector_modal_filter_field_checkbox_show_disabled);
+                    }
+
+                    $modal
                         ->assertSelected($this->_selector_modal_filter_field_account_and_account_type, "")
                         ->assertSeeIn($this->_selector_modal_filter_field_account_and_account_type, $this->_label_select_option_filter_default)
                         ->assertSelectHasOption($this->_selector_modal_filter_field_account_and_account_type, "")
-                        ->assertSelectHasOptions($this->_selector_modal_filter_field_account_and_account_type, collect($accounts)->pluck('id')->toArray());
+                        ->assertSelectHasOptions($this->_selector_modal_filter_field_account_and_account_type, collect($accounts)->where('disabled', false)->pluck('id')->toArray());
+
+                    if($has_disabled_account){
+                        $modal
+                            ->click($this->_selector_modal_filter_field_checkbox_show_disabled."+label")
+                            ->assertSelectHasOptions(
+                                $this->_selector_modal_filter_field_account_and_account_type,
+                                collect($accounts)->pluck('id')->toArray()
+                            )
+                            ->click($this->_selector_modal_filter_field_checkbox_show_disabled."+label");  // click again to reset state for account-types
+                    }
 
                     // test currency displayed in "Min Range" & "Max Range" fields is $
                     $this->assertContains($this->_class_icon_dollar, $modal->attribute($this->_selector_modal_filter_field_min_value_icon, 'class'));
@@ -317,12 +370,33 @@ class FilterModalTest extends DuskTestCase {
                         ->pause(1000)   // 1 second
 
                         ->assertSeeIn($this->_selector_modal_filter_field_switch_account_and_account_type, "Account Type")
-                        ->assertElementColour($this->_selector_modal_filter_field_switch_account_and_account_type.' '.$this->_class_switch_core, $this->_color_filter_switch_default)
+                        ->assertElementColour($this->_selector_modal_filter_field_switch_account_and_account_type.' '.$this->_class_switch_core, $this->_color_filter_switch_default);
 
+                    if($has_disabled_account_type){
+                        $modal
+                            ->assertVisible($this->_selector_modal_filter_field_checkbox_show_disabled."+label")
+                            ->assertSeeIn($this->_selector_modal_filter_field_checkbox_show_disabled."+label", $this->_label_checkbox_show_disabled);
+                    } else {
+                        $modal->assertMissing($this->_selector_modal_filter_field_checkbox_show_disabled);
+                    }
+
+                    $modal
                         ->assertSelected($this->_selector_modal_filter_field_account_and_account_type, "")
                         ->assertSeeIn($this->_selector_modal_filter_field_account_and_account_type, $this->_label_select_option_filter_default)
                         ->assertSelectHasOption($this->_selector_modal_filter_field_account_and_account_type, "")
-                        ->assertSelectHasOptions($this->_selector_modal_filter_field_account_and_account_type, collect($account_types)->pluck('id')->toArray());
+                        ->assertSelectHasOptions(
+                            $this->_selector_modal_filter_field_account_and_account_type,
+                            collect($account_types)->where('disabled', false)->pluck('id')->toArray()
+                        );
+
+                    if($has_disabled_account_type){
+                        $modal
+                            ->click($this->_selector_modal_filter_field_checkbox_show_disabled."+label")
+                            ->assertSelectHasOptions(
+                                $this->_selector_modal_filter_field_account_and_account_type,
+                                collect($account_types)->pluck('id')->toArray()
+                            );
+                    }
 
                     // test currency displayed in "Min Range" & "Max Range" fields is $
                     $this->assertContains($this->_class_icon_dollar, $modal->attribute($this->_selector_modal_filter_field_min_value_icon, 'class'));
