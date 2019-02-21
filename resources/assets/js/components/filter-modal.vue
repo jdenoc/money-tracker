@@ -29,35 +29,47 @@
                 </div>
 
                 <div class="field is-horizontal">
-                    <!--Acccount/Account-type-->
-                    <div class="field-label is-normal no-padding-top"><div class="label">
-                        <toggle-button
-                            id="filter-account-account-types"
-                            v-model="filterData.accountOrAccountTypeSelected"
-                            v-bind:value="filterData.accountOrAccountTypeSelected"
-                            v-bind:labels="{checked: 'Account', unchecked: 'Account Type'}"
-                            v-bind:color="{checked: toggleButtonProperties.colors.unchecked, unchecked: toggleButtonProperties.colors.unchecked}"
-                            v-bind:height="36"
-                            v-bind:width="140"
-                            v-bind:sync="true"
-                            v-on:click.native="resetAccountOrAccountTypeField"
-                        />
-                    </div></div>
+                    <!--Account/Account-type-->
+                    <div class="field-label is-normal no-padding-top">
+                        <div class="label">
+                            <toggle-button
+                                id="filter-account-account-types"
+                                v-model="filterData.accountOrAccountTypeSelected"
+                                v-bind:value="filterData.accountOrAccountTypeSelected"
+                                v-bind:labels="{checked: 'Account', unchecked: 'Account Type'}"
+                                v-bind:color="{checked: toggleButtonProperties.colors.unchecked, unchecked: toggleButtonProperties.colors.unchecked}"
+                                v-bind:height="36"
+                                v-bind:width="140"
+                                v-bind:sync="true"
+                                v-on:click.native="resetAccountOrAccountTypeField"
+                            />
+                        </div>
+                        <div id="filter-show-disabled" v-show="areAccountsOrAccountTypesDisabled">
+                            <input class="is-checkradio is-circle is-small" id="filter-show-disabled-checkbox" type="checkbox"
+                               v-model="canShowDisabledAccountAndAccountTypes"
+                            />
+                            <label for="filter-show-disabled-checkbox">Show Disabled</label>
+                        </div>
+                    </div>
                     <div class="field-body"><div class="field">
-                        <div class="control"><div class="select" v-bind:class="{'is-loading': !areAccountsAndAccountTypesSet}">
-                            <select name="filter-account-or-account-types-id" id="filter-account-or-account-types-id" class="has-text-grey-dark"
-                                v-model="filterData.accountOrAccountTypeId"
-                                v-on:change="updateAccountCurrency"
-                                >
-                                <option value="" selected>[ ALL ]</option>
-                                <option
-                                    v-for="accountOrAccountType in listAccountOrAccountTypes"
-                                    v-bind:key="accountOrAccountType.id"
-                                    v-bind:value="accountOrAccountType.id"
-                                    v-text="accountOrAccountType.name"
-                                ></option>
-                            </select>
-                        </div></div>
+                        <div class="control">
+                            <div class="select" v-bind:class="{'is-loading': !areAccountsAndAccountTypesSet}">
+                                <select name="filter-account-or-account-types-id" id="filter-account-or-account-types-id" class="has-text-grey-dark"
+                                    v-model="filterData.accountOrAccountTypeId"
+                                    v-on:change="updateAccountCurrency"
+                                    >
+                                    <option value="" selected>[ ALL ]</option>
+                                    <option
+                                        v-for="accountOrAccountType in listAccountOrAccountTypes"
+                                        v-show="!accountOrAccountType.disabled || canShowDisabledAccountAndAccountTypes"
+                                        v-bind:key="accountOrAccountType.id"
+                                        v-bind:value="accountOrAccountType.id"
+                                        v-text="accountOrAccountType.name"
+                                    ></option>
+                                </select>
+                            </div>
+                        </div>
+
                     </div></div>
                 </div>
 
@@ -255,6 +267,8 @@
                 switchValueAccount: true,
                 switchValueAccountType: false,
 
+                canShowDisabledAccountAndAccountTypes: false,
+
                 filterData: {},
                 defaultData: {
                     startDate: "",
@@ -272,10 +286,11 @@
                     maxValue: ""
                 },
 
-                currencyClass: {
-                    euro: "fa-euro-sign",
-                    dollar: "fa-dollar-sign",
-                    pound: "fa-pound-sign"
+                currency: {
+                    euro:     {label: "EUR", class: "fa-euro-sign"},
+                    dollarUs: {label: "USD", class: "fa-dollar-sign"},
+                    dollarCa: {label: "CAD", class: "fa-dollar-sign"},
+                    pound:    {label: "GBP", class: "fa-pound-sign"}
                 },
 
                 toggleButtonProperties: {
@@ -293,6 +308,20 @@
             areTagsSet: function(){
                 return !_.isEmpty(this.listTags);
             },
+            areAccountsOrAccountTypesDisabled: function(){
+                let accountOrAccountTypeobjects = {};
+                if(this.filterData.accountOrAccountTypeSelected === this.switchValueAccount){
+                    accountOrAccountTypeobjects = this.accountsObject.retrieve;
+                } else if(this.filterData.accountOrAccountTypeSelected === this.switchValueAccountType){
+                    accountOrAccountTypeobjects = this.accountTypesObject.retrieve;
+                }
+
+                return !_.isEmpty(accountOrAccountTypeobjects)
+                    && this.processListOfObjects(accountOrAccountTypeobjects)
+                        .filter(function(accountOrAccountTypeObject){
+                            return accountOrAccountTypeObject.disabled
+                        }).length > 0;
+            },
             listAccountOrAccountTypes: function(){
                 if(this.filterData.accountOrAccountTypeSelected === this.switchValueAccount){
                     return this.listAccounts
@@ -302,15 +331,15 @@
             },
             listAccountTypes: function(){
                 let accountTypes = this.accountTypesObject.retrieve;
-                return _.orderBy(accountTypes, 'name');
+                return this.processListOfObjects(accountTypes, this.canShowDisabledAccountAndAccountTypes);
             },
             listAccounts: function(){
                 let accounts = this.accountsObject.retrieve;
-                return _.orderBy(accounts, 'name');
+                return this.processListOfObjects(accounts, this.canShowDisabledAccountAndAccountTypes);
             },
             listTags: function(){
                 let tags = this.tagsObject.retrieve;
-                return _.orderBy(tags, 'name');
+                return this.processListOfObjects(tags);
             }
         },
         methods: {
@@ -334,23 +363,26 @@
                 }
 
                 switch(account.currency){
-                    case 'EUR':
-                        this.accountCurrencyClass = this.currencyClass.euro;
+                    case this.currency.euro.label:
+                        this.accountCurrencyClass = this.currency.euro.class;
                         break;
 
-                    case 'GBP':
-                        this.accountCurrencyClass = this.currencyClass.pound;
+                    case this.currency.pound.label:
+                        this.accountCurrencyClass = this.currency.pound.class;
                         break;
 
-                    case 'USD':
-                    case 'CAD':
+                    case this.currency.dollarCa.label:
+                        this.accountCurrencyClass = this.currency.dollarCa.class;
+                        break;
+
+                    case this.currency.dollarUs.label:
                     default:
-                        this.accountCurrencyClass = this.currencyClass.dollar;
+                        this.accountCurrencyClass = this.currency.dollarUs.class;
                 }
             },
             resetAccountOrAccountTypeField: function(){
                 this.filterData.accountOrAccountTypeId = this.defaultData.accountOrAccountTypeId;
-                this.accountCurrencyClass = this.currencyClass.dollar;
+                this.accountCurrencyClass = this.currency.dollarUs.class;
             },
             resetFields: function(){
                 this.defaultData.accountOrAccountTypeSelected = this.switchValueAccount;
@@ -427,6 +459,14 @@
                 }
 
                 this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, {pageNumber: 0, filterParameters: filterDataParameters});
+            },
+            processListOfObjects: function(listOfObjects, canShowDisabled=true){
+                if(!canShowDisabled){
+                    listOfObjects = listOfObjects.filter(function(object){
+                        return !object.disabled;
+                    });
+                }
+                return _.orderBy(listOfObjects, 'name');
             }
         },
         created: function(){
@@ -474,6 +514,16 @@ $quarter-margin: 0.25rem;
             margin: $quarter-margin;
             padding-right: 0.5rem;
         }
+    }
+}
+
+#filter-show-disabled{
+    margin-top: -0.25rem;
+    margin-bottom: -0.5rem;
+
+    #filter-show-disabled-checkbox+label:after,
+    #filter-show-disabled-checkbox+label::after{
+        top: 0.3125rem;
     }
 }
 </style>

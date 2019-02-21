@@ -41,6 +41,17 @@ abstract class DuskTestCase extends BaseTestCase {
         return $this->removeCountFromApiResponse($tags_response->json());
     }
 
+    /**
+     * @return array
+     */
+    public function getApiInstitutions(){
+        $institutions_response = $this->get('/api/institutions');
+        return $this->removeCountFromApiResponse($institutions_response->json());
+    }
+
+    /**
+     * @return array
+     */
     public function getApiAccounts(){
         $accounts_response = $this->get("/api/accounts");
         return $this->removeCountFromApiResponse($accounts_response->json());
@@ -63,6 +74,10 @@ abstract class DuskTestCase extends BaseTestCase {
         return $this->removeCountFromApiResponse($entry_response->json());
     }
 
+    /**
+     * @param array $api_call_response
+     * @return array
+     */
     private function removeCountFromApiResponse($api_call_response){
         unset($api_call_response['count']);
         return $api_call_response;
@@ -74,8 +89,7 @@ abstract class DuskTestCase extends BaseTestCase {
      */
     public function getApiEntries($page_number=0){
         $entries_response = $this->json('POST', '/api/entries/'.$page_number, ["sort"=>["parameter"=>"entry_date", "direction"=>"desc"]]);
-        $entries = $entries_response->json();
-        return $entries;
+        return $entries_response->json();
     }
 
 }
