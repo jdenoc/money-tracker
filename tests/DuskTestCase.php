@@ -3,6 +3,7 @@
 namespace Tests;
 
 use App\Traits\Tests\StorageTestFiles;
+use Laravel\Dusk\Browser;
 use Laravel\Dusk\TestCase as BaseTestCase;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
@@ -11,6 +12,9 @@ abstract class DuskTestCase extends BaseTestCase {
 
     use CreatesApplication;
     use StorageTestFiles;
+
+    const RESIZE_WIDTH_PX = 1400;
+    const RESIZE_HEIGHT_PX = 2500;
 
     /**
      * Prepare for Dusk test execution.
@@ -31,6 +35,20 @@ abstract class DuskTestCase extends BaseTestCase {
         return RemoteWebDriver::create(
              'http://selenium:4444/wd/hub', DesiredCapabilities::chrome(), 5000, 10000
         );
+    }
+
+    /**
+     * Sets the default browser width and height
+     *
+     * @return void
+     * @throws \Throwable
+     */
+    protected function setUp(){
+        $this->browse(function (Browser $browser){
+            $browser->resize(self::RESIZE_WIDTH_PX, self::RESIZE_HEIGHT_PX);
+        });
+
+        parent::setUp();
     }
 
     /**
