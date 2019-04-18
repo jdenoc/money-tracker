@@ -14,11 +14,6 @@ class EntryModalNewEntryTest extends DuskTestCase {
     use DatabaseMigrations;
     use HomePageSelectors;
 
-    public function setUp(){
-        parent::setUp();
-        Artisan::call('db:seed', ['--class'=>'UiSampleDatabaseSeeder']);
-    }
-
     public function testEntryModalIsNotVisibleByDefault(){
         $this->browse(function (Browser $browser) {
             $browser

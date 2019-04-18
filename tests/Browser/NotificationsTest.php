@@ -3,7 +3,6 @@
 namespace Tests\Browser;
 
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskTestCase;
@@ -35,7 +34,6 @@ class NotificationsTest extends DuskTestCase {
 
     public function setUp(){
         parent::setUp();
-        Artisan::call('db:seed', ['--class'=>'UiSampleDatabaseSeeder']);
         $this->setDatabaseStateInjectionPermission(self::$ALLOW_INJECT_DATABASE_STATE_ON_EXCEPTION);
     }
 

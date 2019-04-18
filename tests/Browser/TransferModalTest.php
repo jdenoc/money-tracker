@@ -6,7 +6,6 @@ use App\Http\Controllers\Api\EntryController;
 use Facebook\WebDriver\WebDriverBy;
 use Faker\Factory as FakerFactory;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Support\Facades\Artisan;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskTestCase;
 use Laravel\Dusk\Browser;
@@ -16,11 +15,6 @@ class TransferModalTest extends DuskTestCase {
 
     use DatabaseMigrations;
     use HomePageSelectors;
-
-    public function setUp(){
-        parent::setUp();
-        Artisan::call('db:seed', ['--class'=>'UiSampleDatabaseSeeder']);
-    }
 
     public function testTransferModalNotVisibleByDefault(){
         $this->browse(function(Browser $browser){
