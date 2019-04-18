@@ -3,6 +3,7 @@
 namespace Tests;
 
 use App\Traits\Tests\StorageTestFiles;
+use Illuminate\Support\Facades\Artisan;
 use Laravel\Dusk\Browser;
 use Laravel\Dusk\TestCase as BaseTestCase;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
@@ -38,17 +39,33 @@ abstract class DuskTestCase extends BaseTestCase {
     }
 
     /**
-     * Sets the default browser width and height
-     *
      * @return void
      * @throws \Throwable
      */
     protected function setUp(){
+        parent::setUp();
+
+        $this->resizeBrowser();
+        $this->seedDatabase();
+    }
+
+    /**
+     * Sets the default browser width and height
+     *
+     * @throws \Throwable
+     */
+    protected function resizeBrowser(){
         $this->browse(function (Browser $browser){
             $browser->resize(self::RESIZE_WIDTH_PX, self::RESIZE_HEIGHT_PX);
         });
+    }
 
-        parent::setUp();
+    /**
+     * Seed the database by calling the artisan command:
+     *      artisan db:seed --class=UiSampleDatabaseSeeder
+     */
+    protected function seedDatabase(){
+        Artisan::call('db:seed', ['--class'=>'UiSampleDatabaseSeeder']);
     }
 
     /**

@@ -29,7 +29,6 @@ class FilterModalTest extends DuskTestCase {
 
     public function setUp(){
         parent::setUp();
-        Artisan::call('db:seed', ['--class'=>'UiSampleDatabaseSeeder']);
 
         $this->faker = FakerFactory::create();
     }

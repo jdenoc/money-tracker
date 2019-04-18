@@ -4,7 +4,6 @@ namespace Tests\Browser;
 
 use App\Entry;
 use App\Http\Controllers\Api\EntryController;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskTestCase;
@@ -24,11 +23,6 @@ class PaginationTest extends DuskTestCase {
     const ENTRY_COUNT_ONE = 10;     // number of entries needed to be generated for 1 page of results
     const ENTRY_COUNT_TWO = 40;     // number of entries needed to be generated for 2 pages of results
     const ENTRY_COUNT_THREE = 75;   // number of entries needed to be generated for 3 pages of results
-
-    public function setUp(){
-        parent::setUp();
-        Artisan::call('db:seed', ['--class'=>'UiSampleDatabaseSeeder']);
-    }
 
     public function testPaginationButtonsNotVisibleIfEntryCountLessThanPageMax(){
         DB::statement("TRUNCATE entries");

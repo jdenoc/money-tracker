@@ -24,11 +24,6 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     private $_class_has_tags = "has-tags";
     private $_class_existing_attachment = "existing-attachment";
 
-    public function setUp(){
-        parent::setUp();
-        Artisan::call('db:seed', ['--class'=>'UiSampleDatabaseSeeder']);
-    }
-
     public function providerUnconfirmedEntry(){
         return [
             "Expense"=>[$this->_selector_table_unconfirmed_expense, $this->_label_expense_switch_expense],
