@@ -7,6 +7,9 @@ Vue.use(Snotify, {toast: {timeout: 5000}});
 import VueHotkey from 'v-hotkey';
 Vue.use(VueHotkey);
 
+import VTooltip from 'v-tooltip';
+Vue.use(VTooltip);
+
 import EntryModal from './components/entry-modal';
 import EntriesTable from './components/entries-table';
 import EntriesTableEntryRow from './components/entries-table-entry-row';

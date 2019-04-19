@@ -1,43 +1,52 @@
 <template>
-    <nav class="panel">
+    <nav class="panel has-background-white-bis">
         <p class="panel-heading">Institutions</p>
 
-        <a id="institution-overview-links" class="panel-block is-active">
-            Overview
-            <span class="is-filtered badge is-badge-small is-badge-outlined" data-badge="filtered"></span>
-        </a>
+        <ul id="closed-accounts" class="menu-list" v-if="inactiveAccountsExist">
+            <li v-bind:class="accordionClasses">
+                <ul class="institution-panel-institution-accounts">
+                    <institutions-panel-institution-account
+                        v-for="account in inactiveAccounts"
+                        v-bind:key="account.id"
+                        v-bind:id="account.id"
+                        v-bind:name="account.name"
+                        v-bind:canShowTooltip="false"
+                    ></institutions-panel-institution-account>
+                </ul>
+                <a v-on:click="toggleClosedAccountsAccordion">
+                    <span class="panel-icon">
+                        <i v-bind:class="closedAccountsOpenCloseIcon" aria-hidden="true"></i>
+                    </span>
+                    <span class="name-label">Closed Accounts</span>
+                </a>
+            </li>
+        </ul>
 
-        <section class="accordions">
+        <ul class="menu-list">
+            <li><a id="overview" class="has-text-weight-semibold"
+               v-bind:class="{'is-active' : isOverviewFilterActive, 'has-text-info': !isOverviewFilterActive}"
+               v-on:click="displayOverviewOfEntries"
+            >
+                Overview
+                <!-- TODO: <span>(filtered)</span> should appear if "complex" filter has been engaged -->
+            </a></li>
             <institutions-panel-institution
                 v-for="institution in activeInstitutions"
                 v-bind:key="institution.id"
                 v-bind:id="institution.id"
                 v-bind:name="institution.name"
             ></institutions-panel-institution>
+        </ul>
 
-            <!-- TODO: replace all of this with something better... -->
-            <div class="accordion" v-show="inactiveAccountsAreAvailable">
-                <div class="panel-block accordion-header toggle institution-node">
-                    <p>Closed Accounts</p>
-                </div>
-                <div class="accordion-body panel">
-                    <institutions-panel-institution-account
-                        v-for="account in inactiveAccounts"
-                        v-bind:key="account.id"
-                        v-bind:id="account.id"
-                        v-bind:name="account.name"
-                    ></institutions-panel-institution-account>
-                </div>
-            </div>
-        </section>
     </nav>
 </template>
 
 <script>
-    import {Accounts} from "../accounts";
-    import {Institutions} from "../institutions";
+    import {Accounts} from '../accounts';
+    import {Institutions} from '../institutions';
     import InstitutionsPanelInstitution from "./institutions-panel-institution";
-    import InstitutionsPanelInstitutionAccount from "./institutions-panel-institution-account";
+    import InstitutionsPanelInstitutionAccount from './institutions-panel-institution-account';
+    import Store from '../store';
 
     export default {
         name: "institutions-panel",
@@ -47,74 +56,102 @@
         },
         data: function(){
             return {
-                accounts: new Accounts(),
-                institutions: new Institutions(),
+                institutionsObject: new Institutions(),
+                accountsObject: new Accounts(),
+
+                isClosedAccountsAccordionOpen: false,
+                openCloseIcons: {
+                    opened: 'fas fa-chevron-up',
+                    closed: 'fas fa-chevron-down'
+                },
             }
         },
-        computed: {
-            institutionsAreAvailable: function(){
-                return this.institutions.retrieve.length > 0;
-            },
-            accountsAreAvailable: function(){
-                return this.accounts.retrieve.length > 0;
-            },
+        computed:{
             activeInstitutions: function(){
-                return this.institutions.retrieve.filter(function(institution){
+                return this.institutionsObject.retrieve.filter(function(institution){
                     return institution.active;
-                });
-            },
-            inactiveInstitutions: function(){
-                return this.institutions.retrieve.filter(function(institution){
-                    return !institution.active;
+                }).sort(function(a, b){
+                    if (a.name < b.name)
+                        return -1;
+                    if (a.name > b.name)
+                        return 1;
+                    return 0;
                 });
             },
             inactiveAccounts: function(){
-                return this.accounts.retrieve.filter(function(account){
-                    return account.disabled
-                })
+                return this.accountsObject.retrieve.filter(function(account){
+                    return account.disabled;
+                }).sort(function(a, b){
+                    if (a.name < b.name)
+                        return -1;
+                    if (a.name > b.name)
+                        return 1;
+                    return 0;
+                });
             },
-            inactiveAccountsAreAvailable: function(){
-                return this.inactiveAccounts.length > 0;
+            closedAccountsOpenCloseIcon: function(){
+                return this.isClosedAccountsAccordionOpen ? this.openCloseIcons.closed : this.openCloseIcons.opened;
+            },
+            accordionClasses: function(){
+                return this.isClosedAccountsAccordionOpen ? '' : 'is-closed';
+            },
+            isOverviewFilterActive: function(){
+                let currentFilter = Store.getters.currentFilter;
+                return Object.keys(currentFilter).length === 0;
+            },
+            inactiveAccountsExist: function(){
+                return Object.keys(this.inactiveAccounts).length !== 0;
             }
         },
-        methods: {
-            fireAccordionReadyEvent: function(){
-                let accordionReadyEvent = new Event('DOMContentLoaded');
-                document.dispatchEvent(accordionReadyEvent);
-            }
-        },
-        watch: {
-            institutionsAreAvailable: function(){
-                this.fireAccordionReadyEvent();
+        methods:{
+            toggleClosedAccountsAccordion: function(){
+                this.isClosedAccountsAccordionOpen = !this.isClosedAccountsAccordionOpen;
             },
-            accountsAreAvailable: function(){
-                this.fireAccordionReadyEvent();
+            displayOverviewOfEntries: function(){
+                this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, {pageNumber: 0, filterParameters: {}});
             }
         }
     }
 </script>
 
-<style scoped>
-    .panel-block.is-active{
-        color: #3273dc;
-        border-left-width: 3px;
-    }
-    #institution-overview-links{
-        background-color: white;
-    }
-    #institution-overview-links:hover{
-        background-color: whitesmoke;
-    }
-    .is-filtered{
-        display: none;
-        margin: 0 0 5px 10px;
-    }
-    .institution-node{
-        background-color: initial !important;
-        color: #363636 !important;
-        border-bottom: 0;
-    }
-    .panel-heading{
-        font-weight: bold;
+<style lang="scss" scoped>
+    .panel{
+        position: fixed;
+        width: 25%;
+        height: 92%;
+
+        .menu-list{
+            line-height: 1;
+
+            li ul{
+                margin-top: 0.25rem;
+                margin-right: 0;
+                padding-left: 0;
+            }
+        }
+
+        #closed-accounts.menu-list {
+            position: absolute;
+            bottom: 0;
+
+            li ul {
+                margin-bottom: 0;
+                padding-left: 0.25rem;
+            }
+
+            .institution-panel-institution-accounts{
+                max-height: 20rem;
+                transition: 0.3s ease all;
+                overflow: hidden;
+                font-weight: 400;
+                margin-top: 0;
+            }
+
+            .is-closed{
+                .institution-panel-institution-accounts{
+                    max-height: 0;
+                }
+            }
+        }
     }
 </style>

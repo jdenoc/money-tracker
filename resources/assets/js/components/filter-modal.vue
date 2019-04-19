@@ -429,6 +429,9 @@
                             filterDataParameters.tags.push(tagId);
                         }
                     });
+                    if(_.isEmpty(filterDataParameters.tags)){
+                        delete filterDataParameters.tags;
+                    }
                 }
 
                 if(this.filterData.isIncome){

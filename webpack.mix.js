@@ -18,8 +18,6 @@ let webFontDirectory        = 'public/vue/webfonts';
 let resourceAssetsDirectory = 'resources/assets';
 
 mix.js('resources/assets/js/app.js', jsDirectory)
-    // bulma-accordion
-    .js(nodeDirectory+'/bulma-accordion/dist/bulma-accordion.min.js', jsDirectory+'/bulma-accordion.js')
     // dropzone
     .copy(nodeDirectory+'/vue2-dropzone/dist/vue2Dropzone.css', cssDirectory+'/vue-dropzone.css')
     // font-awesome
