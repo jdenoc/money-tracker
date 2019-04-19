@@ -1,64 +1,90 @@
 <template>
-    <div v-bind:id="'institution-id-'+this.institutionId" class="accordion">
-        <div class="institution-node panel-block accordion-header toggle">
-            <p v-text="this.institutionName"></p>
-        </div>
-        <div class="accordion-body panel">
+    <li v-bind:id="'institution-'+id" class="institution-panel-institution" v-bind:class="accordionClasses">
+        <a class="institution-panel-institution-name"  v-on:click="toggleAccordion">
+            <span class="panel-icon">
+                <i v-bind:class="openCloseIcon" aria-hidden="true"></i>
+            </span>
+            <span class="name-label" v-text="name"></span>
+        </a>
+
+        <ul class="institution-panel-institution-accounts">
             <institutions-panel-institution-account
-                v-for="account in activeInstitutionAccounts"
+                v-for="account in activeAccountsInInstitution"
                 v-bind:key="account.id"
                 v-bind:id="account.id"
                 v-bind:name="account.name"
+                v-bind:accountCurrency="account.currency"
                 v-bind:total="account.total"
             ></institutions-panel-institution-account>
-        </div>
-    </div>
+        </ul>
+    </li>
 </template>
 
 <script>
-    import {Accounts} from "../accounts";
+    import {Accounts} from '../accounts';
     import InstitutionsPanelInstitutionAccount from "./institutions-panel-institution-account";
 
     export default {
         name: "institutions-panel-institution",
-        components: {
-            InstitutionsPanelInstitutionAccount,
+        components: {InstitutionsPanelInstitutionAccount},
+        props: {
+            id: Number,
+            name: String
         },
-        props: ['id', 'name'],
         data: function(){
             return {
-                accounts: new Accounts(),
-            }
+                isOpen: false,
+                openCloseIcons: {
+                    opened: 'fas fa-chevron-up',
+                    closed: 'fas fa-chevron-down'
+                },
+                accountsObject: new Accounts(),
+            };
         },
         computed: {
-            institutionId: function(){
-                return this.id;
+            openCloseIcon: function(){
+                return this.isOpen ? this.openCloseIcons.opened : this.openCloseIcons.closed;
             },
-            institutionName: function(){
-                return this.name;
+            closedAccountsOpenCloseIcon: function(){
+                return this.isOpen ? this.openCloseIcons.closed : this.openCloseIcons.opened;
             },
-            activeAccounts: function(){
-                return this.accounts.retrieve.filter(function(account){
-                    return !account.disabled
-                })
+            accordionClasses: function(){
+                return this.isOpen ? '' : 'is-closed';
             },
-            activeInstitutionAccounts: function(){
-                return this.activeAccounts.filter(function(account){
-                    if(account.hasOwnProperty('institution_id')){
-                        return this.institutionId === account.institution_id;
-                    }
+            accountsInInstitution: function(){
+                return this.accountsObject.retrieve.filter(function(account){
+                    return account.institution_id === this.id;
                 }.bind(this));
+            },
+            activeAccountsInInstitution: function(){
+                return this.accountsInInstitution.filter(function(account){
+                    return !account.disabled;
+                });
+            }
+        },
+        methods:{
+            toggleAccordion: function(){
+                this.isOpen = !this.isOpen;
             },
         }
     }
 </script>
 
-<style scoped>
-    .institution-node{
-        background-color: initial !important;
-        color: #363636 !important;
-        border-bottom: 0;
+<style lang="scss" scoped>
+    .institution-panel-institution-accounts{
+        max-height: 20rem;
+        overflow: hidden;
+        font-weight: 400;
+        margin-top: 0;
+        -webkit-transition: all 0.3s ease-in-out;
+        -moz-transition: all 0.3s ease-in-out;
+        -o-transition: all 0.3s ease-in-out;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .is-closed{
+        .institution-panel-institution-accounts{
+            max-height: 0;
+        }
     }
 </style>
-
-

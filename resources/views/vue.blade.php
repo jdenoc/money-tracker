@@ -45,6 +45,5 @@
         </div>
     </div>
     <script type="text/javascript" src="{{asset('vue/js/app.js')}}"></script>
-    <script type="text/javascript" src="{{asset('vue/js/bulma-accordion.js')}}"></script>
 </body>
 </html>

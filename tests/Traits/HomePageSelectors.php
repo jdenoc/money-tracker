@@ -26,6 +26,16 @@ trait HomePageSelectors {
     private $_selector_modal_dropzone_error_message = ".dz-error-message";
     private $_selector_modal_dropzone_btn_remove = ".dz-remove";
 
+    // institutions panel
+    private $_selector_panel_institutions = "#institutions-panel-column";
+    private $_selector_panel_institutions_overview = "#overview";
+    private $_selector_panel_institutions_institution = ".institution-panel-institution";
+    private $_selector_panel_institutions_institution_open_close = ".institution-panel-institution-name span.panel-icon i";
+    private $_selector_panel_institutions_institution_name = ".institution-panel-institution-name span.name-label";
+    private $_selector_panel_institutions_accounts = ".institution-panel-institution-accounts";
+    private $_selector_panel_institutions_accounts_account = ".institutions-panel-account";
+    private $_selector_panel_institutions_accounts_account_name = ".institutions-panel-account-name";
+
     // entry-modal
     private $_selector_modal_entry = "@entry-modal";  // see Browser\Pages\HomePage.php
     private $_selector_modal_entry_btn_confirmed = "#entry-confirm";
@@ -148,6 +158,7 @@ trait HomePageSelectors {
     private $_color_filter_btn_tag_default = "#f5f5f5";
     private $_color_filter_btn_tag_active = "#209CEE";
 
+    private $_class_is_active = "is-active";
     private $_class_switch_core = ".v-switch-core";
     private $_class_icon_euro = "fa-euro-sign";
     private $_class_icon_dollar = "fa-dollar-sign";

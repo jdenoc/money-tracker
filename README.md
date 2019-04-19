@@ -97,7 +97,7 @@ docker/docker-yarn.sh run build-dev
 ##### Bring "up" application container(s)
 ```bash
 docker-compose -f docker/docker-compose.yml up -d
-# composer doesn't right to the correct .env file
+# composer doesn't write to the correct .env file during setup
 # so we need to generate the APP_KEY value again
 docker container exec -t app.money-tracker artisan key:generate
 ```

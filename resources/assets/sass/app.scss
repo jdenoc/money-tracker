@@ -1,5 +1,17 @@
-#institutions-panel-column{
-  background-color: whitesmoke;
+// Bulma
+@import "~bulma/bulma.sass";
+@import "~bulma-badge/dist/bulma-badge.sass";
+@import "~bulma-checkradio/dist/css/bulma-checkradio.sass";
+
+// Snotify
+@import "~vue-snotify/styles/material";
+
+// v-tooltip
+@import "tooltip";
+
+// custom styling
+.columns.is-gapless{
+  margin-top: 3.25rem;
 }
 
 .has-padding-right{
@@ -22,13 +34,3 @@
 .tags-input span{
   margin: 0 0.3rem 0 0;
 }
-
-// Bulma
-@import "~bulma/bulma.sass";
-@import "~bulma-accordion/dist/bulma-accordion.sass";
-@import "~bulma-badge/dist/bulma-badge.sass";
-@import "~bulma-checkradio/dist/css/bulma-checkradio.sass";
-@import "~bulma-tooltip/dist/bulma-tooltip.sass";
-
-// Snotify
-@import "~vue-snotify/styles/material";

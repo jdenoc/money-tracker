@@ -39,7 +39,7 @@ class FilterModalTest extends DuskTestCase {
                 ->visit(new HomePage())
                 ->waitForLoadingToStop()
                 ->openFilterModal()
-                ->with($this->_selector_modal_filter.' '.$this->_selector_modal_head, function($modal){
+                ->with($this->_selector_modal_filter.' '.$this->_selector_modal_head, function(Browser $modal){
                     $modal
                         ->assertSee("Filter Entries")
                         ->assertVisible($this->_selector_modal_btn_close);
@@ -56,7 +56,7 @@ class FilterModalTest extends DuskTestCase {
                 ->visit(new HomePage())
                 ->waitForLoadingToStop()
                 ->openFilterModal()
-                ->with($this->_selector_modal_filter.' '.$this->_selector_modal_body, function($modal) use ($accounts, $tags){
+                ->with($this->_selector_modal_filter.' '.$this->_selector_modal_body, function(Browser $modal) use ($accounts, $tags){
                     $modal
                         // start date - input
                         ->assertSee("Start Date:")
@@ -191,7 +191,7 @@ class FilterModalTest extends DuskTestCase {
                 ->visit(new HomePage())
                 ->waitForLoadingToStop()
                 ->openFilterModal()
-                ->with($this->_selector_modal_filter.' '.$this->_selector_modal_foot, function($modal){
+                ->with($this->_selector_modal_filter.' '.$this->_selector_modal_foot, function(Browser $modal){
                     $modal
                         ->assertVisible($this->_selector_modal_filter_btn_cancel)
                         ->assertSee($this->_label_btn_cancel)
@@ -224,7 +224,7 @@ class FilterModalTest extends DuskTestCase {
                 ->visit(new HomePage())
                 ->waitForLoadingToStop()
                 ->openFilterModal()
-                ->with($this->_selector_modal_filter.' '.$this->_selector_modal_body, function($modal) use ($filter_modal_field_selectors){
+                ->with($this->_selector_modal_filter.' '.$this->_selector_modal_body, function(Browser $modal) use ($filter_modal_field_selectors){
                     $filter_modal_elements = $modal->elements('div.field.is-horizontal');
                     $this->assertCount(count($filter_modal_field_selectors), $filter_modal_elements);
                 });
@@ -237,7 +237,7 @@ class FilterModalTest extends DuskTestCase {
                 ->visit(new HomePage())
                 ->waitForLoadingToStop()
                 ->openFilterModal()
-                ->with($this->_selector_modal_filter.' '.$this->_selector_modal_head, function($modal){
+                ->with($this->_selector_modal_filter.' '.$this->_selector_modal_head, function(Browser $modal){
                     $modal->click($this->_selector_modal_btn_close);
                 })
                 ->assertMissing($this->_selector_modal_filter);
@@ -250,7 +250,7 @@ class FilterModalTest extends DuskTestCase {
                 ->visit(new HomePage())
                 ->waitForLoadingToStop()
                 ->openFilterModal()
-                ->with($this->_selector_modal_filter.' '.$this->_selector_modal_foot, function($modal){
+                ->with($this->_selector_modal_filter.' '.$this->_selector_modal_foot, function(Browser $modal){
                     $modal->click($this->_selector_modal_filter_btn_cancel);
                 })
                 ->assertMissing($this->_selector_modal_filter);
@@ -309,7 +309,7 @@ class FilterModalTest extends DuskTestCase {
                 ->visit(new HomePage())
                 ->waitForLoadingToStop()
                 ->openFilterModal()
-                ->with($this->_selector_modal_filter.' '.$this->_selector_modal_body, function($modal) use ($has_disabled_account, $has_disabled_account_type, $accounts, $account_types){
+                ->with($this->_selector_modal_filter.' '.$this->_selector_modal_body, function(Browser $modal) use ($has_disabled_account, $has_disabled_account_type, $accounts, $account_types){
                     $modal
                         ->assertVisible($this->_selector_modal_filter_field_switch_account_and_account_type)
                         ->assertVisible($this->_selector_modal_filter_field_account_and_account_type)
@@ -346,7 +346,7 @@ class FilterModalTest extends DuskTestCase {
                     $this->assertContains($this->_class_icon_dollar, $modal->attribute($this->_selector_modal_filter_field_max_value_icon, 'class'));
 
                     // select an account and confirm the name in the select changes
-                    $account_to_select = $this->faker->randomElement($accounts);
+                    $account_to_select = collect($accounts)->where('disabled', 0)->random(1)->first();
                     $modal
                         ->select($this->_selector_modal_filter_field_account_and_account_type, $account_to_select['id'])
                         ->assertSeeIn($this->_selector_modal_filter_field_account_and_account_type, $account_to_select['name']);
@@ -458,15 +458,12 @@ class FilterModalTest extends DuskTestCase {
      * @throws \Throwable
      */
     public function testFlipSwitch($switch_selector){
-        $accounts = $this->getApiAccounts();
-        $account_types = $this->getApiAccountTypes();
-
-        $this->browse(function(Browser $browser) use ($switch_selector, $accounts, $account_types){
+        $this->browse(function(Browser $browser) use ($switch_selector){
             $browser
                 ->visit(new HomePage())
                 ->waitForLoadingToStop()
                 ->openFilterModal()
-                ->with($this->_selector_modal_filter, function($modal) use ($switch_selector, $accounts, $account_types){
+                ->with($this->_selector_modal_filter, function(Browser $modal) use ($switch_selector){
                     $modal
                         ->assertVisible($switch_selector)
                         ->assertSeeIn($switch_selector, $this->_label_switch_disabled)
@@ -501,7 +498,7 @@ class FilterModalTest extends DuskTestCase {
                 ->visit(new HomePage())
                 ->waitForLoadingToStop()
                 ->openFilterModal()
-                ->with($this->_selector_modal_filter, function($modal) use ($init_switch_selector, $companion_switch_selector){
+                ->with($this->_selector_modal_filter, function(Browser $modal) use ($init_switch_selector, $companion_switch_selector){
                     $modal
                         ->assertVisible($init_switch_selector)
                         ->assertSeeIn($init_switch_selector, $this->_label_switch_disabled)
@@ -544,7 +541,7 @@ class FilterModalTest extends DuskTestCase {
                 ->visit(new HomePage())
                 ->waitForLoadingToStop()
                 ->openFilterModal()
-                ->with($this->_selector_modal_filter.' '.$this->_selector_modal_body, function($modal) use ($field_selector){
+                ->with($this->_selector_modal_filter.' '.$this->_selector_modal_body, function(Browser $modal) use ($field_selector){
                     $modal
                         ->type($field_selector, "rh48r7th72.9ewd3dadh1")
                         ->click($this->_selector_modal_filter_field_end_date)
@@ -558,7 +555,7 @@ class FilterModalTest extends DuskTestCase {
             $browser->visit(new HomePage())
                 ->waitForLoadingToStop()
                 ->openFilterModal()
-                ->with($this->_selector_modal_filter.' '.$this->_selector_modal_body, function ($modal){
+                ->with($this->_selector_modal_filter.' '.$this->_selector_modal_body, function (Browser $modal){
                     $tags = $this->getApiTags();
                     foreach($tags as $tag){
                         $selector_tag_checkbox = $this->_selector_modal_filter_field_tags.' '.$this->_partial_selector_filter_tag.$tag['id'];
@@ -583,7 +580,7 @@ class FilterModalTest extends DuskTestCase {
                 ->waitForLoadingToStop()
                 ->openFilterModal()
                 // modify all (or at least most) fields
-                ->with($this->_selector_modal_filter.' '.$this->_selector_modal_body, function($modal) use ($tags){
+                ->with($this->_selector_modal_filter.' '.$this->_selector_modal_body, function(Browser $modal) use ($tags){
                     $time_from_browser = $modal->getBrowserLocaleDate();
                     $start_date = $modal->processLocaleDateForTyping($time_from_browser);
 
@@ -615,7 +612,7 @@ class FilterModalTest extends DuskTestCase {
                 })
 
                 // click reset button
-                ->with($this->_selector_modal_filter.' '.$this->_selector_modal_foot, function($modal){
+                ->with($this->_selector_modal_filter.' '.$this->_selector_modal_foot, function(Browser $modal){
                     $modal
                         ->assertVisible($this->_selector_modal_filter_btn_reset)
                         ->click($this->_selector_modal_filter_btn_reset)
@@ -623,7 +620,7 @@ class FilterModalTest extends DuskTestCase {
                 })
 
                 // confirm all fields have been reset
-                ->with($this->_selector_modal_filter.' '.$this->_selector_modal_body, function($modal) use ($tags){
+                ->with($this->_selector_modal_filter.' '.$this->_selector_modal_body, function(Browser $modal) use ($tags){
                     $modal
                         ->assertInputValue($this->_selector_modal_filter_field_start_date, '')
                         ->assertInputValue($this->_selector_modal_filter_field_end_date, '')
@@ -681,7 +678,7 @@ class FilterModalTest extends DuskTestCase {
                 ->waitForLoadingToStop()
                 ->openFilterModal()
                 // modify all (or at least most) fields
-                ->with($this->_selector_modal_filter.' '.$this->_selector_modal_body, function($modal) use ($filter_param, &$filter_value){
+                ->with($this->_selector_modal_filter.' '.$this->_selector_modal_body, function(Browser $modal) use ($filter_param, &$filter_value){
                     switch($filter_param){
                         case $this->_selector_modal_filter_field_start_date:
                         case $this->_selector_modal_filter_field_end_date:
@@ -701,7 +698,7 @@ class FilterModalTest extends DuskTestCase {
                                 $modal->click($this->_selector_modal_filter_field_switch_account_and_account_type);
                                 $filter_values = $this->getApiAccountTypes();
                             }
-                            $filter_value = collect($filter_values)->random(1)->first();
+                            $filter_value = collect($filter_values)->where('disabled', false)->random(1)->first();
                             $modal->select($filter_param, $filter_value['id']);
 
                             if($is_account){
@@ -741,14 +738,14 @@ class FilterModalTest extends DuskTestCase {
                     }
                 })
 
-                ->with($this->_selector_modal_filter.' '.$this->_selector_modal_foot, function($modal){
+                ->with($this->_selector_modal_filter.' '.$this->_selector_modal_foot, function(Browser $modal){
                     $modal->click($this->_selector_modal_filter_btn_filter);
                 })
                 ->waitForLoadingToStop()
                 ->assertMissing($this->_selector_modal_filter)
 
                 // confirm only rows matching the filter parameters are shown
-                ->with($this->_selector_table.' '.$this->_selector_table_body, function($table) use ($filter_param, $filter_value){
+                ->with($this->_selector_table.' '.$this->_selector_table_body, function(Browser $table) use ($filter_param, $filter_value){
                     $table_rows = $table->elements('tr');
                     foreach($table_rows as $table_row){
                         switch($filter_param){
@@ -841,6 +838,46 @@ class FilterModalTest extends DuskTestCase {
                         }
                     }
             });
+        });
+    }
+
+    public function testClickFilterButtonToUpdateInstitutionsPanelActive(){
+        $this->browse(function(Browser $browser){
+            $filter_value = [];
+            $browser
+                ->visit(new HomePage())
+                ->waitForLoadingToStop()
+                ->openFilterModal()
+                // modify all (or at least most) fields
+                ->with($this->_selector_modal_filter.' '.$this->_selector_modal_body, function(Browser $modal) use (&$filter_value){
+                    $accounts = $this->getApiAccounts();
+                    $filter_value = collect($accounts)->where('disabled', 0)->random(1)->first();
+                    $modal->select($this->_selector_modal_filter_field_account_and_account_type, $filter_value['id']);
+                })
+
+                ->with($this->_selector_modal_filter.' '.$this->_selector_modal_foot, function($modal){
+                    $modal->click($this->_selector_modal_filter_btn_filter);
+                })
+                ->waitForLoadingToStop()
+                ->assertMissing($this->_selector_modal_filter)
+
+                ->with($this->_selector_panel_institutions, function(Browser $panel) use ($filter_value){
+                    // TODO: confirm "Overview (filtered)" is visible
+                    // "overview" is NOT active
+                    $overview_classes = $panel->attribute($this->_selector_panel_institutions_overview, 'class');
+                    $this->assertNotContains($this->_class_is_active, $overview_classes);
+
+                    $panel
+                        ->click("#institution-".$filter_value['institution_id'].' a')
+                        ->pause('400');  // 0.4 seconds
+
+                    $account_classes = $panel->attribute('#account-'.$filter_value['id'].' '.$this->_selector_panel_institutions_accounts_account_name, 'class');
+                    $this->assertContains($this->_class_is_active, $account_classes);
+
+                    $selector = '#account-'.$filter_value['id'].' '.$this->_selector_panel_institutions_accounts_account_name.' span:first-child';
+                    $account_name = $panel->text($selector);
+                    $this->assertEquals($filter_value['name'], $account_name, "Could not find value at selector:".$panel->resolver->format($selector));
+                });
         });
     }
 

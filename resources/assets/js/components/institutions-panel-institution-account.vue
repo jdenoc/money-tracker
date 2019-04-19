@@ -1,69 +1,110 @@
 <template>
-    <a class="account-node accordion-content panel-block" v-bind:id="'account-'+this.accountId">
-        <span
-            v-text="this.accountName"
-            v-bind:class="{'badge is-badge-small is-badge-info is-badge-outlined': isAccountTotalVisable, 'tooltip is-tooltip-right is-tooltip-multiline' : hasAccountTypes}"
-            v-bind:data-badge="'$'+parseFloat(accountTotal).toFixed(2)"
-            v-bind:data-tooltip="accountTypeTooltipList"
-            ></span>
-    </a>
+    <li v-bind:id="'account-'+id" class="institutions-panel-account has-background-white" v-tooltip="tooltipContent">
+        <a class="has-text-info institutions-panel-account-name"
+            v-on:click="displayAccountEntries"
+            v-bind:class="{'is-active' : isAccountFilterActive}"
+        >
+        <span v-text="name"></span>
+        <br/>
+        <span class="account-currency" v-bind:class="{'is-hidden': !isAccountTotalVisible}">
+            <i v-bind:class="accountCurrencyClass"></i>
+            <span v-text="total"></span>
+        </span>
+        </a>
+    </li>
 </template>
 
 <script>
     import {Accounts} from "../accounts";
+    import currency from '../currency';
+    import Store from '../store';
 
     export default {
         name: "institutions-panel-institution-account",
-        props: ['id', 'name', 'total'],
+        props: {
+            id: Number,
+            name: String,
+            total: Number,
+            accountCurrency: String,
+            canShowTooltip: {
+                type: Boolean,
+                default: true
+            }
+        },
         computed: {
-            accountId: function(){
-                return this.id;
+            currencyObject: function(){
+                return currency.currency;
             },
-            accountName: function(){
-                return this.name;
+            accountCurrencyClass: function(){
+                switch (this.accountCurrency) {
+                    case this.currencyObject.euro.label:
+                        return this.currencyObject.euro.class;
+
+                    case this.currencyObject.pound.label:
+                        return this.currencyObject.pound.class;
+
+                    case this.currencyObject.dollarCa.label:
+                        return this.currencyObject.dollarCa.class;
+
+                    case this.currencyObject.dollarUs.label:
+                        return this.currencyObject.dollarUs.class;
+                }
             },
-            accountTotal: function(){
-                return this.total;
+            isAccountFilterActive: function(){
+                let currentFilter = Store.getters.currentFilter;
+                return Object.keys(currentFilter).length === 1
+                    && currentFilter.hasOwnProperty('account')
+                    && currentFilter.account === this.id;
             },
-            isAccountTotalVisable: function(){
-                return !isNaN(this.accountTotal);
+            isAccountTotalVisible: function(){
+                return !isNaN(this.total);
             },
             hasAccountTypes: function(){
-                let accountTypes = new Accounts().getAccountTypes(this.accountId);
+                let accountTypes = new Accounts().getAccountTypes(this.id);
                 return accountTypes.length > 0;
             },
             accountTypeTooltipList: function(){
-                let accountTypes = new Accounts().getAccountTypes(this.accountId);
+                let accountTypes = new Accounts().getAccountTypes(this.id);
                 let tooltipList = "";
                 accountTypes.forEach(function(accountType){
-                    tooltipList += "- "+accountType.name+" ("+accountType.last_digits+")\n"
+                    tooltipList += "&bull; "+accountType.name+" ("+accountType.last_digits+")<br/>"
                 });
                 return tooltipList.trim();
             },
+            tooltipContent: function(){
+                return this.canShowTooltip && {
+                    content: this.accountTypeTooltipList,
+                    html: true,
+                    placement: 'right',
+                    classes: 'is-size-7 has-text-weight-semibold',
+                }
+            }
         },
         methods: {
-
+            displayAccountEntries: function(){
+                this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
+                let filterDataParameters = {account: this.id};
+                this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, {pageNumber: 0, filterParameters: filterDataParameters});
+            }
         }
     }
 </script>
 
-<style scoped>
-    li{
-        padding-right: 65px;
-    }
-    .badge::after{
-        margin: 9px 10px 0;
-    }
-    .account-node{
-        background-color: #FFF;
-        padding: 0.25em 0 0.25em 1.1em !important;
-        text-decoration: none !important;
-    }
-    .tooltip:hover::after{
-        display: none;
-    }
-    .is-tooltip-multiline::before{
-        white-space: pre-line;
-        width: 175px;
+<style lang="scss" scoped>
+    .institutions-panel-account{
+        width: 100%;
+
+        a.has-text-info.is-active{
+            color: white !important;
+        }
+
+        .account-currency{
+            font-weight: 900;
+            font-size: 0.65rem;
+
+            i{
+                margin-right: -0.125rem;
+            }
+        }
     }
 </style>
