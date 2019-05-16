@@ -4,7 +4,6 @@ namespace Tests\Browser;
 
 use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Support\Facades\Artisan;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskTestCase;
 use Laravel\Dusk\Browser;
@@ -162,7 +161,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     public function testClickingOnEntryTableEditButtonOfConfirmedEntryThenUnlock(){
         $this->browse(function(Browser $browser){
-            $confirmed_entry_selector = $this->randomConfirmedEntrySelector();
+            $confirmed_entry_selector = $this->randomConfirmedEntrySelector(true);
             $browser->visit(new HomePage())
                 ->waitForLoadingToStop()
                 ->openExistingEntryModal($confirmed_entry_selector)
@@ -213,7 +212,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     public function testClickingOnEntryTableEditButtonOfEntryWithAttachments(){
         $this->browse(function(Browser $browser){
-            $entry_selector = $this->randomEntrySelector().'.'.$this->_class_has_attachments;
+            $entry_selector = $this->randomEntrySelector(['has_attachments'=>true]).'.'.$this->_class_has_attachments;
             $browser->visit(new HomePage())
                 ->waitForLoadingToStop()
                 ->openExistingEntryModal($entry_selector)
@@ -257,7 +256,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     public function testOpenAttachment(){
         $this->browse(function(Browser $browser){
-            $entry_selector = $this->randomEntrySelector().'.'.$this->_class_has_attachments;
+            $entry_selector = $this->randomEntrySelector(['has_attachments'=>true]).'.'.$this->_class_has_attachments;
             $browser->visit(new HomePage())
                 ->waitForLoadingToStop()
                 ->openExistingEntryModal($entry_selector)
@@ -282,7 +281,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     public function testDeleteAttachmentFromExistingEntry(){
         $this->browse(function(Browser $browser){
-            $entry_selector = $this->randomEntrySelector().'.'.$this->_class_has_attachments;
+            $entry_selector = $this->randomEntrySelector(['has_attachments'=>true]).'.'.$this->_class_has_attachments;
             // initialising this variable here, then pass it as a reference so that we can update its value.
             $attachment_count = 0;
 
@@ -314,23 +313,24 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     }
 
     public function testUpdateExistingEntryDate(){
-        $this->markTestIncomplete("TODO: figure out how to select the same row");
         $this->browse(function(Browser $browser){
-            // TODO: figure out how to select the same row
-            $entry_selector = $this->randomUnconfirmedEntrySelector();
+            $entry_selector = $this->randomUnconfirmedEntrySelector(true);
             $old_value = "";
             $new_value = date("Y-m-d", strtotime("-90 days"));
 
             $browser->visit(new HomePage())
                 ->waitForLoadingToStop()
                 ->openExistingEntryModal($entry_selector)
-                ->with($this->_selector_modal_body, function($modal_body) use (&$old_value, $new_value){
+                ->with($this->_selector_modal_body, function(Browser $modal_body) use (&$old_value, $new_value){
                     $old_value = $modal_body->value($this->_selector_modal_entry_field_date);
                     // clear input[type="date"]
                     for($i=0; $i<strlen($old_value); $i++){
                         $modal_body->keys($this->_selector_modal_entry_field_date, "{backspace}");
                     }
-                    $modal_body->keys($this->_selector_modal_entry_field_date, $new_value);
+
+                    $browser_date = $modal_body->getDateFromLocale($modal_body->getBrowserLocale(), $new_value);
+                    $new_value_to_type = $modal_body->processLocaleDateForTyping($browser_date);
+                    $modal_body->type($this->_selector_modal_entry_field_date, $new_value_to_type);
                 })
                 ->with($this->_selector_modal_foot, function($modal_foot){
                     $modal_foot->click($this->_selector_modal_entry_btn_save);
@@ -347,7 +347,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     public function testUpdateExistingEntryAccountType(){
         $account_types = $this->getApiAccountTypes();
         $this->browse(function(Browser $browser) use ($account_types){
-            $entry_selector = $this->randomUnconfirmedEntrySelector();
+            $entry_selector = $this->randomUnconfirmedEntrySelector(true);
             $old_value = "";
             $new_value = "";
 
@@ -390,7 +390,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      */
     public function testUpdateExistingEntryValue($field_selector, $new_value){
         $this->browse(function(Browser $browser) use ($field_selector, $new_value){
-            $entry_selector = $this->randomUnconfirmedEntrySelector();
+            $entry_selector = $this->randomUnconfirmedEntrySelector(true);
             $old_value = "";
 
             $browser->visit(new HomePage())
@@ -413,9 +413,115 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         });
     }
 
-    // TODO: write test to test toggling confirm switch
-    // TODO: write test to test toggling expense switch
+    public function providerOpenExistingEntryInModalThenChangeConfirmSwitch(){
+        return [
+            'unconfirmed->confirmed'=>[false],
+            'confirmed->unconfirmed'=>[true]
+        ];
+    }
+
+    /**
+     * @dataProvider providerOpenExistingEntryInModalThenChangeConfirmSwitch
+     * @param bool $selector_bool
+     *
+     * @throws \Throwable
+     */
+    public function testOpenExistingEntryInModalThenChangeConfirmSwitch($selector_bool){
+        $entry_selector = $this->randomEntrySelector(['confirm'=>$selector_bool]);
+        $this->browse(function(Browser $browser) use ($entry_selector, $selector_bool){
+            $browser->visit(new HomePage())
+                ->waitForLoadingToStop()
+                ->openExistingEntryModal($entry_selector.'.'.($selector_bool?'is-confirmed':'has-background-warning'))
+                ->with($this->_selector_modal_foot, function(Browser $modal_foot) use ($selector_bool){
+                    if($selector_bool){
+                        $modal_foot->click($this->_selector_modal_entry_btn_lock);
+                    }
+                })
+                ->with($this->_selector_modal_head, function(Browser $modal_head) use ($selector_bool){
+                    $classes = $modal_head->attribute($this->_selector_modal_entry_btn_confirmed_label, "class");
+                    if($selector_bool){
+                        $this->assertContains($this->_class_white_text, $classes);
+                        $this->assertNotContains($this->_class_light_grey_text, $classes);
+                        $modal_head->assertChecked($this->_selector_modal_entry_btn_confirmed);
+                    } else {
+                        $this->assertContains($this->_class_light_grey_text, $classes);
+                        $this->assertNotContains($this->_class_white_text, $classes);
+                        $modal_head->assertNotChecked($this->_selector_modal_entry_btn_confirmed);
+                    }
+
+                    $modal_head->click($this->_selector_modal_entry_btn_confirmed_label);
+                    $classes = $modal_head->attribute($this->_selector_modal_entry_btn_confirmed_label, "class");
+
+                    if($selector_bool){
+                        $this->assertContains($this->_class_light_grey_text, $classes);
+                        $this->assertNotContains($this->_class_white_text, $classes);
+                        $modal_head->assertNotChecked($this->_selector_modal_entry_btn_confirmed);
+                    } else {
+                        $this->assertContains($this->_class_white_text, $classes);
+                        $this->assertNotContains($this->_class_light_grey_text, $classes);
+                        $modal_head->assertChecked($this->_selector_modal_entry_btn_confirmed);
+                    }
+                })
+                ->with($this->_selector_modal_foot, function(Browser $modal_foot){
+                    $modal_foot->click($this->_selector_modal_entry_btn_save);
+                })
+                ->waitForLoadingToStop()
+                ->openExistingEntryModal($entry_selector.'.'.($selector_bool?'has-background-warning':'is-confirmed'))
+                ->with($this->_selector_modal_head, function(Browser $modal_head) use ($selector_bool){
+                    $classes = $modal_head->attribute($this->_selector_modal_entry_btn_confirmed_label, "class");
+                    if($selector_bool){
+                        $this->assertContains($this->_class_light_grey_text, $classes);
+                        $this->assertNotContains($this->_class_white_text, $classes);
+                        $modal_head->assertNotChecked($this->_selector_modal_entry_btn_confirmed);
+                    } else {
+                        $this->assertContains($this->_class_white_text, $classes);
+                        $this->assertNotContains($this->_class_light_grey_text, $classes);
+                        $modal_head->assertChecked($this->_selector_modal_entry_btn_confirmed);
+                    }
+                });
+        });
+    }
+
+    public function providerOpenExistingEntryInModalThenChangeExpenseIncomeSwitch(){
+        return [
+            'expense->income'=>[true],
+            'income->expense'=>[false],
+        ];
+    }
+
+    /**
+     * @dataProvider providerOpenExistingEntryInModalThenChangeExpenseIncomeSwitch
+     * @param bool $selector_bool
+     *
+     * @throws \Throwable
+     */
+    public function testOpenExistingEntryInModalThenChangeExpenseIncomeSwitch($selector_bool){
+        $entry_selector = $this->randomEntrySelector(['expense'=>$selector_bool, 'confirm'=>false]);
+        $this->browse(function(Browser $browser) use ($entry_selector, $selector_bool){
+            $browser->visit(new HomePage())
+                ->waitForLoadingToStop()
+                ->openExistingEntryModal($entry_selector.'.'.($selector_bool ? $this->_class_is_expense:$this->_class_is_income))
+                ->with($this->_selector_modal_body, function(Browser $modal_body) use ($selector_bool){
+                    $entry_expense_switch_text = $modal_body->text($this->_selector_modal_entry_field_expense);
+                    $this->assertEquals($selector_bool ? $this->_label_expense_switch_expense:$this->_label_expense_switch_income , $entry_expense_switch_text);
+                    $modal_body
+                        ->click($this->_selector_modal_entry_field_expense)
+                        ->pause(500); // 0.5 seconds - need to wait for the transition to complete after click;
+                })
+                ->with($this->_selector_modal_foot, function(Browser $modal_foot){
+                    $modal_foot->click($this->_selector_modal_entry_btn_save);
+                })
+                ->waitForLoadingToStop()
+                ->openExistingEntryModal($entry_selector.'.'.($selector_bool?$this->_class_is_income:$this->_class_is_expense))
+                ->with($this->_selector_modal_body, function(Browser $modal_body) use ($selector_bool){
+                    $entry_expense_switch_text = $modal_body->text($this->_selector_modal_entry_field_expense);
+                    $this->assertEquals(($selector_bool?$this->_label_expense_switch_income:$this->_label_expense_switch_expense), $entry_expense_switch_text);
+                });
+        });
+    }
+
     // TODO: write test for changing tags input values
+
     // TODO: write test to add attachment
 
     public function testOpenExistingEntryInModalThenCloseModalAndOpenNewEntryModal(){
@@ -486,19 +592,39 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         });
     }
 
-    private function randomConfirmedEntrySelector(){
-        $confirmed_entry_selectors = [$this->_selector_table_confirmed_expense, $this->_selector_table_confirmed_income];
-        return $confirmed_entry_selectors[array_rand($confirmed_entry_selectors, 1)];
+    private function randomConfirmedEntrySelector($get_id=false){
+        if($get_id){
+            return $this->randomEntrySelector(['confirm'=>true]);
+        } else {
+            $confirmed_entry_selectors = [$this->_selector_table_confirmed_expense, $this->_selector_table_confirmed_income];
+            return $confirmed_entry_selectors[array_rand($confirmed_entry_selectors, 1)];
+        }
     }
 
-    private function randomUnconfirmedEntrySelector(){
-        $unconfirmed_entry_selectors = [$this->_selector_table_unconfirmed_expense, $this->_selector_table_unconfirmed_income];
-        return $unconfirmed_entry_selectors[array_rand($unconfirmed_entry_selectors, 1)];
+    private function randomUnconfirmedEntrySelector($get_id=false){
+        if($get_id){
+            return $this->randomEntrySelector(['confirm'=>false]);
+        } else {
+            $unconfirmed_entry_selectors = [$this->_selector_table_unconfirmed_expense, $this->_selector_table_unconfirmed_income];
+            return $unconfirmed_entry_selectors[array_rand($unconfirmed_entry_selectors, 1)];
+        }
     }
 
-    private function randomEntrySelector(){
-        $entry_selectors = [$this->randomConfirmedEntrySelector(), $this->randomUnconfirmedEntrySelector()];
-        return $entry_selectors[array_rand($entry_selectors, 1)];
+    /**
+     * @param array $entry_constraints
+     * @return string
+     */
+    private function randomEntrySelector($entry_constraints = []){
+        $entries = $this->getApiEntries();
+        unset($entries['count']);
+        $entries_collection = collect($entries);
+        if(!empty($entry_constraints)){
+            foreach(array_keys($entry_constraints) as $constraint){
+                $entries_collection = $entries_collection->where($constraint, $entry_constraints[$constraint]);
+            }
+        }
+        $entry_id = $entries_collection->random(1)->pluck('id')->first();
+        return "#entry-".$entry_id;
     }
 
 }

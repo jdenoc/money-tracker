@@ -1,5 +1,6 @@
 <template>
     <tr
+        v-bind:id="'entry-'+id"
         v-bind:class="{
             'has-background-warning': !confirm,
             'has-background-success': confirm && !expense,
@@ -81,7 +82,7 @@
     $stripe-even-opacity: 0.15;
 
     @mixin set-background-color($background-color){
-        background-color: rgba($background-color, $stripe-odd-opacity);
+        background-color: rgba($background-color, $stripe-odd-opacity) !important;
         &:nth-child(even){
             background-color: rgba($background-color, $stripe-even-opacity) !important;
         }
@@ -98,5 +99,9 @@
     }
     tr.has-background-success{
         @include set-background-color($success-bg);
+    }
+
+    td.row-entry-date{
+        width: 6.85rem;
     }
 </style>

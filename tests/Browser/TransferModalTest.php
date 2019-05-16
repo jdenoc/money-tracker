@@ -511,21 +511,21 @@ class TransferModalTest extends DuskTestCase {
             $table_row_selector .= '.has-attachments';
         }
         $browser
-            ->with($table_row_selector, function($table_row) use ($transfer_entry_data, $entry_modal_date_input_value, $has_tags, $has_attachments){
+            ->with($table_row_selector, function(Browser $table_row) use ($transfer_entry_data, $entry_modal_date_input_value, $has_tags, $has_attachments){
                 $table_row
                     ->assertSeeIn($this->_selector_table_row_date, $entry_modal_date_input_value)
                     ->assertSeeIn($this->_selector_table_row_memo, $transfer_entry_data['memo'])
                     ->assertSeeIn($this->_selector_table_row_value, $transfer_entry_data['value'])
                     ->assertVisible($this->_selector_table_row_transfer_checkbox.' '.$this->_selector_table_is_checked_checkbox);
                 if($has_tags){
-                    $table_row->assertSee($transfer_entry_data['tag']);
+                    $table_row->assertSeeIn($this->_selector_table_row_tags, $transfer_entry_data['tag']);
                 }
                 if($has_attachments){
                     $table_row->assertVisible($this->_selector_table_row_attachment_checkbox.' '.$this->_selector_table_is_checked_checkbox);
                 }
             })
             ->openExistingEntryModal($table_row_selector)
-            ->with($this->_selector_modal_entry, function($modal) use ($transfer_entry_data, $entry_modal_date_input_value, $entry_switch_expense_label, $account_type_key, $has_tags, $has_attachments){
+            ->with($this->_selector_modal_entry, function(Browser $modal) use ($transfer_entry_data, $entry_modal_date_input_value, $entry_switch_expense_label, $account_type_key, $has_tags, $has_attachments){
                 $modal
                     ->assertInputValue($this->_selector_modal_entry_field_date, $entry_modal_date_input_value)
                     ->assertInputValue($this->_selector_modal_entry_field_value, $transfer_entry_data['value'])
