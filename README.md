@@ -275,9 +275,7 @@ Assuming we already have our docker environment already setup ([instructions her
 ```bash
 # Run PhpUnit tests
 docker container exec -t app.money-tracker vendor/bin/phpunit --stop-on-failure
-# Run Dusk tests
-docker container exec -t app.money-tracker artisan migrate:refresh
-docker container exec -t app.money-tracker artisan db:seed --class=UiSampleDatabaseSeeder
+# Run Laravel Dusk tests
 docker container exec -t app.money-tracker artisan dusk --stop-on-failure
 ```
 

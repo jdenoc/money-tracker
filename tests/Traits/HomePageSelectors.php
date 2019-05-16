@@ -158,6 +158,8 @@ trait HomePageSelectors {
     private $_color_filter_btn_tag_default = "#f5f5f5";
     private $_color_filter_btn_tag_active = "#209CEE";
 
+    private $_class_is_income = "is-income";
+    private $_class_is_expense = "is-expense";
     private $_class_is_active = "is-active";
     private $_class_switch_core = ".v-switch-core";
     private $_class_icon_euro = "fa-euro-sign";

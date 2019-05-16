@@ -6,7 +6,7 @@ class UiSampleDatabaseSeeder extends Seeder {
 
     const COUNT_ACCOUNT = 2;
     const COUNT_ACCOUNT_TYPE = 3;
-    const COUNT_ATTACHMENT = 6;
+    const COUNT_ATTACHMENT = 4;
     const COUNT_ENTRY = 5;
     const COUNT_INSTITUTION = 2;
     const COUNT_MIN = 1;
@@ -64,8 +64,8 @@ class UiSampleDatabaseSeeder extends Seeder {
         $this->command->line(self::OUTPUT_PREFIX."Randomly assigned tags to entries");
 
         // no point in selecting disabled entries. they're not going to be tested.
-        $entry_income_ids = $entries->where('expense', 1)->where('disabled', 0)->pluck('id')->toArray();
-        $entry_expense_ids = $entries->where('expense', 0)->where('disabled', 0)->pluck('id')->toArray();
+        $entry_income_ids = $entries->where('expense', 0)->where('disabled', 0)->pluck('id')->toArray();
+        $entry_expense_ids = $entries->where('expense', 1)->where('disabled', 0)->pluck('id')->toArray();
 
         // randomly select some entries and mark them as transfers
         $transfer_to_entry_ids = $faker->randomElements($entry_income_ids, self::COUNT_ENTRY);
@@ -82,25 +82,42 @@ class UiSampleDatabaseSeeder extends Seeder {
 
         // assign attachments to entries. if entry is a "transfer", then add an attachment of the same name to its counterpart
         for($attachment_i=0; $attachment_i<self::COUNT_ATTACHMENT; $attachment_i++){
-            $random_entry_income_id = $faker->randomElement($entry_income_ids);
-            if(in_array($random_entry_income_id, $transfer_to_entry_ids)){
-                $new_attachment = factory(App\Attachment::class)->create(['entry_id'=>$random_entry_income_id]);
-                $transfer_entry = $entries->where('id', $random_entry_income_id)->first();
-                factory(App\Attachment::class)->create(['entry_id'=>$transfer_entry->transfer_entry_id, 'name'=>$new_attachment->name]);
-            } else {
-                factory(App\Attachment::class)->create(['entry_id'=>$random_entry_income_id]);
-            }
-
-            $random_entry_expense_id = $faker->randomElement($entry_expense_ids);
-            if(in_array($random_entry_expense_id, $transfer_from_entry_ids)){
-                $new_attachment = factory(App\Attachment::class)->create(['entry_id'=>$random_entry_expense_id]);
-                $transfer_entry = $entries->where('id', $random_entry_expense_id)->first();
-                factory(App\Attachment::class)->create(['entry_id'=>$transfer_entry->transfer_entry_id, 'name'=>$new_attachment->name]);
-            } else {
-                factory(App\Attachment::class)->create(['entry_id'=>$random_entry_expense_id]);
-            }
+            // income entries
+            $this->assignAttachmentToEntry($faker, $entry_income_ids, $transfer_to_entry_ids, $entries);
+            // expense entries
+            $this->assignAttachmentToEntry($faker, $entry_expense_ids, $transfer_from_entry_ids, $entries);
         }
         $this->command->line(self::OUTPUT_PREFIX."Randomly assigned Attachments to entries");
+
+        // income confirmed
+        $this->assignAttachmentToEntry(
+            $faker,
+            $entries->where('expense', 0)->where('disabled', 0)->where('confirm', 1)->pluck('id')->toArray(),
+            $transfer_to_entry_ids,
+            $entries
+        );
+        // income unconfirmed
+        $this->assignAttachmentToEntry(
+            $faker,
+            $entries->where('expense', 0)->where('disabled', 0)->where('confirm', 0)->pluck('id')->toArray(),
+            $transfer_to_entry_ids,
+            $entries
+        );
+        // expense confirmed
+        $this->assignAttachmentToEntry(
+            $faker,
+            $entries->where('expense', 1)->where('disabled', 0)->where('confirm', 1)->pluck('id')->toArray(),
+            $transfer_from_entry_ids,
+            $entries
+        );
+        // expense unconfirmed
+        $this->assignAttachmentToEntry(
+            $faker,
+            $entries->where('expense', 1)->where('disabled', 0)->where('confirm', 0)->pluck('id')->toArray(),
+            $transfer_from_entry_ids,
+            $entries
+        );
+        $this->command->line(self::OUTPUT_PREFIX."Assigned Attachments to all varieties of entries");
     }
 
     /**
@@ -147,11 +164,28 @@ class UiSampleDatabaseSeeder extends Seeder {
     /**
      * @param Faker\Generator $faker
      * @param int[] $tag_ids
-     * @param \App\Entry $entry
+     * @param App\Entry $entry
      */
     private function attachTagToEntry($faker, $tag_ids, $entry){
         $entry_tag_ids = $faker->randomElements($tag_ids, $faker->numberBetween(self::COUNT_MIN, self::COUNT_TAG));
         $entry->tags()->attach($entry_tag_ids);
+    }
+
+    /**
+     * @param Faker\Generator $faker
+     * @param int[] $entry_ids
+     * @param int[] $transfer_entry_ids
+     * @param \Illuminate\Support\Collection $entries_collection
+     */
+    private function assignAttachmentToEntry($faker, $entry_ids, $transfer_entry_ids, $entries_collection){
+        $random_entry_id = $faker->randomElement($entry_ids);
+        if(in_array($random_entry_id, $transfer_entry_ids)){
+            $new_attachment = factory(App\Attachment::class)->create(['entry_id'=>$random_entry_id]);
+            $transfer_entry = $entries_collection->where('id', $random_entry_id)->first();
+            factory(App\Attachment::class)->create(['entry_id'=>$transfer_entry->transfer_entry_id, 'name'=>$new_attachment->name]);
+        } else {
+            factory(App\Attachment::class)->create(['entry_id'=>$random_entry_id]);
+        }
     }
 
 }
