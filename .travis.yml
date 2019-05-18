@@ -25,7 +25,7 @@ before_install:
 
 install:
   # composer install
-  - docker container run --rm -t --volume $PWD:/app composer/composer:php5-alpine install
+  - docker container run --rm -t --volume $PWD:/app composer/composer:php5-alpine install --ignore-platform-reqs
   # start docker containers
   - docker-compose -f docker/docker-compose.yml up -d
   - docker container ls
