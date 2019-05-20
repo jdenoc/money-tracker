@@ -25,7 +25,8 @@ before_install:
 
 install:
   # composer install
-  - docker container run --rm -t --volume $PWD:/app composer/composer:php5-alpine install --ignore-platform-reqs
+  - if [ -n "$GH_TOKEN" ]; then docker/docker-composer.sh config github-oauth.github.com ${GH_TOKEN}; fi;
+  - docker/docker-composer.sh install --ignore-platform-reqs
   # start docker containers
   - docker-compose -f docker/docker-compose.yml up -d
   - docker container ls
