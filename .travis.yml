@@ -39,7 +39,7 @@ before_script:
   - docker container exec -t app.money-tracker artisan key:generate
   - docker container exec -t app.money-tracker artisan travis-ci --display-env
   # build website
-  - docker/docker-yarn run build-prod
+  - docker/docker-yarn.sh run build-prod
 
 script:
   - docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api
