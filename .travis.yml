@@ -28,7 +28,7 @@ before_install:
 install:
   # install composer packages
   - if [ -n "$GH_TOKEN" ]; then docker/docker-composer.sh config github-oauth.github.com ${GH_TOKEN}; fi;
-  - docker/docker-composer.sh install --ignore-platform-reqs
+  - docker/docker-composer.sh install
   # install yarn packages
   - docker/docker-yarn.sh install
   # start docker containers
