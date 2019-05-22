@@ -15,7 +15,7 @@
 </template>
 
 <script>
-    import randomColor from 'randomColor';
+    import randomColor from 'randomcolor/randomColor';
     import Spinner from 'vue-spinner-component/src/Spinner.vue';
 
     export default {
