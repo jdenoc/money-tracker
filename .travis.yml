@@ -48,7 +48,10 @@ before_script:
 
 script:
   # PhpUnit tests
-  - docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api
+  - docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-put
+  - docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-get
+  - docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-post
+  - docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-delete
   - docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite console
   - docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite web
   - docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite unit
