@@ -28,16 +28,18 @@ before_install:
 install:
   # install composer packages
   - if [ -n "$GH_TOKEN" ]; then docker/docker-composer.sh config github-oauth.github.com ${GH_TOKEN}; fi;
-  - docker/docker-composer.sh install
+  - docker/docker-composer.sh install --no-interaction
   # install yarn packages
-  - docker/docker-yarn.sh install
+  - docker/docker-yarn.sh install --non-interactive
   # start docker containers
   - docker-compose -f docker/docker-compose.yml up -d
   - docker container ls
   - docker volume ls
-  # install travis-ci/discord integration script
+  # install travis-ci/discord integration script(s)
   - wget https://raw.githubusercontent.com/jdenoc/travis-ci-discord-webhook/master/send.sh
   - chmod +x send.sh
+  - wget https://raw.githubusercontent.com/jdenoc/travis-ci-discord-webhook/master/image-send.sh
+  - chmod +x image-send.sh
 
 before_script:
   - docker container exec -t mysql.money-tracker iterate-mysql-health-check
@@ -64,6 +66,7 @@ after_success:
 
 after_failure:
   - ./send.sh failure $WEBHOOK_URL
+  - ./image-send.sh $DUSK_SCREENSHOT_DIRECTORY $WEBHOOK_URL
 
 after_script:
   - docker-compose -f docker/docker-compose.yml down -v
