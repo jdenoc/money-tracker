@@ -67,6 +67,9 @@ after_success:
 after_failure:
   - ./send.sh failure $WEBHOOK_URL
   - ./image-send.sh $DUSK_SCREENSHOT_DIRECTORY $WEBHOOK_URL
+  - docker container exec -t app.money-tracker ls -la /var/www/money-tracker
+  - docker container exec -t app.money-tracker ls -la /var/www/money-tracker/storage
+  - docker container exec -t app.money-tracker ls -la /var/www/money-tracker/storage/logs
 
 after_script:
   - docker-compose -f docker/docker-compose.yml down -v
