@@ -17,10 +17,8 @@ ADD docker/money-tracker.vhost.conf /etc/apache2/sites-enabled/000-default.conf
 # setup web directory
 WORKDIR /var/www/money-tracker
 ENV APACHE_DOCUMENT_ROOT /var/www/money-tracker/public
-# TODO: ---vvv--- REMOVE ---vvv---
-RUN printenv
-# TODO: ---vvv--- REMOVE ---vvv---
-RUN cat /etc/apache2/envvars | grep -v ^#
+ENV APACHE_RUN_USER www-data
+ENV APACHE_RUN_GROUP www-data
 RUN mkdir -p $APACHE_DOCUMENT_ROOT \
 	&& chown -R "$APACHE_RUN_USER:$APACHE_RUN_GROUP" "${APACHE_DOCUMENT_ROOT}"
 
