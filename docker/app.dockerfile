@@ -1,5 +1,10 @@
 FROM php:5.6-apache
 
+# set default ServerName
+RUN touch /etc/apache2/conf-available/servername.conf \
+  && echo 'ServerName app.money-tracker' > /etc/apache2/conf-available/servername.conf \
+  && a2enconf servername
+
 # install php extensions
 RUN apt-get update \
 	&& apt-get install -y libmcrypt-dev mysql-client zlib1g-dev libicu-dev g++ --no-install-recommends \
@@ -16,9 +21,9 @@ ADD docker/money-tracker.vhost.conf /etc/apache2/sites-enabled/000-default.conf
 
 # setup web directory
 WORKDIR /var/www/money-tracker
-ENV APACHE_DOCUMENT_ROOT /var/www/money-tracker/public
 ENV APACHE_RUN_USER www-data
 ENV APACHE_RUN_GROUP www-data
+ENV APACHE_DOCUMENT_ROOT /var/www/money-tracker/public
 RUN mkdir -p $APACHE_DOCUMENT_ROOT \
 	&& chown -R "$APACHE_RUN_USER:$APACHE_RUN_GROUP" "${APACHE_DOCUMENT_ROOT}"
 

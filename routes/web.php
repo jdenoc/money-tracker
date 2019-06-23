@@ -12,6 +12,23 @@
 */
 
 Route::get('/', function () {
+    $stdout = fopen('php://stdout', 'w');
+    $output = array();
+    $output[] = "IAM:".get_current_user();
+    $output[] = "whoami:";
+    exec("whoami", $output);
+    $output[] = "id:";
+    exec('id', $output);
+    $output[] = "pwd:";
+    exec("pwd", $output);
+    $output[] = "ls -la ..:";
+    exec("ls -la ..", $output);
+    $output[] = "ls -la ../storage/logs:";
+    exec("ls -la ../storage/logs", $output);
+
+    fwrite($stdout, implode("\n", $output)."\n");
+    Log::debug(implode("\n", $output)."\n");
+
     return view('welcome');
 })->name('welcome');
 
