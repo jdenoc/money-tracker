@@ -9,6 +9,13 @@ use Tests\DuskTestCase;
 use Laravel\Dusk\Browser;
 use Tests\Traits\InjectDatabaseStateIntoException;
 
+/**
+ * Class NotificationsTest
+ *
+ * @package Tests\Browser
+ *
+ * @group notifications
+ */
 class NotificationsTest extends DuskTestCase {
 
     use DatabaseMigrations;

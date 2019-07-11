@@ -7,6 +7,14 @@ use Tests\Browser\Pages\HomePage;
 use Tests\DuskTestCase;
 use Laravel\Dusk\Browser;
 
+/**
+ * Class NavbarTest
+ *
+ * @package Tests\Browser
+ *
+ * @group navigation
+ * @group home
+ */
 class NavbarTest extends DuskTestCase {
 
     use DatabaseMigrations;

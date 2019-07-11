@@ -11,6 +11,14 @@ use Laravel\Dusk\Browser;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\Traits\HomePageSelectors;
 
+/**
+ * Class PaginationTest
+ *
+ * @package Tests\Browser
+ *
+ * @group navigation
+ * @group home
+ */
 class PaginationTest extends DuskTestCase {
 
     use DatabaseMigrations;

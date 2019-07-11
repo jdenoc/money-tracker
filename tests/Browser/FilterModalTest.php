@@ -15,6 +15,15 @@ use Laravel\Dusk\Browser;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\Traits\HomePageSelectors;
 
+/**
+ * Class FilterModalTest
+ *
+ * @package Tests\Browser
+ *
+ * @group filter-modal
+ * @group modal
+ * @group home
+ */
 class FilterModalTest extends DuskTestCase {
 
     use DatabaseMigrations;

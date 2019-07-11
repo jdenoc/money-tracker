@@ -11,6 +11,15 @@ use Tests\DuskTestCase;
 use Laravel\Dusk\Browser;
 use Tests\Traits\HomePageSelectors;
 
+/**
+ * Class TransferModalTest
+ *
+ * @package Tests\Browser
+ *
+ * @group transfer-modal
+ * @group modal
+ * @group home
+ */
 class TransferModalTest extends DuskTestCase {
 
     use DatabaseMigrations;

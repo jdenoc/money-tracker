@@ -9,6 +9,15 @@ use Tests\DuskTestCase;
 use Laravel\Dusk\Browser;
 use Tests\Traits\HomePageSelectors;
 
+/**
+ * Class EntryModalNewEntryTest
+ *
+ * @package Tests\Browser
+ *
+ * @group entry-modal
+ * @group modal
+ * @group home
+ */
 class EntryModalNewEntryTest extends DuskTestCase {
 
     use DatabaseMigrations;

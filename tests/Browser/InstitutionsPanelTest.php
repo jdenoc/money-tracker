@@ -13,6 +13,14 @@ use Tests\Browser\Pages\HomePage;
 use Tests\DuskTestCase;
 use Tests\Traits\HomePageSelectors;
 
+/**
+ * Class InstitutionsPanelTest
+ *
+ * @package Tests\Browser
+ *
+ * @group navigation
+ * @group home
+ */
 class InstitutionsPanelTest extends DuskTestCase {
 
     use HomePageSelectors;
