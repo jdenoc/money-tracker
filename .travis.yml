@@ -36,9 +36,9 @@ install:
   - docker container ls
   - docker volume ls
   # install travis-ci/discord integration script(s)
-  - wget https://raw.githubusercontent.com/jdenoc/travis-ci-discord-webhook/1.0.2/send.sh
+  - wget https://raw.githubusercontent.com/jdenoc/travis-ci-discord-webhook/1.1.2/send.sh
   - chmod +x send.sh
-  - wget https://raw.githubusercontent.com/jdenoc/travis-ci-discord-webhook/1.0.2/image-send.sh
+  - wget https://raw.githubusercontent.com/jdenoc/travis-ci-discord-webhook/1.1.2/image-send.sh
   - chmod +x image-send.sh
   # make sure user `www-data` has ownership of everything
   - docker container exec -t app.money-tracker chown -R www-data:www-data .
@@ -84,7 +84,7 @@ after_failure:
   - ./send.sh failure $WEBHOOK_URL
   - ./image-send.sh $DUSK_SCREENSHOT_DIRECTORY $WEBHOOK_URL
   - docker container logs --tail all --timestamps app.money-tracker
-  - 'docker container exec -t app.money-tracker sh -c "for log in ''ls -d /var/www/money-tracker/storage/logs/*''; do echo \"\\n\\n[LOG]: \$log\"; tail -100 \$log; done"'
+  - 'docker container exec -t app.money-tracker sh -c "for log in ''ls -d /var/www/money-tracker/storage/logs/*''; do echo \"\\n\\n[LOG]\: \$log\"; tail -100 \$log; done"'
 
 after_script:
   - docker-compose -f docker/docker-compose.yml down -v
