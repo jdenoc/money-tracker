@@ -13,7 +13,8 @@ class Account extends BaseModel {
         'id'
     ];
     protected $casts = [
-        'disabled'=>'boolean'
+        'disabled'=>'boolean',
+        'total'=>'float'
     ];
     protected $dates = [
         'create_stamp',

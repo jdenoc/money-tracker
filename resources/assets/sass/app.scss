@@ -1,9 +1,36 @@
+// Bulma
+@import "~bulma/bulma.sass";
+@import "~bulma-badge/dist/bulma-badge.sass";
+@import "~bulma-checkradio/dist/css/bulma-checkradio.sass";
 
-// Fonts
-@import url(https://fonts.googleapis.com/css?family=Raleway:300,400,600);
+// Snotify
+@import "~vue-snotify/styles/material";
 
-// Variables
-@import "variables";
+// v-tooltip
+@import "tooltip";
 
-// Bootstrap
-@import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
+// custom styling
+.columns.is-gapless{
+  margin-top: 3.25rem;
+}
+
+.has-padding-right{
+  padding-right: 0.375rem;
+}
+
+.no-padding-top{
+  padding-top: 0;
+}
+
+.is-checkradio[type=checkbox].is-block+label.checkbox-adjusted-top::after,
+.is-checkradio[type=checkbox].is-block+label.checkbox-adjusted-top:after{
+  top: 0.4rem;
+}
+
+/* additional styling for voerro-tags-input component */
+.tags-input input{
+  font-size: 0.75rem;
+}
+.tags-input span{
+  margin: 0 0.3rem 0 0;
+}

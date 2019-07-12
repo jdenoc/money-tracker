@@ -4,11 +4,17 @@
 # composer
 composer.lock
 vendor
+auth.json
 
 # yarn
+node_modules
 yarn.lock
 yarn-error.log
 public/components
+
+# laravel-mix
+mix-manifest.json
+public/vue
 
 .env
 _ide_helper.php

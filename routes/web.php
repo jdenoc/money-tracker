@@ -13,6 +13,14 @@
 
 Route::get('/', function () {
     return view('welcome');
+})->name('welcome');
+
+Route::get('/vue-mock', function(){
+    if(config('app.debug')){
+        return view('vue');
+    } else {
+        abort(404, "page not available on production");
+    }
 });
 
 Route::get('/home', 'Web\HomeController@display');

@@ -11,12 +11,14 @@ services:
     volumes:
       - ..:/var/www/money-tracker  # .. is interpreted as relative to the location of the Compose file
     environment:
-      - PHP_IDE_CONFIG="serverName=money-tracker.docker"
+      - PHP_IDE_CONFIG=serverName=money-tracker.docker
       - APP_ENV=docker
     extra_hosts:
       - dockerhost:$DOCKER_HOST_IP
     dns_search:
       - money-tracker.docker
+    networks:
+      - net.money-tracker
 
   database:
     build:
@@ -31,6 +33,23 @@ services:
       - MYSQL_DATABASE=money_tracker
       - MYSQL_USER=jdenoc
       - MYSQL_PASSWORD=password
+    networks:
+      - net.money-tracker
+
+  selenium: # needed for e2e (End-to-End) testing
+    image: selenium/standalone-chrome:latest
+    container_name: "selenium.money-tracker"
+    depends_on:
+      - application
+    links:
+      - application:money-tracker.docker
+    volumes:
+      - /dev/shm:/dev/shm
+    networks:
+      - net.money-tracker
 
 volumes:
   db.money-tracker:
+
+networks:
+  net.money-tracker:

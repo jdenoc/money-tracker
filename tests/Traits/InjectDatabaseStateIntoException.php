@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests;
+namespace Tests\Traits;
 
 use App\Account;
 use App\AccountType;
@@ -58,7 +58,11 @@ trait InjectDatabaseStateIntoException {
         if($this->isDatabaseStateInjectionAllowed()){
             $exception_message = $original_exception->getMessage()."\n".$injectable_message;
             $exception_name = get_class($original_exception);
-            return new $exception_name($exception_message, null, $original_exception);
+            if($exception_name == \Illuminate\Database\QueryException::class){
+                return new $exception_name($exception_message, [], $original_exception);
+            } else {
+                return new $exception_name($exception_message, null, $original_exception);
+            }
         } else {
             return $original_exception;
         }

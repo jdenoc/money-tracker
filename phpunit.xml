@@ -9,8 +9,20 @@
          processIsolation="false"
          stopOnFailure="true">
     <testsuites>
-        <testsuite name="api">
-            <directory suffix="Test.php">./tests/Feature/Api</directory>
+        <testsuite name="api-get">
+            <directory suffix="Test.php">./tests/Feature/Api/Get</directory>
+        </testsuite>
+
+        <testsuite name="api-post">
+            <directory suffix="Test.php">./tests/Feature/Api/Post</directory>
+        </testsuite>
+
+        <testsuite name="api-put">
+            <directory suffix="Test.php">./tests/Feature/Api/Put</directory>
+        </testsuite>
+
+        <testsuite name="api-delete">
+            <directory suffix="Test.php">./tests/Feature/Api/Delete</directory>
         </testsuite>
 
         <testsuite name="console">
