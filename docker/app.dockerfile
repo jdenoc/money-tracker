@@ -7,7 +7,7 @@ RUN touch /etc/apache2/conf-available/servername.conf \
 
 # install php extensions
 RUN apt-get update \
-	&& apt-get upgrade \
+	&& apt-get upgrade -y \
 	&& apt-get install -y libmcrypt-dev mysql-client zlib1g-dev libicu-dev g++ --no-install-recommends \
 	&& docker-php-ext-configure intl \
     && docker-php-ext-install mcrypt pdo_mysql zip intl \
