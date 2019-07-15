@@ -11,19 +11,12 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-})->name('welcome');
+Route::get('/laravel', function () {
+    return view('laravel-welcome');
+})->name('laravel-welcome');
 
-Route::get('/vue-mock', function(){
-    if(config('app.debug')){
-        return view('vue');
-    } else {
-        abort(404, "page not available on production");
-    }
-});
-
-Route::get('/home', 'Web\HomeController@display');
+Route::get('/', 'Web\HomeController@display');
+Route::get('/legacy', 'Web\HomeController@legacy');
 Route::get('/attachment/{uuid}', 'Web\AttachmentController@display');
 Route::post('/attachment/upload', 'Web\AttachmentController@upload');
 Route::delete('/attachment/upload', 'Web\AttachmentController@deleteUpload');

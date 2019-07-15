@@ -27,8 +27,22 @@ class ATest extends DuskTestCase {
      */
     public function testBasicExample(){
         $this->browse(function (Browser $browser) {
-            $browser->visit('/')    // TODO: move this somewhere else
+            $browser->visit('/laravel')
                     ->assertSee('Laravel');
+        });
+    }
+
+    public function testLegacySiteIsAvailable(){
+        $this->browse(function (Browser $browser){
+            $browser->visit('/legacy')
+                ->assertTitleContains("Money Tracker | Legacy");
+        });
+    }
+
+    public function testTitleIsCorrect(){
+        $this->browse(function (Browser $browser){
+            $browser->visit('/')
+                ->assertTitleContains("Money Tracker | HOME");
         });
     }
 }
