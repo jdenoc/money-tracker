@@ -2,7 +2,7 @@ import Vue from 'vue';
 import Store from './store';
 
 import Snotify from 'vue-snotify';
-Vue.use(Snotify, {toast: {timeout: 5000}});
+Vue.use(Snotify, {toast: {timeout: 8000}});    // 8 seconds
 
 import VueHotkey from 'v-hotkey';
 Vue.use(VueHotkey);

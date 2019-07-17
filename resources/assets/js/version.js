@@ -25,9 +25,3 @@ export class Version extends ObjectBaseClass {
         }
     }
 }
-
-// var version = {
-//     display: function(){
-//         $('#app-version').text(version.value);
-//     }
-// };

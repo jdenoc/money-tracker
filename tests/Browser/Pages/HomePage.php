@@ -21,7 +21,7 @@ class HomePage extends Page {
      * @return string
      */
     public function url(){
-        return '/vue-mock';
+        return '/';
     }
 
     /**
