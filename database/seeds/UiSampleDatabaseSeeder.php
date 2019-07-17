@@ -4,12 +4,15 @@ use Illuminate\Database\Seeder;
 
 class UiSampleDatabaseSeeder extends Seeder {
 
-    const COUNT_TAG = 3;
+    const COUNT_ACCOUNT = 2;
+    const COUNT_ACCOUNT_TYPE = 3;
+    const COUNT_ATTACHMENT = 4;
+    const COUNT_ENTRY = 5;
     const COUNT_INSTITUTION = 2;
-    const COUNT_ACCOUNT = 4;
-    const COUNT_ACCOUNT_TYPE = 6;
-    const COUNT_ENTRY = 10;
-    const COUNT_ATTACHMENT = 2;
+    const COUNT_MIN = 1;
+    const COUNT_TAG = 5;
+
+    const OUTPUT_PREFIX = "<info>".__CLASS__.":</info> ";
 
     /**
      * Run the database seeds.
@@ -21,43 +24,168 @@ class UiSampleDatabaseSeeder extends Seeder {
 
         $tags = factory(App\Tag::class, self::COUNT_TAG)->create();
         $tag_ids = $tags->pluck('id')->toArray();
+        $this->command->line(self::OUTPUT_PREFIX."Tags seeded");
 
         $institutions = factory(App\Institution::class, self::COUNT_INSTITUTION)->create(['active'=>1]);
         $institution_ids = $institutions->pluck('id')->toArray();
+        $this->command->line(self::OUTPUT_PREFIX."Institutions seeded");
 
         $accounts = collect();
-        for($account_i=0; $account_i<self::COUNT_ACCOUNT; $account_i++){
-            $account = factory(App\Account::class)->create(['institution_id'=>$faker->randomElement($institution_ids)]);
-            $accounts->push($account);
-            unset($account);
+        foreach($institution_ids as $institution_id){
+            $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$institution_id, 'disabled'=>false]);
         }
+        $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$faker->randomElement($institution_ids), 'disabled'=>true]);
         $account_ids = $accounts->pluck('id')->toArray();
+        $this->command->line(self::OUTPUT_PREFIX."Accounts seeded");
 
         $account_types = collect();
-        for($account_type_i=0; $account_type_i<self::COUNT_ACCOUNT_TYPE; $account_type_i++){
-            $account_type = factory(App\AccountType::class)->create(['account_id'=>$faker->randomElement($account_ids)]);
-            $account_types->push($account_type);
-            unset($account_type);
+        foreach($account_ids as $account_id){
+            $account_types = $this->addAccountTypeToCollection($account_types, ['account_id'=>$account_id, 'disabled'=>false], $faker);
         }
+        $account_types = $this->addAccountTypeToCollection($account_types, ['account_id'=>$faker->randomElement($account_ids), 'disabled'=>true], $faker);
         $account_type_ids = $account_types->pluck('id')->toArray();
+        $this->command->line(self::OUTPUT_PREFIX."Account-types seeded");
 
         $entries = collect();
-        for($entry_i=0; $entry_i<self::COUNT_ENTRY; $entry_i++){
-            $entry = factory(App\Entry::class)->create(['account_type_id'=>$faker->randomElement($account_type_ids)]);
+        foreach($account_type_ids as $account_type_id){
+            $entries = $this->addEntryToCollection($entries, ['account_type_id'=>$account_type_id, 'disabled'=>false], $faker);
+        }
+        $entries = $this->addEntryToCollection($entries, ['account_type_id'=>$faker->randomElement($account_type_ids), 'disabled'=>true], $faker);
+        $this->command->line(self::OUTPUT_PREFIX."Entries seeded");
+
+        foreach($entries as $entry){
             if($faker->boolean){    // randomly assign tags to entries
-                $entry_tag_ids = $faker->randomElements($tag_ids, $faker->numberBetween(1, self::COUNT_TAG));
-                $entry->tags()->attach($entry_tag_ids);
+                $this->attachTagToEntry($faker, $tag_ids, $entry);
             }
-            $entries->push($entry);
-            unset($entry, $entry_tag_ids);
         }
-        $entry_ids = $entries->pluck('id')->toArray();
+        // just in case we missed an entry necessary for testing, we're going to assign tags to a random confirmed & unconfirmed entries
+        $this->attachTagToEntry($faker, $tag_ids, $entries->where('confirm', 0)->random(1)->first());
+        $this->attachTagToEntry($faker, $tag_ids, $entries->where('confirm', 1)->random(1)->first());
+        $this->command->line(self::OUTPUT_PREFIX."Randomly assigned tags to entries");
 
+        // no point in selecting disabled entries. they're not going to be tested.
+        $entry_income_ids = $entries->where('expense', 0)->where('disabled', 0)->pluck('id')->toArray();
+        $entry_expense_ids = $entries->where('expense', 1)->where('disabled', 0)->pluck('id')->toArray();
+
+        // randomly select some entries and mark them as transfers
+        $transfer_to_entry_ids = $faker->randomElements($entry_income_ids, self::COUNT_ENTRY);
+        $transfer_from_entry_ids = $faker->randomElements($entry_expense_ids, self::COUNT_ENTRY);
+        for($transfer_i=0; $transfer_i<self::COUNT_ENTRY; $transfer_i++){
+            $transfer_from_entry = $entries->where('id', $transfer_from_entry_ids[$transfer_i])->first();
+            $transfer_from_entry->transfer_entry_id = $transfer_to_entry_ids[$transfer_i];
+            $transfer_from_entry->save();
+            $transfer_to_entry = $entries->where('id', $transfer_to_entry_ids[$transfer_i])->first();
+            $transfer_to_entry->transfer_entry_id = $transfer_from_entry_ids[$transfer_i];
+            $transfer_to_entry->save();
+        }
+        $this->command->line(self::OUTPUT_PREFIX."Randomly marked entries as transfers");
+
+        // assign attachments to entries. if entry is a "transfer", then add an attachment of the same name to its counterpart
         for($attachment_i=0; $attachment_i<self::COUNT_ATTACHMENT; $attachment_i++){
-            factory(App\Attachment::class)->create(['entry_id'=>$faker->randomElement($entry_ids)]);
+            // income entries
+            $this->assignAttachmentToEntry($faker, $entry_income_ids, $transfer_to_entry_ids, $entries);
+            // expense entries
+            $this->assignAttachmentToEntry($faker, $entry_expense_ids, $transfer_from_entry_ids, $entries);
         }
+        $this->command->line(self::OUTPUT_PREFIX."Randomly assigned Attachments to entries");
 
+        // income confirmed
+        $this->assignAttachmentToEntry(
+            $faker,
+            $entries->where('expense', 0)->where('disabled', 0)->where('confirm', 1)->pluck('id')->toArray(),
+            $transfer_to_entry_ids,
+            $entries
+        );
+        // income unconfirmed
+        $this->assignAttachmentToEntry(
+            $faker,
+            $entries->where('expense', 0)->where('disabled', 0)->where('confirm', 0)->pluck('id')->toArray(),
+            $transfer_to_entry_ids,
+            $entries
+        );
+        // expense confirmed
+        $this->assignAttachmentToEntry(
+            $faker,
+            $entries->where('expense', 1)->where('disabled', 0)->where('confirm', 1)->pluck('id')->toArray(),
+            $transfer_from_entry_ids,
+            $entries
+        );
+        // expense unconfirmed
+        $this->assignAttachmentToEntry(
+            $faker,
+            $entries->where('expense', 1)->where('disabled', 0)->where('confirm', 0)->pluck('id')->toArray(),
+            $transfer_from_entry_ids,
+            $entries
+        );
+        $this->command->line(self::OUTPUT_PREFIX."Assigned Attachments to all varieties of entries");
+    }
 
+    /**
+     * @param Illuminate\Support\Collection $account_collection
+     * @param array $data
+     * @return Illuminate\Support\Collection
+     */
+    private function addAccountToCollection($account_collection, $data){
+        return $this->addToCollection($account_collection, App\Account::class, $data, self::COUNT_ACCOUNT);
+    }
+
+    /**
+     * @param Illuminate\Support\Collection $account_type_collection
+     * @param array $data
+     * @param Faker\Generator $faker
+     * @return \Illuminate\Support\Collection
+     */
+    private function addAccountTypeToCollection($account_type_collection, $data, $faker){
+        return $this->addToCollection($account_type_collection, App\AccountType::class, $data, $faker->numberBetween(self::COUNT_MIN, self::COUNT_ACCOUNT_TYPE));
+    }
+
+    /**
+     * @param Illuminate\Support\Collection $entry_collection
+     * @param array $data
+     * * @param Faker\Generator $faker
+     * @return \Illuminate\Support\Collection
+     */
+    private function addEntryToCollection($entry_collection, $data, $faker){
+        return $this->addToCollection($entry_collection, App\Entry::class, $data, $faker->numberBetween(self::COUNT_MIN, self::COUNT_ENTRY*2));
+    }
+
+    /**
+     * @param Illuminate\Support\Collection $collection
+     * @param $type_class
+     * @param array $data
+     * @param int $count
+     * @return Illuminate\Support\Collection mixed
+     */
+    private function addToCollection($collection, $type_class, $data, $count=1){
+        $object = factory($type_class, $count)->create($data);  // when passing a count value to a factory, a collection is ALWAYS returned
+        return $collection->merge($object);
+    }
+
+    /**
+     * @param Faker\Generator $faker
+     * @param int[] $tag_ids
+     * @param App\Entry $entry
+     */
+    private function attachTagToEntry($faker, $tag_ids, $entry){
+        $entry_tag_ids = $faker->randomElements($tag_ids, $faker->numberBetween(self::COUNT_MIN, self::COUNT_TAG));
+        $entry->tags()->attach($entry_tag_ids);
+    }
+
+    /**
+     * @param Faker\Generator $faker
+     * @param int[] $entry_ids
+     * @param int[] $transfer_entry_ids
+     * @param \Illuminate\Support\Collection $entries_collection
+     */
+    private function assignAttachmentToEntry($faker, $entry_ids, $transfer_entry_ids, $entries_collection){
+        $random_entry_id = $faker->randomElement($entry_ids);
+        if(in_array($random_entry_id, $transfer_entry_ids)){
+            $new_attachment = factory(App\Attachment::class)->create(['entry_id'=>$random_entry_id]);
+            $transfer_entry = $entries_collection->where('id', $random_entry_id)->first();
+            factory(App\Attachment::class)->create(['entry_id'=>$transfer_entry->transfer_entry_id, 'name'=>$new_attachment->name]);
+        } else {
+            factory(App\Attachment::class)->create(['entry_id'=>$random_entry_id]);
+        }
     }
 
 }

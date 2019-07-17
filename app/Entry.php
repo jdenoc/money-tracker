@@ -16,7 +16,7 @@ class Entry extends BaseModel {
 
     protected $table = 'entries';
     protected $fillable = [
-        'entry_date', 'account_type_id', 'entry_value', 'memo', 'expense', 'confirm', 'disabled', 'disabled_stamp'
+        'entry_date', 'account_type_id', 'entry_value', 'memo', 'expense', 'confirm', 'disabled', 'disabled_stamp', 'transfer_entry_id'
     ];
     protected $guarded = [
         'id', 'create_stamp', 'modified_stamp'
@@ -98,7 +98,8 @@ class Entry extends BaseModel {
      */
     public static function get_collection_of_non_disabled_entries($filters = [], $limit=10, $offset=0, $sort_by=self::DEFAULT_SORT_PARAMETER, $sort_direction=self::DEFAULT_SORT_DIRECTION){
         $entries_query = self::build_entry_query($filters);
-        $entries_query->distinct()->select("entries.*");    // this makes sure that the correct ID is present if a JOIN is required
+        // this makes sure that the correct ID is present if a JOIN is required
+        $entries_query->distinct()->select("entries.*");
         $entries_query->orderBy($sort_by, $sort_direction);
         return $entries_query->offset($offset)->limit($limit)->get();
     }
@@ -182,6 +183,15 @@ class Entry extends BaseModel {
                             ->whereIn('entry_tags.tag_id', $tag_ids);
                     });
                     break;
+                case EntryController::FILTER_KEY_IS_TRANSFER:
+                    if($filter_constraint == true){
+                        // WHERE entries.transfer_entry_id IS NOT NULL
+                        $entries_query->whereNotNull("transfer_entry_id");
+                    } elseif($filter_constraint == false){
+                        // WHERE entries.transfer_entry_id IS NULL
+                        $entries_query->whereNull("transfer_entry_id");
+                    }
+                    break;
             }
         }
 
@@ -193,6 +203,15 @@ class Entry extends BaseModel {
      */
     public function has_attachments(){
         return $this->attachments()->count() > 0;
+    }
+
+    public function has_tags(){
+        try{
+            return $this->tags()->count() > 0;
+        } catch(\Exception $e){
+            error_log($e);
+            return false;
+        }
     }
 
     /**
