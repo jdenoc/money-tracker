@@ -160,15 +160,13 @@ cd money-tracker/
 
 # setup composer packages & environment variables
 composer install
+php artisan app:name "Money Tracker"
 php artisan app:version `git describe`
 
 # ***OPTIONAL***
 # If you're working with PhpStorm, be sure to run the following command.
 # It will generate Laravel Facades that PhpStorm can use.
 composer ide-helper
-
-# set the application version
-php artisan app:version `git describe`
 
 # construct the database tables
 php artisan migrate
@@ -199,6 +197,7 @@ cp .env.example .env
 sed "s/APP_ENV=.*/APP_ENV=production/" .env
 composer install --no-dev
 php artisan app:version $MOST_RECENT_TAG
+php artisan app:name "Money Tracker"
 php artisan migrate
 
 # setup Yarn packages
@@ -216,20 +215,28 @@ From time to time, there will be new updates released. Such updates will contain
 # put site into maintenance mode
 php artisan down
 
+# fetch newest version
 git fetch --tags
 MOST_RECENT_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
 git checkout -q tags/$MOST_RECENT_TAG
 php artisan app:version $MOST_RECENT_TAG
 
+# Database updates
+# Note: check update release notes.
+php artisan migrate 
+
 # New/Updates to composer/yarn packages
 # Note: check update release notes. 
 composer update --no-dev
 yarn install --prod
+
+# Build website from *.vue files
 yarn run build-prod
 
-# Database updates
-# Note: check update release notes.
-php artisan migrate 
+# clear cache
+php artisan view:clear
+php artisan config:clear
+php artisan config:cache
 
 # take site out of maintenance mode
 php artisan up
