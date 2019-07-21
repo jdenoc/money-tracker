@@ -42,9 +42,3 @@ export class Accounts extends ObjectBaseClass {
         });
     }
 }
-
-// var accounts = {
-//     display: function(){
-//         institutionsPane.displayAccounts();
-//     }
-// };
