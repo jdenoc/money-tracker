@@ -86,7 +86,9 @@ class InstitutionsPanelTest extends DuskTestCase {
                                 ->sortBy('name');
                             foreach($institution_accounts_collection as $institution_account){
                                 $institution_node->with($this->_selector_panel_institutions_accounts.' #account-'.$institution_account['id'], function($account_node) use ($institution_account, $account_types_collection){
-                                    $this->assertInstitutionPanelAccountNode($account_node, $institution_account, $account_types_collection);
+                                    $account_account_types_collection = $account_types_collection->where('account_id', $institution_account['id']);
+                                    $this->assertInstitutionPanelAccountNode($account_node, $institution_account['name'], $account_account_types_collection);
+                                    $this->assertInstitutionPanelAccountNodeClickInteraction($account_node, $account_types_collection);
                                 });
                             }
                         });
@@ -144,7 +146,9 @@ class InstitutionsPanelTest extends DuskTestCase {
 
                     foreach($disabled_accounts_collection as $account_data){
                         $closed_accounts->with($this->_selector_panel_institutions_accounts.' #account-'.$account_data['id'], function($account_node) use ($account_data, $account_types_collection){
-                            $this->assertInstitutionPanelAccountNode($account_node, $account_data, $account_types_collection, false);
+                            $account_account_types_collection = $account_types_collection->where('account_id', $account_data['id']);
+                            $this->assertInstitutionPanelAccountNode($account_node, $account_data['name'], $account_account_types_collection, false);
+                            $this->assertInstitutionPanelAccountNodeClickInteraction($account_node, $account_account_types_collection);
                         });
                     }
                 });
@@ -153,17 +157,14 @@ class InstitutionsPanelTest extends DuskTestCase {
 
     /**
      * @param Browser $account_node
-     * @param array $account_data
+     * @param string $account_name
      * @param Collection $account_types_collection
      * @param boolean $has_tooltip
      */
-    private function assertInstitutionPanelAccountNode($account_node, $account_data, $account_types_collection, $has_tooltip=true){
+    private function assertInstitutionPanelAccountNode($account_node, $account_name, $account_types_collection, $has_tooltip=true){
         // confirm account name is within collection
         $account_node_name = $account_node->text($this->_selector_panel_institutions_accounts_account_name.' span:first-child');
-        $this->assertContains($account_data['name'], $account_node_name);
-
-        $account_account_types = $account_types_collection->where('disabled', false)
-            ->where('account_id', $account_data['id']);
+        $this->assertContains($account_name, $account_node_name);
 
         // hover over account element
         $account_node->mouseover('');
@@ -173,8 +174,13 @@ class InstitutionsPanelTest extends DuskTestCase {
             $account_node_tooltip_id = $account_node->attribute('', 'aria-describedby');    // get the tooltip element id
             $account_node->assertVisible('#'.$account_node_tooltip_id);
             $account_types_tooltip_text = $account_node->text('#'.$account_node_tooltip_id);
-            foreach($account_account_types as $account_account_type){
-                $this->assertContains($account_account_type['name'], $account_types_tooltip_text);
+            foreach($account_types_collection as $account_account_type){
+                $account_type_record_tooltip_text = $account_account_type['name']." (".$account_account_type['last_digits'].")";
+                if($account_account_type['disabled']){
+                    $this->assertNotContains($account_type_record_tooltip_text, $account_types_tooltip_text);
+                } else {
+                    $this->assertContains($account_type_record_tooltip_text, $account_types_tooltip_text);
+                }
             }
         } else {
             $account_css_prefix = $account_node->resolver->prefix;
@@ -186,6 +192,13 @@ class InstitutionsPanelTest extends DuskTestCase {
         // account is NOT "active"
         $account_name_class = $account_node->attribute($this->_selector_panel_institutions_accounts_account_name, 'class');
         $this->assertNotContains('is-active', $account_name_class);
+    }
+
+    /**
+     * @param Browser $account_node
+     * @param Collection $account_types_collection
+     */
+    private function assertInstitutionPanelAccountNodeClickInteraction($account_node, $account_types_collection){
         $account_node->click('');
         // wait for loading to finish
         $account_css_prefix = $account_node->resolver->prefix;
@@ -203,13 +216,13 @@ class InstitutionsPanelTest extends DuskTestCase {
         $account_node->resolver->prefix = $account_css_prefix;
 
         // entries table has been updated with entries associated with account
-        $account_node->with($this->_selector_table.' '.$this->_selector_table_body, function ($table) use ($account_account_types){
+        $account_node->with($this->_selector_table.' '.$this->_selector_table_body, function (Browser $table) use ($account_types_collection){
             $table_rows = $table->elements('tr');
             foreach($table_rows as $table_row){
                 $row_entry_account_type = $table_row
                     ->findElement(WebDriverBy::cssSelector($this->_selector_table_row_account_type))
                     ->getText();
-                $this->assertContains($row_entry_account_type, $account_account_types->pluck('name')->all());
+                $this->assertContains($row_entry_account_type, $account_types_collection->where('disabled', false)->pluck('name')->all());
             }
         });
     }

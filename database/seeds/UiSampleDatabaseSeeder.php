@@ -35,22 +35,21 @@ class UiSampleDatabaseSeeder extends Seeder {
             $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$institution_id, 'disabled'=>false]);
         }
         $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$faker->randomElement($institution_ids), 'disabled'=>true]);
-        $account_ids = $accounts->pluck('id')->toArray();
         $this->command->line(self::OUTPUT_PREFIX."Accounts seeded");
 
         $account_types = collect();
-        foreach($account_ids as $account_id){
+        foreach($accounts->pluck('id') as $account_id){
             $account_types = $this->addAccountTypeToCollection($account_types, ['account_id'=>$account_id, 'disabled'=>false], $faker);
         }
-        $account_types = $this->addAccountTypeToCollection($account_types, ['account_id'=>$faker->randomElement($account_ids), 'disabled'=>true], $faker);
-        $account_type_ids = $account_types->pluck('id')->toArray();
+        $account_types = $this->addAccountTypeToCollection($account_types, ['account_id'=>$accounts->where('disabled', false)->pluck('id')->random(), 'disabled'=>true], $faker);
+        $account_types = $this->addAccountTypeToCollection($account_types, ['account_id'=>$accounts->where('disabled', true)->pluck('id')->random(), 'disabled'=>true], $faker);
         $this->command->line(self::OUTPUT_PREFIX."Account-types seeded");
 
         $entries = collect();
-        foreach($account_type_ids as $account_type_id){
+        foreach($account_types->pluck('id') as $account_type_id){
             $entries = $this->addEntryToCollection($entries, ['account_type_id'=>$account_type_id, 'disabled'=>false], $faker);
         }
-        $entries = $this->addEntryToCollection($entries, ['account_type_id'=>$faker->randomElement($account_type_ids), 'disabled'=>true], $faker);
+        $entries = $this->addEntryToCollection($entries, ['account_type_id'=>$account_types->pluck('id')->random(), 'disabled'=>true], $faker);
         $this->command->line(self::OUTPUT_PREFIX."Entries seeded");
 
         foreach($entries as $entry){
@@ -59,8 +58,8 @@ class UiSampleDatabaseSeeder extends Seeder {
             }
         }
         // just in case we missed an entry necessary for testing, we're going to assign tags to a random confirmed & unconfirmed entries
-        $this->attachTagToEntry($faker, $tag_ids, $entries->where('confirm', 0)->random(1)->first());
-        $this->attachTagToEntry($faker, $tag_ids, $entries->where('confirm', 1)->random(1)->first());
+        $this->attachTagToEntry($faker, $tag_ids, $entries->where('confirm', 0)->random());
+        $this->attachTagToEntry($faker, $tag_ids, $entries->where('confirm', 1)->random());
         $this->command->line(self::OUTPUT_PREFIX."Randomly assigned tags to entries");
 
         // no point in selecting disabled entries. they're not going to be tested.
@@ -133,7 +132,7 @@ class UiSampleDatabaseSeeder extends Seeder {
      * @param Illuminate\Support\Collection $account_type_collection
      * @param array $data
      * @param Faker\Generator $faker
-     * @return \Illuminate\Support\Collection
+     * @return Illuminate\Support\Collection
      */
     private function addAccountTypeToCollection($account_type_collection, $data, $faker){
         return $this->addToCollection($account_type_collection, App\AccountType::class, $data, $faker->numberBetween(self::COUNT_MIN, self::COUNT_ACCOUNT_TYPE));
@@ -143,7 +142,7 @@ class UiSampleDatabaseSeeder extends Seeder {
      * @param Illuminate\Support\Collection $entry_collection
      * @param array $data
      * * @param Faker\Generator $faker
-     * @return \Illuminate\Support\Collection
+     * @return Illuminate\Support\Collection
      */
     private function addEntryToCollection($entry_collection, $data, $faker){
         return $this->addToCollection($entry_collection, App\Entry::class, $data, $faker->numberBetween(self::COUNT_MIN, self::COUNT_ENTRY*2));
@@ -175,7 +174,7 @@ class UiSampleDatabaseSeeder extends Seeder {
      * @param Faker\Generator $faker
      * @param int[] $entry_ids
      * @param int[] $transfer_entry_ids
-     * @param \Illuminate\Support\Collection $entries_collection
+     * @param Illuminate\Support\Collection $entries_collection
      */
     private function assignAttachmentToEntry($faker, $entry_ids, $transfer_entry_ids, $entries_collection){
         $random_entry_id = $faker->randomElement($entry_ids);
