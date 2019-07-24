@@ -46,6 +46,8 @@ install:
 before_script:
   - docker container exec -t mysql.money-tracker iterate-mysql-health-check
   - docker container exec -t app.money-tracker artisan key:generate
+  - docker container exec -t app.money-tracker artisan app:version `git describe`
+  - docker container exec -t app.money-tracker artisan config:cache
   - docker container exec -t app.money-tracker env
   # setup log files, so that
   - docker container exec -t --user www-data app.money-tracker touch storage/logs/laravel.debug.log
@@ -82,9 +84,10 @@ after_success:
 
 after_failure:
   - ./send.sh failure $WEBHOOK_URL
+  - ls -la $DUSK_SCREENSHOT_DIRECTORY
   - ./image-send.sh --retry=3 --delay=7 $DUSK_SCREENSHOT_DIRECTORY $WEBHOOK_URL
-  - docker container logs --tail all --timestamps app.money-tracker
-  - 'docker container exec -t app.money-tracker sh -c "for log in ''ls -d /var/www/money-tracker/storage/logs/*''; do echo \"\\n\\n[LOG]\: \$log\"; tail -100 \$log; done"'
+  - docker container logs --tail all --timestamps app.money-tracker > /dev/null
+  - 'docker container exec -t app.money-tracker sh -c "for log in ''ls -d /var/www/money-tracker/storage/logs/*''; do echo \"\\n\\n[LOG]: \$log\"; tail -100 \$log; done"'
 
 after_script:
   - docker-compose -f docker/docker-compose.yml down -v
