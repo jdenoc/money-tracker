@@ -87,7 +87,7 @@ after_failure:
   - ls -la $DUSK_SCREENSHOT_DIRECTORY
   - ./image-send.sh --retry=3 --delay=7 $DUSK_SCREENSHOT_DIRECTORY $WEBHOOK_URL
   - docker container logs --tail all --timestamps app.money-tracker > /dev/null
-  - 'docker container exec -t app.money-tracker sh -c "for log in ''ls -d /var/www/money-tracker/storage/logs/*''; do echo \"\\n\\n[LOG]: \$log\"; tail -100 \$log; done"'
+  - docker/cmd/laravel-logs.sh
 
 after_script:
   - docker-compose -f docker/docker-compose.yml down -v
