@@ -16,6 +16,9 @@ addons:
 services:
   - docker
 
+matrix:
+  fast_finish: true
+
 env: DOCKER_HOST_IP=127.0.0.1 DUSK_SCREENSHOT_DIRECTORY=tests/Browser/screenshots/
 
 before_install:
