@@ -43,6 +43,15 @@ install:
   # make sure user `www-data` has ownership of everything
   - docker container exec -t app.money-tracker chown -R www-data:www-data .
 
+cache:
+  yarn: true
+  directories:
+    - vendor              # composer packages
+    - node_modules        # yarn/npm packages
+    - public/vue/css      # webpack generated css
+    - public/vue/js       # webpack generated javascript
+    - public/vue/webfonts # webpack generated web-fonts
+
 before_script:
   - docker container exec -t mysql.money-tracker iterate-mysql-health-check
   - docker container exec -t app.money-tracker artisan key:generate
