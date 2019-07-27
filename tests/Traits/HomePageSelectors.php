@@ -1,9 +1,4 @@
 <?php
-/**
- * Created by
- * User: denis.oconnor
- * Date: 2019-01-14
- */
 
 namespace Tests\Traits;
 
