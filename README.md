@@ -70,6 +70,10 @@ Set `DOCKER_HOST_IP` environment variable
 - Linux/Mac: `export DOCKER_HOST_IP="192.168.x.y"`
 - Windows: `setx DOCKER_HOST_IP="192.168.x.y"`
 
+Set `COMPOSE_PROJECT_NAME` environment variable
+- Linux/Mac: `export COMPOSE_PROJECT_NAME="moneytracker"`
+- Windows: `setx COMPOSE_PROJECT_NAME="moneytracker"`
+
 ##### Clone repo
 ```bash
 git clone https://github.com/jdenoc/money-tracker.git --branch=develop
@@ -124,6 +128,7 @@ If you have a database dump file, you can load it with this command:
 ```bash
 .docker/cmd/mysql.sh < /path/to/file.sql
 ```
+`.docker/cmd/mysql.sh` can be used just like the typical `mysql` command, but is run within the mysql container
 
 ##### Tear-down 
 ```bash
@@ -156,6 +161,7 @@ git clone https://github.com/jdenoc/money-tracker.git --branch=develop
 cd money-tracker/
 
 # setup composer packages & environment variables
+cp .env.example .env
 composer install
 php artisan app:name "Money Tracker"
 php artisan app:version `git describe`
@@ -230,7 +236,7 @@ yarn install --prod
 # Build website from *.vue files
 yarn run build-prod
 
-# clear cache
+# reset cache
 php artisan view:clear
 php artisan config:clear
 php artisan config:cache
