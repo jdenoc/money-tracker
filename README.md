@@ -122,10 +122,7 @@ docker/cmd/artisan.sh db:seed --class=UiSampleDatabaseSeeder
 <small>***OPTIONAL***</small>:
 If you have a database dump file, you can load it with this command:
 ```bash
-docker container exec -t mysql.money-tracker mysql -u`cat .env.docker | grep DB_USERNAME | sed 's/DB_USERNAME=//'` \
-	-p`cat .env.docker | grep DB_PASSWORD | sed 's/DB_PASSWORD=//'` \
-	`cat .env.docker | grep DB_DATABASE | sed 's/DB_DATABASE=//'` \
-	< /path/to/file.sql
+docker/cmd/mysql.sh < /path/to/file.sql
 ```
 
 ##### Tear-down 
