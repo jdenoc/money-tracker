@@ -99,24 +99,24 @@ docker/cmd/yarn.sh run build-dev
 docker-compose -f docker/docker-compose.yml up -d
 # composer doesn't write to the correct .env file during setup
 # so we need to generate the APP_KEY value again
-docker container exec -t app.money-tracker artisan key:generate
+docker/cmd/artisan.sh key:generate
 ```
 
 ##### Set application version value
 _**Note:** you can replace_ `git describe` _with any value you want_
 ```bash
-docker container exec -t app.money-tracker artisan app:version `git describe`
+docker/cmd/artisan.sh app:version `git describe`
 ```
 
 ##### Setup database/clear existing database and re-initialise it empty
 ```bash
-docker container exec -t app.money-tracker artisan migrate:refresh
+docker/cmd/artisan.sh migrate:refresh
 ```
 
 ##### Load dummy data into database
 ```bash
-docker container exec -t app.money-tracker artisan migrate:refresh
-docker container exec -t app.money-tracker artisan db:seed --class=UiSampleDatabaseSeeder
+docker/cmd/artisan.sh migrate:refresh
+docker/cmd/artisan.sh db:seed --class=UiSampleDatabaseSeeder
 ```
 
 <small>***OPTIONAL***</small>:
@@ -283,7 +283,7 @@ Assuming we already have our docker environment already setup ([instructions her
 # Run PhpUnit tests
 docker container exec -t app.money-tracker vendor/bin/phpunit --stop-on-failure
 # Run Laravel Dusk tests
-docker container exec -t app.money-tracker artisan dusk --stop-on-failure
+docker/cmd/artisan.sh dusk --stop-on-failure
 ```
 
 ### <a name="testing-locally">Local/Dev</a>
