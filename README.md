@@ -78,13 +78,13 @@ cd money-tracker/
 
 ##### Run composer install  
 ```bash
-docker/docker-composer.sh install
+docker/cmd/composer.sh install
 ```
 
 <small>***OPTIONAL***</small>:
 If you're working with PhpStorm, be sure to run the following command:
 ```bash
-docker/docker-composer.sh ide-helper
+docker/cmd/composer.sh ide-helper
 ```
 This will generate Laravel Facades that PhpStorm can use.  
 
