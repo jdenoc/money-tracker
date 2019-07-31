@@ -30,7 +30,7 @@ install:
   - if [ -n "$GH_TOKEN" ]; then docker/cmd/composer.sh config github-oauth.github.com ${GH_TOKEN}; fi;
   - docker/cmd/composer.sh install --no-interaction
   # install yarn packages
-  - docker/docker-yarn.sh install --non-interactive
+  - docker/cmd/yarn.sh install --non-interactive
   # start docker containers
   - docker-compose -f docker/docker-compose.yml up -d
   - docker container ls
@@ -68,7 +68,7 @@ before_script:
   - docker container exec -t --user www-data app.money-tracker touch storage/logs/laravel.alert.log
   - docker container exec -t --user www-data app.money-tracker touch storage/logs/laravel.emergency.log
   # build/compile website
-  - docker/docker-yarn.sh run build-prod
+  - docker/cmd/yarn.sh run build-prod
 
 matrix:
   fast_finish: true
