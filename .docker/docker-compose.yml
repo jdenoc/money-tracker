@@ -4,7 +4,7 @@ services:
   application:
     build:
       context: .. # interpreted as relative to the location of the Compose file
-      dockerfile: docker/app.dockerfile
+      dockerfile: .docker/app.dockerfile
     container_name: "app.money-tracker"
     ports:
       - 80:80
@@ -23,7 +23,7 @@ services:
   database:
     build:
       context: .. # interpreted as relative to the location of the Compose file
-      dockerfile: docker/mysql.dockerfile
+      dockerfile: .docker/mysql.dockerfile
     container_name: "mysql.money-tracker"
     volumes:
       - db.money-tracker:/var/lib/mysql

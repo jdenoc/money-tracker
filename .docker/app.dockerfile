@@ -18,7 +18,7 @@ RUN apt-get update \
 RUN a2enmod rewrite
 
 # setup vhost
-ADD docker/money-tracker.vhost.conf /etc/apache2/sites-enabled/000-default.conf
+ADD .docker/money-tracker.vhost.conf /etc/apache2/sites-enabled/000-default.conf
 
 # setup web directory
 WORKDIR /var/www/money-tracker

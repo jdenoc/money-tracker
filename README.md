@@ -78,61 +78,61 @@ cd money-tracker/
 
 ##### Run composer install  
 ```bash
-docker/cmd/composer.sh install
+.docker/cmd/composer.sh install
 ```
 
 <small>***OPTIONAL***</small>:
 If you're working with PhpStorm, be sure to run the following command:
 ```bash
-docker/cmd/composer.sh ide-helper
+.docker/cmd/composer.sh ide-helper
 ```
 This will generate Laravel Facades that PhpStorm can use.  
 
 ##### Run yarn install
 ```bash
-docker/cmd/yarn.sh install
-docker/cmd/yarn.sh run build-dev
+.docker/cmd/yarn.sh install
+.docker/cmd/yarn.sh run build-dev
 ```
 
 ##### Bring "up" application container(s)
 ```bash
-docker-compose -f docker/docker-compose.yml up -d
+docker-compose -f .docker/docker-compose.yml up -d
 # composer doesn't write to the correct .env file during setup
 # so we need to generate the APP_KEY value again
-docker/cmd/artisan.sh key:generate
+.docker/cmd/artisan.sh key:generate
 ```
 
 ##### Set application version value
 _**Note:** you can replace_ `git describe` _with any value you want_
 ```bash
-docker/cmd/artisan.sh app:version `git describe`
+.docker/cmd/artisan.sh app:version `git describe`
 ```
 
 ##### Setup database/clear existing database and re-initialise it empty
 ```bash
-docker/cmd/artisan.sh migrate:refresh
+.docker/cmd/artisan.sh migrate:refresh
 ```
 
 ##### Load dummy data into database
 ```bash
-docker/cmd/artisan.sh migrate:refresh
-docker/cmd/artisan.sh db:seed --class=UiSampleDatabaseSeeder
+.docker/cmd/artisan.sh migrate:refresh
+.docker/cmd/artisan.sh db:seed --class=UiSampleDatabaseSeeder
 ```
 
 <small>***OPTIONAL***</small>:
 If you have a database dump file, you can load it with this command:
 ```bash
-docker/cmd/mysql.sh < /path/to/file.sql
+.docker/cmd/mysql.sh < /path/to/file.sql
 ```
 
 ##### Tear-down 
 ```bash
-docker-compose -f docker/docker-compose.yml down
+docker-compose -f .docker/docker-compose.yml down
 ```
 
 _**Note:** You can tear down the docker containers and their associated volumes with this command:_
 ```bash
-docker-compose -f docker/docker-compose.yml down -v
+docker-compose -f .docker/docker-compose.yml down -v
 ```
 _**Note:** You do not need to worry about "tearing down" the yarn and/or composer containers. They will "remove" themselves once they have completed their tasks._  
 
@@ -280,7 +280,7 @@ Assuming we already have our docker environment already setup ([instructions her
 # Run PhpUnit tests
 docker container exec -t app.money-tracker vendor/bin/phpunit --stop-on-failure
 # Run Laravel Dusk tests
-docker/cmd/artisan.sh dusk --stop-on-failure
+.docker/cmd/artisan.sh dusk --stop-on-failure
 ```
 
 ### <a name="testing-locally">Local/Dev</a>
