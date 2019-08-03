@@ -30,16 +30,6 @@ class AppVersionTest extends TestCase {
         parent::setUp();
         $faker = FakerFactory::create();
         $this->_test_version = $faker->randomDigitNotNull.'.'.$faker->randomDigitNotNull.'.'.$faker->randomDigitNotNull.'-test-'.$faker->word;
-
-        // need to clear the cached config otherwise we can't write to the appropriate .env file
-        Artisan::call("config:clear");
-    }
-
-    public function tearDown(){
-        // since we destroyed the config cache during setup, we should recreate it
-        Artisan::call("config:cache");
-
-        parent::tearDown();
     }
 
     public function testSettingAppVersionViaArgument(){
