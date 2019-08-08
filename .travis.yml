@@ -71,7 +71,7 @@ jobs:
       install:  # $GH_TOKEN should be set in travis-ci settings and generated in GitHub user settings
         # install composer packages
         - if [ -n "$GH_TOKEN" ]; then .docker/cmd/composer.sh config github-oauth.github.com ${GH_TOKEN}; fi;
-        - .docker/cmd/composer.sh install --no-interaction
+        - .docker/cmd/composer.sh install --no-interaction --optimize-autoloader
         # install yarn packages
         - .docker/cmd/yarn.sh install --non-interactive
         # build/compile website with webpack
