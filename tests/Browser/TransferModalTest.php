@@ -478,13 +478,12 @@ class TransferModalTest extends DuskTestCase {
 
     private function fillTagsInputUsingAutocomplete(Browser $browser, $tag){
         $browser->with($this->_selector_modal_transfer, function($modal) use ($tag){
-            $first_char = substr($tag, 0, 1);
-            $second_char = substr($tag, 1, 2);
-
             $modal
                 ->waitUntilMissing($this->_selector_modal_transfer_field_tags_container_is_loading, HomePage::WAIT_SECONDS)
-                ->keys($this->_selector_modal_transfer_field_tags, $first_char)
-                ->keys($this->_selector_modal_transfer_field_tags, $second_char)
+                // using safeColorName as our tag, we can be guaranteed after 3 characters we will have a unique word available
+                ->keys($this->_selector_modal_transfer_field_tags, substr($tag, 0, 1))  // 1st char
+                ->keys($this->_selector_modal_transfer_field_tags, substr($tag, 1, 1))  // 2nd char
+                ->keys($this->_selector_modal_transfer_field_tags, substr($tag, 2, 1))  // 3rd char
                 ->waitFor($this->_selector_modal_tag_autocomplete_options)
                 ->assertSee($tag)
                 ->click($this->_selector_modal_tag_autocomplete_options);
