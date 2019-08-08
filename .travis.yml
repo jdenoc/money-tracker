@@ -62,7 +62,7 @@ jobs:
         - docker pull composer/composer:php5-alpine
         - docker pull node:6
         - docker-compose -f .docker/docker-compose.yml pull
-        - docker-compose -f .docker/docker-compose.yml build
+        - DISABLE_XDEBUG=true docker-compose -f .docker/docker-compose.yml build
         # save docker images to be cached and used for tests
         - mkdir -p .docker/images
         - docker save ${COMPOSE_PROJECT_NAME}_application | gzip > .docker/images/application.tar.gz

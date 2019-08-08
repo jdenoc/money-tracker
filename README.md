@@ -11,7 +11,7 @@ For a list of features currently available, what they're expected outcome is and
 - [Installation/setup](#installation)
   - [Docker](#docker-environment)
     - [Tear-down](#tear-down)
-  - [Local/Dev](#local/dev-environment)
+  - [Local/Dev](#localdev-environment)
     - [Database](#dev-database)
     - [Application](#dev-application)
   - [Production](#production-environment)
@@ -106,6 +106,14 @@ docker-compose -f .docker/docker-compose.yml up -d
 .docker/cmd/artisan.sh key:generate
 ```
 
+<small>***OPTIONAL***</small>:
+If you wish to run docker without xdebug, prefix the above command with `DISABLE_XDEBUG=true`  
+For Example:
+```bash
+DISABLE_XDEBUG=true docker-compose -f .docker/docker-compose.yml up -d
+```
+`DISABLE_XDEBUG=true` is required _once_ to build the docker image. Afterwards, it is never used again.
+
 ##### Set application version value
 _**Note:** you can replace_ `git describe` _with any value you want_
 ```bash
@@ -143,7 +151,7 @@ _**Note:** You do not need to worry about "tearing down" the yarn and/or compose
 
 ***
 
-### Local/Dev environment
+### <a name="localdev-environment">Local/Dev environment</a>
 Sometimes, you just don't want to use Docker. That's fine and we support your decision. Here are some helpful steps on setup.
 
 #### <a name="dev-database">Database setup</a> 
@@ -281,7 +289,7 @@ Here is a list of commands that will _scheduled_ as part of this setup:
 This project has been setup to use [travis-ci](https://travis-ci.org/jdenoc/money-tracker) for continuous integration testing.  
 
 ### <a name="testing-docker">Docker</a>
-Assuming we already have our docker environment already setup ([instructions here](#local-docker-environment)), performing the following commands should run the tests we want.
+Assuming we already have our docker environment already setup ([instructions here](#docker-environment)), performing the following commands should run the tests we want.
 ```bash
 # Run PhpUnit tests
 docker container exec -t app.money-tracker vendor/bin/phpunit --stop-on-failure
