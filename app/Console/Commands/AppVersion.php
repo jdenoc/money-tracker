@@ -37,7 +37,7 @@ class AppVersion extends Command {
         // make sure .env file exists
         $dot_env_file_path = app()->environmentFilePath();
         if(!File::exists($dot_env_file_path)){
-            $this->error(".env file does not exist.\nPlease create one before trying again.");
+            $this->error(app()->environmentFile()." file does not exist.\nPlease create one before trying again.");
             return;
         }
 

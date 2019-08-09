@@ -11,7 +11,7 @@ For a list of features currently available, what they're expected outcome is and
 - [Installation/setup](#installation)
   - [Docker](#docker-environment)
     - [Tear-down](#tear-down)
-  - [Local/Dev](#local/dev-environment)
+  - [Local/Dev](#localdev-environment)
     - [Database](#dev-database)
     - [Application](#dev-application)
   - [Production](#production-environment)
@@ -70,6 +70,10 @@ Set `DOCKER_HOST_IP` environment variable
 - Linux/Mac: `export DOCKER_HOST_IP="192.168.x.y"`
 - Windows: `setx DOCKER_HOST_IP="192.168.x.y"`
 
+Set `COMPOSE_PROJECT_NAME` environment variable
+- Linux/Mac: `export COMPOSE_PROJECT_NAME="moneytracker"`
+- Windows: `setx COMPOSE_PROJECT_NAME="moneytracker"`
+
 ##### Clone repo
 ```bash
 git clone https://github.com/jdenoc/money-tracker.git --branch=develop
@@ -78,70 +82,76 @@ cd money-tracker/
 
 ##### Run composer install  
 ```bash
-docker/docker-composer.sh install
+.docker/cmd/composer.sh install
 ```
 
 <small>***OPTIONAL***</small>:
 If you're working with PhpStorm, be sure to run the following command:
 ```bash
-docker/docker-composer.sh ide-helper
+.docker/cmd/composer.sh ide-helper
 ```
 This will generate Laravel Facades that PhpStorm can use.  
 
 ##### Run yarn install
 ```bash
-docker/docker-yarn.sh install
-docker/docker-yarn.sh run build-dev
+.docker/cmd/yarn.sh install
+.docker/cmd/yarn.sh run build-dev
 ```
 
 ##### Bring "up" application container(s)
 ```bash
-docker-compose -f docker/docker-compose.yml up -d
+docker-compose -f .docker/docker-compose.yml up -d
 # composer doesn't write to the correct .env file during setup
 # so we need to generate the APP_KEY value again
-docker container exec -t app.money-tracker artisan key:generate
+.docker/cmd/artisan.sh key:generate
 ```
+
+<small>***OPTIONAL***</small>:
+If you wish to run docker without xdebug, prefix the above command with `DISABLE_XDEBUG=true`  
+For Example:
+```bash
+DISABLE_XDEBUG=true docker-compose -f .docker/docker-compose.yml up -d
+```
+`DISABLE_XDEBUG=true` is required _once_ to build the docker image. Afterwards, it is never used again.
 
 ##### Set application version value
 _**Note:** you can replace_ `git describe` _with any value you want_
 ```bash
-docker container exec -t app.money-tracker artisan app:version `git describe`
+.docker/cmd/artisan.sh app:version `git describe`
 ```
 
 ##### Setup database/clear existing database and re-initialise it empty
 ```bash
-docker container exec -t app.money-tracker artisan migrate:refresh
+.docker/cmd/artisan.sh migrate:refresh
 ```
 
 ##### Load dummy data into database
 ```bash
-docker container exec -t app.money-tracker artisan migrate:refresh
-docker container exec -t app.money-tracker artisan db:seed --class=UiSampleDatabaseSeeder
+.docker/cmd/artisan.sh migrate:refresh
+.docker/cmd/artisan.sh db:seed --class=UiSampleDatabaseSeeder
 ```
 
 <small>***OPTIONAL***</small>:
 If you have a database dump file, you can load it with this command:
 ```bash
-docker container exec -t mysql.money-tracker mysql -u`cat .env.docker | grep DB_USERNAME | sed 's/DB_USERNAME=//'` \
-	-p`cat .env.docker | grep DB_PASSWORD | sed 's/DB_PASSWORD=//'` \
-	`cat .env.docker | grep DB_DATABASE | sed 's/DB_DATABASE=//'` \
-	< /path/to/file.sql
+.docker/cmd/mysql.sh < /path/to/file.sql
 ```
+`.docker/cmd/mysql.sh` can be used just like the typical `mysql` command, but is run within the mysql container
 
 ##### Tear-down 
 ```bash
-docker-compose -f docker/docker-compose.yml down
+docker-compose -f .docker/docker-compose.yml down
 ```
 
 _**Note:** You can tear down the docker containers and their associated volumes with this command:_
 ```bash
-docker-compose -f docker/docker-compose.yml down -v
+docker-compose -f .docker/docker-compose.yml down -v
 ```
 _**Note:** You do not need to worry about "tearing down" the yarn and/or composer containers. They will "remove" themselves once they have completed their tasks._  
 
 ***
 
-### Local/Dev environment
+### <a name="localdev-environment">Local/Dev environment</a>
 Sometimes, you just don't want to use Docker. That's fine and we support your decision. Here are some helpful steps on setup.
 
 #### <a name="dev-database">Database setup</a> 
@@ -159,6 +169,7 @@ git clone https://github.com/jdenoc/money-tracker.git --branch=develop
 cd money-tracker/
 
 # setup composer packages & environment variables
+cp .env.example .env
 composer install
 php artisan app:name "Money Tracker"
 php artisan app:version `git describe`
@@ -233,7 +244,7 @@ yarn install --prod
 # Build website from *.vue files
 yarn run build-prod
 
-# clear cache
+# reset cache
 php artisan view:clear
 php artisan config:clear
 php artisan config:cache
@@ -278,12 +289,12 @@ Here is a list of commands that will _scheduled_ as part of this setup:
 This project has been setup to use [travis-ci](https://travis-ci.org/jdenoc/money-tracker) for continuous integration testing.  
 
 ### <a name="testing-docker">Docker</a>
-Assuming we already have our docker environment already setup ([instructions here](#local-docker-environment)), performing the following commands should run the tests we want.
+Assuming we already have our docker environment already setup ([instructions here](#docker-environment)), performing the following commands should run the tests we want.
 ```bash
 # Run PhpUnit tests
 docker container exec -t app.money-tracker vendor/bin/phpunit --stop-on-failure
 # Run Laravel Dusk tests
-docker container exec -t app.money-tracker artisan dusk --stop-on-failure
+.docker/cmd/artisan.sh dusk --stop-on-failure
 ```
 
 ### <a name="testing-locally">Local/Dev</a>
