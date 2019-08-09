@@ -345,6 +345,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                     $modal_foot->click($this->_selector_modal_entry_btn_save);
                 })
                 ->waitForLoadingToStop()
+                ->scrollToElement($entry_selector)
                 ->openExistingEntryModal($entry_selector)
                 ->with($this->_selector_modal_body, function($modal_body) use (&$old_value, $new_value){
                     $this->assertNotEquals($old_value, $modal_body->value($this->_selector_modal_entry_field_date));
