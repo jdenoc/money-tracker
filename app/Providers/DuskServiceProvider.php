@@ -16,8 +16,7 @@ class DuskServiceProvider extends DuskServiceProviderBase {
         parent::boot(); // needed to allow original DuskServiceProvider to do it's thing
 
         Browser::macro('scrollToElement', function ($element = null) {
-            $this->script("$('html, body').animate({ scrollTop: $('$element').offset().top }, 0);");
-
+            $this->script("document.querySelector('$element').scrollIntoView({behavior: 'smooth'})");
             return $this;
         });
 
