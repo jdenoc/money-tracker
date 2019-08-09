@@ -62,14 +62,12 @@ class HomePage extends Page {
             '@notification-error'=>".snotifyToast.snotify-error",
             '@notification-info'=>".snotifyToast.snotify-info",
             '@notification-success'=>".snotifyToast.snotify-success",
-            '@notification-warning'=>".snotifyToast.snotify-warning", // TODO: confirm this is correct
+            '@notification-warning'=>".snotifyToast.snotify-warning",
         ];
     }
 
     public function waitForLoadingToStop(Browser $browser){
-        $browser
-            ->assertVisible('@loading')
-            ->waitUntilMissing('@loading', self::WAIT_SECONDS_LONG);
+        $browser->waitUntilMissing('@loading', self::WAIT_SECONDS_LONG);
     }
 
     public function openNewEntryModal(Browser $browser){
@@ -171,13 +169,13 @@ class HomePage extends Page {
             'css_color = window.getComputedStyle(document.querySelector("'.$element_selector.'"), "'.$element_pseudo_selector.'").getPropertyValue("background-color");',
             'rgb = css_color.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);',
             'if(rgb === null){
-            hex = css_color;    // assuming that the CSS color returned is HEX
-        } else {
-            r = (parseInt(rgb[1]) < 16 ? "0" : "")+parseInt(rgb[1]).toString(16);
-            g = (parseInt(rgb[2]) < 16 ? "0" : "")+parseInt(rgb[2]).toString(16);
-            b = (parseInt(rgb[3]) < 16 ? "0" : "")+parseInt(rgb[3]).toString(16);
-            hex = "#"+r+g+b;
-        }',
+                hex = css_color;    // assuming that the CSS color returned is HEX
+            } else {
+                r = (parseInt(rgb[1]) < 16 ? "0" : "")+parseInt(rgb[1]).toString(16);
+                g = (parseInt(rgb[2]) < 16 ? "0" : "")+parseInt(rgb[2]).toString(16);
+                b = (parseInt(rgb[3]) < 16 ? "0" : "")+parseInt(rgb[3]).toString(16);
+                hex = "#"+r+g+b;
+            }',
             'return hex;'
         ]);
 
