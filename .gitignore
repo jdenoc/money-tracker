@@ -10,12 +10,12 @@ auth.json
 node_modules
 yarn.lock
 yarn-error.log
-public/components
 
 # laravel-mix
 mix-manifest.json
 public/vue
 
 .env
+phpunit.dusk.xml
 _ide_helper.php
 .phpstorm.meta.php

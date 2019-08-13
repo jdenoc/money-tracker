@@ -16,7 +16,11 @@ class DuskServiceProvider extends DuskServiceProviderBase {
         parent::boot(); // needed to allow original DuskServiceProvider to do it's thing
 
         Browser::macro('scrollToElement', function ($element = null) {
-            $this->script("document.querySelector('$element').scrollIntoView()");
+            $this->script([
+                "document.querySelector('$element').scrollIntoView();",
+                "window.scrollBy(0, -52);"  // adjust for height of navbar
+            ]);
+
             return $this;
         });
 
