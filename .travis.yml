@@ -16,49 +16,31 @@ addons:
 services:
   - docker
 
-env: DOCKER_HOST_IP=127.0.0.1 DUSK_SCREENSHOT_DIRECTORY=tests/Browser/screenshots/
-
-before_install:
-  - docker pull composer/composer:php5-alpine
-  - docker pull node:6
-  - docker-compose -f docker/docker-compose.yml pull
-  - docker-compose -f docker/docker-compose.yml build
-
-# $GH_TOKEN should be set in travis-ci settings and generated in GitHub user settings
-install:
-  # install composer packages
-  - if [ -n "$GH_TOKEN" ]; then docker/docker-composer.sh config github-oauth.github.com ${GH_TOKEN}; fi;
-  - docker/docker-composer.sh install --no-interaction
-  # install yarn packages
-  - docker/docker-yarn.sh install --non-interactive
-  # start docker containers
-  - docker-compose -f docker/docker-compose.yml up -d
-  - docker container ls
-  - docker volume ls
-  # install travis-ci/discord integration script(s)
-  - wget https://raw.githubusercontent.com/jdenoc/travis-ci-discord-webhook/1.2.0/send.sh
-  - chmod +x send.sh
-  - wget https://raw.githubusercontent.com/jdenoc/travis-ci-discord-webhook/1.2.0/image-send.sh
-  - chmod +x image-send.sh
-  # make sure user `www-data` has ownership of everything
-  - docker container exec -t app.money-tracker chown -R www-data:www-data .
+env: DOCKER_HOST_IP=127.0.0.1 DUSK_SCREENSHOT_DIRECTORY=tests/Browser/screenshots/ COMPOSE_PROJECT_NAME=moneytracker
 
 cache:
-  yarn: true
   directories:
-    - vendor              # composer packages
-    - node_modules        # yarn/npm packages
-    - public/vue/css      # webpack generated css
-    - public/vue/js       # webpack generated javascript
-    - public/vue/webfonts # webpack generated web-fonts
+    - vendor          # composer packages
+    - node_modules    # yarn/npm packages
+    - public/vue      # webpack generated css/js/webfont
+    - .webhook        # stores discord webhook scripts
+    - .docker/images  # stores docker images
 
 before_script:
+  # load docker images (if any)
+  - if [[ -f .docker/images/application.tar.gz ]]; then docker load < .docker/images/application.tar.gz; fi
+  - if [[ -f .docker/images/database.tar.gz ]]; then docker load < .docker/images/database.tar.gz; fi
+  - if [[ -f .docker/images/selenium.tar.gz ]]; then docker load < .docker/images/selenium.tar.gz; fi
+  # start docker containers
+  - docker-compose -f .docker/docker-compose.yml up -d
   - docker container exec -t mysql.money-tracker iterate-mysql-health-check
-  - docker container exec -t app.money-tracker artisan key:generate
-  - docker container exec -t app.money-tracker artisan app:version `git describe`
-  - docker container exec -t app.money-tracker artisan config:cache
+  # make sure user `www-data` has ownership of everything
+  - docker container exec -t app.money-tracker chown -R www-data:www-data .
+  # general application setup
+  - .docker/cmd/artisan.sh key:generate
+  - .docker/cmd/artisan.sh app:version `git describe`
   - docker container exec -t app.money-tracker env
-  # setup log files, so that
+  # setup laravel log files
   - docker container exec -t --user www-data app.money-tracker touch storage/logs/laravel.debug.log
   - docker container exec -t --user www-data app.money-tracker touch storage/logs/laravel.info.log
   - docker container exec -t --user www-data app.money-tracker touch storage/logs/laravel.notice.log
@@ -67,15 +49,41 @@ before_script:
   - docker container exec -t --user www-data app.money-tracker touch storage/logs/laravel.critical.log
   - docker container exec -t --user www-data app.money-tracker touch storage/logs/laravel.alert.log
   - docker container exec -t --user www-data app.money-tracker touch storage/logs/laravel.emergency.log
-  # build/compile website
-  - docker/docker-yarn.sh run build-prod
 
-matrix:
-  fast_finish: true
+stages:
+  - build
+  - unit
+  - e2e
 
 jobs:
   include:
-    - stage: phpunit
+    - stage: build
+      before_install:
+        - docker pull composer/composer:php5-alpine
+        - docker pull node:6
+        - docker-compose -f .docker/docker-compose.yml pull
+        - DISABLE_XDEBUG=true docker-compose -f .docker/docker-compose.yml build
+        # save docker images to be cached and used for tests
+        - mkdir -p .docker/images
+        - docker save ${COMPOSE_PROJECT_NAME}_application | gzip > .docker/images/application.tar.gz
+        - docker save ${COMPOSE_PROJECT_NAME}_database | gzip > .docker/images/database.tar.gz
+        - docker save selenium/standalone-chrome:latest | gzip > .docker/images/selenium.tar.gz
+      install:  # $GH_TOKEN should be set in travis-ci settings and generated in GitHub user settings
+        # install composer packages
+        - if [ -n "$GH_TOKEN" ]; then .docker/cmd/composer.sh config github-oauth.github.com ${GH_TOKEN}; fi;
+        - .docker/cmd/composer.sh install --no-interaction --optimize-autoloader
+        # install yarn packages
+        - .docker/cmd/yarn.sh install --non-interactive
+        # build/compile website with webpack
+        - .docker/cmd/yarn.sh run build-prod
+        # install travis-ci/discord integration script(s)
+        - mkdir -p .webhook
+        - wget -O .webhook/send.sh https://raw.githubusercontent.com/jdenoc/travis-ci-discord-webhook/1.2.0/send.sh
+        - wget -O .webhook/image-send.sh https://raw.githubusercontent.com/jdenoc/travis-ci-discord-webhook/1.2.0/image-send.sh
+        - chmod +x .webhook/*.sh
+      script: true
+
+    - stage: unit-tests
       script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-put
     - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-get
     - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-post
@@ -83,29 +91,27 @@ jobs:
     - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite console
     - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite web
     - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite unit
-    - stage: dusk
-      script: docker container exec -t app.money-tracker artisan dusk --group demo --stop-on-failure
-    - script: docker container exec -t app.money-tracker artisan dusk --group notifications --stop-on-failure
-    - script: docker container exec -t app.money-tracker artisan dusk --group navigation --stop-on-failure
-    - script: docker container exec -t app.money-tracker artisan dusk --group entry-modal --stop-on-failure
-    - script: docker container exec -t app.money-tracker artisan dusk --group filter-modal --stop-on-failure
-    - script: docker container exec -t app.money-tracker artisan dusk --group transfer-modal --stop-on-failure
+
+    - stage: e2e-tests
+      script: .docker/cmd/artisan.sh dusk --group demo --stop-on-failure
+    - script: .docker/cmd/artisan.sh dusk --group notifications --stop-on-failure
+    - script: .docker/cmd/artisan.sh dusk --group navigation --stop-on-failure
+    - script: .docker/cmd/artisan.sh dusk --group entry-modal --stop-on-failure
+    - script: .docker/cmd/artisan.sh dusk --group filter-modal --stop-on-failure
+    - script: .docker/cmd/artisan.sh dusk --group transfer-modal --stop-on-failure
 
 # $WEBHOOK_URL should be set in travis-ci settings
 after_success:
-  - ./send.sh success $WEBHOOK_URL
+  - .webhook/send.sh success $WEBHOOK_URL
 
 after_failure:
-  - ./send.sh failure $WEBHOOK_URL
-  - ls -la $DUSK_SCREENSHOT_DIRECTORY
-  - ./image-send.sh --retry=3 --delay=7 $DUSK_SCREENSHOT_DIRECTORY $WEBHOOK_URL
+  - .webhook/send.sh failure $WEBHOOK_URL
+  - .webhook/image-send.sh --retry=3 --delay=7 $DUSK_SCREENSHOT_DIRECTORY $WEBHOOK_URL
   - docker container logs --tail all --timestamps app.money-tracker > /dev/null
-  - docker/cmd/laravel-logs.sh
+  - .docker/cmd/laravel-logs.sh
 
 after_script:
-  - docker-compose -f docker/docker-compose.yml down -v
-  - docker container ls
-  - docker volume ls
+  - docker-compose -f .docker/docker-compose.yml down -v
 
 # make sure ONLY updates to the master & develop branches cause a build
 branches:

@@ -22,14 +22,17 @@ class UiSampleDatabaseSeeder extends Seeder {
     public function run(){
         $faker = Faker\Factory::create();
 
+        // ***** TAGS *****
         $tags = factory(App\Tag::class, self::COUNT_TAG)->create();
         $tag_ids = $tags->pluck('id')->toArray();
         $this->command->line(self::OUTPUT_PREFIX."Tags seeded");
 
+        // ***** INSTITUTIONS *****
         $institutions = factory(App\Institution::class, self::COUNT_INSTITUTION)->create(['active'=>1]);
         $institution_ids = $institutions->pluck('id')->toArray();
         $this->command->line(self::OUTPUT_PREFIX."Institutions seeded");
 
+        // ***** ACCOUNTS *****
         $accounts = collect();
         foreach($institution_ids as $institution_id){
             $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$institution_id, 'disabled'=>false]);
@@ -37,6 +40,7 @@ class UiSampleDatabaseSeeder extends Seeder {
         $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$faker->randomElement($institution_ids), 'disabled'=>true]);
         $this->command->line(self::OUTPUT_PREFIX."Accounts seeded");
 
+        // ***** ACCOUNT-TYPES *****
         $account_types = collect();
         foreach($accounts->pluck('id') as $account_id){
             $account_types = $this->addAccountTypeToCollection($account_types, ['account_id'=>$account_id, 'disabled'=>false], $faker);
@@ -45,6 +49,7 @@ class UiSampleDatabaseSeeder extends Seeder {
         $account_types = $this->addAccountTypeToCollection($account_types, ['account_id'=>$accounts->where('disabled', true)->pluck('id')->random(), 'disabled'=>true], $faker);
         $this->command->line(self::OUTPUT_PREFIX."Account-types seeded");
 
+        // ***** ENTRIES *****
         $entries = collect();
         foreach($account_types->pluck('id') as $account_type_id){
             $entries = $this->addEntryToCollection($entries, ['account_type_id'=>$account_type_id, 'disabled'=>false], $faker);

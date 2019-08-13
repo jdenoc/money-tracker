@@ -10,15 +10,13 @@ RUN apt-get update \
   && apt-get upgrade -y \
   && apt-get install -y libmcrypt-dev mysql-client zlib1g-dev libicu-dev g++ --no-install-recommends \
   && docker-php-ext-configure intl \
-  && docker-php-ext-install mcrypt pdo_mysql zip intl \
-  && pecl install xdebug-2.5.5 \
-  && docker-php-ext-enable xdebug
+  && docker-php-ext-install mcrypt pdo_mysql zip intl
 
 # enable mod_rewrite apache module
 RUN a2enmod rewrite
 
 # setup vhost
-ADD docker/money-tracker.vhost.conf /etc/apache2/sites-enabled/000-default.conf
+ADD .docker/money-tracker.vhost.conf /etc/apache2/sites-enabled/000-default.conf
 
 # setup web directory
 WORKDIR /var/www/money-tracker
@@ -44,15 +42,21 @@ RUN echo 'error_log = /dev/stderr' >> $PHP_INI_DIR/conf.d/php-error_log.ini
 # set php timezone
 RUN echo 'date.timezone = "UTC"' >> $PHP_INI_DIR/conf.d/php-date.timezone.ini
 
-# override some xdebug settings
-RUN XDEBUG_INI=`php --ini | grep xdebug | tr -d ,` \
-  && echo "" >> $XDEBUG_INI \
-  && echo "xdebug.coverage_enable=1" >> $XDEBUG_INI \
-  && echo "xdebug.idekey=DOCKER" >> $XDEBUG_INI \
-  && echo "xdebug.remote_autostart=1" >> $XDEBUG_INI \
-  && echo "xdebug.remote_enable=1" >> $XDEBUG_INI \
-  && echo "xdebug.remote_host=dockerhost" >> $XDEBUG_INI \
-  && echo "xdebug.remote_port=9000" >> $XDEBUG_INI
+# install xdebug
+ARG DISABLE_XDEBUG
+RUN if [ "$DISABLE_XDEBUG" = false ]; \
+  then \
+    pecl install xdebug-2.5.5; \
+    docker-php-ext-enable xdebug; \
+    XDEBUG_INI=`php --ini | grep xdebug | tr -d ,` \
+      && echo "" >> $XDEBUG_INI \
+      && echo "xdebug.coverage_enable=1" >> $XDEBUG_INI \
+      && echo "xdebug.idekey=DOCKER" >> $XDEBUG_INI \
+      && echo "xdebug.remote_autostart=1" >> $XDEBUG_INI \
+      && echo "xdebug.remote_enable=1" >> $XDEBUG_INI \
+      && echo "xdebug.remote_host=dockerhost" >> $XDEBUG_INI \
+      && echo "xdebug.remote_port=9000" >> $XDEBUG_INI; \
+  fi;
 
 # allow external access to port 9000 for xdebug
 EXPOSE 9000
