@@ -109,7 +109,15 @@
             },
             displayOverviewOfEntries: function(){
                 this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, {pageNumber: 0, filterParameters: {}});
+            },
+            updateAccountRecords: function(){
+                this.accountsObject.fetch().then(function(notification){
+                    this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, notification);
+                }.bind(this));
             }
+        },
+        created: function(){
+            this.$eventHub.listen(this.$eventHub.EVENT_ACCOUNT_UPDATE, this.updateAccountRecords);
         }
     }
 </script>
