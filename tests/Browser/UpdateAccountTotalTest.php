@@ -199,7 +199,7 @@ class UpdateAccountTotalTest extends DuskTestCase {
         $entries = $this->getApiEntries();
         unset($entries['count']);
         $entries_collection = collect($entries);
-        return $entries_collection->where('account_type_id', $this->_account_type_id)->random();
+        return $entries_collection->where('account_type_id', $this->_account_type_id)->where('confirm', 0)->random();
     }
 
 }
