@@ -472,16 +472,18 @@
                         }
                     });
                 }
-                this.entryObject.save(newEntryData).then(function(notification){
-                    if(!_.isEmpty(notification)){
-                        this.$eventHub.broadcast(
-                            this.$eventHub.EVENT_NOTIFICATION,
-                            {type: notification.type, message: notification.message.replace('%s', this.entryData.id)}
-                        );
-                    }
-                    this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, this.currentPage);
-                    this.closeModal();
-                }.bind(this));
+                this.entryObject.save(newEntryData)
+                    .then(function(notification){
+                        if(!_.isEmpty(notification)){
+                            this.$eventHub.broadcast(
+                                this.$eventHub.EVENT_NOTIFICATION,
+                                {type: notification.type, message: notification.message.replace('%s', this.entryData.id)}
+                            );
+                        }
+                        this.$eventHub.broadcast(this.$eventHub.EVENT_ACCOUNT_UPDATE);
+                        this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, this.currentPage);
+                    }.bind(this))
+                    .finally(this.closeModal.bind(this));
             },
             deleteEntry: function(){
                 this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);

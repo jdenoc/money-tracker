@@ -20,7 +20,6 @@ import Navbar from './components/navbar';
 import Notification from './components/notification';
 import TransferModal from './components/transfer-modal';
 
-import { Accounts } from './accounts';
 import { AccountTypes } from './account-types';
 import { Institutions } from './institutions';
 import { Tags } from './tags';
@@ -40,6 +39,10 @@ Vue.prototype.$eventHub = new Vue({
          * @returns {string}
          */
         EVENT_NOTIFICATION: function(){ return "notification"; },
+        /**
+         * @returns {string}
+         */
+        EVENT_ACCOUNT_UPDATE: function(){ return 'update-accounts'; },
         /**
          * @returns {string}
          */
@@ -72,8 +75,6 @@ Vue.prototype.$eventHub = new Vue({
          * @returns {string}
          */
         EVENT_TRANSFER_MODAL_CLOSE: function(){ return "close-transfer-model"; }
-
-        // TODO: EVENT_UPDATE_ACCOUNTS: update accounts in institutions panel when there is an entry update
     },
     methods: {
         broadcast(event, data = null){
@@ -127,13 +128,11 @@ new Vue({
         displayNotification: function(notification){
             this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, notification);
         },
-
     },
     mounted: function(){
         this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
 
-        let accounts = new Accounts();
-        accounts.fetch().then(this.displayNotification.bind(this));
+        this.$eventHub.broadcast(this.$eventHub.EVENT_ACCOUNT_UPDATE);
 
         let accountTypes = new AccountTypes();
         accountTypes.fetch().then(this.displayNotification.bind(this));

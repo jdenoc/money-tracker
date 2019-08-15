@@ -107,10 +107,6 @@ export class Entries extends ObjectBaseClass {
 //         });
 //     },
 
-//     clearDisplay: function(){
-//         $("#entries-display-pane tbody tr").remove();
-//     },
-
 //     ajaxCompleteProcessing: function(){
 //         $('.is-filtered').toggle(filterModal.active);
 //         entries.display();
@@ -119,12 +115,4 @@ export class Entries extends ObjectBaseClass {
 //         loading.end();
 //     },
 
-//     reload: function(pageNumber, filterParameters){
-//         pageNumber = paginate.processPageNumber(pageNumber);
-//         if(filterParameters){
-//             entries.filter(filterParameters, pageNumber);
-//         } else {
-//             entries.load(pageNumber);
-//         }
-//     }
 // };
