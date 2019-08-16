@@ -206,7 +206,7 @@ git checkout -q tags/$MOST_RECENT_TAG
 # setup composer packages, database tables & environment variables
 cp .env.example .env
 sed "s/APP_ENV=.*/APP_ENV=production/" .env
-composer install --no-dev
+composer install --no-dev -o
 php artisan app:version $MOST_RECENT_TAG
 php artisan app:name "Money Tracker"
 php artisan migrate
@@ -214,6 +214,9 @@ php artisan migrate
 # setup Yarn packages
 yarn install --prod
 yarn run build-prod
+
+# setup cache
+php artisan config:cache
 ```
 
 ***
@@ -238,7 +241,7 @@ php artisan migrate
 
 # New/Updates to composer/yarn packages
 # Note: check update release notes. 
-composer update --no-dev
+composer update --no-dev -o
 yarn install --prod
 
 # Build website from *.vue files
@@ -246,7 +249,6 @@ yarn run build-prod
 
 # reset cache
 php artisan view:clear
-php artisan config:clear
 php artisan config:cache
 
 # take site out of maintenance mode
