@@ -208,6 +208,36 @@ class PaginationTest extends DuskTestCase {
         });
     }
 
+    public function testNextButtonNotVisibleWhenNoEntriesProvidedByFilter(){
+        factory(Entry::class, self::ENTRY_COUNT_TWO)->create($this->entryOverrideAttributes());
+
+        $this->browse(function (Browser $browser){
+            $browser
+                ->visit(new HomePage())
+                ->waitForLoadingToStop()
+                ->openFilterModal()
+                ->with($this->_selector_modal_filter.' '.$this->_selector_modal_head, function(Browser $modal){
+                    $filter_value = date("Y-m-d", strtotime("+10 day"));
+                    $browser_date = $modal->getDateFromLocale($modal->getBrowserLocale(), $filter_value);
+                    $filter_value = $modal->processLocaleDateForTyping($browser_date);
+                    $modal->type($this->_selector_modal_filter_field_start_date, $filter_value);
+
+                    $filter_value = date("Y-m-d");
+                    $browser_date = $modal->getDateFromLocale($modal->getBrowserLocale(), $filter_value);
+                    $filter_value = $modal->processLocaleDateForTyping($browser_date);
+                    $modal->type($this->_selector_modal_filter_field_end_date, $filter_value);
+                })
+                ->with($this->_selector_modal_filter.' '.$this->_selector_modal_foot, function(Browser $modal){
+                    $modal->click($this->_selector_modal_filter_btn_filter);
+                })
+                ->waitForLoadingToStop()
+                ->with($this->_selector_table_body, function(Browser $table){
+                    $table->assertMissing('tr');
+                })
+                ->assertMissing($this->_selector_pagination_btn_next);
+        });
+    }
+
     /**
      * @param Browser $browser
      * @param array $entries

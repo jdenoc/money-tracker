@@ -40,13 +40,13 @@ export class Entries extends ObjectBaseClass {
 
     axiosFailure(error){
         if(error.response){
+            this.count = 0;
+            this.assign = [];
             switch(error.response.status){
                 case 404:
-                    this.assign = [];
                     return {type: SnotifyStyle.info, message: "No entries were found"};
                 case 500:
                 default:
-                    this.assign = [];
                     // return {type: SnotifyStyle.error, message: "An error occurred while attempting to retrieve "+(filterModal.active?"filtered":"")+" entries"};    // TODO: after filtering is in place
                     return {type: SnotifyStyle.error, message: "An error occurred while attempting to retrieve entries"};
             }
