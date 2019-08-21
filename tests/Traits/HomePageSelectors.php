@@ -40,6 +40,7 @@ trait HomePageSelectors {
     private $_selector_modal_entry_field_value = "input#entry-value";
     private $_selector_modal_entry_field_account_type = "select#entry-account-type";
     private $_selector_modal_entry_field_account_type_is_loading = ".select.is-loading select#entry-account-type";
+    private $_selector_modal_entry_meta = "#entry-account-type-meta";
     private $_selector_modal_entry_field_memo = "textarea#entry-memo";
     private $_selector_modal_entry_field_expense = "#entry-expense";
     private $_selector_modal_entry_field_tags_container_is_loading = ".field:nth-child(6) .control.is-loading";

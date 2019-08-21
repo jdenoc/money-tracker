@@ -2,8 +2,9 @@
 
 namespace Tests\Browser;
 
+use App\Account;
+use App\AccountType;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Support\Facades\Artisan;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskTestCase;
 use Laravel\Dusk\Browser;
@@ -222,11 +223,14 @@ class EntryModalNewEntryTest extends DuskTestCase {
                 ->visit(new HomePage())
                 ->waitForLoadingToStop()
                 ->openNewEntryModal()
-                ->with($this->_selector_modal_body, function($entry_modal_body){
+                ->with($this->_selector_modal_body, function(Browser $entry_modal_body){
+                    // currency icon in input#entry-value is "$"
+                    $entry_value_currency = $entry_modal_body->attribute($this->_selector_modal_entry_field_value." + .icon.is-left i", 'class');
+                    $this->assertContains($this->_class_icon_dollar, $entry_value_currency);
+                    // don't see account meta
                     $entry_modal_body
                         ->assertDontSee($this->_label_account_type_meta_account_name)
                         ->assertDontSee($this->_label_account_type_meta_last_digits);
-                        // TODO: currency icon in input#entry-value is "$"
                 })
                 ->waitUntilMissing($this->_selector_modal_entry_field_account_type_is_loading, HomePage::WAIT_SECONDS)
                 ->with($this->_selector_modal_body, function($entry_modal_body) use ($account_type){
@@ -235,17 +239,102 @@ class EntryModalNewEntryTest extends DuskTestCase {
                         ->select($this->_selector_modal_entry_field_account_type, $account_type['id'])
                         ->assertNotSelected($this->_selector_modal_entry_field_account_type, "")
                         ->assertSelected($this->_selector_modal_entry_field_account_type, $account_type['id'])
-                        ->assertSee($account_type['name'])
-                        ->assertSee($this->_label_account_type_meta_account_name)
-                        ->assertSee($this->_label_account_type_meta_last_digits)
-                        // TODO: currency icon in input#entry-value is updated
+                        ->assertSeeIn($this->_selector_modal_entry_field_account_type, $account_type['name'])
+                        ->assertVisible($this->_selector_modal_entry_meta)
+                        ->assertSeeIn($this->_selector_modal_entry_meta, $this->_label_account_type_meta_account_name)
+                        ->assertSeeIn($this->_selector_modal_entry_meta, $this->_label_account_type_meta_last_digits)
                         ->select($this->_selector_modal_entry_field_account_type, "")
-                        ->assertDontSee($this->_label_account_type_meta_account_name)
-                        ->assertDontSee($this->_label_account_type_meta_last_digits);
-                        // TODO: currency icon in input#entry-value is "$"
+                        ->assertMissing($this->_selector_modal_entry_meta)
+                        ->assertDontSeeIn($this->_selector_modal_entry_meta, $this->_label_account_type_meta_account_name)
+                        ->assertDontSeeIn($this->_selector_modal_entry_meta, $this->_label_account_type_meta_last_digits);
                 });
-
         });
+    }
+
+    public function testSelectingDisabledAccountTypeMetaDataIsGrey(){
+        // this test relies on a consistent database to test with
+        // we can't use a dataProvider as the data is wiped by the time the test(s) are run
+        $disabled_account = Account::where('disabled', true)->get()->random();
+        $account_types = AccountType::all();
+
+        $disabled_account_types = [
+            'disabled-account'=>$account_types->where('account_id', $disabled_account['id'])->random(),
+            'disabled-account-type'=>$account_types->where('disabled', true)->random()
+        ];
+
+        foreach($disabled_account_types as $account_type){
+            $this->browse(function(Browser $browser) use ($account_type){
+                $browser
+                    ->visit(new HomePage())
+                    ->waitForLoadingToStop()
+                    ->openNewEntryModal()
+                    ->waitUntilMissing($this->_selector_modal_entry_field_account_type_is_loading, HomePage::WAIT_SECONDS)
+                    ->with($this->_selector_modal_body, function(Browser $entry_modal_body) use ($account_type){
+                        $entry_modal_body
+                            ->assertVisible($this->_selector_modal_entry_field_account_type)
+                            ->select($this->_selector_modal_entry_field_account_type, $account_type['id'])
+                            ->assertVisible($this->_selector_modal_entry_meta);
+
+                        $meta_text_color = $entry_modal_body->attribute($this->_selector_modal_entry_meta, 'class');
+                        $this->assertNotContains('has-text-info', $meta_text_color);
+                        $this->assertContains('has-text-grey-light', $meta_text_color);
+
+                        $entry_modal_body
+                            ->select($this->_selector_modal_entry_field_account_type, '')
+                            ->assertMissing($this->_selector_modal_entry_meta);
+                    });
+            });
+        }
+    }
+
+    public function testSelectingAccountTypeChangesCurrency(){
+        // this test relies on a consistent database to test with
+        // we can't use a dataProvider as the data is wiped by the time the test(s) are run
+        $accounts = Account::all()->unique('currency');
+        foreach($accounts as $account){
+            // See resources/assets/js/currency.js for list of supported currencies
+            switch($account['currency']){
+                case 'EUR':
+                    $currency_class = $this->_class_icon_euro;
+                    break;
+                case 'GBP':
+                    $currency_class = $this->_class_icon_pound;
+                    break;
+                case 'CAD':
+                case 'USD':
+                default:
+                    $currency_class = $this->_class_icon_dollar;
+                    break;
+            }
+
+            $account_type = AccountType::where('account_id', $account['id'])->get()->random();
+
+            $this->browse(function(Browser $browser) use ($account_type, $currency_class){
+                $browser
+                    ->visit(new HomePage())
+                    ->waitForLoadingToStop()
+                    ->openNewEntryModal()
+                    ->waitUntilMissing($this->_selector_modal_entry_field_account_type_is_loading, HomePage::WAIT_SECONDS)
+                    ->with($this->_selector_modal_body, function(Browser $entry_modal_body) use ($account_type, $currency_class){
+                        // currency icon in input#entry-value is "$" by default
+                        $entry_value_currency = $entry_modal_body->attribute($this->_selector_modal_entry_field_value." + .icon.is-left i", 'class');
+                        $this->assertContains($this->_class_icon_dollar, $entry_value_currency);
+
+                        $entry_modal_body
+                            ->assertVisible($this->_selector_modal_entry_field_account_type)
+                            ->select($this->_selector_modal_entry_field_account_type, $account_type['id']);
+
+                        $entry_value_currency = $entry_modal_body->attribute($this->_selector_modal_entry_field_value." + .icon.is-left i", 'class');
+                        $this->assertContains($currency_class, $entry_value_currency);
+
+                        // revert account-type select field to default state
+                        $entry_modal_body->select($this->_selector_modal_entry_field_account_type, '');
+                        $entry_value_currency = $entry_modal_body->attribute($this->_selector_modal_entry_field_value." + .icon.is-left i", 'class');
+                        $this->assertContains($this->_class_icon_dollar, $entry_value_currency);
+                    });
+            });
+
+        }
     }
 
     public function testClickingExpenseIncomeSwitch(){

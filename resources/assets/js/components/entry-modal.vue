@@ -61,7 +61,7 @@
                                 ></option>
                             </select>
                         </div></div>
-                        <div class="help has-text-info" v-bind:class="{'is-hidden': !hasAccountTypeBeenSelected}">
+                        <div id="entry-account-type-meta" class="help" v-bind:class="{'is-hidden': !hasAccountTypeBeenSelected, 'has-text-info': isAccountEnabled, 'has-text-grey-light': !isAccountEnabled}">
                             <p>
                                 <span class="has-text-weight-semibold has-padding-right">Account Name:</span>
                                 <span id="entry-account-type-meta-account-name" v-text="accountTypeMeta.accountName"></span>
@@ -207,6 +207,7 @@
                     accountName: "",
                     currencyClass:"fa-dollar-sign",
                     lastDigits: "",
+                    isEnabled: true
                 },
 
                 isDeletable: false,
@@ -254,6 +255,9 @@
             },
             hasAccountTypeBeenSelected: function(){
                 return this.entryData.account_type_id !== '';
+            },
+            isAccountEnabled: function(){
+                return this.accountTypeMeta.isEnabled;
             },
             getAttachmentUploadUrl: function(){
                 return this.dropzoneOptions.url;
@@ -511,6 +515,7 @@
                 this.accountTypeMeta.accountName = account.name;
                 let accountType = this.accountTypesObject.find(this.entryData.account_type_id);
                 this.accountTypeMeta.lastDigits = accountType.last_digits;
+                this.accountTypeMeta.isEnabled = !accountType.disabled && !account.disabled;
 
                 switch(account.currency){
                     case this.currency.euro.label:
