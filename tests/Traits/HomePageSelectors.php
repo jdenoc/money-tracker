@@ -40,6 +40,7 @@ trait HomePageSelectors {
     private $_selector_modal_entry_field_value = "input#entry-value";
     private $_selector_modal_entry_field_account_type = "select#entry-account-type";
     private $_selector_modal_entry_field_account_type_is_loading = ".select.is-loading select#entry-account-type";
+    private $_selector_modal_entry_meta = "#entry-account-type-meta";
     private $_selector_modal_entry_field_memo = "textarea#entry-memo";
     private $_selector_modal_entry_field_expense = "#entry-expense";
     private $_selector_modal_entry_field_tags_container_is_loading = ".field:nth-child(6) .control.is-loading";
@@ -65,10 +66,12 @@ trait HomePageSelectors {
     private $_selector_modal_transfer_field_value = "input#transfer-value";
     private $_selector_modal_transfer_field_from = "select#from-account-type";
     private $_selector_modal_transfer_field_from_is_loading = ".select.is-loading select#from-account-type";
+    private $_selector_modal_transfer_meta_from = "#transfer-from-account-type-meta";
     private $_selector_modal_transfer_meta_account_name_from = "#from-account-type-meta-account-name";
     private $_selector_modal_transfer_meta_last_digits_from = "#from-account-type-meta-last-digits";
     private $_selector_modal_transfer_field_to = "select#to-account-type";
     private $_selector_modal_transfer_field_to_is_loading = ".select.is-loading select#to-account-type";
+    private $_selector_modal_transfer_meta_to = "#transfer-to-account-type-meta";
     private $_selector_modal_transfer_meta_account_name_to = "#to-account-type-meta-account-name";
     private $_selector_modal_transfer_meta_last_digits_to = "#to-account-type-meta-last-digits";
     private $_selector_modal_transfer_field_memo = "#transfer-memo";

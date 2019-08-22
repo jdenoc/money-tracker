@@ -7,6 +7,7 @@ use PHPUnit\Framework\Assert as PHPUnit;
 
 class HomePage extends Page {
 
+    const WAIT_SECOND = 1;
     const WAIT_SECONDS = 10;
     const WAIT_SECONDS_LONG = 30;
 
