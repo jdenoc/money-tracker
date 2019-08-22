@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+use App\Account;
+use App\AccountType;
 use App\Http\Controllers\Api\EntryController;
 use Facebook\WebDriver\WebDriverBy;
 use Faker\Factory as FakerFactory;
@@ -24,6 +26,11 @@ class TransferModalTest extends DuskTestCase {
 
     use DatabaseMigrations;
     use HomePageSelectors;
+
+    private $method_to = 'to';
+    private $method_from = 'from';
+    private $method_account = 'account';
+    private $method_account_type = 'account-type';
 
     public function testTransferModalNotVisibleByDefault(){
         $this->browse(function(Browser $browser){
@@ -64,7 +71,7 @@ class TransferModalTest extends DuskTestCase {
                 ->visit(new HomePage())
                 ->waitForLoadingToStop()
                 ->openTransferModal()
-                ->with($this->_selector_modal_transfer.' '.$this->_selector_modal_body, function($modal){
+                ->with($this->_selector_modal_transfer.' '.$this->_selector_modal_body, function(Browser $modal){
                     $modal
                         ->assertSee("Date:")
                         ->assertVisible($this->_selector_modal_transfer_field_date)
@@ -201,17 +208,19 @@ class TransferModalTest extends DuskTestCase {
                 ->waitUntilMissing($this->_selector_modal_transfer_field_from_is_loading, HomePage::WAIT_SECONDS)
                 ->waitUntilMissing($this->_selector_modal_transfer_field_to_is_loading, HomePage::WAIT_SECONDS)
 
-                ->with($this->_selector_modal_transfer, function($modal) use ($account_types){
+                ->with($this->_selector_modal_transfer, function(Browser $modal) use ($account_types){
                     $modal
                         ->select($this->_selector_modal_transfer_field_from, $account_types[0]['id'])
+                        ->assertVisible($this->_selector_modal_transfer_meta_from)
                         ->assertVisible($this->_selector_modal_transfer_meta_account_name_from)
                         ->assertVisible($this->_selector_modal_transfer_meta_last_digits_from);
                 })
                 ->assertTransferModalSaveButtonIsDisabled()
 
-                ->with($this->_selector_modal_transfer, function($modal) use ($account_types){
+                ->with($this->_selector_modal_transfer, function(Browser $modal) use ($account_types){
                     $modal
                         ->select($this->_selector_modal_transfer_field_to, $account_types[1]['id'])
+                        ->assertVisible($this->_selector_modal_transfer_meta_to)
                         ->assertVisible($this->_selector_modal_transfer_meta_account_name_to)
                         ->assertVisible($this->_selector_modal_transfer_meta_last_digits_to);
                 })
@@ -274,6 +283,70 @@ class TransferModalTest extends DuskTestCase {
                         ->assertDontSee($this->_label_account_type_meta_last_digits);
                 })
                 ->assertTransferModalSaveButtonIsDisabled();
+        });
+    }
+
+    public function providerSelectingDisabledTransferAccountTypeMetaDataIsGrey(){
+        // [$transfer_field, $account_type_method]
+        return [
+            [$this->method_to, $this->method_account],
+            [$this->method_to, $this->method_account_type],
+            [$this->method_from, $this->method_account],
+            [$this->method_from, $this->method_account_type],
+        ];
+    }
+
+    /**
+     * @dataProvider providerSelectingDisabledTransferAccountTypeMetaDataIsGrey
+     * @param string $transfer_field
+     * @param string $account_type_method
+     *
+     * @throws \Throwable
+     */
+    public function testSelectingDisabledTransferAccountTypeMetaDataIsGrey($transfer_field, $account_type_method){
+        $account_types = AccountType::all();
+        $disabled_account_type = [];
+        if($account_type_method == $this->method_account){
+            $disabled_account = Account::where('disabled', true)->get()->random();
+            $disabled_account_type = $account_types->where('account_id', $disabled_account['id'])->random();
+        } else if($account_type_method == $this->method_account_type) {
+            $disabled_account_type = $account_types->where('disabled', true)->random();
+        } else {
+            $this->fail("Unknown account-type method provided");
+        }
+
+        $this->browse(function(Browser $browser) use ($disabled_account_type, $transfer_field){
+            $browser
+                ->visit(new HomePage())
+                ->waitForLoadingToStop()
+                ->openTransferModal()
+                ->waitUntilMissing($this->_selector_modal_entry_field_account_type_is_loading, HomePage::WAIT_SECONDS)
+                ->with($this->_selector_modal_body, function(Browser $entry_modal_body) use ($disabled_account_type, $transfer_field){
+                    $selector_field = '';
+                    $selector_meta = '';
+                    if($transfer_field == $this->method_to){
+                        $selector_field = $this->_selector_modal_transfer_field_to;
+                        $selector_meta = $this->_selector_modal_transfer_meta_to;
+                    } else if($transfer_field == $this->method_from){
+                        $selector_field = $this->_selector_modal_transfer_field_from;
+                        $selector_meta = $this->_selector_modal_transfer_meta_from;
+                    } else {
+                        $this->fail("Unknown transfer field provided");
+                    }
+
+                    $entry_modal_body
+                        ->assertVisible($selector_field)
+                        ->select($selector_field, $disabled_account_type['id'])
+                        ->assertVisible($selector_meta);
+
+                    $meta_text_color = $entry_modal_body->attribute($selector_meta, 'class');
+                    $this->assertNotContains('has-text-info', $meta_text_color);
+                    $this->assertContains('has-text-grey-light', $meta_text_color);
+
+                    $entry_modal_body
+                        ->select($selector_field, '')
+                        ->assertMissing($selector_meta);
+                });
         });
     }
 

@@ -47,7 +47,7 @@
                                 <option v-bind:value="accountTypeMeta.externalAccountTypeId">[External account]</option>
                             </select>
                         </div></div>
-                        <div class="help has-text-info" v-bind:class="{'is-hidden': !canShowFromAccountTypeMeta}">
+                        <div id="transfer-from-account-type-meta"  class="help" v-bind:class="{'is-hidden': !canShowFromAccountTypeMeta, 'has-text-info': isAccountFromEnabled, 'has-text-grey-light': !isAccountFromEnabled}">
                             <p>
                                 <span class="has-text-weight-semibold has-padding-right">Account Name:</span>
                                 <span id="from-account-type-meta-account-name" v-text="accountTypeMeta.from.accountName"></span>
@@ -79,7 +79,7 @@
                                 <option v-bind:value="accountTypeMeta.externalAccountTypeId">[External account]</option>
                             </select>
                         </div></div>
-                        <div class="help has-text-info" v-bind:class="{'is-hidden': !canShowToAccountTypeMeta}">
+                        <div id="transfer-to-account-type-meta" class="help" v-bind:class="{'is-hidden': !canShowToAccountTypeMeta, 'has-text-info': isAccountToEnabled, 'has-text-grey-light': !isAccountToEnabled}">
                             <p>
                                 <span class="has-text-weight-semibold has-padding-right">Account Name:</span>
                                 <span id="to-account-type-meta-account-name" v-text="accountTypeMeta.to.accountName"></span>
@@ -172,14 +172,17 @@
                     default: {
                         accountName: "",
                         lastDigits: "",
+                        isEnabled: true
                     },
                     from: {
                         accountName: "",
                         lastDigits: "",
+                        isEnabled: true
                     },
                     to: {
                         accountName: "",
                         lastDigits: "",
+                        isEnabled: true
                     },
                     externalAccountTypeId: 0
                 },
@@ -218,6 +221,12 @@
             },
             canShowToAccountTypeMeta: function(){
                 return this.canShowAccountTypeMeta(this.transferData.to_account_type_id);
+            },
+            isAccountToEnabled: function(){
+                return this.accountTypeMeta.to.isEnabled;
+            },
+            isAccountFromEnabled: function(){
+                return this.accountTypeMeta.from.isEnabled;
             },
             currentPage: function(){
                 return Store.getters.currentPage;
@@ -381,6 +390,7 @@
                 this.accountTypeMeta[accountTypeSelect].accountName = account.name;
                 let accountType = this.accountTypesObject.find(this.transferData[accountTypeSelect+'_account_type_id']);
                 this.accountTypeMeta[accountTypeSelect].lastDigits = accountType.last_digits;
+                this.accountTypeMeta[accountTypeSelect].isEnabled = !account.disabled && !accountType.disabled;
             },
             resetData: function(){
                 this.dropzoneRef.removeAllFiles();
