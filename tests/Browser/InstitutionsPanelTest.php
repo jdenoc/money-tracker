@@ -172,7 +172,9 @@ class InstitutionsPanelTest extends DuskTestCase {
         if($has_tooltip){
             // account-types tooltip appears to right
             $account_node_tooltip_id = $account_node->attribute('', 'aria-describedby');    // get the tooltip element id
-            $account_node->assertVisible('#'.$account_node_tooltip_id);
+            $account_node
+                ->pause(HomePage::WAIT_SECOND*500) // 0.5 seconds
+                ->assertVisible('#'.$account_node_tooltip_id);
             $account_types_tooltip_text = $account_node->text('#'.$account_node_tooltip_id);
             foreach($account_types_collection as $account_account_type){
                 $account_type_record_tooltip_text = $account_account_type['name']." (".$account_account_type['last_digits'].")";
