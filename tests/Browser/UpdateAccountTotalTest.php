@@ -159,6 +159,34 @@ class UpdateAccountTotalTest extends DuskTestCase {
         });
     }
 
+    public function testOpenExistingEntryAndDeleteIt(){
+        $this->browse(function(Browser $browser){
+            $browser->visit(new HomePage())->waitForLoadingToStop();
+
+            // take note of account total
+            $this->assertAccountTotal($browser, $this->_institution_id, $this->_account['id'], $this->_account['total'], true);
+
+            // delete an existing entry
+            $entry = $this->getEntry();
+            $entry_selector = "#entry-".$entry['id'];
+
+            $browser
+                ->openExistingEntryModal($entry_selector)
+                ->with($this->_selector_modal_entry, function($entry_modal){
+                    $entry_modal
+                        ->assertVisible($this->_selector_modal_entry_btn_delete)
+                        ->click($this->_selector_modal_entry_btn_delete);
+                })
+                ->waitForLoadingToStop()
+                ->waitUntilMissing($this->_selector_modal_entry, HomePage::WAIT_SECONDS)
+            ;
+
+            // confirm account total updated
+            $new_account_total = $this->_account['total'] - ($entry['expense'] == 1 ?-1:1)*$entry['entry_value'];
+            $this->assertAccountTotal($browser, $this->_institution_id, $this->_account['id'], $new_account_total);
+        });
+    }
+
     /**
      * @param Browser $browser
      * @param int $institution_id
