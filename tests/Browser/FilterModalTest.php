@@ -7,7 +7,6 @@ use App\AccountType;
 use Facebook\WebDriver\WebDriverBy;
 use Faker\Factory as FakerFactory;
 use Faker\Generator;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskTestCase;

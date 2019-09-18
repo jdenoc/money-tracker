@@ -16,7 +16,7 @@ use Tests\Traits\HomePageSelectors;
  *
  * @package Tests\Browser
  *
- * @group entry-modal
+ * @group navigation
  * @group modal
  * @group home
  */

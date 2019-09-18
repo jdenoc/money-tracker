@@ -15,7 +15,6 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- TODO: update entry transfers are a thing -->
                 <entries-table-entry-row
                     v-for="entry in listOfEntries"
                     v-bind:key="entry.id"
