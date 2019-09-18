@@ -67,14 +67,20 @@ class UiSampleDatabaseSeeder extends Seeder {
                 $this->attachTagToEntry($faker, $tag_ids, $entry);
             }
         }
-        // just in case we missed an entry necessary for testing, we're going to assign tags to a random confirmed & unconfirmed entries
-        $this->attachTagToEntry($faker, $tag_ids, $entries->where('confirm', 0)->random());
-        $this->attachTagToEntry($faker, $tag_ids, $entries->where('confirm', 1)->random());
-        $this->command->line(self::OUTPUT_PREFIX."Randomly assigned tags to entries");
 
         // no point in selecting disabled entries. they're not going to be tested.
-        $entry_income_ids = $entries->where('expense', 0)->where('disabled', 0)->pluck('id')->toArray();
-        $entry_expense_ids = $entries->where('expense', 1)->where('disabled', 0)->pluck('id')->toArray();
+        $entries_not_disabled = $entries->where('disabled', 0);
+        $entries_confirmed = $entries_not_disabled->where('confirm', 1);
+        $entries_not_confirmed = $entries_not_disabled->where('confirm', 0);
+        $entry_income_ids = $entries_not_disabled->where('expense', 0)->pluck('id')->toArray();
+        $entry_expense_ids = $entries_not_disabled->where('expense', 1)->pluck('id')->toArray();
+
+        // just in case we missed an entry necessary for testing, we're going to assign tags to random confirmed & unconfirmed entries
+        $this->attachTagToEntry($faker, $tag_ids, $entries_not_confirmed->where('expense', 1)->random());
+        $this->attachTagToEntry($faker, $tag_ids, $entries_not_confirmed->where('expense', 0)->random());
+        $this->attachTagToEntry($faker, $tag_ids, $entries_confirmed->where('expense', 1)->random());
+        $this->attachTagToEntry($faker, $tag_ids, $entries_confirmed->where('expense', 0)->random());
+        $this->command->line(self::OUTPUT_PREFIX."Randomly assigned tags to entries");
 
         // randomly select some entries and mark them as transfers
         $transfer_to_entry_ids = $faker->randomElements($entry_income_ids, self::COUNT_ENTRY);
@@ -101,28 +107,28 @@ class UiSampleDatabaseSeeder extends Seeder {
         // income confirmed
         $this->assignAttachmentToEntry(
             $faker,
-            $entries->where('expense', 0)->where('disabled', 0)->where('confirm', 1)->pluck('id')->toArray(),
+            $entries_confirmed->where('expense', 0)->pluck('id')->toArray(),
             $transfer_to_entry_ids,
             $entries
         );
         // income unconfirmed
         $this->assignAttachmentToEntry(
             $faker,
-            $entries->where('expense', 0)->where('disabled', 0)->where('confirm', 0)->pluck('id')->toArray(),
+            $entries_not_confirmed->where('expense', 0)->pluck('id')->toArray(),
             $transfer_to_entry_ids,
             $entries
         );
         // expense confirmed
         $this->assignAttachmentToEntry(
             $faker,
-            $entries->where('expense', 1)->where('disabled', 0)->where('confirm', 1)->pluck('id')->toArray(),
+            $entries_confirmed->where('expense', 1)->pluck('id')->toArray(),
             $transfer_from_entry_ids,
             $entries
         );
         // expense unconfirmed
         $this->assignAttachmentToEntry(
             $faker,
-            $entries->where('expense', 1)->where('disabled', 0)->where('confirm', 0)->pluck('id')->toArray(),
+            $entries_not_confirmed->where('expense', 1)->pluck('id')->toArray(),
             $transfer_from_entry_ids,
             $entries
         );

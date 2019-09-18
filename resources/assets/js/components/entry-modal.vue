@@ -502,6 +502,7 @@
                         }
                         this.closeModal();
                         if(deleteResult.deleted){
+                            this.$eventHub.broadcast(this.$eventHub.EVENT_ACCOUNT_UPDATE);
                             this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, this.currentPage);
                             // don't need to broadcast an event to hide the loading modal here
                             // already taken care of at the end of the entry-table update event process

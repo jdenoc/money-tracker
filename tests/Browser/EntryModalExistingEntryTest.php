@@ -594,9 +594,9 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
                 ->with($this->_selector_modal_foot, function($modal_foot){
                     $modal_foot
-                            ->assertMissing($this->_selector_modal_entry_btn_delete)   // delete button
-                            ->assertMissing($this->_selector_modal_entry_btn_lock)     // lock/unlock button
-                            ->assertVisible($this->_selector_modal_entry_btn_save);    // save button
+                        ->assertMissing($this->_selector_modal_entry_btn_delete)   // delete button
+                        ->assertMissing($this->_selector_modal_entry_btn_lock)     // lock/unlock button
+                        ->assertVisible($this->_selector_modal_entry_btn_save);    // save button
                 })
                 ->assertEntryModalSaveButtonIsDisabled();
         });
