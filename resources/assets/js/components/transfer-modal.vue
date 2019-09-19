@@ -381,6 +381,7 @@
                             {type: notification.type, message: notification.message}
                         );
                     }
+                    this.$eventHub.broadcast(this.$eventHub.EVENT_ACCOUNT_UPDATE);
                     this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, this.currentPage);
                     this.closeModal();
                 }.bind(this));
