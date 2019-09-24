@@ -36,6 +36,7 @@ trait HomePageSelectors {
     private $_selector_modal_entry = "@entry-modal";  // see Browser\Pages\HomePage.php
     private $_selector_modal_entry_btn_confirmed = "#entry-confirm";
     private $_selector_modal_entry_btn_confirmed_label = "#entry-confirm + label";
+    private $_selector_modal_entry_btn_transfer = "#entry-transfer-btn";
     private $_selector_modal_entry_field_entry_id = "#entry-id";
     private $_selector_modal_entry_field_date="input#entry-date";
     private $_selector_modal_entry_field_value = "input#entry-value";
