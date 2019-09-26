@@ -18,6 +18,7 @@ trait HomePageSelectors {
     private $_selector_modal_dropzone_upload_thumbnail = ".dz-complete:last-child";
     private $_selector_modal_dropzone_progress = ".dz-progress";
     private $_selector_modal_dropzone_error_mark = ".dz-error-mark";
+    private $_selector_modal_dropzone_success_mark = ".dz-success-mark";
     private $_selector_modal_dropzone_error_message = ".dz-error-message";
     private $_selector_modal_dropzone_label_filename = '.dz-filename';
     private $_selector_modal_dropzone_btn_remove = ".dz-remove";

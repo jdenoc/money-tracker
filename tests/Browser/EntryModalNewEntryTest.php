@@ -439,7 +439,8 @@ class EntryModalNewEntryTest extends DuskTestCase {
                                 ->waitUntilMissing($this->_selector_modal_dropzone_progress, HomePage::WAIT_SECONDS)
                                 ->assertMissing($this->_selector_modal_dropzone_error_mark)
                                 ->mouseover("") // hover over current element
-                                ->assertSeeIn('.dz-filename', basename($upload_file_path))
+                                ->waitUntilMissing($this->_selector_modal_dropzone_success_mark, HomePage::WAIT_SECONDS)
+                                ->assertSeeIn($this->_selector_modal_dropzone_label_filename, basename($upload_file_path))
                                 ->assertMissing($this->_selector_modal_dropzone_error_message)
                                 ->assertVisible($this->_selector_modal_dropzone_btn_remove)
                                 ->assertSeeIn($this->_selector_modal_dropzone_btn_remove, $this->_label_btn_dropzone_remove_file)
