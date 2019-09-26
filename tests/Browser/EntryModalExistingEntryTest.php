@@ -2,6 +2,7 @@
 
 namespace Tests\Browser;
 
+use App\Http\Controllers\Api\EntryController;
 use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\Browser\Pages\HomePage;
@@ -32,6 +33,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     private $_class_is_transfer = "is-transfer";
     private $_class_has_tags = "has-tags";
     private $_class_existing_attachment = "existing-attachment";
+    private $_modal_id_prefix = "#entry-";
 
     public function providerUnconfirmedEntry(){
         return [
@@ -535,7 +537,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         $this->browse(function(Browser $browser){
             $entry_selector = $this->randomEntrySelector(['is_transfer'=>true]);
 
-            $entry_id = str_replace("#entry-", "", $entry_selector);
+            $entry_id = str_replace($this->_modal_id_prefix, "", $entry_selector);
             $entry_data = $this->getApiEntry($entry_id);
             $transfer_entry_data = $this->getApiEntry($entry_data['transfer_entry_id']);
             $this->assertEquals($entry_id, $entry_data['id']);
@@ -552,9 +554,9 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                         $this->assertNotEmpty($modal_entry_id);
                         $this->assertEquals($entry_id, $modal_entry_id);
 
-                        $modal_head
-                            ->assertVisible($this->_selector_modal_entry_btn_transfer)
-                            ->click($this->_selector_modal_entry_btn_transfer);
+                        $modal_head->assertVisible($this->_selector_modal_entry_btn_transfer);
+                        $this->assertNotEquals("true", $modal_head->attribute($this->_selector_modal_entry_btn_transfer, "disabled"));
+                        $modal_head->click($this->_selector_modal_entry_btn_transfer);
                     });
                 })
                 ->waitForLoadingToStop()
@@ -605,6 +607,32 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                                 ->assertDontSee($this->_label_entry_new)
                                 ->assertVisible($this->_selector_modal_entry_btn_transfer);
                         });
+                });
+        });
+    }
+
+    public function testExistingExternalTransferEntryHasButtonButIsDisabled(){
+        $this->browse(function(Browser $browser){
+            do{
+                $entry_selector = $this->randomEntrySelector(['is_transfer'=>true]);
+                $entry_id = str_replace($this->_modal_id_prefix, "", $entry_selector);
+                $entry_data = $this->getApiEntry($entry_id);
+            } while($entry_data['transfer_entry_id'] !== EntryController::TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID);
+            $this->assertEquals($entry_id, $entry_data['id']);
+            $entry_selector .= '.'.$this->_class_is_transfer;
+
+            $browser->visit(new HomePage())
+                ->waitForLoadingToStop()
+                ->openExistingEntryModal($entry_selector)
+                ->with($this->_selector_modal_entry, function(Browser $entry_modal) use ($entry_id){
+                    $entry_modal->with($this->_selector_modal_head, function(Browser $modal_head) use ($entry_id){
+                        $modal_entry_id = $modal_head->value($this->_selector_modal_entry_field_entry_id);
+                        $this->assertNotEmpty($modal_entry_id);
+                        $this->assertEquals($entry_id, $modal_entry_id);
+
+                        $modal_head->assertVisible($this->_selector_modal_entry_btn_transfer);
+                        $this->assertEquals("true", $modal_head->attribute($this->_selector_modal_entry_btn_transfer, "disabled"));
+                    });
                 });
         });
     }
@@ -713,7 +741,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
             }
         }
         $entry_id = $entries_collection->random(1)->pluck('id')->first();
-        return "#entry-".$entry_id;
+        return $this->_modal_id_prefix.$entry_id;
     }
 
 }

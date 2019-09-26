@@ -7,6 +7,7 @@
                     Entry: <span v-if="entryData.id" v-text="entryData.id"></span><span v-else>new</span>
                     <button type="button" id="entry-transfer-btn" class="button is-small is-outlined"
                         v-if="isTransfer"
+                        v-bind:disabled="isExternalTransfer"
                         v-on:click="primeDataForModal(entryData.transfer_entry_id)"
                     >
                         <span class="icon is-small"><i class="fas fa-exchange-alt"></i></span>
@@ -261,6 +262,9 @@
             },
             isTransfer: function(){
                 return _.isNumber(this.entryData.transfer_entry_id);
+            },
+            isExternalTransfer: function(){
+                return _.isEqual(this.entryData.transfer_entry_id, 0);
             },
             areAccountTypesSet: function(){
                 return this.listAccountTypes.length > 0;
