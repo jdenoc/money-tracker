@@ -103,22 +103,23 @@ new Vue({
     computed:{
         keymap: function(){
             return {
+                // FIXME: hotkey already used for something else on windows
                 'ctrl+esc': function(){ // close modal
                     switch(Store.getters.currentModal){
                         case Store.getters.STORE_MODAL_ENTRY:
-                            console.log('entry:ctrl+esc');
+                            console.debug('entry:ctrl+esc');
                             this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_MODAL_CLOSE);
                             break;
                         case Store.getters.STORE_MODAL_TRANSFER:
-                            console.log('transfer:ctrl+esc');
+                            console.debug('transfer:ctrl+esc');
                             this.$eventHub.broadcast(this.$eventHub.EVENT_TRANSFER_MODAL_CLOSE);
                             break;
                         case Store.getters.STORE_MODAL_FILTER:
-                            console.log('filter:ctrl+esc');
+                            console.debug('filter:ctrl+esc');
                             this.$eventHub.broadcast(this.$eventHub.EVENT_FILTER_MODAL_CLOSE);
                             break;
                         default:
-                            console.log("ctrl+esc");
+                            console.debug("ctrl+esc");
                     }
                 }.bind(this)
             };

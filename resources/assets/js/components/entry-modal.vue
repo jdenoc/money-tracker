@@ -3,7 +3,16 @@
         <div class="modal-background"></div>
         <div class="modal-card">
             <header class="modal-card-head">
-                <p class="modal-card-title">Entry: <span v-if="entryData.id" v-text="entryData.id"></span><span v-else>new</span></p>
+                <p class="modal-card-title">
+                    Entry: <span v-if="entryData.id" v-text="entryData.id"></span><span v-else>new</span>
+                    <button type="button" id="entry-transfer-btn" class="button is-small is-outlined"
+                        v-if="isTransfer"
+                        v-bind:disabled="isExternalTransfer"
+                        v-on:click="primeDataForModal(entryData.transfer_entry_id)"
+                    >
+                        <span class="icon is-small"><i class="fas fa-exchange-alt"></i></span>
+                    </button>
+                </p>
                 <input type="hidden" name="entry-id" id="entry-id" v-model="entryData.id" />
 
                 <div class="control">
@@ -224,6 +233,7 @@
                     memo: "",
                     expense: true,
                     confirm: false,
+                    transfer_entry_id: null,
                     tags: [],
                     attachments: []
                 },
@@ -249,6 +259,12 @@
             },
             isConfirmed: function(){
                 return this.entryData.confirm && this.entryData.id;
+            },
+            isTransfer: function(){
+                return _.isNumber(this.entryData.transfer_entry_id);
+            },
+            isExternalTransfer: function(){
+                return _.isEqual(this.entryData.transfer_entry_id, 0);
             },
             areAccountTypesSet: function(){
                 return this.listAccountTypes.length > 0;
