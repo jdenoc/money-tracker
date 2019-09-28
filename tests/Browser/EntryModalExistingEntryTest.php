@@ -535,10 +535,11 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     public function testExistingTransferEntryHasEntryButton(){
         $this->browse(function(Browser $browser){
-            $entry_selector = $this->randomEntrySelector(['is_transfer'=>true]);
-
-            $entry_id = str_replace($this->_modal_id_prefix, "", $entry_selector);
-            $entry_data = $this->getApiEntry($entry_id);
+            do{
+                $entry_selector = $this->randomEntrySelector(['is_transfer'=>true]);
+                $entry_id = str_replace($this->_modal_id_prefix, "", $entry_selector);
+                $entry_data = $this->getApiEntry($entry_id);
+            }while($entry_data['transfer_entry_id'] === 0);
             $transfer_entry_data = $this->getApiEntry($entry_data['transfer_entry_id']);
             $this->assertEquals($entry_id, $entry_data['id']);
             $this->assertEquals($entry_data['transfer_entry_id'], $transfer_entry_data['id']);
@@ -639,7 +640,37 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     // TODO: write test for changing tags input values
 
-    // TODO: write test to add attachment
+    public function testUploadAttachmentToExistingEntry(){
+        $this->browse(function(Browser $browser){
+            $entry_selector = $this->randomEntrySelector();
+
+            $browser
+                ->visit(new HomePage())
+                ->waitForLoadingToStop()
+                ->openExistingEntryModal($entry_selector)
+                ->with($this->_selector_modal_body, function($entry_modal_body){
+                    $upload_file_path = storage_path($this->getRandomTestFileStoragePath());
+                    $this->assertFileExists($upload_file_path);
+                    $entry_modal_body
+                        ->assertVisible($this->_selector_modal_entry_field_upload)
+                        ->attach($this->_selector_modal_entry_dropzone_hidden_file_input, $upload_file_path)
+                        ->waitFor($this->_selector_modal_entry_dropzone_upload_thumbnail, HomePage::WAIT_SECONDS)
+                        ->with($this->_selector_modal_entry_dropzone_upload_thumbnail, function(Browser $upload_thumbnail) use ($upload_file_path){
+                            $upload_thumbnail
+                                ->waitUntilMissing($this->_selector_modal_dropzone_progress, HomePage::WAIT_SECONDS)
+                                ->assertMissing($this->_selector_modal_dropzone_error_mark)
+                                ->mouseover("") // hover over current element
+                                ->waitUntilMissing($this->_selector_modal_dropzone_success_mark, HomePage::WAIT_SECONDS)
+                                ->assertSeeIn($this->_selector_modal_dropzone_label_filename, basename($upload_file_path))
+                                ->assertMissing($this->_selector_modal_dropzone_error_message)
+                                ->assertVisible($this->_selector_modal_dropzone_btn_remove)
+                                ->assertSeeIn($this->_selector_modal_dropzone_btn_remove, $this->_label_btn_dropzone_remove_file)
+                                ->click($this->_selector_modal_dropzone_btn_remove);
+                        })
+                        ->assertMissing($this->_selector_modal_entry_dropzone_upload_thumbnail);
+                });
+        });
+    }
 
     public function testOpenExistingEntryInModalThenCloseModalAndOpenNewEntryModal(){
         $this->browse(function(Browser $browser){
