@@ -2,6 +2,7 @@
 
 namespace Tests\Browser;
 
+use App\Http\Controllers\Api\EntryController;
 use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\Browser\Pages\HomePage;
@@ -29,8 +30,10 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     private $_class_white_text = "has-text-white";
     private $_class_light_grey_text = "has-text-grey-light";
     private $_class_has_attachments = "has-attachments";
+    private $_class_is_transfer = "is-transfer";
     private $_class_has_tags = "has-tags";
     private $_class_existing_attachment = "existing-attachment";
+    private $_modal_id_prefix = "#entry-";
 
     public function providerUnconfirmedEntry(){
         return [
@@ -530,9 +533,144 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         });
     }
 
+    public function testExistingTransferEntryHasEntryButton(){
+        $this->browse(function(Browser $browser){
+            do{
+                $entry_selector = $this->randomEntrySelector(['is_transfer'=>true]);
+                $entry_id = str_replace($this->_modal_id_prefix, "", $entry_selector);
+                $entry_data = $this->getApiEntry($entry_id);
+            }while($entry_data['transfer_entry_id'] === 0);
+            $transfer_entry_data = $this->getApiEntry($entry_data['transfer_entry_id']);
+            $this->assertEquals($entry_id, $entry_data['id']);
+            $this->assertEquals($entry_data['transfer_entry_id'], $transfer_entry_data['id']);
+            $this->assertEquals($transfer_entry_data['transfer_entry_id'], $entry_data['id']);
+            $entry_selector .= '.'.$this->_class_is_transfer;
+
+            $browser->visit(new HomePage())
+                ->waitForLoadingToStop()
+                ->openExistingEntryModal($entry_selector)
+                ->with($this->_selector_modal_entry, function(Browser $entry_modal) use ($entry_id){
+                    $entry_modal->with($this->_selector_modal_head, function(Browser $modal_head) use ($entry_id){
+                        $modal_entry_id = $modal_head->value($this->_selector_modal_entry_field_entry_id);
+                        $this->assertNotEmpty($modal_entry_id);
+                        $this->assertEquals($entry_id, $modal_entry_id);
+
+                        $modal_head->assertVisible($this->_selector_modal_entry_btn_transfer);
+                        $this->assertNotEquals("true", $modal_head->attribute($this->_selector_modal_entry_btn_transfer, "disabled"));
+                        $modal_head->click($this->_selector_modal_entry_btn_transfer);
+                    });
+                })
+                ->waitForLoadingToStop()
+                ->assertVisible($this->_selector_modal_entry)
+                ->with($this->_selector_modal_entry, function(Browser $entry_modal) use ($transfer_entry_data){
+                    $entry_modal
+                        ->with($this->_selector_modal_body, function(Browser $modal_body) use ($transfer_entry_data){
+                            $expense_switch_label = $transfer_entry_data['expense'] ? $this->_label_expense_switch_expense : $this->_label_expense_switch_income;
+
+                            $modal_body
+                                ->assertInputValue($this->_selector_modal_entry_field_date, $transfer_entry_data['entry_date'])
+                                ->assertInputValue($this->_selector_modal_entry_field_value, $transfer_entry_data['entry_value'])
+                                ->assertSelected($this->_selector_modal_entry_field_account_type, $transfer_entry_data['account_type_id'])
+                                ->assertInputValue($this->_selector_modal_entry_field_memo, $transfer_entry_data['memo'])
+                                ->assertSeeIn($this->_selector_modal_entry_field_expense, $expense_switch_label);
+                        })
+                        ->with($this->_selector_modal_head, function(Browser $modal_head) use ($transfer_entry_data){
+                            $modal_entry_id = $modal_head->value($this->_selector_modal_entry_field_entry_id);
+                            $this->assertNotEmpty($modal_entry_id);
+                            $this->assertEquals($transfer_entry_data['id'], $modal_entry_id);
+
+                            $modal_head
+                                ->assertDontSee($this->_label_entry_new)
+                                ->assertVisible($this->_selector_modal_entry_btn_transfer)
+                                ->click($this->_selector_modal_entry_btn_transfer);
+                        });
+                })
+                ->waitForLoadingToStop()
+                ->assertVisible($this->_selector_modal_entry)
+                ->with($this->_selector_modal_entry, function(Browser $entry_modal) use ($entry_data){
+                    $entry_modal
+                        ->with($this->_selector_modal_body, function(Browser $modal_body) use ($entry_data){
+                            $expense_switch_label = $entry_data['expense'] ? $this->_label_expense_switch_expense : $this->_label_expense_switch_income;
+
+                            $modal_body
+                                ->assertInputValue($this->_selector_modal_entry_field_date, $entry_data['entry_date'])
+                                ->assertInputValue($this->_selector_modal_entry_field_value, $entry_data['entry_value'])
+                                ->assertSelected($this->_selector_modal_entry_field_account_type, $entry_data['account_type_id'])
+                                ->assertInputValue($this->_selector_modal_entry_field_memo, $entry_data['memo'])
+                                ->assertSeeIn($this->_selector_modal_entry_field_expense, $expense_switch_label);
+                        })
+                        ->with($this->_selector_modal_head, function(Browser $modal_head) use ($entry_data){
+                            $modal_entry_id = $modal_head->value($this->_selector_modal_entry_field_entry_id);
+                            $this->assertNotEmpty($modal_entry_id);
+                            $this->assertEquals($entry_data['id'], $modal_entry_id);
+
+                            $modal_head
+                                ->assertDontSee($this->_label_entry_new)
+                                ->assertVisible($this->_selector_modal_entry_btn_transfer);
+                        });
+                });
+        });
+    }
+
+    public function testExistingExternalTransferEntryHasButtonButIsDisabled(){
+        $this->browse(function(Browser $browser){
+            do{
+                $entry_selector = $this->randomEntrySelector(['is_transfer'=>true]);
+                $entry_id = str_replace($this->_modal_id_prefix, "", $entry_selector);
+                $entry_data = $this->getApiEntry($entry_id);
+            } while($entry_data['transfer_entry_id'] !== EntryController::TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID);
+            $this->assertEquals($entry_id, $entry_data['id']);
+            $entry_selector .= '.'.$this->_class_is_transfer;
+
+            $browser->visit(new HomePage())
+                ->waitForLoadingToStop()
+                ->openExistingEntryModal($entry_selector)
+                ->with($this->_selector_modal_entry, function(Browser $entry_modal) use ($entry_id){
+                    $entry_modal->with($this->_selector_modal_head, function(Browser $modal_head) use ($entry_id){
+                        $modal_entry_id = $modal_head->value($this->_selector_modal_entry_field_entry_id);
+                        $this->assertNotEmpty($modal_entry_id);
+                        $this->assertEquals($entry_id, $modal_entry_id);
+
+                        $modal_head->assertVisible($this->_selector_modal_entry_btn_transfer);
+                        $this->assertEquals("true", $modal_head->attribute($this->_selector_modal_entry_btn_transfer, "disabled"));
+                    });
+                });
+        });
+    }
+
     // TODO: write test for changing tags input values
 
-    // TODO: write test to add attachment
+    public function testUploadAttachmentToExistingEntry(){
+        $this->browse(function(Browser $browser){
+            $entry_selector = $this->randomEntrySelector(['confirm'=>false]);
+
+            $browser
+                ->visit(new HomePage())
+                ->waitForLoadingToStop()
+                ->openExistingEntryModal($entry_selector)
+                ->with($this->_selector_modal_body, function($entry_modal_body){
+                    $upload_file_path = storage_path($this->getRandomTestFileStoragePath());
+                    $this->assertFileExists($upload_file_path);
+                    $entry_modal_body
+                        ->assertVisible($this->_selector_modal_entry_field_upload)
+                        ->attach($this->_selector_modal_entry_dropzone_hidden_file_input, $upload_file_path)
+                        ->waitFor($this->_selector_modal_entry_dropzone_upload_thumbnail, HomePage::WAIT_SECONDS)
+                        ->with($this->_selector_modal_entry_dropzone_upload_thumbnail, function(Browser $upload_thumbnail) use ($upload_file_path){
+                            $upload_thumbnail
+                                ->waitUntilMissing($this->_selector_modal_dropzone_progress, HomePage::WAIT_SECONDS)
+                                ->assertMissing($this->_selector_modal_dropzone_error_mark)
+                                ->mouseover("") // hover over current element
+                                ->waitUntilMissing($this->_selector_modal_dropzone_success_mark, HomePage::WAIT_SECONDS)
+                                ->assertSeeIn($this->_selector_modal_dropzone_label_filename, basename($upload_file_path))
+                                ->assertMissing($this->_selector_modal_dropzone_error_message)
+                                ->assertVisible($this->_selector_modal_dropzone_btn_remove)
+                                ->assertSeeIn($this->_selector_modal_dropzone_btn_remove, $this->_label_btn_dropzone_remove_file)
+                                ->click($this->_selector_modal_dropzone_btn_remove);
+                        })
+                        ->assertMissing($this->_selector_modal_entry_dropzone_upload_thumbnail);
+                });
+        });
+    }
 
     public function testOpenExistingEntryInModalThenCloseModalAndOpenNewEntryModal(){
         $this->browse(function(Browser $browser){
@@ -634,7 +772,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
             }
         }
         $entry_id = $entries_collection->random(1)->pluck('id')->first();
-        return "#entry-".$entry_id;
+        return $this->_modal_id_prefix.$entry_id;
     }
 
 }

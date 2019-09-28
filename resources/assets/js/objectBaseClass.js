@@ -9,7 +9,6 @@ export class ObjectBaseClass {
     }
 
     fetch(){
-        console.log(this.uri);
         return Axios.get(this.uri)
             .then(this.axiosSuccess.bind(this))
             .catch(this.axiosFailure.bind(this));

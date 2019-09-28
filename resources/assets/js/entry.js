@@ -67,7 +67,11 @@ export class Entry extends ObjectBaseClass {
             let entryIndex = entries.findIndex(function(entry){
                 return entry.id === newValue.id;
             });
-            entries[entryIndex] = newValue;
+            if(entryIndex !== -1){
+                entries[entryIndex] = newValue;
+            } else {
+                entries[newValue.id] = newValue;
+            }
             Store.dispatch('setStateOf', {type:this.storeType, value:entries});
         }
     }
@@ -152,20 +156,3 @@ export class Entry extends ObjectBaseClass {
     }
 
 }
-
-//     completeEntryUpdate: function(){
-//         // re-display institutes-pane contents
-//         institutionsPane.clear();
-//         institutionsPane.displayInstitutions();
-//         accounts.load();
-//         institutionsPane.displayAccountTypes();
-//
-//         var intervalSetAccountActive = setInterval(function(){
-//             // need to wait for the accounts to be re-displayed
-//             if(institutionsPane.accountsDisplayed){
-//                 var accountId = ($.isEmptyObject(paginate.filterState)) ? '' : paginate.filterState.account;
-//                 institutionsPane.setActiveState(accountId);
-//                 clearInterval(intervalSetAccountActive);    // stops interval from running again
-//             }
-//         }, 50);
-//     }

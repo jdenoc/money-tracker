@@ -18,7 +18,9 @@ trait HomePageSelectors {
     private $_selector_modal_dropzone_upload_thumbnail = ".dz-complete:last-child";
     private $_selector_modal_dropzone_progress = ".dz-progress";
     private $_selector_modal_dropzone_error_mark = ".dz-error-mark";
+    private $_selector_modal_dropzone_success_mark = ".dz-success-mark";
     private $_selector_modal_dropzone_error_message = ".dz-error-message";
+    private $_selector_modal_dropzone_label_filename = '.dz-filename';
     private $_selector_modal_dropzone_btn_remove = ".dz-remove";
 
     // institutions panel
@@ -35,6 +37,7 @@ trait HomePageSelectors {
     private $_selector_modal_entry = "@entry-modal";  // see Browser\Pages\HomePage.php
     private $_selector_modal_entry_btn_confirmed = "#entry-confirm";
     private $_selector_modal_entry_btn_confirmed_label = "#entry-confirm + label";
+    private $_selector_modal_entry_btn_transfer = "#entry-transfer-btn";
     private $_selector_modal_entry_field_entry_id = "#entry-id";
     private $_selector_modal_entry_field_date="input#entry-date";
     private $_selector_modal_entry_field_value = "input#entry-value";
