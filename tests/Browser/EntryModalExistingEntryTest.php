@@ -642,7 +642,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     public function testUploadAttachmentToExistingEntry(){
         $this->browse(function(Browser $browser){
-            $entry_selector = $this->randomEntrySelector();
+            $entry_selector = $this->randomEntrySelector(['confirm'=>false]);
 
             $browser
                 ->visit(new HomePage())
