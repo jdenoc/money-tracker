@@ -101,39 +101,39 @@ class UiSampleDatabaseSeeder extends Seeder {
         // assign attachments to entries. if entry is a "transfer", then add an attachment of the same name to its counterpart
         for($attachment_i=0; $attachment_i<self::COUNT_ATTACHMENT; $attachment_i++){
             // income entries
-            $entry_income_ids = $entries_not_disabled->where('expense', 0)->pluck('id')->toArray();
-            $this->assignAttachmentToEntry($faker, $entry_income_ids, $transfer_to_entries->pluck('id')->toArray(), $entries);
+            $entry_income_ids = $entries_not_disabled->where('expense', 0)->pluck('id');
+            $this->assignAttachmentToEntry($entry_income_ids->random(), $transfer_to_entries->pluck('id')->toArray(), $entries);
             // expense entries
-            $entry_expense_ids = $entries_not_disabled->where('expense', 1)->pluck('id')->toArray();
-            $this->assignAttachmentToEntry($faker, $entry_expense_ids, $transfer_from_entries->pluck('id')->toArray(), $entries);
+            $entry_expense_ids = $entries_not_disabled->where('expense', 1)->pluck('id');
+            $this->assignAttachmentToEntry($entry_expense_ids->random(), $transfer_from_entries->pluck('id')->toArray(), $entries);
         }
         $this->command->line(self::OUTPUT_PREFIX."Randomly assigned Attachments to entries");
 
         // income confirmed
         $this->assignAttachmentToEntry(
-            $faker,
-            $entries_confirmed->where('expense', 0)->pluck('id')->toArray(),
+            $entries_confirmed->where('expense', 0)->pluck('id')
+                ->chunk(EntryController::MAX_ENTRIES_IN_RESPONSE)->shift()->random(),
             $transfer_to_entries->pluck('id')->toArray(),
             $entries
         );
         // income unconfirmed
         $this->assignAttachmentToEntry(
-            $faker,
-            $entries_not_confirmed->where('expense', 0)->pluck('id')->toArray(),
+            $entries_not_confirmed->where('expense', 0)->pluck('id')
+                ->chunk(EntryController::MAX_ENTRIES_IN_RESPONSE)->shift()->random(),
             $transfer_to_entries->pluck('id')->toArray(),
             $entries
         );
         // expense confirmed
         $this->assignAttachmentToEntry(
-            $faker,
-            $entries_confirmed->where('expense', 1)->pluck('id')->toArray(),
+            $entries_confirmed->where('expense', 1)->pluck('id')
+                ->chunk(EntryController::MAX_ENTRIES_IN_RESPONSE)->shift()->random(),
             $transfer_from_entries->pluck('id')->toArray(),
             $entries
         );
         // expense unconfirmed
         $this->assignAttachmentToEntry(
-            $faker,
-            $entries_not_confirmed->where('expense', 1)->pluck('id')->toArray(),
+            $entries_not_confirmed->where('expense', 1)->pluck('id')
+                ->chunk(EntryController::MAX_ENTRIES_IN_RESPONSE)->shift()->random(),
             $transfer_from_entries->pluck('id')->toArray(),
             $entries
         );
@@ -162,7 +162,7 @@ class UiSampleDatabaseSeeder extends Seeder {
     /**
      * @param Illuminate\Support\Collection $entry_collection
      * @param array $data
-     * * @param Faker\Generator $faker
+     * @param Faker\Generator $faker
      * @return Illuminate\Support\Collection
      */
     private function addEntryToCollection($entry_collection, $data, $faker){
@@ -192,19 +192,17 @@ class UiSampleDatabaseSeeder extends Seeder {
     }
 
     /**
-     * @param Faker\Generator $faker
-     * @param int[] $entry_ids
+     * @param int $entry_id
      * @param int[] $transfer_entry_ids
      * @param Illuminate\Support\Collection $entries_collection
      */
-    private function assignAttachmentToEntry($faker, $entry_ids, $transfer_entry_ids, $entries_collection){
-        $random_entry_id = $faker->randomElement($entry_ids);
-        if(in_array($random_entry_id, $transfer_entry_ids)){
-            $new_attachment = factory(App\Attachment::class)->create(['entry_id'=>$random_entry_id]);
-            $transfer_entry = $entries_collection->where('id', $random_entry_id)->first();
+    private function assignAttachmentToEntry($entry_id, $transfer_entry_ids, $entries_collection){
+        if(in_array($entry_id, $transfer_entry_ids)){
+            $new_attachment = factory(App\Attachment::class)->create(['entry_id'=>$entry_id]);
+            $transfer_entry = $entries_collection->where('id', $entry_id)->first();
             factory(App\Attachment::class)->create(['entry_id'=>$transfer_entry->transfer_entry_id, 'name'=>$new_attachment->name]);
         } else {
-            factory(App\Attachment::class)->create(['entry_id'=>$random_entry_id]);
+            factory(App\Attachment::class)->create(['entry_id'=>$entry_id]);
         }
     }
 
