@@ -33,6 +33,7 @@ class ATest extends DuskTestCase {
     }
 
     public function testLegacySiteIsAvailable(){
+        $this->markTestSkipped("deprecating this endpoint");
         $this->browse(function (Browser $browser){
             $browser->visit('/legacy')
                 ->assertTitleContains("Money Tracker | Legacy");
