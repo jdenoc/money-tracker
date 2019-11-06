@@ -1,4 +1,4 @@
-FROM php:5.6-apache
+FROM php:7.3-apache
 
 # set default ServerName
 RUN touch /etc/apache2/conf-available/servername.conf \
@@ -7,10 +7,10 @@ RUN touch /etc/apache2/conf-available/servername.conf \
 
 # install php extensions
 RUN apt-get update \
-  && apt-get upgrade -y \
-  && apt-get install -y libmcrypt-dev mysql-client zlib1g-dev libicu-dev g++ --no-install-recommends \
-  && docker-php-ext-configure intl \
-  && docker-php-ext-install mcrypt pdo_mysql zip intl
+  && apt-get upgrade -y
+RUN apt-get install -y apt-utils curl  default-mysql-client libzip-dev zlib1g-dev libicu-dev g++ --no-install-recommends
+RUN docker-php-ext-configure intl \
+  && docker-php-ext-install pdo_mysql zip intl
 
 # enable mod_rewrite apache module
 RUN a2enmod rewrite
@@ -46,12 +46,12 @@ RUN echo 'date.timezone = "UTC"' >> $PHP_INI_DIR/conf.d/php-date.timezone.ini
 ARG DISABLE_XDEBUG
 RUN if [ "$DISABLE_XDEBUG" = false ]; \
   then \
-    pecl install xdebug-2.5.5; \
+    pecl install xdebug-2.7.2; \
     docker-php-ext-enable xdebug; \
     XDEBUG_INI=`php --ini | grep xdebug | tr -d ,` \
       && echo "" >> $XDEBUG_INI \
       && echo "xdebug.coverage_enable=1" >> $XDEBUG_INI \
-      && echo "xdebug.idekey=DOCKER" >> $XDEBUG_INI \
+      && echo "xdebug.idekey=PHPSTORMDOCKER" >> $XDEBUG_INI \
       && echo "xdebug.remote_autostart=1" >> $XDEBUG_INI \
       && echo "xdebug.remote_enable=1" >> $XDEBUG_INI \
       && echo "xdebug.remote_host=dockerhost" >> $XDEBUG_INI \
