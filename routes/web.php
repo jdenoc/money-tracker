@@ -16,7 +16,6 @@ Route::get('/laravel', function () {
 })->name('laravel-welcome');
 
 Route::get('/', 'Web\HomeController@display');
-Route::get('/legacy', 'Web\HomeController@legacy');
 Route::get('/attachment/{uuid}', 'Web\AttachmentController@display');
 Route::post('/attachment/upload', 'Web\AttachmentController@upload');
 Route::delete('/attachment/upload', 'Web\AttachmentController@deleteUpload');

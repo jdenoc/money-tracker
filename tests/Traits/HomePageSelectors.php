@@ -55,8 +55,10 @@ trait HomePageSelectors {
     private $_selector_modal_entry_dropzone_hidden_file_input = "#entry-modal-hidden-file-input";
     private $_selector_modal_entry_dropzone_upload_thumbnail = "#entry-modal-file-upload .dz-complete:last-child";
     private $_selector_modal_entry_existing_attachments = "#existing-entry-attachments";
-    private $_selector_modal_entry_existing_attachments_btn_view = "button.view-attachment";
-    private $_selector_modal_entry_existing_attachments_btn_delete = "button.delete-attachment";
+    private $_selector_modal_entry_existing_attachments_first_attachment = ".existing-attachment:first-child";
+    private $_selector_modal_entry_existing_attachments_attachment_name = " .attachment-name";
+    private $_selector_modal_entry_existing_attachments_attachment_btn_view = "button.view-attachment";
+    private $_selector_modal_entry_existing_attachments_attachment_btn_delete = "button.delete-attachment";
     private $_selector_modal_entry_btn_delete = "button#entry-delete-btn";
     private $_selector_modal_entry_btn_lock = "button#entry-lock-btn";
     private $_selector_modal_entry_btn_lock_icon = "#entry-lock-btn i";

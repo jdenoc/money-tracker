@@ -269,16 +269,19 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     public function testOpenAttachment(){
         $this->browse(function(Browser $browser){
             $entry_selector = $this->randomEntrySelector(['has_attachments'=>true]).'.'.$this->_class_has_attachments;
+            $attachment_name = '';
             $browser->visit(new HomePage())
                 ->waitForLoadingToStop()
                 ->openExistingEntryModal($entry_selector)
-                ->with($this->_selector_modal_entry, function($entry_modal){
+                ->with($this->_selector_modal_entry, function(Browser $entry_modal) use (&$attachment_name){
                     $entry_modal
                         ->assertVisible($this->_selector_modal_entry_existing_attachments)
-                        ->with($this->_selector_modal_entry_existing_attachments, function($existing_attachment){
+                        ->with($this->_selector_modal_entry_existing_attachments.' '.$this->_selector_modal_entry_existing_attachments_first_attachment, function(Browser $existing_attachment) use (&$attachment_name){
+                            $attachment_name = $existing_attachment->text($this->_selector_modal_entry_existing_attachments_attachment_name);
+                            $this->assertNotEmpty($attachment_name);
                             $existing_attachment
-                                ->assertVisible($this->_selector_modal_entry_existing_attachments_btn_view)
-                                ->click($this->_selector_modal_entry_existing_attachments_btn_view);
+                                ->assertVisible($this->_selector_modal_entry_existing_attachments_attachment_btn_view)
+                                ->click($this->_selector_modal_entry_existing_attachments_attachment_btn_view);
                         });
                 });
 
@@ -309,8 +312,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                     $entry_modal->with($this->_selector_modal_entry_existing_attachments, function($existing_attachment){
                         $attachment_name = trim($existing_attachment->text('.'.$this->_class_existing_attachment));
                         $existing_attachment
-                            ->assertVisible($this->_selector_modal_entry_existing_attachments_btn_delete)
-                            ->click($this->_selector_modal_entry_existing_attachments_btn_delete)
+                            ->assertVisible($this->_selector_modal_entry_existing_attachments_attachment_btn_delete)
+                            ->click($this->_selector_modal_entry_existing_attachments_attachment_btn_delete)
                             ->assertDialogOpened("Are you sure you want to delete attachment: ".$attachment_name)
                             ->acceptDialog();
                     });
@@ -649,7 +652,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                 ->waitForLoadingToStop()
                 ->openExistingEntryModal($entry_selector)
                 ->with($this->_selector_modal_body, function($entry_modal_body){
-                    $upload_file_path = storage_path($this->getRandomTestFileStoragePath());
+                    $upload_file_path = \Storage::path($this->getRandomTestFileStoragePath());
                     $this->assertFileExists($upload_file_path);
                     $entry_modal_body
                         ->assertVisible($this->_selector_modal_entry_field_upload)
