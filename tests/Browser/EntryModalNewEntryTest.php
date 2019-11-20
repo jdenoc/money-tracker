@@ -428,7 +428,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
                 ->waitForLoadingToStop()
                 ->openNewEntryModal()
                 ->with($this->_selector_modal_body, function($entry_modal_body){
-                    $upload_file_path = storage_path($this->getRandomTestFileStoragePath());
+                    $upload_file_path = \Storage::path($this->getRandomTestFileStoragePath());
                     $this->assertFileExists($upload_file_path);
                     $entry_modal_body
                         ->assertVisible($this->_selector_modal_entry_field_upload)
@@ -458,7 +458,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
                 ->waitForLoadingToStop()
                 ->openNewEntryModal()
                 ->with($this->_selector_modal_body, function($modal_body){
-                    $upload_file_path = storage_path($this->getRandomTestFileStoragePath());
+                    $upload_file_path = \Storage::path($this->getRandomTestFileStoragePath());
                     $this->assertFileExists($upload_file_path);
                     $modal_body
                         ->assertVisible($this->_selector_modal_entry_field_upload)
@@ -641,7 +641,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
             }
 
             if($has_attachments){
-                $upload_file_path = storage_path($this->getRandomTestFileStoragePath());
+                $upload_file_path = \Storage::path($this->getRandomTestFileStoragePath());
                 $this->assertFileExists($upload_file_path);
                 $browser->with($this->_selector_modal_body, function($modal_body) use ($upload_file_path){
                     $modal_body

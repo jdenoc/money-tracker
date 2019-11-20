@@ -409,7 +409,7 @@ class TransferModalTest extends DuskTestCase {
                 }
 
                 if($has_attachments){
-                    $upload_file_path = storage_path($this->getRandomTestFileStoragePath());
+                    $upload_file_path = \Storage::path($this->getRandomTestFileStoragePath());
                     $this->attachFile($browser, $upload_file_path);
                 }
 
@@ -488,7 +488,7 @@ class TransferModalTest extends DuskTestCase {
                 'from_account_type_id'=>($is_from_account_external ? EntryController::TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID : $account_types[0]['id']),
                 'to_account_type_id'=>($is_to_account_external ? EntryController::TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID : $account_types[1]['id']),
                 'tag'=>$tag,
-                'attachment_path'=>storage_path($this->getRandomTestFileStoragePath()),
+                'attachment_path'=>\Storage::path($this->getRandomTestFileStoragePath()),
             ];
 
             $browser->visit(new HomePage())

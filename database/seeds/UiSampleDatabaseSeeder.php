@@ -5,6 +5,8 @@ use Illuminate\Database\Seeder;
 
 class UiSampleDatabaseSeeder extends Seeder {
 
+    use App\Traits\Tests\StorageTestFiles;
+
     const COUNT_ACCOUNT = 2;
     const COUNT_ACCOUNT_TYPE = 3;
     const COUNT_ATTACHMENT = 4;
@@ -14,6 +16,8 @@ class UiSampleDatabaseSeeder extends Seeder {
     const COUNT_TAG = 5;
 
     const OUTPUT_PREFIX = "<info>".__CLASS__.":</info> ";
+
+    private $attachment_stored_count = 0;
 
     /**
      * Run the database seeds.
@@ -137,7 +141,7 @@ class UiSampleDatabaseSeeder extends Seeder {
             $transfer_from_entries->pluck('id')->toArray(),
             $entries
         );
-        $this->command->line(self::OUTPUT_PREFIX."Assigned Attachments to all varieties of entries");
+        $this->command->line(self::OUTPUT_PREFIX."Assigned Attachments to all varieties of entries [".$this->attachment_stored_count."]");
     }
 
     /**
@@ -199,10 +203,24 @@ class UiSampleDatabaseSeeder extends Seeder {
     private function assignAttachmentToEntry($entry_id, $transfer_entry_ids, $entries_collection){
         if(in_array($entry_id, $transfer_entry_ids)){
             $new_attachment = factory(App\Attachment::class)->create(['entry_id'=>$entry_id]);
+            $this->storeAttachment($new_attachment);
             $transfer_entry = $entries_collection->where('id', $entry_id)->first();
-            factory(App\Attachment::class)->create(['entry_id'=>$transfer_entry->transfer_entry_id, 'name'=>$new_attachment->name]);
+            $attachment = factory(App\Attachment::class)->create(['entry_id'=>$transfer_entry->transfer_entry_id, 'name'=>$new_attachment->name]);
+            $this->storeAttachment($attachment);
         } else {
-            factory(App\Attachment::class)->create(['entry_id'=>$entry_id]);
+            $attachment = factory(App\Attachment::class)->create(['entry_id'=>$entry_id]);
+            $this->storeAttachment($attachment);
+        }
+    }
+
+    /**
+     * @param App\Attachment $attachment
+     */
+    private function storeAttachment($attachment){
+        $test_file_path = $this->getTestFileStoragePathFromFilename($attachment->name);
+        if(Storage::exists($test_file_path)){
+            Storage::copy($test_file_path, $attachment->get_storage_file_path());
+            $this->attachment_stored_count++;
         }
     }
 

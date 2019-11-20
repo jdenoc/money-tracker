@@ -4,31 +4,30 @@ namespace App\Traits\Tests;
 
 trait StorageTestFiles {
 
-    protected static $storage_location = "app/test";
-
-    protected static $test_file_paths = [
-        "app/test/nature-thunderstorm.jpg",
-        "app/test/space-blackhole-with-jet.jpg",
-        "app/test/test-pattern.png",
-        "app/test/test-triangle.png",
-        "app/test/crab-nebula.gif",
-        "app/test/gravitational-wave.gif",
-        "app/test/ipsum-lorem.txt",
-        "app/test/lorem-ipsum.txt",
-        "app/test/ipsum-lorem.pdf",
-        "app/test/lorem-ipsum.pdf",
-    ];
+    protected static $storage_path = "test/";
 
     /**
-     * @param int $storage_filepath_index
-     * @return string
+     * @return array
      */
-    public function getTestFileStoragePathFromIndex($storage_filepath_index){
-        if(!in_array($storage_filepath_index, array_keys(self::$test_file_paths))){
-            $test_file_count = count(self::$test_file_paths);
-            throw new \OutOfBoundsException("File number provided does not exist. There are ".$test_file_count.", numbered 0-".($test_file_count-1));
-        }
-        return self::$test_file_paths[$storage_filepath_index];
+    public static function getTestFilePaths(){
+        $file_paths =  \Storage::files(self::$storage_path);
+        $file_paths = array_filter($file_paths, function($file_name){
+            if(strpos($file_name, 'git') === false){
+                return $file_name;
+            }
+        });
+        return array_values($file_paths);
+    }
+
+    /**
+     * @return array
+     */
+    public static function getTestFilenames(){
+        $file_paths = self::getTestFilePaths();
+        $file_names = array_map(function($file_path){
+            return str_replace(self::$storage_path, '', $file_path);
+        }, $file_paths);
+        return $file_names;
     }
 
     /**
@@ -36,18 +35,19 @@ trait StorageTestFiles {
      * @return string
      */
     public function getTestFileStoragePathFromFilename($filename){
-        $storage_filepath_key = array_search(self::$storage_location.'/'.$filename, self::$test_file_paths);
+        $storage_filepath_key = array_search(self::$storage_path.$filename, self::getTestFilePaths());
         if($storage_filepath_key === false){
             throw new \OutOfBoundsException("Filename provided does not match any ");
         }
-        return $this->getTestFileStoragePathFromIndex($storage_filepath_key);
+        return self::$storage_path.$filename;
     }
 
     /**
      * @return string
      */
     public function getRandomTestFileStoragePath(){
-        return self::$test_file_paths[array_rand(self::$test_file_paths, 1)];
+        $file_names = self::getTestFilenames();
+        return self::$storage_path.$file_names[array_rand($file_names, 1)];
     }
 
 }
