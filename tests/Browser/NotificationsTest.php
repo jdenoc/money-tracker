@@ -329,23 +329,20 @@ class NotificationsTest extends DuskTestCase {
     }
 
     public function testNotificationDeleteEntry500(){
-        $this->browse(function (Browser $browser) {
-            $browser->visit(new HomePage());
-            $recreate_table_query = $this->getTableRecreationQuery('entries');
+        $recreate_table_query = $this->getTableRecreationQuery('entries');
 
-            $this->browse(function (Browser $browser) use ($recreate_table_query){
-                $entry_table_row_selector = $this->getEntryTableRowSelector();
-                $browser->visit(new HomePage())
-                    ->waitForLoadingToStop()
-                    ->openExistingEntryModal($entry_table_row_selector);
+        $this->browse(function (Browser $browser) use ($recreate_table_query){
+            $entry_table_row_selector = $this->getEntryTableRowSelector();
+            $browser->visit(new HomePage())
+                ->waitForLoadingToStop()
+                ->openExistingEntryModal($entry_table_row_selector);
 
-                DB::statement("DROP TABLE entries");
+            DB::statement("DROP TABLE entries");
 
-                $browser
-                    ->click($this->_selector_modal_foot_delete_btn)
-                    ->assertNotification(HomePage::NOTIFICATION_ERROR, "An error occurred while attempting to delete entry [");
-                DB::statement($recreate_table_query);
-            });
+            $browser
+                ->click($this->_selector_modal_foot_delete_btn)
+                ->assertNotification(HomePage::NOTIFICATION_ERROR, "An error occurred while attempting to delete entry [");
+            DB::statement($recreate_table_query);
         });
     }
 
