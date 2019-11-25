@@ -59,8 +59,8 @@ jobs:
   include:
     - stage: build
       before_install:
-        - docker pull composer/composer:php5-alpine
-        - docker pull node:6
+        - docker pull composer:1.9
+        - docker pull node:12
         - docker-compose -f .docker/docker-compose.yml pull
         - DISABLE_XDEBUG=true docker-compose -f .docker/docker-compose.yml build
         # save docker images to be cached and used for tests

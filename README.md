@@ -27,17 +27,17 @@ For a list of features currently available, what they're expected outcome is and
 - [Other Documentation](#other-documentation)
 
 ## Requirements
-- NodeJS >= 6
+- NodeJS 12
   ```bash
   # confirm installation and version of NodeJS
   node -v
   ```
-- Yarn >= 1.3.2
+- Yarn 1.9.1
   ```bash
   # confirm installation and version of Yarn
   yarn --version
   ```
-- 5.6.4 <= PHP < 7
+- PHP 7.3
   ```bash
   # confirm installation and version of PHP
   php -v
@@ -47,11 +47,11 @@ For a list of features currently available, what they're expected outcome is and
   - Mbstring PHP Extension
   - Tokenizer PHP Extension
   - XML PHP Extension
-- Composer >= 1.5.1
+- Composer 1.9
   ```bash
-    # confirm installation and version of PHP
-    composer --version
-    ```
+  # confirm installation and version of PHP
+  composer --version
+  ```
 
 ***
 
@@ -88,7 +88,7 @@ cd money-tracker/
 <small>***OPTIONAL***</small>:
 If you're working with PhpStorm, be sure to run the following command:
 ```bash
-.docker/cmd/composer.sh ide-helper
+.docker/cmd/composer.sh run-script ide-helper
 ```
 This will generate Laravel Facades that PhpStorm can use.  
 
@@ -177,7 +177,7 @@ php artisan app:version `git describe`
 # ***OPTIONAL***
 # If you're working with PhpStorm, be sure to run the following command.
 # It will generate Laravel Facades that PhpStorm can use.
-composer ide-helper
+composer run-script ide-helper
 
 # construct the database tables
 php artisan migrate
