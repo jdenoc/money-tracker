@@ -4,23 +4,29 @@
     "type": "project",
     "require": {
         "ext-json": "*",
-        "php": ">=5.6.4",
+        "php": ">=7.0.0",
         "doctrine/dbal": "^2.5",
         "eklundkristoffer/laravel-discord-webhook": "dev-master",
-        "laravel/framework": "5.4.*",
+        "fideloper/proxy": "~3.3",
+        "laravel/framework": "5.5.*",
         "laravel/tinker": "~1.0",
+        "nesbot/carbon": "2.27.0 as 1.39.0",
+        "kylekatarnls/laravel-carbon-2": "^1.0.0",
         "ramsey/uuid": "^3.6"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.2",
+        "filp/whoops": "~2.0",
         "fzaninotto/faker": "~1.4",
-        "laravel/dusk": "^1.0",
-        "mockery/mockery": "0.9.*",
-        "phpunit/phpunit": "~5.7"
+        "laravel/dusk": "^2.0",
+        "mockery/mockery": "~1.0",
+        "phpunit/phpunit": "~6.0",
+        "symfony/thanks": "^1.0"
     },
     "autoload": {
         "classmap": [
-            "database"
+            "database/seeds",
+            "database/factories"
         ],
         "psr-4": {
             "App\\": "app/"
@@ -32,20 +38,19 @@
         }
     },
     "scripts": {
-        "post-install-cmd": [
-            "Illuminate\\Foundation\\ComposerScripts::postInstall",
-            "php artisan optimize"
+        "post-root-package-install": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
         ],
-        "post-update-cmd": [
-            "Illuminate\\Foundation\\ComposerScripts::postUpdate",
-            "php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
-            "php artisan key:generate",
-            "php artisan optimize"
+        "post-create-project-cmd": [
+            "@php artisan key:generate"
+        ],
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover"
         ],
         "ide-helper": [
             "php artisan ide-helper:generate",
-            "php artisan ide-helper:meta",
-            "php artisan optimize"
+            "php artisan ide-helper:meta"
         ]
     },
     "config": {
@@ -56,5 +61,12 @@
     "repositories": [{
         "type": "vcs",
         "url": "https://github.com/eklundkristoffer/laravel-discord-webhook"
-    }]
+    }],
+    "extra": {
+        "laravel": {
+            "dont-discover": [
+                "laravel/dusk"
+            ]
+        }
+    }
 }

@@ -1,7 +1,7 @@
 # Money Tracker  [![Build Status](https://travis-ci.org/jdenoc/money-tracker.svg?branch=master)](https://travis-ci.org/jdenoc/money-tracker) [![GitHub release](https://img.shields.io/github/release/jdenoc/money-tracker.svg)](https://github.com/jdenoc/money-tracker/releases/latest)
 
 ## About
-Money Tracker is a web portal dedicated to help record and manage income & expenses, built on the [Laravel framework](https://laravel.com/docs/5.4)
+Money Tracker is a web portal dedicated to help record and manage income & expenses, built on the [Laravel framework](https://laravel.com/docs/5.5)
 
 ## Features
 For a list of features currently available, what they're expected outcome is and test cases, see the [Features](features/FEATURES.md)
@@ -248,8 +248,8 @@ yarn install --prod
 yarn run build-prod
 
 # reset cache
-php artisan view:clear
 php artisan config:cache
+php artisan view:clear
 
 # take site out of maintenance mode
 php artisan up
@@ -318,12 +318,12 @@ php artisan dusk --stop-on-failure
 ***
 
 ## Other Documentation
-- [Laravel](https://laravel.com/docs/5.4/)
+- [Laravel](https://laravel.com/docs/5.5/)
 - [VueJS](https://vuejs.org/v2/guide/)
 - [Docker](https://docs.docker.com/)
 - [Composer](https://getcomposer.org/doc/)
 - [Yarn](https://yarnpkg.com/en/docs)
 - [PhpUnit](https://phpunit.de/documentation.html)
-- [Laravel Dusk](https://laravel.com/docs/5.4/dusk)
+- [Laravel Dusk](https://laravel.com/docs/5.5/dusk)
 - [Travis CI](https://docs.travis-ci.com/user/languages/php/)
 - [git](https://git-scm.com/doc)

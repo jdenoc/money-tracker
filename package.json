@@ -5,15 +5,15 @@
     "build-dev-watch": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --watch --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
     "build-prod": "cross-env NODE_ENV=production  node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js && echo 'process completed @ ' `date`"
   },
-  "dependencies": {
+  "devDependencies": {
     "@fortawesome/fontawesome-free": "5.2.0",
     "@voerro/vue-tagsinput": "1.9.1",
-    "axios": "0.16.2",
+    "axios": "^0.17",
     "bulma": "0.7.4",
     "bulma-badge": "1.0.1",
     "bulma-checkradio": "2.1.0",
     "cross-env": "5.2.0",
-    "laravel-mix": "^1.0",
+    "laravel-mix": "^2.0",
     "lodash": "4.17.10",
     "randomcolor": "0.5.3",
     "toastr": "2.1.4",
