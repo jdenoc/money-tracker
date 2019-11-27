@@ -38,6 +38,12 @@ class NavbarTest extends DuskTestCase {
 
     // TODO: test for hamburger menu navbar
 
+    /**
+     * @throws \Throwable
+     *
+     * @group navigation-2
+     * test 1/10
+     */
     public function testBrandImage(){
         $this->browse(function(Browser $browser){
             $browser
@@ -49,6 +55,12 @@ class NavbarTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group navigation-2
+     * test 2/10
+     */
     public function testAddEntryButtonExists(){
         $this->browse(function(Browser $browser){
             $browser
@@ -60,6 +72,12 @@ class NavbarTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group navigation-2
+     * test 3/10
+     */
     public function testAddTransferButtonExists(){
         $this->browse(function(Browser $browser){
             $browser
@@ -71,6 +89,12 @@ class NavbarTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group navigation-2
+     * test 4/10
+     */
     public function testFilterButtonExists(){
         $this->browse(function(Browser $browser){
             $browser
@@ -82,6 +106,12 @@ class NavbarTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group navigation-2
+     * test 5/10
+     */
     public function testClickProfileDropdown(){
         $this->browse(function(Browser $browser){
             $browser
@@ -104,6 +134,12 @@ class NavbarTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group navigation-2
+     * test 6/10
+     */
     public function testBurgerMenuVisibleOnSmallerScreenWidth(){
         $this->browse(function(Browser $browser){
             $browser

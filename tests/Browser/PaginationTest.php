@@ -41,6 +41,12 @@ class PaginationTest extends DuskTestCase {
         $this->_account_types = $this->getApiAccountTypes();
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group navigation-3
+     * test 1/10
+     */
     public function testPaginationButtonsNotVisibleIfEntryCountLessThanPageMax(){
         factory(Entry::class, self::ENTRY_COUNT_ONE)->create($this->entryOverrideAttributes());
         $entries = $this->getApiEntries();
@@ -55,6 +61,12 @@ class PaginationTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group navigation-3
+     * test 2/10
+     */
     public function testNextPaginationButtonVisibleIfEntryCountGreaterThanPageMax(){
         factory(Entry::class, self::ENTRY_COUNT_TWO)->create($this->entryOverrideAttributes());
         $entries = $this->getApiEntries();
@@ -69,6 +81,12 @@ class PaginationTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group navigation-3
+     * test 3/10
+     */
     public function testPreviousPaginationButtonsVisiblePagedToNextPage(){
         factory(Entry::class, self::ENTRY_COUNT_THREE)->create($this->entryOverrideAttributes());
         $entries_page1 = $this->getApiEntries(self::PAGE_NUMBER_ONE);
@@ -99,6 +117,12 @@ class PaginationTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group navigation-3
+     * test 4/10
+     */
     public function testClickPreviousPaginationButtonToViewFirstPageOfEntries(){
         factory(Entry::class, self::ENTRY_COUNT_TWO)->create($this->entryOverrideAttributes());
         $entries = $this->getApiEntries();
@@ -123,6 +147,12 @@ class PaginationTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group navigation-3
+     * test 5/10
+     */
     public function testPaginationWithEntryCreationUsingEntryModal(){
         factory(Entry::class, self::ENTRY_COUNT_TWO)->create($this->entryOverrideAttributes());
         $entries_original = $this->getApiEntries(self::PAGE_NUMBER_ONE);
@@ -164,6 +194,12 @@ class PaginationTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group navigation-3
+     * test 6/10
+     */
     public function testPaginationWithEntryCreationUsingTransferModal(){
         factory(Entry::class, self::ENTRY_COUNT_TWO)->create($this->entryOverrideAttributes());
         $entries_original = $this->getApiEntries(self::PAGE_NUMBER_ONE);
@@ -208,6 +244,12 @@ class PaginationTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group navigation-3
+     * test 7/10
+     */
     public function testNextButtonNotVisibleWhenNoEntriesProvidedByFilter(){
         factory(Entry::class, self::ENTRY_COUNT_TWO)->create($this->entryOverrideAttributes());
 

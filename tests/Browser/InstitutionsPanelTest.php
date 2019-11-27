@@ -26,6 +26,12 @@ class InstitutionsPanelTest extends DuskTestCase {
     use HomePageSelectors;
     use DatabaseMigrations;
 
+    /**
+     * @throws \Throwable
+     *
+     * @group navigation-1
+     * test 1/10
+     */
     public function testOverviewOptionIsVisibleAndActiveByDefault(){
         $this->browse(function(Browser $browser){
             $browser
@@ -43,6 +49,12 @@ class InstitutionsPanelTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group navigation-1
+     * test 2/10
+     */
     public function testActiveInstitutionsAreVisibleWithAccountsAndClickingOnAnAccountFiltersEntries(){
         $institutions_collection = $this->getInstitutionsCollection();
         $accounts_collection = $this->getAccountsCollection($institutions_collection);
@@ -97,6 +109,12 @@ class InstitutionsPanelTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group navigation-1
+     * test 3/10
+     */
     public function testDisabledAccountsElementNotVisibleIfNoDisabledAccountsExist(){
         $institutions_collection = $this->getInstitutionsCollection(false);
         $institution_id = $institutions_collection->pluck('id')->random(1)->first();
@@ -111,6 +129,12 @@ class InstitutionsPanelTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group navigation-1
+     * test 4/10
+     */
     public function testDisabledAccountsAreVisibleAndClickingOnADisabledAccountFiltersEntries(){
         $institutions_collection = $this->getInstitutionsCollection(false);
         $accounts_collection = $this->getAccountsCollection($institutions_collection);
