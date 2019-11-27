@@ -39,6 +39,7 @@ before_script:
   # general application setup
   - .docker/cmd/artisan.sh key:generate
   - .docker/cmd/artisan.sh app:version `git describe`
+  - .docker/cmd/artisan.sh config:cache
   - docker container exec -t app.money-tracker env
   # setup laravel log files
   - docker container exec -t --user www-data app.money-tracker touch storage/logs/laravel.debug.log
