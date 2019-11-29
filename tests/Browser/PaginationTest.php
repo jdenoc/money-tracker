@@ -6,9 +6,8 @@ use App\Entry;
 use App\Http\Controllers\Api\EntryController;
 use Illuminate\Support\Facades\DB;
 use Tests\Browser\Pages\HomePage;
-use Tests\DuskTestCase;
+use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Laravel\Dusk\Browser;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\Traits\HomePageSelectors;
 
 /**
@@ -21,7 +20,6 @@ use Tests\Traits\HomePageSelectors;
  */
 class PaginationTest extends DuskTestCase {
 
-    use DatabaseMigrations;
     use HomePageSelectors;
 
     const PAGE_NUMBER_ZERO = 0;

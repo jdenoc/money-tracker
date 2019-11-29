@@ -2,9 +2,8 @@
 
 namespace Tests\Browser;
 
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\Browser\Pages\HomePage;
-use Tests\DuskTestCase;
+use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Laravel\Dusk\Browser;
 
 /**
@@ -16,8 +15,6 @@ use Laravel\Dusk\Browser;
  * @group home
  */
 class NavbarTest extends DuskTestCase {
-
-    use DatabaseMigrations;
 
     const MOBILE_RESIZE_WIDTH_PX = 1000;
     const RESIZE_HEIGHT_PX = 750;

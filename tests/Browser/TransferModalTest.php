@@ -7,9 +7,8 @@ use App\AccountType;
 use App\Http\Controllers\Api\EntryController;
 use Facebook\WebDriver\WebDriverBy;
 use Faker\Factory as FakerFactory;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\Browser\Pages\HomePage;
-use Tests\DuskTestCase;
+use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Laravel\Dusk\Browser;
 use Tests\Traits\HomePageSelectors;
 
@@ -24,7 +23,6 @@ use Tests\Traits\HomePageSelectors;
  */
 class TransferModalTest extends DuskTestCase {
 
-    use DatabaseMigrations;
     use HomePageSelectors;
 
     private $method_to = 'to';

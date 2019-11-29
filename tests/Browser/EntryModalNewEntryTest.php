@@ -4,9 +4,8 @@ namespace Tests\Browser;
 
 use App\Account;
 use App\AccountType;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\Browser\Pages\HomePage;
-use Tests\DuskTestCase;
+use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Laravel\Dusk\Browser;
 use Tests\Traits\HomePageSelectors;
 
@@ -21,7 +20,6 @@ use Tests\Traits\HomePageSelectors;
  */
 class EntryModalNewEntryTest extends DuskTestCase {
 
-    use DatabaseMigrations;
     use HomePageSelectors;
 
     private $method_account = 'account';

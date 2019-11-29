@@ -9,9 +9,8 @@ use Faker\Factory as FakerFactory;
 use Faker\Generator;
 use Illuminate\Support\Facades\DB;
 use Tests\Browser\Pages\HomePage;
-use Tests\DuskTestCase;
+use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Laravel\Dusk\Browser;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\Traits\HomePageSelectors;
 
 /**
@@ -25,7 +24,6 @@ use Tests\Traits\HomePageSelectors;
  */
 class FilterModalTest extends DuskTestCase {
 
-    use DatabaseMigrations;
     use HomePageSelectors;
 
     /**

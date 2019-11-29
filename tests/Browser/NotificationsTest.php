@@ -2,10 +2,9 @@
 
 namespace Tests\Browser;
 
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Support\Facades\DB;
 use Tests\Browser\Pages\HomePage;
-use Tests\DuskTestCase;
+use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Laravel\Dusk\Browser;
 use Tests\Traits\InjectDatabaseStateIntoException;
 
@@ -18,7 +17,6 @@ use Tests\Traits\InjectDatabaseStateIntoException;
  */
 class NotificationsTest extends DuskTestCase {
 
-    use DatabaseMigrations;
     use InjectDatabaseStateIntoException;
 
     private $_selector_unconfirmed_expense = "tr.has-background-warning.is-expense";

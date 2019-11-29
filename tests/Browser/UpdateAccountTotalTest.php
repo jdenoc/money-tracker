@@ -6,9 +6,8 @@ use App\Entry;
 use App\Http\Controllers\Api\EntryController;
 use Faker\Factory as FakerFactory;
 use Tests\Browser\Pages\HomePage;
-use Tests\DuskTestCase;
+use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Laravel\Dusk\Browser;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\Traits\HomePageSelectors;
 
 /**
@@ -22,7 +21,6 @@ use Tests\Traits\HomePageSelectors;
  */
 class UpdateAccountTotalTest extends DuskTestCase {
 
-    use DatabaseMigrations;
     use HomePageSelectors;
 
     private $_institution_id;

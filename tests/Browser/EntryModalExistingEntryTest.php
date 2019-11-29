@@ -4,9 +4,8 @@ namespace Tests\Browser;
 
 use App\Http\Controllers\Api\EntryController;
 use Facebook\WebDriver\WebDriverBy;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\Browser\Pages\HomePage;
-use Tests\DuskTestCase;
+use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Laravel\Dusk\Browser;
 use Tests\Traits\HomePageSelectors;
 
@@ -21,7 +20,6 @@ use Tests\Traits\HomePageSelectors;
  */
 class EntryModalExistingEntryTest extends DuskTestCase {
 
-    use DatabaseMigrations;
     use HomePageSelectors;
 
     private $_class_lock = "fa-lock";

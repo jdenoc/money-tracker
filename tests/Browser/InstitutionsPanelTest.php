@@ -8,9 +8,8 @@ use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Laravel\Dusk\Browser;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\Browser\Pages\HomePage;
-use Tests\DuskTestCase;
+use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Tests\Traits\HomePageSelectors;
 
 /**
@@ -24,7 +23,6 @@ use Tests\Traits\HomePageSelectors;
 class InstitutionsPanelTest extends DuskTestCase {
 
     use HomePageSelectors;
-    use DatabaseMigrations;
 
     /**
      * @throws \Throwable
