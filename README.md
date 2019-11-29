@@ -12,11 +12,11 @@ For a list of features currently available, what they're expected outcome is and
   - [Docker](#docker-environment)
     - [Tear-down](#tear-down)
   - [Local/Dev](#localdev-environment)
-    - [Database](#dev-database)
     - [Application](#dev-application)
+    - [Database](#dev-database)
   - [Production](#production-environment)
-    - [Database](#prod-database)
     - [Application](#prod-application)
+    - [Database](#prod-database)
     - [Updates](#prod-updates)
   - [Environment Variables](#environment-variable-setup)
   - [Scheduled Tasks](#scheduled-tasks-setup)
@@ -122,12 +122,12 @@ _**Note:** you can replace_ `git describe` _with any value you want_
 
 ##### Setup database/clear existing database and re-initialise it empty
 ```bash
-.docker/cmd/artisan.sh migrate:refresh
+.docker/cmd/artisan.sh migrate:fresh
 ```
 
 ##### Load dummy data into database
 ```bash
-.docker/cmd/artisan.sh migrate:refresh
+.docker/cmd/artisan.sh migrate:fresh
 .docker/cmd/artisan.sh db:seed --class=UiSampleDatabaseSeeder
 ```
 
@@ -154,14 +154,6 @@ _**Note:** You do not need to worry about "tearing down" the yarn and/or compose
 ### <a name="localdev-environment">Local/Dev environment</a>
 Sometimes, you just don't want to use Docker. That's fine and we support your decision. Here are some helpful steps on setup.
 
-#### <a name="dev-database">Database setup</a> 
-```bash
-mysql -e "CREATE DATABASE money_tracker;"                                # The database can be named whatever you want. This is just an example.
-mysql -e "CREATE USER 'jdenoc'@'localhost' IDENTIFIED BY 'password';"    # Once again, you can use any database username & password you want. This is just an example.
-mysql -e "GRANT ALL PRIVILEGES ON money_tracker.* TO 'jdenoc'@'localhost';"
-```
-_**Note:** If you changed the database, user or password in the above commands, be sure to assign those new values in the .env file._
-
 #### <a name="dev-application">Application setup</a>
 ```bash
 # Clone repo
@@ -187,12 +179,17 @@ yarn install
 yarn run build-dev
 ```
 
+#### <a name="dev-database">Database setup</a> 
+```bash
+mysql -e "CREATE DATABASE money_tracker;"                                # The database can be named whatever you want. This is just an example.
+mysql -e "CREATE USER 'jdenoc'@'localhost' IDENTIFIED BY 'password';"    # Once again, you can use any database username & password you want. This is just an example.
+mysql -e "GRANT ALL PRIVILEGES ON money_tracker.* TO 'jdenoc'@'localhost';"
+```
+_**Note:** If you changed the database, user or password in the above commands, be sure to assign those new values in the .env file._
+
 ***
 
 ### Production Environment
-
-#### <a name="prod-database">Database Setup</a>
-This is the exact same process as we do for our Local/dev setup. See instructions [here](#dev-database).
 
 #### <a name="prod-application">Application Setup</a>
 ```bash
@@ -218,6 +215,37 @@ yarn run build-prod
 # setup cache
 php artisan config:cache
 ```
+
+### Environment variable setup
+Be sure to edit the `.env` file generated during setup. A few of the default values should be fine to use. Modify those as needed.  
+That being said, there are certainly variables that should be modified at this point. They are: 
+- `APP_ENV`
+- `APP_DEBUG`
+- `APP_LOG_LEVEL` (_log level values can be found [here](https://github.com/Seldaek/monolog/blob/1.23.0/doc/01-usage.md#log-levels)_)
+- `APP_NAME`
+- `APP_URL`
+- `DB_HOST`
+- `DB_DATABASE`
+- `DB_USERNAME`
+- `DB_PASSWORD`
+
+***
+
+### Scheduled tasks Setup
+This is most likely an item to add to your production server, but is also potentially something you'll want running in the background for you dev environment.
+To set this up you will need to add the following Cron entry to your server.
+```bash
+* * * * * php /path-to-your-project/artisan schedule:run >> /dev/null 2>&1
+```
+This Cron will call the Laravel command scheduler every minute. When the `schedule:run` command is executed, Laravel will evaluate your scheduled tasks and runs the tasks that are due.  
+Here is a list of commands that will _scheduled_ as part of this setup:  
+- `artisan storage:clear-tmp-uploads`
+- `artisan sanity-check:account-total`
+
+***
+
+#### <a name="prod-database">Database Setup</a>
+This is the exact same process as we do for our Local/dev setup. See instructions [here](#dev-database).
 
 ***
 
@@ -249,39 +277,12 @@ yarn run build-prod
 
 # reset cache
 php artisan config:cache
+php artisan cache:clear
 php artisan view:clear
 
 # take site out of maintenance mode
 php artisan up
 ```
-
-***
-
-### Environment variable setup
-Be sure to edit the `.env` file generated during setup. A few of the default values should be fine to use. Modify those as needed.  
-That being said, there are certainly variables that should be modified at this point. They are: 
-- `APP_ENV`
-- `APP_DEBUG`
-- `APP_LOG_LEVEL` (_log level values can be found [here](https://github.com/Seldaek/monolog/blob/1.23.0/doc/01-usage.md#log-levels)_)
-- `APP_NAME`
-- `APP_URL`
-- `DB_HOST`
-- `DB_DATABASE`
-- `DB_USERNAME`
-- `DB_PASSWORD`
-
-***
-
-### Scheduled tasks Setup
-This is most likely an item to add to your production server, but is also potentially something you'll want running in the background for you dev environment.
-To set this up you will need to add the following Cron entry to your server.
-```bash
-* * * * * php /path-to-your-project/artisan schedule:run >> /dev/null 2>&1
-```
-This Cron will call the Laravel command scheduler every minute. When the `schedule:run` command is executed, Laravel will evaluate your scheduled tasks and runs the tasks that are due.  
-Here is a list of commands that will _scheduled_ as part of this setup:  
-- `artisan storage:clear-tmp-uploads`
-- `artisan sanity-check:account-total`
 
 ***
 
@@ -303,7 +304,7 @@ docker container exec -t app.money-tracker vendor/bin/phpunit --stop-on-failure
 If you wish to test locally (or on your dev environment), here are some steps to follow:
 ```bash
 # clear existing data in database and reinstall table schemas
-php artsian migrate:refresh
+php artsian migrate:fresh
 
 # run PHP unit tests
 vendor/bin/phpunit --stop-on-failure
