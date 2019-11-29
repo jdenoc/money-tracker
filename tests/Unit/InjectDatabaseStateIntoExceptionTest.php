@@ -9,11 +9,9 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class InjectDatabaseStateIntoExceptionTest extends TestCase {
 
-    use DatabaseMigrations;
     // NOTE: InjectDatabaseStateIntoException trait has already been included by the TestCase class
 
     public function testSettingValidInjectionPermission(){

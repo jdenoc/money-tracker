@@ -4,9 +4,6 @@ namespace Tests\Feature\Console;
 
 use Tests\TestCase;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class AccountTotalSanityCheckTest extends TestCase{
 
