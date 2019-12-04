@@ -56,8 +56,13 @@ before_script:
 
 stages:
   - build
-  - unit
-  - e2e
+  - unit-tests
+  - "e2e-tests: demo"
+  - "e2e-tests: notifications"
+  - "e2e-tests: navigation"
+  - "e2e-tests: entry-modal"
+  - "e2e-tests: filter-modal"
+  - "e2e-tests: transfer-modal"
 
 jobs:
   include:
