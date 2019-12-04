@@ -43,6 +43,7 @@ before_script:
   - .docker/cmd/artisan.sh cache:clear
   - .docker/cmd/artisan.sh view:clear
   - docker container exec -t app.money-tracker env
+  - docker container exec -t --user www-data app.money-tracker mkdir -p storage/framework/cache/data
   # setup laravel log files
   - docker container exec -t --user www-data app.money-tracker touch storage/logs/laravel.debug.log
   - docker container exec -t --user www-data app.money-tracker touch storage/logs/laravel.info.log
