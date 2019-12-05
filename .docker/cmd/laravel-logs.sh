@@ -2,19 +2,19 @@
 
 function display_logs {
   path=$1;
-  NEWLINE=$"\n"
 
   docker container exec -t app.money-tracker bash -c \
     "for log in ''ls -d $path''; do
       if [ -f \$log ]; then
-        echo \"[LOG]: \$log\"; tail -100 \$log;
-        echo \$NEWLINE;
+        printf \"[LOG]: \$log\";
+        printf '\n';
+        tail -100 \$log;
+        printf '\n';
       fi
     done"
 }
 
 root_path="/var/www/money-tracker/"
-
 
 # generic laravel logs
 display_logs $root_path"storage/logs/*"
