@@ -142,7 +142,7 @@ after_failure:
   - .webhook/send.sh failure $WEBHOOK_URL
   - .webhook/image-send.sh --retry=3 --delay=7 $DUSK_SCREENSHOT_DIRECTORY $WEBHOOK_URL
   - docker container logs --tail all --timestamps app.money-tracker > /dev/null
-  - .docker/cmd/laravel-logs.sh
+  - docker container exec -it app.money-tracker .docker/cmd/laravel-logs.sh
 
 after_script:
   - docker-compose -f .docker/docker-compose.yml down -v

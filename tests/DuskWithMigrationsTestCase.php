@@ -10,7 +10,7 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
  * @package Tests
  *
  * This class exists purely so that we can cut down on the amount of code duplication.
- * This way Dusk test classes don't need to include the database refresh trait
+ * This way Dusk test classes don't need to include the DatabaseMigrations trait
  */
 abstract class DuskWithMigrationsTestCase extends DuskTestCase {
 
