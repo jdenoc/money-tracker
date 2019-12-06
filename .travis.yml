@@ -92,22 +92,22 @@ jobs:
         - chmod +x .webhook/*.sh
       script: true
 
-    - stage: unit-tests
-      script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-put
-    - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-get
-    - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-post
-    - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-delete
-    - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite console
-    - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite web
-    - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite unit
+#    - stage: unit-tests
+#      script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-put
+#    - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-get
+#    - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-post
+#    - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-delete
+#    - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite console
+#    - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite web
+#    - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite unit
 
-    - stage: "e2e-tests: demo"
-      script: .docker/cmd/artisan.sh dusk --group demo --stop-on-failure
+#    - stage: "e2e-tests: demo"
+#      script: .docker/cmd/artisan.sh dusk --group demo --stop-on-failure
 
-    - stage: "e2e-tests: notifications"
-      script: .docker/cmd/artisan.sh dusk --group notifications-1 --stop-on-failure
-    - script: .docker/cmd/artisan.sh dusk --group notifications-2 --stop-on-failure
-    - script: .docker/cmd/artisan.sh dusk --group notifications-3 --stop-on-failure
+#    - stage: "e2e-tests: notifications"
+#      script: .docker/cmd/artisan.sh dusk --group notifications-1 --stop-on-failure
+#    - script: .docker/cmd/artisan.sh dusk --group notifications-2 --stop-on-failure
+#    - script: .docker/cmd/artisan.sh dusk --group notifications-3 --stop-on-failure
 
     - stage: "e2e-tests: navigation"
       script: .docker/cmd/artisan.sh dusk --group navigation-1 --stop-on-failure
