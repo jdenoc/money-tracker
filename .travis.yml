@@ -90,6 +90,7 @@ jobs:
         - wget -O .webhook/send.sh https://raw.githubusercontent.com/jdenoc/travis-ci-discord-webhook/1.2.0/send.sh
         - wget -O .webhook/image-send.sh https://raw.githubusercontent.com/jdenoc/travis-ci-discord-webhook/1.2.0/image-send.sh
         - chmod +x .webhook/*.sh
+      before_script: skip
       script: true
 
 #    - stage: unit-tests
