@@ -4,12 +4,12 @@ function display_logs {
   path=$1;
 
   for log in $path; do
+    printf "[LOG]: $log";
     if [ -f $log ]; then
-      printf "[LOG]: $log";
       printf "\n";
-      tail -100 $log;
-      printf "\n";
+      tail -250 $log;
     fi
+    printf "\n-----\n\n";
   done
 }
 
