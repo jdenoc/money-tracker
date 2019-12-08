@@ -4,7 +4,6 @@ namespace Tests\Browser;
 
 use Tests\DuskTestCase;
 use Laravel\Dusk\Browser;
-use Laravel\Dusk\TestCase as BaseTestCase;
 
 /**
  * Class ATest
@@ -16,14 +15,9 @@ use Laravel\Dusk\TestCase as BaseTestCase;
 class ATest extends DuskTestCase {
 
     /**
-     * Override the setUp() from DuskTestCase
-     */
-    protected function setUp(){
-        BaseTestCase::setUp();
-    }
-
-    /**
      * A basic browser test to make sure selenium integration works
+     *
+     * @throws \Throwable
      */
     public function testBasicExample(){
         $this->browse(function (Browser $browser) {
