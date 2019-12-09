@@ -41,6 +41,22 @@ abstract class DuskTestCase extends BaseTestCase {
     }
 
     /**
+     * Replaces default phpunit test name.
+     * The default phpunit test name was applied to console logs and screen shots.
+     * These files were then processed by other scripts.
+     * There were spaces and quotation marks causes these other scripts to fail.
+     *
+     * @param bool $withDataSet
+     * @return string|string[]
+     */
+    public function getName($withDataSet = true){
+        $test_name = parent::getName($withDataSet);
+        $test_name = str_replace(" ", "-", $test_name);
+        $test_name = str_replace('"', '', $test_name);
+        return $test_name;
+    }
+
+    /**
      * @return void
      * @throws \Throwable
      */
