@@ -35,8 +35,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     public function providerUnconfirmedEntry(){
         return [
-            "Expense"=>[$this->_selector_table_unconfirmed_expense, $this->_label_expense_switch_expense],  // test 1/10
-            "Income"=>[$this->_selector_table_unconfirmed_income, $this->_label_expense_switch_income],     // test 2/10
+            "Expense"=>[$this->_selector_table_unconfirmed_expense, $this->_label_expense_switch_expense],  // test 1/25
+            "Income"=>[$this->_selector_table_unconfirmed_income, $this->_label_expense_switch_income],     // test 2/25
         ];
     }
 
@@ -48,7 +48,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @throws \Throwable
      *
      * @group entry-modal-1
-     * test (see provider)/10
+     * test (see provider)/25
      */
     public function testClickingOnEntryTableEditButtonOfUnconfirmedEntry($data_entry_selector, $data_expense_switch_label){
         $this->browse(function(Browser $browser) use ($data_entry_selector, $data_expense_switch_label){
@@ -98,8 +98,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     public function providerConfirmedEntry(){
         return [
-            "Expense"=>[$this->_selector_table_confirmed_expense, $this->_label_expense_switch_expense],    // test 3/10
-            "Income"=>[$this->_selector_table_confirmed_income, $this->_label_expense_switch_income],       // test 4/10
+            "Expense"=>[$this->_selector_table_confirmed_expense, $this->_label_expense_switch_expense],    // test 3/25
+            "Income"=>[$this->_selector_table_confirmed_income, $this->_label_expense_switch_income],       // test 4/25
         ];
     }
 
@@ -111,7 +111,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @throws \Throwable
      *
      * @group entry-modal-1
-     * test (see provider)/10
+     * test (see provider)/25
      */
     public function testClickingOnEntryTableEditButtonOfConfirmedEntry($data_entry_selector, $data_expense_switch_label){
         $this->browse(function(Browser $browser) use ($data_entry_selector, $data_expense_switch_label){
@@ -179,7 +179,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @throws \Throwable
      *
      * @group entry-modal-1
-     * test 5/10
+     * test 5/25
      */
     public function testClickingOnEntryTableEditButtonOfConfirmedEntryThenUnlock(){
         $this->browse(function(Browser $browser){
@@ -236,7 +236,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @throws \Throwable
      *
      * @group entry-modal-1
-     * test 6/10
+     * test 6/25
      */
     public function testClickingOnEntryTableEditButtonOfEntryWithAttachments(){
         $this->browse(function(Browser $browser){
@@ -255,9 +255,9 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     public function providerEntryWithTags(){
         return [
-            // test 7/10
+            // test 7/25
             "Confirmed"=>[$this->randomConfirmedEntrySelector().'.'.$this->_class_has_tags, $this->_selector_tags, $this->_selector_tags_tag],
-            // test 8/10
+            // test 8/25
             "Unconfirmed"=>[$this->randomUnconfirmedEntrySelector().'.'.$this->_class_has_tags, $this->_selector_modal_entry_field_tags, $this->_selector_modal_entry_field_tags_input_tag],
         ];
     }
@@ -271,7 +271,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @throws \Throwable
      *
      * @group entry-modal-1
-     * test (see provider)/10
+     * test (see provider)/25
      */
     public function testClickingOnEntryTableEditButtonOfEntryWithTags($data_entry_selector, $data_tags_container_selector, $data_tag_selector){
         $this->browse(function(Browser $browser) use ($data_entry_selector, $data_tags_container_selector, $data_tag_selector){
@@ -291,7 +291,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @throws \Throwable
      *
      * @group entry-modal-1
-     * test 9/10
+     * test 9/25
      */
     public function testOpenAttachment(){
         $this->browse(function(Browser $browser){
@@ -325,7 +325,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @throws \Throwable
      *
      * @group entry-modal-1
-     * test 10/10
+     * test 10/25
      */
     public function testDeleteAttachmentFromExistingEntry(){
         $this->browse(function(Browser $browser){
@@ -363,8 +363,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     /**
      * @throws \Throwable
      *
-     * @group entry-modal-2
-     * test 1/10
+     * @group entry-modal-1
+     * test 11/25
      */
     public function testUpdateExistingEntryDate(){
         $this->browse(function(Browser $browser){
@@ -402,8 +402,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     /**
      * @throws \Throwable
      *
-     * @group entry-modal-2
-     * test 2/10
+     * @group entry-modal-1
+     * test 12/25
      */
     public function testUpdateExistingEntryAccountType(){
         $account_types = $this->getApiAccountTypes();
@@ -437,8 +437,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     public function providerUpdateEntry(){
         return [
-            'entry_value'=>[$this->_selector_modal_entry_field_value, 0.01],                                    // test 3/10
-            'memo'=>[$this->_selector_modal_entry_field_memo, "hfrsighesiugbeusigbweuisgbeisugsebuibseiugbg"],  // test 4/10
+            'entry_value'=>[$this->_selector_modal_entry_field_value, 0.01],                                    // test 13/25
+            'memo'=>[$this->_selector_modal_entry_field_memo, "hfrsighesiugbeusigbweuisgbeisugsebuibseiugbg"],  // test 14/25
         ];
     }
 
@@ -449,8 +449,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      *
      * @throws \Throwable
      *
-     * @group entry-modal-2
-     * test (see provider)/10
+     * @group entry-modal-1
+     * test (see provider)/25
      */
     public function testUpdateExistingEntryValue($field_selector, $new_value){
         $this->browse(function(Browser $browser) use ($field_selector, $new_value){
@@ -479,8 +479,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     public function providerOpenExistingEntryInModalThenChangeConfirmSwitch(){
         return [
-            'unconfirmed->confirmed'=>[false],  // test 5/10
-            'confirmed->unconfirmed'=>[true]    // test 6/10
+            'unconfirmed->confirmed'=>[false],  // test 15/25
+            'confirmed->unconfirmed'=>[true]    // test 16/25
         ];
     }
 
@@ -490,8 +490,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      *
      * @throws \Throwable
      *
-     * @group entry-modal-2
-     * test (see provider)/10
+     * @group entry-modal-1
+     * test (see provider)/25
      */
     public function testOpenExistingEntryInModalThenChangeConfirmSwitch($selector_bool){
         $entry_selector = $this->randomEntrySelector(['confirm'=>$selector_bool]);
@@ -551,8 +551,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     public function providerOpenExistingEntryInModalThenChangeExpenseIncomeSwitch(){
         return [
-            'expense->income'=>[true],  // test 7/10
-            'income->expense'=>[false], // test 8/10
+            'expense->income'=>[true],  // test 17/25
+            'income->expense'=>[false], // test 18/25
         ];
     }
 
@@ -562,8 +562,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      *
      * @throws \Throwable
      *
-     * @group entry-modal-2
-     * test (see provider)/10
+     * @group entry-modal-1
+     * test (see provider)/25
      */
     public function testOpenExistingEntryInModalThenChangeExpenseIncomeSwitch($selector_bool){
         $entry_selector = $this->randomEntrySelector(['expense'=>$selector_bool, 'confirm'=>false]);
@@ -593,8 +593,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     /**
      * @throws \Throwable
      *
-     * @group entry-modal-2
-     * test 9/10
+     * @group entry-modal-1
+     * test 19/25
      */
     public function testExistingTransferEntryHasEntryButton(){
         $this->browse(function(Browser $browser){
@@ -678,8 +678,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     /**
      * @throws \Throwable
      *
-     * @group entry-modal-2
-     * test 10/10
+     * @group entry-modal-1
+     * test 20/25
      */
     public function testExistingExternalTransferEntryHasButtonButIsDisabled(){
         $this->browse(function(Browser $browser){
@@ -712,8 +712,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     /**
      * @throws \Throwable
      *
-     * @group entry-modal-3
-     * test 1/10
+     * @group entry-modal-1
+     * test 21/25
      */
     public function testUploadAttachmentToExistingEntry(){
         $this->browse(function(Browser $browser){
@@ -750,8 +750,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     /**
      * @throws \Throwable
      *
-     * @group entry-modal-3
-     * test 2/10
+     * @group entry-modal-1
+     * test 22/25
      */
     public function testOpenExistingEntryInModalThenCloseModalAndOpenNewEntryModal(){
         $this->browse(function(Browser $browser){

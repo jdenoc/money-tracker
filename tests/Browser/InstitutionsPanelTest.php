@@ -28,7 +28,7 @@ class InstitutionsPanelTest extends DuskTestCase {
      * @throws \Throwable
      *
      * @group navigation-1
-     * test 1/10
+     * test 1/25
      */
     public function testOverviewOptionIsVisibleAndActiveByDefault(){
         $this->browse(function(Browser $browser){
@@ -51,7 +51,7 @@ class InstitutionsPanelTest extends DuskTestCase {
      * @throws \Throwable
      *
      * @group navigation-1
-     * test 2/10
+     * test 2/25
      */
     public function testActiveInstitutionsAreVisibleWithAccountsAndClickingOnAnAccountFiltersEntries(){
         $institutions_collection = $this->getInstitutionsCollection();
@@ -111,7 +111,7 @@ class InstitutionsPanelTest extends DuskTestCase {
      * @throws \Throwable
      *
      * @group navigation-1
-     * test 3/10
+     * test 3/25
      */
     public function testDisabledAccountsElementNotVisibleIfNoDisabledAccountsExist(){
         $institutions_collection = $this->getInstitutionsCollection(false);
@@ -131,7 +131,7 @@ class InstitutionsPanelTest extends DuskTestCase {
      * @throws \Throwable
      *
      * @group navigation-1
-     * test 4/10
+     * test 4/25
      */
     public function testDisabledAccountsAreVisibleAndClickingOnADisabledAccountFiltersEntries(){
         $institutions_collection = $this->getInstitutionsCollection(false);

@@ -53,7 +53,7 @@ class NotificationsTest extends DuskTestCase {
      * @throws \Throwable
      *
      * @group notifications-1
-     * test 1/10
+     * test 1/25
      */
     public function testNoNotificationOnFetch200(){
         $this->browse(function (Browser $browser) {
@@ -67,7 +67,7 @@ class NotificationsTest extends DuskTestCase {
      * @throws \Throwable
      *
      * @group notifications-1
-     * test 2/10
+     * test 2/25
      */
     public function testNotificationFetchAccounts404(){
         // FORCE 404 from `GET /api/accounts`
@@ -83,7 +83,7 @@ class NotificationsTest extends DuskTestCase {
      * @throws \Throwable
      *
      * @group notifications-1
-     * test 3/10
+     * test 3/25
      */
     public function testNotificationFetchAccounts500(){
         $recreate_table_query = $this->getTableRecreationQuery('accounts');
@@ -103,7 +103,7 @@ class NotificationsTest extends DuskTestCase {
      * @throws \Throwable
      *
      * @group notifications-1
-     * test 4/10
+     * test 4/25
      */
     public function testNotificationFetchAccountTypes404(){
         // FORCE 404 from `GET /api/account-types`
@@ -119,7 +119,7 @@ class NotificationsTest extends DuskTestCase {
      * @throws \Throwable
      *
      * @group notifications-1
-     * test 5/10
+     * test 5/25
      */
     public function testNotificationFetchAccountTypes500(){
         $recreate_table_query = $this->getTableRecreationQuery('account_types');
@@ -139,7 +139,7 @@ class NotificationsTest extends DuskTestCase {
      * @throws \Throwable
      *
      * @group notifications-1
-     * test 6/10
+     * test 6/25
      */
     public function testNotificationDeleteAttachment404(){
         // TODO: write me...
@@ -162,7 +162,7 @@ class NotificationsTest extends DuskTestCase {
      * @throws \Throwable
      *
      * @groups notifications-1
-     * test 7/10
+     * test 7/25
      */
     public function testNotificationDeleteAttachment500(){
         // TODO: write me...
@@ -185,7 +185,7 @@ class NotificationsTest extends DuskTestCase {
      * @throws \Throwable
      *
      * @group notifications-1
-     * test 8/10
+     * test 8/25
      */
     public function testNotificationFetchEntries404(){
         // FORCE 404 from `GET /api/entries`
@@ -201,7 +201,7 @@ class NotificationsTest extends DuskTestCase {
      * @throws \Throwable
      *
      * @group notifications-1
-     * test 9/10
+     * test 9/25
      */
     public function testNotificationFetchEntries500(){
         $recreate_table_query = $this->getTableRecreationQuery('entries');
@@ -221,7 +221,7 @@ class NotificationsTest extends DuskTestCase {
      * @throws \Throwable
      *
      * @group notifications-1
-     * test 10/10
+     * test 10/25
      */
     public function testNotificationSaveNewEntry400(){
         $this->markTestIncomplete();
@@ -244,8 +244,8 @@ class NotificationsTest extends DuskTestCase {
     /**
      * @throws \Throwable
      *
-     * @group notifications-2
-     * test 1/10
+     * @group notifications-1
+     * test 11/25
      */
     public function testNotificationSaveNewEntry500(){
         $this->markTestIncomplete();
@@ -267,8 +267,8 @@ class NotificationsTest extends DuskTestCase {
     /**
      * @throws \Throwable
      *
-     * @group notifications-2
-     * test 2/10
+     * @group notifications-1
+     * test 12/25
      */
     public function testNotificationFetchEntry404(){
         $this->markTestIncomplete();
@@ -288,8 +288,8 @@ class NotificationsTest extends DuskTestCase {
     /**
      * @throws \Throwable
      *
-     * @group notifications-2
-     * test 3/10
+     * @group notifications-1
+     * test 13/25
      */
     public function testNotificationFetchEntry500(){
         $recreate_table_query = $this->getTableRecreationQuery("entries");
@@ -310,8 +310,8 @@ class NotificationsTest extends DuskTestCase {
     /**
      * @throws \Throwable
      *
-     * @group notifications-2
-     * test 4/10
+     * @group notifications-1
+     * test 14/25
      */
     public function testNotificationSaveExistingEntry200(){
         $this->markTestIncomplete();
@@ -332,8 +332,8 @@ class NotificationsTest extends DuskTestCase {
 
     public function providerNotificationSaveExistingEntry4XX(){
         return [
-            400=>[400, 'bad input | force failure'],       // test 5/10
-            404=>[404, 'entry not found | force failure']  // test 6/10
+            400=>[400, 'bad input | force failure'],       // test 15/25
+            404=>[404, 'entry not found | force failure']  // test 16/25
         ];
     }
 
@@ -342,8 +342,8 @@ class NotificationsTest extends DuskTestCase {
      *
      * @throws \Throwable
      *
-     * @group notifications-2
-     * test (see provider)/10
+     * @group notifications-1
+     * test (see provider)/25
      */
     public function testNotificationSaveExistingEntry4XX($http_status, $error_response_message){
         $this->markTestIncomplete();
@@ -367,8 +367,8 @@ class NotificationsTest extends DuskTestCase {
     /**
      * @throws \Throwable
      *
-     * @group notifications-2
-     * test 7/10
+     * @group notifications-1
+     * test 17/25
      */
     public function testNotificationSaveExistingEntry500(){
         $this->markTestIncomplete();
@@ -391,8 +391,8 @@ class NotificationsTest extends DuskTestCase {
     /**
      * @throws \Throwable
      *
-     * @group notifications-2
-     * test 8/10
+     * @group notifications-1
+     * test 18/25
      */
     public function testNotificationDeleteEntry200(){
         $this->browse(function (Browser $browser) {
@@ -408,8 +408,8 @@ class NotificationsTest extends DuskTestCase {
     /**
      * @throws \Throwable
      *
-     * @group notifications-2
-     * test 9/10
+     * @group notifications-1
+     * test 19/25
      */
     public function testNotificationDeleteEntry404(){
         // TODO: write me...
@@ -431,8 +431,8 @@ class NotificationsTest extends DuskTestCase {
     /**
      * @throws \Throwable
      *
-     * @group notifications-2
-     * test 10/10
+     * @group notifications-1
+     * test 20/25
      */
     public function testNotificationDeleteEntry500(){
         $recreate_table_query = $this->getTableRecreationQuery('entries');
@@ -455,8 +455,8 @@ class NotificationsTest extends DuskTestCase {
     /**
      * @throws \Throwable
      *
-     * @group notifications-3
-     * test 1/10
+     * @group notifications-1
+     * test 21/25
      */
     public function testNotificationFetchInstitutions404(){
         // FORCE 404 from `GET /api/institutions`
@@ -471,8 +471,8 @@ class NotificationsTest extends DuskTestCase {
     /**
      * @throws \Throwable
      *
-     * @group notifications-3
-     * test 2/10
+     * @group notifications-1
+     * test 22/25
      */
     public function testNotificationFetchInstitutions500(){
         $recreate_table_query = $this->getTableRecreationQuery('institutions');
@@ -491,8 +491,8 @@ class NotificationsTest extends DuskTestCase {
     /**
      * @throws \Throwable
      *
-     * @group notifications-3
-     * test 3/10
+     * @group notifications-1
+     * test 23/25
      */
     public function testNotificationFetchTags404(){
         // FORCE 404 from `GET /api/tags`
@@ -508,8 +508,8 @@ class NotificationsTest extends DuskTestCase {
     /**
      * @throws \Throwable
      *
-     * @group notifications-3
-     * test 4/10
+     * @group notifications-1
+     * test 24/25
      */
     public function testNotificationFetchTags500(){
         $recreate_table_query = $this->getTableRecreationQuery('tags');

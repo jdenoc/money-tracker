@@ -43,7 +43,7 @@ class FilterModalTest extends DuskTestCase {
      * @throws \Throwable
      *
      * @group filter-modal-1
-     * test 1/10
+     * test 1/25
      */
     public function testModalHeaderHasCorrectElements(){
         $this->browse(function(Browser $browser){
@@ -63,7 +63,7 @@ class FilterModalTest extends DuskTestCase {
      * @throws \Throwable
      *
      * @group filter-modal-1
-     * test 2/10
+     * test 2/25
      */
     public function testModalBodyHasCorrectElements(){
         $accounts = $this->getApiAccounts();
@@ -207,7 +207,7 @@ class FilterModalTest extends DuskTestCase {
      * @throws \Throwable
      *
      * @group filter-modal-1
-     * test 3/10
+     * test 3/25
      */
     public function testModalFooterHasCorrectElements(){
         $this->browse(function(Browser $browser){
@@ -231,7 +231,7 @@ class FilterModalTest extends DuskTestCase {
      * @throws \Throwable
      *
      * @group filter-modal-1
-     * test 4/10
+     * test 4/25
      */
     public function testModalHasTheCorrectNumberOfInputs(){
         $filter_modal_field_selectors = [
@@ -265,7 +265,7 @@ class FilterModalTest extends DuskTestCase {
      * @throws \Throwable
      *
      * @group filter-modal-1
-     * test 5/10
+     * test 5/25
      */
     public function testCloseTransferModalWithXButtonInHeader(){
         $this->browse(function(Browser $browser){
@@ -284,7 +284,7 @@ class FilterModalTest extends DuskTestCase {
      * @throws \Throwable
      *
      * @group filter-modal-1
-     * test 6/10
+     * test 6/25
      */
     public function testCloseTransferModalWithCancelButtonInFooter(){
         $this->browse(function(Browser $browser){
@@ -303,7 +303,7 @@ class FilterModalTest extends DuskTestCase {
      * @throws \Throwable
      *
      * @group filter-modal-1
-     * test 7/10
+     * test 7/25
      */
     public function testCloseFilterModalWithHotkey(){
         $this->browse(function(Browser $browser){
@@ -319,10 +319,10 @@ class FilterModalTest extends DuskTestCase {
     public function providerFlipAccountAndAccountTypeSwitch(){
         return [
             // [account.disabled, account-type.disabled]
-            ['account'=>false, 'account-type'=>true],   // test 8/10
-            ['account'=>false, 'account-type'=>false],  // test 9/10
-            ['account'=>true, 'account-type'=>false],   // test 10/10
-            ['account'=>true, 'account-type'=>true],    // test 11/10
+            ['account'=>false, 'account-type'=>true],   // test 8/25
+            ['account'=>false, 'account-type'=>false],  // test 9/25
+            ['account'=>true, 'account-type'=>false],   // test 10/25
+            ['account'=>true, 'account-type'=>true],    // test 11/25
         ];
     }
 
@@ -334,7 +334,7 @@ class FilterModalTest extends DuskTestCase {
      * @throws \Throwable
      *
      * @group filter-modal-1
-     * test (see provider)/10
+     * test (see provider)/25
      */
     public function testFlipAccountAndAccountTypeSwitch($has_disabled_account, $has_disabled_account_type){
         DB::statement("TRUNCATE accounts");
@@ -493,12 +493,12 @@ class FilterModalTest extends DuskTestCase {
 
     public function providerFlipSwitch(){
         return [
-            "flip income"=>['#filter-is-income'],               // test 1/10
-            "flip expense"=>['#filter-is-expense'],             // test 2/10
-            "flip has-attachment"=>['#filter-has-attachment'],  // test 3/10
-            "flip no-attachment"=>['#filter-no-attachment'],    // test 4/10
-            "flip transfer"=>['#filter-is-transfer'],           // test 5/10
-            "flip not confirmed"=>['#filter-unconfirmed']       // test 6/10
+            "flip income"=>['#filter-is-income'],               // test 12/25
+            "flip expense"=>['#filter-is-expense'],             // test 13/25
+            "flip has-attachment"=>['#filter-has-attachment'],  // test 14/25
+            "flip no-attachment"=>['#filter-no-attachment'],    // test 15/25
+            "flip transfer"=>['#filter-is-transfer'],           // test 16/25
+            "flip not confirmed"=>['#filter-unconfirmed']       // test 17/25
         ];
     }
 
@@ -508,8 +508,8 @@ class FilterModalTest extends DuskTestCase {
      *
      * @throws \Throwable
      *
-     * @group filter-modal-2
-     * test (see provider)/10
+     * @group filter-modal-1
+     * test (see provider)/25
      */
     public function testFlipSwitch($switch_selector){
         $this->browse(function(Browser $browser) use ($switch_selector){
@@ -532,10 +532,10 @@ class FilterModalTest extends DuskTestCase {
 
     public function providerFlippingCompanionSwitches(){
         return [
-            "flip income with expense"=>['#filter-is-income', '#filter-is-expense'],                        // test 7/10
-            "flip expense with income"=>['#filter-is-expense', '#filter-is-income'],                        // test 8/10
-            "flip has-attachment with no-attachment"=>['#filter-has-attachment', '#filter-no-attachment'],  // test 9/10
-            "flip no-attachment with has-attachment"=>['#filter-no-attachment', '#filter-has-attachment']   // test 10/10
+            "flip income with expense"=>['#filter-is-income', '#filter-is-expense'],                        // test 18/25
+            "flip expense with income"=>['#filter-is-expense', '#filter-is-income'],                        // test 19/25
+            "flip has-attachment with no-attachment"=>['#filter-has-attachment', '#filter-no-attachment'],  // test 20/25
+            "flip no-attachment with has-attachment"=>['#filter-no-attachment', '#filter-has-attachment']   // test 21/25
         ];
     }
 
@@ -546,8 +546,8 @@ class FilterModalTest extends DuskTestCase {
      *
      * @throws \Throwable
      *
-     * @group filter-modal-2
-     * test (see provider)/10
+     * @group filter-modal-1
+     * test (see provider)/25
      */
     public function testFlippingCompanionSwitches($init_switch_selector, $companion_switch_selector){
         $this->browse(function(Browser $browser) use ($init_switch_selector, $companion_switch_selector){
@@ -581,8 +581,8 @@ class FilterModalTest extends DuskTestCase {
 
     public function providerRangeValueConvertsIntoDecimalOfTwoPlaces(){
         return [
-            'Min Range'=>['#filter-min-value'], // test 1/10
-            'Max Range'=>['#filter-max-value'], // test 2/10
+            'Min Range'=>['#filter-min-value'], // test 22/25
+            'Max Range'=>['#filter-max-value'], // test 23/25
         ];
     }
 
@@ -592,8 +592,8 @@ class FilterModalTest extends DuskTestCase {
      *
      * @throws \Throwable
      *
-     * @group filter-modal-3
-     * test (see provider)/10
+     * @group filter-modal-1
+     * test (see provider)/25
      */
     public function testRangeValueConvertsIntoDecimalOfTwoPlaces($field_selector){
         $this->browse(function(Browser $browser) use ($field_selector){
@@ -613,8 +613,8 @@ class FilterModalTest extends DuskTestCase {
     /**
      * @throws \Throwable
      *
-     * @group filter-modal-3
-     * test 3/10
+     * @group filter-modal-1
+     * test 24/25
      */
     public function testClickingOnTagButtons(){
         $this->browse(function(Browser $browser){
@@ -640,8 +640,8 @@ class FilterModalTest extends DuskTestCase {
     /**
      * @throws \Throwable
      *
-     * @group filter-modal-3
-     * test 4/10
+     * @group filter-modal-1
+     * test 25/25
      */
     public function testResetFields(){
         $this->browse(function(Browser $browser){
@@ -721,18 +721,18 @@ class FilterModalTest extends DuskTestCase {
 
     public function providerClickFilterButtonToFilterResults(){
         return [
-            "Start Date"=>[$this->_selector_modal_filter_field_start_date],                         // test 1/10
-            "End Date"=>[$this->_selector_modal_filter_field_end_date],                             // test 2/10
-            "Account&Account-type"=>[$this->_selector_modal_filter_field_account_and_account_type], // test 3/10
-            "Tags"=>[$this->_partial_selector_filter_tag],                                          // test 4/10
-            "Income"=>[$this->_selector_modal_filter_field_switch_income],                          // test 5/10
-            "Expense"=>[$this->_selector_modal_filter_field_switch_expense],                        // test 6/10
-            "Has Attachments"=>[$this->_selector_modal_filter_field_switch_has_attachment],         // test 7/10
-            "No Attachments"=>[$this->_selector_modal_filter_field_switch_no_attachment],           // test 8/10
-            "Transfer"=>[$this->_selector_modal_filter_field_switch_transfer],                      // test 9/10
-            "Unconfirmed"=>[$this->_selector_modal_filter_field_switch_unconfirmed],                // test 10/10
-            "Min Range"=>[$this->_selector_modal_filter_field_min_value],                           // test 11/10
-            "Max Range"=>[$this->_selector_modal_filter_field_max_value],                           // test 12/10
+            "Start Date"=>[$this->_selector_modal_filter_field_start_date],                         // test 1/25
+            "End Date"=>[$this->_selector_modal_filter_field_end_date],                             // test 2/25
+            "Account&Account-type"=>[$this->_selector_modal_filter_field_account_and_account_type], // test 3/25
+            "Tags"=>[$this->_partial_selector_filter_tag],                                          // test 4/25
+            "Income"=>[$this->_selector_modal_filter_field_switch_income],                          // test 5/25
+            "Expense"=>[$this->_selector_modal_filter_field_switch_expense],                        // test 6/25
+            "Has Attachments"=>[$this->_selector_modal_filter_field_switch_has_attachment],         // test 7/25
+            "No Attachments"=>[$this->_selector_modal_filter_field_switch_no_attachment],           // test 8/25
+            "Transfer"=>[$this->_selector_modal_filter_field_switch_transfer],                      // test 9/25
+            "Unconfirmed"=>[$this->_selector_modal_filter_field_switch_unconfirmed],                // test 10/25
+            "Min Range"=>[$this->_selector_modal_filter_field_min_value],                           // test 11/25
+            "Max Range"=>[$this->_selector_modal_filter_field_max_value],                           // test 12/25
         ];
     }
 
@@ -742,8 +742,8 @@ class FilterModalTest extends DuskTestCase {
      *
      * @throws \Throwable
      *
-     * @group filter-modal-4
-     * test (see provider)/10
+     * @group filter-modal-2
+     * test (see provider)/25
      */
     public function testClickFilterButtonToFilterResults($filter_param){
         $this->browse(function(Browser $browser) use ($filter_param){
@@ -920,8 +920,8 @@ class FilterModalTest extends DuskTestCase {
     /**
      * @throws \Throwable
      *
-     * @group filter-modal-3
-     * test 5/10
+     * @group filter-modal-2
+     * test 13/25
      */
     public function testClickFilterButtonToUpdateInstitutionsPanelActive(){
         $this->browse(function(Browser $browser){
