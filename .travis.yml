@@ -36,9 +36,14 @@ before_script:
   - docker container exec -t mysql.money-tracker iterate-mysql-health-check
   # make sure user `www-data` has ownership of everything
   - docker container exec -t app.money-tracker chown -R www-data:www-data .
+  - docker container exec -t --user www-data app.money-tracker mkdir -p storage/framework/cache/data
   # general application setup
   - .docker/cmd/artisan.sh key:generate
   - .docker/cmd/artisan.sh app:version `git describe`
+  - .docker/cmd/artisan.sh config:clear
+  - .docker/cmd/artisan.sh cache:clear
+  - .docker/cmd/artisan.sh view:clear
+  - .docker/cmd/artisan.sh travis-ci --display-env
   - docker container exec -t app.money-tracker env
   # setup laravel log files
   - docker container exec -t --user www-data app.money-tracker touch storage/logs/laravel.debug.log
@@ -52,15 +57,20 @@ before_script:
 
 stages:
   - build
-  - unit
-  - e2e
+  - unit-tests
+  - "e2e-tests: demo"
+  - "e2e-tests: notifications"
+  - "e2e-tests: navigation"
+  - "e2e-tests: entry-modal"
+  - "e2e-tests: filter-modal"
+  - "e2e-tests: transfer-modal"
 
 jobs:
   include:
     - stage: build
       before_install:
-        - docker pull composer/composer:php5-alpine
-        - docker pull node:6
+        - docker pull composer:1.9
+        - docker pull node:12
         - docker-compose -f .docker/docker-compose.yml pull
         - DISABLE_XDEBUG=true docker-compose -f .docker/docker-compose.yml build
         # save docker images to be cached and used for tests
@@ -81,6 +91,7 @@ jobs:
         - wget -O .webhook/send.sh https://raw.githubusercontent.com/jdenoc/travis-ci-discord-webhook/1.2.0/send.sh
         - wget -O .webhook/image-send.sh https://raw.githubusercontent.com/jdenoc/travis-ci-discord-webhook/1.2.0/image-send.sh
         - chmod +x .webhook/*.sh
+      before_script: skip
       script: true
 
     - stage: unit-tests
@@ -92,13 +103,29 @@ jobs:
     - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite web
     - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite unit
 
-    - stage: e2e-tests
+    - stage: "e2e-tests: demo"
       script: .docker/cmd/artisan.sh dusk --group demo --stop-on-failure
-    - script: .docker/cmd/artisan.sh dusk --group notifications --stop-on-failure
-    - script: .docker/cmd/artisan.sh dusk --group navigation --stop-on-failure
-    - script: .docker/cmd/artisan.sh dusk --group entry-modal --stop-on-failure
-    - script: .docker/cmd/artisan.sh dusk --group filter-modal --stop-on-failure
-    - script: .docker/cmd/artisan.sh dusk --group transfer-modal --stop-on-failure
+
+    - stage: "e2e-tests: notifications"
+      script: .docker/cmd/artisan.sh dusk --group notifications-1 --stop-on-failure
+
+    - stage: "e2e-tests: navigation"
+      script: .docker/cmd/artisan.sh dusk --group navigation-1 --stop-on-failure
+    - script: .docker/cmd/artisan.sh dusk --group navigation-2 --stop-on-failure
+    - script: .docker/cmd/artisan.sh dusk --group navigation-3 --stop-on-failure
+    - script: .docker/cmd/artisan.sh dusk --group navigation-4 --stop-on-failure
+
+    - stage: "e2e-tests: entry-modal"
+      script: .docker/cmd/artisan.sh dusk --group entry-modal-1 --stop-on-failure
+    - script: .docker/cmd/artisan.sh dusk --group entry-modal-2 --stop-on-failure
+
+    - stage: "e2e-tests: filter-modal"
+      script: .docker/cmd/artisan.sh dusk --group filter-modal-1 --stop-on-failure
+    - script: .docker/cmd/artisan.sh dusk --group filter-modal-2 --stop-on-failure
+
+    - stage: "e2e-tests: transfer-modal"
+      script: .docker/cmd/artisan.sh dusk --group transfer-modal-1 --stop-on-failure
+    - script: .docker/cmd/artisan.sh dusk --group transfer-modal-2 --stop-on-failure
 
 # $WEBHOOK_URL should be set in travis-ci settings
 after_success:
@@ -108,7 +135,7 @@ after_failure:
   - .webhook/send.sh failure $WEBHOOK_URL
   - .webhook/image-send.sh --retry=3 --delay=7 $DUSK_SCREENSHOT_DIRECTORY $WEBHOOK_URL
   - docker container logs --tail all --timestamps app.money-tracker > /dev/null
-  - .docker/cmd/laravel-logs.sh
+  - docker container exec -it app.money-tracker .docker/cmd/laravel-logs.sh
 
 after_script:
   - docker-compose -f .docker/docker-compose.yml down -v

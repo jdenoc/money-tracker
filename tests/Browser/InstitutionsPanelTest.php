@@ -8,9 +8,8 @@ use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Laravel\Dusk\Browser;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\Browser\Pages\HomePage;
-use Tests\DuskTestCase;
+use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Tests\Traits\HomePageSelectors;
 
 /**
@@ -24,8 +23,13 @@ use Tests\Traits\HomePageSelectors;
 class InstitutionsPanelTest extends DuskTestCase {
 
     use HomePageSelectors;
-    use DatabaseMigrations;
 
+    /**
+     * @throws \Throwable
+     *
+     * @group navigation-1
+     * test 1/25
+     */
     public function testOverviewOptionIsVisibleAndActiveByDefault(){
         $this->browse(function(Browser $browser){
             $browser
@@ -43,6 +47,12 @@ class InstitutionsPanelTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group navigation-1
+     * test 2/25
+     */
     public function testActiveInstitutionsAreVisibleWithAccountsAndClickingOnAnAccountFiltersEntries(){
         $institutions_collection = $this->getInstitutionsCollection();
         $accounts_collection = $this->getAccountsCollection($institutions_collection);
@@ -97,6 +107,12 @@ class InstitutionsPanelTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group navigation-1
+     * test 3/25
+     */
     public function testDisabledAccountsElementNotVisibleIfNoDisabledAccountsExist(){
         $institutions_collection = $this->getInstitutionsCollection(false);
         $institution_id = $institutions_collection->pluck('id')->random(1)->first();
@@ -111,6 +127,12 @@ class InstitutionsPanelTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group navigation-1
+     * test 4/25
+     */
     public function testDisabledAccountsAreVisibleAndClickingOnADisabledAccountFiltersEntries(){
         $institutions_collection = $this->getInstitutionsCollection(false);
         $accounts_collection = $this->getAccountsCollection($institutions_collection);

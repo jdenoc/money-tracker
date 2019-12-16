@@ -6,9 +6,8 @@ use App\Entry;
 use App\Http\Controllers\Api\EntryController;
 use Faker\Factory as FakerFactory;
 use Tests\Browser\Pages\HomePage;
-use Tests\DuskTestCase;
+use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Laravel\Dusk\Browser;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\Traits\HomePageSelectors;
 
 /**
@@ -22,7 +21,6 @@ use Tests\Traits\HomePageSelectors;
  */
 class UpdateAccountTotalTest extends DuskTestCase {
 
-    use DatabaseMigrations;
     use HomePageSelectors;
 
     private $_institution_id;
@@ -50,8 +48,8 @@ class UpdateAccountTotalTest extends DuskTestCase {
 
     public function providerUpdateAccountTotalWithNewEntry(){
        return [
-           'expense'=>[true],
-           'income'=>[false]
+           'expense'=>[true],   // test 1/25
+           'income'=>[false]    // test 2/25
        ] ;
     }
 
@@ -60,6 +58,9 @@ class UpdateAccountTotalTest extends DuskTestCase {
      * @param bool $is_entry_expense
      *
      * @throws \Throwable
+     *
+     * @group navigation-4
+     * test (see provider)/25
      */
     public function testUpdateAccountTotalWithNewEntry($is_entry_expense){
         $this->browse(function (Browser $browser) use($is_entry_expense){
@@ -97,6 +98,12 @@ class UpdateAccountTotalTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group navigation-4
+     * test 3/25
+     */
     public function testUpdateAccountTotalWithExistingEntryByTogglingIncomeExpense(){
         $this->browse(function (Browser $browser){
             $browser->visit(new HomePage())->waitForLoadingToStop();
@@ -130,6 +137,12 @@ class UpdateAccountTotalTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group navigation-4
+     * test 4/25
+     */
     public function testUpdateAccountTotalWithExistingEntryByChangingValue(){
         $this->browse(function (Browser $browser){
             $browser->visit(new HomePage())->waitForLoadingToStop();
@@ -161,6 +174,12 @@ class UpdateAccountTotalTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group navigation-4
+     * test 5/25
+     */
     public function testOpenExistingEntryAndDeleteIt(){
         $this->browse(function(Browser $browser){
             $browser->visit(new HomePage())->waitForLoadingToStop();
@@ -192,9 +211,9 @@ class UpdateAccountTotalTest extends DuskTestCase {
     public function providerUpdateAccountTotalsWithNewTransferEntries(){
         return [
             // [$is_from_account_external, $is_to_account_external]
-            'neither account is external'=>[false, false],
-            '"to" account is external'=>[false, true],
-            '"from" account is external'=>[true, false]
+            'neither account is external'=>[false, false],  // test 6/25
+            '"to" account is external'=>[false, true],      // test 7/25
+            '"from" account is external'=>[true, false]     // test 8/25
             // there will NEVER be a [true, true] option. there can not be two "external" accounts
         ];
     }
@@ -205,6 +224,9 @@ class UpdateAccountTotalTest extends DuskTestCase {
      * @param bool $is_to_account_external
      *
      * @throws \Throwable
+     *
+     * @group navigation-4
+     * test (see provider)/25
      */
     public function testUpdateAccountTotalsWithNewTransferEntries($is_from_account_external, $is_to_account_external){
         $account = [];

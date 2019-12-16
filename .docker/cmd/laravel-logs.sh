@@ -1,9 +1,22 @@
 #!/usr/bin/env bash
 
-docker container exec -t app.money-tracker sh -c \
-  "for log in ''ls -d /var/www/money-tracker/storage/logs/*''; do
-    if [ -f \$log ]; then
-      echo \"[LOG]: \$log\"; tail -100 \$log;
-      echo \"\\n\";
+function display_logs {
+  path=$1;
+
+  for log in $path; do
+    printf "[LOG]: $log";
+    if [ -f $log ]; then
+      printf "\n";
+      tail -500 $log;
     fi
-  done"
+    printf "\n-----\n\n";
+  done
+}
+
+root_path="/var/www/money-tracker/"
+
+# generic laravel logs
+display_logs $root_path"storage/logs/*"
+
+# laravel dusk javascript console logs
+display_logs $root_path"tests/Browser/console/*"

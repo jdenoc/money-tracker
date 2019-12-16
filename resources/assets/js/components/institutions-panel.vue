@@ -128,6 +128,10 @@
         width: 25%;
         height: 92%;
 
+        .panel-heading{
+            font-weight: 600;
+        }
+
         .menu-list{
             line-height: 1;
 

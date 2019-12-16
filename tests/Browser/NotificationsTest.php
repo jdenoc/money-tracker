@@ -2,10 +2,9 @@
 
 namespace Tests\Browser;
 
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Support\Facades\DB;
 use Tests\Browser\Pages\HomePage;
-use Tests\DuskTestCase;
+use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Laravel\Dusk\Browser;
 use Tests\Traits\InjectDatabaseStateIntoException;
 
@@ -18,7 +17,6 @@ use Tests\Traits\InjectDatabaseStateIntoException;
  */
 class NotificationsTest extends DuskTestCase {
 
-    use DatabaseMigrations;
     use InjectDatabaseStateIntoException;
 
     private $_selector_unconfirmed_expense = "tr.has-background-warning.is-expense";
@@ -53,6 +51,9 @@ class NotificationsTest extends DuskTestCase {
      *  - tags
      *
      * @throws \Throwable
+     *
+     * @group notifications-1
+     * test 1/25
      */
     public function testNoNotificationOnFetch200(){
         $this->browse(function (Browser $browser) {
@@ -62,6 +63,12 @@ class NotificationsTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group notifications-1
+     * test 2/25
+     */
     public function testNotificationFetchAccounts404(){
         // FORCE 404 from `GET /api/accounts`
         DB::statement("TRUNCATE accounts");
@@ -72,6 +79,12 @@ class NotificationsTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group notifications-1
+     * test 3/25
+     */
     public function testNotificationFetchAccounts500(){
         $recreate_table_query = $this->getTableRecreationQuery('accounts');
 
@@ -86,6 +99,12 @@ class NotificationsTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group notifications-1
+     * test 4/25
+     */
     public function testNotificationFetchAccountTypes404(){
         // FORCE 404 from `GET /api/account-types`
         DB::statement("TRUNCATE account_types");
@@ -96,6 +115,12 @@ class NotificationsTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group notifications-1
+     * test 5/25
+     */
     public function testNotificationFetchAccountTypes500(){
         $recreate_table_query = $this->getTableRecreationQuery('account_types');
 
@@ -110,6 +135,12 @@ class NotificationsTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group notifications-1
+     * test 6/25
+     */
     public function testNotificationDeleteAttachment404(){
         // TODO: write me...
         $this->markTestIncomplete();
@@ -127,6 +158,12 @@ class NotificationsTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @groups notifications-1
+     * test 7/25
+     */
     public function testNotificationDeleteAttachment500(){
         // TODO: write me...
         $this->markTestIncomplete();
@@ -144,6 +181,12 @@ class NotificationsTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group notifications-1
+     * test 8/25
+     */
     public function testNotificationFetchEntries404(){
         // FORCE 404 from `GET /api/entries`
         DB::statement("TRUNCATE entries");
@@ -154,6 +197,12 @@ class NotificationsTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group notifications-1
+     * test 9/25
+     */
     public function testNotificationFetchEntries500(){
         $recreate_table_query = $this->getTableRecreationQuery('entries');
 
@@ -168,6 +217,12 @@ class NotificationsTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group notifications-1
+     * test 10/25
+     */
     public function testNotificationSaveNewEntry400(){
         $this->markTestIncomplete();
         $this->browse(function (Browser $browser) {
@@ -186,6 +241,12 @@ class NotificationsTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group notifications-1
+     * test 11/25
+     */
     public function testNotificationSaveNewEntry500(){
         $this->markTestIncomplete();
         $this->browse(function (Browser $browser) {
@@ -203,6 +264,12 @@ class NotificationsTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group notifications-1
+     * test 12/25
+     */
     public function testNotificationFetchEntry404(){
         $this->markTestIncomplete();
         $this->browse(function (Browser $browser) {
@@ -218,6 +285,12 @@ class NotificationsTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group notifications-1
+     * test 13/25
+     */
     public function testNotificationFetchEntry500(){
         $recreate_table_query = $this->getTableRecreationQuery("entries");
         $this->browse(function(Browser $browser) use ($recreate_table_query){
@@ -234,6 +307,12 @@ class NotificationsTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group notifications-1
+     * test 14/25
+     */
     public function testNotificationSaveExistingEntry200(){
         $this->markTestIncomplete();
         $this->browse(function (Browser $browser) {
@@ -253,8 +332,8 @@ class NotificationsTest extends DuskTestCase {
 
     public function providerNotificationSaveExistingEntry4XX(){
         return [
-            400=>[400, 'bad input | force failure'],
-            404=>[404, 'entry not found | force failure']
+            400=>[400, 'bad input | force failure'],       // test 15/25
+            404=>[404, 'entry not found | force failure']  // test 16/25
         ];
     }
 
@@ -262,6 +341,9 @@ class NotificationsTest extends DuskTestCase {
      * @dataProvider providerNotificationSaveExistingEntry4XX
      *
      * @throws \Throwable
+     *
+     * @group notifications-1
+     * test (see provider)/25
      */
     public function testNotificationSaveExistingEntry4XX($http_status, $error_response_message){
         $this->markTestIncomplete();
@@ -282,6 +364,12 @@ class NotificationsTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group notifications-1
+     * test 17/25
+     */
     public function testNotificationSaveExistingEntry500(){
         $this->markTestIncomplete();
         $this->browse(function (Browser $browser) {
@@ -300,6 +388,12 @@ class NotificationsTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group notifications-1
+     * test 18/25
+     */
     public function testNotificationDeleteEntry200(){
         $this->browse(function (Browser $browser) {
             $entry_table_row_selector = $this->getEntryTableRowSelector();
@@ -311,6 +405,12 @@ class NotificationsTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group notifications-1
+     * test 19/25
+     */
     public function testNotificationDeleteEntry404(){
         // TODO: write me...
         $this->markTestIncomplete();
@@ -328,27 +428,36 @@ class NotificationsTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group notifications-1
+     * test 20/25
+     */
     public function testNotificationDeleteEntry500(){
-        $this->browse(function (Browser $browser) {
-            $browser->visit(new HomePage());
-            $recreate_table_query = $this->getTableRecreationQuery('entries');
+        $recreate_table_query = $this->getTableRecreationQuery('entries');
 
-            $this->browse(function (Browser $browser) use ($recreate_table_query){
-                $entry_table_row_selector = $this->getEntryTableRowSelector();
-                $browser->visit(new HomePage())
-                    ->waitForLoadingToStop()
-                    ->openExistingEntryModal($entry_table_row_selector);
+        $this->browse(function (Browser $browser) use ($recreate_table_query){
+            $entry_table_row_selector = $this->getEntryTableRowSelector();
+            $browser->visit(new HomePage())
+                ->waitForLoadingToStop()
+                ->openExistingEntryModal($entry_table_row_selector);
 
-                DB::statement("DROP TABLE entries");
+            DB::statement("DROP TABLE entries");
 
-                $browser
-                    ->click($this->_selector_modal_foot_delete_btn)
-                    ->assertNotification(HomePage::NOTIFICATION_ERROR, "An error occurred while attempting to delete entry [");
-                DB::statement($recreate_table_query);
-            });
+            $browser
+                ->click($this->_selector_modal_foot_delete_btn)
+                ->assertNotification(HomePage::NOTIFICATION_ERROR, "An error occurred while attempting to delete entry [");
+            DB::statement($recreate_table_query);
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group notifications-1
+     * test 21/25
+     */
     public function testNotificationFetchInstitutions404(){
         // FORCE 404 from `GET /api/institutions`
         DB::statement("TRUNCATE institutions");
@@ -359,6 +468,12 @@ class NotificationsTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group notifications-1
+     * test 22/25
+     */
     public function testNotificationFetchInstitutions500(){
         $recreate_table_query = $this->getTableRecreationQuery('institutions');
 
@@ -373,6 +488,12 @@ class NotificationsTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group notifications-1
+     * test 23/25
+     */
     public function testNotificationFetchTags404(){
         // FORCE 404 from `GET /api/tags`
         DB::statement("TRUNCATE tags");
@@ -384,6 +505,12 @@ class NotificationsTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group notifications-1
+     * test 24/25
+     */
     public function testNotificationFetchTags500(){
         $recreate_table_query = $this->getTableRecreationQuery('tags');
 
