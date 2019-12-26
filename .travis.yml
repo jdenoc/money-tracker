@@ -77,7 +77,7 @@ jobs:
         - mkdir -p .docker/images
         - docker save ${COMPOSE_PROJECT_NAME}_application | gzip > .docker/images/application.tar.gz
         - docker save ${COMPOSE_PROJECT_NAME}_database | gzip > .docker/images/database.tar.gz
-        - docker save selenium/standalone-chrome:latest | gzip > .docker/images/selenium.tar.gz
+        - docker save selenium/standalone-chrome:3.141.59-xenon | gzip > .docker/images/selenium.tar.gz
       install:  # $GH_TOKEN should be set in travis-ci settings and generated in GitHub user settings
         # install composer packages
         - if [ -n "$GH_TOKEN" ]; then .docker/cmd/composer.sh config github-oauth.github.com ${GH_TOKEN}; fi;
