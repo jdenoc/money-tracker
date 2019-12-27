@@ -37,7 +37,7 @@ class InstitutionsPanelTest extends DuskTestCase {
                 ->waitForLoadingToStop()
                 ->with($this->_selector_panel_institutions, function($panel){
                     $panel
-                        ->assertSeeIn(".panel-heading", "Institutions")
+                        ->assertSeeIn($this->_selector_panel_institutions_heading, "Institutions")
                         ->assertVisible($this->_selector_panel_institutions_overview)
                         ->assertSeeIn($this->_selector_panel_institutions_overview, "Overview");
 
@@ -63,9 +63,7 @@ class InstitutionsPanelTest extends DuskTestCase {
                 ->visit(new HomePage())
                 ->waitForLoadingToStop()
                 ->with($this->_selector_panel_institutions, function($panel) use ($institutions_collection, $accounts_collection, $account_types_collection){
-                    $active_institutions_collection = $institutions_collection
-                        ->where('active', true)
-                        ->sortBy('name');
+                    $active_institutions_collection = $this->getInstitutionsCollection(false)->sortBy('name');
 
                     foreach($active_institutions_collection as $active_institution){
                         $panel->with('#institution-'.$active_institution['id'], function($institution_node) use ($active_institution, $accounts_collection, $account_types_collection){
@@ -97,7 +95,8 @@ class InstitutionsPanelTest extends DuskTestCase {
                             foreach($institution_accounts_collection as $institution_account){
                                 $institution_node->with($this->_selector_panel_institutions_accounts.' #account-'.$institution_account['id'], function($account_node) use ($institution_account, $account_types_collection){
                                     $account_account_types_collection = $account_types_collection->where('account_id', $institution_account['id']);
-                                    $this->assertInstitutionPanelAccountNode($account_node, $institution_account['name'], $account_account_types_collection);
+                                    $this->assertAccountNodeName($account_node, $institution_account['name']);
+                                    $this->assertInstitutionPanelAccountNode($account_node, $account_account_types_collection);
                                     $this->assertInstitutionPanelAccountNodeClickInteraction($account_node, $account_types_collection);
                                 });
                             }
@@ -169,7 +168,7 @@ class InstitutionsPanelTest extends DuskTestCase {
                     foreach($disabled_accounts_collection as $account_data){
                         $closed_accounts->with($this->_selector_panel_institutions_accounts.' #account-'.$account_data['id'], function($account_node) use ($account_data, $account_types_collection){
                             $account_account_types_collection = $account_types_collection->where('account_id', $account_data['id']);
-                            $this->assertInstitutionPanelAccountNode($account_node, $account_data['name'], $account_account_types_collection, false);
+                            $this->assertInstitutionPanelAccountNode($account_node, $account_account_types_collection, false);
                             $this->assertInstitutionPanelAccountNodeClickInteraction($account_node, $account_account_types_collection);
                         });
                     }
@@ -177,17 +176,74 @@ class InstitutionsPanelTest extends DuskTestCase {
         });
     }
 
+    public function providerAccountTotalValueIsTwoDecimalPlaces(){
+        return [
+            ["0.12"],   // test 5/25
+            ["0.10"],   // test 6/25
+            ["0.01"],   // test 7/25
+            ["0.00"],   // test 8/25
+            ["-0.01"],  // test 9/25
+            ["-0.10"],  // test 10/25
+            ["-0.12"]   // test 11/25
+        ];
+    }
+
+    /**
+     * @dataProvider providerAccountTotalValueIsTwoDecimalPlaces
+     * @param string $test_total
+     *
+     * @throws \Throwable
+     *
+     * @group navigation-1
+     * test (see provider)/25
+     */
+    public function testAccountTotalValueIsTwoDecimalPlaces($test_total){
+        DB::statement("TRUNCATE institutions");
+        $new_institution = factory(Institution::class)->create(['active'=>true]);
+        $institution_id = $new_institution->id;
+        DB::statement("TRUNCATE accounts");
+        $new_account = factory(Account::class)->create(['institution_id'=>$institution_id, 'total'=>$test_total, 'disabled'=>false]);
+        DB::statement("UPDATE account_types SET account_id=:id", ['id'=>$new_account->id]);
+
+        $this->browse(function(Browser $browser) use ($institution_id, $new_account, $test_total){
+            $browser
+                ->visit(new HomePage())
+                ->waitForLoadingToStop()
+                ->with($this->_selector_panel_institutions, function(Browser $panel) use ($institution_id, $new_account, $test_total){
+                    $panel->with("#institution-".$institution_id, function(Browser $institution_node) use ($new_account, $test_total){
+                        $institution_node
+                            ->click('')         // click institutions node;
+                            ->pause(400)    // 0.4 seconds
+                            ->with($this->_selector_panel_institutions_accounts.' #account-'.$new_account->id, function(Browser $account_node) use ($new_account, $test_total){
+                                $this->assertAccountNodeName($account_node, $new_account->name);
+                                 // confirm total value is to two decimal places
+                                $account_total_text = $account_node->text($this->_selector_panel_institutions_accounts_account_total);
+                                $this->assertEquals($test_total, $test_total);
+                                $this->assertEquals($test_total, $account_total_text);
+                                $this->assertEquals(1, preg_match("/\d+\.\d{2}/", $account_total_text));
+                        });
+
+                    });
+                });
+        });
+    }
+
     /**
      * @param Browser $account_node
      * @param string $account_name
-     * @param Collection $account_types_collection
-     * @param boolean $has_tooltip
      */
-    private function assertInstitutionPanelAccountNode($account_node, $account_name, $account_types_collection, $has_tooltip=true){
+    private function assertAccountNodeName(Browser $account_node, $account_name){
         // confirm account name is within collection
         $account_node_name = $account_node->text($this->_selector_panel_institutions_accounts_account_name.' span:first-child');
         $this->assertContains($account_name, $account_node_name);
+    }
 
+    /**
+     * @param Browser $account_node
+     * @param Collection $account_types_collection
+     * @param boolean $has_tooltip
+     */
+    private function assertInstitutionPanelAccountNode($account_node, $account_types_collection, $has_tooltip=true){
         // hover over account element
         $account_node->mouseover('');
 
