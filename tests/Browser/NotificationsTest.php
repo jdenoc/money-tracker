@@ -340,6 +340,9 @@ class NotificationsTest extends DuskTestCase {
     /**
      * @dataProvider providerNotificationSaveExistingEntry4XX
      *
+     * @param int $http_status
+     * @param string $error_response_message
+     *
      * @throws \Throwable
      *
      * @group notifications-1

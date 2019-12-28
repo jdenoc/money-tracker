@@ -2,7 +2,6 @@
 
 namespace Tests;
 
-use App\Traits\Tests\LogTestName;
 use App\Traits\Tests\StorageTestFiles;
 use Laravel\Dusk\Browser;
 use Laravel\Dusk\TestCase as BaseTestCase;
@@ -13,7 +12,6 @@ abstract class DuskTestCase extends BaseTestCase {
 
     use CreatesApplication;
     use StorageTestFiles;
-    use LogTestName;
 
     const RESIZE_WIDTH_PX = 1400;
     const RESIZE_HEIGHT_PX = 2500;
@@ -68,7 +66,11 @@ abstract class DuskTestCase extends BaseTestCase {
     protected function setUpTraits(){
         $uses = array_flip(class_uses_recursive(static::class));
 
-        if (isset($uses[LogTestName::class])){
+        if(isset($uses[\Tests\Traits\InjectDatabaseStateIntoException::class])){
+            $this->prepareFailureExceptionForDatabaseInjection();
+        }
+
+        if (isset($uses[\App\Traits\Tests\LogTestName::class])){
             $this->runTestNameLogging($this->getName());
         }
 

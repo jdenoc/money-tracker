@@ -15,7 +15,14 @@ trait InjectDatabaseStateIntoException {
     public static $ALLOW_INJECT_DATABASE_STATE_ON_EXCEPTION = true;
     public static $DENY_INJECT_DATABASE_STATE_ON_EXCEPTION = false;
 
+    /**
+     * @var bool
+     */
     private $can_inject_database_state = false;
+    /**
+     * @var string
+     */
+    private $_database_state = '';
 
     /**
      * @return bool
@@ -68,5 +75,25 @@ trait InjectDatabaseStateIntoException {
         }
     }
 
+    /**
+     * @param \Throwable|\Exception $unsuccessful_test_exception
+     * @throws \Exception
+     * @throws \Throwable
+     */
+    protected function onNotSuccessfulTest($unsuccessful_test_exception){
+        $exception_message_to_inject = "Database state on failure:\n".$this->_database_state;
+        $unsuccessful_test_exception = $this->injectMessageIntoException($unsuccessful_test_exception, $exception_message_to_inject);
+
+        parent::onNotSuccessfulTest($unsuccessful_test_exception); // this needs to occur at the end of the method, or things won't get output.
+    }
+
+    public function prepareFailureExceptionForDatabaseInjection(){
+        $this->beforeApplicationDestroyed(function(){
+            if($this->isDatabaseStateInjectionAllowed()){
+                // database truncation occurs in the tearDown() step, before we reach onNotSuccessfulTest()
+                $this->_database_state = $this->getDatabaseState();
+            }
+        });
+    }
 
 }
