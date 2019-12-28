@@ -8,7 +8,7 @@
         <br/>
         <span class="account-currency" v-bind:class="{'is-hidden': !isAccountTotalVisible}">
             <i v-bind:class="accountCurrencyClass"></i>
-            <span v-text="total"></span>
+            <span v-text="accountTotal"></span>
         </span>
         </a>
     </li>
@@ -32,6 +32,13 @@
             }
         },
         computed: {
+            accountTotal: function(){
+                if(this.isAccountTotalVisible){
+                    return this.total.toFixed(2);
+                } else {
+                    return '';
+                }
+            },
             currencyObject: function(){
                 return currency.currency;
             },
