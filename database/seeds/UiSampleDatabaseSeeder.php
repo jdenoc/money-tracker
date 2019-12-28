@@ -94,6 +94,7 @@ class UiSampleDatabaseSeeder extends Seeder {
             $transfer_from_entry->transfer_entry_id = $transfer_to_entry->id;
             $transfer_from_entry->save();
             $transfer_to_entry->transfer_entry_id = $transfer_from_entry->id;
+            $transfer_to_entry->entry_value = $transfer_from_entry->entry_value;
             $transfer_to_entry->save();
         }
         $external_transfer_entry = $entries_not_disabled->where('transfer_entry_id', null)
