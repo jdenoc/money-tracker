@@ -66,7 +66,7 @@ abstract class DuskTestCase extends BaseTestCase {
     protected function setUpTraits(){
         $uses = array_flip(class_uses_recursive(static::class));
 
-        if(isset($uses[\Tests\Traits\InjectDatabaseStateIntoException::class])){
+        if(isset($uses[\App\Traits\Tests\InjectDatabaseStateIntoException::class])){
             $this->prepareFailureExceptionForDatabaseInjection();
         }
 

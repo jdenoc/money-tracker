@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Traits;
+namespace App\Traits\Tests;
 
 use App\Account;
 use App\AccountType;
