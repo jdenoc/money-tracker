@@ -116,29 +116,37 @@ class UiSampleDatabaseSeeder extends Seeder {
 
         // income confirmed
         $this->assignAttachmentToEntry(
-            $entries_confirmed->where('expense', 0)->pluck('id')
-                ->chunk(EntryController::MAX_ENTRIES_IN_RESPONSE)->shift()->random(),
+            $entries_confirmed
+                ->chunk(EntryController::MAX_ENTRIES_IN_RESPONSE)->shift()
+                ->where('expense', 0)->pluck('id')
+                ->random(),
             $transfer_to_entries->pluck('id')->toArray(),
             $entries
         );
         // income unconfirmed
         $this->assignAttachmentToEntry(
-            $entries_not_confirmed->where('expense', 0)->pluck('id')
-                ->chunk(EntryController::MAX_ENTRIES_IN_RESPONSE)->shift()->random(),
+            $entries_not_confirmed
+                ->chunk(EntryController::MAX_ENTRIES_IN_RESPONSE)->shift()
+                ->where('expense', 0)->pluck('id')
+                ->random(),
             $transfer_to_entries->pluck('id')->toArray(),
             $entries
         );
         // expense confirmed
         $this->assignAttachmentToEntry(
-            $entries_confirmed->where('expense', 1)->pluck('id')
-                ->chunk(EntryController::MAX_ENTRIES_IN_RESPONSE)->shift()->random(),
+            $entries_confirmed
+                ->chunk(EntryController::MAX_ENTRIES_IN_RESPONSE)->shift()
+                ->where('expense', 1)->pluck('id')
+                ->random(),
             $transfer_from_entries->pluck('id')->toArray(),
             $entries
         );
         // expense unconfirmed
         $this->assignAttachmentToEntry(
-            $entries_not_confirmed->where('expense', 1)->pluck('id')
-                ->chunk(EntryController::MAX_ENTRIES_IN_RESPONSE)->shift()->random(),
+            $entries_not_confirmed
+                ->chunk(EntryController::MAX_ENTRIES_IN_RESPONSE)->shift()
+                ->where('expense', 1)->pluck('id')
+                ->random(),
             $transfer_from_entries->pluck('id')->toArray(),
             $entries
         );
