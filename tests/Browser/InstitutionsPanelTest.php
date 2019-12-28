@@ -35,7 +35,7 @@ class InstitutionsPanelTest extends DuskTestCase {
             $browser
                 ->visit(new HomePage())
                 ->waitForLoadingToStop()
-                ->with($this->_selector_panel_institutions, function($panel){
+                ->with($this->_selector_panel_institutions, function(Browser $panel){
                     $panel
                         ->assertSeeIn($this->_selector_panel_institutions_heading, "Institutions")
                         ->assertVisible($this->_selector_panel_institutions_overview)
@@ -62,11 +62,11 @@ class InstitutionsPanelTest extends DuskTestCase {
             $browser
                 ->visit(new HomePage())
                 ->waitForLoadingToStop()
-                ->with($this->_selector_panel_institutions, function($panel) use ($institutions_collection, $accounts_collection, $account_types_collection){
+                ->with($this->_selector_panel_institutions, function(Browser $panel) use ($institutions_collection, $accounts_collection, $account_types_collection){
                     $active_institutions_collection = $this->getInstitutionsCollection(false)->sortBy('name');
 
                     foreach($active_institutions_collection as $active_institution){
-                        $panel->with('#institution-'.$active_institution['id'], function($institution_node) use ($active_institution, $accounts_collection, $account_types_collection){
+                        $panel->with('#institution-'.$active_institution['id'], function(Browser $institution_node) use ($active_institution, $accounts_collection, $account_types_collection){
                             // confirm "accordion" is closed
                             $open_close_node_class = $institution_node->attribute($this->_selector_panel_institutions_institution_open_close, 'class');
                             $this->assertContains('fa-chevron-down', $open_close_node_class);
@@ -93,9 +93,9 @@ class InstitutionsPanelTest extends DuskTestCase {
                                 ->where('institution_id', $active_institution['id'])
                                 ->sortBy('name');
                             foreach($institution_accounts_collection as $institution_account){
-                                $institution_node->with($this->_selector_panel_institutions_accounts.' #account-'.$institution_account['id'], function($account_node) use ($institution_account, $account_types_collection){
-                                    $account_account_types_collection = $account_types_collection->where('account_id', $institution_account['id']);
+                                $institution_node->with($this->_selector_panel_institutions_accounts.' #account-'.$institution_account['id'], function(Browser $account_node) use ($institution_account, $account_types_collection){
                                     $this->assertAccountNodeName($account_node, $institution_account['name']);
+                                    $account_account_types_collection = $account_types_collection->where('account_id', $institution_account['id']);
                                     $this->assertInstitutionPanelAccountNode($account_node, $account_account_types_collection);
                                     $this->assertInstitutionPanelAccountNodeClickInteraction($account_node, $account_types_collection);
                                 });
@@ -143,7 +143,7 @@ class InstitutionsPanelTest extends DuskTestCase {
                 ->visit(new HomePage())
                 ->waitForLoadingToStop()
                 ->assertVisible("#closed-accounts")
-                ->with("#closed-accounts", function($closed_accounts) use ($disabled_accounts_collection, $account_types_collection){
+                ->with("#closed-accounts", function(Browser $closed_accounts) use ($disabled_accounts_collection, $account_types_collection){
                     // confirm the label says "closed accounts"
                     $closed_accounts_label = $closed_accounts->text('span.name-label');
                     $this->assertEquals("Closed Accounts", $closed_accounts_label);
@@ -166,7 +166,7 @@ class InstitutionsPanelTest extends DuskTestCase {
                     $this->assertContains('fa-chevron-down', $open_close_node_class);
 
                     foreach($disabled_accounts_collection as $account_data){
-                        $closed_accounts->with($this->_selector_panel_institutions_accounts.' #account-'.$account_data['id'], function($account_node) use ($account_data, $account_types_collection){
+                        $closed_accounts->with($this->_selector_panel_institutions_accounts.' #account-'.$account_data['id'], function(Browser $account_node) use ($account_data, $account_types_collection){
                             $account_account_types_collection = $account_types_collection->where('account_id', $account_data['id']);
                             $this->assertInstitutionPanelAccountNode($account_node, $account_account_types_collection, false);
                             $this->assertInstitutionPanelAccountNodeClickInteraction($account_node, $account_account_types_collection);
@@ -235,7 +235,7 @@ class InstitutionsPanelTest extends DuskTestCase {
     private function assertAccountNodeName(Browser $account_node, $account_name){
         // confirm account name is within collection
         $account_node_name = $account_node->text($this->_selector_panel_institutions_accounts_account_name.' span:first-child');
-        $this->assertContains($account_name, $account_node_name);
+        $this->assertContains($account_name, $account_node_name, "account name NOT found within institution-account node");
     }
 
     /**
