@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Laravel\Dusk\Browser;
-use Tests\Traits\InjectDatabaseStateIntoException;
+use App\Traits\Tests\InjectDatabaseStateIntoException;
 
 /**
  * Class NotificationsTest
@@ -339,6 +339,9 @@ class NotificationsTest extends DuskTestCase {
 
     /**
      * @dataProvider providerNotificationSaveExistingEntry4XX
+     *
+     * @param int $http_status
+     * @param string $error_response_message
      *
      * @throws \Throwable
      *
