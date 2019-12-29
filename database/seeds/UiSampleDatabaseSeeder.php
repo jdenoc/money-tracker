@@ -7,7 +7,6 @@ class UiSampleDatabaseSeeder extends Seeder {
 
     use App\Traits\Tests\StorageTestFiles;
 
-    const COUNT_ACCOUNT = 2;
     const COUNT_ACCOUNT_TYPE = 3;
     const COUNT_ATTACHMENT = 4;
     const COUNT_ENTRY = 5;
@@ -159,7 +158,7 @@ class UiSampleDatabaseSeeder extends Seeder {
      * @return Illuminate\Support\Collection
      */
     private function addAccountToCollection($account_collection, $data){
-        return $this->addToCollection($account_collection, App\Account::class, $data, self::COUNT_ACCOUNT);
+        return $this->addToCollection($account_collection, App\Account::class, $data);
     }
 
     /**
