@@ -6,9 +6,12 @@ use App\AccountType;
 use App\Entry;
 use App\Tag;
 use App\Http\Controllers\Api\EntryController;
+use App\Traits\Tests\InjectDatabaseStateIntoException;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 
 class PostEntriesTest extends ListEntriesBase {
+
+    use InjectDatabaseStateIntoException;
 
     public function setUp(){
         parent::setUp();
