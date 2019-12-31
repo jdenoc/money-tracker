@@ -173,6 +173,8 @@ composer run-script ide-helper
 
 # construct the database tables
 php artisan migrate
+# NOTE: Make sure database has been created/setup first.
+# See next section.
 
 # setup Yarn packages
 yarn install
@@ -207,6 +209,7 @@ composer install --no-dev -o
 php artisan app:version $MOST_RECENT_TAG
 php artisan app:name "Money Tracker"
 php artisan migrate
+# NOTE: Make sure database has been setup first.
 
 # setup Yarn packages
 yarn install --prod
@@ -222,7 +225,8 @@ That being said, there are certainly variables that should be modified at this p
 - `APP_ENV`
 - `APP_DEBUG`
 - `APP_LOG_LEVEL` (_log level values can be found [here](https://github.com/Seldaek/monolog/blob/1.23.0/doc/01-usage.md#log-levels)_)
-- `APP_NAME`
+- `APP_NAME` (can be set by `php artisan app:name`)
+- `APP_VERSION` (can be set by `php artisan app:version`)
 - `APP_URL`
 - `DB_HOST`
 - `DB_DATABASE`
