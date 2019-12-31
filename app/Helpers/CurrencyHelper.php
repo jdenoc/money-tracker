@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 
 class CurrencyHelper {
 
-    private static $_file_path = "json/currencyData.json";
+    private static $_file_path = "json/currency.json";
 
     /**
      * @var Collection|null
