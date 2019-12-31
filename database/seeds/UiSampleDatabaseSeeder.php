@@ -45,7 +45,7 @@ class UiSampleDatabaseSeeder extends Seeder {
         $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$faker->randomElement($institution_ids), 'disabled'=>true]);
         $currencies = CurrencyHelper::fetchCurrencies();
         foreach($currencies as $currency){
-            $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$faker->randomElement($institution_ids), 'currencyData'=>$currency->code]);
+            $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$faker->randomElement($institution_ids), 'currency'=>$currency->code]);
         }
         $this->command->line(self::OUTPUT_PREFIX."Accounts seeded [".$accounts->count()."]");
 
