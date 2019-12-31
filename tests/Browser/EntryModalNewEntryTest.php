@@ -4,6 +4,7 @@ namespace Tests\Browser;
 
 use App\Account;
 use App\AccountType;
+use App\Helpers\CurrencyHelper;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Laravel\Dusk\Browser;
@@ -380,20 +381,12 @@ class EntryModalNewEntryTest extends DuskTestCase {
         // this test relies on a consistent database to test with
         // we can't use a dataProvider as the data is wiped by the time the test(s) are run
         $accounts = Account::all()->unique('currency');
+        $currencies = CurrencyHelper::fetchCurrencies();
         foreach($accounts as $account){
-            // See resources/assets/js/currency.js for list of supported currencies
-            switch($account['currency']){
-                case 'EUR':
-                    $currency_class = $this->_class_icon_euro;
-                    break;
-                case 'GBP':
-                    $currency_class = $this->_class_icon_pound;
-                    break;
-                case 'CAD':
-                case 'USD':
-                default:
-                    $currency_class = $this->_class_icon_dollar;
-                    break;
+            // See storage/app/json/currency.json for list of supported currencies
+            $currency_class = $currencies->where('code', $account['currency'])->first()->class;
+            if(is_null($currency_class)){
+                $currency_class = $this->_class_icon_dollar;
             }
 
             $account_type = AccountType::where('account_id', $account['id'])->get()->random();

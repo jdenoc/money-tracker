@@ -16,7 +16,7 @@
 
 <script>
     import {Accounts} from "../accounts";
-    import currency from '../currency';
+    import {Currency} from '../currency';
     import Store from '../store';
 
     export default {
@@ -31,6 +31,11 @@
                 default: true
             }
         },
+        data: function(){
+            return {
+                currencyObject: new Currency()
+            }
+        },
         computed: {
             accountTotal: function(){
                 if(this.isAccountTotalVisible){
@@ -39,23 +44,8 @@
                     return '';
                 }
             },
-            currencyObject: function(){
-                return currency.currency;
-            },
             accountCurrencyClass: function(){
-                switch (this.accountCurrency) {
-                    case this.currencyObject.euro.label:
-                        return this.currencyObject.euro.class;
-
-                    case this.currencyObject.pound.label:
-                        return this.currencyObject.pound.class;
-
-                    case this.currencyObject.dollarCa.label:
-                        return this.currencyObject.dollarCa.class;
-
-                    case this.currencyObject.dollarUs.label:
-                        return this.currencyObject.dollarUs.class;
-                }
+                return this.currencyObject.getClassFromCode(this.accountCurrency);
             },
             isAccountFilterActive: function(){
                 let currentFilter = Store.getters.currentFilter;

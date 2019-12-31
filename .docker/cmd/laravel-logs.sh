@@ -4,7 +4,7 @@ function display_logs {
   path=$1;
 
   for log in $path; do
-    printf "[LOG]: $log";
+    printf "[LOG]: `basename $log`";
     if [ -f $log ]; then
       printf "\n";
       tail -500 $log;
@@ -13,7 +13,7 @@ function display_logs {
   done
 }
 
-root_path="/var/www/money-tracker/"
+root_path="`dirname $0`/../../"
 
 # generic laravel logs
 display_logs $root_path"storage/logs/*"
