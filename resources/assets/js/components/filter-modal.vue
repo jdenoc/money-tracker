@@ -245,6 +245,7 @@
     import _ from 'lodash';
     import {Accounts} from '../accounts';
     import {AccountTypes} from '../account-types';
+    import {Currency} from "../currency";
     import {Tags} from '../tags';
     import { ToggleButton } from 'vue-js-toggle-button'
     import Store from '../store';
@@ -258,6 +259,7 @@
             return {
                 accountsObject: new Accounts(),
                 accountTypesObject: new AccountTypes(),
+                currencyObject: new Currency(),
                 tagsObject: new Tags(),
 
                 isVisible: false,
@@ -286,13 +288,6 @@
                     maxValue: ""
                 },
 
-                currency: {
-                    euro:     {label: "EUR", class: "fa-euro-sign"},
-                    dollarUs: {label: "USD", class: "fa-dollar-sign"},
-                    dollarCa: {label: "CAD", class: "fa-dollar-sign"},
-                    pound:    {label: "GBP", class: "fa-pound-sign"}
-                },
-
                 toggleButtonProperties: {
                     labels: {checked: 'Enabled', unchecked: 'Disabled'},
                     colors: {checked: '#209CEE', unchecked: '#B5B5B5'},
@@ -309,15 +304,15 @@
                 return !_.isEmpty(this.listTags);
             },
             areAccountsOrAccountTypesDisabled: function(){
-                let accountOrAccountTypeobjects = {};
+                let accountOrAccountTypeObjects = {};
                 if(this.filterData.accountOrAccountTypeSelected === this.switchValueAccount){
-                    accountOrAccountTypeobjects = this.accountsObject.retrieve;
+                    accountOrAccountTypeObjects = this.accountsObject.retrieve;
                 } else if(this.filterData.accountOrAccountTypeSelected === this.switchValueAccountType){
-                    accountOrAccountTypeobjects = this.accountTypesObject.retrieve;
+                    accountOrAccountTypeObjects = this.accountTypesObject.retrieve;
                 }
 
-                return !_.isEmpty(accountOrAccountTypeobjects)
-                    && this.processListOfObjects(accountOrAccountTypeobjects)
+                return !_.isEmpty(accountOrAccountTypeObjects)
+                    && this.processListOfObjects(accountOrAccountTypeObjects)
                         .filter(function(accountOrAccountTypeObject){
                             return accountOrAccountTypeObject.disabled
                         }).length > 0;
@@ -362,27 +357,11 @@
                     account = this.accountTypesObject.getAccount(this.filterData.accountOrAccountTypeId);
                 }
 
-                switch(account.currency){
-                    case this.currency.euro.label:
-                        this.accountCurrencyClass = this.currency.euro.class;
-                        break;
-
-                    case this.currency.pound.label:
-                        this.accountCurrencyClass = this.currency.pound.class;
-                        break;
-
-                    case this.currency.dollarCa.label:
-                        this.accountCurrencyClass = this.currency.dollarCa.class;
-                        break;
-
-                    case this.currency.dollarUs.label:
-                    default:
-                        this.accountCurrencyClass = this.currency.dollarUs.class;
-                }
+                this.accountCurrencyClass = this.currencyObject.getClassFromCode(account.currency);
             },
             resetAccountOrAccountTypeField: function(){
                 this.filterData.accountOrAccountTypeId = this.defaultData.accountOrAccountTypeId;
-                this.accountCurrencyClass = this.currency.dollarUs.class;
+                this.accountCurrencyClass = this.currencyObject.default.class;
             },
             resetFields: function(){
                 this.defaultData.accountOrAccountTypeSelected = this.switchValueAccount;

@@ -1,5 +1,6 @@
 <?php
 
+use App\Helpers\CurrencyHelper;
 use App\Http\Controllers\Api\EntryController;
 use Illuminate\Database\Seeder;
 
@@ -42,11 +43,10 @@ class UiSampleDatabaseSeeder extends Seeder {
             $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$institution_id, 'disabled'=>false]);
         }
         $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$faker->randomElement($institution_ids), 'disabled'=>true]);
-        // See resources/assets/js/currency.js for list of supported currencies
-        $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$faker->randomElement($institution_ids), 'currency'=>'USD']);
-        $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$faker->randomElement($institution_ids), 'currency'=>'CAD']);
-        $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$faker->randomElement($institution_ids), 'currency'=>'EUR']);
-        $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$faker->randomElement($institution_ids), 'currency'=>'GBP']);
+        $currencies = CurrencyHelper::fetchCurrencies();
+        foreach($currencies as $currency){
+            $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$faker->randomElement($institution_ids), 'currencyData'=>$currency->code]);
+        }
         $this->command->line(self::OUTPUT_PREFIX."Accounts seeded [".$accounts->count()."]");
 
         // ***** ACCOUNT-TYPES *****

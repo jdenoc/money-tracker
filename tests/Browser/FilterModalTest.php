@@ -4,6 +4,7 @@ namespace Tests\Browser;
 
 use App\Account;
 use App\AccountType;
+use App\Helpers\CurrencyHelper;
 use Facebook\WebDriver\WebDriverBy;
 use Faker\Factory as FakerFactory;
 use Faker\Generator;
@@ -475,19 +476,11 @@ class FilterModalTest extends DuskTestCase {
     }
 
     private function getCurrencyClassFromCurrency($currency){
-        switch($currency){
-            case 'EUR':
-                return $this->_class_icon_euro;
-                break;
-
-            case 'GBP':
-                return $this->_class_icon_pound;
-                break;
-
-            case 'USD':
-            case 'CAD':
-            default:
-                return $this->_class_icon_dollar;
+        $currency_class = CurrencyHelper::fetchCurrencies()->where('code', $currency)->first()->class;
+        if(is_null($currency_class)){
+            return $this->_class_icon_dollar;
+        } else {
+            return $currency_class;
         }
     }
 

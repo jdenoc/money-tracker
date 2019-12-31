@@ -1,12 +1,25 @@
-/**
- * Created by denis.oconnor on 2019-03-01
- */
+import json from '../../../storage/app/json/currency.json'
 
-export default {
-    currency: {
-        euro: { label: "EUR", class: "fas fa-euro-sign" },
-        dollarUs: { label: "USD", class: "fas fa-dollar-sign" },
-        dollarCa: { label: "CAD", class: "fas fa-dollar-sign" },
-        pound: { label: "GBP", class: "fas fa-pound-sign" }
+export class Currency {
+
+    constructor(){
+        this.currencyData = json;
+        this.default = {
+            "label": "dollarUs",
+            "code": "USD",
+            "class": "fas fa-dollar-sign"
+        };
     }
+
+    getClassFromCode(currencyCode){
+        let currencyNode = this.currencyData.filter(function(currencyDatum){
+            return currencyCode === currencyDatum.code;
+        }).shift();
+        if(_.isEmpty(currencyNode)){
+            return this.default.class;
+        } else {
+            return currencyNode.class;
+        }
+    }
+
 };
