@@ -1,7 +1,7 @@
 # Money Tracker  [![Build Status](https://travis-ci.org/jdenoc/money-tracker.svg?branch=master)](https://travis-ci.org/jdenoc/money-tracker) [![GitHub release](https://img.shields.io/github/release/jdenoc/money-tracker.svg)](https://github.com/jdenoc/money-tracker/releases/latest)
 
 ## About
-Money Tracker is a web portal dedicated to help record and manage income & expenses, built on the [Laravel framework](https://laravel.com/docs/5.4)
+Money Tracker is a web portal dedicated to help record and manage income & expenses, built on the [Laravel framework](https://laravel.com/docs/5.5)
 
 ## Features
 For a list of features currently available, what they're expected outcome is and test cases, see the [Features](features/FEATURES.md)
@@ -12,11 +12,11 @@ For a list of features currently available, what they're expected outcome is and
   - [Docker](#docker-environment)
     - [Tear-down](#tear-down)
   - [Local/Dev](#localdev-environment)
-    - [Database](#dev-database)
     - [Application](#dev-application)
+    - [Database](#dev-database)
   - [Production](#production-environment)
-    - [Database](#prod-database)
     - [Application](#prod-application)
+    - [Database](#prod-database)
     - [Updates](#prod-updates)
   - [Environment Variables](#environment-variable-setup)
   - [Scheduled Tasks](#scheduled-tasks-setup)
@@ -27,17 +27,17 @@ For a list of features currently available, what they're expected outcome is and
 - [Other Documentation](#other-documentation)
 
 ## Requirements
-- NodeJS >= 6
+- NodeJS 12
   ```bash
   # confirm installation and version of NodeJS
   node -v
   ```
-- Yarn >= 1.3.2
+- Yarn 1.9.1
   ```bash
   # confirm installation and version of Yarn
   yarn --version
   ```
-- 5.6.4 <= PHP < 7
+- PHP 7.3
   ```bash
   # confirm installation and version of PHP
   php -v
@@ -47,11 +47,11 @@ For a list of features currently available, what they're expected outcome is and
   - Mbstring PHP Extension
   - Tokenizer PHP Extension
   - XML PHP Extension
-- Composer >= 1.5.1
+- Composer 1.9
   ```bash
-    # confirm installation and version of PHP
-    composer --version
-    ```
+  # confirm installation and version of PHP
+  composer --version
+  ```
 
 ***
 
@@ -88,7 +88,7 @@ cd money-tracker/
 <small>***OPTIONAL***</small>:
 If you're working with PhpStorm, be sure to run the following command:
 ```bash
-.docker/cmd/composer.sh ide-helper
+.docker/cmd/composer.sh run-script ide-helper
 ```
 This will generate Laravel Facades that PhpStorm can use.  
 
@@ -122,12 +122,12 @@ _**Note:** you can replace_ `git describe` _with any value you want_
 
 ##### Setup database/clear existing database and re-initialise it empty
 ```bash
-.docker/cmd/artisan.sh migrate:refresh
+.docker/cmd/artisan.sh migrate:fresh
 ```
 
 ##### Load dummy data into database
 ```bash
-.docker/cmd/artisan.sh migrate:refresh
+.docker/cmd/artisan.sh migrate:fresh
 .docker/cmd/artisan.sh db:seed --class=UiSampleDatabaseSeeder
 ```
 
@@ -154,14 +154,6 @@ _**Note:** You do not need to worry about "tearing down" the yarn and/or compose
 ### <a name="localdev-environment">Local/Dev environment</a>
 Sometimes, you just don't want to use Docker. That's fine and we support your decision. Here are some helpful steps on setup.
 
-#### <a name="dev-database">Database setup</a> 
-```bash
-mysql -e "CREATE DATABASE money_tracker;"                                # The database can be named whatever you want. This is just an example.
-mysql -e "CREATE USER 'jdenoc'@'localhost' IDENTIFIED BY 'password';"    # Once again, you can use any database username & password you want. This is just an example.
-mysql -e "GRANT ALL PRIVILEGES ON money_tracker.* TO 'jdenoc'@'localhost';"
-```
-_**Note:** If you changed the database, user or password in the above commands, be sure to assign those new values in the .env file._
-
 #### <a name="dev-application">Application setup</a>
 ```bash
 # Clone repo
@@ -177,22 +169,29 @@ php artisan app:version `git describe`
 # ***OPTIONAL***
 # If you're working with PhpStorm, be sure to run the following command.
 # It will generate Laravel Facades that PhpStorm can use.
-composer ide-helper
+composer run-script ide-helper
 
 # construct the database tables
 php artisan migrate
+# NOTE: Make sure database has been created/setup first.
+# See next section.
 
 # setup Yarn packages
 yarn install
 yarn run build-dev
 ```
 
+#### <a name="dev-database">Database setup</a> 
+```bash
+mysql -e "CREATE DATABASE money_tracker;"                                # The database can be named whatever you want. This is just an example.
+mysql -e "CREATE USER 'jdenoc'@'localhost' IDENTIFIED BY 'password';"    # Once again, you can use any database username & password you want. This is just an example.
+mysql -e "GRANT ALL PRIVILEGES ON money_tracker.* TO 'jdenoc'@'localhost';"
+```
+_**Note:** If you changed the database, user or password in the above commands, be sure to assign those new values in the .env file._
+
 ***
 
 ### Production Environment
-
-#### <a name="prod-database">Database Setup</a>
-This is the exact same process as we do for our Local/dev setup. See instructions [here](#dev-database).
 
 #### <a name="prod-application">Application Setup</a>
 ```bash
@@ -210,6 +209,7 @@ composer install --no-dev -o
 php artisan app:version $MOST_RECENT_TAG
 php artisan app:name "Money Tracker"
 php artisan migrate
+# NOTE: Make sure database has been setup first.
 
 # setup Yarn packages
 yarn install --prod
@@ -218,6 +218,38 @@ yarn run build-prod
 # setup cache
 php artisan config:cache
 ```
+
+### Environment variable setup
+Be sure to edit the `.env` file generated during setup. A few of the default values should be fine to use. Modify those as needed.  
+That being said, there are certainly variables that should be modified at this point. They are: 
+- `APP_ENV`
+- `APP_DEBUG`
+- `APP_LOG_LEVEL` (_log level values can be found [here](https://github.com/Seldaek/monolog/blob/1.23.0/doc/01-usage.md#log-levels)_)
+- `APP_NAME` (can be set by `php artisan app:name`)
+- `APP_VERSION` (can be set by `php artisan app:version`)
+- `APP_URL`
+- `DB_HOST`
+- `DB_DATABASE`
+- `DB_USERNAME`
+- `DB_PASSWORD`
+
+***
+
+### Scheduled tasks Setup
+This is most likely an item to add to your production server, but is also potentially something you'll want running in the background for you dev environment.
+To set this up you will need to add the following Cron entry to your server.
+```bash
+* * * * * php /path-to-your-project/artisan schedule:run >> /dev/null 2>&1
+```
+This Cron will call the Laravel command scheduler every minute. When the `schedule:run` command is executed, Laravel will evaluate your scheduled tasks and runs the tasks that are due.  
+Here is a list of commands that will _scheduled_ as part of this setup:  
+- `artisan storage:clear-tmp-uploads`
+- `artisan sanity-check:account-total`
+
+***
+
+#### <a name="prod-database">Database Setup</a>
+This is the exact same process as we do for our Local/dev setup. See instructions [here](#dev-database).
 
 ***
 
@@ -248,40 +280,13 @@ yarn install --prod
 yarn run build-prod
 
 # reset cache
-php artisan view:clear
 php artisan config:cache
+php artisan cache:clear
+php artisan view:clear
 
 # take site out of maintenance mode
 php artisan up
 ```
-
-***
-
-### Environment variable setup
-Be sure to edit the `.env` file generated during setup. A few of the default values should be fine to use. Modify those as needed.  
-That being said, there are certainly variables that should be modified at this point. They are: 
-- `APP_ENV`
-- `APP_DEBUG`
-- `APP_LOG_LEVEL` (_log level values can be found [here](https://github.com/Seldaek/monolog/blob/1.23.0/doc/01-usage.md#log-levels)_)
-- `APP_NAME`
-- `APP_URL`
-- `DB_HOST`
-- `DB_DATABASE`
-- `DB_USERNAME`
-- `DB_PASSWORD`
-
-***
-
-### Scheduled tasks Setup
-This is most likely an item to add to your production server, but is also potentially something you'll want running in the background for you dev environment.
-To set this up you will need to add the following Cron entry to your server.
-```bash
-* * * * * php /path-to-your-project/artisan schedule:run >> /dev/null 2>&1
-```
-This Cron will call the Laravel command scheduler every minute. When the `schedule:run` command is executed, Laravel will evaluate your scheduled tasks and runs the tasks that are due.  
-Here is a list of commands that will _scheduled_ as part of this setup:  
-- `artisan storage:clear-tmp-uploads`
-- `artisan sanity-check:account-total`
 
 ***
 
@@ -303,7 +308,7 @@ docker container exec -t app.money-tracker vendor/bin/phpunit --stop-on-failure
 If you wish to test locally (or on your dev environment), here are some steps to follow:
 ```bash
 # clear existing data in database and reinstall table schemas
-php artsian migrate:refresh
+php artsian migrate:fresh
 
 # run PHP unit tests
 vendor/bin/phpunit --stop-on-failure
@@ -318,12 +323,12 @@ php artisan dusk --stop-on-failure
 ***
 
 ## Other Documentation
-- [Laravel](https://laravel.com/docs/5.4/)
+- [Laravel](https://laravel.com/docs/5.5/)
 - [VueJS](https://vuejs.org/v2/guide/)
 - [Docker](https://docs.docker.com/)
 - [Composer](https://getcomposer.org/doc/)
 - [Yarn](https://yarnpkg.com/en/docs)
 - [PhpUnit](https://phpunit.de/documentation.html)
-- [Laravel Dusk](https://laravel.com/docs/5.4/dusk)
+- [Laravel Dusk](https://laravel.com/docs/5.5/dusk)
 - [Travis CI](https://docs.travis-ci.com/user/languages/php/)
 - [git](https://git-scm.com/doc)

@@ -2,9 +2,8 @@
 
 namespace Tests\Browser;
 
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\Browser\Pages\HomePage;
-use Tests\DuskTestCase;
+use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Laravel\Dusk\Browser;
 
 /**
@@ -16,8 +15,6 @@ use Laravel\Dusk\Browser;
  * @group home
  */
 class NavbarTest extends DuskTestCase {
-
-    use DatabaseMigrations;
 
     const MOBILE_RESIZE_WIDTH_PX = 1000;
     const RESIZE_HEIGHT_PX = 750;
@@ -38,6 +35,12 @@ class NavbarTest extends DuskTestCase {
 
     // TODO: test for hamburger menu navbar
 
+    /**
+     * @throws \Throwable
+     *
+     * @group navigation-2
+     * test 1/25
+     */
     public function testBrandImage(){
         $this->browse(function(Browser $browser){
             $browser
@@ -49,6 +52,12 @@ class NavbarTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group navigation-2
+     * test 2/25
+     */
     public function testAddEntryButtonExists(){
         $this->browse(function(Browser $browser){
             $browser
@@ -60,6 +69,12 @@ class NavbarTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group navigation-2
+     * test 3/25
+     */
     public function testAddTransferButtonExists(){
         $this->browse(function(Browser $browser){
             $browser
@@ -71,6 +86,12 @@ class NavbarTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group navigation-2
+     * test 4/25
+     */
     public function testFilterButtonExists(){
         $this->browse(function(Browser $browser){
             $browser
@@ -82,6 +103,12 @@ class NavbarTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group navigation-2
+     * test 5/25
+     */
     public function testClickProfileDropdown(){
         $this->browse(function(Browser $browser){
             $browser
@@ -104,6 +131,12 @@ class NavbarTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group navigation-2
+     * test 6/25
+     */
     public function testBurgerMenuVisibleOnSmallerScreenWidth(){
         $this->browse(function(Browser $browser){
             $browser

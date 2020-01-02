@@ -189,6 +189,7 @@
 <script>
     import _ from 'lodash';
     import {AccountTypes} from "../account-types";
+    import {Currency} from '../currency';
     import {Entry} from "../entry";
     import {SnotifyStyle} from 'vue-snotify';
     import {Tags} from '../tags';
@@ -209,6 +210,7 @@
         data: function(){
             return {
                 accountTypesObject: new AccountTypes(),
+                currencyObject: new Currency(),
                 entryObject: new Entry(),
                 tagsObject: new Tags(),
 
@@ -236,13 +238,6 @@
                     transfer_entry_id: null,
                     tags: [],
                     attachments: []
-                },
-
-                currency: {
-                    euro:     {label: "EUR", class: "fa-euro-sign"},
-                    dollarUs: {label: "USD", class: "fa-dollar-sign"},
-                    dollarCa: {label: "CAD", class: "fa-dollar-sign"},
-                    pound:    {label: "GBP", class: "fa-pound-sign"}
                 },
 
                 toggleButtonProperties: {
@@ -534,23 +529,7 @@
                 this.accountTypeMeta.lastDigits = accountType.last_digits;
                 this.accountTypeMeta.isEnabled = !accountType.disabled && !account.disabled;
 
-                switch(account.currency){
-                    case this.currency.euro.label:
-                        this.accountTypeMeta.currencyClass = this.currency.euro.class;
-                        break;
-
-                    case this.currency.pound.label:
-                        this.accountTypeMeta.currencyClass = this.currency.pound.class;
-                        break;
-
-                    case this.currency.dollarCa.label:
-                        this.accountTypeMeta.currencyClass = this.currency.dollarCa.class;
-                        break;
-
-                    case this.currency.dollarUs.label:
-                    default:
-                        this.accountTypeMeta.currencyClass = this.currency.dollarUs.class;
-                }
+                this.accountTypeMeta.currencyClass = this.currencyObject.getClassFromCode(account.currency);
             },
             resetEntryData: function(){
                 this.dropzoneRef.removeAllFiles();

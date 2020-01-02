@@ -4,9 +4,9 @@ namespace Tests\Browser;
 
 use App\Account;
 use App\AccountType;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use App\Helpers\CurrencyHelper;
 use Tests\Browser\Pages\HomePage;
-use Tests\DuskTestCase;
+use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Laravel\Dusk\Browser;
 use Tests\Traits\HomePageSelectors;
 
@@ -21,12 +21,17 @@ use Tests\Traits\HomePageSelectors;
  */
 class EntryModalNewEntryTest extends DuskTestCase {
 
-    use DatabaseMigrations;
     use HomePageSelectors;
 
     private $method_account = 'account';
     private $method_account_type = 'account-type';
 
+    /**
+     * @throws \Throwable
+     *
+     * @group entry-modal-2
+     * test 1/25
+     */
     public function testEntryModalIsNotVisibleByDefault(){
         $this->browse(function (Browser $browser) {
             $browser
@@ -36,6 +41,12 @@ class EntryModalNewEntryTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group entry-modal-2
+     * test 2/25
+     */
     public function testEntryModalIsVisibleWhenNavbarElementIsClicked(){
         $this->browse(function(Browser $browser){
             $browser
@@ -46,6 +57,12 @@ class EntryModalNewEntryTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group entry-modal-2
+     * test 3/25
+     */
     public function testModalHeaderHasCorrectElements(){
         $this->browse(function(Browser $browser){
             $browser
@@ -65,6 +82,12 @@ class EntryModalNewEntryTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group entry-modal-2
+     * test 4/25
+     */
     public function testCloseEntryModalWithXInModalHead(){
         $this->browse(function(Browser $browser){
             $browser
@@ -78,6 +101,12 @@ class EntryModalNewEntryTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group entry-modal-2
+     * test 5/25
+     */
     public function testConfirmedButtonActivatesWhenClicked(){
         $this->browse(function(Browser $browser){
             $browser
@@ -97,6 +126,12 @@ class EntryModalNewEntryTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group entry-modal-2
+     * test 6/25
+     */
     public function testModalBodyHasCorrectElements(){
         $this->browse(function(Browser $browser){
             $browser
@@ -152,6 +187,12 @@ class EntryModalNewEntryTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group entry-modal-2
+     * test 7/25
+     */
     public function testModalFooterHasCorrectElements(){
         $this->browse(function(Browser $browser){
             $browser
@@ -177,6 +218,12 @@ class EntryModalNewEntryTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group entry-modal-2
+     * test 8/25
+     */
     public function testCloseEntryModalWithCancelButton(){
         $this->browse(function(Browser $browser){
             $browser
@@ -190,6 +237,12 @@ class EntryModalNewEntryTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group entry-modal-2
+     * test 9/25
+     */
     public function testCloseEntryModalWithHotkey(){
         $this->browse(function(Browser $browser){
             $browser
@@ -201,6 +254,12 @@ class EntryModalNewEntryTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group entry-modal-2
+     * test 10/25
+     */
     public function testEntryValueConvertsIntoDecimalOfTwoPlaces(){
         $this->browse(function(Browser $browser){
             $browser
@@ -216,6 +275,12 @@ class EntryModalNewEntryTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group entry-modal-2
+     * test 11/25
+     */
     public function testSelectingAccountTypeDisplaysAccountTypeMetaData(){
         $account_types = $this->getApiAccountTypes();
         $account_type = $account_types[array_rand($account_types, 1)];
@@ -257,8 +322,8 @@ class EntryModalNewEntryTest extends DuskTestCase {
     public function providerSelectingDisabledAccountTypeMetaDataIsGrey(){
         // [$account_type_method]
         return [
-            [$this->method_account],
-            [$this->method_account_type]
+            [$this->method_account],        // test 12/25
+            [$this->method_account_type]    // test 13/25
         ];
     }
 
@@ -267,6 +332,9 @@ class EntryModalNewEntryTest extends DuskTestCase {
      * @param string $account_type_method
      *
      * @throws \Throwable
+     *
+     * @group entry-modal-2
+     * test (see provider)/25
      */
     public function testSelectingDisabledAccountTypeMetaDataIsGrey($account_type_method){
         $account_types = AccountType::all();
@@ -303,24 +371,22 @@ class EntryModalNewEntryTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group entry-modal-2
+     * test 14/25
+     */
     public function testSelectingAccountTypeChangesCurrency(){
         // this test relies on a consistent database to test with
         // we can't use a dataProvider as the data is wiped by the time the test(s) are run
         $accounts = Account::all()->unique('currency');
+        $currencies = CurrencyHelper::fetchCurrencies();
         foreach($accounts as $account){
-            // See resources/assets/js/currency.js for list of supported currencies
-            switch($account['currency']){
-                case 'EUR':
-                    $currency_class = $this->_class_icon_euro;
-                    break;
-                case 'GBP':
-                    $currency_class = $this->_class_icon_pound;
-                    break;
-                case 'CAD':
-                case 'USD':
-                default:
-                    $currency_class = $this->_class_icon_dollar;
-                    break;
+            // See storage/app/json/currency.json for list of supported currencies
+            $currency_class = $currencies->where('code', $account['currency'])->first()->class;
+            if(is_null($currency_class)){
+                $currency_class = $this->_class_icon_dollar;
             }
 
             $account_type = AccountType::where('account_id', $account['id'])->get()->random();
@@ -353,6 +419,12 @@ class EntryModalNewEntryTest extends DuskTestCase {
         }
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group entry-modal-2
+     * test 15/25
+     */
     public function testClickingExpenseIncomeSwitch(){
         $this->browse(function(Browser $browser){
             $browser
@@ -372,6 +444,12 @@ class EntryModalNewEntryTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group entry-modal-2
+     * test 16/25
+     */
     public function testFillFieldsToEnabledSaveButton(){
         $account_types = $this->getApiAccountTypes();
         $account_type = $account_types[array_rand($account_types, 1)];
@@ -421,6 +499,12 @@ class EntryModalNewEntryTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group entry-modal-2
+     * test 17/25
+     */
     public function testUploadAttachmentToNewEntry(){
         $this->browse(function(Browser $browser){
             $browser
@@ -428,7 +512,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
                 ->waitForLoadingToStop()
                 ->openNewEntryModal()
                 ->with($this->_selector_modal_body, function($entry_modal_body){
-                    $upload_file_path = storage_path($this->getRandomTestFileStoragePath());
+                    $upload_file_path = \Storage::path($this->getRandomTestFileStoragePath());
                     $this->assertFileExists($upload_file_path);
                     $entry_modal_body
                         ->assertVisible($this->_selector_modal_entry_field_upload)
@@ -451,6 +535,12 @@ class EntryModalNewEntryTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group entry-modal-2
+     * test 18/25
+     */
     public function testUploadAttachmentAndAttachmentIsNotPresentAfterClosingAndReopeningModal(){
         $this->browse(function(Browser $browser){
             $browser
@@ -458,7 +548,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
                 ->waitForLoadingToStop()
                 ->openNewEntryModal()
                 ->with($this->_selector_modal_body, function($modal_body){
-                    $upload_file_path = storage_path($this->getRandomTestFileStoragePath());
+                    $upload_file_path = \Storage::path($this->getRandomTestFileStoragePath());
                     $this->assertFileExists($upload_file_path);
                     $modal_body
                         ->assertVisible($this->_selector_modal_entry_field_upload)
@@ -476,6 +566,12 @@ class EntryModalNewEntryTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group entry-modal-2
+     * test 19/25
+     */
     public function testTagsInputAutoComplete(){
         // select tag at random and input the first character into the tags-input field
         $tags = $this->getApiTags();
@@ -497,6 +593,12 @@ class EntryModalNewEntryTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group entry-modal-2
+     * test 20/25
+     */
     public function testCreateEntryWithMinimumRequirementsExpense(){
         $account_types = $this->getApiAccountTypes();
         $account_type = $account_types[array_rand($account_types, 1)];
@@ -526,6 +628,12 @@ class EntryModalNewEntryTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group entry-modal-2
+     * test 21/25
+     */
     public function testCreateEntryWithMinimumRequirementsIncome(){
         $account_types = $this->getApiAccountTypes();
         $account_type = $account_types[array_rand($account_types, 1)];
@@ -556,6 +664,12 @@ class EntryModalNewEntryTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group entry-modal-2
+     * test 22/25
+     */
     public function testCreateConfirmedEntry(){
         $account_types = $this->getApiAccountTypes();
         $account_type = $account_types[array_rand($account_types, 1)];
@@ -591,10 +705,10 @@ class EntryModalNewEntryTest extends DuskTestCase {
     public function providerCreateGenericEntry(){
         return [
             // [$has_tags, $has_attachments]
-            [false, false],
-            [true, false],
-            [false, true],
-            [true, true]
+            [false, false], // test 23/25
+            [true, false],  // test 24/25
+            [false, true],  // test 25/25
+            [true, true]    // test 26/25
         ];
     }
 
@@ -604,6 +718,9 @@ class EntryModalNewEntryTest extends DuskTestCase {
      * @param bool $has_attachments
      *
      * @throws \Throwable
+     *
+     * @group entry-modal-2
+     * test (see provider)/25
      */
     public function testCreateGenericEntry($has_tags, $has_attachments){
         $account_types = $this->getApiAccountTypes();
@@ -641,7 +758,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
             }
 
             if($has_attachments){
-                $upload_file_path = storage_path($this->getRandomTestFileStoragePath());
+                $upload_file_path = \Storage::path($this->getRandomTestFileStoragePath());
                 $this->assertFileExists($upload_file_path);
                 $browser->with($this->_selector_modal_body, function($modal_body) use ($upload_file_path){
                     $modal_body

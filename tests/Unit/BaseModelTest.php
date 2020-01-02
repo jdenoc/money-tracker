@@ -3,14 +3,10 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 use App;
 
 class BaseModelTest extends TestCase {
-
-    use DatabaseMigrations;
 
     /**
      * SCENARIO: get a list of ENUM values associated with a database column, when the column is of type enum

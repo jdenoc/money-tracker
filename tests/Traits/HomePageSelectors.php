@@ -25,6 +25,7 @@ trait HomePageSelectors {
 
     // institutions panel
     private $_selector_panel_institutions = "#institutions-panel-column";
+    private $_selector_panel_institutions_heading = ".panel-heading";
     private $_selector_panel_institutions_overview = "#overview";
     private $_selector_panel_institutions_institution = ".institution-panel-institution";
     private $_selector_panel_institutions_institution_open_close = ".institution-panel-institution-name span.panel-icon i";
@@ -32,6 +33,7 @@ trait HomePageSelectors {
     private $_selector_panel_institutions_accounts = ".institution-panel-institution-accounts";
     private $_selector_panel_institutions_accounts_account = ".institutions-panel-account";
     private $_selector_panel_institutions_accounts_account_name = ".institutions-panel-account-name";
+    private $_selector_panel_institutions_accounts_account_total = ".institutions-panel-account-name .account-currency span";
 
     // entry-modal
     private $_selector_modal_entry = "@entry-modal";  // see Browser\Pages\HomePage.php
@@ -55,8 +57,10 @@ trait HomePageSelectors {
     private $_selector_modal_entry_dropzone_hidden_file_input = "#entry-modal-hidden-file-input";
     private $_selector_modal_entry_dropzone_upload_thumbnail = "#entry-modal-file-upload .dz-complete:last-child";
     private $_selector_modal_entry_existing_attachments = "#existing-entry-attachments";
-    private $_selector_modal_entry_existing_attachments_btn_view = "button.view-attachment";
-    private $_selector_modal_entry_existing_attachments_btn_delete = "button.delete-attachment";
+    private $_selector_modal_entry_existing_attachments_first_attachment = ".existing-attachment:first-child";
+    private $_selector_modal_entry_existing_attachments_attachment_name = " .attachment-name";
+    private $_selector_modal_entry_existing_attachments_attachment_btn_view = "button.view-attachment";
+    private $_selector_modal_entry_existing_attachments_attachment_btn_delete = "button.delete-attachment";
     private $_selector_modal_entry_btn_delete = "button#entry-delete-btn";
     private $_selector_modal_entry_btn_lock = "button#entry-lock-btn";
     private $_selector_modal_entry_btn_lock_icon = "#entry-lock-btn i";

@@ -1,11 +1,13 @@
 <?php
 
+use App\Helpers\CurrencyHelper;
 use App\Http\Controllers\Api\EntryController;
 use Illuminate\Database\Seeder;
 
 class UiSampleDatabaseSeeder extends Seeder {
 
-    const COUNT_ACCOUNT = 2;
+    use App\Traits\Tests\StorageTestFiles;
+
     const COUNT_ACCOUNT_TYPE = 3;
     const COUNT_ATTACHMENT = 4;
     const COUNT_ENTRY = 5;
@@ -14,6 +16,8 @@ class UiSampleDatabaseSeeder extends Seeder {
     const COUNT_TAG = 5;
 
     const OUTPUT_PREFIX = "<info>".__CLASS__.":</info> ";
+
+    private $attachment_stored_count = 0;
 
     /**
      * Run the database seeds.
@@ -39,11 +43,10 @@ class UiSampleDatabaseSeeder extends Seeder {
             $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$institution_id, 'disabled'=>false]);
         }
         $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$faker->randomElement($institution_ids), 'disabled'=>true]);
-        // See resources/assets/js/currency.js for list of supported currencies
-        $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$faker->randomElement($institution_ids), 'currency'=>'USD']);
-        $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$faker->randomElement($institution_ids), 'currency'=>'CAD']);
-        $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$faker->randomElement($institution_ids), 'currency'=>'EUR']);
-        $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$faker->randomElement($institution_ids), 'currency'=>'GBP']);
+        $currencies = CurrencyHelper::fetchCurrencies();
+        foreach($currencies as $currency){
+            $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$faker->randomElement($institution_ids), 'currency'=>$currency->code]);
+        }
         $this->command->line(self::OUTPUT_PREFIX."Accounts seeded [".$accounts->count()."]");
 
         // ***** ACCOUNT-TYPES *****
@@ -90,6 +93,7 @@ class UiSampleDatabaseSeeder extends Seeder {
             $transfer_from_entry->transfer_entry_id = $transfer_to_entry->id;
             $transfer_from_entry->save();
             $transfer_to_entry->transfer_entry_id = $transfer_from_entry->id;
+            $transfer_to_entry->entry_value = $transfer_from_entry->entry_value;
             $transfer_to_entry->save();
         }
         $external_transfer_entry = $entries_not_disabled->where('transfer_entry_id', null)
@@ -111,33 +115,41 @@ class UiSampleDatabaseSeeder extends Seeder {
 
         // income confirmed
         $this->assignAttachmentToEntry(
-            $entries_confirmed->where('expense', 0)->pluck('id')
-                ->chunk(EntryController::MAX_ENTRIES_IN_RESPONSE)->shift()->random(),
+            $entries_confirmed
+                ->chunk(EntryController::MAX_ENTRIES_IN_RESPONSE)->shift()
+                ->where('expense', 0)->pluck('id')
+                ->random(),
             $transfer_to_entries->pluck('id')->toArray(),
             $entries
         );
         // income unconfirmed
         $this->assignAttachmentToEntry(
-            $entries_not_confirmed->where('expense', 0)->pluck('id')
-                ->chunk(EntryController::MAX_ENTRIES_IN_RESPONSE)->shift()->random(),
+            $entries_not_confirmed
+                ->chunk(EntryController::MAX_ENTRIES_IN_RESPONSE)->shift()
+                ->where('expense', 0)->pluck('id')
+                ->random(),
             $transfer_to_entries->pluck('id')->toArray(),
             $entries
         );
         // expense confirmed
         $this->assignAttachmentToEntry(
-            $entries_confirmed->where('expense', 1)->pluck('id')
-                ->chunk(EntryController::MAX_ENTRIES_IN_RESPONSE)->shift()->random(),
+            $entries_confirmed
+                ->chunk(EntryController::MAX_ENTRIES_IN_RESPONSE)->shift()
+                ->where('expense', 1)->pluck('id')
+                ->random(),
             $transfer_from_entries->pluck('id')->toArray(),
             $entries
         );
         // expense unconfirmed
         $this->assignAttachmentToEntry(
-            $entries_not_confirmed->where('expense', 1)->pluck('id')
-                ->chunk(EntryController::MAX_ENTRIES_IN_RESPONSE)->shift()->random(),
+            $entries_not_confirmed
+                ->chunk(EntryController::MAX_ENTRIES_IN_RESPONSE)->shift()
+                ->where('expense', 1)->pluck('id')
+                ->random(),
             $transfer_from_entries->pluck('id')->toArray(),
             $entries
         );
-        $this->command->line(self::OUTPUT_PREFIX."Assigned Attachments to all varieties of entries");
+        $this->command->line(self::OUTPUT_PREFIX."Assigned Attachments to all varieties of entries [".$this->attachment_stored_count."]");
     }
 
     /**
@@ -146,7 +158,7 @@ class UiSampleDatabaseSeeder extends Seeder {
      * @return Illuminate\Support\Collection
      */
     private function addAccountToCollection($account_collection, $data){
-        return $this->addToCollection($account_collection, App\Account::class, $data, self::COUNT_ACCOUNT);
+        return $this->addToCollection($account_collection, App\Account::class, $data);
     }
 
     /**
@@ -199,10 +211,24 @@ class UiSampleDatabaseSeeder extends Seeder {
     private function assignAttachmentToEntry($entry_id, $transfer_entry_ids, $entries_collection){
         if(in_array($entry_id, $transfer_entry_ids)){
             $new_attachment = factory(App\Attachment::class)->create(['entry_id'=>$entry_id]);
+            $this->storeAttachment($new_attachment);
             $transfer_entry = $entries_collection->where('id', $entry_id)->first();
-            factory(App\Attachment::class)->create(['entry_id'=>$transfer_entry->transfer_entry_id, 'name'=>$new_attachment->name]);
+            $attachment = factory(App\Attachment::class)->create(['entry_id'=>$transfer_entry->transfer_entry_id, 'name'=>$new_attachment->name]);
+            $this->storeAttachment($attachment);
         } else {
-            factory(App\Attachment::class)->create(['entry_id'=>$entry_id]);
+            $attachment = factory(App\Attachment::class)->create(['entry_id'=>$entry_id]);
+            $this->storeAttachment($attachment);
+        }
+    }
+
+    /**
+     * @param App\Attachment $attachment
+     */
+    private function storeAttachment($attachment){
+        $test_file_path = $this->getTestFileStoragePathFromFilename($attachment->name);
+        if(Storage::exists($test_file_path)){
+            Storage::copy($test_file_path, $attachment->get_storage_file_path());
+            $this->attachment_stored_count++;
         }
     }
 

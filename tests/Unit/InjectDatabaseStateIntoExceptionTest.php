@@ -8,13 +8,12 @@
 
 namespace Tests\Unit;
 
+use App\Traits\Tests\InjectDatabaseStateIntoException;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class InjectDatabaseStateIntoExceptionTest extends TestCase {
 
-    use DatabaseMigrations;
-    // NOTE: InjectDatabaseStateIntoException trait has already been included by the TestCase class
+    use InjectDatabaseStateIntoException;
 
     public function testSettingValidInjectionPermission(){
         $current_state = $this->isDatabaseStateInjectionAllowed();

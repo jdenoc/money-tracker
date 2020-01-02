@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use App\Helpers\CurrencyHelper;
 use Faker;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
@@ -142,7 +143,7 @@ class GetAccountTest extends TestCase {
         $element = 'currency';
         $this->assertArrayHasKey($element, $response_as_array);
         $this->assertEquals(3, strlen($response_as_array[$element]));
-        $this->assertTrue(in_array($response_as_array[$element], ['CAD', 'EUR', 'GBP', 'USD']));
+        $this->assertTrue(in_array($response_as_array[$element], CurrencyHelper::getCodesAsArray()));
         $this->assertEquals($response_as_array[$element], $generated_account->currency);
         unset($response_as_array[$element]);
 

@@ -3,7 +3,6 @@
 namespace Tests;
 
 use App\Traits\Tests\StorageTestFiles;
-use Illuminate\Support\Facades\Artisan;
 use Laravel\Dusk\Browser;
 use Laravel\Dusk\TestCase as BaseTestCase;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
@@ -24,7 +23,7 @@ abstract class DuskTestCase extends BaseTestCase {
      * @return void
      */
     public static function prepare(){
-        static::startChromeDriver();
+//        static::startChromeDriver();
     }
 
     /**
@@ -34,8 +33,25 @@ abstract class DuskTestCase extends BaseTestCase {
      */
     protected function driver(){
         return RemoteWebDriver::create(
-             'http://selenium:4444/wd/hub', DesiredCapabilities::chrome(), 5000, 10000
+             'http://selenium:4444/wd/hub',
+             DesiredCapabilities::chrome()
         );
+    }
+
+    /**
+     * Replaces default phpunit test name.
+     * The default phpunit test name was applied to console logs and screen shots.
+     * These files were then processed by other scripts.
+     * There were spaces and quotation marks causes these other scripts to fail.
+     *
+     * @param bool $withDataSet
+     * @return string|string[]
+     */
+    public function getName($withDataSet = true){
+        $test_name = parent::getName($withDataSet);
+        $test_name = str_replace(" ", "-", $test_name);
+        $test_name = str_replace('"', '', $test_name);
+        return $test_name;
     }
 
     /**
@@ -44,9 +60,21 @@ abstract class DuskTestCase extends BaseTestCase {
      */
     protected function setUp(){
         parent::setUp();
-
         $this->resizeBrowser();
-        $this->seedDatabase();
+    }
+
+    protected function setUpTraits(){
+        $uses = array_flip(class_uses_recursive(static::class));
+
+        if(isset($uses[\App\Traits\Tests\InjectDatabaseStateIntoException::class])){
+            $this->prepareFailureExceptionForDatabaseInjection();
+        }
+
+        if (isset($uses[\App\Traits\Tests\LogTestName::class])){
+            $this->runTestNameLogging($this->getName());
+        }
+
+        return parent::setUpTraits();
     }
 
     /**
@@ -58,14 +86,6 @@ abstract class DuskTestCase extends BaseTestCase {
         $this->browse(function (Browser $browser){
             $browser->resize(self::RESIZE_WIDTH_PX, self::RESIZE_HEIGHT_PX);
         });
-    }
-
-    /**
-     * Seed the database by calling the artisan command:
-     *      artisan db:seed --class=UiSampleDatabaseSeeder
-     */
-    protected function seedDatabase(){
-        Artisan::call('db:seed', ['--class'=>'UiSampleDatabaseSeeder']);
     }
 
     /**
