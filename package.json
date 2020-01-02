@@ -8,7 +8,7 @@
   "devDependencies": {
     "@fortawesome/fontawesome-free": "5.2.0",
     "@voerro/vue-tagsinput": "1.9.1",
-    "axios": "^0.17",
+    "axios": "^0.19",
     "bulma": "0.7.4",
     "bulma-badge": "1.0.1",
     "bulma-checkradio": "2.1.0",
