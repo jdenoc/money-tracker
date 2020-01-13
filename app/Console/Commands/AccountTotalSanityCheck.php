@@ -13,6 +13,7 @@ class AccountTotalSanityCheck extends Command {
 
     const CONFIG_ENV = "app.env";
     const CONFIG_DISCORD_WEBHOOK_URL ="services.discord.webhook_url";
+    const ARG_ACCOUNT_ID = "accountId";
     const OPTION_FORCE_FAILURE = 'force-failure';
     const OPTION_DONT_NOTIFY_DISCORD = 'dont-notify-discord';
     const OPTION_NOTIFY_SCREEN = "notify-screen";
@@ -24,6 +25,7 @@ class AccountTotalSanityCheck extends Command {
      * @var string
      */
     protected $signature = 'sanity-check:account-total
+                            {accountId? : Account ID to perform sanity check}
                             {--force-failure : Force sanity check to fail before even performing it}
                             {--dont-notify-discord : Stop script from sending notification to provided Discord webhook}
                             {--notify-screen : Output to screen}';
@@ -50,12 +52,23 @@ class AccountTotalSanityCheck extends Command {
             $sanity_check_object->actual = 0;
             $sanity_check_object->expected = 1;
 
-            $this->notify($sanity_check_object);
+            $this->notifySanityCheck($sanity_check_object);
         } else {
-            $accounts = Account::all();
-            foreach($accounts as $account){
-                $sanity_check_object = $this->retrieveExpectedAccountTotalData($account);
-                $this->notify($sanity_check_object);
+            $account_id = $this->argument(self::ARG_ACCOUNT_ID);
+            if(empty($account_id)){
+                $accounts = Account::all();
+                foreach($accounts as $account){
+                    $sanity_check_object = $this->retrieveExpectedAccountTotalData($account);
+                    $this->notifySanityCheck($sanity_check_object);
+                }
+            } else {
+                $account = Account::find($account_id);
+                if(is_null($account)){
+                    $this->notifyInternally(sprintf("Account %d not found", $account_id), 'warning');
+                } else {
+                    $sanity_check_object = $this->retrieveExpectedAccountTotalData($account);
+                    $this->notifySanityCheck($sanity_check_object);
+                }
             }
         }
         return;
@@ -98,48 +111,48 @@ class AccountTotalSanityCheck extends Command {
     }
 
     /**
-     * Send a "notification" if there is a difference between actual and expected values
+     * Send a "notification" regarding a difference (if any) between actual and expected values
      * @param SanityCheckAlertObject $sanity_check_object
      */
-    private function notify($sanity_check_object){
+    private function notifySanityCheck($sanity_check_object){
         if($sanity_check_object->diff() > 0){
             $this->notifyInternally("Sanity check has failed ".$sanity_check_object, 'emergency');
-
-            // Attempt to notify Discord
-            if(!$this->option(self::OPTION_DONT_NOTIFY_DISCORD)){
-                $discord_webhook_url = config(self::CONFIG_DISCORD_WEBHOOK_URL);
-                if(empty($discord_webhook_url)){
-                    $this->notifyInternally("Discord webhook URL not set. Can not send notification to Discord", 'warning');
-                } else {
-                    $this->notifyDiscord($sanity_check_object, $discord_webhook_url);
-                }
-            }
+            $this->notifyDiscord($sanity_check_object);
+        } else {
+            $this->notifyInternally("\tOK");
         }
     }
 
     /**
      * Send "notification" to Discord Webhook
      * @param SanityCheckAlertObject $sanity_check
-     * @param string $webhook_url
      */
-    private function notifyDiscord($sanity_check, $webhook_url){
-        $webhook_data = [
-            "embeds"=>[[
-                "title"=>"`[".strtoupper(config(self::CONFIG_ENV))."]` Account Total: Sanity Check | Failure",
-                "description"=>"Sanity check has failed for account: _`".$sanity_check->account_name."`_ `[".$sanity_check->account_id."]`",
-                "color"=>15158332,  // RED
-                "fields"=>[
-                    ["name"=>"Actual", "value"=>'**`'.$sanity_check->actual.'`**', "inline"=>true],
-                    ["name"=>"Expected", "value"=>'**`'.$sanity_check->expected.'`**', "inline"=>true],
-                    ["name"=>"Difference", "value"=>'**`'.$sanity_check->diff().'`**', "inline"=>true]
-                ],
-                "timestamp"=>date("c")
-            ]]
-        ];
+    private function notifyDiscord($sanity_check){
+        if(!$this->option(self::OPTION_DONT_NOTIFY_DISCORD)){
+            $webhook_data = [
+                "embeds"=>[[
+                    "title"=>"`[".strtoupper(config(self::CONFIG_ENV))."]` Account Total: Sanity Check | Failure",
+                    "description"=>"Sanity check has failed for account: _`".$sanity_check->account_name."`_ `[".$sanity_check->account_id."]`",
+                    "color"=>15158332,  // RED
+                    "fields"=>[
+                        ["name"=>"Actual", "value"=>'**`'.$sanity_check->actual.'`**', "inline"=>true],
+                        ["name"=>"Expected", "value"=>'**`'.$sanity_check->expected.'`**', "inline"=>true],
+                        ["name"=>"Difference", "value"=>'**`'.$sanity_check->diff().'`**', "inline"=>true]
+                    ],
+                    "timestamp"=>date("c")
+                ]]
+            ];
 
-        $discord = new DiscordClient();
-        $discord->registerWebhook(self::WEBHOOK_ALIAS, $webhook_url);
-        $discord->executeWebhook(self::WEBHOOK_ALIAS, $webhook_data);
+            $discord_webhook_url = config(self::CONFIG_DISCORD_WEBHOOK_URL);
+            if(empty($discord_webhook_url)){
+                $this->notifyInternally("Discord webhook URL not set. Can not send notification to Discord", 'warning');
+            } else {
+                // Attempt to notify Discord
+                $discord = new DiscordClient();
+                $discord->registerWebhook(self::WEBHOOK_ALIAS, $discord_webhook_url);
+                $discord->executeWebhook(self::WEBHOOK_ALIAS, $webhook_data);
+            }
+        }
     }
 
     /**
