@@ -7,6 +7,9 @@ use Illuminate\Support\Collection;
 
 class CurrencyHelper {
 
+    /**
+     * @var string
+     */
     private static $_file_path = "json/currency.json";
 
     /**
@@ -16,6 +19,7 @@ class CurrencyHelper {
 
     /**
      * @return Collection
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public static function fetchCurrencies(){
         $currency_json = \Storage::get(self::$_file_path);
@@ -33,6 +37,8 @@ class CurrencyHelper {
     /**
      * Currency codes are based on the ISO4217 standard
      * @link https://en.wikipedia.org/wiki/ISO_4217
+     *
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public static function getCodesAsArray(){
         if(is_null(self::$_currencies)){
