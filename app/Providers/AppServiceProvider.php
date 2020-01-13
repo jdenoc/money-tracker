@@ -21,10 +21,6 @@ class AppServiceProvider extends ServiceProvider {
      * @return void
      */
     public function register(){
-        // IDE Helper
-        if ($this->app->environment() !== 'production') {
-            $this->app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
-            $this->app->register(DuskServiceProvider::class);
-        }
+
     }
 }
