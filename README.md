@@ -163,7 +163,6 @@ cd money-tracker/
 # setup composer packages & environment variables
 cp .env.example .env
 composer install
-php artisan app:name "Money Tracker"
 php artisan app:version `git describe`
 
 # ***OPTIONAL***
@@ -172,9 +171,8 @@ php artisan app:version `git describe`
 composer run-script ide-helper
 
 # construct the database tables
-php artisan migrate
-# NOTE: Make sure database has been created/setup first.
-# See next section.
+# NOTE: Make sure database has been created/setup first. See next section.
+php artisan migrate:fresh
 
 # setup Yarn packages
 yarn install
@@ -203,20 +201,21 @@ MOST_RECENT_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
 git checkout -q tags/$MOST_RECENT_TAG
 
 # setup composer packages, database tables & environment variables
-cp .env.example .env
-sed "s/APP_ENV=.*/APP_ENV=production/" .env
 composer install --no-dev -o
+sed "s/APP_ENV=.*/APP_ENV=production/" .env > .env.tmp; mv .env.tmp .env
+sed "s/APP_DEBUG=.*/APP_DEBUG=false/" .env > .env.tmp; mv .env.tmp .env
+sed "s/APP_LOG_LEVEL=.*/APP_LOG_LEVEL=error/" .env > .env.tmp; mv .env.tmp .env
 php artisan app:version $MOST_RECENT_TAG
-php artisan app:name "Money Tracker"
-php artisan migrate
-# NOTE: Make sure database has been setup first.
 
 # setup Yarn packages
-yarn install --prod
+yarn install
 yarn run build-prod
 
 # setup cache
 php artisan config:cache
+
+# NOTE: Make sure database has been setup first.
+php artisan migrate:fresh
 ```
 
 ### Environment variable setup
@@ -225,7 +224,7 @@ That being said, there are certainly variables that should be modified at this p
 - `APP_ENV`
 - `APP_DEBUG`
 - `APP_LOG_LEVEL` (_log level values can be found [here](https://github.com/Seldaek/monolog/blob/1.23.0/doc/01-usage.md#log-levels)_)
-- `APP_NAME` (can be set by `php artisan app:name`)
+- `APP_NAME`
 - `APP_VERSION` (can be set by `php artisan app:version`)
 - `APP_URL`
 - `DB_HOST`
@@ -254,7 +253,7 @@ This is the exact same process as we do for our Local/dev setup. See instruction
 ***
 
 #### <a name="prod-updates">Updates</a>
-From time to time, there will be new updates released. Such updates will contain new features, bug fixes, general improvements ect. In order to allow such improvements to be usable on production deployments, you should follow these steps
+From time to time, there will be new updates released. Such updates will contain new features, bug fixes, general improvements ect. In order to allow such improvements to be usable on production deployments, you should follow these steps:
 ```bash
 # While already in the application directory, i.e.: cd money-tracker/
 
@@ -265,24 +264,26 @@ php artisan down
 git fetch --tags
 MOST_RECENT_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
 git checkout -q tags/$MOST_RECENT_TAG
-php artisan app:version $MOST_RECENT_TAG
-
-# Database updates
-# Note: check update release notes.
-php artisan migrate 
 
 # New/Updates to composer/yarn packages
 # Note: check update release notes. 
 composer update --no-dev -o
-yarn install --prod
+yarn install
 
 # Build website from *.vue files
 yarn run build-prod
 
+# Database updates
+# Note: check update release notes.
+php artisan migrate
+
 # reset cache
-php artisan config:cache
 php artisan cache:clear
 php artisan view:clear
+php artisan config:cache
+
+# Label the latest version
+php artisan app:version $MOST_RECENT_TAG
 
 # take site out of maintenance mode
 php artisan up
