@@ -99,8 +99,7 @@ jobs:
     - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-get
     - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-post
     - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-delete
-    - install: cp .env.docker .env # only doing this here so `artisan app:version` tests don't fail`
-      script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite console
+    - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite console
     - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite web
     - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite unit
 

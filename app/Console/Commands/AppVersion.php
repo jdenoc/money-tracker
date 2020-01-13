@@ -34,40 +34,55 @@ class AppVersion extends Command {
      * @return mixed
      */
     public function handle(){
-        // make sure .env file exists
-        $dot_env_file_path = app()->environmentFilePath();
-        if(!File::exists($dot_env_file_path)){
-            $this->error(app()->environmentFile()." file does not exist.\nPlease create one before trying again.");
+        if(!$this->environmentFileExists()){
+            $this->error(basename($this->getEnvironmentFilePath())." file does not exist.\nPlease create one before trying again.");
             return;
         }
 
-        $version = $this->argument(self::ARG_NAME);
-        if(empty($version)){
+        $new_version = $this->argument(self::ARG_NAME);
+        if(empty($new_version)){
             $current_version = config(self::CONFIG_PARAM);  // getting config value from memory
             $current_version = empty($current_version) ? 'NOT YET SET' : $current_version;
             $this->info(sprintf(self::INFO_STRING_GET_VERSION, $current_version));
             return;
         }
 
-        $this->writeNewEnvironmentFileWith($dot_env_file_path, $version);
-        config([self::CONFIG_PARAM=>$version]);  // setting the config value in memory
-        $this->info(sprintf(self::INFO_STRING_SET_VERSION, $version));
+        $this->writeNewEnvironmentFileWith($new_version);
+        config([self::CONFIG_PARAM=>$new_version]);  // setting the config value in memory
+        $this->info(sprintf(self::INFO_STRING_SET_VERSION, $new_version));
         return;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getEnvironmentFilePath(){
+        return $this->laravel->environmentFilePath();
+    }
+
+    /**
+     * Makes sure that the (provided) environment file exists
+     *
+     * @param string $env_file_path
+     * @return bool
+     */
+    protected function environmentFileExists(){
+        return File::exists($this->getEnvironmentFilePath());
     }
 
     /**
      * Write a new environment file with the given key.
      *     Taken & modified from Illuminate\Foundation\Console\KeyGenerateCommand
      *
-     * @param string   $dot_env_file_path
-     * @param  string  $version
+     * @param string  $version
      * @return void
      */
-    protected function writeNewEnvironmentFileWith($dot_env_file_path, $version){
-        file_put_contents($dot_env_file_path, preg_replace(
+    protected function writeNewEnvironmentFileWith($version){
+        $env_file_path = $this->getEnvironmentFilePath();
+        file_put_contents($env_file_path, preg_replace(
             $this->versionReplacementPattern(),
             self::ENV_PARAM.'='.$version,
-            file_get_contents($dot_env_file_path)
+            file_get_contents($env_file_path)
         ));
     }
 
