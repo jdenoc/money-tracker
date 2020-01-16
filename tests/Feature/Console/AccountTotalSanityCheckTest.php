@@ -57,7 +57,6 @@ class AccountTotalSanityCheckTest extends TestCase {
             });
         $account->update(['total'=>$new_total]);
 
-//        Artisan::call($this->_command, ['accountId'=>$account->id, '--notify-screen'=>true, '--dont-notify-discord'=>true]);
         Artisan::call($this->_command, array_merge(['accountId'=>$account->id], $this->_screen_only_notification_options));
         $result_as_text = trim(Artisan::output());
         $this->assertContains(sprintf("Checking account ID:%d\n\tOK", $account->id), $result_as_text);
