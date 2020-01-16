@@ -66,7 +66,7 @@ class AccountTotalSanityCheckTest extends TestCase {
         Artisan::call("db:seed", ['--class'=>'UiSampleDatabaseSeeder']);
         DB::statement("TRUNCATE accounts");
 
-        $account_id = $this->faker->randomNumber(1);
+        $account_id = $this->faker->randomDigitNotNull;
         Artisan::call($this->_command, array_merge(['accountId'=>$account_id], $this->_screen_only_notification_options));
         $result_as_text = trim(Artisan::output());
         $this->assertContains(sprintf("Account %d not found", $account_id), $result_as_text);
