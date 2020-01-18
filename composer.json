@@ -58,7 +58,7 @@
     },
     "repositories": [{
         "type": "vcs",
-        "url": "https://github.com/eklundkristoffer/laravel-discord-webhook"
+        "url": "https://github.com/jdenoc/laravel-discord-webhook"
     }],
     "extra": {
         "laravel": {

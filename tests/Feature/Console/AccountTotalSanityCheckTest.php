@@ -72,4 +72,23 @@ class AccountTotalSanityCheckTest extends TestCase {
         $this->assertContains(sprintf("Account %d not found", $account_id), $result_as_text);
     }
 
+    public function testSanityCheckIndividualAccountIdZeroNotFoundOutputtingToScreenAndWithoutNotifyingDiscord(){
+        Artisan::call("db:seed", ['--class'=>'UiSampleDatabaseSeeder']);
+        DB::statement("TRUNCATE accounts");
+
+        $account_id = 0;
+        Artisan::call($this->_command, array_merge(['accountId'=>$account_id], $this->_screen_only_notification_options));
+        $result_as_text = trim(Artisan::output());
+        $this->assertContains(sprintf("Account %d not found", $account_id), $result_as_text);
+    }
+
+    public function testSanityCheckAccountsNotFoundOutputtingToScreenAndWithoutNotifyingDiscord(){
+        Artisan::call("db:seed", ['--class'=>'UiSampleDatabaseSeeder']);
+        DB::statement("TRUNCATE accounts");
+
+        Artisan::call($this->_command, $this->_screen_only_notification_options);
+        $result_as_text = trim(Artisan::output());
+        $this->assertContains("No accounts found", $result_as_text);
+    }
+
 }
