@@ -33,7 +33,6 @@ RUN echo '#!/bin/bash\nphp /var/www/money-tracker/artisan "$@"' > /usr/local/bin
 
 # select a php.ini config file; we use php.ini-development as it has "display_errors = On"
 RUN cp $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini \
-  && sed -i "s/;always_populate_raw_post_data = -1/always_populate_raw_post_data = -1/" $PHP_INI_DIR/php.ini \
   && sed -i "s/expose_php = On/expose_php = Off/" $PHP_INI_DIR/php.ini
 
 # set php error logging

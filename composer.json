@@ -38,10 +38,8 @@
         }
     },
     "scripts": {
-        "post-root-package-install": [
-            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
-        ],
-        "post-create-project-cmd": [
+        "post-update-cmd": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
             "@php artisan key:generate"
         ],
         "post-autoload-dump": [
@@ -60,7 +58,7 @@
     },
     "repositories": [{
         "type": "vcs",
-        "url": "https://github.com/eklundkristoffer/laravel-discord-webhook"
+        "url": "https://github.com/jdenoc/laravel-discord-webhook"
     }],
     "extra": {
         "laravel": {
