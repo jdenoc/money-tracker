@@ -21,9 +21,8 @@ class AppServiceProvider extends ServiceProvider {
      * @return void
      */
     public function register(){
-        // IDE Helper
         if ($this->app->environment() !== 'production') {
-            $this->app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
+            // This still needs to be registered because laravel/dusk is not permitted to be discovered via composer
             $this->app->register(DuskServiceProvider::class);
         }
     }
