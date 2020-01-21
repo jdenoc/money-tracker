@@ -116,8 +116,7 @@ class EntryController extends Controller {
         if(empty($entry)){
             return response('', HttpStatus::HTTP_NOT_FOUND);
         } else {
-            $entry->disabled = true;
-            $entry->save();
+            $entry->disable();
             return response('', HttpStatus::HTTP_NO_CONTENT);
         }
     }
