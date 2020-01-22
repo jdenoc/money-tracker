@@ -5,12 +5,15 @@ namespace Tests\Feature\Api;
 use App\Account;
 use App\AccountType;
 use App\Entry;
-use Faker\Factory as FakerFactory;
+use Carbon\Carbon;
+use Illuminate\Foundation\Testing\WithFaker;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 
 class DeleteEntryTest extends TestCase {
+
+    use WithFaker;
 
     private $_base_uri = '/api/entry/';
 
@@ -33,12 +36,21 @@ class DeleteEntryTest extends TestCase {
         $this->assertEmpty($delete_response->getContent());
         $this->assertTrue(is_array($get_response2->json()));
         $this->assertEmpty($get_response2->json());
+
+        // confirm disabled_stamp and modified_stamp have been updated
+        $newly_disabled_entry = Entry::find($entry->id);
+        $this->assertTrue($newly_disabled_entry->disabled);
+        $this->assertNotEmpty($newly_disabled_entry->disabled_stamp);
+        $this->assertDateFormat($newly_disabled_entry->disabled_stamp, Carbon::ATOM, $newly_disabled_entry->disabled_stamp. "does not match format ".Carbon::ATOM);
+        $this->assertNotEmpty($entry->modified_stamp);
+        $this->assertNotEmpty($newly_disabled_entry->modified_stamp);
+        $this->assertDateFormat($newly_disabled_entry->modified_stamp, Carbon::ATOM, $newly_disabled_entry->modfied_stamp. "does not match format ".Carbon::ATOM);
+        $this->assertNotEquals($entry->modified_stamp, $newly_disabled_entry->modfied_stamp);
     }
 
     public function testMarkingEntryDeletedWhenEntryDoesNotExist(){
-        $faker = FakerFactory::create();
         // GIVEN
-        $entry_id = $faker->randomNumber();
+        $entry_id = $this->faker->randomNumber();
 
         // WHEN
         $get_response = $this->get($this->_base_uri.$entry_id);

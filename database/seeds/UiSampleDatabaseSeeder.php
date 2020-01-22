@@ -2,11 +2,14 @@
 
 use App\Helpers\CurrencyHelper;
 use App\Http\Controllers\Api\EntryController;
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
+use Illuminate\Foundation\Testing\WithFaker;
 
 class UiSampleDatabaseSeeder extends Seeder {
 
     use App\Traits\Tests\StorageTestFiles;
+    use WithFaker;
 
     const COUNT_ACCOUNT_TYPE = 3;
     const COUNT_ATTACHMENT = 4;
@@ -21,11 +24,9 @@ class UiSampleDatabaseSeeder extends Seeder {
 
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
     public function run(){
-        $faker = Faker\Factory::create();
+        $this->setUpFaker();
 
         // ***** TAGS *****
         $tags = factory(App\Tag::class, self::COUNT_TAG)->create();
@@ -42,33 +43,33 @@ class UiSampleDatabaseSeeder extends Seeder {
         foreach($institution_ids as $institution_id){
             $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$institution_id, 'disabled'=>false]);
         }
-        $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$faker->randomElement($institution_ids), 'disabled'=>true]);
+        $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$this->faker->randomElement($institution_ids), 'disabled'=>true]);
         $currencies = CurrencyHelper::fetchCurrencies();
         foreach($currencies as $currency){
-            $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$faker->randomElement($institution_ids), 'currency'=>$currency->code]);
+            $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$this->faker->randomElement($institution_ids), 'currency'=>$currency->code]);
         }
         $this->command->line(self::OUTPUT_PREFIX."Accounts seeded [".$accounts->count()."]");
 
         // ***** ACCOUNT-TYPES *****
         $account_types = collect();
         foreach($accounts->pluck('id') as $account_id){
-            $account_types = $this->addAccountTypeToCollection($account_types, ['account_id'=>$account_id, 'disabled'=>false], $faker);
+            $account_types = $this->addAccountTypeToCollection($account_types, ['account_id'=>$account_id, 'disabled'=>false]);
         }
-        $account_types = $this->addAccountTypeToCollection($account_types, ['account_id'=>$accounts->where('disabled', false)->pluck('id')->random(), 'disabled'=>true], $faker);
-        $account_types = $this->addAccountTypeToCollection($account_types, ['account_id'=>$accounts->where('disabled', true)->pluck('id')->random(), 'disabled'=>true], $faker);
+        $account_types = $this->addAccountTypeToCollection($account_types, ['account_id'=>$accounts->where('disabled', false)->pluck('id')->random(), 'disabled'=>true]);
+        $account_types = $this->addAccountTypeToCollection($account_types, ['account_id'=>$accounts->where('disabled', true)->pluck('id')->random(), 'disabled'=>true]);
         $this->command->line(self::OUTPUT_PREFIX."Account-types seeded [".$account_types->count()."]");
 
         // ***** ENTRIES *****
         $entries = collect();
         foreach($account_types->pluck('id') as $account_type_id){
-            $entries = $this->addEntryToCollection($entries, ['account_type_id'=>$account_type_id, 'disabled'=>false], $faker);
+            $entries = $this->addEntryToCollection($entries, ['account_type_id'=>$account_type_id, 'disabled'=>false]);
         }
-        $entries = $this->addEntryToCollection($entries, ['account_type_id'=>$account_types->pluck('id')->random(), 'disabled'=>true], $faker);
+        $entries = $this->addEntryToCollection($entries, ['account_type_id'=>$account_types->pluck('id')->random(), 'disabled'=>true, 'disabled_stamp'=>new Carbon()]);
         $this->command->line(self::OUTPUT_PREFIX."Entries seeded [".$entries->count()."]");
 
         foreach($entries as $entry){
-            if($faker->boolean){    // randomly assign tags to entries
-                $this->attachTagToEntry($faker, $tag_ids, $entry);
+            if($this->faker->boolean){    // randomly assign tags to entries
+                $this->attachTagToEntry($tag_ids, $entry);
             }
         }
 
@@ -78,10 +79,10 @@ class UiSampleDatabaseSeeder extends Seeder {
         $entries_not_confirmed = $entries_not_disabled->where('confirm', 0);
 
         // just in case we missed an entry necessary for testing, we're going to assign tags to random confirmed & unconfirmed entries
-        $this->attachTagToEntry($faker, $tag_ids, $entries_not_confirmed->where('expense', 1)->random());
-        $this->attachTagToEntry($faker, $tag_ids, $entries_not_confirmed->where('expense', 0)->random());
-        $this->attachTagToEntry($faker, $tag_ids, $entries_confirmed->where('expense', 1)->random());
-        $this->attachTagToEntry($faker, $tag_ids, $entries_confirmed->where('expense', 0)->random());
+        $this->attachTagToEntry($tag_ids, $entries_not_confirmed->where('expense', 1)->random());
+        $this->attachTagToEntry($tag_ids, $entries_not_confirmed->where('expense', 0)->random());
+        $this->attachTagToEntry($tag_ids, $entries_confirmed->where('expense', 1)->random());
+        $this->attachTagToEntry($tag_ids, $entries_confirmed->where('expense', 0)->random());
         $this->command->line(self::OUTPUT_PREFIX."Randomly assigned tags to entries");
 
         // randomly select some entries and mark them as transfers
@@ -164,21 +165,19 @@ class UiSampleDatabaseSeeder extends Seeder {
     /**
      * @param Illuminate\Support\Collection $account_type_collection
      * @param array $data
-     * @param Faker\Generator $faker
      * @return Illuminate\Support\Collection
      */
-    private function addAccountTypeToCollection($account_type_collection, $data, $faker){
-        return $this->addToCollection($account_type_collection, App\AccountType::class, $data, $faker->numberBetween(self::COUNT_MIN, self::COUNT_ACCOUNT_TYPE));
+    private function addAccountTypeToCollection($account_type_collection, $data){
+        return $this->addToCollection($account_type_collection, App\AccountType::class, $data, $this->faker->numberBetween(self::COUNT_MIN, self::COUNT_ACCOUNT_TYPE));
     }
 
     /**
      * @param Illuminate\Support\Collection $entry_collection
      * @param array $data
-     * @param Faker\Generator $faker
      * @return Illuminate\Support\Collection
      */
-    private function addEntryToCollection($entry_collection, $data, $faker){
-        return $this->addToCollection($entry_collection, App\Entry::class, $data, $faker->numberBetween(self::COUNT_MIN, self::COUNT_ENTRY*2));
+    private function addEntryToCollection($entry_collection, $data){
+        return $this->addToCollection($entry_collection, App\Entry::class, $data, $this->faker->numberBetween(self::COUNT_MIN, self::COUNT_ENTRY*2));
     }
 
     /**
@@ -194,12 +193,11 @@ class UiSampleDatabaseSeeder extends Seeder {
     }
 
     /**
-     * @param Faker\Generator $faker
      * @param int[] $tag_ids
      * @param App\Entry $entry
      */
-    private function attachTagToEntry($faker, $tag_ids, $entry){
-        $entry_tag_ids = $faker->randomElements($tag_ids, $faker->numberBetween(self::COUNT_MIN, self::COUNT_TAG));
+    private function attachTagToEntry($tag_ids, $entry){
+        $entry_tag_ids = $this->faker->randomElements($tag_ids, $this->faker->numberBetween(self::COUNT_MIN, self::COUNT_TAG));
         $entry->tags()->attach($entry_tag_ids);
     }
 
