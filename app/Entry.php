@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Http\Controllers\Api\EntryController;
+use Carbon\Carbon;
 
 class Entry extends BaseModel {
 
@@ -80,6 +81,12 @@ class Entry extends BaseModel {
             $this->account_type()->first()->account()->first()->update_total($actual_entry_value);
         }
         return $saved_entry;
+    }
+
+    public function disable(){
+        $this->disabled = true;
+        $this->disabled_stamp = new Carbon();
+        $this->save();
     }
 
     public static function get_entry_with_tags_and_attachments($entry_id){

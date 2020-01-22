@@ -9,7 +9,7 @@ use App\Tag;
 use Carbon\Carbon;
 use Faker\Factory as FakerFactory;
 use Faker\Generator;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Tests\TestCase;
 
@@ -53,12 +53,16 @@ class ListEntriesBase extends TestCase {
      * @param bool $entry_disabled
      * @param array $override_entry_components
      * @return Entry
+     * @throws \Exception
      */
     protected function generate_entry_record($account_type_id, $entry_disabled, $override_entry_components=[]){
         $default_entry_data = ['account_type_id'=>$account_type_id, 'disabled'=>$entry_disabled];
         $new_entry_data = array_merge($default_entry_data, $override_entry_components);
         unset($new_entry_data['tags']);
         unset($new_entry_data['has_attachments']);
+        if($new_entry_data['disabled']){
+            $new_entry_data['disabled_stamp'] = new Carbon();
+        }
         $generated_entry = factory(Entry::class)->create($new_entry_data);
 
         if(!$entry_disabled){    // no sense cluttering up the database with test data for something that isn't supposed to appear anyway
@@ -94,6 +98,7 @@ class ListEntriesBase extends TestCase {
      * @param bool $randomly_mark_entries_disabled
      * @param bool $mark_entries_disabled
      * @return Collection
+     * @throws \Exception
      */
     protected function batch_generate_entries($generate_entry_count, $generated_account_type_id, $filter_details=[], $randomly_mark_entries_disabled=false, $mark_entries_disabled=false){
         $generated_entries = collect();
