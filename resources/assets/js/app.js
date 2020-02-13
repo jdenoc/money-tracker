@@ -18,6 +18,8 @@ import InstitutionsPanel from './components/institutions-panel';
 import LoadingModal from './components/loading-modal';
 import Navbar from './components/navbar';
 import Notification from './components/notification';
+import Stats from "./components/stats/stats";
+import StatsNav from "./components/stats/stats-nav";
 import TransferModal from './components/transfer-modal';
 
 import { AccountTypes } from './account-types';
@@ -74,7 +76,15 @@ Vue.prototype.$eventHub = new Vue({
         /**
          * @returns {string}
          */
-        EVENT_TRANSFER_MODAL_CLOSE: function(){ return "close-transfer-model"; }
+        EVENT_TRANSFER_MODAL_CLOSE: function(){ return "close-transfer-model"; },
+        /**
+         * @returns {string}
+         */
+        EVENT_STATS_TRENDING: function(){ return 'stats-display-trending-chart'},
+        /**
+         * @returns {string}
+         */
+        EVENT_STATS_TAGS: function(){ return 'stats-display-tags-chart' }
     },
     methods: {
         broadcast(event, data = null){
@@ -97,6 +107,8 @@ new Vue({
         LoadingModal,
         Navbar,
         Notification,
+        Stats,
+        StatsNav,
         TransferModal
     },
     store: Store,
