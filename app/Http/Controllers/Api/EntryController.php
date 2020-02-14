@@ -19,12 +19,14 @@ class EntryController extends Controller {
     const ERROR_ENTRY_ID = 0;
     const RESPONSE_SAVE_KEY_ID = 'id';
     const RESPONSE_SAVE_KEY_ERROR = 'error';
+    const RESPONSE_FILTER_KEY_ERROR = 'error';
     const ERROR_MSG_SAVE_ENTRY_NO_ERROR = '';
     const ERROR_MSG_SAVE_ENTRY_NO_DATA = "No data provided";
     const ERROR_MSG_SAVE_ENTRY_MISSING_PROPERTY = "Missing data: %s";
     const ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE = "Account type provided does not exist";
     const ERROR_MSG_SAVE_ENTRY_DOES_NOT_EXIST = "Entry does not exist";
     const ERROR_MSG_SAVE_TRANSFER_BOTH_EXTERNAL = "A transfer can not consist with both entries belonging to external accounts";
+    const ERROR_MSG_FILTER_INVALID = 'invalid filter provided';
     const FILTER_KEY_ACCOUNT = 'account';
     const FILTER_KEY_ACCOUNT_TYPE = 'account_type';
     const FILTER_KEY_ATTACHMENTS = 'attachments';
@@ -100,7 +102,7 @@ class EntryController extends Controller {
 
         $filter_validator = Validator::make($filter_data, self::get_filter_details(isset($filter_data[self::FILTER_KEY_TAGS])));
         if($filter_validator->fails()){
-            return response(['error'=>'invalid filter provided'], HttpStatus::HTTP_BAD_REQUEST);
+            return response([self::RESPONSE_FILTER_KEY_ERROR=>self::ERROR_MSG_FILTER_INVALID], HttpStatus::HTTP_BAD_REQUEST);
         }
 
         return $this->provide_paged_entries_response($filter_data, $page_number, $sort_by, $sort_direction);
