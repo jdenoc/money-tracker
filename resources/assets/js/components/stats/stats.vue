@@ -7,9 +7,9 @@
 </template>
 
 <script>
+    import SummaryChart from "./summary-chart";
     import TrendingChart from "./trending-chart";
     import TagsChart from "./tags-chart";
-    import SummaryChart from "./summary-chart";
     import {statsNavMixin} from "../../mixins/stats-nav-mixin";
 
     export default {
@@ -17,7 +17,7 @@
         mixins: [statsNavMixin],
         components: {SummaryChart, TagsChart, TrendingChart},
         created: function(){
-            this.$eventHub.listen(this.$eventHub.EVENT_STATS_TRENDING, function(){
+            this.$eventHub.listen(this.$eventHub.EVENT_STATS_SUMMARY, function(){
                 this.makeChartVisible('summary');
             }.bind(this));
             this.$eventHub.listen(this.$eventHub.EVENT_STATS_TRENDING, function(){

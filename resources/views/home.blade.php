@@ -44,6 +44,6 @@
             </div>
         </div>
     </div>
-    <script type="text/javascript" src="{{asset('vue/js/app.js')}}"></script>
+    <script type="text/javascript" src="{{asset('vue/js/app-home.js')}}"></script>
 </body>
 </html>

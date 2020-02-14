@@ -17,7 +17,8 @@ let jsDirectory             = 'public/vue/js';
 let webFontDirectory        = 'public/vue/webfonts';
 let resourceAssetsDirectory = 'resources/assets';
 
-mix.js('resources/assets/js/app.js', jsDirectory)
+mix.js('resources/assets/js/app-home.js', jsDirectory)
+    .js('resources/assets/js/app-stats.js', jsDirectory)
     // dropzone
     .copy(nodeDirectory+'/vue2-dropzone/dist/vue2Dropzone.min.css', cssDirectory+'/vue-dropzone.css')
     // font-awesome

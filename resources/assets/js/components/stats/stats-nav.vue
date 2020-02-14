@@ -38,7 +38,7 @@
         methods:{
             showSummaryChart: function(){
                 this.makeChartVisible('summary');
-                this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, {type: SnotifyStyle.info, message: "Feature not yet enabled"});
+                this.$eventHub.broadcast(this.$eventHub.EVENT_STATS_SUMMARY);
             },
             showTrendingChart: function(){
                 this.makeChartVisible('trending');
