@@ -29,6 +29,7 @@
                         <hr class="navbar-divider">
                         <div id="app-version" class="navbar-item has-text-info is-italic is-hidden-touch">Version: {{appVersion}}</div>
                         <hr class="navbar-divider">
+                        <a class="navbar-item" href="/"><i class="fas fa-home"></i> Home</a>
                         <a class="navbar-item" href="stats"><i class="fas fa-chart-pie"></i> Statistics</a>
                         <a class="navbar-item" href="settings"><i class="fas fa-cog"></i> Settings</a>
                         <hr class="navbar-divider">
