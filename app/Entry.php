@@ -108,6 +108,7 @@ class Entry extends BaseModel {
         // this makes sure that the correct ID is present if a JOIN is required
         $entries_query->distinct()->select("entries.*");
         $entries_query->orderBy($sort_by, $sort_direction);
+        $entries_query->latest(self::CREATED_AT);
         return $entries_query->offset($offset)->limit($limit)->get();
     }
 
