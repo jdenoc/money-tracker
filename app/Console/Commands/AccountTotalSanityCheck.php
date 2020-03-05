@@ -20,6 +20,10 @@ class AccountTotalSanityCheck extends Command {
     const OPTION_NOTIFY_SCREEN = "notify-screen";
     const WEBHOOK_ALIAS = "account-total-sanity-check-failure";
 
+    const LOG_LEVEL_DEBUG = 'debug';
+    const LOG_LEVEL_WARNING = 'warning';
+    const LOG_LEVEL_EMERGENCY = 'emergency';
+
     /**
      * The name and signature of the console command.
      *
@@ -45,7 +49,7 @@ class AccountTotalSanityCheck extends Command {
      */
     public function handle(){
         if($this->option(self::OPTION_FORCE_FAILURE)){
-            $this->notifyInternally("Forcing Failure", 'debug');
+            $this->notifyInternally("Forcing Failure", self::LOG_LEVEL_DEBUG);
 
             $sanity_check_object = new SanityCheckAlertObject();
             $sanity_check_object->account_id = 0;
@@ -59,21 +63,21 @@ class AccountTotalSanityCheck extends Command {
             if(!is_null($account_id)){
                 $account = Account::find($account_id);
                 if(is_null($account)){
-                    $this->notifyInternally(sprintf("Account %d not found", $account_id), 'warning');
+                    $this->notifyInternally(sprintf("Account %d not found", $account_id), self::LOG_LEVEL_WARNING);
                 } else {
                     $sanity_check_object = $this->retrieveExpectedAccountTotalData($account);
                     $this->notifySanityCheck($sanity_check_object);
                 }
             } elseif(!is_null($account_id) && intval($account_id) === 0){
-                $this->notifyInternally("Account 0 does not exist", "warning");
+                $this->notifyInternally("Account 0 does not exist", self::LOG_LEVEL_WARNING);
             } else {
                 $accounts = Account::all();
                 if($accounts->isEmpty()){
-                    $this->notifyInternally("No accounts found", "warning");
+                    $this->notifyInternally("No accounts found", self::LOG_LEVEL_WARNING);
                     $webhook_data = New DiscordContentObject();
                     $webhook_data->addEmbeddedTitle("`[".strtoupper(config(self::CONFIG_ENV))."]` Account Total: Sanity Check | WARNING");
                     $webhook_data->addEmbeddedDescription("No accounts found");
-                    $this->notifyDiscord($webhook_data, 'warning');
+                    $this->notifyDiscord($webhook_data, self::LOG_LEVEL_WARNING);
                 } else {
                     foreach($accounts as $account){
                         $sanity_check_object = $this->retrieveExpectedAccountTotalData($account);
@@ -111,7 +115,7 @@ class AccountTotalSanityCheck extends Command {
             ORDER BY entries.entry_date DESC, entries.id DESC
          */
 
-        $this->notifyInternally("Checking account ID:".$account->id, "debug");
+        $this->notifyInternally("Checking account ID:".$account->id, self::LOG_LEVEL_DEBUG);
         $sanity_check_result = $sanity_check_query->get();
         $sanity_check_object = new SanityCheckAlertObject();
         $sanity_check_object->actual = $sanity_check_result[0]->actual;
@@ -127,14 +131,14 @@ class AccountTotalSanityCheck extends Command {
      */
     private function notifySanityCheck($sanity_check_object){
         if($sanity_check_object->diff() > 0){
-            $this->notifyInternally("Sanity check has failed ".$sanity_check_object, 'emergency');
+            $this->notifyInternally("Sanity check has failed ".$sanity_check_object, self::LOG_LEVEL_EMERGENCY);
             $webhook_data = New DiscordContentObject();
             $webhook_data->addEmbeddedTitle("`[".strtoupper(config(self::CONFIG_ENV))."]` Account Total: Sanity Check | Failure");
             $webhook_data->addEmbeddedDescription("Sanity check has failed for account: _`".$sanity_check_object->account_name."`_ `[".$sanity_check_object->account_id."]`");
             $webhook_data->addEmbeddedField("Actual", '**`'.$sanity_check_object->actual.'`**');
             $webhook_data->addEmbeddedField("Expected", '**`'.$sanity_check_object->expected.'`**');
             $webhook_data->addEmbeddedField("Difference", '**`'.$sanity_check_object->diff().'`**');
-            $this->notifyDiscord($webhook_data, 'emergency');
+            $this->notifyDiscord($webhook_data, self::LOG_LEVEL_EMERGENCY);
         } else {
             $this->notifyInternally("\tOK");
         }
@@ -145,24 +149,24 @@ class AccountTotalSanityCheck extends Command {
      * @param DiscordContentObject $webhook_data
      * @param string $level
      */
-    private function notifyDiscord($webhook_data, $level='debug'){
+    private function notifyDiscord($webhook_data, $level=self::LOG_LEVEL_DEBUG){
         if(!$this->option(self::OPTION_DONT_NOTIFY_DISCORD)){
             switch($level){
-                case 'debug':
+                case self::LOG_LEVEL_DEBUG:
                 default:
                     $webhook_data->addEmbeddedColor($webhook_data::COLOR_DEFAULT);
                     break;
-                case 'warning':
+                case self::LOG_LEVEL_WARNING:
                     $webhook_data->addEmbeddedColor($webhook_data::COLOR_ORANGE);
                     break;
-                case 'emergency':
+                case self::LOG_LEVEL_EMERGENCY:
                     $webhook_data->addEmbeddedColor($webhook_data::COLOR_RED);
                     break;
             }
 
             $discord_webhook_url = config(self::CONFIG_DISCORD_WEBHOOK_URL);
             if(empty($discord_webhook_url)){
-                $this->notifyInternally("Discord webhook URL not set. Can not send notification to Discord", 'warning');
+                $this->notifyInternally("Discord webhook URL not set. Can not send notification to Discord", self::LOG_LEVEL_WARNING);
             } else {
                 // Attempt to notify Discord
                 $discord = new DiscordClient();
@@ -178,18 +182,18 @@ class AccountTotalSanityCheck extends Command {
      * @param string $notification_message
      * @param string $level
      */
-    private function notifyInternally($notification_message, $level='debug'){
+    private function notifyInternally($notification_message, $level=self::LOG_LEVEL_DEBUG){
         Log::log($level, $notification_message);
         if($this->option(self::OPTION_NOTIFY_SCREEN)){
             switch($level){
-                case 'debug':
+                case self::LOG_LEVEL_DEBUG:
                 default:
                     $this->info($notification_message);
                     break;
-                case 'warning':
+                case self::LOG_LEVEL_WARNING:
                     $this->warn($notification_message);
                     break;
-                case 'emergency':
+                case self::LOG_LEVEL_EMERGENCY:
                     $this->error($notification_message);
                     break;
             }
