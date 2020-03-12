@@ -143,6 +143,7 @@ abstract class DuskTestCase extends BaseTestCase {
      * @return array
      */
     public function getApiEntries($page_number=0){
+        // See resources/assets/js/entries.js:16-38
         $entries_response = $this->json('POST', '/api/entries/'.$page_number, ["sort"=>["parameter"=>"entry_date", "direction"=>"desc"]]);
         return $entries_response->json();
     }

@@ -94,9 +94,10 @@ trait HomePageSelectors {
     private $_selector_modal_filter = "@filter-modal";  // see Browser\Pages\HomePage.php
     private $_selector_modal_filter_field_start_date = "#filter-start-date";
     private $_selector_modal_filter_field_end_date = "#filter-end-date";
-    private $_selector_modal_filter_field_switch_account_and_account_type = "#filter-account-account-types";
-    private $_selector_modal_filter_field_checkbox_show_disabled = "#filter-show-disabled-checkbox";
-    private $_selector_modal_filter_field_account_and_account_type = "#filter-account-or-account-types-id";
+    private $_selector_modal_filter_field_switch_account_and_account_type = "#toggle-account-account-types";
+    private $_selector_modal_filter_field_checkbox_show_disabled = "#show-disabled-accounts-account-types";
+    private $_selector_modal_filter_field_checkbox_show_disabled_label = "#show-disabled-accounts-account-types label";
+    private $_selector_modal_filter_field_account_and_account_type = "#select-account-or-account-types-id";
     private $_selector_modal_filter_field_tags= "#filter-tags";
     private $_selector_modal_filter_field_switch_income = "#filter-is-income";
     private $_selector_modal_filter_field_switch_expense = "#filter-is-expense";
@@ -161,7 +162,7 @@ trait HomePageSelectors {
     private $_color_filter_switch_default = "#B5B5B5";
     private $_color_filter_switch_active = "#209CEE";
     private $_color_filter_btn_tag_default = "#f5f5f5";
-    private $_color_filter_btn_tag_active = "#209CEE";
+    private $_color_filter_btn_tag_active = "#3298DC";
 
     private $_class_is_income = "is-income";
     private $_class_is_expense = "is-expense";

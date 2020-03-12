@@ -371,8 +371,8 @@ class FilterModalTest extends DuskTestCase {
 
                     if($has_disabled_account){
                         $modal
-                            ->assertVisible($this->_selector_modal_filter_field_checkbox_show_disabled."+label")
-                            ->assertSeeIn($this->_selector_modal_filter_field_checkbox_show_disabled."+label", $this->_label_checkbox_show_disabled);
+                            ->assertVisible($this->_selector_modal_filter_field_checkbox_show_disabled_label)
+                            ->assertSeeIn($this->_selector_modal_filter_field_checkbox_show_disabled_label, $this->_label_checkbox_show_disabled);
                     } else {
                         $modal->assertMissing($this->_selector_modal_filter_field_checkbox_show_disabled);
                     }
@@ -385,12 +385,12 @@ class FilterModalTest extends DuskTestCase {
 
                     if($has_disabled_account){
                         $modal
-                            ->click($this->_selector_modal_filter_field_checkbox_show_disabled."+label")
+                            ->click($this->_selector_modal_filter_field_checkbox_show_disabled_label)
                             ->assertSelectHasOptions(
                                 $this->_selector_modal_filter_field_account_and_account_type,
                                 collect($accounts)->pluck('id')->toArray()
                             )
-                            ->click($this->_selector_modal_filter_field_checkbox_show_disabled."+label");  // click again to reset state for account-types
+                            ->click($this->_selector_modal_filter_field_checkbox_show_disabled_label);  // click again to reset state for account-types
                     }
 
                     // test currency displayed in "Min Range" & "Max Range" fields is $
@@ -425,8 +425,8 @@ class FilterModalTest extends DuskTestCase {
 
                     if($has_disabled_account_type){
                         $modal
-                            ->assertVisible($this->_selector_modal_filter_field_checkbox_show_disabled."+label")
-                            ->assertSeeIn($this->_selector_modal_filter_field_checkbox_show_disabled."+label", $this->_label_checkbox_show_disabled);
+                            ->assertVisible($this->_selector_modal_filter_field_checkbox_show_disabled_label)
+                            ->assertSeeIn($this->_selector_modal_filter_field_checkbox_show_disabled_label, $this->_label_checkbox_show_disabled);
                     } else {
                         $modal->assertMissing($this->_selector_modal_filter_field_checkbox_show_disabled);
                     }
@@ -442,7 +442,7 @@ class FilterModalTest extends DuskTestCase {
 
                     if($has_disabled_account_type){
                         $modal
-                            ->click($this->_selector_modal_filter_field_checkbox_show_disabled."+label")
+                            ->click($this->_selector_modal_filter_field_checkbox_show_disabled_label)
                             ->assertSelectHasOptions(
                                 $this->_selector_modal_filter_field_account_and_account_type,
                                 collect($account_types)->pluck('id')->toArray()
