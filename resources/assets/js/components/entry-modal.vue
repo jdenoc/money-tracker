@@ -116,7 +116,7 @@
                             v-show="!isLocked"
                             element-id="entry-tags"
                             v-model="entryData.tags"
-                            v-bind:existing-tags="listTags"
+                            v-bind:existing-tags="listTagsAsObject"
                             v-bind:only-existing-tags="true"
                             v-bind:typeahead="true"
                             v-bind:typeahead-max-results="5"
@@ -192,7 +192,7 @@
     import {Currency} from '../currency';
     import {Entry} from "../entry";
     import {SnotifyStyle} from 'vue-snotify';
-    import {Tags} from '../tags';
+    import {tagsObjectMixin} from "../mixins/tags-object-mixin";
     import EntryModalAttachment from "./entry-modal-attachment";
     import Store from '../store';
     import { ToggleButton } from 'vue-js-toggle-button';
@@ -201,6 +201,7 @@
 
     export default {
         name: "entry-modal",
+        mixins: [tagsObjectMixin],
         components: {
             EntryModalAttachment,
             ToggleButton,
@@ -212,7 +213,6 @@
                 accountTypesObject: new AccountTypes(),
                 currencyObject: new Currency(),
                 entryObject: new Entry(),
-                tagsObject: new Tags(),
 
                 accountTypeMeta: {
                     accountName: "",
@@ -273,18 +273,9 @@
             getAttachmentUploadUrl: function(){
                 return this.dropzoneOptions.url;
             },
-            listTags: function(){
-                return this.tagsObject.retrieve.reduce(function(result, item){
-                    result[item.id] = item.name;
-                    return result;
-                }, {});
-            },
-            areTagsSet: function(){
-                return !_.isEmpty(this.listTags);
-            },
             displayReadOnlyTags: function(){
                 let currentTags = typeof this.entryData.tags == 'undefined' ? [] : this.entryData.tags;
-                return currentTags.map(function(item){ return this.listTags[item]; }.bind(this));
+                return currentTags.map(function(item){ return this.listTagsAsObject[item]; }.bind(this));
             },
             listAccountTypes: function(){
                 let accountTypes = this.accountTypesObject.retrieve;
@@ -564,7 +555,12 @@
     }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+    @import '~@voerro/vue-tagsinput/dist/style.css';
+    @import '../../sass/tags-input';
+    @import '~dropzone/dist/min/dropzone.min.css';
+    @import "~vue2-dropzone/dist/vue2Dropzone.min.css";
+
     .field-label.is-normal{
         font-size: 13px;
     }

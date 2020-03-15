@@ -208,13 +208,14 @@
     import {Accounts} from '../accounts';
     import {AccountTypes} from '../account-types';
     import {Currency} from "../currency";
-    import {Tags} from '../tags';
-    import { ToggleButton } from 'vue-js-toggle-button'
-    import Store from '../store';
+    import {tagsObjectMixin} from "../mixins/tags-object-mixin";
+    import {ToggleButton} from 'vue-js-toggle-button'
     import AccountAccountTypeTogglingSelector from "./account-account-type-toggling-selector";
+    import Store from '../store';
 
     export default {
         name: "filter-modal",
+        mixins: [tagsObjectMixin],
         components: {
             AccountAccountTypeTogglingSelector,
             ToggleButton,
@@ -224,7 +225,6 @@
                 accountsObject: new Accounts(),
                 accountTypesObject: new AccountTypes(),
                 currencyObject: new Currency(),
-                tagsObject: new Tags(),
 
                 isVisible: false,
 
@@ -261,12 +261,8 @@
             }
         },
         computed: {
-            areTagsSet: function(){
-                return !_.isEmpty(this.listTags);
-            },
             listTags: function(){
-                let tags = this.tagsObject.retrieve;
-                return this.processListOfObjects(tags);
+                return this.processListOfObjects(this.rawTagsData);
             },
             accountCurrencyClass: function(){
                 let account = null;

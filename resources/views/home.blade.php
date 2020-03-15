@@ -15,8 +15,6 @@
 
     <link href="{{asset('vue/css/app.css')}}" rel="stylesheet" type="text/css">
     <link href="{{asset('vue/css/font-awesome.css')}}" rel="stylesheet" type="text/css">
-    <link href="{{asset('vue/css/tags-input.css')}}" rel="stylesheet" type="text/css">
-    <link href="{{asset('vue/css/vue-dropzone.css')}}" rel="stylesheet" type="text/css">
 </head>
 <body>
     <div id="app">
