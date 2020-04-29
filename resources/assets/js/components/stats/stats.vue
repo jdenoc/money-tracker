@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="stats-display">
         <summary-chart v-show="isVisibleChart.summary"></summary-chart>
         <trending-chart v-show="isVisibleChart.trending"></trending-chart>
         <tags-chart v-show="isVisibleChart.tags"></tags-chart>
@@ -31,5 +31,7 @@
 </script>
 
 <style scoped>
-
+    #stats-display{
+        margin-left: 0.5rem;
+    }
 </style>

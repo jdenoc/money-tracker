@@ -13,7 +13,10 @@ import Notification from './components/notification';
 import Stats from "./components/stats/stats";
 import StatsNav from "./components/stats/stats-nav";
 
-import { Version } from './version';
+import {AccountTypes} from "./account-types";
+import {Tags} from "./tags";
+import {Version} from './version';
+import {Accounts} from "./accounts";
 
 new Vue({
     el: "#app",
@@ -26,8 +29,21 @@ new Vue({
     },
     store: Store,
     computed:{ },
-    methods: { },
+    methods: {
+        displayNotification: function(notification){
+            this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, notification);
+        },
+    },
     mounted: function(){
+        let accounts = new Accounts();
+        accounts.fetch().then(this.displayNotification.bind(this));
+
+        let accountTypes = new AccountTypes();
+        accountTypes.fetch().then(this.displayNotification.bind(this));
+
+        let tags = new Tags();
+        tags.fetch().then(this.displayNotification.bind(this));
+
         let version = new Version();
         version.fetch();
     }

@@ -29,7 +29,6 @@
 </template>
 
 <script>
-    import {SnotifyStyle} from "vue-snotify";
     import {statsNavMixin} from '../../mixins/stats-nav-mixin';
 
     export default {
