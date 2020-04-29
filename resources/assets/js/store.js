@@ -19,7 +19,14 @@ export default new Vuex.Store({
         institutions: [],
         accounts: [],
         accountTypes: [],
-        entries: []
+        entries: [],
+        fetched: {
+            institutions: false,
+            accounts: false,
+            accountTypes: false,
+            tags: false,
+            version: false
+        }
     },
     getters: {
         // isAuthenticated: function(state){
@@ -97,13 +104,23 @@ export default new Vuex.Store({
             return function(storeType){
                 let storeTypes = getters.getAllStoreTypes;
                 if(storeTypes.indexOf(storeType) >= 0){
-                    return state[storeType]
+                    return state[storeType];
                 } else {
                     return [];
                 }
             }
         },
 
+        getFetchedState: function(state, getters){
+            return function(storeType){
+                let storeTypes = getters.getAllStoreTypes;
+                if(storeTypes.indexOf(storeType) >= 0 && storeType !== getters.STORE_TYPE_ENTRIES){
+                    return state.fetched[storeType];
+                } else {
+                    return false;
+                }
+            }
+        },
         getAllStoreTypes: function(state, getters){
             return [
                 getters.STORE_TYPE_ACCOUNTS,
@@ -120,7 +137,7 @@ export default new Vuex.Store({
                 getters.STORE_MODAL_TRANSFER,
                 getters.STORE_MODAL_FILTER,
                 getters.STORE_MODAL_NONE
-            ]
+            ];
         }
     },
     mutations: {
@@ -150,6 +167,12 @@ export default new Vuex.Store({
             if(storeTypes.indexOf(payload.type) >= 0){
                 state[payload.type] = payload.value;
             }
+        },
+        setFetchedState: function(state, payload){
+            let storeTypes = this.getters.getAllStoreTypes;
+            if(storeTypes.indexOf(payload.type) >= 0 && payload.type !== this.getters.STORE_TYPE_ENTRIES){
+                state.fetched[payload.type] = payload.value;
+            }
         }
     },
     actions: {
@@ -174,6 +197,9 @@ export default new Vuex.Store({
         },
         setStateOf: function(context, payload){
             context.commit('setStateOf', payload);
+        },
+        setFetchedState: function(context, payload){
+            context.commit('setFetchedState', payload);
         }
     },
     plugins: [
