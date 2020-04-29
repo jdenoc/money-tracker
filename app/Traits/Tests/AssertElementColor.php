@@ -8,6 +8,18 @@ use PHPUnit\Framework\Assert as PHPUnit;
 trait AssertElementColor {
 
     /**
+     * Alternative spelling of method
+     *
+     * @param Browser $browser
+     * @param string $element_selector
+     * @param string $expected_colour
+     * @param string $element_pseudo_selector
+     */
+    public function assertElementColor(Browser $browser, $element_selector, $expected_colour, $element_pseudo_selector = ''){
+        $this->assertElementColour($browser, $element_selector, $expected_colour);
+    }
+
+    /**
      * @param Browser $browser
      * @param string $element_selector
      * @param string $expected_colour

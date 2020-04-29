@@ -2,11 +2,12 @@
 
 namespace App\Traits\Tests\Dusk;
 
+use App\Traits\Tests\WaitTimes;
 use Laravel\Dusk\Browser;
 
 trait Loading {
 
-    protected static $WAIT_SECONDS_LONG = 30;
+    use WaitTimes;
 
     public function waitForLoadingToStop(Browser $browser){
         $selector_loading = '#loading-modal';

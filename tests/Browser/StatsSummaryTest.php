@@ -11,6 +11,7 @@ use Illuminate\Support\Collection;
 use Tests\Browser\Pages\StatsPage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Laravel\Dusk\Browser;
+use Throwable;
 
 /**
  * Class StatsSummaryTest
@@ -18,6 +19,7 @@ use Laravel\Dusk\Browser;
  * @package Tests\Browser
  *
  * @group stats
+ * @group stats-summary
  */
 class StatsSummaryTest extends DuskTestCase {
 
@@ -37,7 +39,7 @@ class StatsSummaryTest extends DuskTestCase {
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @group stats-summary-1
      * test 1/25
@@ -61,7 +63,7 @@ class StatsSummaryTest extends DuskTestCase {
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @group stats-summary-1
      * test 2/25
@@ -93,7 +95,7 @@ class StatsSummaryTest extends DuskTestCase {
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @group stats-summary-1
      * test 3/25
@@ -136,7 +138,7 @@ class StatsSummaryTest extends DuskTestCase {
      * @param bool $is_random_selector_value
      * @param bool $are_disabled_select_options_available
      *
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @group stats-summary-1
      * test (see provider)/25

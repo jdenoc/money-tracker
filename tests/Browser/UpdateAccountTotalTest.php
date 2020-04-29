@@ -4,11 +4,15 @@ namespace Tests\Browser;
 
 use App\Entry;
 use App\Http\Controllers\Api\EntryController;
+use App\Traits\Tests\Dusk\Loading;
+use App\Traits\Tests\Dusk\Navbar;
+use App\Traits\Tests\WaitTimes;
 use Faker\Factory as FakerFactory;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Laravel\Dusk\Browser;
 use Tests\Traits\HomePageSelectors;
+use Throwable;
 
 /**
  * Class UpdateAccountTotalTest
@@ -22,6 +26,9 @@ use Tests\Traits\HomePageSelectors;
 class UpdateAccountTotalTest extends DuskTestCase {
 
     use HomePageSelectors;
+    use WaitTimes;
+    use Loading;
+    use Navbar;
 
     private $_institution_id;
     private $_account;
@@ -57,26 +64,28 @@ class UpdateAccountTotalTest extends DuskTestCase {
      * @dataProvider providerUpdateAccountTotalWithNewEntry
      * @param bool $is_entry_expense
      *
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @group navigation-4
      * test (see provider)/25
      */
     public function testUpdateAccountTotalWithNewEntry($is_entry_expense){
         $this->browse(function (Browser $browser) use($is_entry_expense){
-            $browser->visit(new HomePage())->waitForLoadingToStop();
+            $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
 
             // take note of account total
             $this->assertAccountTotal($browser, $this->_institution_id, $this->_account['id'], $this->_account['total'], true);
 
             // create a new entry
             $entry_total = 10.00;
-            $browser->openNewEntryModal()
+            $this->openNewEntryModal($browser);
+            $browser
                 ->with($this->_selector_modal_body, function(Browser $entry_modal_body) use ($is_entry_expense, $entry_total){
                     // The date field should already be filled in. No need to fill it in again.
                     $entry_modal_body
                         ->type($this->_selector_modal_entry_field_value, $entry_total)
-                        ->waitUntilMissing($this->_selector_modal_entry_field_account_type_is_loading, HomePage::WAIT_SECONDS)
+                        ->waitUntilMissing($this->_selector_modal_entry_field_account_type_is_loading, self::$WAIT_SECONDS)
                         ->select($this->_selector_modal_entry_field_account_type, $this->_account_type_id)
                         ->type($this->_selector_modal_entry_field_memo, "Test new entry account total update");
 
@@ -89,8 +98,8 @@ class UpdateAccountTotalTest extends DuskTestCase {
                 })
                 ->with($this->_selector_modal_foot, function(Browser $modal_foot){
                     $modal_foot->click($this->_selector_modal_entry_btn_save);
-                })
-                ->waitForLoadingToStop();
+                });
+            $this->waitForLoadingToStop($browser);
 
             // confirm account total updated
             $new_account_total = $this->_account['total']+($is_entry_expense?-1:1)*$entry_total;
@@ -99,14 +108,15 @@ class UpdateAccountTotalTest extends DuskTestCase {
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @group navigation-4
      * test 3/25
      */
     public function testUpdateAccountTotalWithExistingEntryByTogglingIncomeExpense(){
         $this->browse(function (Browser $browser){
-            $browser->visit(new HomePage())->waitForLoadingToStop();
+            $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
 
             // take note of account total
             $this->assertAccountTotal($browser, $this->_institution_id, $this->_account['id'], $this->_account['total'], true);
@@ -121,13 +131,13 @@ class UpdateAccountTotalTest extends DuskTestCase {
                 ->with($this->_selector_modal_body, function(Browser $entry_modal_body) use ($entry_selector, &$switch_text){
                     $entry_modal_body
                         ->click($this->_selector_modal_entry_field_expense)
-                        ->pause(500); // 0.5 seconds - need to wait for the transition to complete after click;
+                        ->pause(self::$WAIT_HALF_SECOND_IN_MILLISECONDS); // need to wait for the transition to complete after click;
                     $switch_text = $entry_modal_body->text($this->_selector_modal_entry_field_expense);
                 })
                 ->with($this->_selector_modal_foot, function(Browser $modal_foot){
                     $modal_foot->click($this->_selector_modal_entry_btn_save);
-                })
-                ->waitForLoadingToStop();
+                });
+            $this->waitForLoadingToStop($browser);
 
             // confirm account total updated
             $new_account_total = $this->_account['total']
@@ -138,14 +148,15 @@ class UpdateAccountTotalTest extends DuskTestCase {
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @group navigation-4
      * test 4/25
      */
     public function testUpdateAccountTotalWithExistingEntryByChangingValue(){
         $this->browse(function (Browser $browser){
-            $browser->visit(new HomePage())->waitForLoadingToStop();
+            $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
 
             // take note of account total
             $this->assertAccountTotal($browser, $this->_institution_id, $this->_account['id'], $this->_account['total'], true);
@@ -163,8 +174,8 @@ class UpdateAccountTotalTest extends DuskTestCase {
                 })
                 ->with($this->_selector_modal_foot, function(Browser $modal_foot){
                     $modal_foot->click($this->_selector_modal_entry_btn_save);
-                })
-                ->waitForLoadingToStop();
+                });
+            $this->waitForLoadingToStop($browser);
 
             // confirm account total updated
             $new_account_total = $this->_account['total']
@@ -175,14 +186,15 @@ class UpdateAccountTotalTest extends DuskTestCase {
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @group navigation-4
      * test 5/25
      */
     public function testOpenExistingEntryAndDeleteIt(){
         $this->browse(function(Browser $browser){
-            $browser->visit(new HomePage())->waitForLoadingToStop();
+            $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
 
             // take note of account total
             $this->assertAccountTotal($browser, $this->_institution_id, $this->_account['id'], $this->_account['total'], true);
@@ -197,10 +209,9 @@ class UpdateAccountTotalTest extends DuskTestCase {
                     $entry_modal
                         ->assertVisible($this->_selector_modal_entry_btn_delete)
                         ->click($this->_selector_modal_entry_btn_delete);
-                })
-                ->waitForLoadingToStop()
-                ->waitUntilMissing($this->_selector_modal_entry, HomePage::WAIT_SECONDS)
-            ;
+                });
+            $this->waitForLoadingToStop($browser);
+            $browser->waitUntilMissing($this->_selector_modal_entry, self::$WAIT_SECONDS);
 
             // confirm account total updated
             $new_account_total = $this->_account['total'] - ($entry['expense'] == 1 ?-1:1)*$entry['entry_value'];
@@ -223,7 +234,7 @@ class UpdateAccountTotalTest extends DuskTestCase {
      * @param bool $is_from_account_external
      * @param bool $is_to_account_external
      *
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @group navigation-4
      * test (see provider)/25
@@ -258,7 +269,8 @@ class UpdateAccountTotalTest extends DuskTestCase {
         }
 
         $this->browse(function(Browser $browser) use ($is_from_account_external, $is_to_account_external, $account){
-            $browser->visit(new HomePage())->waitForLoadingToStop();
+            $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
 
             // take note of "to" account total
             if(!$is_to_account_external){
@@ -289,7 +301,8 @@ class UpdateAccountTotalTest extends DuskTestCase {
             $browser_locale_date = $browser->getBrowserLocaleDate();
             $browser_locale_date_for_typing = $browser->processLocaleDateForTyping($browser_locale_date);
 
-            $browser->openTransferModal()
+            $this->openTransferModal($browser);
+            $browser
                 ->with($this->_selector_modal_transfer, function(Browser $modal) use ($transfer_entry_data, $browser_locale_date_for_typing){
                     $modal
                         ->type($this->_selector_modal_transfer_field_date, $browser_locale_date_for_typing)
@@ -302,9 +315,9 @@ class UpdateAccountTotalTest extends DuskTestCase {
                 })
                 ->with($this->_selector_modal_transfer, function(Browser $modal){
                     $modal->click($this->_selector_modal_transfer_btn_save);
-                })
-                ->waitForLoadingToStop()
-                ->assertMissing($this->_selector_modal_transfer);
+                });
+            $this->waitForLoadingToStop($browser);
+            $browser->assertMissing($this->_selector_modal_transfer);
 
             if(!$is_from_account_external){
                 // considered expense
@@ -334,7 +347,7 @@ class UpdateAccountTotalTest extends DuskTestCase {
                 $institution_node
                     // click institution node;
                     ->click('')
-                    ->pause(400)    // 0.4 seconds
+                    ->pause(self::$WAIT_TWO_FIFTHS_OF_A_SECOND_IN_MILLISECONDS)
                     ->assertVisible($this->_selector_panel_institutions_accounts);
             }
 
