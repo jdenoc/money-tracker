@@ -148,7 +148,7 @@
 
 <script>
     import _ from 'lodash';
-    import {AccountTypes} from "../account-types";
+    import {accountTypesObjectMixin} from "../mixins/account-types-object-mixin";
     import {Entry} from "../entry";
     import {SnotifyStyle} from 'vue-snotify';
     import {tagsObjectMixin} from "../mixins/tags-object-mixin";
@@ -158,14 +158,13 @@
 
     export default {
         name: "transfer-modal",
-        mixins: [tagsObjectMixin],
+        mixins: [accountTypesObjectMixin, tagsObjectMixin],
         components: {
             VoerroTagsInput,
             VueDropzone: vue2Dropzone,
         },
         data: function(){
             return {
-                accountTypesObject: new AccountTypes(),
                 entryObject: new Entry(),
 
                 accountTypeMeta: {
@@ -238,8 +237,7 @@
                 return this.dropzoneOptions.url;
             },
             listAccountTypes: function(){
-                let accountTypes = this.accountTypesObject.retrieve;
-                return _.orderBy(accountTypes, 'name');
+                return _.orderBy(this.rawAccountTypesData, 'name');
             },
             dropzoneRef: function(){
                 return this.$refs.transferModalFileUpload;
@@ -363,7 +361,6 @@
                         }
                     });
                 }
-
 
                 this.entryObject.saveTransfer(transferData).then(function(notification){
                     if(!_.isEmpty(notification)){

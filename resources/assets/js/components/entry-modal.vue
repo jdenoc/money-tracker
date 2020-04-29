@@ -54,7 +54,7 @@
                 <div class="field is-horizontal">
                     <div class="field-label is-normal"><label class="label" for="entry-account-type">Account Type:</label></div>
                     <div class="field-body"><div class="field">
-                        <div class="control"><div class="select" v-bind:class="{'is-loading': !areAccountTypesSet}">
+                        <div class="control"><div class="select" v-bind:class="{'is-loading': !areAccountTypesAvailable}">
                             <select name="entry-account-type" id="entry-account-type" class="has-text-grey-dark"
                                 v-model="entryData.account_type_id"
                                 v-on:change="updateAccountTypeMeta"
@@ -188,10 +188,11 @@
 
 <script>
     import _ from 'lodash';
-    import {AccountTypes} from "../account-types";
     import {Currency} from '../currency';
     import {Entry} from "../entry";
     import {SnotifyStyle} from 'vue-snotify';
+    import {accountsObjectMixin} from "../mixins/accounts-object-mixin";
+    import {accountTypesObjectMixin} from "../mixins/account-types-object-mixin";
     import {tagsObjectMixin} from "../mixins/tags-object-mixin";
     import EntryModalAttachment from "./entry-modal-attachment";
     import Store from '../store';
@@ -201,7 +202,7 @@
 
     export default {
         name: "entry-modal",
-        mixins: [tagsObjectMixin],
+        mixins: [accountsObjectMixin, accountTypesObjectMixin, tagsObjectMixin],
         components: {
             EntryModalAttachment,
             ToggleButton,
@@ -210,7 +211,6 @@
         },
         data: function(){
             return {
-                accountTypesObject: new AccountTypes(),
                 currencyObject: new Currency(),
                 entryObject: new Entry(),
 
@@ -261,9 +261,6 @@
             isExternalTransfer: function(){
                 return _.isEqual(this.entryData.transfer_entry_id, 0);
             },
-            areAccountTypesSet: function(){
-                return this.listAccountTypes.length > 0;
-            },
             hasAccountTypeBeenSelected: function(){
                 return this.entryData.account_type_id !== '';
             },
@@ -278,8 +275,7 @@
                 return currentTags.map(function(item){ return this.listTagsAsObject[item]; }.bind(this));
             },
             listAccountTypes: function(){
-                let accountTypes = this.accountTypesObject.retrieve;
-                return _.orderBy(accountTypes, 'name');
+                return _.orderBy(this.rawAccountTypesData, 'name');
             },
             currentDate: function(){
                 let today = new Date();
@@ -480,14 +476,14 @@
                 }
                 this.entryObject.save(newEntryData)
                     .then(function(notification){
+                        // show a notification if needed
                         if(!_.isEmpty(notification)){
                             this.$eventHub.broadcast(
                                 this.$eventHub.EVENT_NOTIFICATION,
                                 {type: notification.type, message: notification.message.replace('%s', this.entryData.id)}
                             );
                         }
-                        this.$eventHub.broadcast(this.$eventHub.EVENT_ACCOUNT_UPDATE);
-                        this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, this.currentPage);
+                        this.broadcastUpdateRequestForAccountsColumnAndEntriesTable();
                     }.bind(this))
                     .finally(this.closeModal.bind(this));
             },
@@ -504,14 +500,19 @@
                         }
                         this.closeModal();
                         if(deleteResult.deleted){
-                            this.$eventHub.broadcast(this.$eventHub.EVENT_ACCOUNT_UPDATE);
-                            this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, this.currentPage);
-                            // don't need to broadcast an event to hide the loading modal here
-                            // already taken care of at the end of the entry-table update event process
+                            this.broadcastUpdateRequestForAccountsColumnAndEntriesTable();
                         } else {
                             this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
                         }
                     }.bind(this));
+            },
+            broadcastUpdateRequestForAccountsColumnAndEntriesTable: function(){
+                // allow accounts data to be once again fetched
+                this.$eventHub.broadcast(this.$eventHub.EVENT_ACCOUNT_UPDATE);
+                // update entries table
+                this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, this.currentPage);
+                // don't need to broadcast an event to hide the loading modal here
+                // already taken care of at the end of the entry-table update event process
             },
             updateAccountTypeMeta: function(){
                 let account = this.accountTypesObject.getAccount(this.entryData.account_type_id);

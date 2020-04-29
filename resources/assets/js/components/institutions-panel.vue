@@ -42,11 +42,11 @@
 </template>
 
 <script>
-    import {Accounts} from '../accounts';
     import {Institutions} from '../institutions';
     import InstitutionsPanelInstitution from "./institutions-panel-institution";
     import InstitutionsPanelInstitutionAccount from './institutions-panel-institution-account';
     import Store from '../store';
+    import {accountsObjectMixin} from "../mixins/accounts-object-mixin";
 
     export default {
         name: "institutions-panel",
@@ -54,10 +54,10 @@
             InstitutionsPanelInstitution,
             InstitutionsPanelInstitutionAccount
         },
+        mixins: [accountsObjectMixin],
         data: function(){
             return {
                 institutionsObject: new Institutions(),
-                accountsObject: new Accounts(),
 
                 isClosedAccountsAccordionOpen: false,
                 openCloseIcons: {
@@ -79,7 +79,7 @@
                 });
             },
             inactiveAccounts: function(){
-                return this.accountsObject.retrieve.filter(function(account){
+                return this.rawAccountsData.filter(function(account){
                     return account.disabled;
                 }).sort(function(a, b){
                     if (a.name < b.name)
@@ -111,6 +111,7 @@
                 this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, {pageNumber: 0, filterParameters: {}});
             },
             updateAccountRecords: function(){
+                this.accountsObject.setFetchedState = false;
                 this.accountsObject.fetch().then(function(notification){
                     this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, notification);
                 }.bind(this));

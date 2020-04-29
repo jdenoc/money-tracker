@@ -216,15 +216,13 @@
 
     export default {
         name: "filter-modal",
-        mixins: [tagsObjectMixin],
+        mixins: [accountsObjectMixin, accountTypesObjectMixin, tagsObjectMixin],
         components: {
             AccountAccountTypeTogglingSelector,
             ToggleButton,
         },
         data: function(){
             return {
-                accountsObject: new Accounts(),
-                accountTypesObject: new AccountTypes(),
                 currencyObject: new Currency(),
 
                 isVisible: false,

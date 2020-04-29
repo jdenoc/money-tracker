@@ -14,9 +14,18 @@
         </div>
         <div class="navbar-menu" v-bind:class="{'is-active': hasNavbarBurgerMenuBeenClicked}">
             <div class="navbar-end">
-                <a id="nav-entry-modal" class="navbar-item" v-on:click="openAddEntryModal"><i class="fas fa-plus-circle"></i> Add Entry</a>
-                <a id="nav-transfer-modal" class="navbar-item" v-on:click="openTransferModal"><i class="fas fa-exchange-alt"></i> Add Transfer</a>
-                <a id="nav-filter-modal" class="navbar-item" v-on:click="openFilterModal"><i class="fas fa-filter"></i> Filter</a>
+                <a id="nav-entry-modal" class="navbar-item"
+                   v-on:click="openAddEntryModal"
+                   v-show="isHomePage"
+                ><i class="fas fa-plus-circle"></i> Add Entry</a>
+                <a id="nav-transfer-modal" class="navbar-item"
+                   v-on:click="openTransferModal"
+                   v-show="isHomePage"
+                ><i class="fas fa-exchange-alt"></i> Add Transfer</a>
+                <a id="nav-filter-modal" class="navbar-item"
+                   v-on:click="openFilterModal"
+                   v-show="isHomePage"
+                ><i class="fas fa-filter"></i> Filter</a>
 
                 <div class="navbar-item has-dropdown"
                     v-bind:class="{'is-active': hasNavbarAvatarImageBeenClicked}"
@@ -29,8 +38,8 @@
                         <hr class="navbar-divider">
                         <div id="app-version" class="navbar-item has-text-info is-italic is-hidden-touch">Version: {{appVersion}}</div>
                         <hr class="navbar-divider">
-                        <a class="navbar-item" href="/"><i class="fas fa-home"></i> Home</a>
-                        <a class="navbar-item" href="stats"><i class="fas fa-chart-pie"></i> Statistics</a>
+                        <a class="navbar-item" href="/" v-show="!isHomePage"><i class="fas fa-home"></i> Home</a>
+                        <a class="navbar-item" href="stats" v-show="!isStatsPage"><i class="fas fa-chart-pie"></i> Statistics</a>
                         <a class="navbar-item" href="settings"><i class="fas fa-cog"></i> Settings</a>
                         <hr class="navbar-divider">
                         <a class="navbar-item" href="logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
@@ -46,6 +55,9 @@
 
     export default {
         name: "navbar",
+        props: {
+            pageName: {type: String, required: true}
+        },
         data: function(){
             return {
                 defaultAppVersion: 'x.y.z',
@@ -55,6 +67,12 @@
             }
         },
         computed: {
+            isHomePage: function(){
+                return this.pageName === 'home';
+            },
+            isStatsPage: function(){
+                return this.pageName === 'stats';
+            },
             hasNavbarAvatarImageBeenClicked: function(){
                 return this.navbarAvatarImageClicked;
             },

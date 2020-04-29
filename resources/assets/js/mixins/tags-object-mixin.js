@@ -4,7 +4,7 @@ import {Tags} from "../tags";
 export const tagsObjectMixin = {
     data: function(){
         return {
-            tagsObject: new Tags(),
+            tagsObject: new Tags()
         }
     },
 
@@ -21,9 +21,6 @@ export const tagsObjectMixin = {
         areTagsSet: function(){
             return !_.isEmpty(this.rawTagsData);
         },
-    },
-
-    mounted: function(){
-        this.tagsObject.fetch();
     }
+
 };
