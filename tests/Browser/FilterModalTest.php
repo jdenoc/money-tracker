@@ -5,6 +5,7 @@ namespace Tests\Browser;
 use App\Account;
 use App\AccountType;
 use App\Helpers\CurrencyHelper;
+use App\Traits\Tests\AccountOrAccountTypeTogglingSelector;
 use Facebook\WebDriver\WebDriverBy;
 use Faker\Factory as FakerFactory;
 use Faker\Generator;
@@ -26,6 +27,7 @@ use Tests\Traits\HomePageSelectors;
 class FilterModalTest extends DuskTestCase {
 
     use HomePageSelectors;
+    use AccountOrAccountTypeTogglingSelector;
 
     /**
      * @var Generator
@@ -98,23 +100,12 @@ class FilterModalTest extends DuskTestCase {
                         $this->_selector_modal_filter_field_end_date.' is not type="date"'
                     );
 
+                    // account/account-type selector
+                    $this->_id_label = 'filter-modal';
+                    $this->assertDefaultStateOfAccountOrAccountTypeTogglingSelectorComponent($modal, $accounts);
+
+                    // tags - button(s)
                     $modal
-                        // account/account-type - switch
-                        ->assertVisible($this->_selector_modal_filter_field_switch_account_and_account_type)
-                        ->assertSeeIn($this->_selector_modal_filter_field_switch_account_and_account_type, "Account")
-                        ->assertElementColour(
-                            $this->_selector_modal_filter_field_switch_account_and_account_type.' '.$this->_class_switch_core,
-                            $this->_color_filter_switch_default
-                        )
-
-                        //account/account-type - select
-                        ->assertVisible($this->_selector_modal_filter_field_account_and_account_type)
-                        ->assertSelected($this->_selector_modal_filter_field_account_and_account_type, "")
-                        ->assertSeeIn($this->_selector_modal_filter_field_account_and_account_type, $this->_label_select_option_filter_default)
-                        ->assertSelectHasOption($this->_selector_modal_filter_field_account_and_account_type, "")
-                        ->assertSelectHasOptions($this->_selector_modal_filter_field_account_and_account_type, collect($accounts)->where('disabled', false)->pluck('id')->toArray())
-
-                        // tags - button(s)
                         ->assertSee("Tags:")
                         ->assertVisible($this->_selector_modal_filter_field_tags);
 
@@ -363,11 +354,11 @@ class FilterModalTest extends DuskTestCase {
                 ->openFilterModal()
                 ->with($this->_selector_modal_filter.' '.$this->_selector_modal_body, function(Browser $modal) use ($has_disabled_account, $has_disabled_account_type, $accounts, $account_types){
                     $modal
-                        ->assertVisible($this->_selector_modal_filter_field_switch_account_and_account_type)
+                        ->assertVisible($this->getSwitchAccountAndAccountTypeId())
                         ->assertVisible($this->_selector_modal_filter_field_account_and_account_type)
 
-                        ->assertSeeIn($this->_selector_modal_filter_field_switch_account_and_account_type, "Account")
-                        ->assertElementColour($this->_selector_modal_filter_field_switch_account_and_account_type.' '.$this->_class_switch_core, $this->_color_filter_switch_default);
+                        ->assertSeeIn($this->getSwitchAccountAndAccountTypeId(), "Account")
+                        ->assertElementColour($this->getSwitchAccountAndAccountTypeId().' '.$this->_class_switch_core, $this->_color_filter_switch_default);
 
                     if($has_disabled_account){
                         $modal
@@ -417,11 +408,11 @@ class FilterModalTest extends DuskTestCase {
                     );
 
                     $modal
-                        ->click($this->_selector_modal_filter_field_switch_account_and_account_type)
+                        ->click($this->getSwitchAccountAndAccountTypeId())
                         ->pause(1000)   // 1 second
 
-                        ->assertSeeIn($this->_selector_modal_filter_field_switch_account_and_account_type, "Account Type")
-                        ->assertElementColour($this->_selector_modal_filter_field_switch_account_and_account_type.' '.$this->_class_switch_core, $this->_color_filter_switch_default);
+                        ->assertSeeIn($this->getSwitchAccountAndAccountTypeId(), "Account Type")
+                        ->assertElementColour($this->getSwitchAccountAndAccountTypeId().' '.$this->_class_switch_core, $this->_color_filter_switch_default);
 
                     if($has_disabled_account_type){
                         $modal
@@ -660,7 +651,7 @@ class FilterModalTest extends DuskTestCase {
                     $modal
                         ->type($this->_selector_modal_filter_field_start_date, $start_date)
                         ->type($this->_selector_modal_filter_field_end_date, $start_date)
-                        ->click($this->_selector_modal_filter_field_switch_account_and_account_type)
+                        ->click($this->getSwitchAccountAndAccountTypeId())
                         ->select($this->_selector_modal_filter_field_account_and_account_type, $account_type['id']);
 
                     foreach($tags_to_select as $tag_to_select){
@@ -689,7 +680,7 @@ class FilterModalTest extends DuskTestCase {
                     $modal
                         ->assertInputValue($this->_selector_modal_filter_field_start_date, '')
                         ->assertInputValue($this->_selector_modal_filter_field_end_date, '')
-                        ->assertSeeIn($this->_selector_modal_filter_field_switch_account_and_account_type, "Account")
+                        ->assertSeeIn($this->getSwitchAccountAndAccountTypeId(), "Account")
                         ->assertSelected($this->_selector_modal_filter_field_account_and_account_type, '');
 
                     foreach($tags as $tag){
@@ -763,7 +754,7 @@ class FilterModalTest extends DuskTestCase {
                                 $filter_values = $this->getApiAccounts();
                             } else {
                                 // account-type
-                                $modal->click($this->_selector_modal_filter_field_switch_account_and_account_type);
+                                $modal->click($this->getSwitchAccountAndAccountTypeId());
                                 $filter_values = $this->getApiAccountTypes();
                             }
                             $filter_value = collect($filter_values)->where('disabled', false)->random(1)->first();
@@ -954,6 +945,13 @@ class FilterModalTest extends DuskTestCase {
                     $this->assertEquals($filter_value['name'], $account_name, "Could not find value at selector:".$panel->resolver->format($selector));
                 });
         });
+    }
+
+    /**
+     * @return string
+     */
+    private function getSwitchAccountAndAccountTypeId(){
+        return sprintf($this->_selector_pattern_modal_filter_field_switch_account_and_account_type, 'filter-modal');
     }
 
 }

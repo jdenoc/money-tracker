@@ -1,10 +1,10 @@
 <template>
-    <div class="field is-horizontal">
+    <div class="field is-horizontal" v-bind:id="getIdForComponent">
         <!--Account/Account-type-->
         <div class="field-label is-normal no-padding-top">
             <div class="label">
                 <toggle-button
-                    id="toggle-account-account-types"
+                    v-bind:id="getIdForToggleSwitch"
                     v-model="propToggle"
                     v-bind:value="propToggle"
                     v-bind:labels="{checked: toggleButtonProperties.label.checked, unchecked: toggleButtonProperties.label.unchecked}"
@@ -14,17 +14,18 @@
                     v-bind:sync="true"
                 />
             </div>
-            <div id="show-disabled-accounts-account-types" v-show="areDisabledAccountsOrAccountTypesPresent">
-                <input class="is-checkradio is-circle is-small" id="show-disabled-checkbox" type="checkbox"
+            <div class="show-disabled-accounts-or-account-types" v-show="areDisabledAccountsOrAccountTypesPresent">
+                <input class="is-checkradio is-circle is-small" type="checkbox"
+                   v-bind:id="getIdForShowDisabledCheckbox"
                    v-model="canShowDisabledAccountAndAccountTypes"
                 />
-                <label for="show-disabled-checkbox">Show Disabled</label>
+                <label v-bind:for="getIdForShowDisabledCheckbox">Show Disabled</label>
             </div>
         </div>
         <div class="field-body"><div class="field">
             <div class="control">
                 <div class="select" v-bind:class="{'is-loading': !areAccountsAndAccountTypesSet}">
-                    <select name="select-account-or-account-types-id" id="select-account-or-account-types-id" class="has-text-grey-dark"
+                    <select name="select-account-or-account-types-id" class="has-text-grey-dark select-account-or-account-types-id"
                         v-model="propSelect"
                         v-on:change="selectorValueChange"
                     >
@@ -34,20 +35,20 @@
                             v-show="!accountOrAccountType.disabled || canShowDisabledAccountAndAccountTypes"
                             v-bind:key="accountOrAccountType.id"
                             v-bind:value="accountOrAccountType.id"
+                            v-bind:class="{'disabled-option has-text-grey-light' : accountOrAccountType.disabled}"
                             v-text="accountOrAccountType.name"
                         ></option>
                     </select>
                 </div>
             </div>
-
         </div></div>
     </div>
 </template>
 
 <script>
     import _ from "lodash";
-    import {Accounts} from "../accounts";
-    import {AccountTypes} from "../account-types";
+    import {accountsObjectMixin} from "../mixins/accounts-object-mixin";
+    import {accountTypesObjectMixin} from "../mixins/account-types-object-mixin";
     import {ToggleButton} from 'vue-js-toggle-button'
 
     export default {
@@ -55,15 +56,14 @@
         components: {
             ToggleButton
         },
+        mixins: [accountsObjectMixin, accountTypesObjectMixin],
         props: {
+            id: {type: String, required: true},
             accountOrAccountTypeToggled: {type: Boolean, default: true},
             accountOrAccountTypeId: {type: String|Number, required: true, default: ''}
         },
         data: function(){
             return {
-                accountsObject: new Accounts(),
-                accountTypesObject: new AccountTypes(),
-
                 selectedToggleSwitch: {
                     account: true,
                     accountType: false
@@ -100,28 +100,33 @@
             },
             listAccountOrAccountTypes: function(){
                 if(this.propToggle === this.selectedToggleSwitch.account){
-                    return this.listAccounts;
+                    return this.rawAccountsData;
                 } else if(this.propToggle === this.selectedToggleSwitch.accountType){
-                    return this.listAccountTypes
+                    return this.rawAccountTypesData;
                 }
-            },
-            listAccountTypes: function(){
-                return this.accountTypesObject.retrieve;
-            },
-            listAccounts: function(){
-                return this.accountsObject.retrieve;
             },
 
             areAccountsAndAccountTypesSet: function(){
-                return this.listAccountTypes.length > 0 && this.listAccounts.length > 0;
+                return this.areAccountTypesAvailable && this.areAccountsAvailable;
             },
             areDisabledAccountsOrAccountTypesPresent: function(){
                 return !_.isEmpty(this.listAccountOrAccountTypes)
-                    && this.processListOfObjects(this.listAccountOrAccountTypes)
+                    && this.listAccountOrAccountTypes
                         .filter(function(accountOrAccountTypeObject){
                             return accountOrAccountTypeObject.disabled
                         }).length > 0;
             },
+
+            getIdForComponent: function(){
+                return 'account-or-account-type-toggling-selector-for-'+this.id;
+            },
+            getIdForShowDisabledCheckbox: function(){
+                return 'show-disabled-accounts-or-account-types-'+this.id+'-checkbox';
+            },
+            getIdForToggleSwitch: function(){
+                return 'toggle-account-and-account-types-for-'+this.id;
+            }
+
         },
         methods: {
             processListOfObjects: function(listOfObjects, canShowDisabled=true){
@@ -166,11 +171,12 @@
     .vue-js-switch{
         font-size: $font-size;
     }
-    #select-account-or-account-types-id{
-        min-width: 16rem;
+    .select-account-or-account-types-id{
+        min-width: 15rem;
+        max-width: 19rem;
     }
 
-    #show-disabled-accounts-account-types{
+    .show-disabled-accounts-or-account-types{
         margin-top: -0.25rem;
         margin-bottom: -0.5rem;
 

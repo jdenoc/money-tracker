@@ -94,10 +94,10 @@ trait HomePageSelectors {
     private $_selector_modal_filter = "@filter-modal";  // see Browser\Pages\HomePage.php
     private $_selector_modal_filter_field_start_date = "#filter-start-date";
     private $_selector_modal_filter_field_end_date = "#filter-end-date";
-    private $_selector_modal_filter_field_switch_account_and_account_type = "#toggle-account-account-types";
-    private $_selector_modal_filter_field_checkbox_show_disabled = "#show-disabled-accounts-account-types";
-    private $_selector_modal_filter_field_checkbox_show_disabled_label = "#show-disabled-accounts-account-types label";
-    private $_selector_modal_filter_field_account_and_account_type = "#select-account-or-account-types-id";
+    private $_selector_pattern_modal_filter_field_switch_account_and_account_type = "#toggle-account-and-account-types-for-%s"; // this is a pattern, not an actual identifier
+    private $_selector_modal_filter_field_checkbox_show_disabled = ".show-disabled-accounts-or-account-types";
+    private $_selector_modal_filter_field_checkbox_show_disabled_label = ".show-disabled-accounts-or-account-types label";
+    private $_selector_modal_filter_field_account_and_account_type = ".select-account-or-account-types-id";
     private $_selector_modal_filter_field_tags= "#filter-tags";
     private $_selector_modal_filter_field_switch_income = "#filter-is-income";
     private $_selector_modal_filter_field_switch_expense = "#filter-is-expense";

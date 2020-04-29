@@ -29,6 +29,7 @@
                 </div>
 
                 <account-account-type-toggling-selector
+                    id="filter-modal"
                     v-bind:account-or-account-type-id.sync="filterData.accountOrAccountTypeId"
                     v-on:update-select="filterData.accountOrAccountTypeId = $event"
                     v-bind:account-or-account-type-toggled.sync="filterData.accountOrAccountTypeSelected"
@@ -205,9 +206,9 @@
 
 <script>
     import _ from 'lodash';
-    import {Accounts} from '../accounts';
-    import {AccountTypes} from '../account-types';
     import {Currency} from "../currency";
+    import {accountsObjectMixin} from "../mixins/accounts-object-mixin";
+    import {accountTypesObjectMixin} from "../mixins/account-types-object-mixin";
     import {tagsObjectMixin} from "../mixins/tags-object-mixin";
     import {ToggleButton} from 'vue-js-toggle-button'
     import AccountAccountTypeTogglingSelector from "./account-account-type-toggling-selector";
