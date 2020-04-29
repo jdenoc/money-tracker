@@ -2,6 +2,8 @@
 
 namespace Tests;
 
+use App\Entry;
+use App\Http\Controllers\Api\EntryController;
 use App\Traits\Tests\StorageTestFiles;
 use Laravel\Dusk\Browser;
 use Laravel\Dusk\TestCase as BaseTestCase;
@@ -133,18 +135,25 @@ abstract class DuskTestCase extends BaseTestCase {
      * @param array $api_call_response
      * @return array
      */
-    private function removeCountFromApiResponse($api_call_response){
+    public function removeCountFromApiResponse($api_call_response){
         unset($api_call_response['count']);
         return $api_call_response;
     }
 
     /**
      * @param int $page_number
+     * @param array $filter_data
      * @return array
      */
-    public function getApiEntries($page_number=0){
+    public function getApiEntries($page_number=0, $filter_data=[]){
         // See resources/assets/js/entries.js:16-38
-        $entries_response = $this->json('POST', '/api/entries/'.$page_number, ["sort"=>["parameter"=>"entry_date", "direction"=>"desc"]]);
+        // See app/Http/Controllers/Api/EntryController.php:30-43
+        $sort = [EntryController::FILTER_KEY_SORT=>[
+            EntryController::FILTER_KEY_SORT_PARAMETER=>"entry_date",
+            EntryController::FILTER_KEY_SORT_DIRECTION=>Entry::DEFAULT_SORT_DIRECTION
+        ]];
+        $filter_data = array_merge($filter_data, $sort);
+        $entries_response = $this->json('POST', '/api/entries/'.$page_number, $filter_data);
         return $entries_response->json();
     }
 

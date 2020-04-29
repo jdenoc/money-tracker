@@ -18,7 +18,7 @@
 </head>
 <body>
 <div id="app">
-    <navbar></navbar>
+    <navbar page-name="stats"></navbar>
     <div class="columns is-gapless">
         <div class="column is-one-fifth">
             <stats-nav></stats-nav>

@@ -18,7 +18,7 @@
 </head>
 <body>
     <div id="app">
-        <navbar></navbar>
+        <navbar page-name="home"></navbar>
         <div class="columns is-gapless">
             <div id="institutions-panel-column" class="column is-one-quarter">
                 <institutions-panel></institutions-panel>

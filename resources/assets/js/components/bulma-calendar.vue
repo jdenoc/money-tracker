@@ -56,7 +56,9 @@
                 dateFormat: "YYYY-MM-DD",
                 showTodayButton: false,
             })[0];
-            calendar.on('select', this.dateRangeUpdateCallback);
+            if(this.dateRangeUpdateCallback !== undefined){
+                calendar.on('select', this.dateRangeUpdateCallback);
+            }
         },
 
     }
