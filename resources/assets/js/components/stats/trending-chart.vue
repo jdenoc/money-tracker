@@ -1,58 +1,51 @@
 <template>
     <div>
-        <div class="buttons">
-            <button class="button is-info is-light"
-                v-bind:class="{'is-active': buttons.isActive.current.week}"
-                v-on:click="displayChartWeek()"
-                ><i class="fas fa-calendar-alt"></i>this Week
-            </button>
-            <button class="button is-info is-light"
-                v-bind:class="{'is-active': buttons.isActive.current.month}"
-                v-on:click="displayChartMonth()"
-                ><i class="fas fa-calendar-alt"></i>this Month
-            </button>
-            <button class="button is-info is-light"
-                v-bind:class="{'is-active': buttons.isActive.current.quarter}"
-                v-on:click="displayChartQuarter()"
-                ><i class="fas fa-calendar-alt"></i>current quarter
-            </button>
-            <button class="button is-info is-light"
-                v-bind:class="{'is-active': buttons.isActive.current.year}"
-                v-on:click="displayChartYear()"
-                ><i class="fas fa-calendar-alt"></i>this Year
-            </button>
-            <button class="button is-info is-light"
-                v-bind:class="{'is-active': buttons.isCustomDateRangeVisible}"
-                v-on:click="toggleCustomDateRangeVisibility()"
-                ><i class="fas"
-                    v-bind:class="{'fa-calendar-times': buttons.isCustomDateRangeVisible, 'fa-calendar-plus' : !buttons.isCustomDateRangeVisible}"
-                ></i>custom date range
-            </button>
-        </div>
-        <label class="label" v-show="buttons.isCustomDateRangeVisible">
-            <bulma-calendar
-                ref="trendingBulmaCalendar"
-                v-bind:dateRangeUpdateCallback="bulmaDateRangeUpdateCallback"
-            ></bulma-calendar>
-        </label>
+        <section id="stats-form-trending" class="section">
+            <account-account-type-toggling-selector
+                id="trending-chart"
+                v-bind:account-or-account-type-id="accountOrAccountTypeId"
+                v-bind:account-or-account-type-toggled="accountOrAccountTypeToggle"
+                v-on:update-select="accountOrAccountTypeId = $event"
+                v-on:update-toggle="accountOrAccountTypeToggle = $event"
+            ></account-account-type-toggling-selector>
 
-        <line-chart
-            v-if="dataLoaded"
-            v-bind:chart-data="this.chartData"
-            v-bind:options="this.chartOptions"
+            <div class="field">
+                <bulma-calendar
+                    ref="trendingStatsChartBulmaCalendar"
+                ></bulma-calendar>
+            </div>
+
+            <div class="field"><div class="control">
+                <button class="button is-primary generate-stats" v-on:click="displayData"><i class="fas fa-chart-bar"></i>Generate Chart</button>
+            </div></div>
+        </section>
+
+        <hr />
+
+        <section v-if="areEntriesAvailable" class="section stats-results-trending">
+            <line-chart
+                v-if="dataLoaded"
+                v-bind:chart-data="this.chartData"
+                v-bind:options="this.chartOptions"
             >Your browser does not support the canvas element.</line-chart>
+        </section>
+        <section v-else class="section has-text-centered has-text-weight-semibold is-size-6 stats-results-trending">
+            No data available
+        </section>
     </div>
 </template>
 
 <script>
+    import AccountAccountTypeTogglingSelector from "../account-account-type-toggling-selector";
     import BulmaCalendar from "../bulma-calendar";
     import LineChart from "./chart-defaults/line-chart";
+    import {entriesObjectMixin} from "../../mixins/entries-object-mixin";
     import {statsChartMixin} from "../../mixins/stats-chart-mixin";
 
     export default {
         name: "trending-chart",
-        mixins: [statsChartMixin],
-        components: {BulmaCalendar, LineChart},
+        mixins: [entriesObjectMixin, statsChartMixin],
+        components: {BulmaCalendar, LineChart, AccountAccountTypeTogglingSelector},
         data: function(){
             return {
                 chartConfig: {
@@ -65,10 +58,17 @@
                     },
                     timeUnit: 'day',
                     titleText: "Generated data"
-                }
+                },
+
+                accountOrAccountTypeToggle: true,
+                accountOrAccountTypeId: '',
             }
         },
         computed: {
+            millisecondsPerDay: function(){
+                return 1000*3600*24;
+            },
+
             incomeData: function(){
                 return this.standardiseData(false);
             },
@@ -130,26 +130,18 @@
                                 minRotation: 90
                             }
                         }],
-                        // yAxes: [{
-                        //     display: true,
-                        //     // Include a dollar sign in the ticks
-                        //     callback: function(value, index, values) {
-                        //         return '$' + value;
-                        //     }
-                        // }]
                     }
                 };
             },
 
             getBulmaCalendar: function(){
-                return this.$refs.trendingBulmaCalendar;
+                return this.$refs.trendingStatsChartBulmaCalendar;
             }
         },
         methods: {
             standardiseData: function(isExpense){
                 let standardisedChartData = [];
-                // this.rawData
-                this.rawEntryData
+                this.rawEntriesData
                     .filter(function(chartDatum){ return chartDatum.expense === isExpense })
                     .map(function(filteredChartDatum){
                         // extract entry_date and entry_value
@@ -172,70 +164,52 @@
                 return standardisedChartData;
             },
 
-            fetchData: function(filterParameters){
-                this.entriesObject
-                    .fetch(0, filterParameters)
-                    .then(function(notification){
-                        this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, notification);
-                    }.bind(this))
-                    .finally(function(){
-                        this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
-                        this.dataLoaded = true;
-                    }.bind(this));
+            setChartTitle: function(startDate, endDate){
+                this.chartConfig.titleText = "Trending ["+startDate+" - "+endDate+"]";
             },
 
-            displayChartCustomDateRange: function(chartTitlePrefix=''){
+            setChartTimeUnit: function(startDate, endDate){
+                let s1 = new Date(startDate).getTime();
+                let s2 = new Date(endDate).getTime();
+                let dayDiff = (s2-s1)/this.millisecondsPerDay; // milliseconds per day
+
+                if(dayDiff <= 30){  // <= 1 month:  day
+                    this.chartConfig.timeUnit = 'day';
+                } else if(dayDiff <= 3*30){  // <= 3 months:  week
+                    this.chartConfig.timeUnit = 'week';
+                } else  if(dayDiff >= 365*3){  // >= 3 years:  year
+                    this.chartConfig.timeUnit = 'year';
+                } else {  // otherwise:  month
+                    this.chartConfig.timeUnit = 'month';
+                }
+            },
+
+            displayData: function(){
                 this.dataLoaded = false;
                 this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
-                this.chartConfig.titleText = chartTitlePrefix+"Trending ["+this.getBulmaCalendar.calendarStartDate()+" - "+this.getBulmaCalendar.calendarEndDate()+"]";
-                this.fetchData({start_date: this.getBulmaCalendar.calendarStartDate(), end_date: this.getBulmaCalendar.calendarEndDate()});
-            },
 
-            displayChartYear: function(){
-                this.toggleActiveButton('current.year');
-                this.getBulmaCalendar.setBulmaCalendarDateRange(this.currentYearStartDate, this.currentYearEndDate);
-                this.chartConfig.timeUnit = 'month';
-                this.displayChartCustomDateRange("Yearly - ");
-            },
+                let chartDataFilterParameters = {
+                    start_date: this.getBulmaCalendar.calendarStartDate(),
+                    end_date: this.getBulmaCalendar.calendarEndDate(),
+                };
 
-            displayChartQuarter: function(){
-                this.toggleActiveButton('current.quarter');
-                this.getBulmaCalendar.setBulmaCalendarDateRange(this.currentQuarterStartDate, this.currentQuarterEndDate);
-                this.chartConfig.timeUnit = 'week';
-                this.displayChartCustomDateRange("Quarterly - ");
-            },
+                if(this.accountOrAccountTypeToggle === true){
+                    chartDataFilterParameters.account = this.accountOrAccountTypeId;
+                } else {
+                    chartDataFilterParameters.account_type = this.accountOrAccountTypeId;
+                }
 
-            displayChartMonth: function(){
-                this.toggleActiveButton('current.month');
-                this.getBulmaCalendar.setBulmaCalendarDateRange(this.currentMonthStartDate, this.currentMonthEndDate);
-                this.chartConfig.timeUnit = 'day';
-                this.displayChartCustomDateRange("Monthly - ");
+                this.setChartTitle(chartDataFilterParameters.start_date, chartDataFilterParameters.end_date);
+                this.setChartTimeUnit(chartDataFilterParameters.start_date, chartDataFilterParameters.end_date);
+                this.fetchData(chartDataFilterParameters);
             },
-
-            displayChartWeek: function(){
-                this.toggleActiveButton('current.week');
-                this.getBulmaCalendar.setBulmaCalendarDateRange(this.currentWeekStartDate, this.currentWeekEndDate);
-                this.chartConfig.timeUnit = 'day';
-                this.displayChartCustomDateRange("Weekly - ");
-            },
-
-            bulmaDateRangeUpdateCallback: function(){
-                this.toggleActiveButton();
-                this.displayChartCustomDateRange();
-            }
         },
+        mounted: function(){
+            this.getBulmaCalendar.setBulmaCalendarDateRange(this.currentMonthStartDate, this.currentMonthEndDate);
+        }
     }
 </script>
 
-<style scoped>
-    .fas{
-        padding-right: 0.375rem;
-    }
-    .buttons{
-        margin: 1rem 1rem 0.5rem;
-    }
-    .label{
-        width: 30rem;
-        margin: 0 1rem;
-    }
+<style lang="scss" scoped>
+    @import '../../../sass/stats-chart';
 </style>
