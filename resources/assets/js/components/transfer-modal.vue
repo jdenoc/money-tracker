@@ -21,7 +21,7 @@
                 <div class="field is-horizontal">
                     <div class="field-label is-normal"><label class="label" for="transfer-value">Value:</label></div>
                     <div class="field-body"><div class="field"><div class="control">
-                        <input class="input has-text-grey-dark" id="transfer-value" name="transfer-value" type="text" placeholder="999.99"
+                        <input class="input has-text-grey-dark" id="transfer-value" name="transfer-value" type="text" placeholder="999.99" autocomplete="off"
                            v-model="transferData.value"
                            v-on:change="decimaliseValue"
                         />

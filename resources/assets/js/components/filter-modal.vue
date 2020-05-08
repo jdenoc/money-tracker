@@ -163,7 +163,7 @@
                     <!--Min Range-->
                     <div class="field-label is-normal"><label class="label" for="filter-min-value">Min Range:</label></div>
                     <div class="field-body"><div class="field"><div class="control has-icons-left">
-                        <input class="input has-text-grey-dark" id="filter-min-value" name="filter-min-value" type="text" placeholder="999.99"
+                        <input class="input has-text-grey-dark" id="filter-min-value" name="filter-min-value" type="text" placeholder="999.99" autocomplete="off"
                             v-model="filterData.minValue"
                             v-on:change="decimaliseValue('minValue')"
                         />
@@ -175,7 +175,7 @@
                     <!--Max Range-->
                     <div class="field-label is-normal"><label class="label" for="filter-max-value">Max Range:</label></div>
                     <div class="field-body"><div class="field"><div class="control has-icons-left">
-                        <input class="input has-text-grey-dark" id="filter-max-value" name="filter-max-value" type="text" placeholder="999.99"
+                        <input class="input has-text-grey-dark" id="filter-max-value" name="filter-max-value" type="text" placeholder="999.99" autocomplete="off"
                                v-model="filterData.maxValue"
                                v-on:change="decimaliseValue('maxValue')"
                         />
@@ -210,7 +210,7 @@
     import {accountsObjectMixin} from "../mixins/accounts-object-mixin";
     import {accountTypesObjectMixin} from "../mixins/account-types-object-mixin";
     import {tagsObjectMixin} from "../mixins/tags-object-mixin";
-    import {ToggleButton} from 'vue-js-toggle-button'
+    import {ToggleButton} from 'vue-js-toggle-button';
     import AccountAccountTypeTogglingSelector from "./account-account-type-toggling-selector";
     import Store from '../store';
 

@@ -42,7 +42,7 @@
                 <div class="field is-horizontal">
                     <div class="field-label is-normal"><label class="label" for="entry-value">Value:</label></div>
                     <div class="field-body"><div class="field"><div class="control has-icons-left">
-                        <input class="input has-text-grey-dark" id="entry-value" name="entry-value" type="text" placeholder="999.99"
+                        <input class="input has-text-grey-dark" id="entry-value" name="entry-value" type="text" placeholder="999.99" autocomplete="off"
                            v-model="entryData.entry_value"
                            v-bind:readonly="isLocked"
                            v-on:change="decimaliseEntryValue"
