@@ -2,6 +2,7 @@
 
 namespace Tests\Browser;
 
+use App\Entry;
 use App\Http\Controllers\Api\EntryController;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
@@ -736,13 +737,87 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         });
     }
 
-    // TODO: write test for changing tags input values
-
     /**
      * @throws Throwable
      *
      * @group entry-modal-1
      * test 21/25
+     */
+    public function testDeleteTagsFromExistingEntry(){
+        $this->browse(function(Browser $browser){
+            $entry_selector = $this->randomUnconfirmedEntrySelector(false);
+            $entry_id = null;
+
+            $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
+            $browser
+                ->openExistingEntryModal($entry_selector.'.'.$this->_class_has_tags)
+                ->with($this->_selector_modal_entry, function(Browser $entry_modal) use ($entry_selector, &$entry_id){
+                    $entry_id = $entry_modal->value($this->_selector_modal_entry_field_entry_id);
+                    $entry = Entry::findOrFail($entry_id);
+                    foreach($entry->tags->pluck('name') as $tag){
+                        $this->assertTagInInput($entry_modal, $tag);
+                        $entry_modal->click(self::$SELECTOR_TAGS_INPUT_TAG.' .tags-input-remove');
+                    }
+                    $entry_modal->click($this->_selector_modal_entry_btn_save);
+                });
+            $this->waitForLoadingToStop($browser);
+
+            $browser
+                ->assertMissing($this->_modal_id_prefix.$entry_id.'.'.$this->_class_has_tags)
+                ->openExistingEntryModal($this->_modal_id_prefix.$entry_id)
+                ->with($this->_selector_modal_entry, function(Browser $entry_modal) use ($entry_selector){
+                    $this->assertDefaultStateOfTagsInput($entry_modal);
+                });
+        });
+    }
+
+    /**
+     * @throws Throwable
+     *
+     * @group entry-modal-1
+     * test 22/25
+     */
+    public function testUpdateTagsInExistingEntry(){
+        $tags_from_api = collect($this->getApiTags());
+
+        $this->browse(function(Browser $browser) use ($tags_from_api){
+            $entry_selector = $this->randomUnconfirmedEntrySelector(false);
+            $entry_id = null;
+            $new_tag = '';
+
+            $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
+            $browser
+                ->openExistingEntryModal($entry_selector)
+                ->with($this->_selector_modal_entry, function(Browser $entry_modal) use ($entry_selector, &$entry_id, $tags_from_api, &$new_tag){
+                    $entry_id = $entry_modal->value($this->_selector_modal_entry_field_entry_id);
+                    $entry = Entry::findOrFail($entry_id);
+
+                    $existing_entry_tags = $entry->tags->pluck('name')->all();
+                    do{
+                        $new_tag = $tags_from_api->pluck('name')->random();
+                    }while(in_array($new_tag , $existing_entry_tags));
+                    $this->fillTagsInputUsingAutocomplete($entry_modal, $new_tag);
+                    $this->assertTagInInput($entry_modal, $new_tag);
+                    $entry_modal->click($this->_selector_modal_entry_btn_save);
+                });
+            $this->waitForLoadingToStop($browser);
+
+            $browser
+                ->assertVisible($this->_modal_id_prefix.$entry_id.'.'.$this->_class_has_tags)
+                ->openExistingEntryModal($this->_modal_id_prefix.$entry_id)
+                ->with($this->_selector_modal_entry, function(Browser $entry_modal) use ($entry_selector, $new_tag){
+                    $this->assertTagInInput($entry_modal, $new_tag);
+                });
+        });
+    }
+
+    /**
+     * @throws Throwable
+     *
+     * @group entry-modal-1
+     * test 23/25
      */
     public function testUploadAttachmentToExistingEntry(){
         $this->browse(function(Browser $browser){
@@ -779,7 +854,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group entry-modal-1
-     * test 22/25
+     * test 24/25
      */
     public function testOpenExistingEntryInModalThenCloseModalAndOpenNewEntryModal(){
         $this->browse(function(Browser $browser){
