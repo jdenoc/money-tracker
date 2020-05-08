@@ -6,9 +6,10 @@ use App\Account;
 use App\AccountType;
 use App\Helpers\CurrencyHelper;
 use App\Traits\Tests\AssertElementColor;
-use App\Traits\Tests\Dusk\Loading;
-use App\Traits\Tests\Dusk\Navbar;
-use App\Traits\Tests\Dusk\Notification;
+use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
+use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
+use App\Traits\Tests\Dusk\Notification as DuskTraitNotification;
+use App\Traits\Tests\Dusk\TagsInput as DuskTraitTagsInput;
 use App\Traits\Tests\WaitTimes;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
@@ -28,9 +29,10 @@ use Throwable;
 class EntryModalNewEntryTest extends DuskTestCase {
 
     use HomePageSelectors;
-    use Loading;
-    use Notification;
-    use Navbar;
+    use DuskTraitLoading;
+    use DuskTraitNotification;
+    use DuskTraitNavbar;
+    use DuskTraitTagsInput;
     use AssertElementColor;
     use WaitTimes;
 
@@ -185,10 +187,10 @@ class EntryModalNewEntryTest extends DuskTestCase {
                     $this->assertElementColour($entry_modal_body, $this->_selector_modal_entry_field_expense.' '.$this->_class_switch_core, $this->_color_expense_switch_expense);
                     $entry_modal_body->assertDontSee($this->_label_expense_switch_income)
 
-                        ->assertSee('Tags:')
-                        ->assertVisible($this->_selector_modal_entry_field_tags)  // auto-complete tags-input field
-                        ->assertInputValue($this->_selector_modal_entry_field_tags, "")
+                        ->assertSee('Tags:');
+                    $this->assertDefaultStateOfTagsInput($entry_modal_body);
 
+                    $entry_modal_body
                         ->assertVisible($this->_selector_modal_entry_field_upload) // drag-n-drop file upload field
                         ->with($this->_selector_modal_entry_field_upload, function($file_upload){
                             $file_upload->assertSee($this->_label_file_upload);
@@ -594,12 +596,8 @@ class EntryModalNewEntryTest extends DuskTestCase {
             $this->openNewEntryModal($browser);
             $browser
                 ->with($this->_selector_modal_body, function ($entry_modal_body) use ($tag){
-                    $first_char = substr($tag, 0, 1);
-                    $entry_modal_body
-                        ->waitUntilMissing($this->_selector_modal_entry_field_tags_container_is_loading, self::$WAIT_SECONDS)
-                        ->keys($this->_selector_modal_entry_field_tags, $first_char)
-                        ->waitFor($this->_selector_modal_tag_autocomplete_options)
-                        ->assertSee($tag);
+                    $this->fillTagsInputUsingAutocomplete($entry_modal_body, $tag);
+                    $this->assertTagInInput($entry_modal_body, $tag);
                 });
         });
     }
@@ -759,15 +757,9 @@ class EntryModalNewEntryTest extends DuskTestCase {
                 $browser->with($this->_selector_modal_body, function($modal_body){
                     $tags = $this->getApiTags();
                     $tag = $tags[array_rand($tags, 1)]['name'];
-                    $first_char = substr($tag, 0, 1);
-                    $second_char = substr($tag, 1, 2);
-
-                    $modal_body->waitUntilMissing($this->_selector_modal_entry_field_tags_container_is_loading, self::$WAIT_SECONDS)
-                        ->keys($this->_selector_modal_entry_field_tags, $first_char)
-                        ->keys($this->_selector_modal_entry_field_tags, $second_char)
-                        ->waitFor($this->_selector_modal_tag_autocomplete_options)
-                        ->assertSee($tag)
-                        ->click($this->_selector_modal_tag_autocomplete_options);
+                    
+                    $this->fillTagsInputUsingAutocomplete($modal_body, $tag);
+                    $this->assertTagInInput($modal_body, $tag);
                 });
             }
 

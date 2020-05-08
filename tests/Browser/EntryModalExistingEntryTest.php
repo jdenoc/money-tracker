@@ -3,9 +3,10 @@
 namespace Tests\Browser;
 
 use App\Http\Controllers\Api\EntryController;
-use App\Traits\Tests\Dusk\Loading;
-use App\Traits\Tests\Dusk\Navbar;
-use App\Traits\Tests\Dusk\Notification;
+use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
+use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
+use App\Traits\Tests\Dusk\Notification as DuskTraitNotification;
+use App\Traits\Tests\Dusk\TagsInput as DuskTraitTagsInput;
 use App\Traits\Tests\WaitTimes;
 use Facebook\WebDriver\WebDriverBy;
 use Tests\Browser\Pages\HomePage;
@@ -27,9 +28,10 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     use WaitTimes;
     use HomePageSelectors;
-    use Loading;
-    use Notification;
-    use Navbar;
+    use DuskTraitLoading;
+    use DuskTraitNavbar;
+    use DuskTraitNotification;
+    use DuskTraitTagsInput;
 
     private $_class_lock = "fa-lock";
     private $_class_unlock = "fa-unlock-alt";
@@ -268,6 +270,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     }
 
     public function providerEntryWithTags(){
+        // [$data_entry_selector, $data_tags_container_selector, $data_tag_selector]
         return [
             // test 7/25
             "Confirmed"=>[$this->randomConfirmedEntrySelector().'.'.$this->_class_has_tags, $this->_selector_tags, $this->_selector_tags_tag],
@@ -847,6 +850,10 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @param bool $get_id
+     * @return string
+     */
     private function randomConfirmedEntrySelector($get_id=false){
         if($get_id){
             return $this->randomEntrySelector(['confirm'=>true]);
@@ -856,6 +863,10 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         }
     }
 
+    /**
+     * @param bool $get_id
+     * @return string
+     */
     private function randomUnconfirmedEntrySelector($get_id=false){
         if($get_id){
             return $this->randomEntrySelector(['confirm'=>false]);
@@ -870,14 +881,13 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @return string
      */
     private function randomEntrySelector($entry_constraints = []){
-        $entries = $this->removeCountFromApiResponse($this->getApiEntries());
-        $entries_collection = collect($entries);
+        $entries_collection = collect($this->removeCountFromApiResponse($this->getApiEntries()));
         if(!empty($entry_constraints)){
             foreach(array_keys($entry_constraints) as $constraint){
                 $entries_collection = $entries_collection->where($constraint, $entry_constraints[$constraint]);
             }
         }
-        $entry_id = $entries_collection->random(1)->pluck('id')->first();
+        $entry_id = $entries_collection->pluck('id')->random();
         return $this->_modal_id_prefix.$entry_id;
     }
 

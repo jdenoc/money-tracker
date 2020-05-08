@@ -5,12 +5,11 @@ namespace Tests\Browser;
 use App\Account;
 use App\AccountType;
 use App\Helpers\CurrencyHelper;
-use App\Traits\Tests\AccountOrAccountTypeTogglingSelector;
-use App\Traits\Tests\Dusk\Loading;
-use App\Traits\Tests\Dusk\Navbar;
+use App\Traits\Tests\Dusk\AccountOrAccountTypeTogglingSelector as DuskTraitAccountOrAccountTypeTogglingSelector;
+use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
+use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
 use Facebook\WebDriver\WebDriverBy;
-use Faker\Factory as FakerFactory;
-use Faker\Generator;
+use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\DB;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
@@ -30,22 +29,13 @@ use Throwable;
 class FilterModalTest extends DuskTestCase {
 
     use HomePageSelectors;
-    use AccountOrAccountTypeTogglingSelector;
-    use Navbar;
-    use Loading;
+    use DuskTraitAccountOrAccountTypeTogglingSelector;
+    use DuskTraitLoading;
+    use DuskTraitNavbar;
 
-    /**
-     * @var Generator
-     */
-    private $faker;
+    use WithFaker;
 
     private $_partial_selector_filter_tag = "#filter-tag-";
-
-    public function setUp(){
-        parent::setUp();
-
-        $this->faker = FakerFactory::create();
-    }
 
     /**
      * @throws Throwable

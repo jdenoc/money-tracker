@@ -2,9 +2,9 @@
 
 namespace Tests\Browser;
 
-use App\Traits\Tests\AccountOrAccountTypeTogglingSelector;
-use App\Traits\Tests\Dusk\BulmaDatePicker;
-use App\Traits\Tests\Dusk\Loading;
+use App\Traits\Tests\Dusk\AccountOrAccountTypeTogglingSelector as DuskTraitAccountOrAccountTypeTogglingSelector;
+use App\Traits\Tests\Dusk\BulmaDatePicker as DuskTraitBulmaDatePicker;
+use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use Laravel\Dusk\Browser;
 use Tests\Browser\Pages\StatsPage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
@@ -20,16 +20,16 @@ use Throwable;
  */
 class StatsTrendingTest extends DuskTestCase {
 
-    use Loading;
-    use AccountOrAccountTypeTogglingSelector;
-    use BulmaDatePicker;
+    use DuskTraitAccountOrAccountTypeTogglingSelector;
+    use DuskTraitBulmaDatePicker;
+    use DuskTraitLoading;
 
     private static $SELECTOR_STATS_FORM_TRENDING = "#stats-form-trending";
     private static $SELECTOR_BUTTON_GENERATE = '.generate-stats';
     private static $SELECTOR_STATS_RESULTS_AREA = '.stats-results-trending';
     private static $SELECTOR_SIDE_PANEL = '.panel';
     private static $SELECTOR_SIDE_PANEL_OPTION_TRENDING = '.panel-block:nth-child(3)';
-    private static $SELECTOR_CHART_TRENDING = '.canvas#line-chart';
+    private static $SELECTOR_CHART_TRENDING = 'canvas#line-chart';
 
     private static $LABEL_OPTION_TRENDING = "Trending";
     private static $LABEL_GENERATE_CHART_BUTTON = "Generate Chart";

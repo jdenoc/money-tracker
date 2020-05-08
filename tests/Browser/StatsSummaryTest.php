@@ -3,9 +3,9 @@
 namespace Tests\Browser;
 
 use App\Http\Controllers\Api\EntryController;
-use App\Traits\Tests\AccountOrAccountTypeTogglingSelector;
-use App\Traits\Tests\Dusk\BulmaDatePicker;
-use App\Traits\Tests\Dusk\Loading;
+use App\Traits\Tests\Dusk\AccountOrAccountTypeTogglingSelector as DuskTraitAccountOrAccountTypeTogglingSelector;
+use App\Traits\Tests\Dusk\BulmaDatePicker as DuskTraitBulmaDatePicker;
+use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Support\Collection;
 use Tests\Browser\Pages\StatsPage;
@@ -23,9 +23,9 @@ use Throwable;
  */
 class StatsSummaryTest extends DuskTestCase {
 
-    use AccountOrAccountTypeTogglingSelector;
-    use BulmaDatePicker;
-    use Loading;
+    use DuskTraitAccountOrAccountTypeTogglingSelector;
+    use DuskTraitBulmaDatePicker;
+    use DuskTraitLoading;
 
     private static $SELECTOR_STATS_FORM_SUMMARY = "#stats-form-summary";
     private static $SELECTOR_BUTTON_GENERATE = '.generate-stats';
@@ -115,8 +115,8 @@ class StatsSummaryTest extends DuskTestCase {
     public function providerTestGenerateStatsTables(){
         $previous_year_start = date("Y-01-01", strtotime('-1 year'));
         $today = date("Y-m-d");
+        //[$datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available]
         return [
-            //[$datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available]
             // defaults account/account-type & date-picker values
             [null, null, false, false, false],  // test 4/25
             // date-picker previous year start to present & default account/account-type
