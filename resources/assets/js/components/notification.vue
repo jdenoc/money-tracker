@@ -3,6 +3,7 @@
 </template>
 
 <script>
+    import _ from 'lodash';
     import { SnotifyStyle } from 'vue-snotify';
 
     export default {

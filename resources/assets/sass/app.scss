@@ -1,6 +1,7 @@
 // Bulma
 @import "~bulma/bulma.sass";
 @import "~bulma-badge/dist/bulma-badge.sass";
+@import "~bulma-calendar/dist/css/bulma-calendar.min.css";
 @import "~bulma-checkradio/dist/css/bulma-checkradio.sass";
 
 // Snotify
@@ -25,12 +26,4 @@
 .is-checkradio[type=checkbox].is-block+label.checkbox-adjusted-top::after,
 .is-checkradio[type=checkbox].is-block+label.checkbox-adjusted-top:after{
   top: 0.4rem;
-}
-
-/* additional styling for voerro-tags-input component */
-.tags-input input{
-  font-size: 0.75rem;
-}
-.tags-input span{
-  margin: 0 0.3rem 0 0;
 }

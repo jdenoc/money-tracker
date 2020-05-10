@@ -26,10 +26,23 @@ class ATest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws \Throwable
+     */
     public function testTitleIsCorrect(){
         $this->browse(function (Browser $browser){
             $browser->visit('/')
                 ->assertTitleContains("Money Tracker | HOME");
+        });
+    }
+
+    /**
+     * @throws \Throwable
+     */
+    public function testTitleIsCorrectOnStatsPage(){
+        $this->browse(function (Browser $browser){
+            $browser->visit('/stats')
+                ->assertTitleContains("Money Tracker | STATS");
         });
     }
 }

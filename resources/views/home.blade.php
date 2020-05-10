@@ -15,12 +15,10 @@
 
     <link href="{{asset('vue/css/app.css')}}" rel="stylesheet" type="text/css">
     <link href="{{asset('vue/css/font-awesome.css')}}" rel="stylesheet" type="text/css">
-    <link href="{{asset('vue/css/tags-input.css')}}" rel="stylesheet" type="text/css">
-    <link href="{{asset('vue/css/vue-dropzone.css')}}" rel="stylesheet" type="text/css">
 </head>
 <body>
     <div id="app">
-        <navbar></navbar>
+        <navbar page-name="home"></navbar>
         <div class="columns is-gapless">
             <div id="institutions-panel-column" class="column is-one-quarter">
                 <institutions-panel></institutions-panel>
@@ -44,6 +42,6 @@
             </div>
         </div>
     </div>
-    <script type="text/javascript" src="{{asset('vue/js/app.js')}}"></script>
+    <script type="text/javascript" src="{{asset('vue/js/app-home.js')}}"></script>
 </body>
 </html>

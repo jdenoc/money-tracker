@@ -28,50 +28,13 @@
                     </div></div></div>
                 </div>
 
-                <div class="field is-horizontal">
-                    <!--Account/Account-type-->
-                    <div class="field-label is-normal no-padding-top">
-                        <div class="label">
-                            <toggle-button
-                                id="filter-account-account-types"
-                                v-model="filterData.accountOrAccountTypeSelected"
-                                v-bind:value="filterData.accountOrAccountTypeSelected"
-                                v-bind:labels="{checked: 'Account', unchecked: 'Account Type'}"
-                                v-bind:color="{checked: toggleButtonProperties.colors.unchecked, unchecked: toggleButtonProperties.colors.unchecked}"
-                                v-bind:height="36"
-                                v-bind:width="140"
-                                v-bind:sync="true"
-                                v-on:click.native="resetAccountOrAccountTypeField"
-                            />
-                        </div>
-                        <div id="filter-show-disabled" v-show="areAccountsOrAccountTypesDisabled">
-                            <input class="is-checkradio is-circle is-small" id="filter-show-disabled-checkbox" type="checkbox"
-                               v-model="canShowDisabledAccountAndAccountTypes"
-                            />
-                            <label for="filter-show-disabled-checkbox">Show Disabled</label>
-                        </div>
-                    </div>
-                    <div class="field-body"><div class="field">
-                        <div class="control">
-                            <div class="select" v-bind:class="{'is-loading': !areAccountsAndAccountTypesSet}">
-                                <select name="filter-account-or-account-types-id" id="filter-account-or-account-types-id" class="has-text-grey-dark"
-                                    v-model="filterData.accountOrAccountTypeId"
-                                    v-on:change="updateAccountCurrency"
-                                    >
-                                    <option value="" selected>[ ALL ]</option>
-                                    <option
-                                        v-for="accountOrAccountType in listAccountOrAccountTypes"
-                                        v-show="!accountOrAccountType.disabled || canShowDisabledAccountAndAccountTypes"
-                                        v-bind:key="accountOrAccountType.id"
-                                        v-bind:value="accountOrAccountType.id"
-                                        v-text="accountOrAccountType.name"
-                                    ></option>
-                                </select>
-                            </div>
-                        </div>
-
-                    </div></div>
-                </div>
+                <account-account-type-toggling-selector
+                    id="filter-modal"
+                    v-bind:account-or-account-type-id.sync="filterData.accountOrAccountTypeId"
+                    v-on:update-select="filterData.accountOrAccountTypeId = $event"
+                    v-bind:account-or-account-type-toggled.sync="filterData.accountOrAccountTypeSelected"
+                    v-on:update-toggle="filterData.accountOrAccountTypeSelected = $event"
+                ></account-account-type-toggling-selector>
 
                 <div class="field is-horizontal">
                     <!--Tags-->
@@ -200,7 +163,7 @@
                     <!--Min Range-->
                     <div class="field-label is-normal"><label class="label" for="filter-min-value">Min Range:</label></div>
                     <div class="field-body"><div class="field"><div class="control has-icons-left">
-                        <input class="input has-text-grey-dark" id="filter-min-value" name="filter-min-value" type="text" placeholder="999.99"
+                        <input class="input has-text-grey-dark" id="filter-min-value" name="filter-min-value" type="text" placeholder="999.99" autocomplete="off"
                             v-model="filterData.minValue"
                             v-on:change="decimaliseValue('minValue')"
                         />
@@ -209,10 +172,10 @@
                 </div>
 
                 <div class="field is-horizontal">
-                    <!--Max Range:                      | [input]-->
+                    <!--Max Range-->
                     <div class="field-label is-normal"><label class="label" for="filter-max-value">Max Range:</label></div>
                     <div class="field-body"><div class="field"><div class="control has-icons-left">
-                        <input class="input has-text-grey-dark" id="filter-max-value" name="filter-max-value" type="text" placeholder="999.99"
+                        <input class="input has-text-grey-dark" id="filter-max-value" name="filter-max-value" type="text" placeholder="999.99" autocomplete="off"
                                v-model="filterData.maxValue"
                                v-on:change="decimaliseValue('maxValue')"
                         />
@@ -243,31 +206,31 @@
 
 <script>
     import _ from 'lodash';
-    import {Accounts} from '../accounts';
-    import {AccountTypes} from '../account-types';
     import {Currency} from "../currency";
-    import {Tags} from '../tags';
-    import { ToggleButton } from 'vue-js-toggle-button'
+    import {accountsObjectMixin} from "../mixins/accounts-object-mixin";
+    import {accountTypesObjectMixin} from "../mixins/account-types-object-mixin";
+    import {tagsObjectMixin} from "../mixins/tags-object-mixin";
+    import {ToggleButton} from 'vue-js-toggle-button';
+    import AccountAccountTypeTogglingSelector from "./account-account-type-toggling-selector";
     import Store from '../store';
 
     export default {
         name: "filter-modal",
+        mixins: [accountsObjectMixin, accountTypesObjectMixin, tagsObjectMixin],
         components: {
+            AccountAccountTypeTogglingSelector,
             ToggleButton,
         },
         data: function(){
             return {
-                accountsObject: new Accounts(),
-                accountTypesObject: new AccountTypes(),
                 currencyObject: new Currency(),
-                tagsObject: new Tags(),
 
                 isVisible: false,
 
-                accountCurrencyClass: "fa-dollar-sign",
-
-                switchValueAccount: true,
-                switchValueAccountType: false,
+                accountAccountTypeToggle: {
+                    accountValue: true,
+                    accountTypeValue: false
+                },
 
                 canShowDisabledAccountAndAccountTypes: false,
 
@@ -297,45 +260,20 @@
             }
         },
         computed: {
-            areAccountsAndAccountTypesSet: function(){
-                return this.listAccountTypes.length > 0 && this.listAccounts.length > 0;
+            listTags: function(){
+                return this.processListOfObjects(this.rawTagsData);
             },
-            areTagsSet: function(){
-                return !_.isEmpty(this.listTags);
-            },
-            areAccountsOrAccountTypesDisabled: function(){
-                let accountOrAccountTypeObjects = {};
-                if(this.filterData.accountOrAccountTypeSelected === this.switchValueAccount){
-                    accountOrAccountTypeObjects = this.accountsObject.retrieve;
-                } else if(this.filterData.accountOrAccountTypeSelected === this.switchValueAccountType){
-                    accountOrAccountTypeObjects = this.accountTypesObject.retrieve;
+            accountCurrencyClass: function(){
+                let account = null;
+                if(this.filterData.accountOrAccountTypeSelected === this.accountAccountTypeToggle.accountValue){
+                    account = this.accountsObject.find(this.filterData.accountOrAccountTypeId);
+                } else if(this.filterData.accountOrAccountTypeSelected === this.accountAccountTypeToggle.accountTypeValue){
+                    account = this.accountTypesObject.getAccount(this.filterData.accountOrAccountTypeId);
                 }
 
-                return !_.isEmpty(accountOrAccountTypeObjects)
-                    && this.processListOfObjects(accountOrAccountTypeObjects)
-                        .filter(function(accountOrAccountTypeObject){
-                            return accountOrAccountTypeObject.disabled
-                        }).length > 0;
+                let currencyCode = _.isNull(account) ? '' : account.currency;
+                return this.currencyObject.getClassFromCode(currencyCode);
             },
-            listAccountOrAccountTypes: function(){
-                if(this.filterData.accountOrAccountTypeSelected === this.switchValueAccount){
-                    return this.listAccounts
-                } else if(this.filterData.accountOrAccountTypeSelected === this.switchValueAccountType){
-                    return this.listAccountTypes
-                }
-            },
-            listAccountTypes: function(){
-                let accountTypes = this.accountTypesObject.retrieve;
-                return this.processListOfObjects(accountTypes, this.canShowDisabledAccountAndAccountTypes);
-            },
-            listAccounts: function(){
-                let accounts = this.accountsObject.retrieve;
-                return this.processListOfObjects(accounts, this.canShowDisabledAccountAndAccountTypes);
-            },
-            listTags: function(){
-                let tags = this.tagsObject.retrieve;
-                return this.processListOfObjects(tags);
-            }
         },
         methods: {
             setModalState: function(modal){
@@ -349,23 +287,8 @@
                 this.setModalState(Store.getters.STORE_MODAL_NONE);
                 this.isVisible = false;
             },
-            updateAccountCurrency: function(){
-                let account = null;
-                if(this.filterData.accountOrAccountTypeSelected === this.switchValueAccount){
-                    account = this.accountsObject.find(this.filterData.accountOrAccountTypeId);
-                } else if(this.filterData.accountOrAccountTypeSelected === this.switchValueAccountType){
-                    account = this.accountTypesObject.getAccount(this.filterData.accountOrAccountTypeId);
-                }
-
-                this.accountCurrencyClass = this.currencyObject.getClassFromCode(account.currency);
-            },
-            resetAccountOrAccountTypeField: function(){
-                this.filterData.accountOrAccountTypeId = this.defaultData.accountOrAccountTypeId;
-                this.accountCurrencyClass = this.currencyObject.default.class;
-            },
             resetFields: function(){
-                this.defaultData.accountOrAccountTypeSelected = this.switchValueAccount;
-                this.resetAccountOrAccountTypeField();
+                this.defaultData.accountOrAccountTypeSelected = this.accountAccountTypeToggle.accountValue;
                 for(let t in this.listTags){
                     this.defaultData.tags[this.listTags[t]['id']] = false;
                 }
@@ -395,9 +318,9 @@
                     filterDataParameters.end_date = this.filterData.endDate;
                 }
 
-                if(this.filterData.accountOrAccountTypeSelected === this.switchValueAccount){
+                if(this.filterData.accountOrAccountTypeSelected === this.accountAccountTypeToggle.accountValue){
                     filterDataParameters.account = this.filterData.accountOrAccountTypeId;
-                } else if(this.filterData.accountOrAccountTypeSelected === this.switchValueAccountType){
+                } else if(this.filterData.accountOrAccountTypeSelected === this.accountAccountTypeToggle.accountTypeValue){
                     filterDataParameters.account_type = this.filterData.accountOrAccountTypeId;
                 }
 

@@ -11,11 +11,9 @@
 |
 */
 
-Route::get('/laravel', function () {
-    return view('laravel-welcome');
-})->name('laravel-welcome');
-
+Route::get('/laravel', 'Web\HomeController@laravelWelcome')->name('laravel-welcome');
 Route::get('/', 'Web\HomeController@display');
+Route::get('/stats', 'Web\StatsController@display');
 Route::get('/attachment/{uuid}', 'Web\AttachmentController@display');
 Route::post('/attachment/upload', 'Web\AttachmentController@upload');
 Route::delete('/attachment/upload', 'Web\AttachmentController@deleteUpload');

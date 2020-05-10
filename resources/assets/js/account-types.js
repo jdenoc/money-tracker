@@ -42,9 +42,3 @@ export class AccountTypes extends ObjectBaseClass {
         }
     }
 }
-
-//     display: function(){
-//         entryModal.initAccountTypeSelect();
-//         filterModal.initAccountTypeSelect();
-//         institutionsPane.displayAccountTypes();
-//     },
