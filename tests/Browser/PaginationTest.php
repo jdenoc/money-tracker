@@ -4,11 +4,14 @@ namespace Tests\Browser;
 
 use App\Entry;
 use App\Http\Controllers\Api\EntryController;
+use App\Traits\Tests\Dusk\Loading;
+use App\Traits\Tests\Dusk\Navbar;
 use Illuminate\Support\Facades\DB;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Laravel\Dusk\Browser;
 use Tests\Traits\HomePageSelectors;
+use Throwable;
 
 /**
  * Class PaginationTest
@@ -21,6 +24,8 @@ use Tests\Traits\HomePageSelectors;
 class PaginationTest extends DuskTestCase {
 
     use HomePageSelectors;
+    use Loading;
+    use Navbar;
 
     const PAGE_NUMBER_ZERO = 0;
     const PAGE_NUMBER_ONE = 1;
@@ -40,7 +45,7 @@ class PaginationTest extends DuskTestCase {
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @group navigation-3
      * test 1/25
@@ -51,16 +56,16 @@ class PaginationTest extends DuskTestCase {
         $this->assertLessThan(EntryController::MAX_ENTRIES_IN_RESPONSE, $entries['count']);
 
         $this->browse(function (Browser $browser){
+            $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
             $browser
-                ->visit(new HomePage())
-                ->waitForLoadingToStop()
                 ->assertMissing($this->_selector_pagination_btn_next)
                 ->assertMissing($this->_selector_pagination_btn_prev);
         });
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @group navigation-3
      * test 2/25
@@ -71,16 +76,16 @@ class PaginationTest extends DuskTestCase {
         $this->assertGreaterThanOrEqual(EntryController::MAX_ENTRIES_IN_RESPONSE, $entries['count']);
 
         $this->browse(function (Browser $browser){
+            $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
             $browser
-                ->visit(new HomePage())
-                ->waitForLoadingToStop()
                 ->assertMissing($this->_selector_pagination_btn_prev)
                 ->assertVisible($this->_selector_pagination_btn_next);
         });
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @group navigation-3
      * test 3/25
@@ -96,19 +101,20 @@ class PaginationTest extends DuskTestCase {
 
         $this->browse(function (Browser $browser) use ($entries_page1, $entries_page2){
             unset($entries_page1['count'], $entries_page2['count']);
+            $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
             $browser
-                ->visit(new HomePage())
-                ->waitForLoadingToStop()
                 ->assertVisible($this->_selector_pagination_btn_next)
-                ->click($this->_selector_pagination_btn_next)
-                ->waitForLoadingToStop()
-                ->assertVisible($this->_selector_pagination_btn_prev);
+                ->click($this->_selector_pagination_btn_next);
+            $this->waitForLoadingToStop($browser);
+            $browser->assertVisible($this->_selector_pagination_btn_prev);
             $this->assertEntriesDisplayed($browser, $entries_page1);
 
             $browser
                 ->assertVisible($this->_selector_pagination_btn_next)
-                ->click($this->_selector_pagination_btn_next)
-                ->waitForLoadingToStop()
+                ->click($this->_selector_pagination_btn_next);
+            $this->waitForLoadingToStop($browser);
+            $browser
                 ->assertVisible($this->_selector_pagination_btn_prev)
                 ->assertMissing($this->_selector_pagination_btn_next);
             $this->assertEntriesDisplayed($browser, $entries_page2);
@@ -116,7 +122,7 @@ class PaginationTest extends DuskTestCase {
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @group navigation-3
      * test 4/25
@@ -128,25 +134,23 @@ class PaginationTest extends DuskTestCase {
         unset($entries['count']);
 
         $this->browse(function (Browser $browser) use ($entries){
-            $browser
-                ->visit(new HomePage())
-                ->waitForLoadingToStop()
-                ->assertVisible($this->_selector_pagination_btn_next);
+            $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
+            $browser->assertVisible($this->_selector_pagination_btn_next);
 
             $this->assertEntriesDisplayed($browser, $entries);
 
-            $browser
-                ->click($this->_selector_pagination_btn_next)
-                ->waitForLoadingToStop()
-                ->click($this->_selector_pagination_btn_prev)
-                ->waitForLoadingToStop();
+            $browser->click($this->_selector_pagination_btn_next);
+            $this->waitForLoadingToStop($browser);
+            $browser->click($this->_selector_pagination_btn_prev);
+            $this->waitForLoadingToStop($browser);
 
             $this->assertEntriesDisplayed($browser, $entries);
         });
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @group navigation-3
      * test 5/25
@@ -157,11 +161,10 @@ class PaginationTest extends DuskTestCase {
         $this->assertGreaterThan(EntryController::MAX_ENTRIES_IN_RESPONSE, $entries_original['count']);
 
         $this->browse(function(Browser $browser) use ($entries_original){
-            $browser
-                ->visit(new HomePage())
-                ->waitForLoadingToStop()
-                ->click($this->_selector_pagination_btn_next)
-                ->waitForLoadingToStop();
+            $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
+            $browser->click($this->_selector_pagination_btn_next);
+            $this->waitForLoadingToStop($browser);
 
             $entries_count = $entries_original['count'];
             unset($entries_original['count']);
@@ -170,8 +173,8 @@ class PaginationTest extends DuskTestCase {
             $new_entry_date = date("Y-m-d", strtotime($entries_original[0]['entry_date'].' - 1 day'));
             $new_entry_date_to_type = $browser->processLocaleDateForTyping($browser->getDateFromLocale($browser->getBrowserLocale(), $new_entry_date));
 
+            $this->openNewEntryModal($browser);
             $browser
-                ->openNewEntryModal()
                 ->with($this->_selector_modal_entry, function($entry_modal_body) use ($new_entry_date_to_type){
                     $account_types = $this->getApiAccountTypes();
                     $account_type_id = collect($account_types)->pluck('id')->random(1)->first();
@@ -181,9 +184,9 @@ class PaginationTest extends DuskTestCase {
                         ->select($this->_selector_modal_entry_field_account_type, $account_type_id)
                         ->type($this->_selector_modal_entry_field_memo, "Pagination entry-modal test")
                         ->click($this->_selector_modal_entry_btn_save);
-                })
-                ->waitForLoadingToStop()
-                ->assertVisible($this->_selector_pagination_btn_prev);
+                });
+            $this->waitForLoadingToStop($browser);
+            $browser->assertVisible($this->_selector_pagination_btn_prev);
 
             $entries_updated = $this->getApiEntries(self::PAGE_NUMBER_ONE);
             $this->assertGreaterThan($entries_count, $entries_updated['count']);
@@ -193,7 +196,7 @@ class PaginationTest extends DuskTestCase {
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @group navigation-3
      * test 6/25
@@ -210,19 +213,18 @@ class PaginationTest extends DuskTestCase {
             $entries_count = $entries_original['count'];
             unset($entries_original['count']);
 
-            $browser
-                ->visit(new HomePage())
-                ->waitForLoadingToStop()
-                ->click($this->_selector_pagination_btn_next)
-                ->waitForLoadingToStop();
+            $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
+            $browser->click($this->_selector_pagination_btn_next);
+            $this->waitForLoadingToStop($browser);
 
             $this->assertEntriesDisplayed($browser, $entries_original);
 
             $new_entry_date = date("Y-m-d", strtotime($entries_original[0]['entry_date'].' - 1 day'));
             $new_entry_date_to_type = $browser->processLocaleDateForTyping($browser->getDateFromLocale($browser->getBrowserLocale(), $new_entry_date));
 
+            $this->openTransferModal($browser);
             $browser
-                ->openTransferModal()
                 ->with($this->_selector_modal_transfer, function($modal) use ($new_entry_date_to_type, $account_type_ids){
                     $modal
                         ->type($this->_selector_modal_transfer_field_date, $new_entry_date_to_type)
@@ -231,9 +233,9 @@ class PaginationTest extends DuskTestCase {
                         ->select($this->_selector_modal_transfer_field_to, $account_type_ids[1])
                         ->type($this->_selector_modal_transfer_field_memo, "Pagination transfer-modal test")
                         ->click($this->_selector_modal_transfer_btn_save);
-                })
-                ->waitForLoadingToStop()
-                ->assertVisible($this->_selector_pagination_btn_prev);
+                });
+            $this->waitForLoadingToStop($browser);
+            $browser->assertVisible($this->_selector_pagination_btn_prev);
 
             $entries_updated = $this->getApiEntries(self::PAGE_NUMBER_ONE);
             $this->assertGreaterThan($entries_count, $entries_updated['count']);
@@ -243,7 +245,7 @@ class PaginationTest extends DuskTestCase {
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @group navigation-3
      * test 7/25
@@ -252,10 +254,10 @@ class PaginationTest extends DuskTestCase {
         factory(Entry::class, self::ENTRY_COUNT_TWO)->create($this->entryOverrideAttributes());
 
         $this->browse(function (Browser $browser){
+            $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
+            $this->openFilterModal($browser);
             $browser
-                ->visit(new HomePage())
-                ->waitForLoadingToStop()
-                ->openFilterModal()
                 ->with($this->_selector_modal_filter.' '.$this->_selector_modal_head, function(Browser $modal){
                     $filter_value = date("Y-m-d", strtotime("+10 day"));
                     $browser_date = $modal->getDateFromLocale($modal->getBrowserLocale(), $filter_value);
@@ -269,8 +271,9 @@ class PaginationTest extends DuskTestCase {
                 })
                 ->with($this->_selector_modal_filter.' '.$this->_selector_modal_foot, function(Browser $modal){
                     $modal->click($this->_selector_modal_filter_btn_filter);
-                })
-                ->waitForLoadingToStop()
+                });
+            $this->waitForLoadingToStop($browser);
+            $browser
                 ->with($this->_selector_table_body, function(Browser $table){
                     $table->assertMissing('tr');
                 })

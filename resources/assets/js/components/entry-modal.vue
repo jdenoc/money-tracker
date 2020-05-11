@@ -42,7 +42,7 @@
                 <div class="field is-horizontal">
                     <div class="field-label is-normal"><label class="label" for="entry-value">Value:</label></div>
                     <div class="field-body"><div class="field"><div class="control has-icons-left">
-                        <input class="input has-text-grey-dark" id="entry-value" name="entry-value" type="text" placeholder="999.99"
+                        <input class="input has-text-grey-dark" id="entry-value" name="entry-value" type="text" placeholder="999.99" autocomplete="off"
                            v-model="entryData.entry_value"
                            v-bind:readonly="isLocked"
                            v-on:change="decimaliseEntryValue"
@@ -54,7 +54,7 @@
                 <div class="field is-horizontal">
                     <div class="field-label is-normal"><label class="label" for="entry-account-type">Account Type:</label></div>
                     <div class="field-body"><div class="field">
-                        <div class="control"><div class="select" v-bind:class="{'is-loading': !areAccountTypesSet}">
+                        <div class="control"><div class="select" v-bind:class="{'is-loading': !areAccountTypesAvailable}">
                             <select name="entry-account-type" id="entry-account-type" class="has-text-grey-dark"
                                 v-model="entryData.account_type_id"
                                 v-on:change="updateAccountTypeMeta"
@@ -116,7 +116,7 @@
                             v-show="!isLocked"
                             element-id="entry-tags"
                             v-model="entryData.tags"
-                            v-bind:existing-tags="listTags"
+                            v-bind:existing-tags="listTagsAsObject"
                             v-bind:only-existing-tags="true"
                             v-bind:typeahead="true"
                             v-bind:typeahead-max-results="5"
@@ -188,11 +188,12 @@
 
 <script>
     import _ from 'lodash';
-    import {AccountTypes} from "../account-types";
     import {Currency} from '../currency';
     import {Entry} from "../entry";
     import {SnotifyStyle} from 'vue-snotify';
-    import {Tags} from '../tags';
+    import {accountsObjectMixin} from "../mixins/accounts-object-mixin";
+    import {accountTypesObjectMixin} from "../mixins/account-types-object-mixin";
+    import {tagsObjectMixin} from "../mixins/tags-object-mixin";
     import EntryModalAttachment from "./entry-modal-attachment";
     import Store from '../store';
     import { ToggleButton } from 'vue-js-toggle-button';
@@ -201,6 +202,7 @@
 
     export default {
         name: "entry-modal",
+        mixins: [accountsObjectMixin, accountTypesObjectMixin, tagsObjectMixin],
         components: {
             EntryModalAttachment,
             ToggleButton,
@@ -209,10 +211,8 @@
         },
         data: function(){
             return {
-                accountTypesObject: new AccountTypes(),
                 currencyObject: new Currency(),
                 entryObject: new Entry(),
-                tagsObject: new Tags(),
 
                 accountTypeMeta: {
                     accountName: "",
@@ -261,9 +261,6 @@
             isExternalTransfer: function(){
                 return _.isEqual(this.entryData.transfer_entry_id, 0);
             },
-            areAccountTypesSet: function(){
-                return this.listAccountTypes.length > 0;
-            },
             hasAccountTypeBeenSelected: function(){
                 return this.entryData.account_type_id !== '';
             },
@@ -273,22 +270,12 @@
             getAttachmentUploadUrl: function(){
                 return this.dropzoneOptions.url;
             },
-            listTags: function(){
-                return this.tagsObject.retrieve.reduce(function(result, item){
-                    result[item.id] = item.name;
-                    return result;
-                }, {});
-            },
-            areTagsSet: function(){
-                return !_.isEmpty(this.listTags);
-            },
             displayReadOnlyTags: function(){
                 let currentTags = typeof this.entryData.tags == 'undefined' ? [] : this.entryData.tags;
-                return currentTags.map(function(item){ return this.listTags[item]; }.bind(this));
+                return currentTags.map(function(item){ return this.listTagsAsObject[item]; }.bind(this));
             },
             listAccountTypes: function(){
-                let accountTypes = this.accountTypesObject.retrieve;
-                return _.orderBy(accountTypes, 'name');
+                return _.orderBy(this.rawAccountTypesData, 'name');
             },
             currentDate: function(){
                 let today = new Date();
@@ -489,14 +476,14 @@
                 }
                 this.entryObject.save(newEntryData)
                     .then(function(notification){
+                        // show a notification if needed
                         if(!_.isEmpty(notification)){
                             this.$eventHub.broadcast(
                                 this.$eventHub.EVENT_NOTIFICATION,
                                 {type: notification.type, message: notification.message.replace('%s', this.entryData.id)}
                             );
                         }
-                        this.$eventHub.broadcast(this.$eventHub.EVENT_ACCOUNT_UPDATE);
-                        this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, this.currentPage);
+                        this.broadcastUpdateRequestForAccountsColumnAndEntriesTable();
                     }.bind(this))
                     .finally(this.closeModal.bind(this));
             },
@@ -513,14 +500,19 @@
                         }
                         this.closeModal();
                         if(deleteResult.deleted){
-                            this.$eventHub.broadcast(this.$eventHub.EVENT_ACCOUNT_UPDATE);
-                            this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, this.currentPage);
-                            // don't need to broadcast an event to hide the loading modal here
-                            // already taken care of at the end of the entry-table update event process
+                            this.broadcastUpdateRequestForAccountsColumnAndEntriesTable();
                         } else {
                             this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
                         }
                     }.bind(this));
+            },
+            broadcastUpdateRequestForAccountsColumnAndEntriesTable: function(){
+                // allow accounts data to be once again fetched
+                this.$eventHub.broadcast(this.$eventHub.EVENT_ACCOUNT_UPDATE);
+                // update entries table
+                this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, this.currentPage);
+                // don't need to broadcast an event to hide the loading modal here
+                // already taken care of at the end of the entry-table update event process
             },
             updateAccountTypeMeta: function(){
                 let account = this.accountTypesObject.getAccount(this.entryData.account_type_id);
@@ -564,7 +556,12 @@
     }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+    @import '~@voerro/vue-tagsinput/dist/style.css';
+    @import '../../sass/tags-input';
+    @import '~dropzone/dist/min/dropzone.min.css';
+    @import "~vue2-dropzone/dist/vue2Dropzone.min.css";
+
     .field-label.is-normal{
         font-size: 13px;
     }

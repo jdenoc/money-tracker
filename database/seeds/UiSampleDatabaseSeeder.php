@@ -11,6 +11,8 @@ class UiSampleDatabaseSeeder extends Seeder {
     use App\Traits\Tests\StorageTestFiles;
     use WithFaker;
 
+    const OUTPUT_PREFIX = "<info>".__CLASS__.":</info> ";
+
     const COUNT_ACCOUNT_TYPE = 3;
     const COUNT_ATTACHMENT = 4;
     const COUNT_ENTRY = 5;
@@ -18,7 +20,7 @@ class UiSampleDatabaseSeeder extends Seeder {
     const COUNT_MIN = 1;
     const COUNT_TAG = 5;
 
-    const OUTPUT_PREFIX = "<info>".__CLASS__.":</info> ";
+    const YEAR_IN_DAYS = 365;
 
     private $attachment_stored_count = 0;
 
@@ -61,10 +63,16 @@ class UiSampleDatabaseSeeder extends Seeder {
 
         // ***** ENTRIES *****
         $entries = collect();
+        $entry_date_generator = new Carbon();
         foreach($account_types->pluck('id') as $account_type_id){
-            $entries = $this->addEntryToCollection($entries, ['account_type_id'=>$account_type_id, 'disabled'=>false]);
+            $entries = $this->addEntryToCollection($entries, [
+                'account_type_id'=>$account_type_id,
+                'disabled'=>false,
+                'entry_date'=>$entry_date_generator->now()->subDays(rand(0, 1.25*self::YEAR_IN_DAYS))
+            ]);
         }
-        $entries = $this->addEntryToCollection($entries, ['account_type_id'=>$account_types->pluck('id')->random(), 'disabled'=>true, 'disabled_stamp'=>new Carbon()]);
+        $entries = $this->addEntryToCollection($entries, ['account_type_id'=>$account_types->pluck('id')->random(), 'disabled'=>false, 'entry_date'=>$entry_date_generator->now()->subDay()]);
+        $entries = $this->addEntryToCollection($entries, ['account_type_id'=>$account_types->pluck('id')->random(), 'disabled'=>true, 'disabled_stamp'=>$entry_date_generator->now()]);
         $this->command->line(self::OUTPUT_PREFIX."Entries seeded [".$entries->count()."]");
 
         foreach($entries as $entry){

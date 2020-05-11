@@ -9,9 +9,14 @@ export class ObjectBaseClass {
     }
 
     fetch(){
-        return Axios.get(this.uri)
-            .then(this.axiosSuccess.bind(this))
-            .catch(this.axiosFailure.bind(this));
+        if(!this.isFetched){
+            this.setFetchedState = true;
+            return Axios.get(this.uri)
+                .then(this.axiosSuccess.bind(this))
+                .catch(this.axiosFailure.bind(this));
+        } else {
+            return Promise.resolve({});
+        }
     }
 
     axiosSuccess(response){
@@ -36,8 +41,16 @@ export class ObjectBaseClass {
         return Store.getters.getStateOf(this.storeType);
     }
 
+    get isFetched(){
+        return Store.getters.getFetchedState(this.storeType);
+    }
+
     set assign(newValue){
         Store.dispatch('setStateOf', {type:this.storeType, value:newValue});
+    }
+
+    set setFetchedState(newValue){
+        Store.dispatch('setFetchedState', {type:this.storeType, value:newValue});
     }
 
     processSuccessfulResponseData(responseData){

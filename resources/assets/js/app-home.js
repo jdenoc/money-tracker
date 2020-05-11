@@ -10,6 +10,9 @@ Vue.use(VueHotkey);
 import VTooltip from 'v-tooltip';
 Vue.use(VTooltip);
 
+import eventHub from "./plugins/eventHub";
+Vue.use(eventHub);
+
 import EntryModal from './components/entry-modal';
 import EntriesTable from './components/entries-table';
 import EntriesTableEntryRow from './components/entries-table-entry-row';
@@ -24,67 +27,6 @@ import { AccountTypes } from './account-types';
 import { Institutions } from './institutions';
 import { Tags } from './tags';
 import { Version } from './version';
-
-Vue.prototype.$eventHub = new Vue({
-    computed: {
-        /**
-         * @returns {string}
-         */
-        EVENT_LOADING_SHOW: function(){ return "loading-true"; },
-        /**
-         * @returns {string}
-         */
-        EVENT_LOADING_HIDE: function(){ return "loading-false"; },
-        /**
-         * @returns {string}
-         */
-        EVENT_NOTIFICATION: function(){ return "notification"; },
-        /**
-         * @returns {string}
-         */
-        EVENT_ACCOUNT_UPDATE: function(){ return 'update-accounts'; },
-        /**
-         * @returns {string}
-         */
-        EVENT_ENTRY_TABLE_UPDATE: function(){ return "update-entry-table"; },
-        /**
-         * @returns {string}
-         */
-        EVENT_ENTRY_MODAL_OPEN: function(){ return "open-entry-modal";},
-        /**
-         * @returns {string}
-         */
-        EVENT_ENTRY_MODAL_CLOSE: function(){ return "close-entry-modal"; },
-        /**
-         * @returns {string}
-         */
-        EVENT_ENTRY_MODAL_UPDATE_DATA: function(){ return "update-data-in-entry-modal"; },
-        /**
-         * @returns {string}
-         */
-        EVENT_FILTER_MODAL_OPEN: function(){ return "open-filter-modal"; },
-        /**
-         * @returns {string}
-         */
-        EVENT_FILTER_MODAL_CLOSE: function(){ return "close-filter-modal"; },
-        /**
-         * @returns {string}
-         */
-        EVENT_TRANSFER_MODAL_OPEN: function(){ return "open-transfer-model"; },
-        /**
-         * @returns {string}
-         */
-        EVENT_TRANSFER_MODAL_CLOSE: function(){ return "close-transfer-model"; }
-    },
-    methods: {
-        broadcast(event, data = null){
-            this.$emit(event, data);
-        },
-        listen(event, callback){
-            this.$on(event, callback);
-        }
-    }
-});
 
 new Vue({
     el: "#app",

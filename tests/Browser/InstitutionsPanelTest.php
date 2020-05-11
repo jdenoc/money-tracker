@@ -4,6 +4,8 @@ namespace Tests\Browser;
 
 use App\Account;
 use App\Institution;
+use App\Traits\Tests\Dusk\Loading;
+use App\Traits\Tests\WaitTimes;
 use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -11,6 +13,7 @@ use Laravel\Dusk\Browser;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Tests\Traits\HomePageSelectors;
+use Throwable;
 
 /**
  * Class InstitutionsPanelTest
@@ -22,19 +25,21 @@ use Tests\Traits\HomePageSelectors;
  */
 class InstitutionsPanelTest extends DuskTestCase {
 
+    use WaitTimes;
     use HomePageSelectors;
+    use Loading;
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @group navigation-1
      * test 1/25
      */
     public function testOverviewOptionIsVisibleAndActiveByDefault(){
         $this->browse(function(Browser $browser){
+            $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
             $browser
-                ->visit(new HomePage())
-                ->waitForLoadingToStop()
                 ->with($this->_selector_panel_institutions, function(Browser $panel){
                     $panel
                         ->assertSeeIn($this->_selector_panel_institutions_heading, "Institutions")
@@ -48,7 +53,7 @@ class InstitutionsPanelTest extends DuskTestCase {
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @group navigation-1
      * test 2/25
@@ -59,9 +64,9 @@ class InstitutionsPanelTest extends DuskTestCase {
         $account_types_collection = $this->getAccountTypesCollection();
 
         $this->browse(function(Browser $browser) use ($institutions_collection, $accounts_collection, $account_types_collection){
+            $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
             $browser
-                ->visit(new HomePage())
-                ->waitForLoadingToStop()
                 ->with($this->_selector_panel_institutions, function(Browser $panel) use ($institutions_collection, $accounts_collection, $account_types_collection){
                     $active_institutions_collection = $this->getInstitutionsCollection(false)->sortBy('name');
 
@@ -80,7 +85,7 @@ class InstitutionsPanelTest extends DuskTestCase {
                                 ->assertMissing($this->_selector_panel_institutions_accounts)
                                 // click institutions node;
                                 ->click('')
-                                ->pause(400)    // 0.4 seconds
+                                ->pause(self::$WAIT_TWO_FIFTHS_OF_A_SECOND_IN_MILLISECONDS)
                                 // accounts now visible
                                 ->assertVisible($this->_selector_panel_institutions_accounts);
 
@@ -107,7 +112,7 @@ class InstitutionsPanelTest extends DuskTestCase {
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @group navigation-1
      * test 3/25
@@ -119,15 +124,14 @@ class InstitutionsPanelTest extends DuskTestCase {
         factory(Account::class, 3)->create(['disabled'=>0, 'institution_id'=>$institution_id]);
 
         $this->browse(function(Browser $browser){
-            $browser
-                ->visit(new HomePage())
-                ->waitForLoadingToStop()
-                ->assertMissing("#closed-accounts");
+            $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
+            $browser->assertMissing("#closed-accounts");
         });
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @group navigation-1
      * test 4/25
@@ -139,9 +143,9 @@ class InstitutionsPanelTest extends DuskTestCase {
         $account_types_collection = $this->getAccountTypesCollection();
 
         $this->browse(function(Browser $browser) use ($disabled_accounts_collection, $account_types_collection){
+            $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
             $browser
-                ->visit(new HomePage())
-                ->waitForLoadingToStop()
                 ->assertVisible("#closed-accounts")
                 ->with("#closed-accounts", function(Browser $closed_accounts) use ($disabled_accounts_collection, $account_types_collection){
                     // confirm the label says "closed accounts"
@@ -157,7 +161,7 @@ class InstitutionsPanelTest extends DuskTestCase {
                         ->assertMissing($this->_selector_panel_institutions_accounts)
                         // click "closed accounts"
                         ->click('')
-                        ->pause(400)    // 0.4 seconds
+                        ->pause(self::$WAIT_TWO_FIFTHS_OF_A_SECOND_IN_MILLISECONDS)
                         // accounts now visible
                         ->assertVisible($this->_selector_panel_institutions_accounts);
 
@@ -192,7 +196,7 @@ class InstitutionsPanelTest extends DuskTestCase {
      * @dataProvider providerAccountTotalValueIsTwoDecimalPlaces
      * @param string $test_total
      *
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @group navigation-1
      * test (see provider)/25
@@ -206,14 +210,14 @@ class InstitutionsPanelTest extends DuskTestCase {
         DB::statement("UPDATE account_types SET account_id=:id", ['id'=>$new_account->id]);
 
         $this->browse(function(Browser $browser) use ($institution_id, $new_account, $test_total){
+            $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
             $browser
-                ->visit(new HomePage())
-                ->waitForLoadingToStop()
                 ->with($this->_selector_panel_institutions, function(Browser $panel) use ($institution_id, $new_account, $test_total){
                     $panel->with("#institution-".$institution_id, function(Browser $institution_node) use ($new_account, $test_total){
                         $institution_node
                             ->click('')         // click institutions node;
-                            ->pause(400)    // 0.4 seconds
+                            ->pause(self::$WAIT_TWO_FIFTHS_OF_A_SECOND_IN_MILLISECONDS)
                             ->with($this->_selector_panel_institutions_accounts.' #account-'.$new_account->id, function(Browser $account_node) use ($new_account, $test_total){
                                 $this->assertAccountNodeName($account_node, $new_account->name);
                                  // confirm total value is to two decimal places
@@ -251,7 +255,7 @@ class InstitutionsPanelTest extends DuskTestCase {
             // account-types tooltip appears to right
             $account_node_tooltip_id = $account_node->attribute('', 'aria-describedby');    // get the tooltip element id
             $account_node
-                ->pause(HomePage::WAIT_SECOND*500) // 0.5 seconds
+                ->pause(self::$WAIT_HALF_SECOND_IN_MILLISECONDS)
                 ->assertVisible('#'.$account_node_tooltip_id);
             $account_types_tooltip_text = $account_node->text('#'.$account_node_tooltip_id);
             foreach($account_types_collection as $account_account_type){
@@ -283,7 +287,7 @@ class InstitutionsPanelTest extends DuskTestCase {
         // wait for loading to finish
         $account_css_prefix = $account_node->resolver->prefix;
         $account_node->resolver->prefix = '';
-        $account_node->waitForLoadingToStop();
+        $this->waitForLoadingToStop($account_node);
         $account_node->resolver->prefix = $account_css_prefix;
         // account is "active"
         $account_name_class = $account_node->attribute($this->_selector_panel_institutions_accounts_account_name, 'class');

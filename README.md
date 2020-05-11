@@ -127,8 +127,7 @@ _**Note:** you can replace_ `git describe` _with any value you want_
 
 ##### Load dummy data into database
 ```bash
-.docker/cmd/artisan.sh migrate:fresh
-.docker/cmd/artisan.sh db:seed --class=UiSampleDatabaseSeeder
+.docker/cmd/artisan.sh migrate:fresh --seeder=UiSampleDatabaseSeeder
 ```
 
 <small>***OPTIONAL***</small>:
@@ -277,13 +276,15 @@ yarn run build-prod
 # Note: check update release notes.
 php artisan migrate
 
-# reset cache
+# clear existing cache
 php artisan cache:clear
 php artisan view:clear
-php artisan config:cache
 
 # Label the latest version
 php artisan app:version $MOST_RECENT_TAG
+
+# setup new cache
+php artisan config:cache
 
 # take site out of maintenance mode
 php artisan up

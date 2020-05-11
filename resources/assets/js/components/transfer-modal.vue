@@ -21,7 +21,7 @@
                 <div class="field is-horizontal">
                     <div class="field-label is-normal"><label class="label" for="transfer-value">Value:</label></div>
                     <div class="field-body"><div class="field"><div class="control">
-                        <input class="input has-text-grey-dark" id="transfer-value" name="transfer-value" type="text" placeholder="999.99"
+                        <input class="input has-text-grey-dark" id="transfer-value" name="transfer-value" type="text" placeholder="999.99" autocomplete="off"
                            v-model="transferData.value"
                            v-on:change="decimaliseValue"
                         />
@@ -107,7 +107,7 @@
                         <voerro-tags-input
                             element-id="transfer-tags"
                             v-model="transferData.tags"
-                            v-bind:existing-tags="listTags"
+                            v-bind:existing-tags="listTagsAsObject"
                             v-bind:only-existing-tags="true"
                             v-bind:typeahead="true"
                             v-bind:typeahead-max-results="5"
@@ -148,25 +148,24 @@
 
 <script>
     import _ from 'lodash';
-    import {AccountTypes} from "../account-types";
+    import {accountTypesObjectMixin} from "../mixins/account-types-object-mixin";
     import {Entry} from "../entry";
     import {SnotifyStyle} from 'vue-snotify';
-    import {Tags} from '../tags';
+    import {tagsObjectMixin} from "../mixins/tags-object-mixin";
     import Store from '../store';
     import VoerroTagsInput from '@voerro/vue-tagsinput';
     import vue2Dropzone from 'vue2-dropzone';
 
     export default {
         name: "transfer-modal",
+        mixins: [accountTypesObjectMixin, tagsObjectMixin],
         components: {
             VoerroTagsInput,
             VueDropzone: vue2Dropzone,
         },
         data: function(){
             return {
-                accountTypesObject: new AccountTypes(),
                 entryObject: new Entry(),
-                tagsObject: new Tags(),
 
                 accountTypeMeta: {
                     default: {
@@ -213,9 +212,6 @@
             areAccountTypesSet: function(){
                 return this.listAccountTypes.length > 0;
             },
-            areTagsSet: function(){
-                return !_.isEmpty(this.listTags);
-            },
             canShowFromAccountTypeMeta: function(){
                 return this.canShowAccountTypeMeta(this.transferData.from_account_type_id);
             },
@@ -240,15 +236,8 @@
             getAttachmentUploadUrl: function(){
                 return this.dropzoneOptions.url;
             },
-            listTags: function(){
-                return this.tagsObject.retrieve.reduce(function(result, item){
-                    result[item.id] = item.name;
-                    return result;
-                }, {});
-            },
             listAccountTypes: function(){
-                let accountTypes = this.accountTypesObject.retrieve;
-                return _.orderBy(accountTypes, 'name');
+                return _.orderBy(this.rawAccountTypesData, 'name');
             },
             dropzoneRef: function(){
                 return this.$refs.transferModalFileUpload;
@@ -373,7 +362,6 @@
                     });
                 }
 
-
                 this.entryObject.saveTransfer(transferData).then(function(notification){
                     if(!_.isEmpty(notification)){
                         this.$eventHub.broadcast(
@@ -426,7 +414,10 @@
     }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+    @import '~dropzone/dist/min/dropzone.min.css';
+    @import "~vue2-dropzone/dist/vue2Dropzone.min.css";
+
     .field-label.is-normal{
         font-size: 0.875rem;
     }
