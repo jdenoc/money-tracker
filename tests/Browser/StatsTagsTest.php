@@ -278,10 +278,12 @@ class StatsTagsTest extends DuskTestCase {
      */
     private function createDisabledEntryWithTags($is_account_type_rather_than_account_toggled, $account_or_account_type_id, $account_types, $tags){
         if(!$is_account_type_rather_than_account_toggled){
-            $account_types->where('account_id', $account_or_account_type_id);
+            $account_type_id = $account_types->where('account_id', $account_or_account_type_id);
+        } else {
+            $account_type_id = $account_or_account_type_id;
         }
 
-        $disabled_entry = factory(Entry::class)->create(['account_type_id'=>$account_or_account_type_id, 'disabled'=>true]);
+        $disabled_entry = factory(Entry::class)->create(['account_type_id'=>$account_type_id, 'disabled'=>true]);
         $disabled_entry->tags()->attach($tags->pluck('id')->all());
     }
 
