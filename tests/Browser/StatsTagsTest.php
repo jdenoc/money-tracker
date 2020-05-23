@@ -4,9 +4,11 @@ namespace Tests\Browser;
 
 use App\Entry;
 use App\Traits\Tests\Dusk\AccountOrAccountTypeTogglingSelector as DuskTraitAccountOrAccountTypeTogglingSelector;
+use App\Traits\Tests\Dusk\BatchFilterEntries as DuskBatchFilterEntries;
 use App\Traits\Tests\Dusk\BulmaDatePicker as DuskTraitBulmaDatePicker;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\TagsInput as DuskTraitTagsInput;
+use Illuminate\Support\Collection;
 use Tests\Browser\Pages\StatsPage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Laravel\Dusk\Browser;
@@ -24,9 +26,11 @@ class StatsTagsTest extends DuskTestCase {
 
     use DuskTraitLoading;
     use DuskTraitAccountOrAccountTypeTogglingSelector;
+    use DuskBatchFilterEntries;
     use DuskTraitBulmaDatePicker;
     use DuskTraitTagsInput;
 
+    private static $SELECTOR_STATS_TAGS = "#stats-tags";
     private static $SELECTOR_STATS_FORM_TAGS = "#stats-form-tags";
     private static $SELECTOR_BUTTON_GENERATE = '.generate-stats';
     private static $SELECTOR_STATS_RESULTS_AREA = '.stats-results-tags';
@@ -37,6 +41,8 @@ class StatsTagsTest extends DuskTestCase {
     private static $LABEL_OPTION_TAGS = "Tags";
     private static $LABEL_GENERATE_CHART_BUTTON = 'Generate Chart';
     private static $LABEL_NO_STATS_DATA = 'No data available';
+
+    private static $VUE_KEY_STANDARDISEDATA = "standardiseData";
 
     public function __construct($name = null, array $data = [], $dataName = ''){
         parent::__construct($name, $data, $dataName);
@@ -84,23 +90,27 @@ class StatsTagsTest extends DuskTestCase {
                     $side_panel->click(self::$SELECTOR_SIDE_PANEL_OPTION_TAGS);
                 })
 
-                ->assertVisible(self::$SELECTOR_STATS_FORM_TAGS)
-                ->with(self::$SELECTOR_STATS_FORM_TAGS, function(Browser $form) use ($accounts){
-                    // account/account-type selector
-                    $this->assertDefaultStateOfAccountOrAccountTypeTogglingSelectorComponent($form, $accounts);
+                ->assertVisible(self::$SELECTOR_STATS_TAGS)
+                ->with(self::$SELECTOR_STATS_TAGS, function(Browser $stats_tags) use ($accounts){
+                    $stats_tags
+                        ->assertVisible(self::$SELECTOR_STATS_FORM_TAGS)
+                        ->with(self::$SELECTOR_STATS_FORM_TAGS, function(Browser $form) use ($accounts){
+                            // account/account-type selector
+                            $this->assertDefaultStateOfAccountOrAccountTypeTogglingSelectorComponent($form, $accounts);
 
-                    // tags-input
-                    $this->assertDefaultStateOfTagsInput($form);
+                            // tags-input
+                            $this->assertDefaultStateOfTagsInput($form);
 
-                    // bulma date-picker
-                    $this->assertDefaultStateBulmaDatePicker($form);
+                            // bulma date-picker
+                            $this->assertDefaultStateBulmaDatePicker($form);
 
-                    // button
-                    $form
-                        ->assertVisible(self::$SELECTOR_BUTTON_GENERATE)
-                        ->assertSeeIn(self::$SELECTOR_BUTTON_GENERATE, self::$LABEL_GENERATE_CHART_BUTTON);
-                    $button_classes = $form->attribute(self::$SELECTOR_BUTTON_GENERATE, 'class');
-                    $this->assertContains('is-primary', $button_classes);
+                            // button
+                            $form
+                                ->assertVisible(self::$SELECTOR_BUTTON_GENERATE)
+                                ->assertSeeIn(self::$SELECTOR_BUTTON_GENERATE, self::$LABEL_GENERATE_CHART_BUTTON);
+                            $button_classes = $form->attribute(self::$SELECTOR_BUTTON_GENERATE, 'class');
+                            $this->assertContains('is-primary', $button_classes);
+                        });
                 });
         });
     }
@@ -118,8 +128,12 @@ class StatsTagsTest extends DuskTestCase {
                 ->with(self::$SELECTOR_SIDE_PANEL, function(Browser $side_panel){
                     $side_panel->click(self::$SELECTOR_SIDE_PANEL_OPTION_TAGS);
                 })
-                ->assertVisible(self::$SELECTOR_STATS_RESULTS_AREA)
-                ->assertSeeIn(self::$SELECTOR_STATS_RESULTS_AREA, self::$LABEL_NO_STATS_DATA);
+                ->assertVisible(self::$SELECTOR_STATS_TAGS)
+                ->with(self::$SELECTOR_STATS_TAGS, function(Browser $stats_tags){
+                    $stats_tags
+                        ->assertVisible(self::$SELECTOR_STATS_RESULTS_AREA)
+                        ->assertSeeIn(self::$SELECTOR_STATS_RESULTS_AREA, self::$LABEL_NO_STATS_DATA);
+                });
         });
     }
 
@@ -173,30 +187,12 @@ class StatsTagsTest extends DuskTestCase {
     public function testGenerateTagsChart($datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $tag_count){
         $accounts = collect($this->getApiAccounts());
         $account_types = collect($this->getApiAccountTypes());
-        $tags = collect($this->getApiTags())->chunk($tag_count)->first();
+        $tags = collect($this->getApiTags());
 
-        $filter_entries = [];
-        if($is_switch_toggled){
-            $account_or_account_type_id = ($is_random_selector_value) ? $account_types->where('disabled', $are_disabled_select_options_available)->pluck('id')->random() : '';
-            $filter_entries['account_type']=$account_or_account_type_id;
-        } else {
-            $account_or_account_type_id = ($is_random_selector_value) ? $accounts->where('disabled', $are_disabled_select_options_available)->pluck('id')->random() : '';
-            $filter_entries['account']=$account_or_account_type_id;
-        }
+        $this->browse(function(Browser $browser) use ($datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $accounts, $account_types, $tag_count, $tags){
+            $account_or_account_type_id = null;
+            $form_tags = null;
 
-        if(!is_null($tags)){
-            // make sure that a tag is associated with an entry
-            if(!$is_random_selector_value){
-                // Not selecting an account/account-type, no need to actually do any filtering
-                $filter_entries = [];
-            }
-            $entries = collect($this->removeCountFromApiResponse($this->getApiEntries(0, $filter_entries)));
-            $entry = $entries->random();
-            $e = Entry::findOrFail($entry['id']);
-            $e->tags()->attach($tags->first()['id']);
-        }
-
-        $this->browse(function (Browser $browser) use ($account_or_account_type_id, $datepicker_start, $datepicker_end, $is_switch_toggled, $are_disabled_select_options_available, $tags){
             $browser
                 ->visit(new StatsPage())
                 ->with(self::$SELECTOR_SIDE_PANEL, function(Browser $side_panel){
@@ -204,18 +200,28 @@ class StatsTagsTest extends DuskTestCase {
                 })
 
                 ->assertVisible(self::$SELECTOR_STATS_FORM_TAGS)
-                ->with(self::$SELECTOR_STATS_FORM_TAGS, function(Browser $form) use ($account_or_account_type_id, $datepicker_start, $datepicker_end, $is_switch_toggled, $are_disabled_select_options_available, $tags){
+                ->with(self::$SELECTOR_STATS_FORM_TAGS, function(Browser $form) use ($is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $accounts, $account_types, &$account_or_account_type_id, $tag_count, $tags, &$form_tags, &$datepicker_start, &$datepicker_end){
                     if($are_disabled_select_options_available){
                         $this->toggleShowDisabledAccountOrAccountTypeCheckbox($form);
                     }
+
                     if($is_switch_toggled){
+                        // switch to account-types
                         $this->toggleAccountOrAccountTypeSwitch($form);
+                        $account_or_account_type_id = $is_random_selector_value ? $account_types->where('disabled', $are_disabled_select_options_available)->pluck('id')->random() : '';
+                    } else {
+                        // stay with accounts
+                        $account_or_account_type_id = $is_random_selector_value ? $accounts->where('disabled', $are_disabled_select_options_available)->pluck('id')->random() : '';
+                    }
+                    if($are_disabled_select_options_available){
+                        $this->createDisabledEntryWithTags($is_switch_toggled, $account_or_account_type_id, $account_types, $tags);
                     }
 
                     $this->selectAccountOrAccountTypeValue($form, $account_or_account_type_id);
 
-                    if(!is_null($tags)){
-                        foreach($tags as $tag){
+                    $form_tags = $tags->chunk($tag_count)->first();
+                    if(!is_null($form_tags)){
+                        foreach($form_tags as $tag){
                             $this->fillTagsInputUsingAutocomplete($form, $tag['name']);
                             $this->assertTagInInput($form, $tag['name']);
                         }
@@ -223,18 +229,73 @@ class StatsTagsTest extends DuskTestCase {
 
                     if(!is_null($datepicker_start) && !is_null($datepicker_end)){
                         $this->setDateRange($form, $datepicker_start, $datepicker_end);
+                    } else {
+                        $datepicker_start = date('Y-m-01');
+                        $datepicker_end = date('Y-m-t');
                     }
 
                     $form->click(self::$SELECTOR_BUTTON_GENERATE);
                 });
 
+            $entries = $this->getBatchedFilteredEntries($datepicker_start, $datepicker_end, $account_or_account_type_id, $is_switch_toggled, $form_tags);
+
             $this->waitForLoadingToStop($browser);
             $browser
                 ->assertDontSeeIn(self::$SELECTOR_STATS_RESULTS_AREA, self::$LABEL_NO_STATS_DATA)
-                ->with(self::$SELECTOR_STATS_RESULTS_AREA, function(Browser $stats_results){
-                    //  line-chart graph canvas should be visible
-                    $stats_results->assertVisible(self::$SELECTOR_CHART_TAGS);
-                });
+                ->with(self::$SELECTOR_STATS_RESULTS_AREA, function(Browser $stats_results_area){
+                    $stats_results_area->assertVisible(self::$SELECTOR_CHART_TAGS);
+                })
+                ->assertVue(self::$VUE_KEY_STANDARDISEDATA, $this->standardiseData($entries, $tags), self::$SELECTOR_STATS_TAGS);
         });
     }
+
+    /**
+     * @param Collection $entries
+     * @param Collection $tags
+     * @return array
+     */
+    private function standardiseData($entries, $tags){
+        $standardised_chart_data = [];
+
+        foreach($entries as $entry){
+            if(count($entry['tags']) === 0){
+                $entry['tags'][] = 0;
+            }
+
+            foreach($entry['tags'] as $tag){
+                $key = ($tag === 0) ? 'untagged' : $tags->where('id', $tag)->pluck('name')->first();
+                if(!isset($standardised_chart_data[$key])){
+                    $standardised_chart_data[$key] = ['x'=>$key, 'y'=>0];
+                }
+
+                if($entry['expense']){
+                    $standardised_chart_data[$key]['y'] -= $entry['entry_value'];
+                } else {
+                    $standardised_chart_data[$key]['y'] += $entry['entry_value'];
+                }
+                $standardised_chart_data[$key]['y'] = round($standardised_chart_data[$key]['y'], 2);
+            }
+        }
+        return array_values($standardised_chart_data);
+    }
+
+    /**
+     * Database seeder doesn't assign tags to disabled entries.
+     * It's a waste of resources to do that for every test when most tests don't need that kind of data.
+     * So instead for these tests, we'll create a disabled with all the tags
+     *
+     * @param bool $is_account_type_rather_than_account_toggled
+     * @param int $account_or_account_type_id
+     * @param Collection $account_types
+     * @param Collection $tags
+     */
+    private function createDisabledEntryWithTags($is_account_type_rather_than_account_toggled, $account_or_account_type_id, $account_types, $tags){
+        if(!$is_account_type_rather_than_account_toggled){
+            $account_types->where('account_id', $account_or_account_type_id);
+        }
+
+        $disabled_entry = factory(Entry::class)->create(['account_type_id'=>$account_or_account_type_id, 'disabled'=>true]);
+        $disabled_entry->tags()->attach($tags->pluck('id')->all());
+    }
+
 }

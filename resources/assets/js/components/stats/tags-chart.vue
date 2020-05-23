@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="stats-tags">
         <section id="stats-form-tags"  class="section">
             <account-account-type-toggling-selector
                 id="tags-chart"
@@ -75,7 +75,7 @@
         },
         computed: {
             chartData: function(){
-                let chartData = this.standardiseData();
+                let chartData = this.standardiseData;
                 let chartBgColors = [];
                 for(let i=0; i<chartData.length; i++){
                     chartBgColors.push(this.randomColor());
@@ -110,17 +110,12 @@
 
             getBulmaCalendar: function(){
                 return this.$refs.tagsStatsChartBulmaCalendar;
-            }
-        },
-        methods: {
-            setChartTitle: function(startDate, endDate){
-                this.chartConfig.titleText = "Tags ["+startDate+" - "+endDate+"]";
             },
 
             standardiseData: function(){
                 let standardisedChartData = {};
 
-                this.rawEntriesData
+                this.largeBatchEntryData
                     .forEach(function(entryDatum){
                         let tempDatum = _.cloneDeep(entryDatum);
                         if(tempDatum.tags.length === 0){
@@ -141,10 +136,14 @@
                     }.bind(this), Object.create(null));
 
                 return Object.values(standardisedChartData);
+            }
+        },
+        methods: {
+            setChartTitle: function(startDate, endDate){
+                this.chartConfig.titleText = "Tags ["+startDate+" - "+endDate+"]";
             },
 
             makeRequest: function(){
-                this.dataLoaded = false;
                 this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
 
                 let chartDataFilterParameters = {
@@ -163,7 +162,7 @@
                 }
 
                 this.setChartTitle(chartDataFilterParameters.start_date, chartDataFilterParameters.end_date);
-                this.fetchData(chartDataFilterParameters);
+                this.multiPageDataFetch(chartDataFilterParameters);
             },
         },
         mounted: function(){

@@ -91,6 +91,8 @@ class UiSampleDatabaseSeeder extends Seeder {
         $this->attachTagToEntry($tag_ids, $entries_not_confirmed->where('expense', 0)->random());
         $this->attachTagToEntry($tag_ids, $entries_confirmed->where('expense', 1)->random());
         $this->attachTagToEntry($tag_ids, $entries_confirmed->where('expense', 0)->random());
+        // to extra safe, we're assigning all the tags to the most recent entry
+        $this->attachTagToEntry($tag_ids, $entries_not_disabled->sortByDesc('entry_date')->first(), true);
         $this->command->line(self::OUTPUT_PREFIX."Randomly assigned tags to entries");
 
         // randomly select some entries and mark them as transfers
@@ -203,9 +205,14 @@ class UiSampleDatabaseSeeder extends Seeder {
     /**
      * @param int[] $tag_ids
      * @param App\Entry $entry
+     * @param bool $attach_all
      */
-    private function attachTagToEntry($tag_ids, $entry){
-        $entry_tag_ids = $this->faker->randomElements($tag_ids, $this->faker->numberBetween(self::COUNT_MIN, self::COUNT_TAG));
+    private function attachTagToEntry($tag_ids, $entry, $attach_all=false){
+        if($attach_all){
+            $entry_tag_ids = $tag_ids;
+        } else {
+            $entry_tag_ids = $this->faker->randomElements($tag_ids, $this->faker->numberBetween(self::COUNT_MIN, self::COUNT_TAG));
+        }
         $entry->tags()->attach($entry_tag_ids);
     }
 

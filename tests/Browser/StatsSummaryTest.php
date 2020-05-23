@@ -2,8 +2,8 @@
 
 namespace Tests\Browser;
 
-use App\Http\Controllers\Api\EntryController;
 use App\Traits\Tests\Dusk\AccountOrAccountTypeTogglingSelector as DuskTraitAccountOrAccountTypeTogglingSelector;
+use App\Traits\Tests\Dusk\BatchFilterEntries as DuskBatchFilterEntries;
 use App\Traits\Tests\Dusk\BulmaDatePicker as DuskTraitBulmaDatePicker;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use Facebook\WebDriver\WebDriverBy;
@@ -24,6 +24,7 @@ use Throwable;
 class StatsSummaryTest extends DuskTestCase {
 
     use DuskTraitAccountOrAccountTypeTogglingSelector;
+    use DuskBatchFilterEntries;
     use DuskTraitBulmaDatePicker;
     use DuskTraitLoading;
 
@@ -161,9 +162,11 @@ class StatsSummaryTest extends DuskTestCase {
                         $this->toggleShowDisabledAccountOrAccountTypeCheckbox($form);
                     }
                     if($is_switch_toggled){
+                        // switch to account-types
                         $this->toggleAccountOrAccountTypeSwitch($form);
                         $account_or_account_type_id = ($is_random_selector_value) ? $account_types->where('disabled', $are_disabled_select_options_available)->pluck('id')->random() : '';
                     } else {
+                        // stay with accounts
                         $account_or_account_type_id = ($is_random_selector_value) ? $accounts->where('disabled', $are_disabled_select_options_available)->pluck('id')->random() : '';
                     }
                     $this->selectAccountOrAccountTypeValue($form, $account_or_account_type_id);
@@ -189,7 +192,7 @@ class StatsSummaryTest extends DuskTestCase {
                     $selector_table_label = 'caption';
                     $selector_table_body_rows = 'tbody tr';
 
-                    $entries = $this->filterEntries($datepicker_start, $datepicker_end, $account_or_account_type_id, $is_switch_toggled);
+                    $entries = $this->getBatchedFilteredEntries($datepicker_start, $datepicker_end, $account_or_account_type_id, $is_switch_toggled);
                     $stats_results
                         ->assertVisible($selector_table_total_income_expense)
                         ->with($selector_table_total_income_expense, function(Browser $table) use ($selector_table_label, $selector_table_body_rows, $entries, $accounts, $account_types, $account_or_account_type_id, $datepicker_start, $datepicker_end, $is_switch_toggled){
@@ -238,30 +241,6 @@ class StatsSummaryTest extends DuskTestCase {
                         });
             });
         });
-    }
-
-    /**
-     * @param string $start_date
-     * @param string $end_date
-     * @param int $account_or_account_type_id
-     * @param bool $is_switch_toggled
-     * @return Collection
-     */
-    private function filterEntries($start_date, $end_date, $account_or_account_type_id, $is_switch_toggled){
-        $filter_data = [
-            EntryController::FILTER_KEY_START_DATE=>$start_date,
-            EntryController::FILTER_KEY_END_DATE=>$end_date,
-        ];
-
-        if(!empty($account_or_account_type_id)){
-            if($is_switch_toggled){
-                $filter_data[EntryController::FILTER_KEY_ACCOUNT_TYPE] = $account_or_account_type_id;
-            } else {
-                $filter_data[EntryController::FILTER_KEY_ACCOUNT] = $account_or_account_type_id;
-            }
-        }
-
-        return collect($this->removeCountFromApiResponse($this->getApiEntries(0, $filter_data)));
     }
 
     /**

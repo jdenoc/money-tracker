@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="stats-summary">
         <section id="stats-form-summary" class="section">
             <account-account-type-toggling-selector
                 id="summary-chart"
@@ -141,7 +141,7 @@
                     });
 
                 // tally up values for total
-                this.rawEntriesData.forEach(function(datum){
+                this.largeBatchEntryData.forEach(function(datum){
                     let accountCurrency = this.getAccountCurrencyFromAccountTypeId(datum.account_type_id);
                     if(datum.expense){
                         total[accountCurrency].expense += parseFloat(datum.entry_value);
@@ -162,7 +162,8 @@
         },
         methods: {
             filteredEntries: function(isExpense){
-                return this.rawEntriesData.filter(function(datum){ return datum.expense === isExpense; });
+                // return this.rawEntriesData.filter(function(datum){ return datum.expense === isExpense; });
+                return this.largeBatchEntryData.filter(function(datum){ return datum.expense === isExpense; });
             },
 
             getAccountCurrencyFromAccountTypeId: function(accountTypeId){
@@ -171,7 +172,6 @@
             },
 
             displayData: function(){
-                this.dataLoaded = false;
                 this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
 
                 let chartDataFilterParameters = {
@@ -185,7 +185,7 @@
                     chartDataFilterParameters.account_type = this.accountOrAccountTypeId;
                 }
 
-                this.fetchData(chartDataFilterParameters);
+                this.multiPageDataFetch(chartDataFilterParameters);
             },
 
             resetAccountTypesSelector: function(){

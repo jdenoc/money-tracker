@@ -3,8 +3,10 @@
 namespace Tests\Browser;
 
 use App\Traits\Tests\Dusk\AccountOrAccountTypeTogglingSelector as DuskTraitAccountOrAccountTypeTogglingSelector;
+use App\Traits\Tests\Dusk\BatchFilterEntries as DuskBatchFilterEntries;
 use App\Traits\Tests\Dusk\BulmaDatePicker as DuskTraitBulmaDatePicker;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
+use Illuminate\Support\Collection;
 use Laravel\Dusk\Browser;
 use Tests\Browser\Pages\StatsPage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
@@ -21,15 +23,20 @@ use Throwable;
 class StatsTrendingTest extends DuskTestCase {
 
     use DuskTraitAccountOrAccountTypeTogglingSelector;
+    use DuskBatchFilterEntries;
     use DuskTraitBulmaDatePicker;
     use DuskTraitLoading;
 
+    private static $SELECTOR_STATS_TRENDING = "#stats-trending";
     private static $SELECTOR_STATS_FORM_TRENDING = "#stats-form-trending";
     private static $SELECTOR_BUTTON_GENERATE = '.generate-stats';
     private static $SELECTOR_STATS_RESULTS_AREA = '.stats-results-trending';
     private static $SELECTOR_SIDE_PANEL = '.panel';
     private static $SELECTOR_SIDE_PANEL_OPTION_TRENDING = '.panel-block:nth-child(3)';
     private static $SELECTOR_CHART_TRENDING = 'canvas#line-chart';
+
+    private static $VUE_KEY_EXPENSEDATA = "expenseData";
+    private static $VUE_KEY_INCOMEDATA = "incomeData";
 
     private static $LABEL_OPTION_TRENDING = "Trending";
     private static $LABEL_GENERATE_CHART_BUTTON = "Generate Chart";
@@ -81,20 +88,24 @@ class StatsTrendingTest extends DuskTestCase {
                     $sidepanel->click(self::$SELECTOR_SIDE_PANEL_OPTION_TRENDING);
                 })
 
-                ->assertVisible(self::$SELECTOR_STATS_FORM_TRENDING)
-                ->with(self::$SELECTOR_STATS_FORM_TRENDING, function(Browser $form) use ($accounts){
-                    // account/account-type selector
-                    $this->assertDefaultStateOfAccountOrAccountTypeTogglingSelectorComponent($form, $accounts);
+                ->assertVisible(self::$SELECTOR_STATS_TRENDING)
+                ->with(self::$SELECTOR_STATS_TRENDING, function(Browser $stats_trending) use ($accounts){
+                    $stats_trending
+                        ->assertVisible(self::$SELECTOR_STATS_FORM_TRENDING)
+                        ->with(self::$SELECTOR_STATS_FORM_TRENDING, function(Browser $form) use ($accounts){
+                            // account/account-type selector
+                            $this->assertDefaultStateOfAccountOrAccountTypeTogglingSelectorComponent($form, $accounts);
 
-                    // bulma date-picker
-                    $this->assertDefaultStateBulmaDatePicker($form);
+                            // bulma date-picker
+                            $this->assertDefaultStateBulmaDatePicker($form);
 
-                    // button
-                    $form
-                        ->assertVisible(self::$SELECTOR_BUTTON_GENERATE)
-                        ->assertSeeIn(self::$SELECTOR_BUTTON_GENERATE, self::$LABEL_GENERATE_CHART_BUTTON);
-                    $button_classes = $form->attribute(self::$SELECTOR_BUTTON_GENERATE, 'class');
-                    $this->assertContains('is-primary', $button_classes);
+                            // button
+                            $form
+                                ->assertVisible(self::$SELECTOR_BUTTON_GENERATE)
+                                ->assertSeeIn(self::$SELECTOR_BUTTON_GENERATE, self::$LABEL_GENERATE_CHART_BUTTON);
+                            $button_classes = $form->attribute(self::$SELECTOR_BUTTON_GENERATE, 'class');
+                            $this->assertContains('is-primary', $button_classes);
+                        });
                 });
         });
     }
@@ -112,8 +123,12 @@ class StatsTrendingTest extends DuskTestCase {
                 ->within(self::$SELECTOR_SIDE_PANEL, function(Browser $sidepanel){
                     $sidepanel->click(self::$SELECTOR_SIDE_PANEL_OPTION_TRENDING);
                 })
-                ->assertVisible(self::$SELECTOR_STATS_RESULTS_AREA)
-                ->assertSeeIn(self::$SELECTOR_STATS_RESULTS_AREA, self::$LABEL_NO_STATS_DATA);
+                ->assertVisible(self::$SELECTOR_STATS_TRENDING)
+                ->with(self::$SELECTOR_STATS_TRENDING, function(Browser $stats_trending){
+                    $stats_trending
+                        ->assertVisible(self::$SELECTOR_STATS_RESULTS_AREA)
+                        ->assertSeeIn(self::$SELECTOR_STATS_RESULTS_AREA, self::$LABEL_NO_STATS_DATA);
+                });
         });
     }
 
@@ -156,6 +171,8 @@ class StatsTrendingTest extends DuskTestCase {
         $account_types = collect($this->getApiAccountTypes());
 
         $this->browse(function (Browser $browser) use ($accounts, $account_types, $datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available){
+            $account_or_account_type_id = null;
+
             $browser
                 ->visit(new StatsPage())
                 ->with(self::$SELECTOR_SIDE_PANEL, function(Browser $side_panel){
@@ -163,15 +180,16 @@ class StatsTrendingTest extends DuskTestCase {
                 })
 
                 ->assertVisible(self::$SELECTOR_STATS_FORM_TRENDING)
-                ->with(self::$SELECTOR_STATS_FORM_TRENDING, function(Browser $form) use ($accounts, $account_types, $datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available){
+                ->with(self::$SELECTOR_STATS_FORM_TRENDING, function(Browser $form) use ($accounts, $account_types, &$datepicker_start, &$datepicker_end, $is_switch_toggled, &$account_or_account_type_id, $is_random_selector_value, $are_disabled_select_options_available){
                     if($are_disabled_select_options_available){
                         $this->toggleShowDisabledAccountOrAccountTypeCheckbox($form);
                     }
-                    $account_or_account_type_id = null;
                     if($is_switch_toggled){
+                        // switch to account-types
                         $this->toggleAccountOrAccountTypeSwitch($form);
                         $account_or_account_type_id = ($is_random_selector_value) ? $account_types->where('disabled', $are_disabled_select_options_available)->pluck('id')->random() : '';
                     } else {
+                        // stay with accounts
                         $account_or_account_type_id = ($is_random_selector_value) ? $accounts->where('disabled', $are_disabled_select_options_available)->pluck('id')->random() : '';
                     }
 
@@ -179,19 +197,47 @@ class StatsTrendingTest extends DuskTestCase {
 
                     if(!is_null($datepicker_start) && !is_null($datepicker_end)){
                         $this->setDateRange($form, $datepicker_start, $datepicker_end);
+                    } else {
+                        $datepicker_start = date('Y-m-01');
+                        $datepicker_end = date('Y-m-t');
                     }
 
                     $form->click(self::$SELECTOR_BUTTON_GENERATE);
                 });
 
                 $this->waitForLoadingToStop($browser);
+                $entries = $this->getBatchedFilteredEntries($datepicker_start, $datepicker_end, $account_or_account_type_id, $is_switch_toggled);
+
                 $browser
                     ->assertDontSeeIn(self::$SELECTOR_STATS_RESULTS_AREA, self::$LABEL_NO_STATS_DATA)
-                    ->with(self::$SELECTOR_STATS_RESULTS_AREA, function(Browser $stats_results){
+                    ->with(self::$SELECTOR_STATS_RESULTS_AREA, function(Browser $stats_results) use ($datepicker_start, $datepicker_end, $account_or_account_type_id, $is_switch_toggled){
                         //  line-chart graph canvas should be visible
                         $stats_results->assertVisible(self::$SELECTOR_CHART_TRENDING);
-                    });
+                    })
+                    ->assertVue(self::$VUE_KEY_EXPENSEDATA, $this->standardiseChartData($entries, true), self::$SELECTOR_STATS_TRENDING)
+                    ->assertVue(self::$VUE_KEY_INCOMEDATA, $this->standardiseChartData($entries, false), self::$SELECTOR_STATS_TRENDING);
         });
+    }
+
+    /**
+     * @param Collection $entries
+     * @param bool $is_expense
+     * @return array
+     */
+    private function standardiseChartData($entries, $is_expense){
+        $standardised_chart_data = [];
+        $filtered_entries = $entries->where('expense', $is_expense);
+        foreach($filtered_entries as $entry){
+            // condense data points with similar entry_date values
+            $key = $entry['entry_date'];
+            if(!isset($standardised_chart_data[$key])){
+                $standardised_chart_data[$key] = ['x'=>$key, 'y'=>0];
+            }
+            $standardised_chart_data[$key]['y'] += $entry['entry_value'];
+        }
+
+        ksort($standardised_chart_data);
+        return array_values($standardised_chart_data);
     }
 
 }
