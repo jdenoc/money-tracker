@@ -7,6 +7,7 @@ use App\Traits\Tests\Dusk\AccountOrAccountTypeTogglingSelector as DuskTraitAccou
 use App\Traits\Tests\Dusk\BatchFilterEntries as DuskBatchFilterEntries;
 use App\Traits\Tests\Dusk\BulmaDatePicker as DuskTraitBulmaDatePicker;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
+use App\Traits\Tests\Dusk\StatsSidePanel as DuskTraitStatsSidePanel;
 use App\Traits\Tests\Dusk\TagsInput as DuskTraitTagsInput;
 use Illuminate\Support\Collection;
 use Tests\Browser\Pages\StatsPage;
@@ -29,13 +30,12 @@ class StatsTagsTest extends DuskTestCase {
     use DuskBatchFilterEntries;
     use DuskTraitBulmaDatePicker;
     use DuskTraitTagsInput;
+    use DuskTraitStatsSidePanel;
 
     private static $SELECTOR_STATS_TAGS = "#stats-tags";
     private static $SELECTOR_STATS_FORM_TAGS = "#stats-form-tags";
     private static $SELECTOR_BUTTON_GENERATE = '.generate-stats';
     private static $SELECTOR_STATS_RESULTS_AREA = '.stats-results-tags';
-    private static $SELECTOR_SIDE_PANEL = '.panel';
-    private static $SELECTOR_SIDE_PANEL_OPTION_TAGS = '.panel-block:nth-child(4)';
     private static $SELECTOR_CHART_TAGS = 'canvas#bar-chart';
 
     private static $LABEL_OPTION_TAGS = "Tags";
@@ -59,18 +59,10 @@ class StatsTagsTest extends DuskTestCase {
         $this->browse(function(Browser $browser) {
             $browser
                 ->visit(new StatsPage())
-                ->assertVisible(self::$SELECTOR_SIDE_PANEL)
-                ->with(self::$SELECTOR_SIDE_PANEL, function(Browser $side_panel){
-                    $class_is_active = 'is-active';
-                    $classes = $side_panel->attribute(self::$SELECTOR_SIDE_PANEL_OPTION_TAGS, 'class');
-                    $this->assertNotContains($class_is_active, $classes);
-
-                    $side_panel
-                        ->assertSeeIn(self::$SELECTOR_SIDE_PANEL_OPTION_TAGS, self::$LABEL_OPTION_TAGS)
-                        ->click(self::$SELECTOR_SIDE_PANEL_OPTION_TAGS);
-                    $classes = $side_panel->attribute(self::$SELECTOR_SIDE_PANEL_OPTION_TAGS, 'class');
-                    $this->assertContains($class_is_active, $classes);
-                });
+                ->assertVisible(self::$SELECTOR_STATS_SIDE_PANEL);
+            $this->assertStatsSidePanelOptionIsActive($browser, self::$LABEL_STATS_SIDE_PANEL_OPTION_SUMMARY);
+            $this->clickStatsSidePanelOptionTags($browser);
+            $this->assertStatsSidePanelOptionIsActive($browser, self::$LABEL_STATS_SIDE_PANEL_OPTION_TAGS);
         });
     }
 
@@ -84,12 +76,10 @@ class StatsTagsTest extends DuskTestCase {
         $accounts = $this->getApiAccounts();
 
         $this->browse(function(Browser $browser) use ($accounts){
-            $browser
-                ->visit(new StatsPage())
-                ->with(self::$SELECTOR_SIDE_PANEL, function(Browser $side_panel){
-                    $side_panel->click(self::$SELECTOR_SIDE_PANEL_OPTION_TAGS);
-                })
+            $browser->visit(new StatsPage());
+            $this->clickStatsSidePanelOptionTags($browser);
 
+            $browser
                 ->assertVisible(self::$SELECTOR_STATS_TAGS)
                 ->with(self::$SELECTOR_STATS_TAGS, function(Browser $stats_tags) use ($accounts){
                     $stats_tags
@@ -123,11 +113,10 @@ class StatsTagsTest extends DuskTestCase {
      */
     public function testDefaultDataResultsArea(){
         $this->browse(function(Browser $browser){
+            $browser->visit(new StatsPage());
+            $this->clickStatsSidePanelOptionTags($browser);
+
             $browser
-                ->visit(new StatsPage())
-                ->with(self::$SELECTOR_SIDE_PANEL, function(Browser $side_panel){
-                    $side_panel->click(self::$SELECTOR_SIDE_PANEL_OPTION_TAGS);
-                })
                 ->assertVisible(self::$SELECTOR_STATS_TAGS)
                 ->with(self::$SELECTOR_STATS_TAGS, function(Browser $stats_tags){
                     $stats_tags
@@ -193,12 +182,10 @@ class StatsTagsTest extends DuskTestCase {
             $account_or_account_type_id = null;
             $form_tags = null;
 
-            $browser
-                ->visit(new StatsPage())
-                ->with(self::$SELECTOR_SIDE_PANEL, function(Browser $side_panel){
-                    $side_panel->click(self::$SELECTOR_SIDE_PANEL_OPTION_TAGS);
-                })
+            $browser->visit(new StatsPage());
+            $this->clickStatsSidePanelOptionTags($browser);
 
+            $browser
                 ->assertVisible(self::$SELECTOR_STATS_FORM_TAGS)
                 ->with(self::$SELECTOR_STATS_FORM_TAGS, function(Browser $form) use ($is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $accounts, $account_types, &$account_or_account_type_id, $tag_count, $tags, &$form_tags, &$datepicker_start, &$datepicker_end){
                     if($are_disabled_select_options_available){

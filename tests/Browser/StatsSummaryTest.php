@@ -3,9 +3,10 @@
 namespace Tests\Browser;
 
 use App\Traits\Tests\Dusk\AccountOrAccountTypeTogglingSelector as DuskTraitAccountOrAccountTypeTogglingSelector;
-use App\Traits\Tests\Dusk\BatchFilterEntries as DuskBatchFilterEntries;
+use App\Traits\Tests\Dusk\BatchFilterEntries as DuskTraitBatchFilterEntries;
 use App\Traits\Tests\Dusk\BulmaDatePicker as DuskTraitBulmaDatePicker;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
+use App\Traits\Tests\Dusk\StatsSidePanel as DuskTraitStatsSidePanel;
 use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Support\Collection;
 use Tests\Browser\Pages\StatsPage;
@@ -24,18 +25,15 @@ use Throwable;
 class StatsSummaryTest extends DuskTestCase {
 
     use DuskTraitAccountOrAccountTypeTogglingSelector;
-    use DuskBatchFilterEntries;
+    use DuskTraitBatchFilterEntries;
     use DuskTraitBulmaDatePicker;
     use DuskTraitLoading;
+    use DuskTraitStatsSidePanel;
 
     private static $SELECTOR_STATS_FORM_SUMMARY = "#stats-form-summary";
     private static $SELECTOR_BUTTON_GENERATE = '.generate-stats';
     private static $SELECTOR_STATS_RESULTS_AREA = '.stats-results-summary';
-    private static $SELECTOR_SIDE_PANEL = '.panel';
-    private static $SELECTOR_SIDE_PANEL_HEADING = '.panel-heading:first-child';
-    private static $SELECTOR_SIDE_PANEL_OPTION_SUMMARY = '.panel-heading+.panel-block';
 
-    private static $LABEL_OPTION_SUMMARY = 'Summary';
     private static $LABEL_GENERATE_TABLE_BUTTON = "Generate Tables";
     private static $LABEL_NO_STATS_DATA = 'No data available';
 
@@ -54,17 +52,9 @@ class StatsSummaryTest extends DuskTestCase {
         $this->browse(function(Browser $browser) {
             $browser
                 ->visit(new StatsPage())
-                ->assertVisible(self::$SELECTOR_SIDE_PANEL)
-                ->within(self::$SELECTOR_SIDE_PANEL, function(Browser $sidepanel){
-                    $sidepanel
-                        ->assertVisible(self::$SELECTOR_SIDE_PANEL_HEADING)
-                        ->assertSeeIn(self::$SELECTOR_SIDE_PANEL_HEADING, "Stats")
-                        ->assertVisible(self::$SELECTOR_SIDE_PANEL_OPTION_SUMMARY)
-                        ->assertSeeIn(self::$SELECTOR_SIDE_PANEL_OPTION_SUMMARY, self::$LABEL_OPTION_SUMMARY);
-
-                    $classes = $sidepanel->attribute(self::$SELECTOR_SIDE_PANEL_OPTION_SUMMARY, 'class');
-                    $this->assertContains('is-active', $classes);
-                });
+                ->assertVisible(self::$SELECTOR_STATS_SIDE_PANEL);
+            $this->assertStatsSidePanelHeading($browser);
+            $this->assertStatsSidePanelOptionIsActive($browser, self::$LABEL_STATS_SIDE_PANEL_OPTION_SUMMARY);;
         });
     }
 

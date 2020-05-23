@@ -3,9 +3,10 @@
 namespace Tests\Browser;
 
 use App\Traits\Tests\Dusk\AccountOrAccountTypeTogglingSelector as DuskTraitAccountOrAccountTypeTogglingSelector;
-use App\Traits\Tests\Dusk\BatchFilterEntries as DuskBatchFilterEntries;
+use App\Traits\Tests\Dusk\BatchFilterEntries as DuskTraitBatchFilterEntries;
 use App\Traits\Tests\Dusk\BulmaDatePicker as DuskTraitBulmaDatePicker;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
+use App\Traits\Tests\Dusk\StatsSidePanel as DuskTraitStatsSidePanel;
 use Illuminate\Support\Collection;
 use Laravel\Dusk\Browser;
 use Tests\Browser\Pages\StatsPage;
@@ -23,22 +24,20 @@ use Throwable;
 class StatsTrendingTest extends DuskTestCase {
 
     use DuskTraitAccountOrAccountTypeTogglingSelector;
-    use DuskBatchFilterEntries;
+    use DuskTraitBatchFilterEntries;
     use DuskTraitBulmaDatePicker;
     use DuskTraitLoading;
+    use DuskTraitStatsSidePanel;
 
     private static $SELECTOR_STATS_TRENDING = "#stats-trending";
     private static $SELECTOR_STATS_FORM_TRENDING = "#stats-form-trending";
     private static $SELECTOR_BUTTON_GENERATE = '.generate-stats';
     private static $SELECTOR_STATS_RESULTS_AREA = '.stats-results-trending';
-    private static $SELECTOR_SIDE_PANEL = '.panel';
-    private static $SELECTOR_SIDE_PANEL_OPTION_TRENDING = '.panel-block:nth-child(3)';
     private static $SELECTOR_CHART_TRENDING = 'canvas#line-chart';
 
     private static $VUE_KEY_EXPENSEDATA = "expenseData";
     private static $VUE_KEY_INCOMEDATA = "incomeData";
 
-    private static $LABEL_OPTION_TRENDING = "Trending";
     private static $LABEL_GENERATE_CHART_BUTTON = "Generate Chart";
     private static $LABEL_NO_STATS_DATA = 'No data available';
 
@@ -57,18 +56,10 @@ class StatsTrendingTest extends DuskTestCase {
         $this->browse(function(Browser $browser) {
             $browser
                 ->visit(new StatsPage())
-                ->assertVisible(self::$SELECTOR_SIDE_PANEL)
-                ->within(self::$SELECTOR_SIDE_PANEL, function(Browser $sidepanel){
-                    $class_is_active = 'is-active';
-                    $classes = $sidepanel->attribute(self::$SELECTOR_SIDE_PANEL_OPTION_TRENDING, 'class');
-                    $this->assertNotContains($class_is_active, $classes);
-                    
-                    $sidepanel
-                        ->assertSeeIn(self::$SELECTOR_SIDE_PANEL_OPTION_TRENDING, self::$LABEL_OPTION_TRENDING)
-                        ->click(self::$SELECTOR_SIDE_PANEL_OPTION_TRENDING);
-                    $classes = $sidepanel->attribute(self::$SELECTOR_SIDE_PANEL_OPTION_TRENDING, 'class');
-                    $this->assertContains($class_is_active, $classes);
-                });
+                ->assertVisible(self::$SELECTOR_STATS_SIDE_PANEL);
+            $this->assertStatsSidePanelOptionIsActive($browser, self::$LABEL_STATS_SIDE_PANEL_OPTION_SUMMARY);
+            $this->clickStatsSidePanelOptionTrending($browser);
+            $this->assertStatsSidePanelOptionIsActive($browser, self::$LABEL_STATS_SIDE_PANEL_OPTION_TRENDING);
         });
     }
 
@@ -82,12 +73,10 @@ class StatsTrendingTest extends DuskTestCase {
         $accounts = $this->getApiAccounts();
 
         $this->browse(function(Browser $browser) use ($accounts){
-            $browser
-                ->visit(new StatsPage())
-                ->within(self::$SELECTOR_SIDE_PANEL, function(Browser $sidepanel){
-                    $sidepanel->click(self::$SELECTOR_SIDE_PANEL_OPTION_TRENDING);
-                })
+            $browser->visit(new StatsPage());
+            $this->clickStatsSidePanelOptionTrending($browser);
 
+            $browser
                 ->assertVisible(self::$SELECTOR_STATS_TRENDING)
                 ->with(self::$SELECTOR_STATS_TRENDING, function(Browser $stats_trending) use ($accounts){
                     $stats_trending
@@ -118,11 +107,9 @@ class StatsTrendingTest extends DuskTestCase {
      */
     public function testDefaultDataResultsArea(){
         $this->browse(function(Browser $browser){
+            $browser->visit(new StatsPage());
+            $this->clickStatsSidePanelOptionTrending($browser);
             $browser
-                ->visit(new StatsPage())
-                ->within(self::$SELECTOR_SIDE_PANEL, function(Browser $sidepanel){
-                    $sidepanel->click(self::$SELECTOR_SIDE_PANEL_OPTION_TRENDING);
-                })
                 ->assertVisible(self::$SELECTOR_STATS_TRENDING)
                 ->with(self::$SELECTOR_STATS_TRENDING, function(Browser $stats_trending){
                     $stats_trending
@@ -173,12 +160,9 @@ class StatsTrendingTest extends DuskTestCase {
         $this->browse(function (Browser $browser) use ($accounts, $account_types, $datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available){
             $account_or_account_type_id = null;
 
+            $browser->visit(new StatsPage());
+            $this->clickStatsSidePanelOptionTrending($browser);
             $browser
-                ->visit(new StatsPage())
-                ->with(self::$SELECTOR_SIDE_PANEL, function(Browser $side_panel){
-                    $side_panel->click(self::$SELECTOR_SIDE_PANEL_OPTION_TRENDING);
-                })
-
                 ->assertVisible(self::$SELECTOR_STATS_FORM_TRENDING)
                 ->with(self::$SELECTOR_STATS_FORM_TRENDING, function(Browser $form) use ($accounts, $account_types, &$datepicker_start, &$datepicker_end, $is_switch_toggled, &$account_or_account_type_id, $is_random_selector_value, $are_disabled_select_options_available){
                     if($are_disabled_select_options_available){
