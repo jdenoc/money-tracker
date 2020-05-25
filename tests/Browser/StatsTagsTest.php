@@ -4,7 +4,7 @@ namespace Tests\Browser;
 
 use App\Entry;
 use App\Traits\Tests\Dusk\AccountOrAccountTypeTogglingSelector as DuskTraitAccountOrAccountTypeTogglingSelector;
-use App\Traits\Tests\Dusk\BatchFilterEntries as DuskBatchFilterEntries;
+use App\Traits\Tests\Dusk\BatchFilterEntries as DuskTraitBatchFilterEntries;
 use App\Traits\Tests\Dusk\BulmaDatePicker as DuskTraitBulmaDatePicker;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\StatsSidePanel as DuskTraitStatsSidePanel;
@@ -27,7 +27,7 @@ class StatsTagsTest extends DuskTestCase {
 
     use DuskTraitLoading;
     use DuskTraitAccountOrAccountTypeTogglingSelector;
-    use DuskBatchFilterEntries;
+    use DuskTraitBatchFilterEntries;
     use DuskTraitBulmaDatePicker;
     use DuskTraitTagsInput;
     use DuskTraitStatsSidePanel;
@@ -277,14 +277,16 @@ class StatsTagsTest extends DuskTestCase {
      * @param Collection $tags
      */
     private function createDisabledEntryWithTags($is_account_type_rather_than_account_toggled, $account_or_account_type_id, $account_types, $tags){
-        if(!$is_account_type_rather_than_account_toggled){
-            $account_type_id = $account_types->where('account_id', $account_or_account_type_id);
-        } else {
+        if($is_account_type_rather_than_account_toggled){
             $account_type_id = $account_or_account_type_id;
+        } else {
+            $account_type_id = $account_types->where('account_id', $account_or_account_type_id)->pluck('id')->first();
         }
 
         $disabled_entry = factory(Entry::class)->create(['account_type_id'=>$account_type_id, 'disabled'=>true]);
-        $disabled_entry->tags()->attach($tags->pluck('id')->all());
+        foreach($tags->pluck('id')->all() as $tag_id){
+            $disabled_entry->tags()->attach($tag_id);
+        }
     }
 
 }
