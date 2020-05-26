@@ -200,10 +200,6 @@ class StatsTagsTest extends DuskTestCase {
                         // stay with accounts
                         $account_or_account_type_id = $is_random_selector_value ? $accounts->where('disabled', $are_disabled_select_options_available)->pluck('id')->random() : '';
                     }
-                    if($are_disabled_select_options_available){
-                        $this->createDisabledEntryWithTags($is_switch_toggled, $account_or_account_type_id, $account_types, $tags);
-                    }
-
                     $this->selectAccountOrAccountTypeValue($form, $account_or_account_type_id);
 
                     $form_tags = $tags->chunk($tag_count)->first();
@@ -221,6 +217,7 @@ class StatsTagsTest extends DuskTestCase {
                         $datepicker_end = date('Y-m-t');
                     }
 
+                    $this->createEntryWithAllTags($are_disabled_select_options_available, $is_switch_toggled, $account_or_account_type_id, $account_types, $tags);
                     $form->click(self::$SELECTOR_BUTTON_GENERATE);
                 });
 
@@ -271,19 +268,24 @@ class StatsTagsTest extends DuskTestCase {
      * It's a waste of resources to do that for every test when most tests don't need that kind of data.
      * So instead for these tests, we'll create a disabled with all the tags
      *
+     * @param bool $is_entry_disabled
      * @param bool $is_account_type_rather_than_account_toggled
      * @param int $account_or_account_type_id
      * @param Collection $account_types
      * @param Collection $tags
      */
-    private function createDisabledEntryWithTags($is_account_type_rather_than_account_toggled, $account_or_account_type_id, $account_types, $tags){
-        if($is_account_type_rather_than_account_toggled){
-            $account_type_id = $account_or_account_type_id;
+    private function createEntryWithAllTags($is_entry_disabled, $is_account_type_rather_than_account_toggled, $account_or_account_type_id, $account_types, $tags){
+        if(!empty($account_or_account_type_id)){
+            if($is_account_type_rather_than_account_toggled){
+                $account_type_id = $account_or_account_type_id;
+            } else {
+                $account_type_id = $account_types->where('account_id', $account_or_account_type_id)->pluck('id')->first();
+            }
         } else {
-            $account_type_id = $account_types->where('account_id', $account_or_account_type_id)->pluck('id')->first();
+                $account_type_id = $account_types->pluck('id')->random();
         }
 
-        $disabled_entry = factory(Entry::class)->create(['account_type_id'=>$account_type_id, 'disabled'=>true]);
+        $disabled_entry = factory(Entry::class)->create(['account_type_id'=>$account_type_id, 'disabled'=>$is_entry_disabled]);
         foreach($tags->pluck('id')->all() as $tag_id){
             $disabled_entry->tags()->attach($tag_id);
         }
