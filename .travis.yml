@@ -5,7 +5,6 @@ git:
 
 # trusty instance & sudo are needed so we can utilise docker
 dist: trusty
-sudo: required
 
 addons:
   apt:
