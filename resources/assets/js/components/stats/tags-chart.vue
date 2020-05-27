@@ -135,7 +135,7 @@
                         }.bind(this));
                     }.bind(this), Object.create(null));
 
-                return Object.values(standardisedChartData);
+                return _.sortBy(Object.values(standardisedChartData), function(o){ return o.x;});
             }
         },
         methods: {
