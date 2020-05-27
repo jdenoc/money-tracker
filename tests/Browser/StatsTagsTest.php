@@ -38,7 +38,6 @@ class StatsTagsTest extends DuskTestCase {
     private static $SELECTOR_STATS_RESULTS_AREA = '.stats-results-tags';
     private static $SELECTOR_CHART_TAGS = 'canvas#bar-chart';
 
-    private static $LABEL_OPTION_TAGS = "Tags";
     private static $LABEL_GENERATE_CHART_BUTTON = 'Generate Chart';
     private static $LABEL_NO_STATS_DATA = 'No data available';
 
@@ -170,7 +169,7 @@ class StatsTagsTest extends DuskTestCase {
      *
      * @throws Throwable
      *
-     * @group stats-trending-1
+     * @group stats-tags-1
      * test (see provider)/25
      */
     public function testGenerateTagsChart($datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $tag_count){
@@ -285,7 +284,7 @@ class StatsTagsTest extends DuskTestCase {
                 $account_type_id = $account_types->pluck('id')->random();
         }
 
-        $disabled_entry = factory(Entry::class)->create(['account_type_id'=>$account_type_id, 'disabled'=>$is_entry_disabled]);
+        $disabled_entry = factory(Entry::class)->create(['account_type_id'=>$account_type_id, 'disabled'=>$is_entry_disabled, 'entry_date'=>date('Y-m-d')]);
         foreach($tags->pluck('id')->all() as $tag_id){
             $disabled_entry->tags()->attach($tag_id);
         }
