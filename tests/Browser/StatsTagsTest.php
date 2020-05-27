@@ -281,10 +281,10 @@ class StatsTagsTest extends DuskTestCase {
                 $account_type_id = $account_types->where('account_id', $account_or_account_type_id)->pluck('id')->first();
             }
         } else {
-                $account_type_id = $account_types->pluck('id')->random();
+            $account_type_id = $account_types->pluck('id')->random();
         }
 
-        $disabled_entry = factory(Entry::class)->create(['account_type_id'=>$account_type_id, 'disabled'=>$is_entry_disabled, 'entry_date'=>date('Y-m-d')]);
+        $disabled_entry = factory(Entry::class)->create(['account_type_id'=>$account_type_id, 'disabled'=>$is_entry_disabled, 'entry_date'=>date('Y-m-d', strtotime('-1 day'))]);
         foreach($tags->pluck('id')->all() as $tag_id){
             $disabled_entry->tags()->attach($tag_id);
         }
