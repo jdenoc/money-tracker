@@ -61,7 +61,11 @@ export default {
                 /**
                  * @returns {string}
                  */
-                EVENT_STATS_TAGS: function(){ return 'stats-display-tags-chart' }
+                EVENT_STATS_TAGS: function(){ return 'stats-display-tags-chart' },
+                /**
+                 * @return {string}
+                 */
+                EVENT_STATS_DISTRIBUTION: function(){ return 'stats-display-distribution-char' },
             },
             methods: {
                 broadcast(event, data = null){
