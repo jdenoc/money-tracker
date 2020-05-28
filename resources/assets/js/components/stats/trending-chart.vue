@@ -16,7 +16,7 @@
             </div>
 
             <div class="field"><div class="control">
-                <button class="button is-primary generate-stats" v-on:click="displayData"><i class="fas fa-chart-bar"></i>Generate Chart</button>
+                <button class="button is-primary generate-stats" v-on:click="displayData"><i class="fas fa-chart-area"></i>Generate Chart</button>
             </div></div>
         </section>
 
