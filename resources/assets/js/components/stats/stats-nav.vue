@@ -36,15 +36,15 @@
         mixins: [statsNavMixin],
         methods:{
             showSummaryChart: function(){
-                this.makeChartVisible('summary');
+                this.makeChartVisible(this.chartNameSummary);
                 this.$eventHub.broadcast(this.$eventHub.EVENT_STATS_SUMMARY);
             },
             showTrendingChart: function(){
-                this.makeChartVisible('trending');
+                this.makeChartVisible(this.chartNameTrending);
                 this.$eventHub.broadcast(this.$eventHub.EVENT_STATS_TRENDING);
             },
             showTagsChart: function(){
-                this.makeChartVisible('tags');
+                this.makeChartVisible(this.chartNameTags);
                 this.$eventHub.broadcast(this.$eventHub.EVENT_STATS_TAGS);
             },
         },

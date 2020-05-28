@@ -2,10 +2,11 @@
 
 namespace Tests\Browser;
 
-use App\Http\Controllers\Api\EntryController;
 use App\Traits\Tests\Dusk\AccountOrAccountTypeTogglingSelector as DuskTraitAccountOrAccountTypeTogglingSelector;
+use App\Traits\Tests\Dusk\BatchFilterEntries as DuskTraitBatchFilterEntries;
 use App\Traits\Tests\Dusk\BulmaDatePicker as DuskTraitBulmaDatePicker;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
+use App\Traits\Tests\Dusk\StatsSidePanel as DuskTraitStatsSidePanel;
 use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Support\Collection;
 use Tests\Browser\Pages\StatsPage;
@@ -24,17 +25,15 @@ use Throwable;
 class StatsSummaryTest extends DuskTestCase {
 
     use DuskTraitAccountOrAccountTypeTogglingSelector;
+    use DuskTraitBatchFilterEntries;
     use DuskTraitBulmaDatePicker;
     use DuskTraitLoading;
+    use DuskTraitStatsSidePanel;
 
     private static $SELECTOR_STATS_FORM_SUMMARY = "#stats-form-summary";
     private static $SELECTOR_BUTTON_GENERATE = '.generate-stats';
     private static $SELECTOR_STATS_RESULTS_AREA = '.stats-results-summary';
-    private static $SELECTOR_SIDE_PANEL = '.panel';
-    private static $SELECTOR_SIDE_PANEL_HEADING = '.panel-heading:first-child';
-    private static $SELECTOR_SIDE_PANEL_OPTION_SUMMARY = '.panel-heading+.panel-block';
 
-    private static $LABEL_OPTION_SUMMARY = 'Summary';
     private static $LABEL_GENERATE_TABLE_BUTTON = "Generate Tables";
     private static $LABEL_NO_STATS_DATA = 'No data available';
 
@@ -53,17 +52,9 @@ class StatsSummaryTest extends DuskTestCase {
         $this->browse(function(Browser $browser) {
             $browser
                 ->visit(new StatsPage())
-                ->assertVisible(self::$SELECTOR_SIDE_PANEL)
-                ->within(self::$SELECTOR_SIDE_PANEL, function(Browser $sidepanel){
-                    $sidepanel
-                        ->assertVisible(self::$SELECTOR_SIDE_PANEL_HEADING)
-                        ->assertSeeIn(self::$SELECTOR_SIDE_PANEL_HEADING, "Stats")
-                        ->assertVisible(self::$SELECTOR_SIDE_PANEL_OPTION_SUMMARY)
-                        ->assertSeeIn(self::$SELECTOR_SIDE_PANEL_OPTION_SUMMARY, self::$LABEL_OPTION_SUMMARY);
-
-                    $classes = $sidepanel->attribute(self::$SELECTOR_SIDE_PANEL_OPTION_SUMMARY, 'class');
-                    $this->assertContains('is-active', $classes);
-                });
+                ->assertVisible(self::$SELECTOR_STATS_SIDE_PANEL);
+            $this->assertStatsSidePanelHeading($browser);
+            $this->assertStatsSidePanelOptionIsActive($browser, self::$LABEL_STATS_SIDE_PANEL_OPTION_SUMMARY);;
         });
     }
 
@@ -161,9 +152,11 @@ class StatsSummaryTest extends DuskTestCase {
                         $this->toggleShowDisabledAccountOrAccountTypeCheckbox($form);
                     }
                     if($is_switch_toggled){
+                        // switch to account-types
                         $this->toggleAccountOrAccountTypeSwitch($form);
                         $account_or_account_type_id = ($is_random_selector_value) ? $account_types->where('disabled', $are_disabled_select_options_available)->pluck('id')->random() : '';
                     } else {
+                        // stay with accounts
                         $account_or_account_type_id = ($is_random_selector_value) ? $accounts->where('disabled', $are_disabled_select_options_available)->pluck('id')->random() : '';
                     }
                     $this->selectAccountOrAccountTypeValue($form, $account_or_account_type_id);
@@ -189,7 +182,7 @@ class StatsSummaryTest extends DuskTestCase {
                     $selector_table_label = 'caption';
                     $selector_table_body_rows = 'tbody tr';
 
-                    $entries = $this->filterEntries($datepicker_start, $datepicker_end, $account_or_account_type_id, $is_switch_toggled);
+                    $entries = $this->getBatchedFilteredEntries($datepicker_start, $datepicker_end, $account_or_account_type_id, $is_switch_toggled);
                     $stats_results
                         ->assertVisible($selector_table_total_income_expense)
                         ->with($selector_table_total_income_expense, function(Browser $table) use ($selector_table_label, $selector_table_body_rows, $entries, $accounts, $account_types, $account_or_account_type_id, $datepicker_start, $datepicker_end, $is_switch_toggled){
@@ -238,30 +231,6 @@ class StatsSummaryTest extends DuskTestCase {
                         });
             });
         });
-    }
-
-    /**
-     * @param string $start_date
-     * @param string $end_date
-     * @param int $account_or_account_type_id
-     * @param bool $is_switch_toggled
-     * @return Collection
-     */
-    private function filterEntries($start_date, $end_date, $account_or_account_type_id, $is_switch_toggled){
-        $filter_data = [
-            EntryController::FILTER_KEY_START_DATE=>$start_date,
-            EntryController::FILTER_KEY_END_DATE=>$end_date,
-        ];
-
-        if(!empty($account_or_account_type_id)){
-            if($is_switch_toggled){
-                $filter_data[EntryController::FILTER_KEY_ACCOUNT_TYPE] = $account_or_account_type_id;
-            } else {
-                $filter_data[EntryController::FILTER_KEY_ACCOUNT] = $account_or_account_type_id;
-            }
-        }
-
-        return collect($this->removeCountFromApiResponse($this->getApiEntries(0, $filter_data)));
     }
 
     /**

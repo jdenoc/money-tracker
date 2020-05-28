@@ -23,8 +23,6 @@ trait Navbar {
     private static $SELECTOR_MODAL_TRANSFER = '#transfer-modal';
     private static $SELECTOR_MODAL_FILTER = '#filter-modal';
 
-//_selector_navbar_entry_modal
-
     /**
      * @param Browser $navbar
      */

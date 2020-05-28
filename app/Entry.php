@@ -185,7 +185,7 @@ class Entry extends BaseModel {
                     // RIGHT JOIN entry_tags
                     //   ON entry_tags.entry_id=entries.id
                     //   AND entry_tags.tag_id IN ($tags)
-                    $tag_ids = (is_array($filters[$filter_name])) ? $filter_constraint : [$filter_constraint];
+                    $tag_ids = (is_array($filter_constraint)) ? $filter_constraint : [$filter_constraint];
                     $entries_query->rightJoin('entry_tags', function($join) use ($tag_ids){
                         $join->on('entry_tags.entry_id', '=', 'entries.id')
                             ->whereIn('entry_tags.tag_id', $tag_ids);

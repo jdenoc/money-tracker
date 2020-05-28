@@ -4,9 +4,17 @@ export const statsNavMixin = {
             isVisibleChart: {
                 summary: true,
                 trending: false,
-                tags: false
+                tags: false,
+                distribution: false
             }
         }
+    },
+
+    computed: {
+        chartNameSummary: function(){ return 'summary' },
+        chartNameTrending: function(){ return 'trending' },
+        chartNameTags: function(){ return 'tags' },
+        chartNameDistribution: function(){ return 'distribution' }
     },
 
     methods:{
