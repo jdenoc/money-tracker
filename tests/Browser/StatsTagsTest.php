@@ -45,7 +45,7 @@ class StatsTagsTest extends DuskTestCase {
 
     public function __construct($name = null, array $data = [], $dataName = ''){
         parent::__construct($name, $data, $dataName);
-        $this->_id_label = 'tags-chart';
+        $this->_account_or_account_type_toggling_selector_label_id = 'tags-chart';
     }
 
     /**
