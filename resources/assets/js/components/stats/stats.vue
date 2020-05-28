@@ -18,13 +18,13 @@
         components: {SummaryChart, TagsChart, TrendingChart},
         created: function(){
             this.$eventHub.listen(this.$eventHub.EVENT_STATS_SUMMARY, function(){
-                this.makeChartVisible('summary');
+                this.makeChartVisible(this.chartNameSummary);
             }.bind(this));
             this.$eventHub.listen(this.$eventHub.EVENT_STATS_TRENDING, function(){
-                this.makeChartVisible('trending');
+                this.makeChartVisible(this.chartNameTrending);
             }.bind(this));
             this.$eventHub.listen(this.$eventHub.EVENT_STATS_TAGS, function(){
-                this.makeChartVisible('tags');
+                this.makeChartVisible(this.chartNameTags);
             }.bind(this));
         }
     }

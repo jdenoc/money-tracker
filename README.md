@@ -334,3 +334,4 @@ php artisan dusk --stop-on-failure
 - [Laravel Dusk](https://laravel.com/docs/5.5/dusk)
 - [Travis CI](https://docs.travis-ci.com/user/languages/php/)
 - [git](https://git-scm.com/doc)
+- [ChartJs](https://www.chartjs.org/)

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="stats-trending">
         <section id="stats-form-trending" class="section">
             <account-account-type-toggling-selector
                 id="trending-chart"
@@ -141,7 +141,7 @@
         methods: {
             standardiseData: function(isExpense){
                 let standardisedChartData = [];
-                this.rawEntriesData
+                this.largeBatchEntryData
                     .filter(function(chartDatum){ return chartDatum.expense === isExpense })
                     .map(function(filteredChartDatum){
                         // extract entry_date and entry_value
@@ -185,7 +185,6 @@
             },
 
             displayData: function(){
-                this.dataLoaded = false;
                 this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
 
                 let chartDataFilterParameters = {
@@ -201,7 +200,7 @@
 
                 this.setChartTitle(chartDataFilterParameters.start_date, chartDataFilterParameters.end_date);
                 this.setChartTimeUnit(chartDataFilterParameters.start_date, chartDataFilterParameters.end_date);
-                this.fetchData(chartDataFilterParameters);
+                this.multiPageDataFetch(chartDataFilterParameters);
             },
         },
         mounted: function(){

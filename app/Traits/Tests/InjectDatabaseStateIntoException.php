@@ -63,12 +63,22 @@ trait InjectDatabaseStateIntoException {
      */
     public function injectMessageIntoException($original_exception, $injectable_message){
         if($this->isDatabaseStateInjectionAllowed()){
-            $exception_message = $original_exception->getMessage()."\n".$injectable_message;
+            $new_exception_message = $original_exception->getMessage()."\n\n".$injectable_message;
+
             $exception_name = get_class($original_exception);
-            if($exception_name == \Illuminate\Database\QueryException::class){
-                return new $exception_name($exception_message, [], $original_exception);
-            } else {
-                return new $exception_name($exception_message, null, $original_exception);
+
+            switch($exception_name){
+                case \Illuminate\Database\QueryException::class:
+                    return new $exception_name($new_exception_message, $original_exception->getBindings(), $original_exception);
+
+                case \SebastianBergmann\Comparator\ComparisonFailure::class:
+                    return new  $exception_name($original_exception->getExpected(), $original_exception->getActual(), $original_exception->getExpectedAsString(), $original_exception->getActualAsString(), false, $new_exception_message);
+
+                case \ErrorException::class:
+                    return new $exception_name($new_exception_message, $original_exception->getCode(), $original_exception->getSeverity(), $original_exception->getFile(), $original_exception->getLine(), $original_exception);
+
+                default:
+                    return new $exception_name($new_exception_message, $original_exception->getCode(), $original_exception);
             }
         } else {
             return $original_exception;

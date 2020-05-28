@@ -116,10 +116,9 @@ trait AccountOrAccountTypeTogglingSelector {
     /**
      * @param Browser $browser
      * @param string|int $selector_value
-     * @param string $selector_option
      */
-    public function selectAccountOrAccountTypeValue(Browser $browser, $selector_value, $selector_option=''){
-        $browser->with($this->getAccountOrAccountTypeTogglingSelectorComponentId($this->_id_label), function(Browser $component) use ($selector_value, $selector_option){
+    public function selectAccountOrAccountTypeValue(Browser $browser, $selector_value){
+        $browser->with($this->getAccountOrAccountTypeTogglingSelectorComponentId($this->_id_label), function(Browser $component) use ($selector_value){
             $component
                 // make sure accounts have finished loading
                 ->waitUntilMissing(self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT_LOADING, self::$WAIT_SECONDS)
