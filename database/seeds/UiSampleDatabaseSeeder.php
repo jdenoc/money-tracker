@@ -105,8 +105,12 @@ class UiSampleDatabaseSeeder extends Seeder {
             $transfer_to_entry->entry_value = $transfer_from_entry->entry_value;
             $transfer_to_entry->save();
         }
-        $external_transfer_entry = $entries_not_disabled->where('transfer_entry_id', null)
-            ->sortByDesc('entry_date')->chunk(EntryController::MAX_ENTRIES_IN_RESPONSE)[0]->random();
+        $external_transfer_entry = $entries_not_disabled
+            ->sortByDesc('entry_date')
+            ->chunk(EntryController::MAX_ENTRIES_IN_RESPONSE)
+            ->first()
+            ->where('transfer_entry_id', null)
+            ->random();
         $external_transfer_entry->transfer_entry_id = EntryController::TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
         $external_transfer_entry->save();
         $this->command->line(self::OUTPUT_PREFIX."Randomly marked entries as transfers");
