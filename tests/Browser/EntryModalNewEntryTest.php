@@ -5,11 +5,12 @@ namespace Tests\Browser;
 use App\Account;
 use App\AccountType;
 use App\Helpers\CurrencyHelper;
-use App\Traits\Tests\AssertElementColor;
+use App\Traits\Tests\Dusk\BulmaColors as DuskTraitBulmaColors;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
 use App\Traits\Tests\Dusk\Notification as DuskTraitNotification;
 use App\Traits\Tests\Dusk\TagsInput as DuskTraitTagsInput;
+use App\Traits\Tests\Dusk\ToggleButton as DuskTraitToggleButton;
 use App\Traits\Tests\WaitTimes;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
@@ -29,15 +30,23 @@ use Throwable;
 class EntryModalNewEntryTest extends DuskTestCase {
 
     use HomePageSelectors;
+    use DuskTraitBulmaColors;
     use DuskTraitLoading;
     use DuskTraitNotification;
     use DuskTraitNavbar;
     use DuskTraitTagsInput;
-    use AssertElementColor;
+    use DuskTraitToggleButton;
+
     use WaitTimes;
 
     private $method_account = 'account';
     private $method_account_type = 'account-type';
+
+    public function __construct($name = null, array $data = [], $dataName = ''){
+        parent::__construct($name, $data, $dataName);
+        $this->_color_expense_switch_expense = self::$COLOR_WARNING_HEX;
+        $this->_color_expense_switch_income = self::$COLOR_PRIMARY_HEX;
+    }
 
     /**
      * @throws Throwable
@@ -180,13 +189,11 @@ class EntryModalNewEntryTest extends DuskTestCase {
 
                         ->assertSee('Memo:')
                         ->assertVisible($this->_selector_modal_entry_field_memo)
-                        ->assertInputValue($this->_selector_modal_entry_field_memo, "")
+                        ->assertInputValue($this->_selector_modal_entry_field_memo, "");
 
-                        ->assertVisible($this->_selector_modal_entry_field_expense)
-                        ->assertSee($this->_label_expense_switch_expense);
-                    $this->assertElementColour($entry_modal_body, $this->_selector_modal_entry_field_expense.' '.$this->_class_switch_core, $this->_color_expense_switch_expense);
-                    $entry_modal_body->assertDontSee($this->_label_expense_switch_income)
+                    $this->assertToggleButtonState($entry_modal_body, $this->_selector_modal_entry_field_expense, $this->_label_expense_switch_expense, $this->_color_expense_switch_expense);
 
+                    $entry_modal_body
                         ->assertSee('Tags:');
                     $this->assertDefaultStateOfTagsInput($entry_modal_body);
 
@@ -444,14 +451,9 @@ class EntryModalNewEntryTest extends DuskTestCase {
             $this->openNewEntryModal($browser);
             $browser
                 ->with($this->_selector_modal_body, function($entry_modal_body){
-                    $entry_modal_body->assertSee($this->_label_expense_switch_expense);
-                    $this->assertElementColour($entry_modal_body, $this->_selector_modal_entry_field_expense.' '.$this->_class_switch_core, $this->_color_expense_switch_expense);
-                    $entry_modal_body
-                        ->click($this->_selector_modal_entry_field_expense)
-                        ->pause(self::$WAIT_HALF_SECOND_IN_MILLISECONDS) // need to wait for the transition to complete after click
-                        ->assertSee($this->_label_expense_switch_income);
-                    $this->assertElementColour($entry_modal_body, $this->_selector_modal_entry_field_expense.' '.$this->_class_switch_core, $this->_color_expense_switch_income);
-                    $entry_modal_body->assertDontSee($this->_label_expense_switch_expense);
+                    $this->assertToggleButtonState($entry_modal_body, $this->_selector_modal_entry_field_expense, $this->_label_expense_switch_expense, $this->_color_expense_switch_expense);
+                    $this->toggleToggleButton($entry_modal_body, $this->_selector_modal_entry_field_expense);
+                    $this->assertToggleButtonState($entry_modal_body, $this->_selector_modal_entry_field_expense, $this->_label_expense_switch_income, $this->_color_expense_switch_income);
                 });
         });
     }
@@ -586,7 +588,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
      * test 19/25
      */
     public function testTagsInputAutoComplete(){
-        // select tag at random and input the first character into the tags-input field
+        // select tag at random and input the first few characters into the tags-input field
         $tags = $this->getApiTags();
         $tag = $tags[array_rand($tags, 1)]['name'];
 
@@ -659,8 +661,8 @@ class EntryModalNewEntryTest extends DuskTestCase {
                         ->type($this->_selector_modal_entry_field_value, "9.99")
                         ->waitUntilMissing($this->_selector_modal_entry_field_account_type_is_loading, self::$WAIT_SECONDS)
                         ->select($this->_selector_modal_entry_field_account_type, $account_type['id'])
-                        ->type($this->_selector_modal_entry_field_memo, $memo_field)
-                        ->click($this->_selector_modal_entry_field_expense);
+                        ->type($this->_selector_modal_entry_field_memo, $memo_field);
+                    $this->toggleToggleButton($modal_body, $this->_selector_modal_entry_field_expense);
                 })
                 ->with($this->_selector_modal_foot, function($modal_foot){
                     $modal_foot->click($this->_selector_modal_entry_btn_save);

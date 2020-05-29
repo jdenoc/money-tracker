@@ -54,10 +54,11 @@
     import {statsChartMixin} from "../../mixins/stats-chart-mixin";
     import {tagsObjectMixin} from "../../mixins/tags-object-mixin";
     import {ToggleButton} from 'vue-js-toggle-button';
+    import {bulmaColorsMixin} from "../../mixins/bulma-colors-mixin";
 
     export default {
         name: "distribution-chart",
-        mixins: [entriesObjectMixin, statsChartMixin, tagsObjectMixin],
+        mixins: [bulmaColorsMixin, entriesObjectMixin, statsChartMixin, tagsObjectMixin],
         components: {AccountAccountTypeTogglingSelector, bulmaCalendar, PieChart, ToggleButton},
         data: function(){
             return {
@@ -67,13 +68,6 @@
                 expenseOrIncomeToggle: true,
                 accountOrAccountTypeToggle: true,
                 accountOrAccountTypeId: '',
-
-                toggleButtonProperties: {
-                    colors: {checked: '#B5B5B5', unchecked: '#B5B5B5'},
-                    labels: {checked: 'Expense', unchecked: 'Income'},
-                    height: 40,
-                    width: 475,
-                },
             }
         },
         computed: {
@@ -125,7 +119,15 @@
                     }.bind(this), Object.create(null));
 
                 return _.sortBy(Object.values(standardisedChartData), function(o){ return o.x;});
-            }
+            },
+            toggleButtonProperties: function(){
+                return {
+                    colors: {checked: this.colorGreyLight, unchecked: this.colorGreyLight},
+                    labels: {checked: 'Expense', unchecked: 'Income'},
+                    height: 40,
+                    width: 475,
+                };
+            },
         },
         methods: {
             setChartTitle: function(isExpense, startDate, endDate){

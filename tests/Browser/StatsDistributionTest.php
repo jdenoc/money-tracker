@@ -2,8 +2,10 @@
 
 namespace Tests\Browser;
 
+use App\Entry;
 use App\Traits\Tests\Dusk\AccountOrAccountTypeTogglingSelector as DuskTraitAccountOrAccountTypeTogglingSelector;
 use App\Traits\Tests\Dusk\BatchFilterEntries as DuskTraitBatchFilterEntries;
+use App\Traits\Tests\Dusk\BulmaColors as DuskTraitBulmaColors;
 use App\Traits\Tests\Dusk\BulmaDatePicker as DuskTraitBulmaDatePicker;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\StatsSidePanel as DuskTraitStatsSidePanel;
@@ -25,6 +27,7 @@ use Throwable;
 class StatsDistributionTest extends DuskTestCase {
 
     use DuskTraitAccountOrAccountTypeTogglingSelector;
+    use DuskTraitBulmaColors;
     use DuskTraitBulmaDatePicker;
     use DuskTraitBatchFilterEntries;
     use DuskTraitLoading;
@@ -40,14 +43,18 @@ class StatsDistributionTest extends DuskTestCase {
     private static $SELECTOR_CHART_DISTRIBUTION = "canvas#pie-chart";
 
     private static $LABEL_FORM_TOGGLE_EXPENSEINCOME_DEFAULT = "Expense";
+    private static $LABEL_FORM_TOGGLE_EXPENSEINCOME_INCOME = "Income";
     private static $LABEL_FORM_BUTTON_GENERATE = "Generate Chart";
     private static $LABEL_NO_STATS_DATA = "No data available";
 
     private static $VUE_KEY_STANDARDISEDATA = "standardiseData";
 
+    private $_color_switch_default;
+
     public function __construct($name = null, array $data = [], $dataName = ''){
         parent::__construct($name, $data, $dataName);
         $this->_account_or_account_type_toggling_selector_label_id = 'distribution-chart';
+        $this->_color_switch_default = self::$COLOR_GREY_LIGHT_HEX;
     }
 
     /**
@@ -86,12 +93,7 @@ class StatsDistributionTest extends DuskTestCase {
                     $this->assertDefaultStateOfAccountOrAccountTypeTogglingSelectorComponent($form, $accounts);
 
                     // expense/income - switch
-                    $class_switch_core = ".v-switch-core";
-                    $color_switch_default = "#B5B5B5";
-                    $form
-                        ->assertVisible(self::$SELECTOR_STATS_FORM_TOGGLE_EXPENSEINCOME)
-                        ->assertSeeIn(self::$SELECTOR_STATS_FORM_TOGGLE_EXPENSEINCOME, self::$LABEL_FORM_TOGGLE_EXPENSEINCOME_DEFAULT);
-                    $this->assertElementColour($form, self::$SELECTOR_STATS_FORM_TOGGLE_EXPENSEINCOME.' '.$class_switch_core, $color_switch_default);
+                    $this->assertToggleButtonState($form, self::$SELECTOR_STATS_FORM_TOGGLE_EXPENSEINCOME, self::$LABEL_FORM_TOGGLE_EXPENSEINCOME_DEFAULT, $this->_color_switch_default);
 
                     // bulma date-picker
                     $this->assertDefaultStateBulmaDatePicker($form);
@@ -184,7 +186,7 @@ class StatsDistributionTest extends DuskTestCase {
 
             $browser
                 ->assertVisible(self::$SELECTOR_STATS_FORM_DISTRIBUTION)
-                ->with(self::$SELECTOR_STATS_FORM_DISTRIBUTION, function(Browser $form) use ($is_expense_switch_toggled, $is_account_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $accounts, $account_types, &$filter_data, $datepicker_start, $datepicker_end){
+                ->with(self::$SELECTOR_STATS_FORM_DISTRIBUTION, function(Browser $form) use ($is_expense_switch_toggled, $is_account_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $accounts, $account_types, &$filter_data, $datepicker_start, $datepicker_end, $tags){
                     if($are_disabled_select_options_available){
                         $this->toggleShowDisabledAccountOrAccountTypeCheckbox($form);
                     }
@@ -202,7 +204,8 @@ class StatsDistributionTest extends DuskTestCase {
 
                     if($is_expense_switch_toggled){
                         // expense/income - switch
-                        $form->click(self::$SELECTOR_STATS_FORM_TOGGLE_EXPENSEINCOME);
+                        $this->toggleToggleButton($form, self::$SELECTOR_STATS_FORM_TOGGLE_EXPENSEINCOME);
+                        $this->assertToggleButtonState($form, self::$SELECTOR_STATS_FORM_TOGGLE_EXPENSEINCOME, self::$LABEL_FORM_TOGGLE_EXPENSEINCOME_INCOME, $this->_color_switch_default);
                     }
                     $filter_data = $this->generateFilterArrayElementExpense($filter_data, !$is_expense_switch_toggled);
 
@@ -214,6 +217,7 @@ class StatsDistributionTest extends DuskTestCase {
                     }
                     $filter_data = $this->generateFilterArrayElementDatepicker($filter_data, $datepicker_start, $datepicker_end);
 
+                    $this->createEntryWithAllTags($is_account_switch_toggled, $account_or_account_type_id, $account_types, $tags);
                     $form->click(self::$SELECTOR_STATS_FORM_BUTTON_GENERATE);
                 });
 
@@ -254,6 +258,33 @@ class StatsDistributionTest extends DuskTestCase {
         $x_col = array_column($standardised_chart_data, 'x');
         array_multisort($x_col, SORT_ASC, $standardised_chart_data);
         return array_values($standardised_chart_data);
+    }
+
+    /**
+     * Database seeder doesn't assign tags to disabled entries.
+     * It's a waste of resources to do that for every test when most tests don't need that kind of data.
+     * So instead for these tests, we'll create a disabled with all the tags
+     *
+     * @param bool $is_account_type_rather_than_account_toggled
+     * @param int $account_or_account_type_id
+     * @param Collection $account_types
+     * @param Collection $tags
+     */
+    private function createEntryWithAllTags($is_account_type_rather_than_account_toggled, $account_or_account_type_id, $account_types, $tags){
+        if(!empty($account_or_account_type_id)){
+            if($is_account_type_rather_than_account_toggled){
+                $account_type_id = $account_or_account_type_id;
+            } else {
+                $account_type_id = $account_types->where('account_id', $account_or_account_type_id)->pluck('id')->first();
+            }
+        } else {
+            $account_type_id = $account_types->pluck('id')->random();
+        }
+
+        $disabled_entry = factory(Entry::class)->create(['account_type_id'=>$account_type_id, 'disabled'=>false, 'entry_date'=>date('Y-m-d', strtotime('-1 day'))]);
+        foreach($tags->pluck('id')->all() as $tag_id){
+            $disabled_entry->tags()->attach($tag_id);
+        }
     }
 
 }

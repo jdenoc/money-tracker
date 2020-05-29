@@ -159,6 +159,7 @@
                             standardisedChartData.push(this[key]);
                         }
                         this[key].y += datum.y;
+                        this[key].y = _.round(datum.y, 2);
                     }, Object.create(null));
 
                 return standardisedChartData;
