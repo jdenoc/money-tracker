@@ -4,7 +4,7 @@ namespace Tests\Browser;
 
 use App\Account;
 use App\Institution;
-use App\Traits\Tests\Dusk\Loading;
+use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\WaitTimes;
 use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Support\Collection;
@@ -27,7 +27,7 @@ class InstitutionsPanelTest extends DuskTestCase {
 
     use WaitTimes;
     use HomePageSelectors;
-    use Loading;
+    use DuskTraitLoading;
 
     /**
      * @throws Throwable
