@@ -48,13 +48,13 @@
 
             <hr/>
 
-            <table class="table">
+            <table class="table is-hoverable is-narrow">
                 <caption class="subtitle is-5 has-text-left">Top 10 income/expense entries</caption>
                 <thead>
                     <tr>
                         <th>&nbsp;</th>
-                        <th colspan="2">Income</th>
-                        <th colspan="2">Expense</th>
+                        <th colspan="3">Income</th>
+                        <th colspan="3" class="left-border">Expense</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -62,8 +62,10 @@
                         <td v-text="index+1"></td>
                         <td v-text="incomeAndExpense.incomeMemo"></td>
                         <td v-text="incomeAndExpense.incomeValue" class="has-text-right"></td>
-                        <td v-text="incomeAndExpense.expenseMemo"></td>
+                        <td v-text="incomeAndExpense.incomeDate"></td>
+                        <td v-text="incomeAndExpense.expenseMemo" class="left-border"></td>
                         <td v-text="incomeAndExpense.expenseValue" class="has-text-right"></td>
+                        <td v-text="incomeAndExpense.expenseDate"></td>
                     </tr>
                 </tbody>
             </table>
@@ -116,13 +118,13 @@
                     if(incomeEntries[i] === undefined && expenseEntries[i] === undefined){
                         break;
                     }
-                    let incomeValue = incomeEntries[i] ? parseFloat(incomeEntries[i].entry_value).toFixed(2) : '';
-                    let expenseValue = expenseEntries[i] ? parseFloat(expenseEntries[i].entry_value).toFixed(2) : '';
                     topEntries.push({
                         incomeMemo: incomeEntries[i] ? incomeEntries[i].memo : '',
-                        incomeValue: incomeValue,
+                        incomeValue: incomeEntries[i] ? parseFloat(incomeEntries[i].entry_value).toFixed(2) : '',
+                        incomeDate: incomeEntries[i] ? incomeEntries[i].entry_date : '',
                         expenseMemo: expenseEntries[i] ? expenseEntries[i].memo : '',
-                        expenseValue: expenseValue
+                        expenseValue: expenseEntries[i] ? parseFloat(expenseEntries[i].entry_value).toFixed(2) : '',
+                        expenseDate: expenseEntries[i] ? expenseEntries[i].entry_date : '',
                     });
                 }
                 return topEntries;
@@ -203,5 +205,9 @@
 </script>
 
 <style lang="scss" scoped>
+    @import '~bulma/sass/utilities/initial-variables';
     @import '../../../sass/stats-chart';
+    .left-border{
+        border-left: 1px solid $grey-lighter;
+    }
 </style>
