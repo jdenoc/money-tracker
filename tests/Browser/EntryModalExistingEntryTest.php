@@ -676,14 +676,13 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                     $entry_modal
                         ->with($this->_selector_modal_body, function(Browser $modal_body) use ($transfer_entry_data){
                             $expense_switch_label = $transfer_entry_data['expense'] ? $this->_label_expense_switch_expense : $this->_label_expense_switch_income;
-                            $expense_switch_colour = $transfer_entry_data['expense'] ? $this->_color_expense_switch_expense : $this->_color_expense_switch_income;
 
                             $modal_body
                                 ->assertInputValue($this->_selector_modal_entry_field_date, $transfer_entry_data['entry_date'])
                                 ->assertInputValue($this->_selector_modal_entry_field_value, $transfer_entry_data['entry_value'])
                                 ->assertSelected($this->_selector_modal_entry_field_account_type, $transfer_entry_data['account_type_id'])
                                 ->assertInputValue($this->_selector_modal_entry_field_memo, $transfer_entry_data['memo']);
-                            $this->assertToggleButtonState($modal_body, $this->_selector_modal_entry_field_expense, $expense_switch_label, $expense_switch_colour);
+                            $this->assertToggleButtonState($modal_body, $this->_selector_modal_entry_field_expense, $expense_switch_label);
                         })
                         ->with($this->_selector_modal_head, function(Browser $modal_head) use ($transfer_entry_data){
                             $modal_entry_id = $modal_head->value($this->_selector_modal_entry_field_entry_id);
