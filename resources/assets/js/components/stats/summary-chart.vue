@@ -102,14 +102,17 @@
             },
 
             top10IncomeAndExpenses: function(){
-                let incomeEntries = this.filteredEntries(false).sort(function(a, b){
-                    // largest to smallest
-                    return b.entry_value - a.entry_value;
-                });
-                let expenseEntries = this.filteredEntries(true).sort(function(a, b){
-                    // largest to smallest
-                    return b.entry_value - a.entry_value;
-                });
+                let incomeEntries = _.orderBy(
+                    this.filteredEntries(false),
+                    ['entry_value', 'entry_date', 'id'],
+                    ['desc', 'desc', 'desc']
+                );
+
+                let expenseEntries = _.orderBy(
+                    this.filteredEntries(true),
+                    ['entry_value', 'entry_date', 'id'],
+                    ['desc', 'desc', 'desc']
+                );
 
                 let topEntries = [];
                 for(let i=0; i< 10; i++){
@@ -162,8 +165,13 @@
         },
         methods: {
             filteredEntries: function(isExpense){
-                // return this.rawEntriesData.filter(function(datum){ return datum.expense === isExpense; });
-                return this.largeBatchEntryData.filter(function(datum){ return datum.expense === isExpense; });
+                return this.largeBatchEntryData
+                    .map(function(entry){
+                        let e = _.clone(entry);
+                        e.entry_value = _.round(entry.entry_value, 2);
+                        return e;
+                    })
+                    .filter(function(datum){ return datum.expense === isExpense; });
             },
 
             getAccountCurrencyFromAccountTypeId: function(accountTypeId){
