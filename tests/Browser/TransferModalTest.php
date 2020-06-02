@@ -5,9 +5,9 @@ namespace Tests\Browser;
 use App\Account;
 use App\AccountType;
 use App\Http\Controllers\Api\EntryController;
-use App\Traits\Tests\Dusk\Loading;
-use App\Traits\Tests\Dusk\Navbar;
-use App\Traits\Tests\Dusk\Notification;
+use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
+use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
+use App\Traits\Tests\Dusk\Notification as DuskTraitNotification;
 use Facebook\WebDriver\WebDriverBy;
 use Faker\Factory as FakerFactory;
 use Tests\Browser\Pages\HomePage;
@@ -28,9 +28,9 @@ use Throwable;
 class TransferModalTest extends DuskTestCase {
 
     use HomePageSelectors;
-    use Loading;
-    use Navbar;
-    use Notification;
+    use DuskTraitLoading;
+    use DuskTraitNavbar;
+    use DuskTraitNotification;
 
     private $method_to = 'to';
     private $method_from = 'from';
@@ -102,7 +102,7 @@ class TransferModalTest extends DuskTestCase {
                     $modal
                         ->assertSee("Date:")
                         ->assertVisible($this->_selector_modal_transfer_field_date)
-                        ->assertInputValue($this->_selector_modal_transfer_field_date, "")
+                        ->assertInputValue($this->_selector_modal_transfer_field_date, date("Y-m-d"))
 
                         ->assertSee("Value:")
                         ->assertVisible($this->_selector_modal_transfer_field_value)
@@ -251,15 +251,13 @@ class TransferModalTest extends DuskTestCase {
         $account_types = $faker->randomElements($all_account_types, 2);
 
         $this->browse(function(Browser $browser) use ($account_types){
-            // get locale date string from browser
-            $browser_locale_date = $browser->processLocaleDateForTyping($browser->getBrowserLocaleDate());
-
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $this->openTransferModal($browser);
             $browser
-                ->with($this->_selector_modal_transfer, function($modal) use ($browser_locale_date){
-                    $modal->type($this->_selector_modal_transfer_field_date, $browser_locale_date);
+                ->with($this->_selector_modal_transfer, function($modal){
+                    // The date field should already be filled in. No need to fill it in again.
+                    $modal->assertInputValue($this->_selector_modal_transfer_field_date, date("Y-m-d"));
                 })
                 ->assertTransferModalSaveButtonIsDisabled()
 
@@ -442,17 +440,14 @@ class TransferModalTest extends DuskTestCase {
         $account_types = $faker->randomElements($all_account_types, 2);
 
         $this->browse(function(Browser $browser) use ($account_types, $faker, $has_tags, $has_attachments){
-            // get locale date string from browser
-            $browser_locale_date = $browser->processLocaleDateForTyping($browser->getBrowserLocaleDate());
-
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $this->openTransferModal($browser);
             $browser
-                ->with($this->_selector_modal_transfer, function($modal) use ($browser_locale_date, $faker, $account_types){
+                ->with($this->_selector_modal_transfer, function($modal) use ($faker, $account_types){
                     $modal
-                        // make sure all the fields are empty first
-                        ->assertInputValue($this->_selector_modal_transfer_field_date, "")
+                        // make sure (almost) all the fields are empty first
+                        ->assertInputValue($this->_selector_modal_transfer_field_date, date('Y-m-d'))
                         ->assertInputValue($this->_selector_modal_transfer_field_value, "")
                         ->assertSelected($this->_selector_modal_transfer_field_from, "")
                         ->assertSelected($this->_selector_modal_transfer_field_to, "")
@@ -461,7 +456,6 @@ class TransferModalTest extends DuskTestCase {
                         ->assertVisible($this->_selector_modal_transfer_field_upload)
                         ->assertMissing($this->_selector_modal_transfer_dropzone_upload_thumbnail)
                         // fill in fields
-                        ->type($this->_selector_modal_transfer_field_date, $browser_locale_date)
                         ->type($this->_selector_modal_transfer_field_value, "123.45")
                         ->select($this->_selector_modal_transfer_field_from, $account_types[0]['id'])
                         ->select($this->_selector_modal_transfer_field_to, $account_types[1]['id'])
@@ -487,10 +481,10 @@ class TransferModalTest extends DuskTestCase {
                 ->assertMissing($this->_selector_modal_transfer);
             $this->openTransferModal($browser);
             $browser
-                ->with($this->_selector_modal_transfer, function($modal) use ($browser_locale_date, $account_types){
-                    // make sure all the fields are empty after re-opening the transfer-modal
+                ->with($this->_selector_modal_transfer, function($modal) use ($account_types){
+                    // make sure (almost) all the fields are empty after re-opening the transfer-modal
                     $modal
-                        ->assertInputValue($this->_selector_modal_transfer_field_date, "")
+                        ->assertInputValue($this->_selector_modal_transfer_field_date, date("Y-m-d"))
                         ->assertInputValue($this->_selector_modal_transfer_field_value, "")
                         ->assertSelected($this->_selector_modal_transfer_field_from, "")
                         ->assertSelected($this->_selector_modal_transfer_field_to, "")
@@ -568,6 +562,13 @@ class TransferModalTest extends DuskTestCase {
             $this->openTransferModal($browser);
             $browser
                 ->with($this->_selector_modal_transfer, function($modal) use ($transfer_entry_data, $browser_locale_date_for_typing){
+                    // laravel dusk has an issue typing into input[type="date"] fields
+                    // work-around for this is to use individual key-strokes
+                    $backspace_count = strlen($modal->value($this->_selector_modal_transfer_field_date));
+                    for($i=0; $i<$backspace_count; $i++){
+                        $modal->keys($this->_selector_modal_transfer_field_date, "{backspace}");
+                    }
+
                     $modal
                         ->type($this->_selector_modal_transfer_field_date, $browser_locale_date_for_typing)
                         ->type($this->_selector_modal_transfer_field_value, $transfer_entry_data['value'])
