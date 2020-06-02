@@ -15,7 +15,7 @@ addons:
 services:
   - docker
 
-env: DOCKER_HOST_IP=127.0.0.1 DUSK_SCREENSHOT_DIRECTORY=tests/Browser/screenshots/ COMPOSE_PROJECT_NAME=moneytracker
+env: DOCKER_HOST_IP=127.0.0.1 COMPOSE_PROJECT_NAME=moneytracker DUSK_SCREENSHOT_DIR=tests/Browser/screenshots/ DUSK_DB_DUMP_DIR=tests/Browser/db-dump/
 
 cache:
   directories:
@@ -87,8 +87,8 @@ jobs:
         - .docker/cmd/yarn.sh run build-prod
         # install travis-ci/discord integration script(s)
         - mkdir -p .webhook
-        - wget -O .webhook/send.sh https://raw.githubusercontent.com/jdenoc/travis-ci-discord-webhook/1.2.0/send.sh
-        - wget -O .webhook/image-send.sh https://raw.githubusercontent.com/jdenoc/travis-ci-discord-webhook/1.2.0/image-send.sh
+        - wget -O .webhook/send.sh https://raw.githubusercontent.com/jdenoc/travis-ci-discord-webhook/1.3.0/send.sh
+        - wget -O .webhook/send-file.sh https://raw.githubusercontent.com/jdenoc/travis-ci-discord-webhook/1.3.0/send-file.sh
         - chmod +x .webhook/*.sh
       before_script: skip
       script: true
@@ -139,7 +139,8 @@ after_success:
 
 after_failure:
   - .webhook/send.sh failure $WEBHOOK_URL
-  - .webhook/image-send.sh --retry=3 --delay=7 $DUSK_SCREENSHOT_DIRECTORY $WEBHOOK_URL
+  - .webhook/send-file.sh --retry=3 --delay=7 --ext=png --ext=jpg --ext=jpeg --ext=gif $DUSK_SCREENSHOT_DIR $WEBHOOK_URL
+  - .webhook/send-file.sh --retry=3 --delay=7 --ext=sql $DUSK_DB_DUMP_DIR $WEBHOOK_URL
   - docker container logs --tail all --timestamps app.money-tracker > /dev/null
   - docker container exec -it app.money-tracker .docker/cmd/laravel-logs.sh
 
