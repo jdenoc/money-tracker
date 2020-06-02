@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use App\Traits\Tests\DatabaseFileDump;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 /**
@@ -19,6 +20,13 @@ abstract class DuskWithMigrationsTestCase extends DuskTestCase {
      * when a database migration is not required for said tests.
      */
     use DatabaseMigrations;
+
+    /**
+     * Often when a test involving a database fails, the failure is very database content dependent.
+     * The best way to re-create said failure is to perform a database dump.
+     * Doing this will allow us to re-produce the failing issue and in doing so, allow us to fix the issue.
+     */
+    use DatabaseFileDump;
 
     public function setUp(){
         parent::setUp();
