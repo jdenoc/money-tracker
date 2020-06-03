@@ -287,9 +287,9 @@ class StatsTagsTest extends DuskTestCase {
             $account_type_id = $account_types->pluck('id')->random();
         }
 
-        $disabled_entry = factory(Entry::class)->create(['account_type_id'=>$account_type_id, 'disabled'=>false, 'entry_date'=>date('Y-m-d', strtotime('-1 day'))]);
+        $entry_with_tags = factory(Entry::class)->create(['account_type_id'=>$account_type_id, 'disabled'=>false, 'entry_date'=>date('Y-m-d')]);
         foreach($tags->pluck('id')->all() as $tag_id){
-            $disabled_entry->tags()->attach($tag_id);
+            $entry_with_tags->tags()->attach($tag_id);
         }
     }
 

@@ -135,7 +135,10 @@
                         }.bind(this));
                     }.bind(this), Object.create(null));
 
-                return _.sortBy(Object.values(standardisedChartData), function(o){ return o.x;});
+                return _.sortBy(
+                    Object.values(standardisedChartData),
+                    function(o){ return o.x;}
+                );
             }
         },
         methods: {

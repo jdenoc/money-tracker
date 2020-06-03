@@ -220,6 +220,12 @@
             currentPage: function(){
                 return Store.getters.currentPage;
             },
+            currentDate: function(){
+                let today = new Date();
+                return today.getFullYear()+'-'
+                    +(today.getMonth()<9?'0':'')+(today.getMonth()+1)+'-'	// months in JavaScript start from 0=January
+                    +(today.getDate()<10?'0':'')+today.getDate();
+            },
             hasValidFromAccountTypeBeenSelected: function(){
                 return this.hasValidAccountTypeBeenSelected(this.transferData.from_account_type_id);
             },
@@ -376,6 +382,7 @@
             },
             resetData: function(){
                 this.dropzoneRef.removeAllFiles();
+                this.defaultData.date = this.currentDate;
                 this.defaultData.attachments = [];  // for whatever reason clonedObject.push() also pushes to the original. This is a work around.
                 this.transferData = _.clone(this.defaultData);
                 this.accountTypeMeta.from = _.clone(this.accountTypeMeta.default);

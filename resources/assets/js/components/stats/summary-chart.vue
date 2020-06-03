@@ -48,13 +48,13 @@
 
             <hr/>
 
-            <table class="table">
+            <table class="table is-hoverable is-narrow">
                 <caption class="subtitle is-5 has-text-left">Top 10 income/expense entries</caption>
                 <thead>
                     <tr>
                         <th>&nbsp;</th>
-                        <th colspan="2">Income</th>
-                        <th colspan="2">Expense</th>
+                        <th colspan="3">Income</th>
+                        <th colspan="3" class="left-border">Expense</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -62,8 +62,10 @@
                         <td v-text="index+1"></td>
                         <td v-text="incomeAndExpense.incomeMemo"></td>
                         <td v-text="incomeAndExpense.incomeValue" class="has-text-right"></td>
-                        <td v-text="incomeAndExpense.expenseMemo"></td>
+                        <td v-text="incomeAndExpense.incomeDate"></td>
+                        <td v-text="incomeAndExpense.expenseMemo" class="left-border"></td>
                         <td v-text="incomeAndExpense.expenseValue" class="has-text-right"></td>
+                        <td v-text="incomeAndExpense.expenseDate"></td>
                     </tr>
                 </tbody>
             </table>
@@ -102,27 +104,30 @@
             },
 
             top10IncomeAndExpenses: function(){
-                let incomeEntries = this.filteredEntries(false).sort(function(a, b){
-                    // largest to smallest
-                    return b.entry_value - a.entry_value;
-                });
-                let expenseEntries = this.filteredEntries(true).sort(function(a, b){
-                    // largest to smallest
-                    return b.entry_value - a.entry_value;
-                });
+                let incomeEntries = _.orderBy(
+                    this.filteredEntries(false),
+                    ['entry_value', 'entry_date', 'id'],
+                    ['desc', 'desc', 'desc']
+                );
+
+                let expenseEntries = _.orderBy(
+                    this.filteredEntries(true),
+                    ['entry_value', 'entry_date', 'id'],
+                    ['desc', 'desc', 'desc']
+                );
 
                 let topEntries = [];
                 for(let i=0; i< 10; i++){
                     if(incomeEntries[i] === undefined && expenseEntries[i] === undefined){
                         break;
                     }
-                    let incomeValue = incomeEntries[i] ? parseFloat(incomeEntries[i].entry_value).toFixed(2) : '';
-                    let expenseValue = expenseEntries[i] ? parseFloat(expenseEntries[i].entry_value).toFixed(2) : '';
                     topEntries.push({
                         incomeMemo: incomeEntries[i] ? incomeEntries[i].memo : '',
-                        incomeValue: incomeValue,
+                        incomeValue: incomeEntries[i] ? parseFloat(incomeEntries[i].entry_value).toFixed(2) : '',
+                        incomeDate: incomeEntries[i] ? incomeEntries[i].entry_date : '',
                         expenseMemo: expenseEntries[i] ? expenseEntries[i].memo : '',
-                        expenseValue: expenseValue
+                        expenseValue: expenseEntries[i] ? parseFloat(expenseEntries[i].entry_value).toFixed(2) : '',
+                        expenseDate: expenseEntries[i] ? expenseEntries[i].entry_date : '',
                     });
                 }
                 return topEntries;
@@ -162,8 +167,13 @@
         },
         methods: {
             filteredEntries: function(isExpense){
-                // return this.rawEntriesData.filter(function(datum){ return datum.expense === isExpense; });
-                return this.largeBatchEntryData.filter(function(datum){ return datum.expense === isExpense; });
+                return this.largeBatchEntryData
+                    .map(function(entry){
+                        let e = _.clone(entry);
+                        e.entry_value = _.round(entry.entry_value, 2);
+                        return e;
+                    })
+                    .filter(function(datum){ return datum.expense === isExpense; });
             },
 
             getAccountCurrencyFromAccountTypeId: function(accountTypeId){
@@ -203,5 +213,9 @@
 </script>
 
 <style lang="scss" scoped>
+    @import '~bulma/sass/utilities/initial-variables';
     @import '../../../sass/stats-chart';
+    .left-border{
+        border-left: 1px solid $grey-lighter;
+    }
 </style>

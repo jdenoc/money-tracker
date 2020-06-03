@@ -36,6 +36,8 @@ class StatsSummaryTest extends DuskTestCase {
 
     private static $LABEL_GENERATE_TABLE_BUTTON = "Generate Tables";
     private static $LABEL_NO_STATS_DATA = 'No data available';
+    private static $LABEL_TABLE_NAME_TOTAL = 'Total Income/Expenses';
+    private static $LABEL_TABLE_NAME_TOP = 'Top 10 income/expense entries';
 
     public function __construct($name = null, array $data = [], $dataName = ''){
         parent::__construct($name, $data, $dataName);
@@ -190,18 +192,21 @@ class StatsSummaryTest extends DuskTestCase {
                         ->with($selector_table_total_income_expense, function(Browser $table) use ($selector_table_label, $selector_table_body_rows, $entries, $accounts, $account_types){
                             $totals = $this->getTotalIncomeExpenses($entries, $accounts, $account_types);
 
-                            $table->assertSeeIn($selector_table_label, "Total Income/Expenses");
+                            $table->assertSeeIn($selector_table_label, self::$LABEL_TABLE_NAME_TOTAL);
                             $table_rows = $table->elements($selector_table_body_rows);
                             $this->assertGreaterThanOrEqual(1, count($table_rows));
                             $this->assertGreaterThanOrEqual(1, count($totals));
-                            $this->assertSameSize($totals, $table_rows, "'Total Income/Expense' table row count does not match expected totals:".print_r($totals, true));
+                            $this->assertSameSize($totals, $table_rows, "'".self::$LABEL_TABLE_NAME_TOTAL."' table row count does not match expected totals:".print_r($totals, true));
 
+                            $selector_cell_total_income = 'td:nth-child(1)';
+                            $selector_cell_total_expense = 'td:nth-child(2)';
+                            $selector_cell_total_currency = 'td:nth-child(3)';
                             foreach($table_rows as $table_row){
                                 //  income | expense | currency
-                                $currency_cell_text = $table_row->findElement(WebDriverBy::cssSelector('td:nth-child(3)'))->getText();
-                                $income_cell_text = $table_row->findElement(WebDriverBy::cssSelector('td:nth-child(1)'))->getText();
+                                $currency_cell_text = $table_row->findElement(WebDriverBy::cssSelector($selector_cell_total_currency))->getText();
+                                $income_cell_text = $table_row->findElement(WebDriverBy::cssSelector($selector_cell_total_income))->getText();
                                 $this->assertEquals($totals[$currency_cell_text]['income'], $income_cell_text);
-                                $expense_cell_text = $table_row->findElement(WebDriverBy::cssSelector('td:nth-child(2)'))->getText();
+                                $expense_cell_text = $table_row->findElement(WebDriverBy::cssSelector($selector_cell_total_expense))->getText();
                                 $this->assertEquals($totals[$currency_cell_text]['expense'], $expense_cell_text);
                             }
                         })
@@ -209,26 +214,43 @@ class StatsSummaryTest extends DuskTestCase {
                         ->with($selector_table_top_10_income_expense, function(Browser $table) use ($selector_table_label, $selector_table_body_rows, $entries){
                             $top_entries = $this->getTop10IncomeExpenses($entries);
 
-                            $table->assertSeeIn($selector_table_label, "Top 10 income/expense entries");
+                            $table->assertSeeIn($selector_table_label, self::$LABEL_TABLE_NAME_TOP);
                             $table_rows = $table->elements($selector_table_body_rows);
                             $this->assertGreaterThanOrEqual(1, count($table_rows));
                             $this->assertGreaterThanOrEqual(1, count($top_entries));
                             $this->assertLessThanOrEqual(10, count($table_rows));
                             $this->assertLessThanOrEqual(10, count($top_entries));
-                            $this->assertSameSize($top_entries, $table_rows, "'Top 10 income/expense entries' table row count does not match expected totals:".print_r($top_entries, true));
+                            $this->assertSameSize($top_entries, $table_rows, "'".self::$LABEL_TABLE_NAME_TOP."' table row count does not match expected totals:".print_r($top_entries, true));
 
+                            $selector_cell_index = 'td:nth-child(1)';
+                            $selector_cell_income_memo = 'td:nth-child(2)';
+                            $selector_cell_income_value = 'td:nth-child(3)';
+                            $selector_cell_income_date = 'td:nth-child(4)';
+                            $selector_cell_expense_memo = 'td:nth-child(5)';
+                            $selector_cell_expense_value = 'td:nth-child(6)';
+                            $selector_cell_expense_date = 'td:nth-child(7)';
                             foreach($table_rows as $table_row){
                                 //  i | income memo | income value | expense memo | expense value
-                                $index_cell_text = $table_row->findElement(WebDriverBy::cssSelector('td:nth-child(1)'))->getText();
+                                $index_cell_text = $table_row->findElement(WebDriverBy::cssSelector($selector_cell_index))->getText();
                                 $error_message_postfix = "index:".$index_cell_text.' '.print_r($top_entries[$index_cell_text], true);
-                                $income_memo_cell_text = $table_row->findElement(WebDriverBy::cssSelector('td:nth-child(2)'))->getText();
+
+                                $income_memo_cell_text = $table_row->findElement(WebDriverBy::cssSelector($selector_cell_income_memo))->getText();
                                 $this->assertEquals($top_entries[$index_cell_text]['income_memo'], $income_memo_cell_text, "income_memo values don't match\n".$error_message_postfix);
-                                $income_value_text = $table_row->findElement(WebDriverBy::cssSelector('td:nth-child(3)'))->getText();
+
+                                $income_value_text = $table_row->findElement(WebDriverBy::cssSelector($selector_cell_income_value))->getText();
                                 $this->assertEquals($top_entries[$index_cell_text]['income_value'], $income_value_text, "income_value values don't match\n".$error_message_postfix);
-                                $expense_memo_cell_text = $table_row->findElement(WebDriverBy::cssSelector('td:nth-child(4)'))->getText();
+
+                                $income_date_text = $table_row->findElement(WebDriverBy::cssSelector($selector_cell_income_date))->getText();
+                                $this->assertEquals($top_entries[$index_cell_text]['income_date'], $income_date_text, "income_date values don't match\n".$error_message_postfix);
+
+                                $expense_memo_cell_text = $table_row->findElement(WebDriverBy::cssSelector($selector_cell_expense_memo))->getText();
                                 $this->assertEquals($top_entries[$index_cell_text]['expense_memo'], $expense_memo_cell_text, "expense_memo don't match\n".$error_message_postfix);
-                                $expense_value_text = $table_row->findElement(WebDriverBy::cssSelector('td:nth-child(5)'))->getText();
+
+                                $expense_value_text = $table_row->findElement(WebDriverBy::cssSelector($selector_cell_expense_value))->getText();
                                 $this->assertEquals($top_entries[$index_cell_text]['expense_value'], $expense_value_text, "expense_value don't match\n".$error_message_postfix);
+
+                                $expense_date_text = $table_row->findElement(WebDriverBy::cssSelector($selector_cell_expense_date))->getText();
+                                $this->assertEquals($top_entries[$index_cell_text]['expense_date'], $expense_date_text, "expense_date don't match\n".$error_message_postfix);
                              }
                         });
             });
@@ -274,8 +296,8 @@ class StatsSummaryTest extends DuskTestCase {
      * @return array
      */
     private function getTop10IncomeExpenses($entries){
-        $top_income_entries = $entries->where('expense', 0)->sortByDesc('entry_value')->values();
-        $top_expense_entries = $entries->where('expense', 1)->sortByDesc('entry_value')->values();
+        $top_income_entries = $entries->where('expense', 0)->sortByDesc($this->sortCallable())->values();
+        $top_expense_entries = $entries->where('expense', 1)->sortByDesc($this->sortCallable())->values();
 
         $top_entries = [];
         for($i=0; $i<10; $i++){
@@ -286,10 +308,25 @@ class StatsSummaryTest extends DuskTestCase {
             $top_entries[$i+1] = [
                 'income_memo'=>!empty($top_income_entries->get($i)) ? $top_income_entries->get($i)['memo'] : '',
                 'income_value'=>!empty($top_income_entries->get($i)) ? $top_income_entries->get($i)['entry_value'] : '',
+                'income_date'=>!empty($top_income_entries->get($i)) ? $top_income_entries->get($i)['entry_date'] : '',
                 'expense_memo'=>!empty($top_expense_entries->get($i)) ? $top_expense_entries->get($i)['memo'] : '',
-                'expense_value'=>!empty($top_expense_entries->get($i)) ? $top_expense_entries->get($i)['entry_value'] : ''
+                'expense_value'=>!empty($top_expense_entries->get($i)) ? $top_expense_entries->get($i)['entry_value'] : '',
+                'expense_date'=>!empty($top_expense_entries->get($i)) ? $top_expense_entries->get($i)['entry_date'] : ''
             ];
         }
         return $top_entries;
     }
+
+    /**
+     * @link https://laracasts.com/discuss/channels/laravel/collections-passing-a-class-method-name-not-a-closure-to-the-map-method?page=1#reply=456138
+     * @link https://stackoverflow.com/a/25451441/4152012
+     *
+     * @return string
+     */
+    private function sortCallable(){
+        return function($entry){
+            return sprintf("%010s %s %d", $entry['entry_value'], $entry['entry_date'], $entry['id']);
+        };
+    }
+
 }
