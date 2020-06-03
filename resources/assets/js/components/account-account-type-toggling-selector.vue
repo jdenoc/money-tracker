@@ -7,8 +7,8 @@
                     v-bind:id="getIdForToggleSwitch"
                     v-model="propToggle"
                     v-bind:value="propToggle"
-                    v-bind:labels="{checked: toggleButtonProperties.label.checked, unchecked: toggleButtonProperties.label.unchecked}"
-                    v-bind:color="{checked: toggleButtonProperties.colors.checked, unchecked: toggleButtonProperties.colors.unchecked}"
+                    v-bind:labels="toggleButtonProperties.label"
+                    v-bind:color="toggleButtonProperties.colors"
                     v-bind:height="toggleButtonProperties.height"
                     v-bind:width="toggleButtonProperties.width"
                     v-bind:sync="true"
@@ -49,6 +49,7 @@
     import _ from "lodash";
     import {accountsObjectMixin} from "../mixins/accounts-object-mixin";
     import {accountTypesObjectMixin} from "../mixins/account-types-object-mixin";
+    import {bulmaColorsMixin} from "../mixins/bulma-colors-mixin";
     import {ToggleButton} from 'vue-js-toggle-button'
 
     export default {
@@ -56,7 +57,7 @@
         components: {
             ToggleButton
         },
-        mixins: [accountsObjectMixin, accountTypesObjectMixin],
+        mixins: [accountsObjectMixin, accountTypesObjectMixin, bulmaColorsMixin],
         props: {
             id: {type: String, required: true},
             accountOrAccountTypeToggled: {type: Boolean, default: true},
@@ -67,13 +68,6 @@
                 selectedToggleSwitch: {
                     account: true,
                     accountType: false
-                },
-
-                toggleButtonProperties: {
-                    label: {checked: "Account", unchecked: "Account Type"},
-                    colors: {checked: '#B5B5B5', unchecked: '#B5B5B5'},
-                    height: 36,
-                    width: 140,
                 },
 
                 propToggle: this.accountOrAccountTypeToggled,
@@ -92,7 +86,7 @@
             propToggle: function(newValue, oldValue){
                 this.resetAccountOrAccountTypeSelectValue();
                 this.$emit('update-toggle', newValue);
-            }
+            },
         },
         computed: {
             listProcessedAccountOrAccountTypes: function(){
@@ -125,8 +119,16 @@
             },
             getIdForToggleSwitch: function(){
                 return 'toggle-account-and-account-types-for-'+this.id;
-            }
+            },
 
+            toggleButtonProperties: function(){
+                return {
+                    label: {checked: "Account", unchecked: "Account Type"},
+                    colors: {checked: this.colorGreyLight, unchecked: this.colorGreyLight},
+                    height: 36,
+                    width: 140,
+                };
+            },
         },
         methods: {
             processListOfObjects: function(listOfObjects, canShowDisabled=true){

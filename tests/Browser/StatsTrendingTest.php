@@ -43,7 +43,7 @@ class StatsTrendingTest extends DuskTestCase {
 
     public function __construct($name = null, array $data = [], $dataName = ''){
         parent::__construct($name, $data, $dataName);
-        $this->_id_label = 'trending-chart';
+        $this->_account_or_account_type_toggling_selector_label_id = 'trending-chart';
     }
 
     /**
@@ -158,13 +158,13 @@ class StatsTrendingTest extends DuskTestCase {
         $account_types = collect($this->getApiAccountTypes());
 
         $this->browse(function (Browser $browser) use ($accounts, $account_types, $datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available){
-            $account_or_account_type_id = null;
+            $filter_data = [];
 
             $browser->visit(new StatsPage());
             $this->clickStatsSidePanelOptionTrending($browser);
             $browser
                 ->assertVisible(self::$SELECTOR_STATS_FORM_TRENDING)
-                ->with(self::$SELECTOR_STATS_FORM_TRENDING, function(Browser $form) use ($accounts, $account_types, &$datepicker_start, &$datepicker_end, $is_switch_toggled, &$account_or_account_type_id, $is_random_selector_value, $are_disabled_select_options_available){
+                ->with(self::$SELECTOR_STATS_FORM_TRENDING, function(Browser $form) use ($accounts, $account_types, $datepicker_start, $datepicker_end, $is_switch_toggled, &$filter_data, $is_random_selector_value, $are_disabled_select_options_available){
                     if($are_disabled_select_options_available){
                         $this->toggleShowDisabledAccountOrAccountTypeCheckbox($form);
                     }
@@ -178,6 +178,7 @@ class StatsTrendingTest extends DuskTestCase {
                     }
 
                     $this->selectAccountOrAccountTypeValue($form, $account_or_account_type_id);
+                    $filter_data = $this->generateFilterArrayElementAccountOrAccountypeId($filter_data, $is_switch_toggled, $account_or_account_type_id);
 
                     if(!is_null($datepicker_start) && !is_null($datepicker_end)){
                         $this->setDateRange($form, $datepicker_start, $datepicker_end);
@@ -185,16 +186,17 @@ class StatsTrendingTest extends DuskTestCase {
                         $datepicker_start = date('Y-m-01');
                         $datepicker_end = date('Y-m-t');
                     }
+                    $filter_data = $this->generateFilterArrayElementDatepicker($filter_data, $datepicker_start, $datepicker_end);
 
                     $form->click(self::$SELECTOR_BUTTON_GENERATE);
                 });
 
                 $this->waitForLoadingToStop($browser);
-                $entries = $this->getBatchedFilteredEntries($datepicker_start, $datepicker_end, $account_or_account_type_id, $is_switch_toggled);
+                $entries = $this->getBatchedFilteredEntries($filter_data);
 
                 $browser
                     ->assertDontSeeIn(self::$SELECTOR_STATS_RESULTS_AREA, self::$LABEL_NO_STATS_DATA)
-                    ->with(self::$SELECTOR_STATS_RESULTS_AREA, function(Browser $stats_results) use ($datepicker_start, $datepicker_end, $account_or_account_type_id, $is_switch_toggled){
+                    ->with(self::$SELECTOR_STATS_RESULTS_AREA, function(Browser $stats_results){
                         //  line-chart graph canvas should be visible
                         $stats_results->assertVisible(self::$SELECTOR_CHART_TRENDING);
                     })

@@ -41,7 +41,7 @@ class StatsSummaryTest extends DuskTestCase {
 
     public function __construct($name = null, array $data = [], $dataName = ''){
         parent::__construct($name, $data, $dataName);
-        $this->_id_label = 'summary-chart';
+        $this->_account_or_account_type_toggling_selector_label_id = 'summary-chart';
     }
 
     /**
@@ -144,12 +144,12 @@ class StatsSummaryTest extends DuskTestCase {
         $account_types = collect($this->getApiAccountTypes());
 
         $this->browse(function (Browser $browser) use ($datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $accounts, $account_types){
-            $account_or_account_type_id = null;
+            $filter_data = [];
 
             $browser
                 ->visit(new StatsPage())
                 ->assertVisible(self::$SELECTOR_STATS_FORM_SUMMARY)
-                ->with(self::$SELECTOR_STATS_FORM_SUMMARY, function(Browser $form) use (&$datepicker_start, &$datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, &$account_or_account_type_id, $accounts, $account_types){
+                ->with(self::$SELECTOR_STATS_FORM_SUMMARY, function(Browser $form) use ($datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, &$filter_data, $accounts, $account_types){
                     if($are_disabled_select_options_available){
                         $this->toggleShowDisabledAccountOrAccountTypeCheckbox($form);
                     }
@@ -162,6 +162,7 @@ class StatsSummaryTest extends DuskTestCase {
                         $account_or_account_type_id = ($is_random_selector_value) ? $accounts->where('disabled', $are_disabled_select_options_available)->pluck('id')->random() : '';
                     }
                     $this->selectAccountOrAccountTypeValue($form, $account_or_account_type_id);
+                    $filter_data = $this->generateFilterArrayElementAccountOrAccountypeId($filter_data, $is_switch_toggled, $account_or_account_type_id);
 
                     if(!is_null($datepicker_start) && !is_null($datepicker_end)){
                         $this->setDateRange($form, $datepicker_start, $datepicker_end);
@@ -170,6 +171,7 @@ class StatsSummaryTest extends DuskTestCase {
                         $datepicker_start = date('Y-m-01');
                         $datepicker_end = date('Y-m-t');
                     }
+                    $filter_data = $this->generateFilterArrayElementDatepicker($filter_data, $datepicker_start, $datepicker_end);
 
                     $form->click(self::$SELECTOR_BUTTON_GENERATE);
                 });
@@ -178,16 +180,16 @@ class StatsSummaryTest extends DuskTestCase {
             $browser
                 ->assertDontSeeIn(self::$SELECTOR_STATS_RESULTS_AREA, self::$LABEL_NO_STATS_DATA)
 
-                ->with(self::$SELECTOR_STATS_RESULTS_AREA, function(Browser $stats_results) use ($datepicker_start, $datepicker_end, $is_switch_toggled, &$account_or_account_type_id, $account_types, $accounts){
+                ->with(self::$SELECTOR_STATS_RESULTS_AREA, function(Browser $stats_results) use ($filter_data, $account_types, $accounts){
                     $selector_table_total_income_expense = 'table:nth-child(1)';
                     $selector_table_top_10_income_expense = 'table:nth-child(3)';
                     $selector_table_label = 'caption';
                     $selector_table_body_rows = 'tbody tr';
 
-                    $entries = $this->getBatchedFilteredEntries($datepicker_start, $datepicker_end, $account_or_account_type_id, $is_switch_toggled);
+                    $entries = $this->getBatchedFilteredEntries($filter_data);
                     $stats_results
                         ->assertVisible($selector_table_total_income_expense)
-                        ->with($selector_table_total_income_expense, function(Browser $table) use ($selector_table_label, $selector_table_body_rows, $entries, $accounts, $account_types, $account_or_account_type_id, $datepicker_start, $datepicker_end, $is_switch_toggled){
+                        ->with($selector_table_total_income_expense, function(Browser $table) use ($selector_table_label, $selector_table_body_rows, $entries, $accounts, $account_types){
                             $totals = $this->getTotalIncomeExpenses($entries, $accounts, $account_types);
 
                             $table->assertSeeIn($selector_table_label, self::$LABEL_TABLE_NAME_TOTAL);

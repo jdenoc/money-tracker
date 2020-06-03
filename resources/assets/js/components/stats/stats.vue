@@ -2,11 +2,13 @@
     <div id="stats-display">
         <summary-chart v-show="isVisibleChart.summary"></summary-chart>
         <trending-chart v-show="isVisibleChart.trending"></trending-chart>
+        <distribution-chart v-show="isVisibleChart.distribution"></distribution-chart>
         <tags-chart v-show="isVisibleChart.tags"></tags-chart>
     </div>
 </template>
 
 <script>
+    import DistributionChart from "./distribution-chart";
     import SummaryChart from "./summary-chart";
     import TrendingChart from "./trending-chart";
     import TagsChart from "./tags-chart";
@@ -15,7 +17,7 @@
     export default {
         name: "stats",
         mixins: [statsNavMixin],
-        components: {SummaryChart, TagsChart, TrendingChart},
+        components: {DistributionChart, SummaryChart, TagsChart, TrendingChart},
         created: function(){
             this.$eventHub.listen(this.$eventHub.EVENT_STATS_SUMMARY, function(){
                 this.makeChartVisible(this.chartNameSummary);
@@ -25,6 +27,9 @@
             }.bind(this));
             this.$eventHub.listen(this.$eventHub.EVENT_STATS_TAGS, function(){
                 this.makeChartVisible(this.chartNameTags);
+            }.bind(this));
+            this.$eventHub.listen(this.$eventHub.EVENT_STATS_DISTRIBUTION, function(){
+                this.makeChartVisible(this.chartNameDistribution);
             }.bind(this));
         }
     }

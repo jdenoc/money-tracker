@@ -199,10 +199,11 @@
     import { ToggleButton } from 'vue-js-toggle-button';
     import VoerroTagsInput from '@voerro/vue-tagsinput';
     import vue2Dropzone from 'vue2-dropzone';
+    import {bulmaColorsMixin} from "../mixins/bulma-colors-mixin";
 
     export default {
         name: "entry-modal",
-        mixins: [accountsObjectMixin, accountTypesObjectMixin, tagsObjectMixin],
+        mixins: [accountsObjectMixin, accountTypesObjectMixin, bulmaColorsMixin, tagsObjectMixin],
         components: {
             EntryModalAttachment,
             ToggleButton,
@@ -238,13 +239,6 @@
                     transfer_entry_id: null,
                     tags: [],
                     attachments: []
-                },
-
-                toggleButtonProperties: {
-                    colors: {checked: '#ffcc00', unchecked: '#00d1b2'},
-                    height: 40,
-                    labels: {checked: 'Expense', unchecked: 'Income'},
-                    width: 200,
                 },
             }
         },
@@ -324,8 +318,16 @@
                 return document.querySelector("meta[name='csrf-token']").getAttribute('content');
             },
             orderedAttachments: function(){
-                return _.orderBy(this.entryData.attachments, 'name')
-            }
+                return _.orderBy(this.entryData.attachments, 'name');
+            },
+            toggleButtonProperties: function(){
+                return {
+                    colors: {checked: this.colorWarning, unchecked: this.colorPrimary},
+                    height: 40,
+                    labels: {checked: 'Expense', unchecked: 'Income'},
+                    width: 200,
+                };
+            },
         },
         methods: {
             decimaliseEntryValue: function(){

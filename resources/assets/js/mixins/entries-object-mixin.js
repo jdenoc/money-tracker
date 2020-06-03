@@ -36,7 +36,6 @@ export const entriesObjectMixin = {
             this.largeBatchEntryData = [];
 
             // init data from page 0
-            this.largeBatchEntryData = this.rawEntriesData;
             this.chainBatchRequest(0, filterParameters);
         },
         dataHasBeenFetched: function(){

@@ -209,6 +209,7 @@
     import {Currency} from "../currency";
     import {accountsObjectMixin} from "../mixins/accounts-object-mixin";
     import {accountTypesObjectMixin} from "../mixins/account-types-object-mixin";
+    import {bulmaColorsMixin} from "../mixins/bulma-colors-mixin";
     import {tagsObjectMixin} from "../mixins/tags-object-mixin";
     import {ToggleButton} from 'vue-js-toggle-button';
     import AccountAccountTypeTogglingSelector from "./account-account-type-toggling-selector";
@@ -216,7 +217,7 @@
 
     export default {
         name: "filter-modal",
-        mixins: [accountsObjectMixin, accountTypesObjectMixin, tagsObjectMixin],
+        mixins: [accountsObjectMixin, accountTypesObjectMixin, bulmaColorsMixin, tagsObjectMixin],
         components: {
             AccountAccountTypeTogglingSelector,
             ToggleButton,
@@ -250,13 +251,6 @@
                     minValue: "",
                     maxValue: ""
                 },
-
-                toggleButtonProperties: {
-                    labels: {checked: 'Enabled', unchecked: 'Disabled'},
-                    colors: {checked: '#209CEE', unchecked: '#B5B5B5'},
-                    height: 40,
-                    width: 200,
-                },
             }
         },
         computed: {
@@ -273,6 +267,14 @@
 
                 let currencyCode = _.isNull(account) ? '' : account.currency;
                 return this.currencyObject.getClassFromCode(currencyCode);
+            },
+            toggleButtonProperties: function(){
+                return {
+                    labels: {checked: 'Enabled', unchecked: 'Disabled'},
+                    colors: {checked: this.colorInfo, unchecked: this.colorGreyLight},
+                    height: 40,
+                    width: 200,
+                };
             },
         },
         methods: {

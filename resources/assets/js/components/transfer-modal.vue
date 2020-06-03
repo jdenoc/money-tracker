@@ -199,13 +199,6 @@
                     tags: [],
                     attachments: []
                 },
-
-                toggleButtonProperties: {
-                    colors: {'checked': '#ffcc00', 'unchecked': '#00d1b2'},
-                    height: 40,
-                    labels: {'checked': 'Expense', 'unchecked': 'Income'},
-                    width: 200,
-                },
             }
         },
         computed: {

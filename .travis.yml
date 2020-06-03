@@ -63,6 +63,7 @@ stages:
   - "e2e-tests: entry-modal"
   - "e2e-tests: filter-modal"
   - "e2e-tests: transfer-modal"
+  - "e2e-tests: stats"
 
 jobs:
   include:
@@ -131,6 +132,7 @@ jobs:
     - stage: "e2e-tests: stats"
       script: .docker/cmd/artisan.sh dusk --group stats-summary --stop-on-failure
     - script: .docker/cmd/artisan.sh dusk --group stats-trending --stop-on-failure
+    - script: .docker/cmd/artisan.sh dusk --group stats-distribution --stop-on-failure
     - script: .docker/cmd/artisan.sh dusk --group stats-tags --stop-on-failure
 
 # $WEBHOOK_URL should be set in travis-ci settings

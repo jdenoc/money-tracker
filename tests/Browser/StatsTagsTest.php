@@ -45,7 +45,7 @@ class StatsTagsTest extends DuskTestCase {
 
     public function __construct($name = null, array $data = [], $dataName = ''){
         parent::__construct($name, $data, $dataName);
-        $this->_id_label = 'tags-chart';
+        $this->_account_or_account_type_toggling_selector_label_id = 'tags-chart';
     }
 
     /**
@@ -178,15 +178,14 @@ class StatsTagsTest extends DuskTestCase {
         $tags = collect($this->getApiTags());
 
         $this->browse(function(Browser $browser) use ($datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $accounts, $account_types, $tag_count, $tags){
-            $account_or_account_type_id = null;
-            $form_tags = null;
+            $filter_data = [];
 
             $browser->visit(new StatsPage());
             $this->clickStatsSidePanelOptionTags($browser);
 
             $browser
                 ->assertVisible(self::$SELECTOR_STATS_FORM_TAGS)
-                ->with(self::$SELECTOR_STATS_FORM_TAGS, function(Browser $form) use ($is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $accounts, $account_types, &$account_or_account_type_id, $tag_count, $tags, &$form_tags, &$datepicker_start, &$datepicker_end){
+                ->with(self::$SELECTOR_STATS_FORM_TAGS, function(Browser $form) use ($is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $accounts, $account_types, &$filter_data, $tag_count, $tags, $datepicker_start, $datepicker_end){
                     if($are_disabled_select_options_available){
                         $this->toggleShowDisabledAccountOrAccountTypeCheckbox($form);
                     }
@@ -200,6 +199,7 @@ class StatsTagsTest extends DuskTestCase {
                         $account_or_account_type_id = $is_random_selector_value ? $accounts->where('disabled', $are_disabled_select_options_available)->pluck('id')->random() : '';
                     }
                     $this->selectAccountOrAccountTypeValue($form, $account_or_account_type_id);
+                    $filter_data = $this->generateFilterArrayElementAccountOrAccountypeId($filter_data, $is_switch_toggled, $account_or_account_type_id);
 
                     $form_tags = $tags->chunk($tag_count)->first();
                     if(!is_null($form_tags)){
@@ -208,6 +208,7 @@ class StatsTagsTest extends DuskTestCase {
                             $this->assertTagInInput($form, $tag['name']);
                         }
                     }
+                    $filter_data = $this->generateFilterArrayElementTags($filter_data, $form_tags);
 
                     if(!is_null($datepicker_start) && !is_null($datepicker_end)){
                         $this->setDateRange($form, $datepicker_start, $datepicker_end);
@@ -215,12 +216,13 @@ class StatsTagsTest extends DuskTestCase {
                         $datepicker_start = date('Y-m-01');
                         $datepicker_end = date('Y-m-t');
                     }
+                    $filter_data = $this->generateFilterArrayElementDatepicker($filter_data, $datepicker_start, $datepicker_end);
 
                     $this->createEntryWithAllTags($is_switch_toggled, $account_or_account_type_id, $account_types, $tags);
                     $form->click(self::$SELECTOR_BUTTON_GENERATE);
                 });
 
-            $entries = $this->getBatchedFilteredEntries($datepicker_start, $datepicker_end, $account_or_account_type_id, $is_switch_toggled, $form_tags);
+            $entries = $this->getBatchedFilteredEntries($filter_data);
 
             $this->waitForLoadingToStop($browser);
             $browser
