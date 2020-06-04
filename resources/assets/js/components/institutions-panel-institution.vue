@@ -57,9 +57,12 @@
                 }.bind(this));
             },
             activeAccountsInInstitution: function(){
-                return this.accountsInInstitution.filter(function(account){
-                    return !account.disabled;
-                });
+                return _.sortBy(
+                    this.accountsInInstitution.filter(function(account){
+                        return !account.disabled;
+                    }),
+                    'name'
+                );
             }
         },
         methods:{

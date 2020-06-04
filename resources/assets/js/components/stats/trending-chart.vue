@@ -16,7 +16,7 @@
             </div>
 
             <div class="field"><div class="control">
-                <button class="button is-primary generate-stats" v-on:click="displayData"><i class="fas fa-chart-bar"></i>Generate Chart</button>
+                <button class="button is-primary generate-stats" v-on:click="displayData"><i class="fas fa-chart-area"></i>Generate Chart</button>
             </div></div>
         </section>
 
@@ -143,25 +143,20 @@
                 let standardisedChartData = [];
                 this.largeBatchEntryData
                     .filter(function(chartDatum){ return chartDatum.expense === isExpense })
-                    .map(function(filteredChartDatum){
-                        // extract entry_date and entry_value
-                        return {x: filteredChartDatum.entry_date, y: parseFloat(filteredChartDatum.entry_value)}
-                    })
-                    .sort(function(a, b){
-                        // order data by entry_date
-                        return (a.x > b.x) ? 1 : (b.x > a.x) ? -1 : 0;
-                    })
                     .forEach(function(datum){
                         // condense data points with similar entry_date values
-                        let key = datum.x;
-                        if(!this[key]){
-                            this[key] = {x: datum.x, y: 0};
-                            standardisedChartData.push(this[key]);
+                        let key = datum.entry_date;
+                        if(!standardisedChartData.hasOwnProperty(key)){
+                            standardisedChartData[key] = {x: key, y: 0}
                         }
-                        this[key].y += datum.y;
-                    }, Object.create(null));
+                        standardisedChartData[key].y += parseFloat(datum.entry_value);
+                        standardisedChartData[key].y = _.round(standardisedChartData[key].y, 2);
+                    });
 
-                return standardisedChartData;
+                return _.sortBy(
+                    Object.values(standardisedChartData),
+                    function(o){ return o.x;}
+                );
             },
 
             setChartTitle: function(startDate, endDate){

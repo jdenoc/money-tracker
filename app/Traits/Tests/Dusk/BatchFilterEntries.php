@@ -8,31 +8,61 @@ use Illuminate\Support\Collection;
 trait BatchFilterEntries {
 
     /**
+     * @param array $filter_data
      * @param string $start_date
      * @param string $end_date
-     * @param int|string $account_or_account_type_id
-     * @param bool $is_switch_toggled
-     * @param Collection|null $tags
-     * @return Collection
+     * @return array
      */
-    private function getBatchedFilteredEntries($start_date, $end_date, $account_or_account_type_id, $is_switch_toggled, $tags=null){
-        $filter_data = [
-            EntryController::FILTER_KEY_START_DATE=>$start_date,
-            EntryController::FILTER_KEY_END_DATE=>$end_date,
-        ];
+    private function generateFilterArrayElementDatepicker($filter_data, $start_date, $end_date){
+        $filter_data[EntryController::FILTER_KEY_START_DATE] = $start_date;
+        $filter_data[EntryController::FILTER_KEY_END_DATE] = $end_date;
+        return $filter_data;
+    }
 
+    /**
+     * @param array $filter_data
+     * @param bool $is_account_switch_toggled
+     * @param int|null $account_or_account_type_id
+     * @return mixed
+     */
+    private function generateFilterArrayElementAccountOrAccountypeId($filter_data, $is_account_switch_toggled, $account_or_account_type_id){
         if(!empty($account_or_account_type_id)){
-            if($is_switch_toggled){
+            if($is_account_switch_toggled){
                 $filter_data[EntryController::FILTER_KEY_ACCOUNT_TYPE] = $account_or_account_type_id;
             } else {
                 $filter_data[EntryController::FILTER_KEY_ACCOUNT] = $account_or_account_type_id;
             }
         }
+        return $filter_data;
+    }
 
+    /**
+     * @param array $filter_data
+     * @param bool $is_expense
+     * @return array
+     */
+    private function generateFilterArrayElementExpense($filter_data, $is_expense){
+        $filter_data[EntryController::FILTER_KEY_EXPENSE] = $is_expense;
+        return $filter_data;
+    }
+
+    /**
+     * @param array $filter_data
+     * @param Collection|null $tags
+     * @return mixed
+     */
+    private function generateFilterArrayElementTags($filter_data, $tags){
         if(!is_null($tags)){
             $filter_data[EntryController::FILTER_KEY_TAGS] = $tags->pluck('id')->toArray();
         }
+        return $filter_data;
+    }
 
+    /**
+     * @param array $filter_data
+     * @return Collection
+     */
+    private function getBatchedFilteredEntries($filter_data){
         $entries = $this->getApiEntries(0, $filter_data);
         if(empty($entries)){
             throw new \UnexpectedValueException("Entries not available with filter ".print_r($filter_data, true));

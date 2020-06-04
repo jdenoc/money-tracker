@@ -74,6 +74,9 @@ trait InjectDatabaseStateIntoException {
                 case \SebastianBergmann\Comparator\ComparisonFailure::class:
                     return new  $exception_name($original_exception->getExpected(), $original_exception->getActual(), $original_exception->getExpectedAsString(), $original_exception->getActualAsString(), false, $new_exception_message);
 
+                case \PHPUnit\Framework\ExpectationFailedException::class:
+                    return new $exception_name($new_exception_message, $original_exception->getComparisonFailure(), $original_exception);
+
                 case \ErrorException::class:
                     return new $exception_name($new_exception_message, $original_exception->getCode(), $original_exception->getSeverity(), $original_exception->getFile(), $original_exception->getLine(), $original_exception);
 

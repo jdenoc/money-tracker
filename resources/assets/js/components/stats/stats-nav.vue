@@ -18,6 +18,14 @@
             </span> Trending
         </a>
         <a class="panel-block"
+           v-on:click="showDistributionChart"
+           v-bind:class="{'is-active': isVisibleChart.distribution}"
+        >
+            <span class="panel-icon">
+                <i class="fas fa-chart-pie" aria-hidden="true"></i>
+            </span> Distribution
+        </a>
+        <a class="panel-block"
             v-on:click="showTagsChart"
             v-bind:class="{'is-active': isVisibleChart.tags}"
             >
@@ -47,6 +55,10 @@
                 this.makeChartVisible(this.chartNameTags);
                 this.$eventHub.broadcast(this.$eventHub.EVENT_STATS_TAGS);
             },
+            showDistributionChart: function(){
+                this.makeChartVisible(this.chartNameDistribution);
+                this.$eventHub.broadcast(this.$eventHub.EVENT_STATS_DISTRIBUTION);
+            }
         },
         mounted: function(){
             // check which chart is supposed to be visible, then broadcast which chart should be visible
