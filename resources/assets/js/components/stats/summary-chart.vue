@@ -21,7 +21,7 @@
         </section>
         <hr />
 
-        <section class="section stats-results-summary" v-if="areEntriesAvailable">
+        <section class="section stats-results-summary" v-if="areEntriesAvailable && dataLoaded">
             <table class="table">
                 <caption class="subtitle is-5 has-text-left">Total Income/Expenses</caption>
                 <thead>

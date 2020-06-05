@@ -257,6 +257,47 @@ class StatsSummaryTest extends DuskTestCase {
         });
     }
 
+    public function providerGeneratingADifferentChartWontCauseSummaryTablesToBecomeVisible(){
+        return [
+            // [$side_panel_selector, $stats_form_selector, $stats_results_selector]
+            'trending'=>[self::$SELECTOR_STATS_SIDE_PANEL_OPTION_TRENDING, '#stats-form-trending', '.stats-results-trending'],
+            'tags'=>[self::$SELECTOR_STATS_SIDE_PANEL_OPTION_TAGS, '#stats-form-tags', '.stats-results-tags'],
+            'distribution'=>[self::$SELECTOR_STATS_SIDE_PANEL_OPTION_DISTRIBUTION, '#stats-form-distribution', '.stats-results-distribution'],
+        ];
+    }
+
+    /**
+     * @dataProvider providerGeneratingADifferentChartWontCauseSummaryTablesToBecomeVisible
+     * @param $side_panel_selector
+     * @param $stats_form_selector
+     * @param $stats_results_selector
+     *
+     * @throws Throwable
+     */
+    public function testGeneratingADifferentChartWontCauseSummaryTablesToBecomeVisible($side_panel_selector, $stats_form_selector, $stats_results_selector){
+        $this->browse(function (Browser $browser) use ($side_panel_selector, $stats_form_selector, $stats_results_selector){
+            $browser
+                ->visit(new StatsPage())
+                ->assertVisible(self::$SELECTOR_STATS_FORM_SUMMARY);
+
+            $this->clickStatsSidePanelOption($browser, $side_panel_selector);
+            $browser
+                ->assertVisible($stats_form_selector)
+                ->with($stats_form_selector, function(Browser $form){
+                    $form->click(self::$SELECTOR_BUTTON_GENERATE);
+                });
+            $this->waitForLoadingToStop($browser);
+            $browser->assertDontSeeIn($stats_results_selector, self::$LABEL_NO_STATS_DATA);
+
+            $this->clickStatsSidePanelOptionSummary($browser);
+            $this->assertStatsSidePanelOptionIsActive($browser, self::$LABEL_STATS_SIDE_PANEL_OPTION_SUMMARY);
+            $browser
+                ->assertVisible(self::$SELECTOR_STATS_FORM_SUMMARY)
+                ->assertSeeIn(self::$SELECTOR_STATS_RESULTS_AREA, self::$LABEL_NO_STATS_DATA);
+        });
+
+    }
+
     /**
      * @param Collection $entries
      * @param Collection $accounts
