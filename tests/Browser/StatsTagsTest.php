@@ -11,7 +11,6 @@ use App\Traits\Tests\Dusk\StatsSidePanel as DuskTraitStatsSidePanel;
 use App\Traits\Tests\Dusk\TagsInput as DuskTraitTagsInput;
 use Illuminate\Support\Collection;
 use Tests\Browser\Pages\StatsPage;
-use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Laravel\Dusk\Browser;
 use Throwable;
 
@@ -23,7 +22,7 @@ use Throwable;
  * @group stats
  * @group stats-tags
  */
-class StatsTagsTest extends DuskTestCase {
+class StatsTagsTest extends StatsBase {
 
     use DuskTraitLoading;
     use DuskTraitAccountOrAccountTypeTogglingSelector;
@@ -33,13 +32,7 @@ class StatsTagsTest extends DuskTestCase {
     use DuskTraitStatsSidePanel;
 
     private static $SELECTOR_STATS_TAGS = "#stats-tags";
-    private static $SELECTOR_STATS_FORM_TAGS = "#stats-form-tags";
-    private static $SELECTOR_BUTTON_GENERATE = '.generate-stats';
-    private static $SELECTOR_STATS_RESULTS_AREA = '.stats-results-tags';
     private static $SELECTOR_CHART_TAGS = 'canvas#bar-chart';
-
-    private static $LABEL_GENERATE_CHART_BUTTON = 'Generate Chart';
-    private static $LABEL_NO_STATS_DATA = 'No data available';
 
     private static $VUE_KEY_STANDARDISEDATA = "standardiseData";
 
@@ -119,41 +112,39 @@ class StatsTagsTest extends DuskTestCase {
                 ->assertVisible(self::$SELECTOR_STATS_TAGS)
                 ->with(self::$SELECTOR_STATS_TAGS, function(Browser $stats_tags){
                     $stats_tags
-                        ->assertVisible(self::$SELECTOR_STATS_RESULTS_AREA)
-                        ->assertSeeIn(self::$SELECTOR_STATS_RESULTS_AREA, self::$LABEL_NO_STATS_DATA);
+                        ->assertVisible(self::$SELECTOR_STATS_RESULTS_TAGS)
+                        ->assertSeeIn(self::$SELECTOR_STATS_RESULTS_TAGS, self::$LABEL_NO_STATS_DATA);
                 });
         });
     }
 
     public function providerTestGenerateTagsChart(){
-        $previous_year_start = date("Y-01-01", strtotime('-1 year'));
-        $today = date("Y-m-d");
         return [
             //[$datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $tag_count]
             // defaults account/account-type & tags & date-picker values
             [null, null, false, false, false, 0],   // test 3/25
             // date-picker previous year start to present & default tags & default account/account-type
-            [$previous_year_start, $today, false, false, false, 0], // test 4/25
+            [$this->previous_year_start, $this->today, false, false, false, 0], // test 4/25
             // date-picker previous year start to present & default tags & random account
-            [$previous_year_start, $today, false, true, false, 0],  // test 5/25
+            [$this->previous_year_start, $this->today, false, true, false, 0],  // test 5/25
             // date-picker previous year start to present & default tags & random account-type
-            [$previous_year_start, $today, true, true, false, 0],   // test 6/25
+            [$this->previous_year_start, $this->today, true, true, false, 0],   // test 6/25
             // date-picker previous year start to present & default tags & random disabled account
-            [$previous_year_start, $today, false, true, true, 0],   // test 7/25
+            [$this->previous_year_start, $this->today, false, true, true, 0],   // test 7/25
             // date-picker previous year start to present & default tags & random disabled account-type
-            [$previous_year_start, $today, true, true, true, 0],    // test 8/25
+            [$this->previous_year_start, $this->today, true, true, true, 0],    // test 8/25
             // date-picker previous year start to present & random tag & default account/account-type
-            [$previous_year_start, $today, false, false, false, 1], // test 9/25
+            [$this->previous_year_start, $this->today, false, false, false, 1], // test 9/25
             // date-picker previous year start to present & random tag & random account
-            [$previous_year_start, $today, false, true, false, 1],  // test 10/25
+            [$this->previous_year_start, $this->today, false, true, false, 1],  // test 10/25
             // date-picker previous year start to present & random tag & random account-type
-            [$previous_year_start, $today, true, true, false, 1],   // test 11/25
+            [$this->previous_year_start, $this->today, true, true, false, 1],   // test 11/25
             // date-picker previous year start to present & random tag & random disabled account
-            [$previous_year_start, $today, false, true, true, 1],   // test 12/25
+            [$this->previous_year_start, $this->today, false, true, true, 1],   // test 12/25
             // date-picker previous year start to present & random tag & random disabled account-type
-            [$previous_year_start, $today, true, true, true, 1],    // test 13/25
+            [$this->previous_year_start, $this->today, true, true, true, 1],    // test 13/25
             // date-picker previous year start to present & random tags & default account/account-type
-            [$previous_year_start, $today, false, false, false, 2]  // test 14/25
+            [$this->previous_year_start, $this->today, false, false, false, 2]  // test 14/25
         ];
     }
 
@@ -213,8 +204,8 @@ class StatsTagsTest extends DuskTestCase {
                     if(!is_null($datepicker_start) && !is_null($datepicker_end)){
                         $this->setDateRange($form, $datepicker_start, $datepicker_end);
                     } else {
-                        $datepicker_start = date('Y-m-01');
-                        $datepicker_end = date('Y-m-t');
+                        $datepicker_start = $this->month_start;
+                        $datepicker_end = $this->month_end;
                     }
                     $filter_data = $this->generateFilterArrayElementDatepicker($filter_data, $datepicker_start, $datepicker_end);
 
@@ -226,12 +217,26 @@ class StatsTagsTest extends DuskTestCase {
 
             $this->waitForLoadingToStop($browser);
             $browser
-                ->assertDontSeeIn(self::$SELECTOR_STATS_RESULTS_AREA, self::$LABEL_NO_STATS_DATA)
-                ->with(self::$SELECTOR_STATS_RESULTS_AREA, function(Browser $stats_results_area){
+                ->assertDontSeeIn(self::$SELECTOR_STATS_RESULTS_TAGS, self::$LABEL_NO_STATS_DATA)
+                ->with(self::$SELECTOR_STATS_RESULTS_TAGS, function(Browser $stats_results_area){
                     $stats_results_area->assertVisible(self::$SELECTOR_CHART_TAGS);
                 })
                 ->assertVue(self::$VUE_KEY_STANDARDISEDATA, $this->standardiseData($entries, $tags), self::$SELECTOR_STATS_TAGS);
         });
+    }
+
+    /**
+     * @throws Throwable
+     *
+     * @group stats-tags-1
+     * test 15/25
+     */
+    public function testGeneratingATagsChartWontCauseSummaryTablesToBecomeVisible(){
+        $this->generatingADifferentChartWontCauseSummaryTablesToBecomeVisible(
+            self::$SELECTOR_STATS_SIDE_PANEL_OPTION_TAGS,
+            self::$SELECTOR_STATS_FORM_TAGS,
+            self::$SELECTOR_STATS_RESULTS_TAGS
+        );
     }
 
     /**

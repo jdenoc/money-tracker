@@ -7,10 +7,10 @@ use App\Traits\Tests\Dusk\BatchFilterEntries as DuskTraitBatchFilterEntries;
 use App\Traits\Tests\Dusk\BulmaDatePicker as DuskTraitBulmaDatePicker;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\StatsSidePanel as DuskTraitStatsSidePanel;
+use Facebook\WebDriver\Remote\RemoteWebElement;
 use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Support\Collection;
 use Tests\Browser\Pages\StatsPage;
-use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Laravel\Dusk\Browser;
 use Throwable;
 
@@ -22,7 +22,7 @@ use Throwable;
  * @group stats
  * @group stats-summary
  */
-class StatsSummaryTest extends DuskTestCase {
+class StatsSummaryTest extends StatsBase {
 
     use DuskTraitAccountOrAccountTypeTogglingSelector;
     use DuskTraitBatchFilterEntries;
@@ -30,12 +30,7 @@ class StatsSummaryTest extends DuskTestCase {
     use DuskTraitLoading;
     use DuskTraitStatsSidePanel;
 
-    private static $SELECTOR_STATS_FORM_SUMMARY = "#stats-form-summary";
-    private static $SELECTOR_BUTTON_GENERATE = '.generate-stats';
-    private static $SELECTOR_STATS_RESULTS_AREA = '.stats-results-summary';
-
     private static $LABEL_GENERATE_TABLE_BUTTON = "Generate Tables";
-    private static $LABEL_NO_STATS_DATA = 'No data available';
     private static $LABEL_TABLE_NAME_TOTAL = 'Total Income/Expenses';
     private static $LABEL_TABLE_NAME_TOP = 'Top 10 income/expense entries';
 
@@ -56,7 +51,7 @@ class StatsSummaryTest extends DuskTestCase {
                 ->visit(new StatsPage())
                 ->assertVisible(self::$SELECTOR_STATS_SIDE_PANEL);
             $this->assertStatsSidePanelHeading($browser);
-            $this->assertStatsSidePanelOptionIsActive($browser, self::$LABEL_STATS_SIDE_PANEL_OPTION_SUMMARY);;
+            $this->assertStatsSidePanelOptionIsActive($browser, self::$LABEL_STATS_SIDE_PANEL_OPTION_SUMMARY);
         });
     }
 
@@ -100,28 +95,26 @@ class StatsSummaryTest extends DuskTestCase {
         $this->browse(function(Browser $browser){
             $browser
                 ->visit(new StatsPage())
-                ->assertVisible(self::$SELECTOR_STATS_RESULTS_AREA)
-                ->assertSeeIn(self::$SELECTOR_STATS_RESULTS_AREA, self::$LABEL_NO_STATS_DATA);
+                ->assertVisible(self::$SELECTOR_STATS_RESULTS_SUMMARY)
+                ->assertSeeIn(self::$SELECTOR_STATS_RESULTS_SUMMARY, self::$LABEL_NO_STATS_DATA);
         });
     }
 
     public function providerTestGenerateStatsTables(){
-        $previous_year_start = date("Y-01-01", strtotime('-1 year'));
-        $today = date("Y-m-d");
         //[$datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available]
         return [
             // defaults account/account-type & date-picker values
             [null, null, false, false, false],  // test 4/25
             // date-picker previous year start to present & default account/account-type
-            [$previous_year_start, $today, false, false, false],    // test 5/25
+            [$this->previous_year_start, $this->today, false, false, false],    // test 5/25
             // date-picker previous year start to present & random account
-            [$previous_year_start, $today, false, true, false],     // test 6/25
+            [$this->previous_year_start, $this->today, false, true, false],     // test 6/25
             // date-picker previous year start to present & random account-type
-            [$previous_year_start, $today, true, true, false],      // test 7/25
+            [$this->previous_year_start, $this->today, true, true, false],      // test 7/25
             // date-picker previous year start to present & random disabled account
-            [$previous_year_start, $today, false, true, false],     // test 8/25
+            [$this->previous_year_start, $this->today, false, true, false],     // test 8/25
             // date-picker previous year start to present & random disabled account-type
-            [$previous_year_start, $today, true, true, false],      // test 9/25
+            [$this->previous_year_start, $this->today, true, true, false],      // test 9/25
         ];
     }
 
@@ -168,8 +161,8 @@ class StatsSummaryTest extends DuskTestCase {
                         $this->setDateRange($form, $datepicker_start, $datepicker_end);
                     } else {
                         // default values
-                        $datepicker_start = date('Y-m-01');
-                        $datepicker_end = date('Y-m-t');
+                        $datepicker_start = $this->month_start;
+                        $datepicker_end = $this->month_end;
                     }
                     $filter_data = $this->generateFilterArrayElementDatepicker($filter_data, $datepicker_start, $datepicker_end);
 
@@ -178,9 +171,9 @@ class StatsSummaryTest extends DuskTestCase {
 
             $this->waitForLoadingToStop($browser);
             $browser
-                ->assertDontSeeIn(self::$SELECTOR_STATS_RESULTS_AREA, self::$LABEL_NO_STATS_DATA)
+                ->assertDontSeeIn(self::$SELECTOR_STATS_RESULTS_SUMMARY, self::$LABEL_NO_STATS_DATA)
 
-                ->with(self::$SELECTOR_STATS_RESULTS_AREA, function(Browser $stats_results) use ($filter_data, $account_types, $accounts){
+                ->with(self::$SELECTOR_STATS_RESULTS_SUMMARY, function(Browser $stats_results) use ($filter_data, $account_types, $accounts){
                     $selector_table_total_income_expense = 'table:nth-child(1)';
                     $selector_table_top_10_income_expense = 'table:nth-child(3)';
                     $selector_table_label = 'caption';
@@ -225,77 +218,38 @@ class StatsSummaryTest extends DuskTestCase {
                             $selector_cell_index = 'td:nth-child(1)';
                             $selector_cell_income_memo = 'td:nth-child(2)';
                             $selector_cell_income_value = 'td:nth-child(3)';
-                            $selector_cell_income_date = 'td:nth-child(4)';
-                            $selector_cell_expense_memo = 'td:nth-child(5)';
-                            $selector_cell_expense_value = 'td:nth-child(6)';
-                            $selector_cell_expense_date = 'td:nth-child(7)';
+                            $selector_cell_expense_memo = 'td:nth-child(4)';
+                            $selector_cell_expense_value = 'td:nth-child(5)';
                             foreach($table_rows as $table_row){
-                                //  i | income memo | income value | expense memo | expense value
+                                //  i | income memo (w/ tooltip) | income value | expense memo (w/ tooltip) | expense value
                                 $index_cell_text = $table_row->findElement(WebDriverBy::cssSelector($selector_cell_index))->getText();
                                 $error_message_postfix = "index:".$index_cell_text.' '.print_r($top_entries[$index_cell_text], true);
 
-                                $income_memo_cell_text = $table_row->findElement(WebDriverBy::cssSelector($selector_cell_income_memo))->getText();
+                                $income_memo_element = $table_row->findElement(WebDriverBy::cssSelector($selector_cell_income_memo));
+                                $income_memo_cell_text = $income_memo_element->getText();
                                 $this->assertEquals($top_entries[$index_cell_text]['income_memo'], $income_memo_cell_text, "income_memo values don't match\n".$error_message_postfix);
+
+                                if(!empty($income_memo_cell_text)){
+                                    $this->assertTooltip($table, $income_memo_element, $top_entries[$index_cell_text]['income_date']);
+                                }
 
                                 $income_value_text = $table_row->findElement(WebDriverBy::cssSelector($selector_cell_income_value))->getText();
                                 $this->assertEquals($top_entries[$index_cell_text]['income_value'], $income_value_text, "income_value values don't match\n".$error_message_postfix);
 
-                                $income_date_text = $table_row->findElement(WebDriverBy::cssSelector($selector_cell_income_date))->getText();
-                                $this->assertEquals($top_entries[$index_cell_text]['income_date'], $income_date_text, "income_date values don't match\n".$error_message_postfix);
-
-                                $expense_memo_cell_text = $table_row->findElement(WebDriverBy::cssSelector($selector_cell_expense_memo))->getText();
+                                $expense_memo_element = $table_row->findElement(WebDriverBy::cssSelector($selector_cell_expense_memo));
+                                $expense_memo_cell_text = $expense_memo_element->getText();
                                 $this->assertEquals($top_entries[$index_cell_text]['expense_memo'], $expense_memo_cell_text, "expense_memo don't match\n".$error_message_postfix);
+
+                                if(!empty($expense_memo_cell_text)){
+                                    $this->assertTooltip($table, $expense_memo_element, $top_entries[$index_cell_text]['expense_date']);
+                                }
 
                                 $expense_value_text = $table_row->findElement(WebDriverBy::cssSelector($selector_cell_expense_value))->getText();
                                 $this->assertEquals($top_entries[$index_cell_text]['expense_value'], $expense_value_text, "expense_value don't match\n".$error_message_postfix);
-
-                                $expense_date_text = $table_row->findElement(WebDriverBy::cssSelector($selector_cell_expense_date))->getText();
-                                $this->assertEquals($top_entries[$index_cell_text]['expense_date'], $expense_date_text, "expense_date don't match\n".$error_message_postfix);
                              }
                         });
             });
         });
-    }
-
-    public function providerGeneratingADifferentChartWontCauseSummaryTablesToBecomeVisible(){
-        return [
-            // [$side_panel_selector, $stats_form_selector, $stats_results_selector]
-            'trending'=>[self::$SELECTOR_STATS_SIDE_PANEL_OPTION_TRENDING, '#stats-form-trending', '.stats-results-trending'],
-            'tags'=>[self::$SELECTOR_STATS_SIDE_PANEL_OPTION_TAGS, '#stats-form-tags', '.stats-results-tags'],
-            'distribution'=>[self::$SELECTOR_STATS_SIDE_PANEL_OPTION_DISTRIBUTION, '#stats-form-distribution', '.stats-results-distribution'],
-        ];
-    }
-
-    /**
-     * @dataProvider providerGeneratingADifferentChartWontCauseSummaryTablesToBecomeVisible
-     * @param $side_panel_selector
-     * @param $stats_form_selector
-     * @param $stats_results_selector
-     *
-     * @throws Throwable
-     */
-    public function testGeneratingADifferentChartWontCauseSummaryTablesToBecomeVisible($side_panel_selector, $stats_form_selector, $stats_results_selector){
-        $this->browse(function (Browser $browser) use ($side_panel_selector, $stats_form_selector, $stats_results_selector){
-            $browser
-                ->visit(new StatsPage())
-                ->assertVisible(self::$SELECTOR_STATS_FORM_SUMMARY);
-
-            $this->clickStatsSidePanelOption($browser, $side_panel_selector);
-            $browser
-                ->assertVisible($stats_form_selector)
-                ->with($stats_form_selector, function(Browser $form){
-                    $form->click(self::$SELECTOR_BUTTON_GENERATE);
-                });
-            $this->waitForLoadingToStop($browser);
-            $browser->assertDontSeeIn($stats_results_selector, self::$LABEL_NO_STATS_DATA);
-
-            $this->clickStatsSidePanelOptionSummary($browser);
-            $this->assertStatsSidePanelOptionIsActive($browser, self::$LABEL_STATS_SIDE_PANEL_OPTION_SUMMARY);
-            $browser
-                ->assertVisible(self::$SELECTOR_STATS_FORM_SUMMARY)
-                ->assertSeeIn(self::$SELECTOR_STATS_RESULTS_AREA, self::$LABEL_NO_STATS_DATA);
-        });
-
     }
 
     /**
@@ -356,6 +310,30 @@ class StatsSummaryTest extends DuskTestCase {
             ];
         }
         return $top_entries;
+    }
+
+    /**
+     * This method takes a lot of code from predefined Browser methods
+     * This allows us to do some work around testing without having to worry about css selector chaining
+     *
+     * @param Browser $browser
+     * @param RemoteWebElement $element
+     * @param string $tooltip_text
+     */
+    private function assertTooltip($browser, $element, $tooltip_text){
+        $browser->driver->getMouse()->mouseMove($element->getCoordinates());    // move mouse over element
+        $tooltip_id = $element->getAttribute('aria-describedby');    // get the tooltip element id
+        $this->assertNotEmpty($tooltip_id);
+        $browser->pause(self::$WAIT_ONE_SECOND_IN_MILLISECONDS);
+
+        $selector_tooltip = "#".$tooltip_id;
+        $this->assertTrue(
+            $browser->resolver->findOrFail($selector_tooltip)->isDisplayed(),
+            "Element [$selector_tooltip] is not visible."
+        );
+
+        $tooltip_text_from_element = $browser->text('#'.$tooltip_id);
+        $this->assertContains($tooltip_text, $tooltip_text_from_element);
     }
 
     /**

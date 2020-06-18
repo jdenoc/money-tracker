@@ -53,19 +53,17 @@
                 <thead>
                     <tr>
                         <th>&nbsp;</th>
-                        <th colspan="3">Income</th>
-                        <th colspan="3" class="left-border">Expense</th>
+                        <th colspan="2">Income</th>
+                        <th colspan="2" class="left-border">Expense</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="(incomeAndExpense, index) in top10IncomeAndExpenses" v-bind:key="index">
                         <td v-text="index+1"></td>
-                        <td v-text="incomeAndExpense.incomeMemo"></td>
+                        <td v-text="incomeAndExpense.incomeMemo" v-tooltip="tooltipContent(incomeAndExpense.incomeDate)"></td>
                         <td v-text="incomeAndExpense.incomeValue" class="has-text-right"></td>
-                        <td v-text="incomeAndExpense.incomeDate"></td>
-                        <td v-text="incomeAndExpense.expenseMemo" class="left-border"></td>
+                        <td v-text="incomeAndExpense.expenseMemo" class="left-border" v-tooltip="tooltipContent(incomeAndExpense.expenseDate)"></td>
                         <td v-text="incomeAndExpense.expenseValue" class="has-text-right"></td>
-                        <td v-text="incomeAndExpense.expenseDate"></td>
                     </tr>
                 </tbody>
             </table>
@@ -166,6 +164,14 @@
             },
         },
         methods: {
+            tooltipContent: function(text){
+                return {
+                    content: text,
+                    html: true,
+                    placement: 'right',
+                    classes: 'is-size-7',
+                }
+            },
             filteredEntries: function(isExpense){
                 return this.largeBatchEntryData
                     .map(function(entry){
@@ -217,5 +223,12 @@
     @import '../../../sass/stats-chart';
     .left-border{
         border-left: 1px solid $grey-lighter;
+    }
+    table:nth-child(3) th:first-child{
+        width: 2%;
+    }
+    table:nth-child(3) th:nth-child(2),
+    table:nth-child(3) th:nth-child(3){
+        width: 48%;
     }
 </style>
