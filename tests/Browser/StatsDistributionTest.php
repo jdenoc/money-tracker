@@ -13,7 +13,6 @@ use App\Traits\Tests\InjectDatabaseStateIntoException;
 use Illuminate\Support\Collection;
 use Laravel\Dusk\Browser;
 use Tests\Browser\Pages\StatsPage;
-use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Throwable;
 
 /**
@@ -24,7 +23,7 @@ use Throwable;
  * @group stats
  * @group stats-distribution
  */
-class StatsDistributionTest extends DuskTestCase {
+class StatsDistributionTest extends StatsBase {
 
     use DuskTraitAccountOrAccountTypeTogglingSelector;
     use DuskTraitBulmaColors;
@@ -36,16 +35,11 @@ class StatsDistributionTest extends DuskTestCase {
     use InjectDatabaseStateIntoException;
 
     private static $SELECTOR_STATS_DISTRIBUTION = '#stats-distribution';
-    private static $SELECTOR_STATS_FORM_DISTRIBUTION = '#stats-form-distribution';
     private static $SELECTOR_STATS_FORM_TOGGLE_EXPENSEINCOME = '#distribution-expense-or-income';
-    private static $SELECTOR_STATS_FORM_BUTTON_GENERATE = '.generate-stats';
-    private static $SELECTOR_STATS_RESULTS_AREA = ".stats-results-distribution";
     private static $SELECTOR_CHART_DISTRIBUTION = "canvas#pie-chart";
 
     private static $LABEL_FORM_TOGGLE_EXPENSEINCOME_DEFAULT = "Expense";
     private static $LABEL_FORM_TOGGLE_EXPENSEINCOME_INCOME = "Income";
-    private static $LABEL_FORM_BUTTON_GENERATE = "Generate Chart";
-    private static $LABEL_NO_STATS_DATA = "No data available";
 
     private static $VUE_KEY_STANDARDISEDATA = "standardiseData";
 
@@ -100,9 +94,9 @@ class StatsDistributionTest extends DuskTestCase {
 
                     // button
                     $form
-                        ->assertVisible(self::$SELECTOR_STATS_FORM_BUTTON_GENERATE)
-                        ->assertSeeIn(self::$SELECTOR_STATS_FORM_BUTTON_GENERATE, self::$LABEL_FORM_BUTTON_GENERATE);
-                    $button_classes = $form->attribute(self::$SELECTOR_STATS_FORM_BUTTON_GENERATE, 'class');
+                        ->assertVisible(self::$SELECTOR_BUTTON_GENERATE)
+                        ->assertSeeIn(self::$SELECTOR_BUTTON_GENERATE, self::$LABEL_GENERATE_CHART_BUTTON);
+                    $button_classes = $form->attribute(self::$SELECTOR_BUTTON_GENERATE, 'class');
                     $this->assertContains('is-primary', $button_classes);
                 });
         });
@@ -119,14 +113,12 @@ class StatsDistributionTest extends DuskTestCase {
             $browser->visit(new StatsPage());
             $this->clickStatsSidePanelOptionDistribution($browser);
             $browser
-                ->assertVisible(self::$SELECTOR_STATS_RESULTS_AREA)
-                ->assertSeeIn(self::$SELECTOR_STATS_RESULTS_AREA, self::$LABEL_NO_STATS_DATA);
+                ->assertVisible(self::$SELECTOR_STATS_RESULTS_DISTRIBUTION)
+                ->assertSeeIn(self::$SELECTOR_STATS_RESULTS_DISTRIBUTION, self::$LABEL_NO_STATS_DATA);
         });
     }
 
     public function providerGenerateDistributionChart(){
-        $previous_year_start = date("Y-01-01", strtotime('-1 year'));
-        $today = date("Y-m-d");
         //[$datepicker_start, $datepicker_end, $is_account_switch_toggled, $is_expense_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available]
         return [
             //  default state of account/account-types; expense; default date range
@@ -134,25 +126,25 @@ class StatsDistributionTest extends DuskTestCase {
             // default state of account/account-types; income; default date range
             [null, null, false, true, false, false],                    // test 5/25
             // default state of account/account-types; expense; date range a year past to today
-            [$previous_year_start, $today, false, false, false, false], // test 6/25
+            [$this->previous_year_start, $this->today, false, false, false, false], // test 6/25
             // default state of account/account-types; income; date range a year past to today
-            [$previous_year_start, $today, false, true, false, false],  // test 7/25
+            [$this->previous_year_start, $this->today, false, true, false, false],  // test 7/25
             // random account; expense; date range a year past to today
-            [$previous_year_start, $today, false, false, true, false],  // test 8/25
+            [$this->previous_year_start, $this->today, false, false, true, false],  // test 8/25
             // random account; income; date range a year past to today
-            [$previous_year_start, $today, false, true, true, false],   // test 9/25
+            [$this->previous_year_start, $this->today, false, true, true, false],   // test 9/25
             // random account-type; expense; date range a year past to today
-            [$previous_year_start, $today, true, false, true, false],   // test 10/25
+            [$this->previous_year_start, $this->today, true, false, true, false],   // test 10/25
             // random account-type; income; date range a year past to today
-            [$previous_year_start, $today, true, true, true, false],    // test 11/25
+            [$this->previous_year_start, $this->today, true, true, true, false],    // test 11/25
             // random disabled account; expense; date range a year past to today
-            [$previous_year_start, $today, false, false, true, true],   // test 12/25
+            [$this->previous_year_start, $this->today, false, false, true, true],   // test 12/25
             // random disabled account; income; date range a year past to today
-            [$previous_year_start, $today, false, true, true, true],    // test 13/25
+            [$this->previous_year_start, $this->today, false, true, true, true],    // test 13/25
             // random disabled account-type; expense; date range a year past to today
-            [$previous_year_start, $today, true, false, true, true],    // test 14/25
+            [$this->previous_year_start, $this->today, true, false, true, true],    // test 14/25
             // random disabled account-type; income; date range a year past to today
-            [$previous_year_start, $today, true, true, true, true],     // test 15/25
+            [$this->previous_year_start, $this->today, true, true, true, true],     // test 15/25
         ];
     }
 
@@ -212,25 +204,40 @@ class StatsDistributionTest extends DuskTestCase {
                     if(!is_null($datepicker_start) && !is_null($datepicker_end)){
                         $this->setDateRange($form, $datepicker_start, $datepicker_end);
                     } else {
-                        $datepicker_start = date('Y-m-01');
-                        $datepicker_end = date('Y-m-t');
+                        $datepicker_start = $this->month_start;
+                        $datepicker_end = $this->month_end;
                     }
                     $filter_data = $this->generateFilterArrayElementDatepicker($filter_data, $datepicker_start, $datepicker_end);
 
                     $this->createEntryWithAllTags($is_account_switch_toggled, $account_or_account_type_id, $account_types, $tags);
-                    $form->click(self::$SELECTOR_STATS_FORM_BUTTON_GENERATE);
+                    $form->click(self::$SELECTOR_BUTTON_GENERATE);
                 });
 
             $entries = $this->getBatchedFilteredEntries($filter_data);
 
             $this->waitForLoadingToStop($browser);
             $browser
-                ->assertDontSeeIn(self::$SELECTOR_STATS_RESULTS_AREA, self::$LABEL_NO_STATS_DATA)
-                ->with(self::$SELECTOR_STATS_RESULTS_AREA, function(Browser $stats_results_area){
+                ->assertDontSeeIn(self::$SELECTOR_STATS_RESULTS_DISTRIBUTION, self::$LABEL_NO_STATS_DATA)
+                ->with(self::$SELECTOR_STATS_RESULTS_DISTRIBUTION, function(Browser $stats_results_area){
                     $stats_results_area->assertVisible(self::$SELECTOR_CHART_DISTRIBUTION);
                 })
                 ->assertVue(self::$VUE_KEY_STANDARDISEDATA, $this->standardiseData($entries, $tags), self::$SELECTOR_STATS_DISTRIBUTION);
         });
+    }
+
+
+    /**
+     * @throws Throwable
+     *
+     * @group stats-distribution-1
+     * test 16/25
+     */
+    public function testGeneratingADistributionChartWontCauseSummaryTablesToBecomeVisible(){
+        $this->generatingADifferentChartWontCauseSummaryTablesToBecomeVisible(
+            self::$SELECTOR_STATS_SIDE_PANEL_OPTION_DISTRIBUTION,
+            self::$SELECTOR_STATS_FORM_DISTRIBUTION,
+            self::$SELECTOR_STATS_RESULTS_DISTRIBUTION
+        );
     }
 
     /**
