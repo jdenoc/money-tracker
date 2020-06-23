@@ -10,7 +10,6 @@ use App\Traits\Tests\Dusk\StatsSidePanel as DuskTraitStatsSidePanel;
 use Illuminate\Support\Collection;
 use Laravel\Dusk\Browser;
 use Tests\Browser\Pages\StatsPage;
-use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Throwable;
 
 /**
@@ -21,7 +20,7 @@ use Throwable;
  * @group stats
  * @group stats-trending
  */
-class StatsTrendingTest extends DuskTestCase {
+class StatsTrendingTest extends StatsBase {
 
     use DuskTraitAccountOrAccountTypeTogglingSelector;
     use DuskTraitBatchFilterEntries;
@@ -30,16 +29,10 @@ class StatsTrendingTest extends DuskTestCase {
     use DuskTraitStatsSidePanel;
 
     private static $SELECTOR_STATS_TRENDING = "#stats-trending";
-    private static $SELECTOR_STATS_FORM_TRENDING = "#stats-form-trending";
-    private static $SELECTOR_BUTTON_GENERATE = '.generate-stats';
-    private static $SELECTOR_STATS_RESULTS_AREA = '.stats-results-trending';
     private static $SELECTOR_CHART_TRENDING = 'canvas#line-chart';
 
     private static $VUE_KEY_EXPENSEDATA = "expenseData";
     private static $VUE_KEY_INCOMEDATA = "incomeData";
-
-    private static $LABEL_GENERATE_CHART_BUTTON = "Generate Chart";
-    private static $LABEL_NO_STATS_DATA = 'No data available';
 
     public function __construct($name = null, array $data = [], $dataName = ''){
         parent::__construct($name, $data, $dataName);
@@ -113,29 +106,27 @@ class StatsTrendingTest extends DuskTestCase {
                 ->assertVisible(self::$SELECTOR_STATS_TRENDING)
                 ->with(self::$SELECTOR_STATS_TRENDING, function(Browser $stats_trending){
                     $stats_trending
-                        ->assertVisible(self::$SELECTOR_STATS_RESULTS_AREA)
-                        ->assertSeeIn(self::$SELECTOR_STATS_RESULTS_AREA, self::$LABEL_NO_STATS_DATA);
+                        ->assertVisible(self::$SELECTOR_STATS_RESULTS_TRENDING)
+                        ->assertSeeIn(self::$SELECTOR_STATS_RESULTS_TRENDING, self::$LABEL_NO_STATS_DATA);
                 });
         });
     }
 
     public function providerTestGenerateTrendingChart(){
-        $previous_year_start = date("Y-01-01", strtotime('-1 year'));
-        $today = date("Y-m-d");
         return [
             //[$datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available]
             // defaults account/account-type & date-picker values
             [null, null, false, false, false],  // test 4/25
             // date-picker previous year start to present & default account/account-type
-            [$previous_year_start, $today, false, false, false],    // test 5/25
+            [$this->previous_year_start, $this->today, false, false, false],    // test 5/25
             // date-picker previous year start to present & random account
-            [$previous_year_start, $today, false, true, false],     // test 6/25
+            [$this->previous_year_start, $this->today, false, true, false],     // test 6/25
             // date-picker previous year start to present & random account-type
-            [$previous_year_start, $today, true, true, false],      // test 7/25
+            [$this->previous_year_start, $this->today, true, true, false],      // test 7/25
             // date-picker previous year start to present & random disabled account
-            [$previous_year_start, $today, false, true, false],     // test 8/25
+            [$this->previous_year_start, $this->today, false, true, false],     // test 8/25
             // date-picker previous year start to present & random disabled account-type
-            [$previous_year_start, $today, true, true, false],      // test 9/25
+            [$this->previous_year_start, $this->today, true, true, false],      // test 9/25
         ];
     }
 
@@ -183,8 +174,8 @@ class StatsTrendingTest extends DuskTestCase {
                     if(!is_null($datepicker_start) && !is_null($datepicker_end)){
                         $this->setDateRange($form, $datepicker_start, $datepicker_end);
                     } else {
-                        $datepicker_start = date('Y-m-01');
-                        $datepicker_end = date('Y-m-t');
+                        $datepicker_start = $this->month_start;
+                        $datepicker_end = $this->month_end;
                     }
                     $filter_data = $this->generateFilterArrayElementDatepicker($filter_data, $datepicker_start, $datepicker_end);
 
@@ -195,14 +186,28 @@ class StatsTrendingTest extends DuskTestCase {
                 $entries = $this->getBatchedFilteredEntries($filter_data);
 
                 $browser
-                    ->assertDontSeeIn(self::$SELECTOR_STATS_RESULTS_AREA, self::$LABEL_NO_STATS_DATA)
-                    ->with(self::$SELECTOR_STATS_RESULTS_AREA, function(Browser $stats_results){
+                    ->assertDontSeeIn(self::$SELECTOR_STATS_RESULTS_TRENDING, self::$LABEL_NO_STATS_DATA)
+                    ->with(self::$SELECTOR_STATS_RESULTS_TRENDING, function(Browser $stats_results){
                         //  line-chart graph canvas should be visible
                         $stats_results->assertVisible(self::$SELECTOR_CHART_TRENDING);
                     })
                     ->assertVue(self::$VUE_KEY_EXPENSEDATA, $this->standardiseChartData($entries, true), self::$SELECTOR_STATS_TRENDING)
                     ->assertVue(self::$VUE_KEY_INCOMEDATA, $this->standardiseChartData($entries, false), self::$SELECTOR_STATS_TRENDING);
         });
+    }
+
+    /**
+     * @throws Throwable
+     *
+     * @group stats-trending-1
+     * test 10/25
+     */
+    public function testGeneratingATrendingChartWontCauseSummaryTablesToBecomeVisible(){
+        $this->generatingADifferentChartWontCauseSummaryTablesToBecomeVisible(
+            self::$SELECTOR_STATS_SIDE_PANEL_OPTION_TRENDING,
+            self::$SELECTOR_STATS_FORM_TRENDING,
+            self::$SELECTOR_STATS_RESULTS_TRENDING
+        );
     }
 
     /**

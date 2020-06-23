@@ -1,5 +1,6 @@
 {
     "name": "jdenoc/money-tracker",
+    "description": "income/expense tracker with receipt retention",
     "keywords": ["laravel"],
     "type": "project",
     "require": {
