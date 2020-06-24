@@ -943,6 +943,67 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         });
     }
 
+    public function providerAttemptToAddAnAttachmentTooLargeToAnExistingEntry(){
+        $upload_max_filesize=$this->convertPhpIniFileSizeToBytes(ini_get('upload_max_filesize'));
+        $post_max_size=$this->convertPhpIniFileSizeToBytes(ini_get('post_max_size'));
+
+        return [
+            'upload_max_filesize+1'=>[  // test 25/25
+                $upload_max_filesize+1,
+                'The file "%s" exceeds your upload_max_filesize ini directive'   // this text is lifted from vendor/symfony/http-foundation/File/UploadedFile.php#266
+            ],
+            'post_max_size'=>[          // test 26/25
+                $post_max_size,
+                'The uploaded file exceeds your post_max_size ini directive.'   // this text is lifted from app/Exceptions/Handler.php#60
+            ],
+            'post_max_size+1'=>[        // test 27/25
+                $post_max_size+1,
+                'The uploaded file exceeds your post_max_size ini directive.'   // this text is lifted from app/Exceptions/Handler.php#60
+            ]
+        ];
+    }
+
+    /**
+     * @dataProvider providerAttemptToAddAnAttachmentTooLargeToAnExistingEntry
+     * @param int $max_upload_filesize
+     * @param string $error_message
+     *
+     * @throws Throwable
+     * @group entry-modal-1
+     * test (see provider)/25
+     */
+    public function testAttemptToAddAnAttachmentTooLargeToAnExistingEntry($max_upload_filesize, $error_message){
+        $dummy_filename = \Storage::path(self::$storage_path).'/'.$this->getName(false).'.txt';
+        $this->generateDummyFile(
+            $dummy_filename,
+            $max_upload_filesize
+        );
+        $this->assertFileExists($dummy_filename);
+        $this->assertEquals(filesize($dummy_filename), $max_upload_filesize);
+
+        $this->browse(function(Browser $browser) use ($dummy_filename, $error_message){
+            $entry_selector = $this->randomUnconfirmedEntrySelector(true);
+
+            $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
+
+            $browser
+                ->openExistingEntryModal($entry_selector)
+                ->with($this->_selector_modal_entry, function($entry_modal) use ($dummy_filename){
+                    $entry_modal
+                        ->assertVisible($this->_selector_modal_entry_field_upload)
+                        ->attach($this->_selector_modal_entry_dropzone_hidden_file_input, $dummy_filename)
+                        ->waitFor($this->_selector_modal_entry_dropzone_upload_thumbnail, self::$WAIT_SECONDS);
+                });
+
+            $this->assertNotificationContents(
+                $browser,
+                self::$NOTIFICATION_TYPE_WARNING,
+                sprintf($error_message, basename($dummy_filename))
+            );
+        });
+    }
+
     /**
      * @param bool $get_id
      * @return string
@@ -982,6 +1043,36 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         }
         $entry_id = $entries_collection->pluck('id')->random();
         return $this->_modal_id_prefix.$entry_id;
+    }
+
+    /**
+     * @param string $ini_value
+     * @return int
+     */
+    private function convertPhpIniFileSizeToBytes($ini_value){
+        $size_type = strtolower($ini_value[strlen($ini_value)-1]);
+        $val = intval($ini_value);
+        switch($size_type) {
+            case 'g':
+                return $val * 1024*1024*1024;
+            case 'm':
+                return $val * 1024*1024;
+            case 'k':
+                return $val * 1024;
+            default:
+                return $val;
+        }
+    }
+
+    /**
+     * @param string $file_name
+     * @param int $file_size    size of file to be created in bytes
+     */
+    private function generateDummyFile($file_name, $file_size){
+        $fp = fopen($file_name, 'w');
+        fseek($fp, $file_size-1, SEEK_CUR);
+        fwrite($fp, 'z');
+        fclose($fp);
     }
 
 }
