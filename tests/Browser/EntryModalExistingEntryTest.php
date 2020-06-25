@@ -38,6 +38,11 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     use DuskTraitTagsInput;
     use DuskTraitToggleButton;
 
+    const INI_POSTMAXSIZE = 'post_max_size';
+    const INI_UPLOADMAXFILESIZE = 'upload_max_filesize';
+    const OVERRIDE_INI_UPLOADMAXFILESIZE='1M';
+    const OVERRIDE_INI_POSTMAXSIZE='3M';
+
     private $_class_lock = "fa-lock";
     private $_class_unlock = "fa-unlock-alt";
     private $_class_disabled = "disabled";
@@ -944,19 +949,22 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     }
 
     public function providerAttemptToAddAnAttachmentTooLargeToAnExistingEntry(){
-        $upload_max_filesize=$this->convertPhpIniFileSizeToBytes(ini_get('upload_max_filesize'));
-        $post_max_size=$this->convertPhpIniFileSizeToBytes(ini_get('post_max_size'));
+        ini_set(self::INI_POSTMAXSIZE, self::OVERRIDE_INI_POSTMAXSIZE);
+        ini_set(self::INI_UPLOADMAXFILESIZE, self::OVERRIDE_INI_UPLOADMAXFILESIZE);
+
+        $upload_max_filesize=$this->convertPhpIniFileSizeToBytes(ini_get(self::INI_UPLOADMAXFILESIZE));
+        $post_max_size=$this->convertPhpIniFileSizeToBytes(ini_get(self::INI_POSTMAXSIZE));
 
         return [
-            'upload_max_filesize+1'=>[  // test 25/25
+            self::INI_UPLOADMAXFILESIZE.'+1'=>[  // test 25/25
                 $upload_max_filesize+1,
                 'The file "%s" exceeds your upload_max_filesize ini directive'   // this text is lifted from vendor/symfony/http-foundation/File/UploadedFile.php#266
             ],
-            'post_max_size'=>[          // test 26/25
+            self::INI_POSTMAXSIZE=>[          // test 26/25
                 $post_max_size,
                 'The uploaded file exceeds your post_max_size ini directive.'   // this text is lifted from app/Exceptions/Handler.php#60
             ],
-            'post_max_size+1'=>[        // test 27/25
+            self::INI_POSTMAXSIZE.'+1'=>[        // test 27/25
                 $post_max_size+1,
                 'The uploaded file exceeds your post_max_size ini directive.'   // this text is lifted from app/Exceptions/Handler.php#60
             ]
