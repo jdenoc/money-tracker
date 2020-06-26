@@ -981,7 +981,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * test (see provider)/25
      */
     public function testAttemptToAddAnAttachmentTooLargeToAnExistingEntry($max_upload_filesize, $error_message){
-        $dummy_filename = \Storage::path(self::$storage_path).'/'.$this->getName(false).'.txt';
+        $dummy_filename = $this->getTestDummyFilename();
         $this->generateDummyFile(
             $dummy_filename,
             $max_upload_filesize
@@ -1081,6 +1081,18 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         fseek($fp, $file_size-1, SEEK_CUR);
         fwrite($fp, 'z');
         fclose($fp);
+    }
+
+    /**
+     * @return string
+     */
+    private function getTestDummyFilename(){
+        return \Storage::path(self::$storage_path).'/'.$this->getName(false).'.txt';
+    }
+
+    protected function tearDown(){
+        \Storage::delete($this->getTestDummyFilename());    // remove any files that any tests may have created
+        parent::tearDown();
     }
 
 }
