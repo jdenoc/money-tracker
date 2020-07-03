@@ -40,8 +40,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     const INI_POSTMAXSIZE = 'post_max_size';
     const INI_UPLOADMAXFILESIZE = 'upload_max_filesize';
-    const OVERRIDE_INI_UPLOADMAXFILESIZE='1M';
-    const OVERRIDE_INI_POSTMAXSIZE='3M';
+    const INI_DISPLAYERRORS = 'display_errors';
 
     private $_class_lock = "fa-lock";
     private $_class_unlock = "fa-unlock-alt";
@@ -58,6 +57,13 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         parent::__construct($name, $data, $dataName);
         $this->_color_expense_switch_expense = self::$COLOR_WARNING_HEX;
         $this->_color_expense_switch_income = self::$COLOR_PRIMARY_HEX;
+    }
+
+    public function setUp(){
+        parent::setUp();
+        if($this->getName(false) === ''){
+            ini_set(self::INI_DISPLAYERRORS, 0);
+        }
     }
 
     public function providerUnconfirmedEntry(){
@@ -949,9 +955,6 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     }
 
     public function providerAttemptToAddAnAttachmentTooLargeToAnExistingEntry(){
-        ini_set(self::INI_POSTMAXSIZE, self::OVERRIDE_INI_POSTMAXSIZE);
-        ini_set(self::INI_UPLOADMAXFILESIZE, self::OVERRIDE_INI_UPLOADMAXFILESIZE);
-
         $upload_max_filesize=$this->convertPhpIniFileSizeToBytes(ini_get(self::INI_UPLOADMAXFILESIZE));
         $post_max_size=$this->convertPhpIniFileSizeToBytes(ini_get(self::INI_POSTMAXSIZE));
 
@@ -1091,7 +1094,10 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     }
 
     protected function tearDown(){
-        \Storage::delete($this->getTestDummyFilename());    // remove any files that any tests may have created
+        if($this->getName(false) === 'testAttemptToAddAnAttachmentTooLargeToAnExistingEntry'){
+            ini_set(self::INI_DISPLAYERRORS, 1);
+            \Storage::delete($this->getTestDummyFilename());    // remove any files that any tests may have created
+        }
         parent::tearDown();
     }
 
