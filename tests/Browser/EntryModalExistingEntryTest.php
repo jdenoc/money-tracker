@@ -61,7 +61,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     public function setUp(){
         parent::setUp();
-        if($this->getName(false) === ''){
+        if($this->getName(false) === 'testAttemptToAddAnAttachmentTooLargeToAnExistingEntry'){
             ini_set(self::INI_DISPLAYERRORS, 0);
         }
     }
