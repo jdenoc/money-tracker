@@ -53,6 +53,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     private $_class_existing_attachment = "existing-attachment";
     private $_modal_id_prefix = "#entry-";
 
+    private $_cached_entries_collection = [];
+
     public function __construct($name = null, array $data = [], $dataName = ''){
         parent::__construct($name, $data, $dataName);
         $this->_color_expense_switch_expense = self::$COLOR_WARNING_HEX;
@@ -61,6 +63,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     public function setUp(){
         parent::setUp();
+        $this->_cached_entries_collection = [];
         if($this->getName(false) === 'testAttemptToAddAnAttachmentTooLargeToAnExistingEntry'){
             ini_set(self::INI_DISPLAYERRORS, 0);
         }
@@ -1046,7 +1049,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @return string
      */
     private function randomEntrySelector($entry_constraints = []){
-        $entries_collection = collect($this->removeCountFromApiResponse($this->getApiEntries()));
+        $entries_collection = $this->getCachedEntriesAsCollection();
         if(!empty($entry_constraints)){
             foreach(array_keys($entry_constraints) as $constraint){
                 $entries_collection = $entries_collection->where($constraint, $entry_constraints[$constraint]);
@@ -1054,6 +1057,18 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         }
         $entry_id = $entries_collection->pluck('id')->random();
         return $this->_modal_id_prefix.$entry_id;
+    }
+
+    /**
+     * Helps to reduce the amount of HTTP requests made while testing
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    private function getCachedEntriesAsCollection(){
+        if(empty($this->_cached_entries_collection)){
+            $this->_cached_entries_collection = collect($this->removeCountFromApiResponse($this->getApiEntries()));
+        }
+        return $this->_cached_entries_collection;
     }
 
     /**
