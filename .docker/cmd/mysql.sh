@@ -8,6 +8,6 @@ if [[ ! -f ${ENV_FILE} ]]; then
 fi
 
 docker container exec -it mysql.money-tracker mysql \
-	-u`cat $ENV_FILE | grep DB_USERNAME | sed 's/DB_USERNAME=//'` \
-	-p`cat $ENV_FILE | grep DB_PASSWORD | sed 's/DB_PASSWORD=//'` \
-	`cat $ENV_FILE | grep DB_DATABASE | sed 's/DB_DATABASE=//'`
+	-u"$(grep DB_USERNAME $ENV_FILE | sed 's/DB_USERNAME=//')" \
+	-p"$(grep DB_PASSWORD $ENV_FILE | sed 's/DB_PASSWORD=//')" \
+	"$(grep DB_DATABASE $ENV_FILE | sed 's/DB_DATABASE=//')"
