@@ -203,7 +203,6 @@ git checkout -q tags/$MOST_RECENT_TAG
 composer install --no-dev -o
 sed "s/APP_ENV=.*/APP_ENV=production/" .env > .env.tmp; mv .env.tmp .env
 sed "s/APP_DEBUG=.*/APP_DEBUG=false/" .env > .env.tmp; mv .env.tmp .env
-sed "s/APP_LOG_LEVEL=.*/APP_LOG_LEVEL=error/" .env > .env.tmp; mv .env.tmp .env
 php artisan app:version $MOST_RECENT_TAG
 
 # setup Yarn packages
@@ -222,7 +221,6 @@ Be sure to edit the `.env` file generated during setup. A few of the default val
 That being said, there are certainly variables that should be modified at this point. They are: 
 - `APP_ENV`
 - `APP_DEBUG`
-- `APP_LOG_LEVEL` (_log level values can be found [here](https://github.com/Seldaek/monolog/blob/1.23.0/doc/01-usage.md#log-levels)_)
 - `APP_NAME`
 - `APP_VERSION` (can be set by `php artisan app:version`)
 - `APP_URL`

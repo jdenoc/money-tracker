@@ -47,9 +47,9 @@ abstract class DuskTestCase extends BaseTestCase {
      * There were spaces and quotation marks causes these other scripts to fail.
      *
      * @param bool $withDataSet
-     * @return string|string[]
+     * @return string|null
      */
-    public function getName($withDataSet = true){
+    public function getName(bool $withDataSet = true): ?string {
         $test_name = parent::getName($withDataSet);
         $test_name = str_replace(" ", "-", $test_name);
         $test_name = str_replace('"', '', $test_name);
