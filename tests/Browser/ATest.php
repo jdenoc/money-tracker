@@ -15,10 +15,11 @@ use Laravel\Dusk\Browser;
 class ATest extends DuskTestCase {
 
     /**
-     * TODO: remove. this is just for testing
+     * TODO: remove; this is just for testing
      */
     public function test_error_log_location(){
         error_log($this->getName(false));
+        logger()->error($this->getName(false));
         logger(json_encode(ini_get_all()));
         self::fail("This test better fail!!!");
     }

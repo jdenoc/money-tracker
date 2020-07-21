@@ -45,6 +45,7 @@ before_script:
   - .docker/cmd/artisan.sh travis-ci --display-env
   - docker container exec -t app.money-tracker env
   # setup laravel log files
+  - docker container exec -t --user www-data app.money-tracker touch storage/logs/php_error.log
   - docker container exec -t --user www-data app.money-tracker touch storage/logs/laravel.debug.log
   - docker container exec -t --user www-data app.money-tracker touch storage/logs/laravel.info.log
   - docker container exec -t --user www-data app.money-tracker touch storage/logs/laravel.notice.log
@@ -143,9 +144,9 @@ after_failure:
   - .webhook/send.sh failure $WEBHOOK_URL
   - .webhook/send-file.sh --retry=3 --delay=7 --ext=png --ext=jpg --ext=jpeg --ext=gif $DUSK_SCREENSHOT_DIR $WEBHOOK_URL
   - .webhook/send-file.sh --retry=3 --delay=7 --ext=sql $DUSK_DB_DUMP_DIR $WEBHOOK_URL
-  - docker container logs --tail all --timestamps app.money-tracker
-  - docker container logs --tail all --timestamps app.money-tracker > /dev/null
   - docker container exec -it app.money-tracker .docker/cmd/laravel-logs.sh
+  - docker container logs --tail all --timestamps app.money-tracker > /dev/null
+  - docker container logs --tail all --timestamps app.money-tracker
 
 after_script:
   - docker-compose -f .docker/docker-compose.yml down -v
