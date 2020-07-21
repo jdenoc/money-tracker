@@ -94,16 +94,16 @@ jobs:
       before_script: skip
       script: true
 
-    - stage: unit-tests
-      script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-put
-    - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-get
-    - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-post
-    - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-delete
-    - script:
-        - .docker/cmd/artisan.sh config:clear # artisan app:version testing doesn't work well when configs have been cached
-        - docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite console
-    - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite web
-    - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite unit
+#    - stage: unit-tests
+#      script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-put
+#    - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-get
+#    - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-post
+#    - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-delete
+#    - script:
+#        - .docker/cmd/artisan.sh config:clear # artisan app:version testing doesn't work well when configs have been cached
+#        - docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite console
+#    - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite web
+#    - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite unit
 
     - stage: "e2e-tests: demo"
       script: .docker/cmd/artisan.sh dusk --group demo --stop-on-failure
@@ -143,6 +143,7 @@ after_failure:
   - .webhook/send.sh failure $WEBHOOK_URL
   - .webhook/send-file.sh --retry=3 --delay=7 --ext=png --ext=jpg --ext=jpeg --ext=gif $DUSK_SCREENSHOT_DIR $WEBHOOK_URL
   - .webhook/send-file.sh --retry=3 --delay=7 --ext=sql $DUSK_DB_DUMP_DIR $WEBHOOK_URL
+  - docker container logs --tail all --timestamps app.money-tracker
   - docker container logs --tail all --timestamps app.money-tracker > /dev/null
   - docker container exec -it app.money-tracker .docker/cmd/laravel-logs.sh
 
