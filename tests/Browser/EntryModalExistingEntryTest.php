@@ -40,8 +40,9 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     const INI_POSTMAXSIZE = 'post_max_size';
     const INI_UPLOADMAXFILESIZE = 'upload_max_filesize';
-    const INI_DISPLAYERRORS = 'display_errors';
-    const INI_DISPLAYSTARTUPERRORS = 'display_startup_errors';
+
+    private static $HTACCESS_FILEPATH = 'public/.htaccess';
+    private static $BKUP_EXT = '.bkup';
 
     private $_class_lock = "fa-lock";
     private $_class_unlock = "fa-unlock-alt";
@@ -56,7 +57,6 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     private $_cached_entries_collection = [];
 
-    private $_default_ini_settings = [];
 
     public function __construct($name = null, array $data = [], $dataName = ''){
         parent::__construct($name, $data, $dataName);
@@ -68,8 +68,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         parent::setUp();
         $this->_cached_entries_collection = [];
         if($this->getName(false) === 'testAttemptToAddAnAttachmentTooLargeToAnExistingEntry'){
-            $this->_default_ini_settings[self::INI_DISPLAYERRORS] = ini_set(self::INI_DISPLAYERRORS, 0);
-            $this->_default_ini_settings[self::INI_DISPLAYSTARTUPERRORS] = ini_set(self::INI_DISPLAYSTARTUPERRORS, 0);
+            $this->addRulesToHtaccessToDisableDisplayErrors();
         }
     }
 
@@ -1112,11 +1111,26 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         return \Storage::path(self::$storage_path).'/'.$this->getName(false).'.txt';
     }
 
+    private function addRulesToHtaccessToDisableDisplayErrors(){
+        copy(self::$HTACCESS_FILEPATH, self::$HTACCESS_FILEPATH.self::$BKUP_EXT);
+        $new_rules = <<<HTACCESS_RULES
+
+
+##### {$this->getName(false)} #####
+php_flag display_errors off
+php_flag display_startup_errors off
+HTACCESS_RULES;
+        file_put_contents(self::$HTACCESS_FILEPATH, $new_rules, FILE_APPEND);
+    }
+
+    private function revertHtaccessToOriginalState(){
+        unlink(self::$HTACCESS_FILEPATH);
+        rename(self::$HTACCESS_FILEPATH.self::$BKUP_EXT, self::$HTACCESS_FILEPATH);
+    }
+
     protected function tearDown(){
         if($this->getName(false) === 'testAttemptToAddAnAttachmentTooLargeToAnExistingEntry'){
-            foreach($this->_default_ini_settings as $ini_setting=>$ini_value){
-                ini_set($ini_setting, $ini_value);
-            }
+            $this->revertHtaccessToOriginalState();
             \Storage::delete($this->getTestDummyFilename());    // remove any files that any tests may have created
         }
         parent::tearDown();
