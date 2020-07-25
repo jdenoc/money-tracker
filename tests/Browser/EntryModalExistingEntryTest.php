@@ -41,6 +41,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     const INI_POSTMAXSIZE = 'post_max_size';
     const INI_UPLOADMAXFILESIZE = 'upload_max_filesize';
     const INI_DISPLAYERRORS = 'display_errors';
+    const INI_DISPLAYSTARTUPERRORS = 'display_startup_errors';
 
     private $_class_lock = "fa-lock";
     private $_class_unlock = "fa-unlock-alt";
@@ -55,6 +56,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     private $_cached_entries_collection = [];
 
+    private $_default_ini_settings = [];
+
     public function __construct($name = null, array $data = [], $dataName = ''){
         parent::__construct($name, $data, $dataName);
         $this->_color_expense_switch_expense = self::$COLOR_WARNING_HEX;
@@ -65,7 +68,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         parent::setUp();
         $this->_cached_entries_collection = [];
         if($this->getName(false) === 'testAttemptToAddAnAttachmentTooLargeToAnExistingEntry'){
-            ini_set(self::INI_DISPLAYERRORS, 0);
+            $this->_default_ini_settings[self::INI_DISPLAYERRORS] = ini_set(self::INI_DISPLAYERRORS, 0);
+            $this->_default_ini_settings[self::INI_DISPLAYSTARTUPERRORS] = ini_set(self::INI_DISPLAYSTARTUPERRORS, 0);
         }
     }
 
@@ -1110,7 +1114,9 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     protected function tearDown(){
         if($this->getName(false) === 'testAttemptToAddAnAttachmentTooLargeToAnExistingEntry'){
-            ini_set(self::INI_DISPLAYERRORS, 1);
+            foreach($this->_default_ini_settings as $ini_setting=>$ini_value){
+                ini_set($ini_setting, $ini_value);
+            }
             \Storage::delete($this->getTestDummyFilename());    // remove any files that any tests may have created
         }
         parent::tearDown();
