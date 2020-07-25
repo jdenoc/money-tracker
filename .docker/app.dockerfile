@@ -36,7 +36,7 @@ RUN cp $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini \
   && sed -i "s/expose_php = On/expose_php = Off/" $PHP_INI_DIR/php.ini
 
 # set php error logging
-RUN echo 'error_log = /dev/stderr' >> $PHP_INI_DIR/conf.d/php-error_log.ini
+RUN echo 'error_log = /var/www/money-tracker/storage/logs/php_error.log' >> $PHP_INI_DIR/conf.d/php-error_log.ini
 
 # set php timezone
 RUN echo 'date.timezone = "UTC"' >> $PHP_INI_DIR/conf.d/php-date.timezone.ini

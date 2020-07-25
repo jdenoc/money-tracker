@@ -3,7 +3,7 @@
 namespace App\Exceptions;
 
 use Exception;
-use Illuminate\Auth\AuthenticationException;
+use Illuminate\Http\Exceptions\PostTooLargeException;
 use Illuminate\Session\TokenMismatchException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use \Symfony\Component\HttpFoundation\Response as HttpStatus;
@@ -50,9 +50,20 @@ class Handler extends ExceptionHandler
      * @return \Illuminate\Http\Response
      */
     public function render($request, Exception $exception){
-        if ($exception instanceof TokenMismatchException || $request->is('attachment/upload')){
+        if ($exception instanceof TokenMismatchException && $request->is('attachment/upload')){
             // handle TokenMismatchException's for attachment/upload
-            return response(['error'=>"token mis-match"],HttpStatus::HTTP_UNAUTHORIZED);
+            return response(['error' => "token mis-match"], HttpStatus::HTTP_UNAUTHORIZED);
+
+        } elseif($exception instanceof PostTooLargeException && $request->is('attachment/upload')){
+            return response(
+                ['error'=>'The uploaded file exceeds your post_max_size ini directive.'],
+                HttpStatus::HTTP_REQUEST_ENTITY_TOO_LARGE
+            );
+        } elseif($request->is('attachment/upload')){
+            return response(
+                ['error'=>'Error occurred during upload. Contact admin.'],
+                HttpStatus::HTTP_INTERNAL_SERVER_ERROR
+            );
         } else {
             return parent::render($request, $exception);
         }
