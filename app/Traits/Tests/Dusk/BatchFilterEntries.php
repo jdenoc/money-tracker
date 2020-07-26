@@ -65,7 +65,7 @@ trait BatchFilterEntries {
     private function getBatchedFilteredEntries($filter_data){
         $entries = $this->getApiEntries(0, $filter_data);
         if(empty($entries)){
-            throw new \UnexpectedValueException("Entries not available with filter ".print_r($filter_data, true));
+            throw new \UnexpectedValueException("Entries not available with filter ".json_encode($filter_data));
         }
 
         $total_pages = intval( ceil($entries['count']/EntryController::MAX_ENTRIES_IN_RESPONSE) );
