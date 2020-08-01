@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 
 class QueryLoggingServiceProvider extends ServiceProvider {
@@ -18,10 +17,11 @@ class QueryLoggingServiceProvider extends ServiceProvider {
             // log queries.
             // solution found here: https://scotch.io/tutorials/debugging-queries-in-laravel#toc-listening-for-query-events
             DB::listen(function($query){
-                $log_message = str_replace('?', '%s', $query->sql);
-                $log_message = vsprintf($log_message, $query->bindings).';';
+                $query_string = str_replace('?', '%s', $query->sql);
+                $log_message  = '[MYSQL] ';
+                $log_message .= vsprintf($query_string, $query->bindings).';';
                 $log_message .= " Time:".$query->time.' milliseconds';
-                Log::info($log_message);
+                logger()->info($log_message);
             });
         }
     }
