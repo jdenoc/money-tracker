@@ -4,6 +4,7 @@ namespace Tests;
 
 use App\Entry;
 use App\Http\Controllers\Api\EntryController;
+use App\Traits\Tests\LogTestName;
 use App\Traits\Tests\StorageTestFiles;
 use Laravel\Dusk\Browser;
 use Laravel\Dusk\TestCase as BaseTestCase;
@@ -14,6 +15,7 @@ abstract class DuskTestCase extends BaseTestCase {
 
     use CreatesApplication;
     use StorageTestFiles;
+    use LogTestName;
 
     const RESIZE_WIDTH_PX = 1400;
     const RESIZE_HEIGHT_PX = 2500;
@@ -51,8 +53,7 @@ abstract class DuskTestCase extends BaseTestCase {
      */
     public function getName(bool $withDataSet = true): ?string {
         $test_name = parent::getName($withDataSet);
-        $test_name = str_replace(" ", "-", $test_name);
-        $test_name = str_replace('"', '', $test_name);
+        $test_name = str_replace([" ", '"'], ["-", ''], $test_name);
         return $test_name;
     }
 

@@ -2,8 +2,6 @@
 
 namespace App\Traits\Tests;
 
-use Illuminate\Support\Facades\Log;
-
 trait LogTestName {
 
     protected $can_log_test_name = true;
@@ -24,7 +22,7 @@ trait LogTestName {
      */
     public function logTestNameStatement($statement){
         if($this->can_log_test_name){
-            Log::info($statement);
+            logger($statement);
         }
     }
 

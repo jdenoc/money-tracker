@@ -2,13 +2,14 @@
 
 namespace Tests\Browser;
 
-use App\Traits\Tests\Dusk\Loading;
-use App\Traits\Tests\Dusk\Notification;
+use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
+use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
+use App\Traits\Tests\Dusk\Notification as DuskTraitNotification;
 use Illuminate\Support\Facades\DB;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Laravel\Dusk\Browser;
-use App\Traits\Tests\InjectDatabaseStateIntoException;
+use Tests\Traits\HomePageSelectors;
 use Throwable;
 
 /**
@@ -20,20 +21,19 @@ use Throwable;
  */
 class NotificationsTest extends DuskTestCase {
 
-    use InjectDatabaseStateIntoException;
-    use Loading;
-    use Notification;
+    use DuskTraitLoading;
+    use DuskTraitNavbar;
+    use DuskTraitNotification;
+    use HomePageSelectors;
 
     private $_selector_unconfirmed_expense = "tr.has-background-warning.is-expense";
     private $_selector_unconfirmed_income = 'tr.has-background-warning.is-income';
 
     private $_selector_modal = "@entry-modal";
-    private $_selector_modal_body = "#entry-modal .modal-card-body";
     private $_selector_modal_body_value = "input#entry-value";
     private $_selector_modal_body_account_type = "select#entry-account-type";
     private $_selector_modal_body_account_type_is_loading = ".select.is-loading select#entry-account-type";
     private $_selector_modal_body_memo = "textarea#entry-memo";
-    private $_selector_modal_foot = "#entry-modal .modal-card-foot";
     private $_selector_modal_foot_save_btn = "button#entry-save-btn";
     private $_selector_modal_foot_delete_btn = "button#entry-delete-btn";
 
@@ -41,11 +41,6 @@ class NotificationsTest extends DuskTestCase {
 
     private $_message_error_occurred = "An error occurred while attempting to retrieve %s";
     private $_message_not_found = "No %s currently available";
-
-    public function setUp(){
-        parent::setUp();
-        $this->setDatabaseStateInjectionPermission(self::$ALLOW_INJECT_DATABASE_STATE_ON_EXCEPTION);
-    }
 
     /**
      * There should be no notifications when the following are successful:
@@ -253,20 +248,39 @@ class NotificationsTest extends DuskTestCase {
      * test 11/25
      */
     public function testNotificationSaveNewEntry500(){
-        $this->markTestIncomplete();
-        $this->browse(function (Browser $browser) {
+        $recreate_table_query = $this->getTableRecreationQuery('entries');
+
+        $account_types = collect($this->getApiAccountTypes());
+        $account_type = $account_types->where('disabled', false)->random();
+
+        $this->browse(function(Browser $browser) use ($account_type){
             $browser->visit(new HomePage());
-            // TODO: wait for loading to hide
-            // TODO: click the "New Entry" navbar button
-            // TODO: wait for modal to load
-            // TODO: fill in minimum required fields
-            // TODO: click the save button in the modal footer
-            // TODO: FORCE 500 from `POST /api/entry`
-            // TODO: wait for notification to pop up
-            // TODO: notification is type:error
-            // TODO: notification text:"An error occurred while attempting to create an entry"
-            // TODO: wait 5 seconds for notification to disappear
+            $this->waitForLoadingToStop($browser);
+            $this->openNewEntryModal($browser);
+
+            // fill in minimum required fields
+            $memo_field = "Test entry - 500 ERROR saving requirements";
+            $browser
+                ->with($this->_selector_modal_body, function($modal_body) use ($account_type, $memo_field){
+                    $modal_body
+                        ->type($this->_selector_modal_entry_field_value, "9.99")
+                        ->waitUntilMissing($this->_selector_modal_entry_field_account_type_is_loading, self::$WAIT_SECONDS)
+                        ->select($this->_selector_modal_entry_field_account_type, $account_type['id'])
+                        ->type($this->_selector_modal_entry_field_memo, $memo_field);
+                });
+
+            // FORCE 500 from `POST /api/entry`
+            DB::statement("DROP TABLE entries");
+
+            $browser->with($this->_selector_modal_foot, function($modal_foot){
+                $modal_foot->click($this->_selector_modal_entry_btn_save);
+            });
+
+            $this->waitForLoadingToStop($browser);
+            $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_ERROR, "An error occurred while attempting to retrieve entries");
         });
+
+        DB::statement($recreate_table_query);
     }
 
     /**
@@ -276,17 +290,18 @@ class NotificationsTest extends DuskTestCase {
      * test 12/25
      */
     public function testNotificationFetchEntry404(){
-        $this->markTestIncomplete();
-        $this->browse(function (Browser $browser) {
+        $entries = collect($this->removeCountFromApiResponse($this->getApiEntries()));
+        $entry_id = $entries->pluck('id')->random();
+
+        $this->browse(function (Browser $browser) use($entry_id) {
             $browser->visit(new HomePage());
-            // TODO: wait for loading to hide
-            // TODO: select an existing entry from the entries-table
-            // TODO: open said entry in an entry-modal
-            // TODO: FORCE 404 from `GET /api/entry{entry_id}`
-            // TODO: wait for notification to pop up
-            // TODO: notification is type:warning
-            // TODO: notification text:"Entry does not exist"
-            // TODO: wait 5 seconds for notification to disappear
+            $this->waitForLoadingToStop($browser);
+
+            // FORCE 404 from `GET /api/entry{entry_id}`
+            DB::table('entries')->delete($entry_id);
+            $browser->openExistingEntryModal(sprintf(self::$PLACEHOLDER_SELECTOR_EXISTING_ENTRY_ROW, $entry_id));
+
+            $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_WARNING, "Entry does not exist");
         });
     }
 
@@ -533,6 +548,10 @@ class NotificationsTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @param $table_name
+     * @return string
+     */
     private function getTableRecreationQuery($table_name){
         $create_query = DB::select("SHOW CREATE TABLE ".$table_name);
         return $create_query[0]->{"Create Table"};

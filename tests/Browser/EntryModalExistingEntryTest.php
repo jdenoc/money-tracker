@@ -53,7 +53,6 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     private $_class_is_transfer = "is-transfer";
     private $_class_has_tags = "has-tags";
     private $_class_existing_attachment = "existing-attachment";
-    private $_modal_id_prefix = "#entry-";
 
     private $_cached_entries_collection = [];
 
@@ -662,7 +661,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         $this->browse(function(Browser $browser){
             do{
                 $entry_selector = $this->randomEntrySelector(['is_transfer'=>true]);
-                $entry_id = str_replace($this->_modal_id_prefix, "", $entry_selector);
+                $entry_id = $this->getEntryIdFromSelector($entry_selector);
                 $entry_data = $this->getApiEntry($entry_id);
             }while($entry_data['transfer_entry_id'] === 0);
             $transfer_entry_data = $this->getApiEntry($entry_data['transfer_entry_id']);
@@ -749,7 +748,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         $this->browse(function(Browser $browser){
             do{
                 $entry_selector = $this->randomEntrySelector(['is_transfer'=>true]);
-                $entry_id = str_replace($this->_modal_id_prefix, "", $entry_selector);
+                $entry_id = $this->getEntryIdFromSelector($entry_selector);
                 $entry_data = $this->getApiEntry($entry_id);
             } while($entry_data['transfer_entry_id'] !== EntryController::TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID);
             $this->assertEquals($entry_id, $entry_data['id']);
@@ -799,8 +798,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
 
             $browser
-                ->assertMissing($this->_modal_id_prefix.$entry_id.'.'.$this->_class_has_tags)
-                ->openExistingEntryModal($this->_modal_id_prefix.$entry_id)
+                ->assertMissing(sprintf(self::$PLACEHOLDER_SELECTOR_EXISTING_ENTRY_ROW, $entry_id).'.'.$this->_class_has_tags)
+                ->openExistingEntryModal(sprintf(self::$PLACEHOLDER_SELECTOR_EXISTING_ENTRY_ROW, $entry_id))
                 ->with($this->_selector_modal_entry, function(Browser $entry_modal) use ($entry_selector){
                     $this->assertDefaultStateOfTagsInput($entry_modal);
                 });
@@ -840,8 +839,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
 
             $browser
-                ->assertVisible($this->_modal_id_prefix.$entry_id.'.'.$this->_class_has_tags)
-                ->openExistingEntryModal($this->_modal_id_prefix.$entry_id)
+                ->assertVisible(sprintf(self::$PLACEHOLDER_SELECTOR_EXISTING_ENTRY_ROW, $entry_id).'.'.$this->_class_has_tags)
+                ->openExistingEntryModal(sprintf(self::$PLACEHOLDER_SELECTOR_EXISTING_ENTRY_ROW, $entry_id))
                 ->with($this->_selector_modal_entry, function(Browser $entry_modal) use ($entry_selector, $new_tag){
                     $this->assertTagInInput($entry_modal, $new_tag);
                 });
@@ -1059,7 +1058,19 @@ class EntryModalExistingEntryTest extends DuskTestCase {
             }
         }
         $entry_id = $entries_collection->pluck('id')->random();
-        return $this->_modal_id_prefix.$entry_id;
+        return sprintf(self::$PLACEHOLDER_SELECTOR_EXISTING_ENTRY_ROW, $entry_id);
+    }
+
+    /**
+     * @param string $selector
+     * @return string
+     */
+    private function getEntryIdFromSelector($selector){
+        return str_replace(
+            str_replace("%s", '', self::$PLACEHOLDER_SELECTOR_EXISTING_ENTRY_ROW),
+            '',
+            $selector
+        );
     }
 
     /**

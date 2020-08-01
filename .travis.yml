@@ -46,14 +46,7 @@ before_script:
   - docker container exec -t app.money-tracker env
   # setup laravel log files
   - docker container exec -t --user www-data app.money-tracker touch storage/logs/php_error.log
-  - docker container exec -t --user www-data app.money-tracker touch storage/logs/laravel.debug.log
-  - docker container exec -t --user www-data app.money-tracker touch storage/logs/laravel.info.log
-  - docker container exec -t --user www-data app.money-tracker touch storage/logs/laravel.notice.log
-  - docker container exec -t --user www-data app.money-tracker touch storage/logs/laravel.warning.log
-  - docker container exec -t --user www-data app.money-tracker touch storage/logs/laravel.error.log
-  - docker container exec -t --user www-data app.money-tracker touch storage/logs/laravel.critical.log
-  - docker container exec -t --user www-data app.money-tracker touch storage/logs/laravel.alert.log
-  - docker container exec -t --user www-data app.money-tracker touch storage/logs/laravel.emergency.log
+  - docker container exec -t --user www-data app.money-tracker touch storage/logs/laravel.log
 
 stages:
   - build
