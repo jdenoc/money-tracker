@@ -3,13 +3,13 @@
 namespace Tests\Browser;
 
 use App\Entry;
+use App\Http\Controllers\Api\EntryController;
 use App\Traits\Tests\Dusk\AccountOrAccountTypeTogglingSelector as DuskTraitAccountOrAccountTypeTogglingSelector;
 use App\Traits\Tests\Dusk\BatchFilterEntries as DuskTraitBatchFilterEntries;
 use App\Traits\Tests\Dusk\BulmaColors as DuskTraitBulmaColors;
 use App\Traits\Tests\Dusk\BulmaDatePicker as DuskTraitBulmaDatePicker;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\StatsSidePanel as DuskTraitStatsSidePanel;
-use App\Traits\Tests\InjectDatabaseStateIntoException;
 use Illuminate\Support\Collection;
 use Laravel\Dusk\Browser;
 use Tests\Browser\Pages\StatsPage;
@@ -31,8 +31,6 @@ class StatsDistributionTest extends StatsBase {
     use DuskTraitBatchFilterEntries;
     use DuskTraitLoading;
     use DuskTraitStatsSidePanel;
-
-    use InjectDatabaseStateIntoException;
 
     private static $SELECTOR_STATS_DISTRIBUTION = '#stats-distribution';
     private static $SELECTOR_STATS_FORM_TOGGLE_EXPENSEINCOME = '#distribution-expense-or-income';
@@ -168,8 +166,6 @@ class StatsDistributionTest extends StatsBase {
         $account_types = collect($this->getApiAccountTypes());
         $tags = collect($this->getApiTags());
 
-        $this->setDatabaseStateInjectionPermission(self::$ALLOW_INJECT_DATABASE_STATE_ON_EXCEPTION);
-
         $this->browse(function (Browser $browser) use ($datepicker_start, $datepicker_end, $is_account_switch_toggled, $is_expense_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $accounts, $account_types, $tags){
             $filter_data = [];
 
@@ -186,11 +182,23 @@ class StatsDistributionTest extends StatsBase {
                     if($is_account_switch_toggled){
                         // switch to account-types
                         $this->toggleAccountOrAccountTypeSwitch($form);
-                        $account_or_account_type_id = $is_random_selector_value ? $account_types->where('disabled', $are_disabled_select_options_available)->pluck('id')->random() : '';
+                        $account_or_account_type_collection = $account_types;
+                        $filter_name = EntryController::FILTER_KEY_ACCOUNT_TYPE;
                     } else {
                         // stay with accounts
-                        $account_or_account_type_id = $is_random_selector_value ? $accounts->where('disabled', $are_disabled_select_options_available)->pluck('id')->random() : '';
+                        $account_or_account_type_collection = $accounts;
+                        $filter_name = EntryController::FILTER_KEY_ACCOUNT;
                     }
+
+                    if($is_random_selector_value){
+                        do{
+                            $account_or_account_type_id = $account_or_account_type_collection->where('disabled', $are_disabled_select_options_available)->pluck('id')->random();
+                            $entry_count = \App\Entry::count_non_disabled_entries([$filter_name=>$account_or_account_type_id]);
+                        } while($entry_count > 0);
+                    } else {
+                        $account_or_account_type_id = '';
+                    }
+
                     $this->selectAccountOrAccountTypeValue($form, $account_or_account_type_id);
                     $filter_data = $this->generateFilterArrayElementAccountOrAccountypeId($filter_data, $is_account_switch_toggled, $account_or_account_type_id);
 
