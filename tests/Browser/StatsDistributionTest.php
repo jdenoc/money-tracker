@@ -3,7 +3,6 @@
 namespace Tests\Browser;
 
 use App\Entry;
-use App\Http\Controllers\Api\EntryController;
 use App\Traits\Tests\Dusk\AccountOrAccountTypeTogglingSelector as DuskTraitAccountOrAccountTypeTogglingSelector;
 use App\Traits\Tests\Dusk\BatchFilterEntries as DuskTraitBatchFilterEntries;
 use App\Traits\Tests\Dusk\BulmaColors as DuskTraitBulmaColors;
@@ -95,7 +94,7 @@ class StatsDistributionTest extends StatsBase {
                         ->assertVisible(self::$SELECTOR_BUTTON_GENERATE)
                         ->assertSeeIn(self::$SELECTOR_BUTTON_GENERATE, self::$LABEL_GENERATE_CHART_BUTTON);
                     $button_classes = $form->attribute(self::$SELECTOR_BUTTON_GENERATE, 'class');
-                    $this->assertContains('is-primary', $button_classes);
+                    $this->assertStringContainsString('is-primary', $button_classes);
                 });
         });
     }
@@ -182,21 +181,10 @@ class StatsDistributionTest extends StatsBase {
                     if($is_account_switch_toggled){
                         // switch to account-types
                         $this->toggleAccountOrAccountTypeSwitch($form);
-                        $account_or_account_type_collection = $account_types;
-                        $filter_name = EntryController::FILTER_KEY_ACCOUNT_TYPE;
+                        $account_or_account_type_id = ($is_random_selector_value) ? $account_types->where('disabled', $are_disabled_select_options_available)->pluck('id')->random() : '';
                     } else {
                         // stay with accounts
-                        $account_or_account_type_collection = $accounts;
-                        $filter_name = EntryController::FILTER_KEY_ACCOUNT;
-                    }
-
-                    if($is_random_selector_value){
-                        do{
-                            $account_or_account_type_id = $account_or_account_type_collection->where('disabled', $are_disabled_select_options_available)->pluck('id')->random();
-                            $entry_count = \App\Entry::count_non_disabled_entries([$filter_name=>$account_or_account_type_id]);
-                        } while($entry_count > 0);
-                    } else {
-                        $account_or_account_type_id = '';
+                        $account_or_account_type_id = ($is_random_selector_value) ? $accounts->where('disabled', $are_disabled_select_options_available)->pluck('id')->random() : '';
                     }
 
                     $this->selectAccountOrAccountTypeValue($form, $account_or_account_type_id);
@@ -217,6 +205,7 @@ class StatsDistributionTest extends StatsBase {
                     }
                     $filter_data = $this->generateFilterArrayElementDatepicker($filter_data, $datepicker_start, $datepicker_end);
 
+                    $this->generateEntryFromFilterData($filter_data);
                     $this->createEntryWithAllTags($is_account_switch_toggled, $account_or_account_type_id, $account_types, $tags);
                     $form->click(self::$SELECTOR_BUTTON_GENERATE);
                 });
@@ -226,7 +215,7 @@ class StatsDistributionTest extends StatsBase {
             $this->waitForLoadingToStop($browser);
             $browser
                 ->assertDontSeeIn(self::$SELECTOR_STATS_RESULTS_DISTRIBUTION, self::$LABEL_NO_STATS_DATA)
-                ->with(self::$SELECTOR_STATS_RESULTS_DISTRIBUTION, function(Browser $stats_results_area){
+                ->with(self::$SELECTOR_STATS_RESULTS_DISTRIBUTION, static function(Browser $stats_results_area){
                     $stats_results_area->assertVisible(self::$SELECTOR_CHART_DISTRIBUTION);
                 })
                 ->assertVue(self::$VUE_KEY_STANDARDISEDATA, $this->standardiseData($entries, $tags), self::$SELECTOR_STATS_DISTRIBUTION);

@@ -2,9 +2,14 @@
 
 namespace Tests\Browser;
 
+use App\Account;
+use App\AccountType;
+use App\Entry;
+use App\Http\Controllers\Api\EntryController;
 use App\Traits\Tests\Dusk\BulmaDatePicker as DuskTraitBulmaDatePicker;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\StatsSidePanel as DuskTraitStatsSidePanel;
+use Illuminate\Foundation\Testing\WithFaker;
 use Laravel\Dusk\Browser;
 use Tests\Browser\Pages\StatsPage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
@@ -15,6 +20,7 @@ class StatsBase extends DuskTestCase {
     use DuskTraitBulmaDatePicker;
     use DuskTraitLoading;
     use DuskTraitStatsSidePanel;
+    use WithFaker;
 
     protected static $SELECTOR_STATS_FORM_SUMMARY = "#stats-form-summary";
     protected static $SELECTOR_STATS_FORM_TRENDING = '#stats-form-trending';
@@ -73,6 +79,38 @@ class StatsBase extends DuskTestCase {
                 ->assertVisible(self::$SELECTOR_STATS_FORM_SUMMARY)
                 ->assertSeeIn(self::$SELECTOR_STATS_RESULTS_SUMMARY, self::$LABEL_NO_STATS_DATA);
         });
+    }
+
+    /**
+     * Sometimes we select an collection of filter parameters that result in no entries being available.
+     * In those situations, we need to make sure that at least one entry does exist.
+     *
+     * @param array $filter_data
+     */
+    protected function generateEntryFromFilterData($filter_data){
+        $new_entry_data = ['disabled'=>false];
+        $new_entry_data['entry_date'] = $this->faker
+            ->dateTimeBetween($filter_data[EntryController::FILTER_KEY_START_DATE], $filter_data[EntryController::FILTER_KEY_END_DATE])
+            ->format("Y-m-d");
+        if(!empty($filter_data[EntryController::FILTER_KEY_EXPENSE])){
+            $new_entry_data['expense'] = $filter_data[EntryController::FILTER_KEY_EXPENSE];
+        }
+
+        if(!empty($filter_data[EntryController::FILTER_KEY_ACCOUNT_TYPE])){
+            $new_entry_data['account_type_id'] = $filter_data[EntryController::FILTER_KEY_ACCOUNT_TYPE];
+        } elseif(!empty($filter_data[EntryController::FILTER_KEY_ACCOUNT])){
+            $account = Account::find_account_with_types($filter_data[EntryController::FILTER_KEY_ACCOUNT]);
+            $new_entry_data['account_type_id'] = $account->account_types->first()->id;
+        } else {
+            // Can't leave the assignment up to RNG in the factory.
+            // Could result in assigning an ID that doesn't exist
+            $new_entry_data['account_type_id'] = AccountType::all()->pluck('id')->random();
+        }
+
+        $entry = factory(Entry::class)->create($new_entry_data);
+        if(!empty($filter_data[EntryController::FILTER_KEY_TAGS])){
+            $entry->tags()->attach($filter_data[EntryController::FILTER_KEY_TAGS]);
+        }
     }
 
 }

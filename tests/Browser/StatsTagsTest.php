@@ -91,7 +91,7 @@ class StatsTagsTest extends StatsBase {
                                 ->assertVisible(self::$SELECTOR_BUTTON_GENERATE)
                                 ->assertSeeIn(self::$SELECTOR_BUTTON_GENERATE, self::$LABEL_GENERATE_CHART_BUTTON);
                             $button_classes = $form->attribute(self::$SELECTOR_BUTTON_GENERATE, 'class');
-                            $this->assertContains('is-primary', $button_classes);
+                            $this->assertStringContainsString('is-primary', $button_classes);
                         });
                 });
         });
@@ -209,6 +209,7 @@ class StatsTagsTest extends StatsBase {
                     }
                     $filter_data = $this->generateFilterArrayElementDatepicker($filter_data, $datepicker_start, $datepicker_end);
 
+                    $this->generateEntryFromFilterData($filter_data);
                     $this->createEntryWithAllTags($is_switch_toggled, $account_or_account_type_id, $account_types, $tags);
                     $form->click(self::$SELECTOR_BUTTON_GENERATE);
                 });

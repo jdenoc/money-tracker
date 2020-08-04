@@ -4,7 +4,7 @@ use Faker\Generator as Faker;
 use App\Helpers\DatabaseFactoryConstants AS FactoryConstants;
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
-$factory->define(App\Entry::class, function(Faker $faker){
+$factory->define(App\Entry::class, static function(Faker $faker){
     return [
         'entry_date'=>$faker->date(),
         'account_type_id'=>$faker->randomNumber(FactoryConstants::MAX_RAND_ID_LENGTH, true),

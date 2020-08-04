@@ -86,7 +86,7 @@ class StatsTrendingTest extends StatsBase {
                                 ->assertVisible(self::$SELECTOR_BUTTON_GENERATE)
                                 ->assertSeeIn(self::$SELECTOR_BUTTON_GENERATE, self::$LABEL_GENERATE_CHART_BUTTON);
                             $button_classes = $form->attribute(self::$SELECTOR_BUTTON_GENERATE, 'class');
-                            $this->assertContains('is-primary', $button_classes);
+                            $this->assertStringContainsString('is-primary', $button_classes);
                         });
                 });
         });
@@ -179,6 +179,7 @@ class StatsTrendingTest extends StatsBase {
                     }
                     $filter_data = $this->generateFilterArrayElementDatepicker($filter_data, $datepicker_start, $datepicker_end);
 
+                    $this->generateEntryFromFilterData($filter_data);
                     $form->click(self::$SELECTOR_BUTTON_GENERATE);
                 });
 
