@@ -176,7 +176,7 @@
 
 <style lang="scss" scoped>
     @import '../../../sass/stats-chart';
-    @import '~@voerro/vue-tagsinput/dist/style.css';
+    @import '../../../../node_modules/@voerro/vue-tagsinput/dist/style.css';
     @import '../../../sass/tags-input';
 
     .field.is-horizontal:nth-child(2){

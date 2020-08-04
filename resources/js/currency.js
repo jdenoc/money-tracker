@@ -1,4 +1,4 @@
-import json from '../../../storage/app/json/currency.json'
+import json from '../../storage/app/json/currency.json'
 
 export class Currency {
 

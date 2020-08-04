@@ -35,7 +35,6 @@ before_script:
   - docker container exec -t mysql.money-tracker iterate-mysql-health-check
   # make sure user `www-data` has ownership of everything
   - docker container exec -t app.money-tracker chown -R www-data:www-data .
-  - docker container exec -t --user www-data app.money-tracker mkdir -p storage/framework/cache/data
   # general application setup
   - .docker/cmd/artisan.sh key:generate
   - .docker/cmd/artisan.sh app:version `git describe`
