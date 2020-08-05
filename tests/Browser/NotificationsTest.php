@@ -71,7 +71,7 @@ class NotificationsTest extends DuskTestCase {
      */
     public function testNotificationFetchAccounts404(){
         // FORCE 404 from `GET /api/accounts`
-        DB::statement("TRUNCATE accounts");
+        DB::table('accounts')->truncate();
 
         $this->browse(function (Browser $browser) {
             $browser->visit(new HomePage());
@@ -107,7 +107,7 @@ class NotificationsTest extends DuskTestCase {
      */
     public function testNotificationFetchAccountTypes404(){
         // FORCE 404 from `GET /api/account-types`
-        DB::statement("TRUNCATE account_types");
+        DB::table('account_types')->truncate();
 
         $this->browse(function (Browser $browser) {
             $browser->visit(new HomePage());
@@ -146,15 +146,18 @@ class NotificationsTest extends DuskTestCase {
         $this->markTestIncomplete();
         $this->browse(function (Browser $browser) {
             $browser->visit(new HomePage());
-            // TODO: wait for loading to stop
-            // TODO: select an existing entry with an attachment from the entries-table
-            // TODO: open said entry in an entry-modal
-            // TODO: click the "delete" attachment button
-            // TODO: FORCE 404 from `DELETE /api/attachment/{uuid}`
-            // TODO: wait for notification to pop up
-            // TODO: notification is type:warning
-            // TODO: notification text:"Could not delete attachment"
-            // TODO: wait 5 seconds for notification to disappear
+            $this->waitForLoadingToStop($browser);
+
+            $browser
+                ->openExistingEntryModal($this->getEntryTableRowSelector().'.has-attachments')
+                ->with($this->_selector_modal_body, static function(){
+                    // TODO: FORCE 404 from `DELETE /api/attachment/{uuid}`
+                    $attachment_uuid = '';  // TODO: get attachment UUID
+                    DB::table('attachments')->where('uuid', $attachment_uuid)->delete();
+                    // TODO: click the "delete" attachment button
+                });
+
+            $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_WARNING, "Could not delete attachment");
         });
     }
 
@@ -169,15 +172,14 @@ class NotificationsTest extends DuskTestCase {
         $this->markTestIncomplete();
         $this->browse(function (Browser $browser) {
             $browser->visit(new HomePage());
-            // TODO: wait for loading to stop
-            // TODO: select an existing entry with an attachment from the entries-table
-            // TODO: open said entry in an entry-modal
-            // TODO: click the "delete" attachment button
-            // TODO: FORCE 500 from `DELETE /api/attachment/{uuid}`
-            // TODO: wait for notification to pop up
-            // TODO: notification is type:error
-            // TODO: notification text:"An error occurred while attempting to delete entry attachment [%s]"
-            // TODO: wait 5 seconds for notification to disappear
+            $this->waitForLoadingToStop($browser);
+            $browser
+                ->openExistingEntryModal($this->getEntryTableRowSelector().'.has-attachments')
+                ->with($this->_selector_modal_body, static function(Browser $modal){
+                    // TODO: FORCE 500 from `DELETE /api/attachment/{uuid}`
+                    // TODO: click the "delete" attachment button
+                });
+            $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_ERROR, "An error occurred while attempting to delete entry attachment [%s]");
         });
     }
 
@@ -189,7 +191,7 @@ class NotificationsTest extends DuskTestCase {
      */
     public function testNotificationFetchEntries404(){
         // FORCE 404 from `GET /api/entries`
-        DB::statement("TRUNCATE entries");
+        DB::table('entries')->truncate();
 
         $this->browse(function (Browser $browser) {
             $browser->visit(new HomePage());
@@ -224,20 +226,17 @@ class NotificationsTest extends DuskTestCase {
      * test 10/25
      */
     public function testNotificationSaveNewEntry400(){
+        // TODO: finish writing me...
         $this->markTestIncomplete();
         $this->browse(function (Browser $browser) {
             $browser->visit(new HomePage());
-            // TODO: wait for loading to hide
-            // TODO: click the "New Entry" navbar button
-            // TODO: wait for modal to load
+            $this->waitForLoadingToStop($browser);
+            $this->openNewEntryModal($browser);
             // TODO: fill in minimum required fields
             // TODO: click the save button in the modal footer
             // TODO: FORCE 400 from `POST /api/entry`
             // TODO: FORCE this response: {error: "Forced failure"}
-            // TODO: wait for notification to pop up
-            // TODO: notification is type:warning
-            // TODO: notification text:"Forced failure"
-            // TODO: wait 5 seconds for notification to disappear
+            $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_WARNING, "Forced failure");
         });
     }
 
@@ -333,19 +332,23 @@ class NotificationsTest extends DuskTestCase {
      * test 14/25
      */
     public function testNotificationSaveExistingEntry200(){
+        // TODO: finish writing me...
         $this->markTestIncomplete();
-        $this->browse(function (Browser $browser) {
+        $entries = collect($this->removeCountFromApiResponse($this->getApiEntries()));
+        $entry_id = $entries->pluck('id')->random();
+
+        $this->browse(function (Browser $browser) use ($entry_id) {
             $browser->visit(new HomePage());
-            // TODO: wait for loading to hide
-            // TODO: select an existing entry from the entries-table
-            // TODO: open said entry in an entry-modal
-            // TODO: wait for modal to load
-            // TODO: change the value of one of the _required_ fields
-            // TODO: click the save button in the modal footer
-            // TODO: wait for notification to pop up
-            // TODO: notification is type:success
-            // TODO: notification text:"Entry updated"
-            // TODO: wait 5 seconds for notification to disappear
+            $this->waitForLoadingToStop($browser);
+            $browser
+                ->openExistingEntryModal(sprintf(self::$PLACEHOLDER_SELECTOR_EXISTING_ENTRY_ROW, $entry_id))
+                ->with($this->_selector_modal_body, static function(Browser $modal){
+                    // TODO: change the value of one of the _required_ fields
+                })
+                ->with($this->_selector_modal_foot, function($modal_foot){
+                    $modal_foot->click($this->_selector_modal_entry_btn_save);
+                });
+            $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_SUCCESS, "Entry updated");
         });
     }
 
@@ -368,10 +371,11 @@ class NotificationsTest extends DuskTestCase {
      * test (see provider)/25
      */
     public function testNotificationSaveExistingEntry4XX($http_status, $error_response_message){
+        // TODO: write me...
         $this->markTestIncomplete();
         $this->browse(function (Browser $browser) {
             $browser->visit(new HomePage());
-            // TODO: wait for loading to hide
+            $this->waitForLoadingToStop($browser);
             // TODO: select an existing entry from the entries-table
             // TODO: open said entry in an entry-modal
             // TODO: wait for modal to load
@@ -393,20 +397,24 @@ class NotificationsTest extends DuskTestCase {
      * test 17/25
      */
     public function testNotificationSaveExistingEntry500(){
+        // TODO: write me...
         $this->markTestIncomplete();
-        $this->browse(function (Browser $browser) {
+        $entries = collect($this->removeCountFromApiResponse($this->getApiEntries()));
+        $entry_id = $entries->pluck('id')->random();
+
+        $this->browse(function (Browser $browser) use ($entry_id){
             $browser->visit(new HomePage());
-            // TODO: wait for loading to hide
-            // TODO: select an existing entry from the entries-table
-            // TODO: open said entry in an entry-modal
-            // TODO: wait for modal to load
-            // TODO: change the value of one of the _required_ fields
-            // TODO: click the save button in the modal footer
-            // TODO: FORCE 500 from `GET /api/entry{entry_id}`
-            // TODO: wait for notification to pop up
-            // TODO: notification is type:error
-            // TODO: notification text:"An error occurred while attempting to update entry [%s]"
-            // TODO: wait 5 seconds for notification to disappear
+            $this->waitForLoadingToStop($browser);
+            $browser
+                ->openExistingEntryModal(sprintf(self::$PLACEHOLDER_SELECTOR_EXISTING_ENTRY_ROW, $entry_id))
+                ->with($this->_selector_modal_body, static function(Browser $modal){
+                    // TODO: change the value of one of the _required_ fields
+                })
+                ->with($this->_selector_modal_foot, function($modal_foot){
+                    // TODO: FORCE 500 from `GET /api/entry{entry_id}`
+                    $modal_foot->click($this->_selector_modal_entry_btn_save);
+                });
+            $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_ERROR, "An error occurred while attempting to update entry [%s]");
         });
     }
 
@@ -439,7 +447,7 @@ class NotificationsTest extends DuskTestCase {
         $this->markTestIncomplete();
         $this->browse(function (Browser $browser) {
             $browser->visit(new HomePage());
-            // TODO: wait for loading to hide
+            $this->waitForLoadingToStop($browser);
             // TODO: select and existing entry from the entries-table
             // TODO: open said entry in an entry-modal
             // TODO: click the "delete" entry button in the modal footer
@@ -483,7 +491,7 @@ class NotificationsTest extends DuskTestCase {
      */
     public function testNotificationFetchInstitutions404(){
         // FORCE 404 from `GET /api/institutions`
-        DB::statement("TRUNCATE institutions");
+        DB::table('institutions')->truncate();
 
         $this->browse(function (Browser $browser) {
             $browser->visit(new HomePage());
@@ -519,7 +527,7 @@ class NotificationsTest extends DuskTestCase {
      */
     public function testNotificationFetchTags404(){
         // FORCE 404 from `GET /api/tags`
-        DB::statement("TRUNCATE tags");
+        DB::table('tags')->truncate();
 
         $this->browse(function (Browser $browser) {
             $browser->visit(new HomePage());
