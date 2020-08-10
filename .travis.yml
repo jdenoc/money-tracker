@@ -36,12 +36,13 @@ before_script:
   # make sure user `www-data` has ownership of everything
   - docker container exec -t app.money-tracker chown -R www-data:www-data .
   # general application setup
-  - .docker/cmd/artisan.sh key:generate
-  - .docker/cmd/artisan.sh app:version `git describe`
   - .docker/cmd/artisan.sh cache:clear
   - .docker/cmd/artisan.sh view:clear
-  - .docker/cmd/artisan.sh config:cache
+  - .docker/cmd/artisan.sh key:generate
+  - .docker/cmd/artisan.sh app:version `git describe --always`
   - .docker/cmd/artisan.sh travis-ci --display-env
+  - .docker/cmd/artisan.sh config:cache
+  - .docker/cmd/artisan.sh travis-ci --config
   - docker container exec -t app.money-tracker env
   # setup laravel log files
   - docker container exec -t --user www-data app.money-tracker touch storage/logs/php_error.log
