@@ -75,6 +75,7 @@ class NotificationsTest extends DuskTestCase {
 
         $this->browse(function (Browser $browser) {
             $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_INFO, sprintf($this->_message_not_found, "accounts"));
         });
     }
@@ -86,17 +87,18 @@ class NotificationsTest extends DuskTestCase {
      * test 3/25
      */
     public function testNotificationFetchAccounts500(){
-        $recreate_table_query = $this->getTableRecreationQuery('accounts');
+        $table = 'accounts';
+        $recreate_table_query = $this->getTableRecreationQuery($table);
+        // FORCE 500 from `GET /api/accounts`
+        $this->dropTable($table);
 
-        $this->browse(function (Browser $browser) use ($recreate_table_query){
-            // FORCE 500 from `GET /api/accounts`
-            DB::statement("DROP TABLE accounts");
-
+        $this->browse(function (Browser $browser){
             $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_ERROR, sprintf($this->_message_error_occurred, "accounts"));
-
-            DB::statement($recreate_table_query);
         });
+
+        DB::statement($recreate_table_query);
     }
 
     /**
@@ -111,6 +113,7 @@ class NotificationsTest extends DuskTestCase {
 
         $this->browse(function (Browser $browser) {
             $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_INFO, sprintf($this->_message_not_found, "account types"));
         });
     }
@@ -122,17 +125,18 @@ class NotificationsTest extends DuskTestCase {
      * test 5/25
      */
     public function testNotificationFetchAccountTypes500(){
-        $recreate_table_query = $this->getTableRecreationQuery('account_types');
+        $table = 'account_types';
+        $recreate_table_query = $this->getTableRecreationQuery($table);
+        // FORCE 500 from `GET /api/account-types`
+        $this->dropTable($table);
 
-        $this->browse(function (Browser $browser) use ($recreate_table_query){
-            // FORCE 500 from `GET /api/account-types`
-            DB::statement("DROP TABLE account_types");
-
+        $this->browse(function (Browser $browser){
             $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_ERROR, sprintf($this->_message_error_occurred, "account types"));
-
-            DB::statement($recreate_table_query);
         });
+
+        DB::statement($recreate_table_query);
     }
 
     /**
@@ -195,6 +199,7 @@ class NotificationsTest extends DuskTestCase {
 
         $this->browse(function (Browser $browser) {
             $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_INFO, "No entries were found");
         });
     }
@@ -206,17 +211,18 @@ class NotificationsTest extends DuskTestCase {
      * test 9/25
      */
     public function testNotificationFetchEntries500(){
-        $recreate_table_query = $this->getTableRecreationQuery('entries');
+        $table = 'entries';
+        $recreate_table_query = $this->getTableRecreationQuery($table);
+        // FORCE 500 from `GET /api/entries`
+        $this->dropTable($table);
 
-        $this->browse(function (Browser $browser) use ($recreate_table_query){
-            // FORCE 500 from `GET /api/entries`
-            DB::statement("DROP TABLE entries");
-
+        $this->browse(function (Browser $browser){
             $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_ERROR, sprintf($this->_message_error_occurred, "entries"));
-
-            DB::statement($recreate_table_query);
         });
+
+        DB::statement($recreate_table_query);
     }
 
     /**
@@ -247,12 +253,13 @@ class NotificationsTest extends DuskTestCase {
      * test 11/25
      */
     public function testNotificationSaveNewEntry500(){
-        $recreate_table_query = $this->getTableRecreationQuery('entries');
+        $table = 'entries';
+        $recreate_table_query = $this->getTableRecreationQuery($table);
 
         $account_types = collect($this->getApiAccountTypes());
         $account_type = $account_types->where('disabled', false)->random();
 
-        $this->browse(function(Browser $browser) use ($account_type){
+        $this->browse(function(Browser $browser) use ($account_type, $table){
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $this->openNewEntryModal($browser);
@@ -269,7 +276,7 @@ class NotificationsTest extends DuskTestCase {
                 });
 
             // FORCE 500 from `POST /api/entry`
-            DB::statement("DROP TABLE entries");
+            $this->dropTable($table);
 
             $browser->with($this->_selector_modal_foot, function($modal_foot){
                 $modal_foot->click($this->_selector_modal_entry_btn_save);
@@ -311,18 +318,19 @@ class NotificationsTest extends DuskTestCase {
      * test 13/25
      */
     public function testNotificationFetchEntry500(){
-        $recreate_table_query = $this->getTableRecreationQuery("entries");
-        $this->browse(function(Browser $browser) use ($recreate_table_query){
+        $table = 'entries';
+        $recreate_table_query = $this->getTableRecreationQuery($table);
+        $this->browse(function(Browser $browser) use ($table){
             $entry_table_row_selector = $this->getEntryTableRowSelector();
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
 
-            DB::statement("DROP TABLE entries");
+            $this->dropTable($table);
 
             $browser->openExistingEntryModal($entry_table_row_selector);
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_ERROR, sprintf($this->_message_error_occurred, "entry"));
-            DB::statement($recreate_table_query);
         });
+        DB::statement($recreate_table_query);
     }
 
     /**
@@ -432,6 +440,7 @@ class NotificationsTest extends DuskTestCase {
             $browser
                 ->openExistingEntryModal($entry_table_row_selector)
                 ->click($this->_selector_modal_foot_delete_btn);
+            $this->waitForLoadingToStop($browser);
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_SUCCESS, "Entry was deleted");
         });
     }
@@ -466,21 +475,22 @@ class NotificationsTest extends DuskTestCase {
      * test 20/25
      */
     public function testNotificationDeleteEntry500(){
-        $recreate_table_query = $this->getTableRecreationQuery('entries');
+        $table = 'entries';
+        $recreate_table_query = $this->getTableRecreationQuery($table);
 
-        $this->browse(function (Browser $browser) use ($recreate_table_query){
+        $this->browse(function (Browser $browser) use ($table){
             $entry_table_row_selector = $this->getEntryTableRowSelector();
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $browser
                 ->openExistingEntryModal($entry_table_row_selector);
 
-            DB::statement("DROP TABLE entries");
+            $this->dropTable($table);
 
             $browser->click($this->_selector_modal_foot_delete_btn);
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_ERROR, "An error occurred while attempting to delete entry [");
-            DB::statement($recreate_table_query);
         });
+        DB::statement($recreate_table_query);
     }
 
     /**
@@ -495,6 +505,7 @@ class NotificationsTest extends DuskTestCase {
 
         $this->browse(function (Browser $browser) {
             $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_INFO, sprintf($this->_message_not_found, "institutions"));
         });
     }
@@ -506,17 +517,18 @@ class NotificationsTest extends DuskTestCase {
      * test 22/25
      */
     public function testNotificationFetchInstitutions500(){
-        $recreate_table_query = $this->getTableRecreationQuery('institutions');
+        $table = 'institutions';
+        $recreate_table_query = $this->getTableRecreationQuery($table);
 
-        $this->browse(function (Browser $browser) use ($recreate_table_query){
+        $this->browse(function (Browser $browser) use ($table){
             // FORCE 500 from `GET /api/institutions`
-            DB::statement("DROP TABLE institutions");
+            $this->dropTable($table);
 
             $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_ERROR, sprintf($this->_message_error_occurred, "institutions"));
-
-            DB::statement($recreate_table_query);
         });
+        DB::statement($recreate_table_query);
     }
 
     /**
@@ -543,17 +555,18 @@ class NotificationsTest extends DuskTestCase {
      * test 24/25
      */
     public function testNotificationFetchTags500(){
-        $recreate_table_query = $this->getTableRecreationQuery('tags');
+        $table = 'tags';
+        $recreate_table_query = $this->getTableRecreationQuery($table);
 
-        $this->browse(function (Browser $browser) use ($recreate_table_query){
+        $this->browse(function (Browser $browser) use ($table){
             // FORCE 500 from `GET /api/tags`
-            DB::statement("DROP TABLE tags");
+            $this->dropTable($table);
 
             $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_ERROR, sprintf($this->_message_error_occurred, "tags"));
-
-            DB::statement($recreate_table_query);
         });
+        DB::statement($recreate_table_query);
     }
 
     /**
@@ -563,6 +576,13 @@ class NotificationsTest extends DuskTestCase {
     private function getTableRecreationQuery($table_name){
         $create_query = DB::select("SHOW CREATE TABLE ".$table_name);
         return $create_query[0]->{"Create Table"};
+    }
+
+    /**
+     * @param string $table_name
+     */
+    private function dropTable($table_name){
+        DB::statement(sprintf("DROP TABLE %s", $table_name));
     }
 
     private function getEntryTableRowSelector(){
