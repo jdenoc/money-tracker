@@ -76,8 +76,10 @@ jobs:
         # install composer packages
         - if [ -n "$GH_TOKEN" ]; then .docker/cmd/composer.sh config github-oauth.github.com ${GH_TOKEN}; fi;
         - .docker/cmd/composer.sh install --no-interaction --optimize-autoloader
+        - cat composer.lock
         # install yarn packages
         - .docker/cmd/yarn.sh install --non-interactive
+        - cat yarn.lock
         # build/compile website with webpack
         - .docker/cmd/yarn.sh run build-prod
         # install travis-ci/discord integration script(s)
@@ -138,7 +140,7 @@ after_failure:
   - .webhook/send-file.sh --retry=3 --delay=7 --ext=png --ext=jpg --ext=jpeg --ext=gif $DUSK_SCREENSHOT_DIR $WEBHOOK_URL
   - .webhook/send-file.sh --retry=3 --delay=7 --ext=sql $DUSK_DB_DUMP_DIR $WEBHOOK_URL
   - docker container logs app.money-tracker > /dev/null
-  - docker container exec -it app.money-tracker .docker/cmd/laravel-logs.sh
+  - docker container exec -t app.money-tracker .docker/cmd/laravel-logs.sh
 
 after_script:
   - docker-compose -f .docker/docker-compose.yml down -v
