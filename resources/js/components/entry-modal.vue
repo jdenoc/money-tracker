@@ -559,10 +559,10 @@
 </script>
 
 <style lang="scss" scoped>
-    @import '../../../node_modules/@voerro/vue-tagsinput/dist/style.css';
+    @import '~@voerro/vue-tagsinput/dist/style.css';
     @import '../../sass/tags-input';
-    @import '../../../node_modules/dropzone/dist/min/dropzone.min.css';
-    @import "../../../node_modules/vue2-dropzone/dist/vue2Dropzone.min.css";
+    @import '~dropzone/dist/min/dropzone.min.css';
+    @import "~vue2-dropzone/dist/vue2Dropzone.min.css";
 
     .field-label.is-normal{
         font-size: 13px;

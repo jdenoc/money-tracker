@@ -219,7 +219,7 @@
 </script>
 
 <style lang="scss" scoped>
-    @import '../../../../node_modules/bulma/sass/utilities/initial-variables';
+    @import '~bulma/sass/utilities/initial-variables';
     @import '../../../sass/stats-chart';
     .left-border{
         border-left: 1px solid $grey-lighter;
