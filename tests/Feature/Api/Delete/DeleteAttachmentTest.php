@@ -1,25 +1,25 @@
 <?php
 
-namespace Tests\Feature\Api;
+namespace Tests\Feature\Api\Delete;
 
 use App\Account;
 use App\AccountType;
 use App\Attachment;
 use App\Entry;
+use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
-use Faker;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Symfony\Component\HttpFoundation\Response;
 
 class DeleteAttachmentTest extends TestCase {
+
+    use WithFaker;
 
     private $_attachment_base_uri = '/api/attachment/';
     private $_entry_base_uri = '/api/entry/';
 
     public function testDeleteAttachmentWhenNoRecordsExist(){
-        $faker = Faker\Factory::create();
         // GIVEN - no attachment records
-        $uuid = $faker->uuid;
+        $uuid = $this->faker->uuid;
 
         // WHEN
         $response = $this->delete($this->_attachment_base_uri.$uuid);
@@ -42,7 +42,7 @@ class DeleteAttachmentTest extends TestCase {
 
         // THEN
         $get_response1->assertStatus(Response::HTTP_OK);
-        $get_response1_as_array = $this->getResponseAsArray($get_response1);
+        $get_response1_as_array = $get_response1->json();
         $this->assertTrue(is_array($get_response1_as_array));
         $this->assertArrayHasKey('attachments', $get_response1_as_array);
         $this->assertTrue(is_array($get_response1_as_array['attachments']));
@@ -60,7 +60,7 @@ class DeleteAttachmentTest extends TestCase {
         $delete_response->assertStatus(Response::HTTP_NO_CONTENT);
 
         $get_response2->assertStatus(Response::HTTP_OK);
-        $get_response2_as_array = $this->getResponseAsArray($get_response2);
+        $get_response2_as_array = $get_response2->json();
         $this->assertTrue(is_array($get_response2_as_array));
         $this->assertArrayHasKey('attachments', $get_response2_as_array);
         $this->assertTrue(is_array($get_response2_as_array['attachments']));

@@ -1,31 +1,23 @@
 <?php
 
-namespace Tests\Feature\Api;
+namespace Tests\Feature\Api\Delete;
 
 use App\Account;
 use App\AccountType;
-use App\Traits\Tests\InjectDatabaseStateIntoException;
-use Faker\Factory as FakerFactory;
+use Illuminate\Foundation\Testing\WithFaker;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
 
 class DeleteAccountTypeTest extends TestCase {
 
-    use InjectDatabaseStateIntoException;
+    use WithFaker;
 
     private $_disable_account_type_uri = '/api/account-type/';
     private $_get_account_uri = '/api/account/';
 
-    public function setUp(){
-        $this->setDatabaseStateInjectionPermission(self::$ALLOW_INJECT_DATABASE_STATE_ON_EXCEPTION);
-        parent::setUp();
-    }
-
     public function testDisableAccountTypeThatDoesNotExist(){
-        $faker = FakerFactory::create();
         // GIVEN - account_type does not exist
-        $account_type_id = $faker->randomNumber();
+        $account_type_id = $this->faker->randomNumber();
 
         // WHEN
         $response = $this->delete($this->_disable_account_type_uri.$account_type_id);

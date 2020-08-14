@@ -1,22 +1,14 @@
 <?php
 
-namespace Tests\Feature\Api;
+namespace Tests\Feature\Api\Post;
 
 use App\AccountType;
 use App\Entry;
 use App\Tag;
 use App\Http\Controllers\Api\EntryController;
-use App\Traits\Tests\InjectDatabaseStateIntoException;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 
-class PostEntriesTest extends ListEntriesBase {
-
-    use InjectDatabaseStateIntoException;
-
-    public function setUp(){
-        parent::setUp();
-        $this->setDatabaseStateInjectionPermission(self::$ALLOW_INJECT_DATABASE_STATE_ON_EXCEPTION);
-    }
+class PostEntriesTest extends \Tests\Feature\Api\ListEntriesBase {
 
     public function providerPostEntriesFilter(){
         // need to call setUp() before running through a data provider method
@@ -166,9 +158,9 @@ class PostEntriesTest extends ListEntriesBase {
             unset($response_body_as_array['count']);
 
             if($i+1 == $page_limit){
-                $this->assertEquals($generate_entry_count-(($page_limit-1)*EntryController::MAX_ENTRIES_IN_RESPONSE), count($response_body_as_array));
+                $this->assertCount($generate_entry_count-(($page_limit-1)*EntryController::MAX_ENTRIES_IN_RESPONSE), $response_body_as_array);
             } else {
-                $this->assertEquals(EntryController::MAX_ENTRIES_IN_RESPONSE, count($response_body_as_array));
+                $this->assertCount(EntryController::MAX_ENTRIES_IN_RESPONSE, $response_body_as_array);
             }
 
             $entries_in_response = array_merge($entries_in_response, $response_body_as_array);

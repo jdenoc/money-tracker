@@ -10,7 +10,6 @@ use Carbon\Carbon;
 use Faker\Factory as FakerFactory;
 use Faker\Generator;
 use Illuminate\Support\Collection;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Tests\TestCase;
 
 class ListEntriesBase extends TestCase {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Api;
+namespace Tests\Feature\Api\Get;
 
 use App\Http\Controllers\Api\VersionController;
 use Tests\TestCase;
