@@ -37,8 +37,6 @@ class NotificationsTest extends DuskTestCase {
     private $_selector_modal_foot_save_btn = "button#entry-save-btn";
     private $_selector_modal_foot_delete_btn = "button#entry-delete-btn";
 
-    private $_selector_notification = "@notification";
-
     private $_message_error_occurred = "An error occurred while attempting to retrieve %s";
     private $_message_not_found = "No %s currently available";
 
@@ -59,7 +57,7 @@ class NotificationsTest extends DuskTestCase {
         $this->browse(function (Browser $browser) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
-            $browser->assertMissing($this->_selector_notification);
+            $browser->assertMissing(self::$SELECTOR_NOTIFICATION);
         });
     }
 
@@ -544,7 +542,7 @@ class NotificationsTest extends DuskTestCase {
         $this->browse(function (Browser $browser) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
-            $browser->assertMissing($this->_selector_notification);
+            $browser->assertMissing(self::$SELECTOR_NOTIFICATION);
         });
     }
 
