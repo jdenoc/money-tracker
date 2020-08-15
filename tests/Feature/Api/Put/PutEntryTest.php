@@ -259,6 +259,9 @@ class PutEntryTest extends TestCase {
         // it caused the database to populate and in doing so we caused some tests to fail.
         // Said tests failed because they were testing the absence of database values.
         $this->initialiseApplication();
+        // faker doesn't get setup until setUp() is called.
+        // Providers are called before setUp() is called so we need to init faker here.
+        $this->setUpFaker();
 
         $required_entry_fields = Entry::get_fields_required_for_update();
         unset($required_entry_fields[array_search('disabled', $required_entry_fields)]);
@@ -520,7 +523,7 @@ class PutEntryTest extends TestCase {
         $failure_message = "PUT response is ".json_encode($response_as_array);
         $this->assertEquals(EntryController::ERROR_ENTRY_ID, $response_as_array[EntryController::RESPONSE_SAVE_KEY_ID], $failure_message);
         $this->assertNotEmpty($response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR], $failure_message);
-        $this->assertContains($response_error_msg, $response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR], $failure_message);
+        $this->assertStringContainsString($response_error_msg, $response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR], $failure_message);
     }
 
     /**
