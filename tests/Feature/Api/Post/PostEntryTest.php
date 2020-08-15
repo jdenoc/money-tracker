@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Api;
+namespace Tests\Feature\Api\Post;
 
 use App\Account;
 use App\AccountType;
@@ -8,12 +8,13 @@ use App\Attachment;
 use App\Entry;
 use App\Http\Controllers\Api\EntryController;
 use App\Tag;
-use Faker\Factory as FakerFactory;
+use Illuminate\Foundation\Testing\WithFaker;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
 
 class PostEntryTest extends TestCase {
+
+    use WithFaker;
 
     private $_base_uri = '/api/entry';
 
@@ -26,7 +27,7 @@ class PostEntryTest extends TestCase {
 
         // THEN
         $this->assertResponseStatus($response, HttpStatus::HTTP_BAD_REQUEST);
-        $response_as_array = $this->getResponseAsArray($response);
+        $response_as_array = $response->json();
         $this->assertPostResponseHasCorrectKeys($response_as_array);
         $this->assertFailedPostResponse($response_as_array, EntryController::ERROR_MSG_SAVE_ENTRY_NO_DATA);
     }
@@ -83,7 +84,7 @@ class PostEntryTest extends TestCase {
 
         // THEN
         $this->assertResponseStatus($response, HttpStatus::HTTP_BAD_REQUEST);
-        $response_as_array = $this->getResponseAsArray($response);
+        $response_as_array = $response->json();
         $this->assertPostResponseHasCorrectKeys($response_as_array);
         $this->assertFailedPostResponse($response_as_array, $expected_response_error_msg);
     }
@@ -97,7 +98,7 @@ class PostEntryTest extends TestCase {
 
         // THEN
         $this->assertResponseStatus($response, HttpStatus::HTTP_BAD_REQUEST);
-        $response_as_array = $this->getResponseAsArray($response);
+        $response_as_array = $response->json();
         $this->assertPostResponseHasCorrectKeys($response_as_array);
         $this->assertFailedPostResponse($response_as_array, EntryController::ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE);
     }
@@ -113,7 +114,7 @@ class PostEntryTest extends TestCase {
         $get_account_response1 = $this->get('/api/account/'.$generated_account->id);
         // THEN
         $this->assertResponseStatus($get_account_response1, HttpStatus::HTTP_OK);
-        $get_account_response1_as_array = $this->getResponseAsArray($get_account_response1);
+        $get_account_response1_as_array = $get_account_response1->json();
         $this->assertArrayHasKey('total', $get_account_response1_as_array);
         $original_account_total = $get_account_response1_as_array['total'];
         $this->assertArrayHasKey('account_types', $get_account_response1_as_array);
@@ -124,7 +125,7 @@ class PostEntryTest extends TestCase {
         $post_response = $this->json("POST", $this->_base_uri, $generated_entry_data);
         // THEN
         $this->assertResponseStatus($post_response, HttpStatus::HTTP_CREATED);
-        $post_response_as_array = $this->getResponseAsArray($post_response);
+        $post_response_as_array = $post_response->json();
         $this->assertPostResponseHasCorrectKeys($post_response_as_array);
         $this->assertEmpty($post_response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR]);
         $created_entry_id = $post_response_as_array[EntryController::RESPONSE_SAVE_KEY_ID];
@@ -134,7 +135,7 @@ class PostEntryTest extends TestCase {
         $get_entry_response = $this->get($this->_base_uri.'/'.$created_entry_id);
         // THEN
         $this->assertResponseStatus($get_entry_response, HttpStatus::HTTP_OK);
-        $get_entry_response_as_array = $this->getResponseAsArray($get_entry_response);
+        $get_entry_response_as_array = $get_entry_response->json();
         $this->assertEquals($generated_entry_data['entry_date'], $get_entry_response_as_array['entry_date']);
         $this->assertEquals($generated_entry_data['entry_value'], $get_entry_response_as_array['entry_value']);
         $this->assertEquals($generated_entry_data['memo'], $get_entry_response_as_array['memo']);
@@ -147,7 +148,7 @@ class PostEntryTest extends TestCase {
         $get_account_response2 = $this->get('/api/account/'.$generated_account->id);
         // THEN
         $this->assertResponseStatus($get_account_response2, HttpStatus::HTTP_OK);
-        $get_account_response2_as_array = $this->getResponseAsArray($get_account_response2);
+        $get_account_response2_as_array = $get_account_response2->json();
         $this->assertArrayHasKey('total', $get_account_response2_as_array);
         $new_account_total = $get_account_response2_as_array['total'];
 
@@ -156,13 +157,12 @@ class PostEntryTest extends TestCase {
     }
 
     public function testCreateEntryWithTagsButOneTagDoesNotExist(){
-        $faker = FakerFactory::create();
         // GIVEN
         $generate_tag_count = 3;
         $generated_tags = factory(Tag::class, $generate_tag_count)->create();
         $generated_tag_ids = $generated_tags->pluck('id')->toArray();
         do{
-            $non_existent_tag_id = $faker->randomNumber();
+            $non_existent_tag_id = $this->faker->randomNumber();
         }while(in_array($non_existent_tag_id, $generated_tag_ids));
 
         $generated_account = factory(Account::class)->create();
@@ -176,7 +176,7 @@ class PostEntryTest extends TestCase {
         $post_response = $this->json('POST', $this->_base_uri, $generated_entry_data);
         // THEN
         $this->assertResponseStatus($post_response, HttpStatus::HTTP_CREATED);
-        $post_response_as_array = $this->getResponseAsArray($post_response);
+        $post_response_as_array = $post_response->json();
         $this->assertPostResponseHasCorrectKeys($post_response_as_array);
         $this->assertEmpty($post_response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR]);
         $created_entry_id = $post_response_as_array[EntryController::RESPONSE_SAVE_KEY_ID];
@@ -186,7 +186,7 @@ class PostEntryTest extends TestCase {
         $get_response = $this->get($this->_base_uri.'/'.$created_entry_id);
         // THEN
         $this->assertResponseStatus($get_response, HttpStatus::HTTP_OK);
-        $get_response_as_array = $this->getResponseAsArray($get_response);
+        $get_response_as_array = $get_response->json();
         $failure_message = "Response does not match generated data.\n\$generated_entry_data:".print_r($generated_entry_data, true)."\nResponse:".$get_response->getContent();
         $this->assertEquals($generated_entry_data['entry_date'], $get_response_as_array['entry_date'], $failure_message);
         $this->assertEquals($generated_entry_data['entry_value'], $get_response_as_array['entry_value'], $failure_message);
@@ -208,9 +208,8 @@ class PostEntryTest extends TestCase {
     }
 
     public function testCreateEntryWithAttachments(){
-        $faker = FakerFactory::create();
         // GIVEN
-        $generated_attachments = factory(Attachment::class, $faker->randomDigitNotNull)->make();
+        $generated_attachments = factory(Attachment::class, $this->faker->randomDigitNotNull)->make();
         $generated_account = factory(Account::class)->create();
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
         $generated_entry_data = $this->generateEntryData();
@@ -228,7 +227,7 @@ class PostEntryTest extends TestCase {
 
         // THEN
         $this->assertResponseStatus($post_response, HttpStatus::HTTP_CREATED);
-        $post_response_as_array = $this->getResponseAsArray($post_response);
+        $post_response_as_array = $post_response->json();
         $this->assertPostResponseHasCorrectKeys($post_response_as_array);
         $this->assertEmpty($post_response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR]);
         $created_entry_id = $post_response_as_array[EntryController::RESPONSE_SAVE_KEY_ID];
@@ -239,7 +238,7 @@ class PostEntryTest extends TestCase {
 
         // THEN
         $this->assertResponseStatus($get_response, HttpStatus::HTTP_OK);
-        $get_response_as_array = $this->getResponseAsArray($get_response);
+        $get_response_as_array = $get_response->json();
         $this->assertEquals($generated_entry_data['entry_date'], $get_response_as_array['entry_date']);
         $this->assertEquals($generated_entry_data['entry_value'], $get_response_as_array['entry_value']);
         $this->assertEquals($generated_entry_data['memo'], $get_response_as_array['memo']);
@@ -273,7 +272,7 @@ class PostEntryTest extends TestCase {
 
         // THEN
         $this->assertResponseStatus($post_response, HttpStatus::HTTP_CREATED);
-        $post_response_as_array = $this->getResponseAsArray($post_response);
+        $post_response_as_array = $post_response->json();
         $this->assertPostResponseHasCorrectKeys($post_response_as_array);
         $this->assertEmpty($post_response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR]);
         $created_entry_id = $post_response_as_array[EntryController::RESPONSE_SAVE_KEY_ID];
@@ -284,7 +283,7 @@ class PostEntryTest extends TestCase {
 
         // THEN
         $this->assertResponseStatus($get_response, HttpStatus::HTTP_OK);
-        $get_response_as_array = $this->getResponseAsArray($get_response);
+        $get_response_as_array = $get_response->json();
         $failure_message = "Response does not match generated data.\n\$generated_entry_data:".print_r($generated_entry_data, true)."\nResponse:".$get_response->getContent();
         $this->assertEquals($generated_entry_data['entry_date'], $get_response_as_array['entry_date'], $failure_message);
         $this->assertEquals($generated_entry_data['entry_value'], $get_response_as_array['entry_value'], $failure_message);

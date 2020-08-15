@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Api;
+namespace Tests\Feature\Api\Get;
 
 use App\AccountType;
 use App\Entry;
@@ -8,7 +8,7 @@ use App\Http\Controllers\Api\EntryController;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 
-class GetEntriesTest extends ListEntriesBase {
+class GetEntriesTest extends \Tests\Feature\Api\ListEntriesBase {
 
     public function testGetEntriesThatDoNotExist(){
         // GIVEN - no data in database
@@ -18,7 +18,7 @@ class GetEntriesTest extends ListEntriesBase {
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_NOT_FOUND);
-        $response_body_as_array = $this->getResponseAsArray($response);
+        $response_body_as_array = $response->json();
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertEmpty($response_body_as_array);
     }
@@ -72,7 +72,7 @@ class GetEntriesTest extends ListEntriesBase {
 
             // THEN
             $response->assertStatus(HttpStatus::HTTP_OK);
-            $response_body_as_array = $this->getResponseAsArray($response);
+            $response_body_as_array = $response->json();
 
             $this->assertTrue(is_array($response_body_as_array));
             $this->assertArrayHasKey('count', $response_body_as_array);
@@ -80,9 +80,9 @@ class GetEntriesTest extends ListEntriesBase {
             unset($response_body_as_array['count']);
 
             if($i+1 == $page_limit){
-                $this->assertEquals($generate_entry_count-(($page_limit-1)*EntryController::MAX_ENTRIES_IN_RESPONSE), count($response_body_as_array));
+                $this->assertCount($generate_entry_count - (($page_limit - 1) * EntryController::MAX_ENTRIES_IN_RESPONSE), $response_body_as_array);
             } else {
-                $this->assertEquals(EntryController::MAX_ENTRIES_IN_RESPONSE, count($response_body_as_array));
+                $this->assertCount(EntryController::MAX_ENTRIES_IN_RESPONSE, $response_body_as_array);
             }
 
             $entries_in_response = array_merge($entries_in_response, $response_body_as_array);
@@ -124,7 +124,7 @@ class GetEntriesTest extends ListEntriesBase {
         // THEN
         $response->assertStatus(HttpStatus::HTTP_OK); // this is the MOST IMPORTANT check. it confirms we were able to handle a large data set
 
-        $response_as_array = $this->getResponseAsArray($response);
+        $response_as_array = $response->json();
         $this->assertEquals($entry_count, $response_as_array['count']);
         unset($response_as_array['count']);
         $this->assertCount(EntryController::MAX_ENTRIES_IN_RESPONSE, $response_as_array);

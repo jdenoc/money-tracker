@@ -1,14 +1,15 @@
 <?php
 
-namespace Tests\Feature\Api;
+namespace Tests\Feature\Api\Get;
 
 use App\AccountType;
-use Faker\Factory;
+use Illuminate\Foundation\Testing\WithFaker;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
 
 class GetAccountTypesTest extends TestCase {
+
+    use WithFaker;
 
     private $_uri = '/api/account-types';
 
@@ -25,12 +26,11 @@ class GetAccountTypesTest extends TestCase {
     }
 
     public function testGetAccountTypes(){
-        $faker = Factory::create();
         // GIVEN
-        $account_type_count = $faker->randomDigitNotNull;
+        $account_type_count = $this->faker->randomDigitNotNull;
         $generated_account_types = [];
         for($i=0; $i<$account_type_count; $i++){
-            $generated_account_type = factory(AccountType::class)->create(['disabled'=>$faker->boolean]);
+            $generated_account_type = factory(AccountType::class)->create(['disabled'=>$this->faker->boolean]);
             $generated_account_types[$generated_account_type->id] = $generated_account_type;
             unset($generated_account_type);
         }
