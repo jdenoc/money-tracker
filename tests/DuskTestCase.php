@@ -51,7 +51,7 @@ abstract class DuskTestCase extends BaseTestCase {
      * @param bool $withDataSet
      * @return string|null
      */
-    public function getName(bool $withDataSet = true): ?string {
+    public function getName(bool $withDataSet = true): string {
         $test_name = parent::getName($withDataSet);
         $test_name = str_replace([" ", '"'], ["-", ''], $test_name);
         return $test_name;
