@@ -9,11 +9,10 @@
         "doctrine/dbal": "^2.5",
         "eklundkristoffer/laravel-discord-webhook": "dev-master",
         "fideloper/proxy": "^4.0",
-        "kylekatarnls/laravel-carbon-2": "^1.0.0",
         "laravel/framework": "5.8.*",
         "laravel/helpers": "^1.2",
         "laravel/tinker": "^1.0",
-        "nesbot/carbon": "2.27.0 as 1.39.0",
+        "nesbot/carbon": "^2.38",
         "ramsey/uuid": "^3.6"
     },
     "require-dev": {
