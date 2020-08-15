@@ -13,7 +13,7 @@ abstract class TestCase extends BaseTestCase {
     use CreatesApplication;
     use RefreshDatabase;
 
-    public function tearDown(){
+    public function tearDown(): void{
         $this->truncateDatabaseTables();
         parent::tearDown();
     }

@@ -61,7 +61,7 @@ abstract class DuskTestCase extends BaseTestCase {
      * @return void
      * @throws \Throwable
      */
-    protected function setUp(){
+    protected function setUp(): void{
         parent::setUp();
         $this->resizeBrowser();
     }

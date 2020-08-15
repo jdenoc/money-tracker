@@ -63,7 +63,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         $this->_color_expense_switch_income = self::$COLOR_PRIMARY_HEX;
     }
 
-    public function setUp(){
+    public function setUp(): void{
         parent::setUp();
         $this->_cached_entries_collection = [];
         if($this->getName(false) === 'testAttemptToAddAnAttachmentTooLargeToAnExistingEntry'){
@@ -1139,7 +1139,7 @@ HTACCESS_RULES;
         rename(self::$HTACCESS_FILEPATH.self::$BKUP_EXT, self::$HTACCESS_FILEPATH);
     }
 
-    protected function tearDown(){
+    protected function tearDown(): void{
         if($this->getName(false) === 'testAttemptToAddAnAttachmentTooLargeToAnExistingEntry'){
             $this->revertHtaccessToOriginalState();
             \Storage::delete($this->getTestDummyFilename());    // remove any files that any tests may have created

@@ -20,7 +20,7 @@ class AccountTotalSanityCheckTest extends TestCase {
     private static $TEMPLATE_CHECKING_ACCOUNT_OK = "Checking account ID:%d\n\tOK";
     private static $TEMPLATE_ACCOUNT_NOT_FOUND = "Account %d not found";
 
-    public function setUp(){
+    public function setUp(): void{
         parent::setUp();
         $this->withoutMockingConsoleOutput();
     }

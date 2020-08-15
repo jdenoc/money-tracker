@@ -22,7 +22,7 @@ class PutEntryTest extends TestCase {
     private $_generated_account_type;
     private $_generated_entry;
 
-    public function setUp(){
+    public function setUp(): void{
         parent::setUp();
         // GIVEN - for all tests
         $this->_generated_account = factory(Account::class)->create();

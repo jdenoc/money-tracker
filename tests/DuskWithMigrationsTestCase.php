@@ -30,7 +30,7 @@ abstract class DuskWithMigrationsTestCase extends DuskTestCase {
      */
     use DatabaseFileDump;
 
-    public function setUp(){
+    public function setUp(): void{
         parent::setUp();
         $this->seed('UiSampleDatabaseSeeder');  // run database seeder
     }

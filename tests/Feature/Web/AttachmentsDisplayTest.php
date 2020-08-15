@@ -32,7 +32,7 @@ class AttachmentsDisplayTest extends TestCase {
         'txt',
     ];
 
-    public function setUp(){
+    public function setUp(): void{
         parent::setUp();
         $this->_faker = FakerFactory::create();
     }

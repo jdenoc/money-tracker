@@ -37,7 +37,7 @@ class PaginationTest extends DuskTestCase {
 
     private $_account_types = [];
 
-    public function setUp(){
+    public function setUp(): void{
         parent::setUp();
         // clear the `entries` table, so we can test against an exact amount of entries.
         DB::statement("TRUNCATE entries");
