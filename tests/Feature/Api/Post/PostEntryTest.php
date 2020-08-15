@@ -325,7 +325,7 @@ class PostEntryTest extends TestCase {
         $failure_message = "POST Response is ".json_encode($response_as_array);
         $this->assertEquals(EntryController::ERROR_ENTRY_ID, $response_as_array[EntryController::RESPONSE_SAVE_KEY_ID], $failure_message);
         $this->assertNotEmpty($response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR], $failure_message);
-        $this->assertContains($response_error_msg, $response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR], $failure_message);
+        $this->assertStringContainsString($response_error_msg, $response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR], $failure_message);
     }
 
 }
