@@ -80,7 +80,7 @@ class StatsSummaryTest extends StatsBase {
                         ->assertVisible(self::$SELECTOR_BUTTON_GENERATE)
                         ->assertSeeIn(self::$SELECTOR_BUTTON_GENERATE, self::$LABEL_GENERATE_TABLE_BUTTON);
                     $button_classes = $form->attribute(self::$SELECTOR_BUTTON_GENERATE, 'class');
-                    $this->assertContains('is-primary', $button_classes);
+                    $this->assertStringContainsString('is-primary', $button_classes);
                 });
         });
     }
@@ -92,7 +92,7 @@ class StatsSummaryTest extends StatsBase {
      * test 3/25
      */
     public function testDefaultDataResultsArea(){
-        $this->browse(function(Browser $browser){
+        $this->browse(static function(Browser $browser){
             $browser
                 ->visit(new StatsPage())
                 ->assertVisible(self::$SELECTOR_STATS_RESULTS_SUMMARY)
@@ -166,6 +166,7 @@ class StatsSummaryTest extends StatsBase {
                     }
                     $filter_data = $this->generateFilterArrayElementDatepicker($filter_data, $datepicker_start, $datepicker_end);
 
+                    $this->generateEntryFromFilterData($filter_data);
                     $form->click(self::$SELECTOR_BUTTON_GENERATE);
                 });
 
@@ -189,7 +190,7 @@ class StatsSummaryTest extends StatsBase {
                             $table_rows = $table->elements($selector_table_body_rows);
                             $this->assertGreaterThanOrEqual(1, count($table_rows));
                             $this->assertGreaterThanOrEqual(1, count($totals));
-                            $this->assertSameSize($totals, $table_rows, "'".self::$LABEL_TABLE_NAME_TOTAL."' table row count does not match expected totals:".print_r($totals, true));
+                            $this->assertSameSize($totals, $table_rows, "'".self::$LABEL_TABLE_NAME_TOTAL."' table row count does not match expected totals: ".print_r($totals, true));
 
                             $selector_cell_total_income = 'td:nth-child(1)';
                             $selector_cell_total_expense = 'td:nth-child(2)';
@@ -333,7 +334,7 @@ class StatsSummaryTest extends StatsBase {
         );
 
         $tooltip_text_from_element = $browser->text('#'.$tooltip_id);
-        $this->assertContains($tooltip_text, $tooltip_text_from_element);
+        $this->assertStringContainsString($tooltip_text, $tooltip_text_from_element);
     }
 
     /**
@@ -343,7 +344,7 @@ class StatsSummaryTest extends StatsBase {
      * @return string
      */
     private function sortCallable(){
-        return function($entry){
+        return static function($entry){
             return sprintf("%010s %s %d", $entry['entry_value'], $entry['entry_date'], $entry['id']);
         };
     }

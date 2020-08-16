@@ -1,13 +1,12 @@
 <?php
 
-namespace Tests\Feature\Api;
+namespace Tests\Feature\Api\Get;
 
 use App\Account;
 use Carbon\Carbon;
+use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
-use Faker;
 
 use App\AccountType;
 use App\Attachment;
@@ -16,16 +15,17 @@ use App\Tag;
 
 class GetEntryTest extends TestCase {
 
+    use WithFaker;
+
     private $_generate_tag_count;
     private $_generate_attachment_count;
     private $_base_uri = '/api/entry/';
 
-    public function setUp(){
+    public function setUp(): void{
         parent::setUp();
 
-        $faker = Faker\Factory::create();
-        $this->_generate_attachment_count = $faker->randomDigitNotNull;
-        $this->_generate_tag_count = $faker->randomDigitNotNull;
+        $this->_generate_attachment_count = $this->faker->randomDigitNotNull;
+        $this->_generate_tag_count = $this->faker->randomDigitNotNull;
     }
 
     public function testGetEntryWithNoData(){
@@ -37,7 +37,7 @@ class GetEntryTest extends TestCase {
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_NOT_FOUND);
-        $response_body_as_array = $this->getResponseAsArray($response);
+        $response_body_as_array = $response->json();
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertEmpty($response_body_as_array);
     }
@@ -55,7 +55,7 @@ class GetEntryTest extends TestCase {
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_OK);
-        $response_body_as_array = $this->getResponseAsArray($response);
+        $response_body_as_array = $response->json();
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertParentNodesExist($response_body_as_array);
         $this->assertEntryNodeValuesExcludingRelationshipsOK($generated_entry, $response_body_as_array);
@@ -77,7 +77,7 @@ class GetEntryTest extends TestCase {
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_OK);
-        $response_body_as_array = $this->getResponseAsArray($response);
+        $response_body_as_array = $response->json();
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertParentNodesExist($response_body_as_array);
         $this->assertEntryNodeValuesExcludingRelationshipsOK($generated_entry, $response_body_as_array);
@@ -97,7 +97,7 @@ class GetEntryTest extends TestCase {
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_OK);
-        $response_body_as_array = $this->getResponseAsArray($response);
+        $response_body_as_array = $response->json();
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertParentNodesExist($response_body_as_array);
         $this->assertEntryNodeValuesExcludingRelationshipsOK($generated_entry, $response_body_as_array);
@@ -118,7 +118,7 @@ class GetEntryTest extends TestCase {
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_OK);
-        $response_body_as_array = $this->getResponseAsArray($response);
+        $response_body_as_array = $response->json();
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertParentNodesExist($response_body_as_array);
         $this->assertEntryNodeValuesExcludingRelationshipsOK($generated_entry, $response_body_as_array);
@@ -138,7 +138,7 @@ class GetEntryTest extends TestCase {
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_OK);
-        $response_body_as_array = $this->getResponseAsArray($response);
+        $response_body_as_array = $response->json();
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertParentNodesExist($response_body_as_array);
         $this->assertEntryNodeValuesExcludingRelationshipsOK($generated_entry, $response_body_as_array);
@@ -158,7 +158,7 @@ class GetEntryTest extends TestCase {
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_NOT_FOUND);
-        $response_body_as_array = $this->getResponseAsArray($response);
+        $response_body_as_array = $response->json();
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertEmpty($response_body_as_array);
     }
@@ -241,7 +241,7 @@ class GetEntryTest extends TestCase {
      */
     private function assertEntryTagsNodeOK($entry_tags_node, $generated_tags_as_array){
         $this->assertTrue(is_array($entry_tags_node));
-        $this->assertEquals($this->_generate_tag_count, count($entry_tags_node));
+        $this->assertCount($this->_generate_tag_count, $entry_tags_node);
         foreach($entry_tags_node as $tag_in_response){
             $this->assertArrayHasKey('id', $tag_in_response);
             $this->assertArrayHasKey('name', $tag_in_response);
@@ -258,7 +258,7 @@ class GetEntryTest extends TestCase {
      */
     private function assertEntryAttachmentsNodeOK($entry_attachments_node, $generated_attachments_as_array){
         $this->assertTrue(is_array($entry_attachments_node));
-        $this->assertEquals($this->_generate_attachment_count, count($entry_attachments_node));
+        $this->assertCount($this->_generate_attachment_count, $entry_attachments_node);
         foreach($entry_attachments_node as $attachment_in_response){
             $this->assertArrayHasKey('uuid', $attachment_in_response);
             $this->assertArrayHasKey('name', $attachment_in_response);

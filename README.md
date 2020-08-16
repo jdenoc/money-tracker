@@ -4,7 +4,7 @@
 Money Tracker is a web portal dedicated to help record and manage income & expenses, built on the [Laravel framework](https://laravel.com/docs/5.5)
 
 ## Features
-For a list of features currently available, what they're expected outcome is and test cases, see the [Features](features/FEATURES.md)
+For a list of features currently available, what their expected outcome is and test cases, see the [Features](features/FEATURES.md)
 
 ## Topics
 - [Requirements](#requirements)
@@ -115,9 +115,9 @@ DISABLE_XDEBUG=true docker-compose -f .docker/docker-compose.yml up -d
 `DISABLE_XDEBUG=true` is required _once_ to build the docker image. Afterwards, it is never used again.
 
 ##### Set application version value
-_**Note:** you can replace_ `git describe` _with any value you want_
+_**Note:** you can replace_ `git describe --always` _with any value you want_
 ```bash
-.docker/cmd/artisan.sh app:version `git describe`
+.docker/cmd/artisan.sh app:version `git describe --always`
 ```
 
 ##### Setup database/clear existing database and re-initialise it empty
@@ -142,7 +142,7 @@ If you have a database dump file, you can load it with this command:
 docker-compose -f .docker/docker-compose.yml down
 ```
 
-_**Note:** You can tear down the docker containers and their associated volumes with this command:_
+_**Note:** You can tear down the docker containers as well as their associated volumes with this command:_
 ```bash
 docker-compose -f .docker/docker-compose.yml down -v
 ```
@@ -151,7 +151,7 @@ _**Note:** You do not need to worry about "tearing down" the yarn and/or compose
 ***
 
 ### <a name="localdev-environment">Local/Dev environment</a>
-Sometimes, you just don't want to use Docker. That's fine and we support your decision. Here are some helpful steps on setup.
+Sometimes, you just don't want to use Docker. That's fine. We support your decision. Here are some helpful steps for the setup.
 
 #### <a name="dev-application">Application setup</a>
 ```bash
@@ -162,7 +162,7 @@ cd money-tracker/
 # setup composer packages & environment variables
 cp .env.example .env
 composer install
-php artisan app:version `git describe`
+php artisan app:version `git describe --always`
 
 # ***OPTIONAL***
 # If you're working with PhpStorm, be sure to run the following command.
@@ -203,7 +203,6 @@ git checkout -q tags/$MOST_RECENT_TAG
 composer install --no-dev -o
 sed "s/APP_ENV=.*/APP_ENV=production/" .env > .env.tmp; mv .env.tmp .env
 sed "s/APP_DEBUG=.*/APP_DEBUG=false/" .env > .env.tmp; mv .env.tmp .env
-sed "s/APP_LOG_LEVEL=.*/APP_LOG_LEVEL=error/" .env > .env.tmp; mv .env.tmp .env
 php artisan app:version $MOST_RECENT_TAG
 
 # setup Yarn packages
@@ -213,7 +212,8 @@ yarn run build-prod
 # setup cache
 php artisan config:cache
 
-# NOTE: Make sure database has been setup first.
+# NOTE: Make sure database has been setup prior to running migrations
+# i.e.: the database is running and configured correctly.
 php artisan migrate:fresh
 ```
 
@@ -222,7 +222,6 @@ Be sure to edit the `.env` file generated during setup. A few of the default val
 That being said, there are certainly variables that should be modified at this point. They are: 
 - `APP_ENV`
 - `APP_DEBUG`
-- `APP_LOG_LEVEL` (_log level values can be found [here](https://github.com/Seldaek/monolog/blob/1.23.0/doc/01-usage.md#log-levels)_)
 - `APP_NAME`
 - `APP_VERSION` (can be set by `php artisan app:version`)
 - `APP_URL`
@@ -252,30 +251,49 @@ This is the exact same process as we do for our Local/dev setup. See instruction
 ***
 
 #### <a name="prod-updates">Updates</a>
-From time to time, there will be new updates released. Such updates will contain new features, bug fixes, general improvements ect. In order to allow such improvements to be usable on production deployments, you should follow these steps:
+From time to time, there will be new updates released. Such updates will contain new features, bug fixes, general improvements, ect. In order to allow such improvements to be usable on production deployments, you should follow these steps:
+- Step 1
 ```bash
-# While already in the application directory, i.e.: cd money-tracker/
+# Navigate to the application directory, i.e.: cd money-tracker/
 
 # put site into maintenance mode
 php artisan down
-
+```
+- Step 2
+```
 # fetch newest version
 git fetch --tags
 MOST_RECENT_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
 git checkout -q tags/$MOST_RECENT_TAG
-
-# New/Updates to composer/yarn packages
+```
+- Step 2.a
+```
+# *** OPTIONAL ***
+# New/Updates to composer packages
 # Note: check update release notes. 
 composer update --no-dev -o
+```
+- Step 2.b
+```
+# *** OPTIONAL ***
+# New/Updates to yarn packages
+# Note: check update release notes. 
 yarn install
-
-# Build website from *.vue files
-yarn run build-prod
-
+```
+- Step 2.c
+```
+# *** OPTIONAL ***
 # Database updates
 # Note: check update release notes.
 php artisan migrate
-
+```
+- Step 3
+```
+# Build website from *.vue files
+yarn run build-prod
+```
+- Step 4
+```
 # clear existing cache
 php artisan cache:clear
 php artisan view:clear
@@ -285,7 +303,9 @@ php artisan app:version $MOST_RECENT_TAG
 
 # setup new cache
 php artisan config:cache
-
+```
+- Step 5
+```
 # take site out of maintenance mode
 php artisan up
 ```
@@ -325,7 +345,7 @@ php artisan dusk --stop-on-failure
 ***
 
 ## Other Documentation
-- [Laravel](https://laravel.com/docs/5.5/)
+- [Laravel](https://laravel.com/docs/6.x/)
 - [VueJS](https://vuejs.org/v2/guide/)
 - [Docker](https://docs.docker.com/)
 - [Composer](https://getcomposer.org/doc/)

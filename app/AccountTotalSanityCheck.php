@@ -29,7 +29,7 @@ class AccountTotalSanityCheck {
     }
 
     public function __get($name){
-        if(in_array($name, array_keys($this->toArray())) && $name != 'diff'){
+        if(array_key_exists($name, $this->toArray()) && $name !== 'diff'){
             return $this->{$name};
         } else {
             return null;
@@ -37,13 +37,13 @@ class AccountTotalSanityCheck {
     }
 
     public function __set($name, $value){
-        if(in_array($name, array_keys($this->toArray())) && $name != 'diff'){
+        if(array_key_exists($name, $this->toArray()) && $name !== 'diff'){
             $this->{$name} = $value;
         }
     }
 
     public function __toString(){
-        return json_encode($this->toArray());
+        return json_encode($this->toArray(), JSON_THROW_ON_ERROR);
     }
 
 }

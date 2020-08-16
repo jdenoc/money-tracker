@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Api;
+namespace Tests\Feature\Api\Delete;
 
 use App\Account;
 use App\AccountType;
@@ -9,7 +9,6 @@ use Carbon\Carbon;
 use Illuminate\Foundation\Testing\WithFaker;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
 
 class DeleteEntryTest extends TestCase {
 

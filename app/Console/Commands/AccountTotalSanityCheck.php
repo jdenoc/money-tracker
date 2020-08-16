@@ -8,7 +8,6 @@ use Eklundkristoffer\DiscordWebhook\DiscordClient;
 use Eklundkristoffer\DiscordWebhook\DiscordContentObject;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class AccountTotalSanityCheck extends Command {
 
@@ -68,7 +67,7 @@ class AccountTotalSanityCheck extends Command {
                     $sanity_check_object = $this->retrieveExpectedAccountTotalData($account);
                     $this->notifySanityCheck($sanity_check_object);
                 }
-            } elseif(!is_null($account_id) && intval($account_id) === 0){
+            } elseif(!is_null($account_id) && (int)$account_id === 0){
                 $this->notifyInternally("Account 0 does not exist", self::LOG_LEVEL_WARNING);
             } else {
                 $accounts = Account::all();
@@ -86,7 +85,6 @@ class AccountTotalSanityCheck extends Command {
                 }
             }
         }
-        return;
     }
 
     /**
@@ -131,7 +129,8 @@ class AccountTotalSanityCheck extends Command {
      */
     private function notifySanityCheck($sanity_check_object){
         if($sanity_check_object->diff() > 0){
-            $this->notifyInternally("Sanity check has failed ".$sanity_check_object, self::LOG_LEVEL_EMERGENCY);
+            $this->notifyInternally("Sanity check has failed", self::LOG_LEVEL_EMERGENCY);
+            $this->notifyInternally($sanity_check_object, self::LOG_LEVEL_EMERGENCY);
             $webhook_data = New DiscordContentObject();
             $webhook_data->addEmbeddedTitle("`[".strtoupper(config(self::CONFIG_ENV))."]` Account Total: Sanity Check | Failure");
             $webhook_data->addEmbeddedDescription("Sanity check has failed for account: _`".$sanity_check_object->account_name."`_ `[".$sanity_check_object->account_id."]`");
@@ -183,7 +182,7 @@ class AccountTotalSanityCheck extends Command {
      * @param string $level
      */
     private function notifyInternally($notification_message, $level=self::LOG_LEVEL_DEBUG){
-        Log::log($level, $notification_message);
+        logger()->log($level, $notification_message);
         if($this->option(self::OPTION_NOTIFY_SCREEN)){
             switch($level){
                 case self::LOG_LEVEL_DEBUG:

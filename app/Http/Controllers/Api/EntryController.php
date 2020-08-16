@@ -149,7 +149,7 @@ class EntryController extends Controller {
      */
     private function modify_entry(Request $request, $update_id=false){
         $request_body = $request->getContent();
-        $entry_data = json_decode($request_body, true);
+        $entry_data = json_decode($request_body, true, 512, JSON_THROW_ON_ERROR);
 
         // no data check
         if(empty($entry_data)){
@@ -419,7 +419,7 @@ class EntryController extends Controller {
         $currently_attached_tags = $entry->get_tag_ids();
         foreach($new_entry_tags as $new_tag){
             if(!in_array($new_tag, $currently_attached_tags)){
-                $entry->tags()->attach(intval($new_tag));
+                $entry->tags()->attach($new_tag);
             }
         }
         $tags_to_remove = array_diff($currently_attached_tags, $new_entry_tags);

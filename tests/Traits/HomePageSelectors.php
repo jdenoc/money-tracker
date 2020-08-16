@@ -128,6 +128,7 @@ trait HomePageSelectors {
     private $_selector_table_unchecked_checkbox = "far fa-square";
     private $_selector_pagination_btn_next = "button#paginate-btn-next";
     private $_selector_pagination_btn_prev = "button#paginate-btn-prev";
+    private static $PLACEHOLDER_SELECTOR_EXISTING_ENTRY_ROW = '#entry-%s';
 
     // ###*** LABELS ***###
     private $_label_entry_new = "Entry: new";

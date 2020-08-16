@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Api;
+namespace Tests\Feature\Api\Post;
 
 use App\Account;
 use App\AccountType;
@@ -12,7 +12,6 @@ use App\Traits\Tests\StorageTestFiles;
 use Faker\Factory as FakerFactory;
 use Tests\TestCase;
 use Illuminate\Http\Response as HttpStatus;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
 
 class PostEntryTransferTest extends TestCase {
 

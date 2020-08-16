@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Api;
+namespace Tests\Feature\Api\Put;
 
 use App\Account;
 use App\AccountType;
@@ -9,18 +9,20 @@ use App\Entry;
 use App\Http\Controllers\Api\EntryController;
 use App\Tag;
 use Faker\Factory as FakerFactory;
+use Illuminate\Foundation\Testing\WithFaker;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
 
 class PutEntryTest extends TestCase {
+
+    use WithFaker;
 
     private $_base_uri = '/api/entry/';
     private $_generated_account;
     private $_generated_account_type;
     private $_generated_entry;
 
-    public function setUp(){
+    public function setUp(): void{
         parent::setUp();
         // GIVEN - for all tests
         $this->_generated_account = factory(Account::class)->create();
@@ -37,20 +39,19 @@ class PutEntryTest extends TestCase {
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_BAD_REQUEST);
-        $response_as_array = $this->getResponseAsArray($response);
+        $response_as_array = $response->json();
         $this->assertPutResponseHasCorrectKeys($response_as_array);
         $this->assertFailedPutResponse($response_as_array, EntryController::ERROR_MSG_SAVE_ENTRY_NO_DATA);
     }
 
     public function testUpdateEntryButNewAccountTypeDoesNotExist(){
-        $faker = FakerFactory::create();
         // GIVEN - see setUp()
 
         $entry_data = factory(Entry::class)->make();
         $entry_data = $entry_data->toArray();
         // make sure account_type_id value that does not exist
         while($entry_data['account_type_id'] == $this->_generated_account_type->id){
-            $entry_data['account_type_id'] = $faker->randomDigitNotNull;
+            $entry_data['account_type_id'] = $this->faker->randomDigitNotNull;
         }
 
         // WHEN
@@ -58,18 +59,17 @@ class PutEntryTest extends TestCase {
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_BAD_REQUEST);
-        $response_as_array = $this->getResponseAsArray($response);
+        $response_as_array = $response->json();
         $this->assertPutResponseHasCorrectKeys($response_as_array);
         $this->assertFailedPutResponse($response_as_array, EntryController::ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE);
     }
 
     public function testUpdateEntryButEntryDoesNotExist(){
-        $faker = FakerFactory::create();
         // GIVEN - entry does not exist
         do{
             // make sure randomly generated entry ID isn't associated
             // with the pre-generated entry
-            $entry_id = $faker->randomNumber();
+            $entry_id = $this->faker->randomNumber();
         }while($entry_id == $this->_generated_entry->id);
         $entry_data = factory(Entry::class)->make(['account_type_id'=>$this->_generated_account_type->id]);
         $entry_data = $entry_data->toArray();
@@ -95,7 +95,7 @@ class PutEntryTest extends TestCase {
         $get_account_response1 = $this->get('/api/account/'.$this->_generated_account->id);
         // THEN
         $get_account_response1->assertStatus(HttpStatus::HTTP_OK);
-        $get_account_response1_as_array = $this->getResponseAsArray($get_account_response1);
+        $get_account_response1_as_array = $get_account_response1->json();
         $this->assertArrayHasKey('total', $get_account_response1_as_array);
         $original_total = $get_account_response1_as_array['total'];
 
@@ -103,7 +103,7 @@ class PutEntryTest extends TestCase {
         $put_response = $this->json("PUT", $this->_base_uri.$this->_generated_entry->id, $entry_data);
         // THEN
         $this->assertResponseStatus($put_response, HttpStatus::HTTP_OK);
-        $put_response_as_array = $this->getResponseAsArray($put_response);
+        $put_response_as_array = $put_response->json();
         $this->assertPutResponseHasCorrectKeys($put_response_as_array);
         $this->assertSuccessPutResponse($put_response_as_array);
 
@@ -111,7 +111,7 @@ class PutEntryTest extends TestCase {
         $get_entry_response = $this->get($this->_base_uri.$this->_generated_entry->id);
         // THEN
         $get_entry_response->assertStatus(HttpStatus::HTTP_OK);
-        $get_entry_response_as_array = $this->getResponseAsArray($get_entry_response);
+        $get_entry_response_as_array = $get_entry_response->json();
         $this->assertArrayHasKey('entry_value', $get_entry_response_as_array);
         $this->assertEquals($entry_data['entry_value'], $get_entry_response_as_array['entry_value']);
 
@@ -119,7 +119,7 @@ class PutEntryTest extends TestCase {
         $get_account_response2 = $this->get('/api/account/'.$this->_generated_account->id);
         // THEN
         $get_account_response2->assertStatus(HttpStatus::HTTP_OK);
-        $get_account_response2_as_array = $this->getResponseAsArray($get_account_response2);
+        $get_account_response2_as_array = $get_account_response2->json();
         $this->assertArrayHasKey('total', $get_account_response2_as_array);
         $updated_total = $get_account_response2_as_array['total'];
 
@@ -214,7 +214,7 @@ class PutEntryTest extends TestCase {
         $get_account_response1 = $this->get('/api/account/'.$this->_generated_account->id);
         // THEN
         $get_account_response1->assertStatus(HttpStatus::HTTP_OK);
-        $get_account_response1_as_array = $this->getResponseAsArray($get_account_response1);
+        $get_account_response1_as_array = $get_account_response1->json();
         $this->assertArrayHasKey('total', $get_account_response1_as_array);
         $original_total = $get_account_response1_as_array['total'];
 
@@ -222,7 +222,7 @@ class PutEntryTest extends TestCase {
         $put_response = $this->json("PUT", $this->_base_uri.$this->_generated_entry->id, $entry_data);
         // THEN
         $put_response->assertStatus(HttpStatus::HTTP_OK);
-        $put_response_as_array = $this->getResponseAsArray($put_response);
+        $put_response_as_array = $put_response->json();
         $this->assertPutResponseHasCorrectKeys($put_response_as_array);
         $this->assertEmpty($put_response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR]);
         $this->assertGreaterThan(EntryController::ERROR_ENTRY_ID, $put_response_as_array[EntryController::RESPONSE_SAVE_KEY_ID]);
@@ -231,7 +231,7 @@ class PutEntryTest extends TestCase {
         $get_entry_response = $this->get($this->_base_uri.$this->_generated_entry->id);
         // THEN
         $get_entry_response->assertStatus(HttpStatus::HTTP_NOT_FOUND);
-        $get_entry_response_as_array = $this->getResponseAsArray($get_entry_response);
+        $get_entry_response_as_array = $get_entry_response->json();
         $this->assertTrue(is_array($get_entry_response_as_array));
         $this->assertEmpty($get_entry_response_as_array);
 
@@ -239,7 +239,7 @@ class PutEntryTest extends TestCase {
         $get_account_response2 = $this->get('/api/account/'.$this->_generated_account->id);
         // THEN
         $get_account_response2->assertStatus(HttpStatus::HTTP_OK);
-        $get_account_response2_as_array = $this->getResponseAsArray($get_account_response2);
+        $get_account_response2_as_array = $get_account_response2->json();
         $this->assertArrayHasKey('total', $get_account_response2_as_array);
         $updated_total = $get_account_response2_as_array['total'];
 
@@ -259,6 +259,9 @@ class PutEntryTest extends TestCase {
         // it caused the database to populate and in doing so we caused some tests to fail.
         // Said tests failed because they were testing the absence of database values.
         $this->initialiseApplication();
+        // faker doesn't get setup until setUp() is called.
+        // Providers are called before setUp() is called so we need to init faker here.
+        $this->setUpFaker();
 
         $required_entry_fields = Entry::get_fields_required_for_update();
         unset($required_entry_fields[array_search('disabled', $required_entry_fields)]);
@@ -269,14 +272,15 @@ class PutEntryTest extends TestCase {
         $generated_entry_data2 = factory(Entry::class)->make();
 
         $update_entry_data = [];
-        for($i=0; $i<count($required_entry_fields); $i++){
+        $required_entry_field_count = count($required_entry_fields);
+        for($i=0; $i<$required_entry_field_count; $i++){
             $update_entry_data['update ['.$required_entry_fields[$i].']'] = [
                 [$required_entry_fields[$i]=>$generated_entry_data1[$required_entry_fields[$i]]]
             ];
         }
 
         $update_batch_properties = [];
-        $batch_entry_fields = array_rand($required_entry_fields, mt_rand(2, count($required_entry_fields)-1));
+        $batch_entry_fields = array_rand($required_entry_fields, $this->faker->numberBetween(2, count($required_entry_fields)-1));
         $batch_entry_fields = array_intersect_key($required_entry_fields, array_flip($batch_entry_fields));
         foreach($batch_entry_fields as $entry_property){
             $update_batch_properties[$entry_property] = $generated_entry_data2[$entry_property];
@@ -297,7 +301,7 @@ class PutEntryTest extends TestCase {
         $put_response = $this->json("PUT", $this->_base_uri.$this->_generated_entry->id, $entry_data);
         // THEN
         $put_response->assertStatus(HttpStatus::HTTP_OK);
-        $put_response_as_array = $this->getResponseAsArray($put_response);
+        $put_response_as_array = $put_response->json();
         $this->assertPutResponseHasCorrectKeys($put_response_as_array);
         $this->assertSuccessPutResponse($put_response_as_array);
 
@@ -305,7 +309,7 @@ class PutEntryTest extends TestCase {
         $get_response = $this->get($this->_base_uri.$this->_generated_entry->id);
         // THEN
         $get_response->assertStatus(HttpStatus::HTTP_OK);
-        $get_response_as_array = $this->getResponseAsArray($get_response);
+        $get_response_as_array = $get_response->json();
         foreach($entry_data as $property=>$value){
             $this->assertEquals($value, $get_response_as_array[$property], "Entry data:".json_encode($entry_data)."\nGet Request:".$get_response->getContent());
         }
@@ -353,7 +357,7 @@ class PutEntryTest extends TestCase {
         $put_response = $this->json('PUT', $this->_base_uri.$this->_generated_entry->id, $put_entry_data);
         // THEN
         $put_response->assertStatus(HttpStatus::HTTP_OK);
-        $put_response_as_array = $this->getResponseAsArray($put_response);
+        $put_response_as_array = $put_response->json();
         $this->assertPutResponseHasCorrectKeys($put_response_as_array);
         $this->assertSuccessPutResponse($put_response_as_array);
 
@@ -361,7 +365,7 @@ class PutEntryTest extends TestCase {
         $get_response = $this->get($this->_base_uri.$this->_generated_entry->id);
         // THEN
         $get_response->assertStatus(HttpStatus::HTTP_OK);
-        $get_response_as_array = $this->getResponseAsArray($get_response);
+        $get_response_as_array = $get_response->json();
         $this->assertArrayHasKey('tags', $get_response_as_array);
         $this->assertTrue(is_array($get_response_as_array['tags']));
         $this->assertNotEmpty($get_response_as_array['tags']);
@@ -416,7 +420,7 @@ class PutEntryTest extends TestCase {
         $put_response = $this->json("PUT", $this->_base_uri.$this->_generated_entry->id, $put_entry_data);
         // THEN
         $this->assertResponseStatus($put_response, HttpStatus::HTTP_OK);
-        $put_response_as_array = $this->getResponseAsArray($put_response);
+        $put_response_as_array = $put_response->json();
         $this->assertPutResponseHasCorrectKeys($put_response_as_array);
         $this->assertSuccessPutResponse($put_response_as_array);
 
@@ -424,7 +428,7 @@ class PutEntryTest extends TestCase {
         $get_response = $this->get($this->_base_uri.$this->_generated_entry->id);
         // THEN
         $this->assertResponseStatus($get_response, HttpStatus::HTTP_OK);
-        $get_response_as_array = $this->getResponseAsArray($get_response);
+        $get_response_as_array = $get_response->json();
         $this->assertArrayHasKey('attachments', $get_response_as_array);
         $this->assertTrue(is_array($get_response_as_array['attachments']));
         $this->assertNotEmpty($get_response_as_array['attachments']);
@@ -453,7 +457,7 @@ class PutEntryTest extends TestCase {
 
         // THEN
         $this->assertResponseStatus($put_response, HttpStatus::HTTP_OK);
-        $put_response_as_array = $this->getResponseAsArray($put_response);
+        $put_response_as_array = $put_response->json();
         $this->assertPutResponseHasCorrectKeys($put_response_as_array);
         $this->assertSuccessPutResponse($put_response_as_array);
 
@@ -462,7 +466,7 @@ class PutEntryTest extends TestCase {
 
         // THEN
         $this->assertResponseStatus($get_response, HttpStatus::HTTP_OK);
-        $get_response_as_array = $this->getResponseAsArray($get_response);
+        $get_response_as_array = $get_response->json();
         $this->assertArrayHasKey('attachments', $get_response_as_array);
         $this->assertTrue(is_array($get_response_as_array['attachments']));
         $this->assertNotEmpty($get_response_as_array['attachments']);
@@ -484,7 +488,7 @@ class PutEntryTest extends TestCase {
         $put_response = $this->json('PUT', $this->_base_uri.$this->_generated_entry->id, $put_entry_data);
         // THEN
         $put_response->assertStatus(HttpStatus::HTTP_OK);
-        $put_response_as_array = $this->getResponseAsArray($put_response);
+        $put_response_as_array = $put_response->json();
         $this->assertPutResponseHasCorrectKeys($put_response_as_array);
         $this->assertSuccessPutResponse($put_response_as_array);
 
@@ -492,7 +496,7 @@ class PutEntryTest extends TestCase {
         $get_response = $this->get($this->_base_uri.$this->_generated_entry->id);
         // THEN
         $get_response->assertStatus(HttpStatus::HTTP_OK);
-        $get_response_as_array = $this->getResponseAsArray($get_response);
+        $get_response_as_array = $get_response->json();
         $this->assertEquals($put_entry_data['entry_date'], $get_response_as_array['entry_date'], $get_response->getContent());
         $this->assertEquals($put_entry_data['entry_value'], $get_response_as_array['entry_value'], $get_response->getContent());
         $this->assertEquals($put_entry_data['memo'], $get_response_as_array['memo'], $get_response->getContent());
@@ -519,7 +523,7 @@ class PutEntryTest extends TestCase {
         $failure_message = "PUT response is ".json_encode($response_as_array);
         $this->assertEquals(EntryController::ERROR_ENTRY_ID, $response_as_array[EntryController::RESPONSE_SAVE_KEY_ID], $failure_message);
         $this->assertNotEmpty($response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR], $failure_message);
-        $this->assertContains($response_error_msg, $response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR], $failure_message);
+        $this->assertStringContainsString($response_error_msg, $response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR], $failure_message);
     }
 
     /**

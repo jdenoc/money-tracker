@@ -1,9 +1,8 @@
 <?php
 
-namespace Tests\Feature\Api;
+namespace Tests\Feature\Api\Get;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Symfony\Component\HttpFoundation\Response;
 
 Use App\Tag;
@@ -22,7 +21,7 @@ class GetTagsTest extends TestCase {
 
         // THEN
         $response->assertStatus(Response::HTTP_OK);
-        $response_body_as_array = $this->getResponseAsArray($response);
+        $response_body_as_array = $response->json();
         $this->assertNotEmpty($response_body_as_array);
         $this->assertArrayHasKey('count', $response_body_as_array);
         $this->assertEquals($response_body_as_array['count'], $tag_count);
@@ -47,7 +46,7 @@ class GetTagsTest extends TestCase {
 
         // THEN
         $response->assertStatus(Response::HTTP_NOT_FOUND);
-        $response_body_as_array = $this->getResponseAsArray($response);
+        $response_body_as_array = $response->json();
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertEmpty($response_body_as_array);
     }

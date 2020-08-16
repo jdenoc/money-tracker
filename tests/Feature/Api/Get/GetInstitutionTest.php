@@ -1,35 +1,26 @@
 <?php
 
-namespace Tests\Feature\Api;
+namespace Tests\Feature\Api\Get;
 
 use App\Account;
 use App\Institution;
 use Carbon\Carbon;
-use Faker;
+use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
 
 class GetInstitutionTest extends TestCase {
+
+    use WithFaker;
 
     /**
      * @var string
      */
     protected $_base_uri = '/api/institution/';
 
-    /**
-     * @var Faker\Generator
-     */
-    protected $_faker;
-
-    public function setUp(){
-        parent::setUp();
-        $this->_faker = Faker\Factory::create();
-    }
-
     public function testGetInstitutionWhenNoInstitutionExists(){
         // GIVEN - no institution
-        $institution_id = $this->_faker->randomDigitNotNull;
+        $institution_id = $this->faker->randomDigitNotNull;
 
         // WHEN
         $response = $this->get($this->_base_uri.$institution_id);
@@ -61,7 +52,7 @@ class GetInstitutionTest extends TestCase {
 
     public function testGetInstitution(){
         // GIVEN
-        $generated_account_count = $this->_faker->randomDigitNotNull;
+        $generated_account_count = $this->faker->randomDigitNotNull;
         $generated_institution = factory(Institution::class)->create();
         $generated_accounts = factory(Account::class, $generated_account_count)->create(['institution_id'=>$generated_institution->id]);
         // These nodes are not in the response output. Lets hide them from the object collection.

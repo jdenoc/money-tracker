@@ -10,32 +10,32 @@ trait Notification {
 
     use WaitTimes;
 
-    private static $NOTIFICATION_TYPE_ERROR = 'error';
-    private static $NOTIFICATION_TYPE_INFO = 'info';
-    private static $NOTIFICATION_TYPE_SUCCESS = 'success';
-    private static $NOTIFICATION_TYPE_WARNING = 'warning';
+    protected static $NOTIFICATION_TYPE_ERROR = 'error';
+    protected static $NOTIFICATION_TYPE_INFO = 'info';
+    protected static $NOTIFICATION_TYPE_SUCCESS = 'success';
+    protected static $NOTIFICATION_TYPE_WARNING = 'warning';
 
     private static $SELECTOR_NAVBAR = '.navbar';
     private static $SELECTOR_NOTIFICATION = '.snotifyToast';
-    private static $CLASS_INFO = "snotify-info";
-    private static $CLASS_ERROR = "snotify-error";
-    private static $CLASS_SUCCESS = "snotify-success";
-    private static $CLASS_WARNING = "snotify-warning";
+    private static $NOTIFICATION_CLASS_INFO = "snotify-info";
+    private static $NOTIFICATION_CLASS_ERROR = "snotify-error";
+    private static $NOTIFICATION_CLASS_SUCCESS = "snotify-success";
+    private static $NOTIFICATION_CLASS_WARNING = "snotify-warning";
 
     public function assertNotificationContents(Browser $browser, $notification_type, $notification_message){
         switch($notification_type){
             case self::$NOTIFICATION_TYPE_ERROR:
-                $notification_class = self::$CLASS_ERROR;
+                $notification_class = self::$NOTIFICATION_CLASS_ERROR;
                 break;
             case self::$NOTIFICATION_TYPE_INFO:
             default:
-                $notification_class = self::$CLASS_INFO;
+                $notification_class = self::$NOTIFICATION_CLASS_INFO;
                 break;
             case self::$NOTIFICATION_TYPE_SUCCESS:
-                $notification_class = self::$CLASS_SUCCESS;
+                $notification_class = self::$NOTIFICATION_CLASS_SUCCESS;
                 break;
             case self::$NOTIFICATION_TYPE_WARNING:
-                $notification_class = self::$CLASS_WARNING;
+                $notification_class = self::$NOTIFICATION_CLASS_WARNING;
                 break;
         }
 

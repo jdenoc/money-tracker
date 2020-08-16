@@ -9,7 +9,6 @@ use App\Traits\Tests\Dusk\BulmaColors as DuskTraitBulmaColors;
 use App\Traits\Tests\Dusk\BulmaDatePicker as DuskTraitBulmaDatePicker;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\StatsSidePanel as DuskTraitStatsSidePanel;
-use App\Traits\Tests\InjectDatabaseStateIntoException;
 use Illuminate\Support\Collection;
 use Laravel\Dusk\Browser;
 use Tests\Browser\Pages\StatsPage;
@@ -31,8 +30,6 @@ class StatsDistributionTest extends StatsBase {
     use DuskTraitBatchFilterEntries;
     use DuskTraitLoading;
     use DuskTraitStatsSidePanel;
-
-    use InjectDatabaseStateIntoException;
 
     private static $SELECTOR_STATS_DISTRIBUTION = '#stats-distribution';
     private static $SELECTOR_STATS_FORM_TOGGLE_EXPENSEINCOME = '#distribution-expense-or-income';
@@ -97,7 +94,7 @@ class StatsDistributionTest extends StatsBase {
                         ->assertVisible(self::$SELECTOR_BUTTON_GENERATE)
                         ->assertSeeIn(self::$SELECTOR_BUTTON_GENERATE, self::$LABEL_GENERATE_CHART_BUTTON);
                     $button_classes = $form->attribute(self::$SELECTOR_BUTTON_GENERATE, 'class');
-                    $this->assertContains('is-primary', $button_classes);
+                    $this->assertStringContainsString('is-primary', $button_classes);
                 });
         });
     }
@@ -168,8 +165,6 @@ class StatsDistributionTest extends StatsBase {
         $account_types = collect($this->getApiAccountTypes());
         $tags = collect($this->getApiTags());
 
-        $this->setDatabaseStateInjectionPermission(self::$ALLOW_INJECT_DATABASE_STATE_ON_EXCEPTION);
-
         $this->browse(function (Browser $browser) use ($datepicker_start, $datepicker_end, $is_account_switch_toggled, $is_expense_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $accounts, $account_types, $tags){
             $filter_data = [];
 
@@ -186,11 +181,12 @@ class StatsDistributionTest extends StatsBase {
                     if($is_account_switch_toggled){
                         // switch to account-types
                         $this->toggleAccountOrAccountTypeSwitch($form);
-                        $account_or_account_type_id = $is_random_selector_value ? $account_types->where('disabled', $are_disabled_select_options_available)->pluck('id')->random() : '';
+                        $account_or_account_type_id = ($is_random_selector_value) ? $account_types->where('disabled', $are_disabled_select_options_available)->pluck('id')->random() : '';
                     } else {
                         // stay with accounts
-                        $account_or_account_type_id = $is_random_selector_value ? $accounts->where('disabled', $are_disabled_select_options_available)->pluck('id')->random() : '';
+                        $account_or_account_type_id = ($is_random_selector_value) ? $accounts->where('disabled', $are_disabled_select_options_available)->pluck('id')->random() : '';
                     }
+
                     $this->selectAccountOrAccountTypeValue($form, $account_or_account_type_id);
                     $filter_data = $this->generateFilterArrayElementAccountOrAccountypeId($filter_data, $is_account_switch_toggled, $account_or_account_type_id);
 
@@ -209,6 +205,7 @@ class StatsDistributionTest extends StatsBase {
                     }
                     $filter_data = $this->generateFilterArrayElementDatepicker($filter_data, $datepicker_start, $datepicker_end);
 
+                    $this->generateEntryFromFilterData($filter_data);
                     $this->createEntryWithAllTags($is_account_switch_toggled, $account_or_account_type_id, $account_types, $tags);
                     $form->click(self::$SELECTOR_BUTTON_GENERATE);
                 });
@@ -218,7 +215,7 @@ class StatsDistributionTest extends StatsBase {
             $this->waitForLoadingToStop($browser);
             $browser
                 ->assertDontSeeIn(self::$SELECTOR_STATS_RESULTS_DISTRIBUTION, self::$LABEL_NO_STATS_DATA)
-                ->with(self::$SELECTOR_STATS_RESULTS_DISTRIBUTION, function(Browser $stats_results_area){
+                ->with(self::$SELECTOR_STATS_RESULTS_DISTRIBUTION, static function(Browser $stats_results_area){
                     $stats_results_area->assertVisible(self::$SELECTOR_CHART_DISTRIBUTION);
                 })
                 ->assertVue(self::$VUE_KEY_STANDARDISEDATA, $this->standardiseData($entries, $tags), self::$SELECTOR_STATS_DISTRIBUTION);
