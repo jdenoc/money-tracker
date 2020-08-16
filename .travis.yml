@@ -97,7 +97,7 @@ jobs:
     - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-delete
     - script:
         - .docker/cmd/artisan.sh config:clear # artisan app:version testing doesn't work well when configs have been cached
-        - cp .env.docker .env.testing
+        - docker container exec -t --user www-data app.money-tracker cp .env.docker .env.testing  # because we're not caching, we need to create a new .env file
         - docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite console
     - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite web
     - script: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite unit
