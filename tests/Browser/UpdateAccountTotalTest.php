@@ -34,7 +34,7 @@ class UpdateAccountTotalTest extends DuskTestCase {
     private $_account;
     private $_account_type_id;
 
-    public function setUp(){
+    public function setUp(): void{
         parent::setUp();
 
         $institutions = $this->getApiInstitutions();

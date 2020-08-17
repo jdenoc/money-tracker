@@ -417,10 +417,10 @@ class TransferModalTest extends DuskTestCase {
     public function providerResetTransferModalFields(){
         return [
             // [$has_tags, $has_attachments]
-            'standard fields'=>[false, false],                      // test 15/25
-            'standard fields \w rawTagsData'=>[true, false],               // test 16/25
-            'standard fields \w attachments'=>[false, true],        // test 17/25
-            'standard fields \w rawTagsData & attachments'=>[true, true]   // test 18/25
+            'standard fields'=>[false, false],                           // test 15/25
+            'standard fields \w rawTagsData'=>[true, false],             // test 16/25
+            'standard fields \w attachments'=>[false, true],             // test 17/25
+            'standard fields \w rawTagsData & attachments'=>[true, true] // test 18/25
         ];
     }
 
@@ -431,7 +431,7 @@ class TransferModalTest extends DuskTestCase {
      *
      * @throws Throwable
      *
-     * @group transfer-modal-2
+     * @group transfer-modal-1
      * test (see provider)/25
      */
     public function testResetTransferModalFields($has_tags, $has_attachments){
@@ -503,15 +503,15 @@ class TransferModalTest extends DuskTestCase {
     public function providerSaveTransferEntry(){
         return [
             // [$is_to_account_external, $is_from_account_external, $has_tags, $has_attachments]
-            'TO account is external'                            => [true,  false, false, false],    // test 1/25
-            'FROM account is external'                          => [false, true,  false, false],    // test 2/25
-            'neither account is external'                       => [false, false, false, false],    // test 3/25
+            'TO account is external'                                   => [true,  false, false, false],    // test 1/25
+            'FROM account is external'                                 => [false, true,  false, false],    // test 2/25
+            'neither account is external'                              => [false, false, false, false],    // test 3/25
             'TO account is external w\ rawTagsData'                    => [true,  false, true,  false],    // test 4/25
             'FROM account is external w\ rawTagsData'                  => [false, true,  true,  false],    // test 5/25
             'neither account is external w\ rawTagsData'               => [false, false, true,  false],    // test 6/25
-            'TO account is external w\ attachments'             => [true,  false, false, true],     // test 7/25
-            'FROM account is external w\ attachments'           => [false, true,  false, true],     // test 8/25
-            'neither account is external w\ attachments'        => [false, false, false, true],     // test 9/25
+            'TO account is external w\ attachments'                    => [true,  false, false, true],     // test 7/25
+            'FROM account is external w\ attachments'                  => [false, true,  false, true],     // test 8/25
+            'neither account is external w\ attachments'               => [false, false, false, true],     // test 9/25
             'TO account is external w\ rawTagsData & attachments'      => [true,  false, true,  true],     // test 10/25
             'FROM account is external w\ rawTagsData & attachments'    => [false, true,  true,  true],     // test 11/25
             'neither account is external w\ rawTagsData & attachments' => [false, false, true,  true],     // test 12/25

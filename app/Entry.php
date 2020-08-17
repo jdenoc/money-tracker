@@ -149,30 +149,30 @@ class Entry extends BaseModel {
                     $entries_query->where('entries.account_type_id', $filter_constraint);
                     break;
                 case EntryController::FILTER_KEY_EXPENSE:
-                    if($filter_constraint == true){
+                    if($filter_constraint === true){
                         $entries_query->where('entries.expense', 1);
                     }
-                    elseif($filter_constraint == false) {
+                    elseif($filter_constraint === false) {
                         $entries_query->where('entries.expense', 0);
                     }
                     break;
                 case EntryController::FILTER_KEY_UNCONFIRMED:
-                    if($filter_constraint == true){
+                    if($filter_constraint === true){
                         $entries_query->where('entries.confirm', 0);
                     }
                     break;
                 case EntryController::FILTER_KEY_ACCOUNT:
-                    $entries_query->join('account_types', function($join) use ($filter_constraint){
+                    $entries_query->join('account_types', static function($join) use ($filter_constraint){
                         $join->on('entries.account_type_id', '=', 'account_types.id')
                             ->where('account_types.account_id', $filter_constraint);
                     });
                     break;
                 case EntryController::FILTER_KEY_ATTACHMENTS:
-                    if($filter_constraint == true){
+                    if($filter_constraint === true){
                         // to get COUNT(attachment.id) > 0 use:
                         // INNER JOIN attachments ON attachments.entry_id=entries.id
                         $entries_query->join('attachments', 'entries.id', '=', 'attachments.entry_id');
-                    } elseif($filter_constraint == false) {
+                    } elseif($filter_constraint === false) {
                         // to get COUNT(attachments.id) == 0 use:
                         // LEFT JOIN attachments
                         //   ON attachments.entry_id=entries.id
@@ -186,16 +186,16 @@ class Entry extends BaseModel {
                     //   ON entry_tags.entry_id=entries.id
                     //   AND entry_tags.tag_id IN ($tags)
                     $tag_ids = (is_array($filter_constraint)) ? $filter_constraint : [$filter_constraint];
-                    $entries_query->rightJoin('entry_tags', function($join) use ($tag_ids){
+                    $entries_query->rightJoin('entry_tags', static function($join) use ($tag_ids){
                         $join->on('entry_tags.entry_id', '=', 'entries.id')
                             ->whereIn('entry_tags.tag_id', $tag_ids);
                     });
                     break;
                 case EntryController::FILTER_KEY_IS_TRANSFER:
-                    if($filter_constraint == true){
+                    if($filter_constraint === true){
                         // WHERE entries.transfer_entry_id IS NOT NULL
                         $entries_query->whereNotNull("transfer_entry_id");
-                    } elseif($filter_constraint == false){
+                    } elseif($filter_constraint === false){
                         // WHERE entries.transfer_entry_id IS NULL
                         $entries_query->whereNull("transfer_entry_id");
                     }

@@ -68,7 +68,7 @@ trait BatchFilterEntries {
             throw new \UnexpectedValueException("Entries not available with filter ".json_encode($filter_data));
         }
 
-        $total_pages = intval( ceil($entries['count']/EntryController::MAX_ENTRIES_IN_RESPONSE) );
+        $total_pages = (int) ceil($entries['count']/EntryController::MAX_ENTRIES_IN_RESPONSE);
         $entries_collection = collect($this->removeCountFromApiResponse($entries));
 
         for($i=1; $i<$total_pages; $i++){

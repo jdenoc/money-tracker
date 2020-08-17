@@ -16,10 +16,10 @@ import Notification from './components/notification';
 import Stats from "./components/stats/stats";
 import StatsNav from "./components/stats/stats-nav";
 
+import {Accounts} from "./accounts";
 import {AccountTypes} from "./account-types";
 import {Tags} from "./tags";
 import {Version} from './version';
-import {Accounts} from "./accounts";
 
 new Vue({
     el: "#app",

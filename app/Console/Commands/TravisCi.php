@@ -13,7 +13,8 @@ class TravisCi extends Command {
      * @var string
      */
     protected $signature = "travis-ci
-                            {--display-env : output environment variables and values}";
+                            {--display-env : output environment variables and values}
+                            {--config : output config variables and values}";
 
     /**
      * The console command description.
@@ -26,20 +27,45 @@ class TravisCi extends Command {
      * Execute the console command.
      */
     public function handle(){
-        foreach($this->options() as $command_option){
-            switch($command_option){
-                case 'display-env':
-                    $this->comment("Environment Variables:");
-                    $dot_env_file_path = app()->environmentFilePath();
-                    $env_names = array_merge(array_keys($_ENV), $this->get_env_names_from_dotenv($dot_env_file_path));
-                    $env_names = array_unique($env_names);
-                    $env_values = array_map([$this, 'output_environment_variable_and_value'], $env_names);
-                    $env_values[] = ['.env file path', $dot_env_file_path];
-                    $this->table(['variable', 'value'], $env_values);
-                    $this->line('');    // new line after output in case we have other output
-                    break;
+        if($this->option('display-env')){
+            $this->comment("Environment Variables:");
+            $dot_env_file_path = app()->environmentFilePath();
+            $env_names = array_merge(array_keys($_ENV), $this->get_env_names_from_dotenv($dot_env_file_path));
+            $env_names = array_unique($env_names);
+            $env_values = array_map([$this, 'output_environment_variable_and_value'], $env_names);
+            $env_values[] = ['.env file path', $dot_env_file_path];
+            $this->table(['variable', 'value'], $env_values);
+            $this->line('');    // new line after output in case we have other output
+        }
+
+        if($this->option('config')){
+            $config = config()->all();
+            $parsed_config = $this->parseConfigValues($config);
+            $this->table(['variable', 'value'], $parsed_config);
+            $this->line('');    // new line after output in case we have other output
+        }
+    }
+
+    /**
+     * @param array $config
+     * @param string $config_name_current_level
+     * @param array $config_table
+     * @return array
+     */
+    private function parseConfigValues($config, $config_name_current_level='', $config_table=[]){
+        foreach($config as $config_name=>$config_value){
+            if(!empty($config_name_current_level)){
+                $config_name = $config_name_current_level.'.'.$config_name;
+            }
+            if(is_array($config_value)){
+                // recursive stuff here
+                $config_table = $this->parseConfigValues($config_value, $config_name, $config_table);
+            } else {
+                $config_table[] = ['variable'=>$config_name, 'value'=>$config_value];
             }
         }
+
+        return $config_table;
     }
 
     /**

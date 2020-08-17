@@ -7,7 +7,7 @@ function display_logs {
     printf "[LOG]: `basename $log`";
     if [ -f $log ]; then
       printf "\n";
-      tail -500 $log;
+      tail -1500 $log;
     fi
     printf "\n-----\n\n";
   done

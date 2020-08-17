@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use App\Helpers\LogWriter;
-use Illuminate\Log\Writer;
+use Illuminate\Log\Logger;
 use Monolog\Logger as Monolog;
 use Illuminate\Log\LogServiceProvider as BaseLogServiceProvider;
 
@@ -12,7 +12,7 @@ class LogServiceProvider extends BaseLogServiceProvider {
     /**
      * Create the logger.
      *
-     * @return \Illuminate\Log\Writer
+     * @return Logger
      */
     public function createLogger()
     {
@@ -37,14 +37,14 @@ class LogServiceProvider extends BaseLogServiceProvider {
     /**
      * Configure the Monolog handlers for the application.
      *
-     * @param  Writer  $log
+     * @param  Logger  $log
      *      $log is actually of type App\Helpers\LogWriter.
      *      PHP Freaks out if I change a previously defined variable type for a method of an extended class.
      *      App\Helpers\LogWriter extends Illuminate\Log\Writer so they're more or less the same thing anyway,
      *      only with a few changes :P
      * @return void
      */
-    protected function configureSingleHandler(Writer $log){
+    protected function configureSingleHandler(Logger $log){
         $can_write_log = false;
         foreach($log->getLogLevels() as $log_level){    // getLogLevels() comes from App\Helpers\LogWriter
             if($can_write_log || $log_level == $this->logLevel()){
@@ -60,14 +60,14 @@ class LogServiceProvider extends BaseLogServiceProvider {
     /**
      * Configure the Monolog handlers for the application.
      *
-     * @param  Writer  $log
+     * @param  Logger  $log
      *      $log is actually of type App\Helpers\LogWriter.
      *      PHP Freaks out if I change a previously defined variable type for a method of an extended class.
      *      App\Helpers\LogWriter extends Illuminate\Log\Writer so they're more or less the same thing anyway,
      *      only with a few changes :P
      * @return void
      */
-    protected function configureDailyHandler(Writer $log){
+    protected function configureDailyHandler(Logger $log){
         $can_write_log = false;
         foreach($log->getLogLevels() as $log_level){    // getLogLevels() comes from App\Helpers\LogWriter
             if($can_write_log || $log_level == $this->logLevel()){

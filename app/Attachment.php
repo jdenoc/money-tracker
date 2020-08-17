@@ -11,7 +11,8 @@ class Attachment extends BaseModel {
 
     protected $table = 'attachments';
     protected $primaryKey = 'uuid';
-    public $incrementing = false;   // because attachments.uuid isn't an int and so can be incremented
+    protected $keyType = 'string';      // The "type" of the primary key ID.
+    public $incrementing = false;   // because attachments.uuid isn't an int and so can't be incremented
     protected $fillable = [
         'uuid', 'entry_id', 'name'
     ];

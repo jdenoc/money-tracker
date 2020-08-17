@@ -10,6 +10,9 @@ use App\Institution;
 use App\Tag;
 use App\User;
 
+/**
+ * @deprecated - deprecating in favor of DatabaseFileDump
+ */
 trait InjectDatabaseStateIntoException {
 
     public static $ALLOW_INJECT_DATABASE_STATE_ON_EXCEPTION = true;

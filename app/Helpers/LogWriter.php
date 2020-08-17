@@ -2,11 +2,11 @@
 
 namespace App\Helpers;
 
-use Illuminate\Log\Writer;
+use Illuminate\Log\Logger;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\RotatingFileHandler;
 
-class LogWriter extends Writer {
+class LogWriter extends Logger {
 
     /**
      * @var bool

@@ -10,7 +10,7 @@ class CurrencyHelper {
     /**
      * @var string
      */
-    private static $_file_path = "json/currency.json";
+    private static $CURRENCY_FILE_PATH = "json/currency.json";
 
     /**
      * @var Collection|null
@@ -22,7 +22,7 @@ class CurrencyHelper {
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public static function fetchCurrencies(){
-        $currency_json = \Storage::get(self::$_file_path);
+        $currency_json = \Storage::get(self::$CURRENCY_FILE_PATH);
         $raw_currency_data = json_decode($currency_json, true);
         $currency_collection = collect();
         foreach($raw_currency_data as $currency_data){
@@ -30,7 +30,7 @@ class CurrencyHelper {
             $currency_collection->push($currency_object);
         }
 
-        self::$_currencies =$currency_collection;
+        self::$_currencies = $currency_collection;
         return self::$_currencies;
     }
 

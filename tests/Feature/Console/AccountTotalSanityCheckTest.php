@@ -17,6 +17,14 @@ class AccountTotalSanityCheckTest extends TestCase {
     private $_command = 'sanity-check:account-total';
     private $_screen_only_notification_options = ['--notify-screen'=>true, '--dont-notify-discord'=>true];
 
+    private static $TEMPLATE_CHECKING_ACCOUNT_OK = "Checking account ID:%d\n\tOK";
+    private static $TEMPLATE_ACCOUNT_NOT_FOUND = "Account %d not found";
+
+    public function setUp(): void{
+        parent::setUp();
+        $this->withoutMockingConsoleOutput();
+    }
+
     public function testForceFailureOutputtingToScreenAndWithoutNotifyingDiscord(){
         Artisan::call($this->_command, array_merge(['--force-failure'=>true], $this->_screen_only_notification_options));
 
@@ -37,14 +45,13 @@ class AccountTotalSanityCheckTest extends TestCase {
         Artisan::call($this->_command, $this->_screen_only_notification_options);
         $result_as_text = trim(Artisan::output());
         foreach($accounts as $account){
-            $this->assertContains(sprintf("Checking account ID:%d\n\tOK", $account->id), $result_as_text);
+            $this->assertContains(sprintf(self::$TEMPLATE_CHECKING_ACCOUNT_OK, $account->id), $result_as_text);
         }
     }
 
     public function testSanityCheckIndividualAccountIdOutputtingToScreenAndWithoutNotifyingDiscord(){
-        Artisan::call("db:seed", ['--class'=>'UiSampleDatabaseSeeder']);
+        $this->seedDatabaseAndMaybeTruncateTable('entries');
 
-        DB::statement("TRUNCATE entries");
         $accounts = Account::where('disabled', 0);
         $accounts->update(['total'=>0]);
         $account = $accounts->get()->random();
@@ -59,36 +66,43 @@ class AccountTotalSanityCheckTest extends TestCase {
 
         Artisan::call($this->_command, array_merge(['accountId'=>$account->id], $this->_screen_only_notification_options));
         $result_as_text = trim(Artisan::output());
-        $this->assertContains(sprintf("Checking account ID:%d\n\tOK", $account->id), $result_as_text);
+        $this->assertContains(sprintf(self::$TEMPLATE_CHECKING_ACCOUNT_OK, $account->id), $result_as_text);
     }
 
     public function testSanityCheckIndividualAccountIdNotFoundOutputtingToScreenAndWithoutNotifyingDiscord(){
-        Artisan::call("db:seed", ['--class'=>'UiSampleDatabaseSeeder']);
-        DB::statement("TRUNCATE accounts");
+        $this->seedDatabaseAndMaybeTruncateTable('accounts');
 
         $account_id = $this->faker->randomDigitNotNull;
         Artisan::call($this->_command, array_merge(['accountId'=>$account_id], $this->_screen_only_notification_options));
         $result_as_text = trim(Artisan::output());
-        $this->assertContains(sprintf("Account %d not found", $account_id), $result_as_text);
+        $this->assertContains(sprintf(self::$TEMPLATE_ACCOUNT_NOT_FOUND, $account_id), $result_as_text);
     }
 
     public function testSanityCheckIndividualAccountIdZeroNotFoundOutputtingToScreenAndWithoutNotifyingDiscord(){
-        Artisan::call("db:seed", ['--class'=>'UiSampleDatabaseSeeder']);
-        DB::statement("TRUNCATE accounts");
+        $this->seedDatabaseAndMaybeTruncateTable();
 
         $account_id = 0;
         Artisan::call($this->_command, array_merge(['accountId'=>$account_id], $this->_screen_only_notification_options));
         $result_as_text = trim(Artisan::output());
-        $this->assertContains(sprintf("Account %d not found", $account_id), $result_as_text);
+        $this->assertContains(sprintf(self::$TEMPLATE_ACCOUNT_NOT_FOUND, $account_id), $result_as_text);
     }
 
     public function testSanityCheckAccountsNotFoundOutputtingToScreenAndWithoutNotifyingDiscord(){
-        Artisan::call("db:seed", ['--class'=>'UiSampleDatabaseSeeder']);
-        DB::statement("TRUNCATE accounts");
+        $this->seedDatabaseAndMaybeTruncateTable('accounts');
 
         Artisan::call($this->_command, $this->_screen_only_notification_options);
         $result_as_text = trim(Artisan::output());
         $this->assertContains("No accounts found", $result_as_text);
+    }
+
+    /**
+     * @param string|null $table_to_truncate
+     */
+    private function seedDatabaseAndMaybeTruncateTable($table_to_truncate = null){
+        Artisan::call("db:seed", ['--class'=>'UiSampleDatabaseSeeder']);
+        if(!is_null($table_to_truncate)){
+            DB::statement(sprintf("TRUNCATE %s", $table_to_truncate));
+        }
     }
 
 }

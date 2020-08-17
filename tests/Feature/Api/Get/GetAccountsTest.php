@@ -1,22 +1,22 @@
 <?php
 
-namespace Tests\Feature\Api;
+namespace Tests\Feature\Api\Get;
 
-use Faker\Factory;
+use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Symfony\Component\HttpFoundation\Response;
 
 use App\Account;
 
 class GetAccountsTest extends TestCase {
 
+    use WithFaker;
+
     private $_uri = '/api/accounts';
 
     public function testGetListOfAccountsWhenTheyAreAvailable(){
-        $faker = Factory::create();
         // GIVEN
-        $account_count = $faker->randomDigitNotNull;
+        $account_count = $this->faker->randomDigitNotNull;
         $generated_accounts = factory(Account::class, $account_count)->create();
         // These nodes are not in the response output. Lets hide them from the object collection.
         $generated_accounts->makeHidden(['disabled_stamp']);
@@ -26,7 +26,7 @@ class GetAccountsTest extends TestCase {
 
         // THEN
         $response->assertStatus(Response::HTTP_OK);
-        $response_body_as_array = $this->getResponseAsArray($response);
+        $response_body_as_array = $response->json();
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertArrayHasKey('count', $response_body_as_array);
         $this->assertEquals($account_count, $response_body_as_array['count']);
@@ -62,7 +62,7 @@ class GetAccountsTest extends TestCase {
 
         // THEN
         $response->assertStatus(Response::HTTP_NOT_FOUND);
-        $response_body_as_array = $this->getResponseAsArray($response);
+        $response_body_as_array = $response->json();
         $this->assertTrue(is_array($response_body_as_array));
         $this->assertEmpty($response_body_as_array);
     }

@@ -3,22 +3,18 @@
 namespace Tests\Feature\Web;
 
 use App\Attachment;
-use Faker\Factory as FakerFactory;
+use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Ramsey\Uuid\Uuid;
 
 class AttachmentsDisplayTest extends TestCase {
 
+    use WithFaker;
+
     const WEB_ATTACHMENT_URI = "/attachment/%s";
     const ATTACHMENT_PARAMETER_UUID = 'uuid';
     const ATTACHMENT_PARAMETER_FILENAME = 'name';
-
-    /**
-     * @var \Faker\Generator;
-     */
-    private $_faker;
 
     /**
      * @var string[]
@@ -32,14 +28,9 @@ class AttachmentsDisplayTest extends TestCase {
         'txt',
     ];
 
-    public function setUp(){
-        parent::setUp();
-        $this->_faker = FakerFactory::create();
-    }
-
     public function testInvalidUuid(){
         // GIVEN
-        $invalid_uuid = $this->_faker->word;   // a word will never be a valid UUID
+        $invalid_uuid = $this->faker->word;   // a word will never be a valid UUID
 
         // WHEN
         $response = $this->get(sprintf(self::WEB_ATTACHMENT_URI, $invalid_uuid));
@@ -74,14 +65,14 @@ class AttachmentsDisplayTest extends TestCase {
         //GIVEN
         do{
             // file extension should NOT be in the approved list
-            $file_ext = $this->_faker->fileExtension;
+            $file_ext = $this->faker->fileExtension;
         }while(in_array($file_ext, $this->_valid_file_types));
         $generated_attachment = factory(Attachment::class)->create([
             self::ATTACHMENT_PARAMETER_UUID => $this->generateValidUuid(),
-            self::ATTACHMENT_PARAMETER_FILENAME => $this->_faker->word.'.'.$file_ext
+            self::ATTACHMENT_PARAMETER_FILENAME => $this->faker->word.'.'.$file_ext
         ]);
         // make sure file exists on disk by generating a dummy file.
-        $generated_attachment->storage_store($this->_faker->sentence);
+        $generated_attachment->storage_store($this->faker->sentence);
 
         //WHEN
         $response = $this->get(sprintf(self::WEB_ATTACHMENT_URI, $generated_attachment->uuid));
@@ -94,10 +85,10 @@ class AttachmentsDisplayTest extends TestCase {
         //GIVEN
         $generated_attachment = factory(Attachment::class)->create([
             self::ATTACHMENT_PARAMETER_UUID => $this->generateValidUuid(),
-            self::ATTACHMENT_PARAMETER_FILENAME => $this->_faker->word.'.'.$this->_faker->randomElement($this->_valid_file_types)
+            self::ATTACHMENT_PARAMETER_FILENAME => $this->faker->word.'.'.$this->faker->randomElement($this->_valid_file_types)
         ]);
         // make sure file exists on disk by generating a dummy file.
-        $generated_attachment->storage_store($this->_faker->sentence);
+        $generated_attachment->storage_store($this->faker->sentence);
 
         //WHEN
         $response = $this->get(sprintf(self::WEB_ATTACHMENT_URI, $generated_attachment->uuid));
@@ -108,7 +99,7 @@ class AttachmentsDisplayTest extends TestCase {
 
     private function generateValidUuid(){
         do{
-            $valid_uuid = $this->_faker->uuid;
+            $valid_uuid = $this->faker->uuid;
         }while(!Uuid::isValid($valid_uuid));
         return $valid_uuid;
     }

@@ -26,7 +26,7 @@ class AppVersionTest extends TestCase {
      */
     private $_test_version;
 
-    public function setUp(){
+    public function setUp(): void{
         parent::setUp();
         $faker = FakerFactory::create();
         $this->_test_version = $faker->randomDigitNotNull.'.'.$faker->randomDigitNotNull.'.'.$faker->randomDigitNotNull.'-test-'.$faker->word;
