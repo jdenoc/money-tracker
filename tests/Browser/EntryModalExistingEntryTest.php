@@ -110,7 +110,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                                 ->assertSee($this->_label_entry_not_new)
                                 ->assertSee($this->_label_btn_confirmed);
                             $entry_confirm_class = $modal_head->attribute($this->_selector_modal_entry_btn_confirmed_label, 'class');
-                            $this->assertContains($this->_class_light_grey_text, $entry_confirm_class);
+                            $this->assertStringContainsString($this->_class_light_grey_text, $entry_confirm_class);
                         })
 
                         ->with($this->_selector_modal_body, function($modal_body) use ($entry_data, $data_expense_switch_label, $expense_switch_colour){
@@ -178,8 +178,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                                 ->assertSee($this->_label_btn_confirmed);
 
                             $classes = $modal_head->attribute($this->_selector_modal_entry_btn_confirmed_label, "class");
-                            $this->assertContains($this->_class_white_text, $classes);
-                            $this->assertNotContains($this->_class_light_grey_text, $classes);
+                            $this->assertStringContainsString($this->_class_white_text, $classes);
+                            $this->assertStringNotContainsString($this->_class_light_grey_text, $classes);
                             $this->assertEquals("true", $modal_head->attribute($this->_selector_modal_entry_btn_confirmed, "disabled"));
                         })
 
@@ -202,7 +202,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                             $this->assertEquals("true", $modal_body->attribute($this->_selector_modal_entry_field_memo, "readonly"));
 
                             $classes = $modal_body->attribute($this->_selector_modal_entry_field_expense, "class");
-                            $this->assertContains($this->_class_disabled, $classes);
+                            $this->assertStringContainsString($this->_class_disabled, $classes);
                         })
 
                         ->with($this->_selector_modal_foot, function($modal_foot){
@@ -216,7 +216,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                                 ->assertDontSee($this->_label_btn_save);
 
                             $classes = $modal_foot->attribute($this->_selector_modal_entry_btn_lock_icon, 'class');
-                            $this->assertContains($this->_class_unlock, $classes);
+                            $this->assertStringContainsString($this->_class_unlock, $classes);
                         });
                 })
                 ->assertEntryModalSaveButtonIsNotDisabled();
@@ -244,8 +244,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                         ->assertSee($this->_label_btn_confirmed);
 
                     $classes = $modal_head->attribute($this->_selector_modal_entry_btn_confirmed_label, "class");
-                    $this->assertContains($this->_class_white_text, $classes, $this->_selector_modal_entry_btn_confirmed_label." is missing class:".$this->_class_white_text);
-                    $this->assertNotContains($this->_class_light_grey_text, $classes, $this->_selector_modal_entry_btn_confirmed_label." has missing class:".$this->_class_light_grey_text);
+                    $this->assertStringContainsString($this->_class_white_text, $classes, $this->_selector_modal_entry_btn_confirmed_label." is missing class:".$this->_class_white_text);
+                    $this->assertStringNotContainsString($this->_class_light_grey_text, $classes, $this->_selector_modal_entry_btn_confirmed_label." has missing class:".$this->_class_light_grey_text);
 
                     $this->assertNotEquals("true", $modal_head->attribute($this->_selector_modal_entry_btn_confirmed, "disabled"));
                 })
@@ -261,7 +261,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                     $this->assertNotEquals("true", $modal_body->attribute($this->_selector_modal_entry_field_memo, 'readonly'));
 
                     $classes = $modal_body->attribute($this->_selector_modal_entry_field_expense, "class");
-                    $this->assertNotContains($this->_class_disabled, $classes);
+                    $this->assertStringNotContainsString($this->_class_disabled, $classes);
                 })
 
                 ->with($this->_selector_modal_foot, function($modal_foot){
@@ -275,8 +275,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                         ->assertSee($this->_label_btn_save);
 
                     $classes = $modal_foot->attribute($this->_selector_modal_entry_btn_lock_icon, "class");
-                    $this->assertContains($this->_class_lock, $classes);
-                    $this->assertNotContains($this->_class_unlock, $classes);
+                    $this->assertStringContainsString($this->_class_lock, $classes);
+                    $this->assertStringNotContainsString($this->_class_unlock, $classes);
                 });
         });
     }
@@ -565,12 +565,12 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                 ->with($this->_selector_modal_head, function(Browser $modal_head) use ($selector_bool){
                     $classes = $modal_head->attribute($this->_selector_modal_entry_btn_confirmed_label, "class");
                     if($selector_bool){
-                        $this->assertContains($this->_class_white_text, $classes);
-                        $this->assertNotContains($this->_class_light_grey_text, $classes);
+                        $this->assertStringContainsString($this->_class_white_text, $classes);
+                        $this->assertStringNotContainsString($this->_class_light_grey_text, $classes);
                         $modal_head->assertChecked($this->_selector_modal_entry_btn_confirmed);
                     } else {
-                        $this->assertContains($this->_class_light_grey_text, $classes);
-                        $this->assertNotContains($this->_class_white_text, $classes);
+                        $this->assertStringContainsString($this->_class_light_grey_text, $classes);
+                        $this->assertStringNotContainsString($this->_class_white_text, $classes);
                         $modal_head->assertNotChecked($this->_selector_modal_entry_btn_confirmed);
                     }
 
@@ -578,12 +578,12 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                     $classes = $modal_head->attribute($this->_selector_modal_entry_btn_confirmed_label, "class");
 
                     if($selector_bool){
-                        $this->assertContains($this->_class_light_grey_text, $classes);
-                        $this->assertNotContains($this->_class_white_text, $classes);
+                        $this->assertStringContainsString($this->_class_light_grey_text, $classes);
+                        $this->assertStringNotContainsString($this->_class_white_text, $classes);
                         $modal_head->assertNotChecked($this->_selector_modal_entry_btn_confirmed);
                     } else {
-                        $this->assertContains($this->_class_white_text, $classes);
-                        $this->assertNotContains($this->_class_light_grey_text, $classes);
+                        $this->assertStringContainsString($this->_class_white_text, $classes);
+                        $this->assertStringNotContainsString($this->_class_light_grey_text, $classes);
                         $modal_head->assertChecked($this->_selector_modal_entry_btn_confirmed);
                     }
                 })
@@ -596,12 +596,12 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                 ->with($this->_selector_modal_head, function(Browser $modal_head) use ($selector_bool){
                     $classes = $modal_head->attribute($this->_selector_modal_entry_btn_confirmed_label, "class");
                     if($selector_bool){
-                        $this->assertContains($this->_class_light_grey_text, $classes);
-                        $this->assertNotContains($this->_class_white_text, $classes);
+                        $this->assertStringContainsString($this->_class_light_grey_text, $classes);
+                        $this->assertStringNotContainsString($this->_class_white_text, $classes);
                         $modal_head->assertNotChecked($this->_selector_modal_entry_btn_confirmed);
                     } else {
-                        $this->assertContains($this->_class_white_text, $classes);
-                        $this->assertNotContains($this->_class_light_grey_text, $classes);
+                        $this->assertStringContainsString($this->_class_white_text, $classes);
+                        $this->assertStringNotContainsString($this->_class_light_grey_text, $classes);
                         $modal_head->assertChecked($this->_selector_modal_entry_btn_confirmed);
                     }
                 });
@@ -936,7 +936,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                         ->assertNotChecked($this->_selector_modal_entry_btn_confirmed);
 
                     $entry_confirm_class = $modal_head->attribute($this->_selector_modal_entry_btn_confirmed_label, 'class');
-                    $this->assertContains($this->_class_light_grey_text, $entry_confirm_class);
+                    $this->assertStringContainsString($this->_class_light_grey_text, $entry_confirm_class);
                 })
 
                 ->with($this->_selector_modal_body, function($modal_body){

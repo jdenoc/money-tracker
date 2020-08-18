@@ -121,7 +121,7 @@ class NavbarTest extends DuskTestCase {
                         ->assertVisible(self::$SELECTOR_NAVBAR_DROPDOWN)
                         ->with(self::$SELECTOR_NAVBAR_DROPDOWN, function(Browser $navbar_dropdown){
                             $navbar_dropdown->assertSeeIn(self::$SELECTOR_NAVBAR_DROPDOWN_VERSION, $this->_label_version);
-                            $this->assertContains('has-text-info', $navbar_dropdown->attribute(self::$SELECTOR_NAVBAR_DROPDOWN_VERSION, 'class'));
+                            $this->assertStringContainsString('has-text-info', $navbar_dropdown->attribute(self::$SELECTOR_NAVBAR_DROPDOWN_VERSION, 'class'));
                             $navbar_dropdown->assertDontSeeLink($this->_label_home);
                             $navbar_dropdown->assertSeeLink($this->_label_stats);
                             $navbar_dropdown->assertSeeLink($this->_label_settings);
@@ -245,7 +245,7 @@ class NavbarTest extends DuskTestCase {
                         ->assertVisible(self::$SELECTOR_NAVBAR_DROPDOWN)
                         ->with(self::$SELECTOR_NAVBAR_DROPDOWN, function(Browser $navbar_dropdown){
                             $navbar_dropdown->assertSeeIn(self::$SELECTOR_NAVBAR_DROPDOWN_VERSION, $this->_label_version);
-                            $this->assertContains('has-text-info', $navbar_dropdown->attribute(self::$SELECTOR_NAVBAR_DROPDOWN_VERSION, 'class'));
+                            $this->assertStringContainsString('has-text-info', $navbar_dropdown->attribute(self::$SELECTOR_NAVBAR_DROPDOWN_VERSION, 'class'));
                             $navbar_dropdown->assertSeeLink($this->_label_home);
                             $navbar_dropdown->assertDontSeeLink($this->_label_stats);
                             $navbar_dropdown->assertSeeLink($this->_label_settings);

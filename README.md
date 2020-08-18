@@ -135,7 +135,7 @@ If you have a database dump file, you can load it with this command:
 ```bash
 .docker/cmd/mysql.sh < /path/to/file.sql
 ```
-`.docker/cmd/mysql.sh` can be used just like the typical `mysql` command, but is run within the mysql container
+`.docker/cmd/mysql.sh -i` can be used just like the typical `mysql` command, but is run within the mysql container
 
 ##### Tear-down 
 ```bash
@@ -252,47 +252,55 @@ This is the exact same process as we do for our Local/dev setup. See instruction
 
 #### <a name="prod-updates">Updates</a>
 From time to time, there will be new updates released. Such updates will contain new features, bug fixes, general improvements, ect. In order to allow such improvements to be usable on production deployments, you should follow these steps:
-- Step 1
+- <a name="prod-updates-1">Step 1</a>
 ```bash
 # Navigate to the application directory, i.e.: cd money-tracker/
 
 # put site into maintenance mode
 php artisan down
 ```
-- Step 2
+- <a name="prod-updates-2">Step 2</a>
 ```
 # fetch newest version
 git fetch --tags
 MOST_RECENT_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
 git checkout -q tags/$MOST_RECENT_TAG
 ```
-- Step 2.a
+- <a name="prod-updates-2a">Step 2.a</a>
+```
+# *** OPTIONAL ***
+# Edit .env file
+# Note: check update release notes.
+cp .env .env.bkup
+# Perform modifications described in release notes.
+```
+- <a name="prod-updates-2b">Step 2.b</a>
 ```
 # *** OPTIONAL ***
 # New/Updates to composer packages
 # Note: check update release notes. 
 composer update --no-dev -o
 ```
-- Step 2.b
+- <a name="prod-updates-2c">Step 2.c</a>
 ```
 # *** OPTIONAL ***
 # New/Updates to yarn packages
 # Note: check update release notes. 
 yarn install
 ```
-- Step 2.c
+- <a name="prod-updates-2d">Step 2.d</a>
 ```
 # *** OPTIONAL ***
 # Database updates
 # Note: check update release notes.
 php artisan migrate
 ```
-- Step 3
+- <a name="prod-updates-3">Step 3</a>
 ```
 # Build website from *.vue files
 yarn run build-prod
 ```
-- Step 4
+- <a name="prod-updates-4">Step 4</a>
 ```
 # clear existing cache
 php artisan cache:clear
@@ -304,7 +312,7 @@ php artisan app:version $MOST_RECENT_TAG
 # setup new cache
 php artisan config:cache
 ```
-- Step 5
+- <a name="prod-updates-5">Step 5</a>
 ```
 # take site out of maintenance mode
 php artisan up
@@ -350,8 +358,8 @@ php artisan dusk --stop-on-failure
 - [Docker](https://docs.docker.com/)
 - [Composer](https://getcomposer.org/doc/)
 - [Yarn](https://yarnpkg.com/en/docs)
-- [PhpUnit](https://phpunit.de/documentation.html)
-- [Laravel Dusk](https://laravel.com/docs/5.5/dusk)
+- [PhpUnit](https://phpunit.readthedocs.io/en/8.5/)
+- [Laravel Dusk](https://laravel.com/docs/6.x/dusk)
 - [Travis CI](https://docs.travis-ci.com/user/languages/php/)
 - [git](https://git-scm.com/doc)
 - [ChartJs](https://www.chartjs.org/)

@@ -375,7 +375,7 @@ class PostEntryTransferTest extends TestCase {
         $this->assertTrue(is_array($response_as_array[EntryController::RESPONSE_SAVE_KEY_ID]), $failure_message);
         $this->assertEmpty($response_as_array[EntryController::RESPONSE_SAVE_KEY_ID], $failure_message);
         $this->assertNotEmpty($response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR], $failure_message);
-        $this->assertContains($response_error_msg, $response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR], $failure_message);
+        $this->assertStringContainsString($response_error_msg, $response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR], $failure_message);
     }
 
     private function getAccountIdOverrideOptions(){
