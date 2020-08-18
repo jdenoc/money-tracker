@@ -22,6 +22,12 @@ trait Notification {
     private static $NOTIFICATION_CLASS_SUCCESS = "snotify-success";
     private static $NOTIFICATION_CLASS_WARNING = "snotify-warning";
 
+    /**
+     * @param Browser $browser
+     * @param string $notification_type
+     * @param string $notification_message
+     * @throws \Facebook\WebDriver\Exception\TimeOutException
+     */
     public function assertNotificationContents(Browser $browser, $notification_type, $notification_message){
         switch($notification_type){
             case self::$NOTIFICATION_TYPE_ERROR:
@@ -42,7 +48,7 @@ trait Notification {
         $browser
             ->waitFor(self::$SELECTOR_NOTIFICATION, 1.5*self::$WAIT_SECONDS)
             ->with(self::$SELECTOR_NOTIFICATION, function(Browser $notification) use ($notification_class, $notification_message){
-                Assert::assertContains(
+                Assert::assertStringContainsString(
                     $notification_class,
                     $notification->attribute('', 'class')
                 );

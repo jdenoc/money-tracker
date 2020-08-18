@@ -370,8 +370,8 @@ class FilterModalTest extends DuskTestCase {
                     }
 
                     // test currency displayed in "Min Range" & "Max Range" fields is $
-                    $this->assertContains($this->_class_icon_dollar, $modal->attribute($this->_selector_modal_filter_field_min_value_icon, 'class'));
-                    $this->assertContains($this->_class_icon_dollar, $modal->attribute($this->_selector_modal_filter_field_max_value_icon, 'class'));
+                    $this->assertStringContainsString($this->_class_icon_dollar, $modal->attribute($this->_selector_modal_filter_field_min_value_icon, 'class'));
+                    $this->assertStringContainsString($this->_class_icon_dollar, $modal->attribute($this->_selector_modal_filter_field_max_value_icon, 'class'));
 
                     // select an account and confirm the name in the select changes
                     $account_to_select = collect($accounts)->where('disabled', 0)->random();
@@ -380,12 +380,12 @@ class FilterModalTest extends DuskTestCase {
 
                     // test select account changes currency displayed in "Min Range" & "Max Range" fields
                     $fail_message = "account data:".json_encode($account_to_select);
-                    $this->assertContains(
+                    $this->assertStringContainsString(
                         $this->getCurrencyClassFromCurrency($account_to_select['currency']),
                         $modal->attribute($this->_selector_modal_filter_field_min_value_icon, 'class'),
                         $fail_message
                     );
-                    $this->assertContains($this->getCurrencyClassFromCurrency(
+                    $this->assertStringContainsString($this->getCurrencyClassFromCurrency(
                         $account_to_select['currency']),
                         $modal->attribute($this->_selector_modal_filter_field_max_value_icon, 'class'),
                         $fail_message
@@ -414,8 +414,8 @@ class FilterModalTest extends DuskTestCase {
                     }
 
                     // test currency displayed in "Min Range" & "Max Range" fields is $
-                    $this->assertContains($this->_class_icon_dollar, $modal->attribute($this->_selector_modal_filter_field_min_value_icon, 'class'));
-                    $this->assertContains($this->_class_icon_dollar, $modal->attribute($this->_selector_modal_filter_field_max_value_icon, 'class'));
+                    $this->assertStringContainsString($this->_class_icon_dollar, $modal->attribute($this->_selector_modal_filter_field_min_value_icon, 'class'));
+                    $this->assertStringContainsString($this->_class_icon_dollar, $modal->attribute($this->_selector_modal_filter_field_max_value_icon, 'class'));
 
                     // select an account and confirm the name in the select changes
                     $account_type_to_select = $this->faker->randomElement($account_types);
@@ -425,12 +425,12 @@ class FilterModalTest extends DuskTestCase {
                     // test select account-type changes currency displayed in "Min Range" & "Max Range" fields
                     $account_from_account_type = collect($accounts)->where('id', '=', $account_type_to_select['account_id'])->first();
                     $fail_message = "account-type data:".json_encode($account_type_to_select)."\naccount data:".json_encode($account_from_account_type);
-                    $this->assertContains(
+                    $this->assertStringContainsString(
                         $this->getCurrencyClassFromCurrency($account_from_account_type['currency']),
                         $modal->attribute($this->_selector_modal_filter_field_min_value_icon, 'class'),
                         $fail_message
                     );
-                    $this->assertContains($this->getCurrencyClassFromCurrency($account_from_account_type['currency']),
+                    $this->assertStringContainsString($this->getCurrencyClassFromCurrency($account_from_account_type['currency']),
                         $modal->attribute($this->_selector_modal_filter_field_max_value_icon, 'class'),
                         $fail_message
                     );
@@ -656,8 +656,8 @@ class FilterModalTest extends DuskTestCase {
                         ->assertInputValue($this->_selector_modal_filter_field_min_value, "")
                         ->assertInputValue($this->_selector_modal_filter_field_max_value, "");
 
-                    $this->assertContains($this->_class_icon_dollar, $modal->attribute($this->_selector_modal_filter_field_min_value_icon, 'class'));
-                    $this->assertContains($this->_class_icon_dollar, $modal->attribute($this->_selector_modal_filter_field_max_value_icon, 'class'));
+                    $this->assertStringContainsString($this->_class_icon_dollar, $modal->attribute($this->_selector_modal_filter_field_min_value_icon, 'class'));
+                    $this->assertStringContainsString($this->_class_icon_dollar, $modal->attribute($this->_selector_modal_filter_field_max_value_icon, 'class'));
                 });
         });
     }
@@ -800,7 +800,7 @@ class FilterModalTest extends DuskTestCase {
 
                             case $this->_partial_selector_filter_tag:
                                 // only rows with .has-tags class
-                                $this->assertContains('has-tags', $table_row->getAttribute('class'));
+                                $this->assertStringContainsString('has-tags', $table_row->getAttribute('class'));
                                 // each row will contain the selected tag text
                                 $row_entry_tags = explode("\n", $table_row->findElement(WebDriverBy::cssSelector($this->_selector_table_row_tags))->getText());
                                 $filter_value_names = collect($filter_value)->pluck('name')->toArray();
@@ -816,29 +816,29 @@ class FilterModalTest extends DuskTestCase {
 
                             case $this->_selector_modal_filter_field_switch_income:
                                 // only rows with .is-income class
-                                $this->assertContains('is-income', $table_row->getAttribute('class'));
+                                $this->assertStringContainsString('is-income', $table_row->getAttribute('class'));
                                 break;
                             case $this->_selector_modal_filter_field_switch_expense:
                                 // only rows with .is-expense class
-                                $this->assertContains('is-expense', $table_row->getAttribute('class'));
+                                $this->assertStringContainsString('is-expense', $table_row->getAttribute('class'));
                                 break;
                             case $this->_selector_modal_filter_field_switch_has_attachment:
                                 // only rows with .has-attachments class
-                                $this->assertContains('has-attachments', $table_row->getAttribute('class'));
+                                $this->assertStringContainsString('has-attachments', $table_row->getAttribute('class'));
                                 break;
                             case $this->_selector_modal_filter_field_switch_no_attachment:
                                 // rows DO NOT CONTAIN .has-attachments class
-                                $this->assertNotContains('has-attachments', $table_row->getAttribute('class'));
+                                $this->assertStringNotContainsString('has-attachments', $table_row->getAttribute('class'));
                                 break;
                             case $this->_selector_modal_filter_field_switch_transfer:
                                 // only rows with .is-transfer class
-                                $this->assertContains('is-transfer', $table_row->getAttribute('class'));
+                                $this->assertStringContainsString('is-transfer', $table_row->getAttribute('class'));
                                 break;
                             case $this->_selector_modal_filter_field_switch_unconfirmed:
                                 // rows DO NOT CONTAIN .is-confirmed class
                                 $table_row_class = $table_row->getAttribute('class');
-                                $this->assertNotContains('is-confirmed', $table_row_class);
-                                $this->assertContains('has-background-warning', $table_row_class);
+                                $this->assertStringNotContainsString('is-confirmed', $table_row_class);
+                                $this->assertStringContainsString('has-background-warning', $table_row_class);
                                 break;
                             case $this->_selector_modal_filter_field_min_value:
                                 // only rows with value >= min_value
@@ -892,14 +892,14 @@ class FilterModalTest extends DuskTestCase {
                     // TODO: confirm "Overview (filtered)" is visible
                     // "overview" is NOT active
                     $overview_classes = $panel->attribute($this->_selector_panel_institutions_overview, 'class');
-                    $this->assertNotContains($this->_class_is_active, $overview_classes);
+                    $this->assertStringNotContainsString($this->_class_is_active, $overview_classes);
 
                     $panel
                         ->click("#institution-".$filter_value['institution_id'].' a')
                         ->pause(self::$WAIT_TWO_FIFTHS_OF_A_SECOND_IN_MILLISECONDS);
 
                     $account_classes = $panel->attribute('#account-'.$filter_value['id'].' '.$this->_selector_panel_institutions_accounts_account_name, 'class');
-                    $this->assertContains($this->_class_is_active, $account_classes);
+                    $this->assertStringContainsString($this->_class_is_active, $account_classes);
 
                     $selector = '#account-'.$filter_value['id'].' '.$this->_selector_panel_institutions_accounts_account_name.' span:first-child';
                     $account_name = $panel->text($selector);

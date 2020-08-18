@@ -47,7 +47,7 @@ class InstitutionsPanelTest extends DuskTestCase {
                         ->assertSeeIn($this->_selector_panel_institutions_overview, "Overview");
 
                     $overview_class = $panel->attribute($this->_selector_panel_institutions_overview, 'class');
-                    $this->assertContains($this->_class_is_active, $overview_class);
+                    $this->assertStringContainsString($this->_class_is_active, $overview_class);
                 });
         });
     }
@@ -74,7 +74,7 @@ class InstitutionsPanelTest extends DuskTestCase {
                         $panel->with('#institution-'.$active_institution['id'], function(Browser $institution_node) use ($active_institution, $accounts_collection, $account_types_collection){
                             // confirm "accordion" is closed
                             $open_close_node_class = $institution_node->attribute($this->_selector_panel_institutions_institution_open_close, 'class');
-                            $this->assertContains('fa-chevron-down', $open_close_node_class);
+                            $this->assertStringContainsString('fa-chevron-down', $open_close_node_class);
 
                             // confirm institution name is within collection
                             $institutions_node_name = $institution_node->text($this->_selector_panel_institutions_institution_name);
@@ -91,7 +91,7 @@ class InstitutionsPanelTest extends DuskTestCase {
 
                             // confirm "accordion" is open
                             $open_close_node_class = $institution_node->attribute($this->_selector_panel_institutions_institution_open_close, 'class');
-                            $this->assertContains('fa-chevron-up', $open_close_node_class);
+                            $this->assertStringContainsString('fa-chevron-up', $open_close_node_class);
 
                             $institution_accounts_collection = $accounts_collection
                                 ->where('disabled', false)
@@ -154,7 +154,7 @@ class InstitutionsPanelTest extends DuskTestCase {
 
                     // confirm "accordion" is closed
                     $open_close_node_class = $closed_accounts->attribute('span.panel-icon i', 'class');
-                    $this->assertContains('fa-chevron-up', $open_close_node_class);
+                    $this->assertStringContainsString('fa-chevron-up', $open_close_node_class);
 
                     $closed_accounts
                         // confirm accounts NOT visible
@@ -167,7 +167,7 @@ class InstitutionsPanelTest extends DuskTestCase {
 
                     // confirm "accordion" is open
                     $open_close_node_class = $closed_accounts->attribute('span.panel-icon i', 'class');
-                    $this->assertContains('fa-chevron-down', $open_close_node_class);
+                    $this->assertStringContainsString('fa-chevron-down', $open_close_node_class);
 
                     foreach($disabled_accounts_collection as $account_data){
                         $closed_accounts->with($this->_selector_panel_institutions_accounts.' #account-'.$account_data['id'], function(Browser $account_node) use ($account_data, $account_types_collection){
@@ -239,7 +239,7 @@ class InstitutionsPanelTest extends DuskTestCase {
     private function assertAccountNodeName(Browser $account_node, $account_name){
         // confirm account name is within collection
         $account_node_name = $account_node->text($this->_selector_panel_institutions_accounts_account_name.' span:first-child');
-        $this->assertContains($account_name, $account_node_name, "account name NOT found within institution-account node");
+        $this->assertStringContainsString($account_name, $account_node_name, "account name NOT found within institution-account node");
     }
 
     /**
@@ -261,9 +261,9 @@ class InstitutionsPanelTest extends DuskTestCase {
             foreach($account_types_collection as $account_account_type){
                 $account_type_record_tooltip_text = $account_account_type['name']." (".$account_account_type['last_digits'].")";
                 if($account_account_type['disabled']){
-                    $this->assertNotContains($account_type_record_tooltip_text, $account_types_tooltip_text);
+                    $this->assertStringNotContainsString($account_type_record_tooltip_text, $account_types_tooltip_text);
                 } else {
-                    $this->assertContains($account_type_record_tooltip_text, $account_types_tooltip_text);
+                    $this->assertStringContainsString($account_type_record_tooltip_text, $account_types_tooltip_text);
                 }
             }
         } else {
@@ -275,7 +275,7 @@ class InstitutionsPanelTest extends DuskTestCase {
 
         // account is NOT "active"
         $account_name_class = $account_node->attribute($this->_selector_panel_institutions_accounts_account_name, 'class');
-        $this->assertNotContains('is-active', $account_name_class);
+        $this->assertStringNotContainsString('is-active', $account_name_class);
     }
 
     /**
@@ -291,12 +291,12 @@ class InstitutionsPanelTest extends DuskTestCase {
         $account_node->resolver->prefix = $account_css_prefix;
         // account is "active"
         $account_name_class = $account_node->attribute($this->_selector_panel_institutions_accounts_account_name, 'class');
-        $this->assertContains('is-active', $account_name_class);
+        $this->assertStringContainsString('is-active', $account_name_class);
         // "overview" is NOT active
         $account_css_prefix = $account_node->resolver->prefix;
         $account_node->resolver->prefix = '';
         $overview_class = $account_node->attribute($this->_selector_panel_institutions.' '.$this->_selector_panel_institutions_overview, 'class');
-        $this->assertNotContains('is-active', $overview_class);
+        $this->assertStringNotContainsString('is-active', $overview_class);
         $account_node->resolver->prefix = $account_css_prefix;
 
         // entries table has been updated with entries associated with account

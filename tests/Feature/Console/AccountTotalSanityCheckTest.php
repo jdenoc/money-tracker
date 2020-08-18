@@ -29,8 +29,8 @@ class AccountTotalSanityCheckTest extends TestCase {
         Artisan::call($this->_command, array_merge(['--force-failure'=>true], $this->_screen_only_notification_options));
 
         $result_as_text = trim(Artisan::output());
-        $this->assertContains("Forcing Failure", $result_as_text);
-        $this->assertContains("Sanity check has failed", $result_as_text);
+        $this->assertStringContainsString("Forcing Failure", $result_as_text);
+        $this->assertStringContainsString("Sanity check has failed", $result_as_text);
     }
 
     public function testSanityCheckOutputtingToScreenAndWithoutNotifyingDiscord(){
@@ -45,7 +45,7 @@ class AccountTotalSanityCheckTest extends TestCase {
         Artisan::call($this->_command, $this->_screen_only_notification_options);
         $result_as_text = trim(Artisan::output());
         foreach($accounts as $account){
-            $this->assertContains(sprintf(self::$TEMPLATE_CHECKING_ACCOUNT_OK, $account->id), $result_as_text);
+            $this->assertStringContainsString(sprintf(self::$TEMPLATE_CHECKING_ACCOUNT_OK, $account->id), $result_as_text);
         }
     }
 
@@ -66,7 +66,7 @@ class AccountTotalSanityCheckTest extends TestCase {
 
         Artisan::call($this->_command, array_merge(['accountId'=>$account->id], $this->_screen_only_notification_options));
         $result_as_text = trim(Artisan::output());
-        $this->assertContains(sprintf(self::$TEMPLATE_CHECKING_ACCOUNT_OK, $account->id), $result_as_text);
+        $this->assertStringContainsString(sprintf(self::$TEMPLATE_CHECKING_ACCOUNT_OK, $account->id), $result_as_text);
     }
 
     public function testSanityCheckIndividualAccountIdNotFoundOutputtingToScreenAndWithoutNotifyingDiscord(){
@@ -75,7 +75,7 @@ class AccountTotalSanityCheckTest extends TestCase {
         $account_id = $this->faker->randomDigitNotNull;
         Artisan::call($this->_command, array_merge(['accountId'=>$account_id], $this->_screen_only_notification_options));
         $result_as_text = trim(Artisan::output());
-        $this->assertContains(sprintf(self::$TEMPLATE_ACCOUNT_NOT_FOUND, $account_id), $result_as_text);
+        $this->assertStringContainsString(sprintf(self::$TEMPLATE_ACCOUNT_NOT_FOUND, $account_id), $result_as_text);
     }
 
     public function testSanityCheckIndividualAccountIdZeroNotFoundOutputtingToScreenAndWithoutNotifyingDiscord(){
@@ -84,7 +84,7 @@ class AccountTotalSanityCheckTest extends TestCase {
         $account_id = 0;
         Artisan::call($this->_command, array_merge(['accountId'=>$account_id], $this->_screen_only_notification_options));
         $result_as_text = trim(Artisan::output());
-        $this->assertContains(sprintf(self::$TEMPLATE_ACCOUNT_NOT_FOUND, $account_id), $result_as_text);
+        $this->assertStringContainsString(sprintf(self::$TEMPLATE_ACCOUNT_NOT_FOUND, $account_id), $result_as_text);
     }
 
     public function testSanityCheckAccountsNotFoundOutputtingToScreenAndWithoutNotifyingDiscord(){
@@ -92,7 +92,7 @@ class AccountTotalSanityCheckTest extends TestCase {
 
         Artisan::call($this->_command, $this->_screen_only_notification_options);
         $result_as_text = trim(Artisan::output());
-        $this->assertContains("No accounts found", $result_as_text);
+        $this->assertStringContainsString("No accounts found", $result_as_text);
     }
 
     /**
