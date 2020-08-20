@@ -22,12 +22,12 @@
         <hr />
 
         <section class="section stats-results-summary" v-if="areEntriesAvailable && dataLoaded">
-            <div class="field is-pulled-right"><div class="control">
-                <input class="is-checkradio is-info is-small is-block" id="summary-chart-include-transfers" type="checkbox"
-                    v-model="includeTransfers"
-                />
-                <label for="summary-chart-include-transfers">Include Transfers</label>
-            </div></div>
+            <include-transfers-checkbox
+                chart-name="summary"
+                v-bind:include-transfers="includeTransfers"
+                v-on:update-checkradio="includeTransfers = $event"
+            >
+            </include-transfers-checkbox>
 
             <table class="table">
                 <caption class="subtitle is-5 has-text-left">Total Income/Expenses</caption>
@@ -84,6 +84,7 @@
 <script>
     import bulmaCalendar from '../bulma-calendar';
     import AccountAccountTypeTogglingSelector from "../account-account-type-toggling-selector";
+    import IncludeTransfersCheckbox from "../include-transfers-checkbox";
     import {Currency} from "../../currency";
 
     import {accountsObjectMixin} from "../../mixins/accounts-object-mixin";
@@ -94,7 +95,7 @@
     export default {
         name: "summary-chart",
         mixins: [statsChartMixin, entriesObjectMixin, accountsObjectMixin, accountTypesObjectMixin],
-        components: {AccountAccountTypeTogglingSelector, bulmaCalendar},
+        components: {IncludeTransfersCheckbox, AccountAccountTypeTogglingSelector, bulmaCalendar},
         data: function(){
           return {
               currencyObject: new Currency(),
