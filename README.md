@@ -355,6 +355,8 @@ php artisan dusk --stop-on-failure
 ## Other Documentation
 - [Laravel](https://laravel.com/docs/6.x/)
 - [VueJS](https://vuejs.org/v2/guide/)
+- [Bulma](https://bulma.io/documentation/)
+- [ChartJs](https://www.chartjs.org/)
 - [Docker](https://docs.docker.com/)
 - [Composer](https://getcomposer.org/doc/)
 - [Yarn](https://yarnpkg.com/en/docs)
@@ -362,4 +364,3 @@ php artisan dusk --stop-on-failure
 - [Laravel Dusk](https://laravel.com/docs/6.x/dusk)
 - [Travis CI](https://docs.travis-ci.com/user/languages/php/)
 - [git](https://git-scm.com/doc)
-- [ChartJs](https://www.chartjs.org/)

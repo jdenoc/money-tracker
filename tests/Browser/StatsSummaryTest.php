@@ -96,7 +96,8 @@ class StatsSummaryTest extends StatsBase {
             $browser
                 ->visit(new StatsPage())
                 ->assertVisible(self::$SELECTOR_STATS_RESULTS_SUMMARY)
-                ->assertSeeIn(self::$SELECTOR_STATS_RESULTS_SUMMARY, self::$LABEL_NO_STATS_DATA);
+                ->assertSeeIn(self::$SELECTOR_STATS_RESULTS_SUMMARY, self::$LABEL_NO_STATS_DATA)
+                ->assertMissing(self::$SELECTOR_STATS_CHECKBOX_INCLUDE_TRANSFERS_CHECKED);
         });
     }
 
@@ -104,17 +105,29 @@ class StatsSummaryTest extends StatsBase {
         //[$datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available]
         return [
             // defaults account/account-type & date-picker values
-            [null, null, false, false, false],  // test 4/25
+            [null, null, false, false, false, false],  // test 4/25
+            // defaults account/account-type & date-picker values & include transfers
+            [null, null, false, false, false, true],  // test 5/25
             // date-picker previous year start to present & default account/account-type
-            [$this->previous_year_start, $this->today, false, false, false],    // test 5/25
+            [$this->previous_year_start, $this->today, false, false, false, false],    // test 6/25
+            // date-picker previous year start to present & default account/account-type & include transfers
+            [$this->previous_year_start, $this->today, false, false, false, true],    // test 7/25
             // date-picker previous year start to present & random account
-            [$this->previous_year_start, $this->today, false, true, false],     // test 6/25
+            [$this->previous_year_start, $this->today, false, true, false, false],     // test 8/25
+            // date-picker previous year start to present & random account & include transfers
+            [$this->previous_year_start, $this->today, false, true, false, true],     // test 9/25
             // date-picker previous year start to present & random account-type
-            [$this->previous_year_start, $this->today, true, true, false],      // test 7/25
+            [$this->previous_year_start, $this->today, true, true, false, false],     // test 10/25
+            // date-picker previous year start to present & random account-type & include transfers
+            [$this->previous_year_start, $this->today, true, true, false, true],      // test 11/25
             // date-picker previous year start to present & random disabled account
-            [$this->previous_year_start, $this->today, false, true, false],     // test 8/25
+            [$this->previous_year_start, $this->today, false, true, false, false],    // test 12/25
+            // date-picker previous year start to present & random disabled account & include transfers
+            [$this->previous_year_start, $this->today, false, true, false, true],     // test 13/25
             // date-picker previous year start to present & random disabled account-type
-            [$this->previous_year_start, $this->today, true, true, false],      // test 9/25
+            [$this->previous_year_start, $this->today, true, true, false, false],     // test 14/25
+            // date-picker previous year start to present & random disabled account-type & include transfers
+            [$this->previous_year_start, $this->today, true, true, false, true],      // test 15/25
         ];
     }
 
@@ -126,17 +139,18 @@ class StatsSummaryTest extends StatsBase {
      * @param bool $is_switch_toggled
      * @param bool $is_random_selector_value
      * @param bool $are_disabled_select_options_available
+     * @param bool $include_transfers
      *
      * @throws Throwable
      *
      * @group stats-summary-1
      * test (see provider)/25
      */
-    public function testGenerateStatsTables($datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available){
+    public function testGenerateStatsTables($datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $include_transfers){
         $accounts = collect($this->getApiAccounts());
         $account_types = collect($this->getApiAccountTypes());
 
-        $this->browse(function (Browser $browser) use ($datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $accounts, $account_types){
+        $this->browse(function (Browser $browser) use ($datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $include_transfers, $accounts, $account_types){
             $filter_data = [];
 
             $browser
@@ -174,13 +188,24 @@ class StatsSummaryTest extends StatsBase {
             $browser
                 ->assertDontSeeIn(self::$SELECTOR_STATS_RESULTS_SUMMARY, self::$LABEL_NO_STATS_DATA)
 
-                ->with(self::$SELECTOR_STATS_RESULTS_SUMMARY, function(Browser $stats_results) use ($filter_data, $account_types, $accounts){
-                    $selector_table_total_income_expense = 'table:nth-child(1)';
-                    $selector_table_top_10_income_expense = 'table:nth-child(3)';
+                ->with(self::$SELECTOR_STATS_RESULTS_SUMMARY, function(Browser $stats_results) use ($filter_data, $include_transfers, $account_types, $accounts){
+                    $selector_table_total_income_expense = 'table:nth-child(2)';
+                    $selector_table_top_10_income_expense = 'table:nth-child(4)';
                     $selector_table_label = 'caption';
                     $selector_table_body_rows = 'tbody tr';
 
                     $entries = $this->getBatchedFilteredEntries($filter_data);
+                    $stats_results
+                        ->assertVisible(self::$SELECTOR_STATS_CHECKBOX_INCLUDE_TRANSFERS)
+                        ->assertSeeIn(self::$SELECTOR_STATS_CHECKBOX_INCLUDE_TRANSFERS, self::$LABEL_CHECKBOX_INCLUDES_TRANSFER)
+                        ->assertMissing(self::$SELECTOR_STATS_CHECKBOX_INCLUDE_TRANSFERS_CHECKED);
+                    if($include_transfers){
+                        $stats_results
+                            ->click(self::$SELECTOR_STATS_CHECKBOX_INCLUDE_TRANSFERS)
+                            ->assertVisible(self::$SELECTOR_STATS_CHECKBOX_INCLUDE_TRANSFERS_CHECKED);
+                    }
+                    $entries = $this->filterTransferEntries($entries, $include_transfers);
+
                     $stats_results
                         ->assertVisible($selector_table_total_income_expense)
                         ->with($selector_table_total_income_expense, function(Browser $table) use ($selector_table_label, $selector_table_body_rows, $entries, $accounts, $account_types){

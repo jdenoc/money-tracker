@@ -22,6 +22,13 @@
         <hr />
 
         <section class="section stats-results-summary" v-if="areEntriesAvailable && dataLoaded">
+            <div class="field is-pulled-right"><div class="control">
+                <input class="is-checkradio is-info is-small is-block" id="summary-chart-include-transfers" type="checkbox"
+                    v-model="includeTransfers"
+                />
+                <label for="summary-chart-include-transfers">Include Transfers</label>
+            </div></div>
+
             <table class="table">
                 <caption class="subtitle is-5 has-text-left">Total Income/Expenses</caption>
                 <thead>
@@ -145,6 +152,9 @@
 
                 // tally up values for total
                 this.largeBatchEntryData.forEach(function(datum){
+                    if(!this.includeTransfers && datum.is_transfer){
+                        return; // skip to next entry
+                    }
                     let accountCurrency = this.getAccountCurrencyFromAccountTypeId(datum.account_type_id);
                     if(datum.expense){
                         total[accountCurrency].expense += parseFloat(datum.entry_value);
@@ -179,7 +189,10 @@
                         e.entry_value = _.round(entry.entry_value, 2);
                         return e;
                     })
-                    .filter(function(datum){ return datum.expense === isExpense; });
+                    .filter(function(datum){ return datum.expense === isExpense; })
+                    .filter(function(datum){
+                        return this.includeTransfers || (!this.includeTransfers && !datum.is_transfer);
+                    }.bind(this));
             },
 
             getAccountCurrencyFromAccountTypeId: function(accountTypeId){

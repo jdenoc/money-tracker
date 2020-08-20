@@ -28,5 +28,9 @@
   }
   .section:last-child{
     padding-top: 0;
+
+    .is-checkradio.is-info.is-small.is-block:checked+label::after{
+      top: 0.4rem;
+    }
   }
 }

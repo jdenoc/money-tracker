@@ -3,7 +3,8 @@ import {SnotifyStyle} from "vue-snotify";
 export const statsChartMixin = {
     data: function(){
         return {
-            dataLoaded: false
+            dataLoaded: false,
+            includeTransfers: false,
         }
     },
 

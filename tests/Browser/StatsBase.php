@@ -10,6 +10,7 @@ use App\Traits\Tests\Dusk\BulmaDatePicker as DuskTraitBulmaDatePicker;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\StatsSidePanel as DuskTraitStatsSidePanel;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Collection;
 use Laravel\Dusk\Browser;
 use Tests\Browser\Pages\StatsPage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
@@ -32,10 +33,14 @@ class StatsBase extends DuskTestCase {
     protected static $SELECTOR_STATS_RESULTS_DISTRIBUTION = '.stats-results-distribution';
     protected static $SELECTOR_STATS_RESULTS_TAGS = '.stats-results-tags';
 
+    protected static $SELECTOR_STATS_CHECKBOX_INCLUDE_TRANSFERS = '.is-checkradio.is-info.is-small.is-block+label';
+    protected static $SELECTOR_STATS_CHECKBOX_INCLUDE_TRANSFERS_CHECKED = '.is-checkradio.is-info.is-small.is-block:checked+label';
+
     protected static $SELECTOR_BUTTON_GENERATE = '.generate-stats';
 
     protected static $LABEL_GENERATE_CHART_BUTTON = "Generate Chart";
     protected static $LABEL_NO_STATS_DATA = 'No data available';
+    protected static $LABEL_CHECKBOX_INCLUDES_TRANSFER = "Include Transfers";
 
     protected $today = '';
     protected $previous_year_start = '';
@@ -110,6 +115,19 @@ class StatsBase extends DuskTestCase {
         $entry = factory(Entry::class)->create($new_entry_data);
         if(!empty($filter_data[EntryController::FILTER_KEY_TAGS])){
             $entry->tags()->attach($filter_data[EntryController::FILTER_KEY_TAGS]);
+        }
+    }
+
+    /**
+     * @param Collection $entries
+     * @param bool $is_transfer
+     * @return Collection
+     */
+    protected function filterTransferEntries($entries, $is_transfer){
+        if(!$is_transfer){
+            return $entries->where('is_transfer', false);
+        } else {
+            return $entries;
         }
     }
 
