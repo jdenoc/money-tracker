@@ -98,7 +98,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
                         ->assertVisible($this->_selector_modal_btn_close);
 
                     $entry_confirm_class = $entry_modal_head->attribute($this->_selector_modal_entry_btn_confirmed_label, 'class');
-                    $this->assertContains('has-text-grey-light', $entry_confirm_class);
+                    $this->assertStringContainsString('has-text-grey-light', $entry_confirm_class);
                 });
         });
     }
@@ -141,8 +141,8 @@ class EntryModalNewEntryTest extends DuskTestCase {
                         ->assertChecked($this->_selector_modal_entry_btn_confirmed);
 
                     $classes = $entry_modal_head->attribute($this->_selector_modal_entry_btn_confirmed_label, "class");
-                    $this->assertContains("has-text-white", $classes);
-                    $this->assertNotContains("has-text-grey-light", $classes);
+                    $this->assertStringContainsString("has-text-white", $classes);
+                    $this->assertStringNotContainsString("has-text-grey-light", $classes);
                 });
         });
     }
@@ -227,7 +227,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
                         ->assertVisible($this->_selector_modal_entry_btn_save)     // save button
                         ->assertSee($this->_label_btn_save);
 
-                    $this->assertContains(
+                    $this->assertStringContainsString(
                         'is-success',
                         $entry_modal_foot->attribute($this->_selector_modal_entry_btn_save, 'class'),
                         "Save button should have 'is-success' class"
@@ -313,7 +313,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
                 ->with($this->_selector_modal_body, function(Browser $entry_modal_body){
                     // currency icon in input#entry-value is "$"
                     $entry_value_currency = $entry_modal_body->attribute($this->_selector_modal_entry_field_value." + .icon.is-left i", 'class');
-                    $this->assertContains($this->_class_icon_dollar, $entry_value_currency);
+                    $this->assertStringContainsString($this->_class_icon_dollar, $entry_value_currency);
                     // don't see account meta
                     $entry_modal_body
                         ->assertDontSee($this->_label_account_type_meta_account_name)
@@ -380,8 +380,8 @@ class EntryModalNewEntryTest extends DuskTestCase {
                         ->assertVisible($this->_selector_modal_entry_meta);
 
                     $meta_text_color = $entry_modal_body->attribute($this->_selector_modal_entry_meta, 'class');
-                    $this->assertNotContains('has-text-info', $meta_text_color);
-                    $this->assertContains('has-text-grey-light', $meta_text_color);
+                    $this->assertStringNotContainsString('has-text-info', $meta_text_color);
+                    $this->assertStringContainsString('has-text-grey-light', $meta_text_color);
 
                     $entry_modal_body
                         ->select($this->_selector_modal_entry_field_account_type, '')
@@ -419,19 +419,19 @@ class EntryModalNewEntryTest extends DuskTestCase {
                     ->with($this->_selector_modal_body, function(Browser $entry_modal_body) use ($account_type, $currency_class){
                         // currency icon in input#entry-value is "$" by default
                         $entry_value_currency = $entry_modal_body->attribute($this->_selector_modal_entry_field_value." + .icon.is-left i", 'class');
-                        $this->assertContains($this->_class_icon_dollar, $entry_value_currency);
+                        $this->assertStringContainsString($this->_class_icon_dollar, $entry_value_currency);
 
                         $entry_modal_body
                             ->assertVisible($this->_selector_modal_entry_field_account_type)
                             ->select($this->_selector_modal_entry_field_account_type, $account_type['id']);
 
                         $entry_value_currency = $entry_modal_body->attribute($this->_selector_modal_entry_field_value." + .icon.is-left i", 'class');
-                        $this->assertContains($currency_class, $entry_value_currency);
+                        $this->assertStringContainsString($currency_class, $entry_value_currency);
 
                         // revert account-type select field to default state
                         $entry_modal_body->select($this->_selector_modal_entry_field_account_type, '');
                         $entry_value_currency = $entry_modal_body->attribute($this->_selector_modal_entry_field_value." + .icon.is-left i", 'class');
-                        $this->assertContains($this->_class_icon_dollar, $entry_value_currency);
+                        $this->assertStringContainsString($this->_class_icon_dollar, $entry_value_currency);
                     });
             });
 

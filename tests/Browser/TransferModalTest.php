@@ -9,7 +9,7 @@ use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
 use App\Traits\Tests\Dusk\Notification as DuskTraitNotification;
 use Facebook\WebDriver\WebDriverBy;
-use Faker\Factory as FakerFactory;
+use Illuminate\Foundation\Testing\WithFaker;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Laravel\Dusk\Browser;
@@ -31,6 +31,8 @@ class TransferModalTest extends DuskTestCase {
     use DuskTraitLoading;
     use DuskTraitNavbar;
     use DuskTraitNotification;
+
+    use WithFaker;
 
     private $method_to = 'to';
     private $method_from = 'from';
@@ -246,9 +248,8 @@ class TransferModalTest extends DuskTestCase {
      * test 10/25
      */
     public function testFillFieldsToEnabledSaveButton(){
-        $faker = FakerFactory::create();
         $all_account_types = $this->getApiAccountTypes();
-        $account_types = $faker->randomElements($all_account_types, 2);
+        $account_types = $this->faker->randomElements($all_account_types, 2);
 
         $this->browse(function(Browser $browser) use ($account_types){
             $browser->visit(new HomePage());
@@ -404,8 +405,8 @@ class TransferModalTest extends DuskTestCase {
                         ->assertVisible($selector_meta);
 
                     $meta_text_color = $entry_modal_body->attribute($selector_meta, 'class');
-                    $this->assertNotContains('has-text-info', $meta_text_color);
-                    $this->assertContains('has-text-grey-light', $meta_text_color);
+                    $this->assertStringNotContainsString('has-text-info', $meta_text_color);
+                    $this->assertStringContainsString('has-text-grey-light', $meta_text_color);
 
                     $entry_modal_body
                         ->select($selector_field, '')
@@ -435,16 +436,15 @@ class TransferModalTest extends DuskTestCase {
      * test (see provider)/25
      */
     public function testResetTransferModalFields($has_tags, $has_attachments){
-        $faker = FakerFactory::create();
         $all_account_types = $this->getApiAccountTypes();
-        $account_types = $faker->randomElements($all_account_types, 2);
+        $account_types = $this->faker->randomElements($all_account_types, 2);
 
-        $this->browse(function(Browser $browser) use ($account_types, $faker, $has_tags, $has_attachments){
+        $this->browse(function(Browser $browser) use ($account_types, $has_tags, $has_attachments){
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $this->openTransferModal($browser);
             $browser
-                ->with($this->_selector_modal_transfer, function($modal) use ($faker, $account_types){
+                ->with($this->_selector_modal_transfer, function($modal) use ($account_types){
                     $modal
                         // make sure (almost) all the fields are empty first
                         ->assertInputValue($this->_selector_modal_transfer_field_date, date('Y-m-d'))
@@ -465,7 +465,7 @@ class TransferModalTest extends DuskTestCase {
                 if($has_tags){
                     // select tag at random and input the first character into the tags-input field
                     $tags = $this->getApiTags();
-                    $tag = $faker->randomElement($tags);
+                    $tag = $this->faker->randomElement($tags);
 
                     $this->fillTagsInputUsingAutocomplete($browser, $tag['name']);
                 }
@@ -531,15 +531,13 @@ class TransferModalTest extends DuskTestCase {
      * test (see provider)/25
      */
     public function testSaveTransferEntry($is_to_account_external, $is_from_account_external, $has_tags, $has_attachments){
-        $faker = FakerFactory::create();
-
-        $this->browse(function(Browser $browser) use ($is_to_account_external, $is_from_account_external, $has_tags, $has_attachments, $faker){
+        $this->browse(function(Browser $browser) use ($is_to_account_external, $is_from_account_external, $has_tags, $has_attachments){
             $all_account_types = $this->getApiAccountTypes();
-            $account_types = $faker->randomElements($all_account_types, 2);
+            $account_types = $this->faker->randomElements($all_account_types, 2);
             $tag = '';
             if($has_tags){
                 $all_tags = $this->getApiTags();
-                $tag = $faker->randomElement($all_tags);
+                $tag = $this->faker->randomElement($all_tags);
                 $tag = $tag['name'];
             }
 
@@ -549,8 +547,8 @@ class TransferModalTest extends DuskTestCase {
 
             // generate some test values
             $transfer_entry_data = [
-                'memo'=>"Test transfer - save".($has_tags?" w/ tags":'').($has_attachments?" w/ attachments":'').' - '.$faker->uuid,
-                'value'=>$faker->randomFloat(2, 0, 100),
+                'memo'=>"Test transfer - save".($has_tags?" w/ tags":'').($has_attachments?" w/ attachments":'').' - '.$this->faker->uuid,
+                'value'=>$this->faker->randomFloat(2, 0, 100),
                 'from_account_type_id'=>($is_from_account_external ? EntryController::TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID : $account_types[0]['id']),
                 'to_account_type_id'=>($is_to_account_external ? EntryController::TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID : $account_types[1]['id']),
                 'tag'=>$tag,

@@ -11,7 +11,7 @@ class UiSampleDatabaseSeeder extends Seeder {
     use App\Traits\Tests\StorageTestFiles;
     use WithFaker;
 
-    const OUTPUT_PREFIX = "<info>".__CLASS__.":</info> ";
+    const CLI_OUTPUT_PREFIX = "<info>".__CLASS__.":</info> ";
 
     const COUNT_ACCOUNT_TYPE = 3;
     const COUNT_ATTACHMENT = 4;
@@ -33,12 +33,12 @@ class UiSampleDatabaseSeeder extends Seeder {
         // ***** TAGS *****
         $tags = factory(App\Tag::class, self::COUNT_TAG)->create();
         $tag_ids = $tags->pluck('id')->toArray();
-        $this->command->line(self::OUTPUT_PREFIX."Tags seeded [".$tags->count()."]");
+        $this->command->line(self::CLI_OUTPUT_PREFIX."Tags seeded [".$tags->count()."]");
 
         // ***** INSTITUTIONS *****
         $institutions = factory(App\Institution::class, self::COUNT_INSTITUTION)->create(['active'=>1]);
         $institution_ids = $institutions->pluck('id')->toArray();
-        $this->command->line(self::OUTPUT_PREFIX."Institutions seeded [".$institutions->count()."]");
+        $this->command->line(self::CLI_OUTPUT_PREFIX."Institutions seeded [".$institutions->count()."]");
 
         // ***** ACCOUNTS *****
         $accounts = collect();
@@ -50,7 +50,7 @@ class UiSampleDatabaseSeeder extends Seeder {
         foreach($currencies as $currency){
             $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$this->faker->randomElement($institution_ids), 'currency'=>$currency->code]);
         }
-        $this->command->line(self::OUTPUT_PREFIX."Accounts seeded [".$accounts->count()."]");
+        $this->command->line(self::CLI_OUTPUT_PREFIX."Accounts seeded [".$accounts->count()."]");
 
         // ***** ACCOUNT-TYPES *****
         $account_types = collect();
@@ -59,7 +59,7 @@ class UiSampleDatabaseSeeder extends Seeder {
         }
         $account_types = $this->addAccountTypeToCollection($account_types, ['account_id'=>$accounts->where('disabled', false)->pluck('id')->random(), 'disabled'=>true]);
         $account_types = $this->addAccountTypeToCollection($account_types, ['account_id'=>$accounts->where('disabled', true)->pluck('id')->random(), 'disabled'=>true]);
-        $this->command->line(self::OUTPUT_PREFIX."Account-types seeded [".$account_types->count()."]");
+        $this->command->line(self::CLI_OUTPUT_PREFIX."Account-types seeded [".$account_types->count()."]");
 
         // ***** ENTRIES *****
         $entries = collect();
@@ -73,7 +73,7 @@ class UiSampleDatabaseSeeder extends Seeder {
         }
         $entries = $this->addEntryToCollection($entries, ['account_type_id'=>$account_types->pluck('id')->random(), 'disabled'=>false, 'entry_date'=>$entry_date_generator->now()]);
         $entries = $this->addEntryToCollection($entries, ['account_type_id'=>$account_types->pluck('id')->random(), 'disabled'=>true, 'disabled_stamp'=>$entry_date_generator->now()]);
-        $this->command->line(self::OUTPUT_PREFIX."Entries seeded [".$entries->count()."]");
+        $this->command->line(self::CLI_OUTPUT_PREFIX."Entries seeded [".$entries->count()."]");
 
         foreach($entries as $entry){
             if($this->faker->boolean){    // randomly assign tags to entries
@@ -87,11 +87,11 @@ class UiSampleDatabaseSeeder extends Seeder {
         $entries_not_confirmed = $entries_not_disabled->where('confirm', 0);
 
         // just in case we missed an entry necessary for testing, we're going to assign tags to random confirmed & unconfirmed entries
-        $this->attachTagToEntry($tag_ids, $entries_not_confirmed->where('expense', 1)->random());
-        $this->attachTagToEntry($tag_ids, $entries_not_confirmed->where('expense', 0)->random());
-        $this->attachTagToEntry($tag_ids, $entries_confirmed->where('expense', 1)->random());
-        $this->attachTagToEntry($tag_ids, $entries_confirmed->where('expense', 0)->random());
-        $this->command->line(self::OUTPUT_PREFIX."Randomly assigned tags to entries");
+        $this->attachTagToEntry($tag_ids, $entries_not_confirmed->where('expense', 1)->sortByDesc('entry_date')->chunk(EntryController::MAX_ENTRIES_IN_RESPONSE/2)->first()->random());
+        $this->attachTagToEntry($tag_ids, $entries_not_confirmed->where('expense', 0)->sortByDesc('entry_date')->chunk(EntryController::MAX_ENTRIES_IN_RESPONSE/2)->first()->random());
+        $this->attachTagToEntry($tag_ids, $entries_confirmed->where('expense', 1)->sortByDesc('entry_date')->chunk(EntryController::MAX_ENTRIES_IN_RESPONSE/2)->first()->random());
+        $this->attachTagToEntry($tag_ids, $entries_confirmed->where('expense', 0)->sortByDesc('entry_date')->chunk(EntryController::MAX_ENTRIES_IN_RESPONSE/2)->first()->random());
+        $this->command->line(self::CLI_OUTPUT_PREFIX."Randomly assigned tags to entries");
 
         // randomly select some entries and mark them as transfers
         $transfer_to_entries = $entries_not_disabled->where('expense', 0)->random(self::COUNT_ENTRY);
@@ -113,7 +113,7 @@ class UiSampleDatabaseSeeder extends Seeder {
             ->random();
         $external_transfer_entry->transfer_entry_id = EntryController::TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
         $external_transfer_entry->save();
-        $this->command->line(self::OUTPUT_PREFIX."Randomly marked entries as transfers");
+        $this->command->line(self::CLI_OUTPUT_PREFIX."Randomly marked entries as transfers");
 
         // assign attachments to entries. if entry is a "transfer", then add an attachment of the same name to its counterpart
         for($attachment_i=0; $attachment_i<self::COUNT_ATTACHMENT; $attachment_i++){
@@ -124,7 +124,7 @@ class UiSampleDatabaseSeeder extends Seeder {
             $entry_expense_ids = $entries_not_disabled->where('expense', 1)->pluck('id');
             $this->assignAttachmentToEntry($entry_expense_ids->random(), $transfer_from_entries->pluck('id')->toArray(), $entries);
         }
-        $this->command->line(self::OUTPUT_PREFIX."Randomly assigned Attachments to entries");
+        $this->command->line(self::CLI_OUTPUT_PREFIX."Randomly assigned Attachments to entries");
 
         // income confirmed
         $this->assignAttachmentToEntry(
@@ -162,7 +162,7 @@ class UiSampleDatabaseSeeder extends Seeder {
             $transfer_from_entries->pluck('id')->toArray(),
             $entries
         );
-        $this->command->line(self::OUTPUT_PREFIX."Assigned Attachments to all varieties of entries [".$this->attachment_stored_count."]");
+        $this->command->line(self::CLI_OUTPUT_PREFIX."Assigned Attachments to all varieties of entries [".$this->attachment_stored_count."]");
     }
 
     /**

@@ -57,6 +57,7 @@ class NotificationsTest extends DuskTestCase {
         $this->browse(function (Browser $browser) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
+            $this->assertBrandImageVisible($browser);   // make sure that other elements are also visible
             $browser->assertMissing(self::$SELECTOR_NOTIFICATION);
         });
     }
@@ -146,19 +147,24 @@ class NotificationsTest extends DuskTestCase {
     public function testNotificationDeleteAttachment404(){
         // TODO: write me...
         $this->markTestIncomplete();
+
         $this->browse(function (Browser $browser) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
 
             $browser
                 ->openExistingEntryModal($this->getEntryTableRowSelector().'.has-attachments')
-                ->with($this->_selector_modal_body, static function(){
-                    // TODO: FORCE 404 from `DELETE /api/attachment/{uuid}`
-                    $attachment_uuid = '';  // TODO: get attachment UUID
-                    DB::table('attachments')->where('uuid', $attachment_uuid)->delete();
-                    // TODO: click the "delete" attachment button
+                ->with($this->_selector_modal_body, function(Browser $entry_modal){
+                    // FORCE 404 from `DELETE /api/attachment/{uuid}`
+                    DB::table('attachments')->truncate();
+                    $entry_modal->with($this->_selector_modal_entry_existing_attachments, function(Browser $existing_attachment){
+                        $existing_attachment
+                            ->assertVisible($this->_selector_modal_entry_existing_attachments_attachment_btn_delete)
+                            ->click($this->_selector_modal_entry_existing_attachments_attachment_btn_delete)
+                            ->assertDialogOpened("Are you sure you want to delete attachment: ")
+                            ->acceptDialog();
+                    });
                 });
-
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_WARNING, "Could not delete attachment");
         });
     }
