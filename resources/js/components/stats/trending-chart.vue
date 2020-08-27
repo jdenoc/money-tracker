@@ -22,7 +22,13 @@
 
         <hr />
 
-        <section v-if="areEntriesAvailable" class="section stats-results-trending">
+        <section v-if="areEntriesAvailable && dataLoaded" class="section stats-results-trending">
+            <include-transfers-checkbox
+                chart-name="trending"
+                v-bind:include-transfers="includeTransfers"
+                v-on:update-checkradio="includeTransfers = $event"
+            ></include-transfers-checkbox>
+            <!-- TODO: redraw chart when includeTransfers changes -->
             <line-chart
                 v-if="dataLoaded"
                 v-bind:chart-data="this.chartData"
@@ -38,6 +44,7 @@
 <script>
     import AccountAccountTypeTogglingSelector from "../account-account-type-toggling-selector";
     import BulmaCalendar from "../bulma-calendar";
+    import IncludeTransfersCheckbox from "../include-transfers-checkbox";
     import LineChart from "./chart-defaults/line-chart";
     import {entriesObjectMixin} from "../../mixins/entries-object-mixin";
     import {statsChartMixin} from "../../mixins/stats-chart-mixin";
@@ -45,7 +52,7 @@
     export default {
         name: "trending-chart",
         mixins: [entriesObjectMixin, statsChartMixin],
-        components: {BulmaCalendar, LineChart, AccountAccountTypeTogglingSelector},
+        components: {IncludeTransfersCheckbox, BulmaCalendar, LineChart, AccountAccountTypeTogglingSelector},
         data: function(){
             return {
                 chartConfig: {
@@ -108,6 +115,7 @@
             },
             chartOptions: function(){
                 return {
+                    responsive: true,
                     maintainAspectRatio: false,
                     title: {
                         display: true,
@@ -144,6 +152,11 @@
                 this.largeBatchEntryData
                     .filter(function(chartDatum){ return chartDatum.expense === isExpense })
                     .forEach(function(datum){
+                      // TODO: take into account external transfers (e.g.: transfer_entry_id=0)
+                        if(!this.includeTransfers && datum.is_transfer){
+                            return; // skip to next entry
+                        }
+
                         // condense data points with similar entry_date values
                         let key = datum.entry_date;
                         if(!standardisedChartData.hasOwnProperty(key)){
@@ -151,7 +164,7 @@
                         }
                         standardisedChartData[key].y += parseFloat(datum.entry_value);
                         standardisedChartData[key].y = _.round(standardisedChartData[key].y, 2);
-                    });
+                    }.bind(this));
 
                 return _.sortBy(
                     Object.values(standardisedChartData),

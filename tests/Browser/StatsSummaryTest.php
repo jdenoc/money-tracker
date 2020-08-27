@@ -96,8 +96,8 @@ class StatsSummaryTest extends StatsBase {
             $browser
                 ->visit(new StatsPage())
                 ->assertVisible(self::$SELECTOR_STATS_RESULTS_SUMMARY)
-                ->assertSeeIn(self::$SELECTOR_STATS_RESULTS_SUMMARY, self::$LABEL_NO_STATS_DATA)
-                ->assertMissing(self::$SELECTOR_STATS_CHECKBOX_INCLUDE_TRANSFERS_CHECKED);
+                ->assertSeeIn(self::$SELECTOR_STATS_RESULTS_SUMMARY, self::$LABEL_NO_STATS_DATA);
+            $this->assertIncludeTransfersCheckboxButtonNotVisible($browser);
         });
     }
 
@@ -195,16 +195,13 @@ class StatsSummaryTest extends StatsBase {
                     $selector_table_body_rows = 'tbody tr';
 
                     $entries = $this->getBatchedFilteredEntries($filter_data);
-                    $stats_results
-                        ->assertVisible(self::$SELECTOR_STATS_CHECKBOX_INCLUDE_TRANSFERS)
-                        ->assertSeeIn(self::$SELECTOR_STATS_CHECKBOX_INCLUDE_TRANSFERS, self::$LABEL_CHECKBOX_INCLUDES_TRANSFER)
-                        ->assertMissing(self::$SELECTOR_STATS_CHECKBOX_INCLUDE_TRANSFERS_CHECKED);
-                    if($include_transfers){
-                        $stats_results
-                            ->click(self::$SELECTOR_STATS_CHECKBOX_INCLUDE_TRANSFERS)
-                            ->assertVisible(self::$SELECTOR_STATS_CHECKBOX_INCLUDE_TRANSFERS_CHECKED);
-                    }
                     $entries = $this->filterTransferEntries($entries, $include_transfers);
+
+                    $this->assertIncludeTransfersCheckboxButtonDefaultState($stats_results);
+                    if($include_transfers){
+                        $this->clickIncludeTransfersCheckboxButton($stats_results);
+                        $this->assertIncludesTransfersCheckboxButtonStateActive($stats_results);
+                    }
 
                     $stats_results
                         ->assertVisible($selector_table_total_income_expense)

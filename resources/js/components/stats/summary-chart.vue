@@ -153,6 +153,7 @@
 
                 // tally up values for total
                 this.largeBatchEntryData.forEach(function(datum){
+                  // TODO: take into account external transfers (e.g.: transfer_entry_id=0)
                     if(!this.includeTransfers && datum.is_transfer){
                         return; // skip to next entry
                     }
@@ -192,6 +193,7 @@
                     })
                     .filter(function(datum){ return datum.expense === isExpense; })
                     .filter(function(datum){
+                      // TODO: take into account external transfers (e.g.: transfer_entry_id=0)
                         return this.includeTransfers || (!this.includeTransfers && !datum.is_transfer);
                     }.bind(this));
             },

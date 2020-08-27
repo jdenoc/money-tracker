@@ -1021,7 +1021,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     }
 
     /**
-     * @param bool $get_id
+     * @param int|bool $get_id
      * @return string
      */
     private function randomConfirmedEntrySelector($get_id=false){

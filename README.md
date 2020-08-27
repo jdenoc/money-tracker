@@ -266,7 +266,7 @@ git fetch --tags
 MOST_RECENT_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
 git checkout -q tags/$MOST_RECENT_TAG
 ```
-- <a name="prod-updates-2a">Step 2.a</a>
+- <a name="prod-updates-2a">Step 2.a</a> <small>_(optional)_</small>
 ```
 # *** OPTIONAL ***
 # Edit .env file
@@ -274,21 +274,21 @@ git checkout -q tags/$MOST_RECENT_TAG
 cp .env .env.bkup
 # Perform modifications described in release notes.
 ```
-- <a name="prod-updates-2b">Step 2.b</a>
+- <a name="prod-updates-2b">Step 2.b</a> <small>_(optional)_</small>
 ```
 # *** OPTIONAL ***
 # New/Updates to composer packages
 # Note: check update release notes. 
 composer update --no-dev -o
 ```
-- <a name="prod-updates-2c">Step 2.c</a>
+- <a name="prod-updates-2c">Step 2.c</a> <small>_(optional)_</small>
 ```
 # *** OPTIONAL ***
 # New/Updates to yarn packages
 # Note: check update release notes. 
 yarn install
 ```
-- <a name="prod-updates-2d">Step 2.d</a>
+- <a name="prod-updates-2d">Step 2.d</a> <small>_(optional)_</small>
 ```
 # *** OPTIONAL ***
 # Database updates
