@@ -17,5 +17,6 @@ public/vue
 
 .env
 phpunit.dusk.xml
+.phpunit.result.cache
 _ide_helper*.php
 .phpstorm.meta.php

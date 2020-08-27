@@ -134,13 +134,13 @@ class StatsDistributionTest extends StatsBase {
             [$this->previous_year_start, $this->today, true, false, true, false],   // test 10/25
             // random account-type; income; date range a year past to today
             [$this->previous_year_start, $this->today, true, true, true, false],    // test 11/25
-            // random disabled account; expense; date range a year past to today
+            // random (possibly) disabled account; expense; date range a year past to today
             [$this->previous_year_start, $this->today, false, false, true, true],   // test 12/25
-            // random disabled account; income; date range a year past to today
+            // random (possibly) disabled account; income; date range a year past to today
             [$this->previous_year_start, $this->today, false, true, true, true],    // test 13/25
-            // random disabled account-type; expense; date range a year past to today
+            // random (possibly) disabled account-type; expense; date range a year past to today
             [$this->previous_year_start, $this->today, true, false, true, true],    // test 14/25
-            // random disabled account-type; income; date range a year past to today
+            // random (possibly) disabled account-type; income; date range a year past to today
             [$this->previous_year_start, $this->today, true, true, true, true],     // test 15/25
         ];
     }
