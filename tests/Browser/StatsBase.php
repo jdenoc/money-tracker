@@ -92,7 +92,7 @@ class StatsBase extends DuskTestCase {
         $new_entry_data['entry_date'] = $this->faker
             ->dateTimeBetween($filter_data[EntryController::FILTER_KEY_START_DATE], $filter_data[EntryController::FILTER_KEY_END_DATE])
             ->format("Y-m-d");
-        if(!empty($filter_data[EntryController::FILTER_KEY_EXPENSE])){
+        if(isset($filter_data[EntryController::FILTER_KEY_EXPENSE])){
             $new_entry_data['expense'] = $filter_data[EntryController::FILTER_KEY_EXPENSE];
         }
 
