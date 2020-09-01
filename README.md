@@ -311,6 +311,7 @@ php artisan app:version $MOST_RECENT_TAG
 
 # setup new cache
 php artisan config:cache
+php artisan view:cache
 ```
 - <a name="prod-updates-5">Step 5</a>
 ```
