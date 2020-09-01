@@ -64,10 +64,6 @@
         components: {AccountAccountTypeTogglingSelector, BarChart, BulmaCalendar, VoerroTagsInput},
         data: function(){
             return {
-                chartConfig: {
-                    titleText: "Generated data"
-                },
-
                 accountOrAccountTypeToggle: true,
                 accountOrAccountTypeId: '',
                 chartTagIds: []

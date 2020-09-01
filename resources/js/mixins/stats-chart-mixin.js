@@ -5,6 +5,10 @@ export const statsChartMixin = {
         return {
             dataLoaded: false,
             includeTransfers: false,
+
+            chartConfig: {
+                titleText: "Generated data"
+            },
         }
     },
 

@@ -98,6 +98,7 @@
         components: {IncludeTransfersCheckbox, AccountAccountTypeTogglingSelector, bulmaCalendar},
         data: function(){
           return {
+              chartConfig: { titleText: null},
               currencyObject: new Currency(),
 
               accountOrAccountTypeToggle: true,

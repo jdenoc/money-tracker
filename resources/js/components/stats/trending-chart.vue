@@ -63,8 +63,7 @@
                     datasetDefault: {
                         fill: false
                     },
-                    timeUnit: 'day',
-                    titleText: "Generated data"
+                    timeUnit: 'day'
                 },
 
                 accountOrAccountTypeToggle: true,

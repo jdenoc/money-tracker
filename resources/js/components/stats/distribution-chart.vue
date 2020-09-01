@@ -69,9 +69,6 @@
         components: {IncludeTransfersCheckbox, AccountAccountTypeTogglingSelector, bulmaCalendar, PieChart, ToggleButton},
         data: function(){
             return {
-                chartConfig: {
-                    titleText: "Generated data"
-                },
                 expenseOrIncomeToggle: true,
                 accountOrAccountTypeToggle: true,
                 accountOrAccountTypeId: '',
