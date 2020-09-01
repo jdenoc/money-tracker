@@ -152,18 +152,16 @@
                     });
 
                 // tally up values for total
-                this.largeBatchEntryData.forEach(function(datum){
-                  // TODO: take into account external transfers (e.g.: transfer_entry_id=0)
-                    if(!this.includeTransfers && datum.is_transfer){
-                        return; // skip to next entry
-                    }
-                    let accountCurrency = this.getAccountCurrencyFromAccountTypeId(datum.account_type_id);
-                    if(datum.expense){
-                        total[accountCurrency].expense += parseFloat(datum.entry_value);
-                    } else {
-                        total[accountCurrency].income += parseFloat(datum.entry_value);
-                    }
-                }.bind(this));
+                this.largeBatchEntryData
+                    .filter(this.filterIncludeTransferEntries)
+                    .forEach(function(datum){
+                        let accountCurrency = this.getAccountCurrencyFromAccountTypeId(datum.account_type_id);
+                        if(datum.expense){
+                            total[accountCurrency].expense += parseFloat(datum.entry_value);
+                        } else {
+                            total[accountCurrency].income += parseFloat(datum.entry_value);
+                        }
+                    }.bind(this));
 
                 // prune empty currencies
                 Object.keys(total).map(function(currency, index) {
@@ -186,16 +184,13 @@
             },
             filteredEntries: function(isExpense){
                 return this.largeBatchEntryData
+                    .filter(this.filterIncludeTransferEntries)
+                    .filter(function(datum){ return datum.expense === isExpense; })
                     .map(function(entry){
                         let e = _.clone(entry);
                         e.entry_value = _.round(entry.entry_value, 2);
                         return e;
-                    })
-                    .filter(function(datum){ return datum.expense === isExpense; })
-                    .filter(function(datum){
-                      // TODO: take into account external transfers (e.g.: transfer_entry_id=0)
-                        return this.includeTransfers || (!this.includeTransfers && !datum.is_transfer);
-                    }.bind(this));
+                    });
             },
 
             getAccountCurrencyFromAccountTypeId: function(accountTypeId){

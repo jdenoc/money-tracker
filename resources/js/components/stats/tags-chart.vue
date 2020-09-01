@@ -36,7 +36,7 @@
 
         <hr />
 
-        <section v-if="areEntriesAvailable" class="section stats-results-tags">
+        <section v-if="areEntriesAvailable && dataLoaded" class="section stats-results-tags">
             <bar-chart
                 v-if="dataLoaded"
                 v-bind:chart-data="this.chartData"
@@ -116,6 +116,7 @@
                 let standardisedChartData = {};
 
                 this.largeBatchEntryData
+                    .filter(this.filterIncludeTransferEntries)
                     .forEach(function(entryDatum){
                         let tempDatum = _.cloneDeep(entryDatum);
                         if(tempDatum.tags.length === 0){

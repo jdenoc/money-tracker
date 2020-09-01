@@ -222,7 +222,7 @@ class StatsTrendingTest extends StatsBase {
      * @throws Throwable
      *
      * @group stats-trending-1
-     * test 10/25
+     * test 16/25
      */
     public function testGeneratingATrendingChartWontCauseSummaryTablesToBecomeVisible(){
         $this->generatingADifferentChartWontCauseSummaryTablesToBecomeVisible(

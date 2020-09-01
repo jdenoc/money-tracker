@@ -150,13 +150,9 @@
             standardiseData: function(isExpense){
                 let standardisedChartData = [];
                 this.largeBatchEntryData
+                    .filter(this.filterIncludeTransferEntries)
                     .filter(function(chartDatum){ return chartDatum.expense === isExpense })
                     .forEach(function(datum){
-                      // TODO: take into account external transfers (e.g.: transfer_entry_id=0)
-                        if(!this.includeTransfers && datum.is_transfer){
-                            return; // skip to next entry
-                        }
-
                         // condense data points with similar entry_date values
                         let key = datum.entry_date;
                         if(!standardisedChartData.hasOwnProperty(key)){

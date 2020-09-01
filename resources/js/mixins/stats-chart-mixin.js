@@ -36,5 +36,10 @@ export const statsChartMixin = {
             let b=Math.floor(Math.random() * (max - min + 1) + min);
             return 'rgba('+r+', '+g+', '+b+', 1)';
         },
+        filterIncludeTransferEntries: function(entry){
+            // TODO: take into account external transfers (e.g.: transfer_entry_id=0)
+            return this.includeTransfers
+                || (!this.includeTransfers && entry.hasOwnProperty('is_transfer') && !entry.is_transfer);
+        }
     },
 };
