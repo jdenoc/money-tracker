@@ -70,7 +70,7 @@ export class Entry extends ObjectBaseClass {
             if(entryIndex !== -1){
                 entries[entryIndex] = newValue;
             } else {
-                entries[newValue.id] = newValue;
+                entries[entries.length] = newValue; // entries.length will always be an index above the current highest index
             }
             Store.dispatch('setStateOf', {type:this.storeType, value:entries});
         }
