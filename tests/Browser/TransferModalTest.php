@@ -621,6 +621,77 @@ class TransferModalTest extends DuskTestCase {
         });
     }
 
+    public function testOpeningMoreThanOneTransferEntryPairPerSession(){
+        // GIVEN:
+        $account_type_id1 = \App\AccountType::where('disabled', true)->get()->random();
+        $account_type_id2 = \App\AccountType::where('disabled', true)->whereNotIn('id', [$account_type_id1->id])->get()->random();
+        $default_entry_data = ['disabled'=>false, 'entry_date'=>date('Y-m-d'), 'expense'=>true, 'entry_value'=>$this->faker->randomFloat(2)];
+        $entry_data_income = ['account_type_id'=>$account_type_id2->id, 'entry_date'=>date("Y-m-d", strtotime("-18 months")), 'expense'=>false];
+
+        // transfer pair 1
+        $e1_1 = factory(\App\Entry::class)->create(array_merge(
+            $default_entry_data,
+            ['account_type_id'=>$account_type_id1->id, 'memo'=>$this->getName(false).'1']
+        ));
+        $e1_2 = factory(\App\Entry::class)->create(array_merge(
+            $default_entry_data,
+            $entry_data_income,
+            ['transfer_entry_id'=>$e1_1->id, 'memo'=>$this->getName(false).'1']
+        ));
+        $e1_1->transfer_entry_id = $e1_2->id;
+        $e1_1->save();
+
+        // transfer pair 2
+        $e2_1 = factory(\App\Entry::class)->create(array_merge(
+            $default_entry_data,
+            ['account_type_id'=>$account_type_id1->id, 'memo'=>$this->getName(false).'2']
+        ));
+        $e2_2 = factory(\App\Entry::class)->create(array_merge(
+            $default_entry_data,
+            $entry_data_income,
+            ['transfer_entry_id'=>$e2_1->id, 'memo'=>$this->getName(false).'2']
+        ));
+        $e2_1->transfer_entry_id = $e2_2->id;
+        $e2_1->save();
+
+        //  WHEN/THEN:
+        $this->browse(function (Browser $browser) use ($e1_1, $e1_2, $e2_1, $e2_2){
+            $browser
+                ->visit(new HomePage())
+                ->openExistingEntryModal(sprintf(self::$PLACEHOLDER_SELECTOR_EXISTING_ENTRY_ROW, $e1_1->id))
+                ->with($this->_selector_modal_entry, function($modal) use ($e1_1, $e1_2){
+                    $modal_entry_id1 = $modal->value($this->_selector_modal_entry_field_entry_id);
+                    $this->assertNotEmpty($modal_entry_id1);
+                    $this->assertEquals($e1_1->id, $modal_entry_id1);
+
+                    $modal->click($this->_selector_modal_entry_btn_transfer);
+                    $this->waitForLoadingToStop($modal);
+
+                    $modal_entry_id2 = $modal->value($this->_selector_modal_entry_field_entry_id);
+                    $this->assertNotEmpty($modal_entry_id2);
+                    $this->assertEquals($e1_2->id, $modal_entry_id2);
+
+                    $modal->click($this->_selector_modal_entry_btn_cancel);
+                })
+
+                ->openExistingEntryModal(sprintf(self::$PLACEHOLDER_SELECTOR_EXISTING_ENTRY_ROW, $e2_1->id))
+                ->with($this->_selector_modal_entry, function($modal) use ($e2_1, $e2_2){
+                    $modal_entry_id1 = $modal->value($this->_selector_modal_entry_field_entry_id);
+                    $this->assertNotEmpty($modal_entry_id1);
+                    $this->assertEquals($e2_1->id, $modal_entry_id1);
+
+                    $modal->click($this->_selector_modal_entry_btn_transfer);
+                    $this->waitForLoadingToStop($modal);
+
+                    $modal_entry_id2 = $modal->value($this->_selector_modal_entry_field_entry_id);
+                    $this->assertNotEmpty($modal_entry_id2);
+                    $this->assertEquals($e2_2->id, $modal_entry_id2);
+
+                    $modal->click($this->_selector_modal_entry_btn_cancel);
+                });
+        });
+    }
+
     private function fillTagsInputUsingAutocomplete(Browser $browser, $tag){
         $browser->with($this->_selector_modal_transfer, function($modal) use ($tag){
             $modal
