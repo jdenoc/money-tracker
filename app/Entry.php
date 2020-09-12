@@ -2,10 +2,12 @@
 
 namespace App;
 
-use App\Http\Controllers\Api\EntryController;
+use App\Traits\EntryFilterKeys;
 use Carbon\Carbon;
 
 class Entry extends BaseModel {
+
+    use EntryFilterKeys;
 
     const CREATED_AT = 'create_stamp';
     const UPDATED_AT = 'modified_stamp';
@@ -133,22 +135,22 @@ class Entry extends BaseModel {
     private static function filter_entry_collection($entries_query, $filters){
         foreach($filters as $filter_name => $filter_constraint){
             switch($filter_name){
-                case EntryController::FILTER_KEY_START_DATE:
+                case self::$FILTER_KEY_START_DATE:
                     $entries_query->where('entries.entry_date', '>=', $filter_constraint);
                     break;
-                case EntryController::FILTER_KEY_MIN_VALUE:
+                case self::$FILTER_KEY_MIN_VALUE:
                     $entries_query->where('entries.entry_value', '>=', $filter_constraint);
                     break;
-                case EntryController::FILTER_KEY_END_DATE:
+                case self::$FILTER_KEY_END_DATE:
                     $entries_query->where('entries.entry_date', '<=', $filter_constraint);
                     break;
-                case EntryController::FILTER_KEY_MAX_VALUE:
+                case self::$FILTER_KEY_MAX_VALUE:
                     $entries_query->where('entries.entry_value', '<=', $filter_constraint);
                     break;
-                case EntryController::FILTER_KEY_ACCOUNT_TYPE:
+                case self::$FILTER_KEY_ACCOUNT_TYPE:
                     $entries_query->where('entries.account_type_id', $filter_constraint);
                     break;
-                case EntryController::FILTER_KEY_EXPENSE:
+                case self::$FILTER_KEY_EXPENSE:
                     if($filter_constraint === true){
                         $entries_query->where('entries.expense', 1);
                     }
@@ -156,18 +158,18 @@ class Entry extends BaseModel {
                         $entries_query->where('entries.expense', 0);
                     }
                     break;
-                case EntryController::FILTER_KEY_UNCONFIRMED:
+                case self::$FILTER_KEY_UNCONFIRMED:
                     if($filter_constraint === true){
                         $entries_query->where('entries.confirm', 0);
                     }
                     break;
-                case EntryController::FILTER_KEY_ACCOUNT:
+                case self::$FILTER_KEY_ACCOUNT:
                     $entries_query->join('account_types', static function($join) use ($filter_constraint){
                         $join->on('entries.account_type_id', '=', 'account_types.id')
                             ->where('account_types.account_id', $filter_constraint);
                     });
                     break;
-                case EntryController::FILTER_KEY_ATTACHMENTS:
+                case self::$FILTER_KEY_ATTACHMENTS:
                     if($filter_constraint === true){
                         // to get COUNT(attachment.id) > 0 use:
                         // INNER JOIN attachments ON attachments.entry_id=entries.id
@@ -181,7 +183,7 @@ class Entry extends BaseModel {
                             ->whereNull('attachments.entry_id');
                     }
                     break;
-                case EntryController::FILTER_KEY_TAGS:
+                case self::$FILTER_KEY_TAGS:
                     // RIGHT JOIN entry_tags
                     //   ON entry_tags.entry_id=entries.id
                     //   AND entry_tags.tag_id IN ($tags)
@@ -191,7 +193,7 @@ class Entry extends BaseModel {
                             ->whereIn('entry_tags.tag_id', $tag_ids);
                     });
                     break;
-                case EntryController::FILTER_KEY_IS_TRANSFER:
+                case self::$FILTER_KEY_IS_TRANSFER:
                     if($filter_constraint === true){
                         // WHERE entries.transfer_entry_id IS NOT NULL
                         $entries_query->whereNotNull("transfer_entry_id");

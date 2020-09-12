@@ -5,7 +5,7 @@ namespace Tests\Browser;
 use App\Account;
 use App\AccountType;
 use App\Entry;
-use App\Http\Controllers\Api\EntryController;
+use App\Traits\EntryFilterKeys;
 use App\Traits\Tests\Dusk\BulmaDatePicker as DuskTraitBulmaDatePicker;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\StatsSidePanel as DuskTraitStatsSidePanel;
@@ -23,6 +23,7 @@ class StatsBase extends DuskTestCase {
     use DuskTraitLoading;
     use DuskTraitStatsIncludeTransfersCheckboxButton;
     use DuskTraitStatsSidePanel;
+    use EntryFilterKeys;
     use WithFaker;
 
     protected static $SELECTOR_STATS_FORM_SUMMARY = "#stats-form-summary";
@@ -102,16 +103,16 @@ class StatsBase extends DuskTestCase {
         }
         
         $new_entry_data['entry_date'] = $this->faker
-            ->dateTimeBetween($filter_data[EntryController::FILTER_KEY_START_DATE], $filter_data[EntryController::FILTER_KEY_END_DATE])
+            ->dateTimeBetween($filter_data[self::$FILTER_KEY_START_DATE], $filter_data[self::$FILTER_KEY_END_DATE])
             ->format("Y-m-d");
-        if(isset($filter_data[EntryController::FILTER_KEY_EXPENSE])){
-            $new_entry_data['expense'] = $filter_data[EntryController::FILTER_KEY_EXPENSE];
+        if(isset($filter_data[self::$FILTER_KEY_EXPENSE])){
+            $new_entry_data['expense'] = $filter_data[self::$FILTER_KEY_EXPENSE];
         }
 
-        if(!empty($filter_data[EntryController::FILTER_KEY_ACCOUNT_TYPE])){
-            $new_entry_data['account_type_id'] = $filter_data[EntryController::FILTER_KEY_ACCOUNT_TYPE];
-        } elseif(!empty($filter_data[EntryController::FILTER_KEY_ACCOUNT])){
-            $account = Account::find_account_with_types($filter_data[EntryController::FILTER_KEY_ACCOUNT]);
+        if(!empty($filter_data[self::$FILTER_KEY_ACCOUNT_TYPE])){
+            $new_entry_data['account_type_id'] = $filter_data[self::$FILTER_KEY_ACCOUNT_TYPE];
+        } elseif(!empty($filter_data[self::$FILTER_KEY_ACCOUNT])){
+            $account = Account::find_account_with_types($filter_data[self::$FILTER_KEY_ACCOUNT]);
             $new_entry_data['account_type_id'] = $account->account_types->first()->id;
         } else {
             // Can't leave the assignment up to RNG in the factory.
@@ -120,8 +121,8 @@ class StatsBase extends DuskTestCase {
         }
 
         $entry = factory(Entry::class)->create($new_entry_data);
-        if(!empty($filter_data[EntryController::FILTER_KEY_TAGS])){
-            $entry->tags()->attach($filter_data[EntryController::FILTER_KEY_TAGS]);
+        if(!empty($filter_data[self::$FILTER_KEY_TAGS])){
+            $entry->tags()->attach($filter_data[self::$FILTER_KEY_TAGS]);
         }
     }
 
