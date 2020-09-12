@@ -180,7 +180,7 @@ class StatsSummaryTest extends StatsBase {
                     }
                     $filter_data = $this->generateFilterArrayElementDatepicker($filter_data, $datepicker_start, $datepicker_end);
 
-                    $this->generateEntryFromFilterData($filter_data);
+                    $this->generateEntryFromFilterData($filter_data, $this->getName());
                     $form->click(self::$SELECTOR_BUTTON_GENERATE);
                 });
 

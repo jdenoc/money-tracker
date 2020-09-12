@@ -26,8 +26,7 @@
                 chart-name="summary"
                 v-bind:include-transfers="includeTransfers"
                 v-on:update-checkradio="includeTransfers = $event"
-            >
-            </include-transfers-checkbox>
+            ></include-transfers-checkbox>
 
             <table class="table">
                 <caption class="subtitle is-5 has-text-left">Total Income/Expenses</caption>

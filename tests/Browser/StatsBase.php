@@ -93,9 +93,14 @@ class StatsBase extends DuskTestCase {
      * In those situations, we need to make sure that at least one entry does exist.
      *
      * @param array $filter_data
+     * @param string $memo
      */
-    protected function generateEntryFromFilterData($filter_data){
+    protected function generateEntryFromFilterData($filter_data, $memo = ''){
         $new_entry_data = ['disabled'=>false];
+        if(!empty($memo)){
+            $new_entry_data['memo'] = $memo;
+        }
+        
         $new_entry_data['entry_date'] = $this->faker
             ->dateTimeBetween($filter_data[EntryController::FILTER_KEY_START_DATE], $filter_data[EntryController::FILTER_KEY_END_DATE])
             ->format("Y-m-d");

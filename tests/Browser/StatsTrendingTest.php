@@ -115,7 +115,7 @@ class StatsTrendingTest extends StatsBase {
 
     public function providerTestGenerateTrendingChart(){
         return [
-            //[$datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available]
+            //[$datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $include_transfers]
             // defaults account/account-type & date-picker values
             [null, null, false, false, false, false],  // test 4/25
             // defaults account/account-type & date-picker values & include transfers checkbox button clicked
@@ -193,7 +193,7 @@ class StatsTrendingTest extends StatsBase {
                     }
                     $filter_data = $this->generateFilterArrayElementDatepicker($filter_data, $datepicker_start, $datepicker_end);
 
-                    $this->generateEntryFromFilterData($filter_data);
+                    $this->generateEntryFromFilterData($filter_data, $this->getName());
                     $form->click(self::$SELECTOR_BUTTON_GENERATE);
                 });
 

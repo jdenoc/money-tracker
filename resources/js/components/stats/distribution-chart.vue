@@ -41,8 +41,8 @@
             ></include-transfers-checkbox>
             <pie-chart
                 v-if="dataLoaded"
-                v-bind:chart-data="this.chartData"
-                v-bind:options="this.chartOptions"
+                v-bind:chart-data="chartData"
+                v-bind:options="chartOptions"
             >Your browser does not support the canvas element.</pie-chart>
         </section>
         <section v-else class="section has-text-centered has-text-weight-semibold is-size-6 stats-results-distribution">

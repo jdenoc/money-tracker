@@ -56,7 +56,6 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     private $_cached_entries_collection = [];
 
-
     public function __construct($name = null, array $data = [], $dataName = ''){
         parent::__construct($name, $data, $dataName);
         $this->_color_expense_switch_expense = self::$COLOR_WARNING_HEX;
@@ -691,13 +690,12 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                 ->with($this->_selector_modal_entry, function(Browser $entry_modal) use ($transfer_entry_data){
                     $entry_modal
                         ->with($this->_selector_modal_body, function(Browser $modal_body) use ($transfer_entry_data){
-                            $expense_switch_label = $transfer_entry_data['expense'] ? $this->_label_expense_switch_expense : $this->_label_expense_switch_income;
-
                             $modal_body
                                 ->assertInputValue($this->_selector_modal_entry_field_date, $transfer_entry_data['entry_date'])
                                 ->assertInputValue($this->_selector_modal_entry_field_value, $transfer_entry_data['entry_value'])
                                 ->assertSelected($this->_selector_modal_entry_field_account_type, $transfer_entry_data['account_type_id'])
                                 ->assertInputValue($this->_selector_modal_entry_field_memo, $transfer_entry_data['memo']);
+                            $expense_switch_label = $transfer_entry_data['expense'] ? $this->_label_expense_switch_expense : $this->_label_expense_switch_income;
                             $this->assertToggleButtonState($modal_body, $this->_selector_modal_entry_field_expense, $expense_switch_label);
                         })
                         ->with($this->_selector_modal_head, function(Browser $modal_head) use ($transfer_entry_data){
@@ -710,19 +708,19 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                                 ->assertVisible($this->_selector_modal_entry_btn_transfer)
                                 ->click($this->_selector_modal_entry_btn_transfer);
                         });
-                })
-
+                });
+            $this->waitForLoadingToStop($browser);
+            $browser
                 ->assertVisible($this->_selector_modal_entry)
                 ->with($this->_selector_modal_entry, function(Browser $entry_modal) use ($entry_data){
                     $entry_modal
                         ->with($this->_selector_modal_body, function(Browser $modal_body) use ($entry_data){
-                            $expense_switch_label = $entry_data['expense'] ? $this->_label_expense_switch_expense : $this->_label_expense_switch_income;
-
                             $modal_body
                                 ->assertInputValue($this->_selector_modal_entry_field_date, $entry_data['entry_date'])
                                 ->assertInputValue($this->_selector_modal_entry_field_value, $entry_data['entry_value'])
                                 ->assertSelected($this->_selector_modal_entry_field_account_type, $entry_data['account_type_id'])
                                 ->assertInputValue($this->_selector_modal_entry_field_memo, $entry_data['memo']);
+                            $expense_switch_label = $entry_data['expense'] ? $this->_label_expense_switch_expense : $this->_label_expense_switch_income;
                             $this->assertToggleButtonState($modal_body, $this->_selector_modal_entry_field_expense, $expense_switch_label);
                         })
                         ->with($this->_selector_modal_head, function(Browser $modal_head) use ($entry_data){

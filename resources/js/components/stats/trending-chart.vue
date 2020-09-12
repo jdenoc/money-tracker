@@ -28,11 +28,10 @@
                 v-bind:include-transfers="includeTransfers"
                 v-on:update-checkradio="includeTransfers = $event"
             ></include-transfers-checkbox>
-            <!-- TODO: redraw chart when includeTransfers changes -->
             <line-chart
                 v-if="dataLoaded"
-                v-bind:chart-data="this.chartData"
-                v-bind:options="this.chartOptions"
+                v-bind:chart-data="chartData"
+                v-bind:options="chartOptions"
             >Your browser does not support the canvas element.</line-chart>
         </section>
         <section v-else class="section has-text-centered has-text-weight-semibold is-size-6 stats-results-trending">
