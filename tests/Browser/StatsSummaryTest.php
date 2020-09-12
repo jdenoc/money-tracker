@@ -92,7 +92,7 @@ class StatsSummaryTest extends StatsBase {
      * test 3/25
      */
     public function testDefaultDataResultsArea(){
-        $this->browse(static function(Browser $browser){
+        $this->browse(function(Browser $browser){
             $browser
                 ->visit(new StatsPage())
                 ->assertVisible(self::$SELECTOR_STATS_RESULTS_SUMMARY)
