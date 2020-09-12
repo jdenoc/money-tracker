@@ -1,7 +1,6 @@
 <?php
 
 use App\Helpers\CurrencyHelper;
-use App\Http\Controllers\Api\EntryController;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -10,6 +9,7 @@ class UiSampleDatabaseSeeder extends Seeder {
 
     use App\Traits\Tests\StorageTestFiles;
     use WithFaker;
+    use \App\Traits\MaxEntryResponseValue;
 
     const CLI_OUTPUT_PREFIX = "<info>".__CLASS__.":</info> ";
 
@@ -87,10 +87,10 @@ class UiSampleDatabaseSeeder extends Seeder {
         $entries_not_confirmed = $entries_not_disabled->where('confirm', 0);
 
         // just in case we missed an entry necessary for testing, we're going to assign tags to random confirmed & unconfirmed entries
-        $this->attachTagToEntry($tag_ids, $entries_not_confirmed->where('expense', 1)->sortByDesc('entry_date')->chunk(EntryController::MAX_ENTRIES_IN_RESPONSE/2)->first()->random());
-        $this->attachTagToEntry($tag_ids, $entries_not_confirmed->where('expense', 0)->sortByDesc('entry_date')->chunk(EntryController::MAX_ENTRIES_IN_RESPONSE/2)->first()->random());
-        $this->attachTagToEntry($tag_ids, $entries_confirmed->where('expense', 1)->sortByDesc('entry_date')->chunk(EntryController::MAX_ENTRIES_IN_RESPONSE/2)->first()->random());
-        $this->attachTagToEntry($tag_ids, $entries_confirmed->where('expense', 0)->sortByDesc('entry_date')->chunk(EntryController::MAX_ENTRIES_IN_RESPONSE/2)->first()->random());
+        $this->attachTagToEntry($tag_ids, $entries_not_confirmed->where('expense', 1)->sortByDesc('entry_date')->chunk(self::$MAX_ENTRIES_IN_RESPONSE/2)->first()->random());
+        $this->attachTagToEntry($tag_ids, $entries_not_confirmed->where('expense', 0)->sortByDesc('entry_date')->chunk(self::$MAX_ENTRIES_IN_RESPONSE/2)->first()->random());
+        $this->attachTagToEntry($tag_ids, $entries_confirmed->where('expense', 1)->sortByDesc('entry_date')->chunk(self::$MAX_ENTRIES_IN_RESPONSE/2)->first()->random());
+        $this->attachTagToEntry($tag_ids, $entries_confirmed->where('expense', 0)->sortByDesc('entry_date')->chunk(self::$MAX_ENTRIES_IN_RESPONSE/2)->first()->random());
         $this->command->line(self::CLI_OUTPUT_PREFIX."Randomly assigned tags to entries");
 
         // randomly select some entries and mark them as transfers
@@ -107,11 +107,11 @@ class UiSampleDatabaseSeeder extends Seeder {
         }
         $external_transfer_entry = $entries_not_disabled
             ->sortByDesc('entry_date')
-            ->chunk(EntryController::MAX_ENTRIES_IN_RESPONSE)
+            ->chunk(self::$MAX_ENTRIES_IN_RESPONSE)
             ->first()
             ->where('transfer_entry_id', null)
             ->random();
-        $external_transfer_entry->transfer_entry_id = EntryController::TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
+        $external_transfer_entry->transfer_entry_id = self::$MAX_ENTRIES_IN_RESPONSE;
         $external_transfer_entry->save();
         $this->command->line(self::CLI_OUTPUT_PREFIX."Randomly marked entries as transfers");
 
@@ -129,7 +129,7 @@ class UiSampleDatabaseSeeder extends Seeder {
         // income confirmed
         $this->assignAttachmentToEntry(
             $entries_confirmed
-                ->chunk(EntryController::MAX_ENTRIES_IN_RESPONSE)->shift()
+                ->chunk(self::$MAX_ENTRIES_IN_RESPONSE)->shift()
                 ->where('expense', 0)->pluck('id')
                 ->random(),
             $transfer_to_entries->pluck('id')->toArray(),
@@ -138,7 +138,7 @@ class UiSampleDatabaseSeeder extends Seeder {
         // income unconfirmed
         $this->assignAttachmentToEntry(
             $entries_not_confirmed
-                ->chunk(EntryController::MAX_ENTRIES_IN_RESPONSE)->shift()
+                ->chunk(self::$MAX_ENTRIES_IN_RESPONSE)->shift()
                 ->where('expense', 0)->pluck('id')
                 ->random(),
             $transfer_to_entries->pluck('id')->toArray(),
@@ -147,7 +147,7 @@ class UiSampleDatabaseSeeder extends Seeder {
         // expense confirmed
         $this->assignAttachmentToEntry(
             $entries_confirmed
-                ->chunk(EntryController::MAX_ENTRIES_IN_RESPONSE)->shift()
+                ->chunk(self::$MAX_ENTRIES_IN_RESPONSE)->shift()
                 ->where('expense', 1)->pluck('id')
                 ->random(),
             $transfer_from_entries->pluck('id')->toArray(),
@@ -156,7 +156,7 @@ class UiSampleDatabaseSeeder extends Seeder {
         // expense unconfirmed
         $this->assignAttachmentToEntry(
             $entries_not_confirmed
-                ->chunk(EntryController::MAX_ENTRIES_IN_RESPONSE)->shift()
+                ->chunk(self::$MAX_ENTRIES_IN_RESPONSE)->shift()
                 ->where('expense', 1)->pluck('id')
                 ->random(),
             $transfer_from_entries->pluck('id')->toArray(),

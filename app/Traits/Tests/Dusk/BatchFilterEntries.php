@@ -3,9 +3,12 @@
 namespace App\Traits\Tests\Dusk;
 
 use App\Http\Controllers\Api\EntryController;
+use App\Traits\MaxEntryResponseValue;
 use Illuminate\Support\Collection;
 
 trait BatchFilterEntries {
+
+    use MaxEntryResponseValue;
 
     /**
      * @param array $filter_data
@@ -68,7 +71,7 @@ trait BatchFilterEntries {
             throw new \UnexpectedValueException("Entries not available with filter ".json_encode($filter_data));
         }
 
-        $total_pages = (int) ceil($entries['count']/EntryController::MAX_ENTRIES_IN_RESPONSE);
+        $total_pages = (int) ceil($entries['count']/self::$MAX_ENTRIES_IN_RESPONSE);
         $entries_collection = collect($this->removeCountFromApiResponse($entries));
 
         for($i=1; $i<$total_pages; $i++){

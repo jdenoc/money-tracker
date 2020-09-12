@@ -6,6 +6,7 @@ use App\Entry;
 use App\AccountType;
 use App\Attachment;
 use App\Tag;
+use App\Traits\MaxEntryResponseValue;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
@@ -15,7 +16,8 @@ use Symfony\Component\HttpFoundation\Response as HttpStatus;
 
 class EntryController extends Controller {
 
-    const MAX_ENTRIES_IN_RESPONSE = 50;
+    use MaxEntryResponseValue;
+
     const ERROR_ENTRY_ID = 0;
     const RESPONSE_SAVE_KEY_ID = 'id';
     const RESPONSE_SAVE_KEY_ERROR = 'error';
@@ -460,8 +462,8 @@ class EntryController extends Controller {
     private function provide_paged_entries_response($filters, $page_number=0, $sort_by=Entry::DEFAULT_SORT_PARAMETER, $sort_direction=Entry::DEFAULT_SORT_DIRECTION){
         $entries_collection = Entry::get_collection_of_non_disabled_entries(
             $filters,
-            EntryController::MAX_ENTRIES_IN_RESPONSE,
-            EntryController::MAX_ENTRIES_IN_RESPONSE*$page_number,
+            self::$MAX_ENTRIES_IN_RESPONSE,
+            self::$MAX_ENTRIES_IN_RESPONSE*$page_number,
             $sort_by,
             $sort_direction
         );
