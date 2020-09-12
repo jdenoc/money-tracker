@@ -33,11 +33,16 @@
             </div></div>
         </section>
         <hr/>
-        <section v-if="areEntriesAvailable" class="section stats-results-distribution">
+        <section v-if="areEntriesAvailable && dataLoaded" class="section stats-results-distribution">
+            <include-transfers-checkbox
+                chart-name="distribution"
+                v-bind:include-transfers="includeTransfers"
+                v-on:update-checkradio="includeTransfers = $event"
+            ></include-transfers-checkbox>
             <pie-chart
                 v-if="dataLoaded"
-                v-bind:chart-data="this.chartData"
-                v-bind:options="this.chartOptions"
+                v-bind:chart-data="chartData"
+                v-bind:options="chartOptions"
             >Your browser does not support the canvas element.</pie-chart>
         </section>
         <section v-else class="section has-text-centered has-text-weight-semibold is-size-6 stats-results-distribution">
@@ -49,22 +54,21 @@
 <script>
     import AccountAccountTypeTogglingSelector from "../account-account-type-toggling-selector";
     import bulmaCalendar from "../bulma-calendar";
+    import IncludeTransfersCheckbox from "../include-transfers-checkbox";
     import PieChart from './chart-defaults/pie-chart';
+    import {ToggleButton} from 'vue-js-toggle-button';
+
+    import {bulmaColorsMixin} from "../../mixins/bulma-colors-mixin";
     import {entriesObjectMixin} from "../../mixins/entries-object-mixin";
     import {statsChartMixin} from "../../mixins/stats-chart-mixin";
     import {tagsObjectMixin} from "../../mixins/tags-object-mixin";
-    import {ToggleButton} from 'vue-js-toggle-button';
-    import {bulmaColorsMixin} from "../../mixins/bulma-colors-mixin";
 
     export default {
         name: "distribution-chart",
         mixins: [bulmaColorsMixin, entriesObjectMixin, statsChartMixin, tagsObjectMixin],
-        components: {AccountAccountTypeTogglingSelector, bulmaCalendar, PieChart, ToggleButton},
+        components: {IncludeTransfersCheckbox, AccountAccountTypeTogglingSelector, bulmaCalendar, PieChart, ToggleButton},
         data: function(){
             return {
-                chartConfig: {
-                    titleText: "Generated data"
-                },
                 expenseOrIncomeToggle: true,
                 accountOrAccountTypeToggle: true,
                 accountOrAccountTypeId: '',
@@ -103,6 +107,7 @@
                 let standardisedChartData = [];
 
                 this.largeBatchEntryData
+                    .filter(this.filterIncludeTransferEntries)
                     .forEach(function(entryDatum){
                         let tempDatum = _.cloneDeep(entryDatum);
                         if(tempDatum.tags.length === 0){
@@ -153,7 +158,7 @@
 
                 this.setChartTitle(chartDataFilterParameters.expense, chartDataFilterParameters.start_date, chartDataFilterParameters.end_date);
                 this.multiPageDataFetch(chartDataFilterParameters);
-            },
+            }
         },
         mounted: function(){
             this.getBulmaCalendar.setBulmaCalendarDateRange(this.currentMonthStartDate, this.currentMonthEndDate);

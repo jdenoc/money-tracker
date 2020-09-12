@@ -266,7 +266,7 @@ git fetch --tags
 MOST_RECENT_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
 git checkout -q tags/$MOST_RECENT_TAG
 ```
-- <a name="prod-updates-2a">Step 2.a</a>
+- <a name="prod-updates-2a">Step 2.a</a> <small>_(optional)_</small>
 ```
 # *** OPTIONAL ***
 # Edit .env file
@@ -274,21 +274,21 @@ git checkout -q tags/$MOST_RECENT_TAG
 cp .env .env.bkup
 # Perform modifications described in release notes.
 ```
-- <a name="prod-updates-2b">Step 2.b</a>
+- <a name="prod-updates-2b">Step 2.b</a> <small>_(optional)_</small>
 ```
 # *** OPTIONAL ***
 # New/Updates to composer packages
 # Note: check update release notes. 
 composer update --no-dev -o
 ```
-- <a name="prod-updates-2c">Step 2.c</a>
+- <a name="prod-updates-2c">Step 2.c</a> <small>_(optional)_</small>
 ```
 # *** OPTIONAL ***
 # New/Updates to yarn packages
 # Note: check update release notes. 
 yarn install
 ```
-- <a name="prod-updates-2d">Step 2.d</a>
+- <a name="prod-updates-2d">Step 2.d</a> <small>_(optional)_</small>
 ```
 # *** OPTIONAL ***
 # Database updates
@@ -311,6 +311,7 @@ php artisan app:version $MOST_RECENT_TAG
 
 # setup new cache
 php artisan config:cache
+php artisan view:cache
 ```
 - <a name="prod-updates-5">Step 5</a>
 ```
@@ -355,6 +356,8 @@ php artisan dusk --stop-on-failure
 ## Other Documentation
 - [Laravel](https://laravel.com/docs/6.x/)
 - [VueJS](https://vuejs.org/v2/guide/)
+- [Bulma](https://bulma.io/documentation/)
+- [ChartJs](https://www.chartjs.org/)
 - [Docker](https://docs.docker.com/)
 - [Composer](https://getcomposer.org/doc/)
 - [Yarn](https://yarnpkg.com/en/docs)
@@ -362,4 +365,3 @@ php artisan dusk --stop-on-failure
 - [Laravel Dusk](https://laravel.com/docs/6.x/dusk)
 - [Travis CI](https://docs.travis-ci.com/user/languages/php/)
 - [git](https://git-scm.com/doc)
-- [ChartJs](https://www.chartjs.org/)

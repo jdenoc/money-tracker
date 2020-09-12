@@ -36,11 +36,16 @@
 
         <hr />
 
-        <section v-if="areEntriesAvailable" class="section stats-results-tags">
+        <section v-if="areEntriesAvailable && dataLoaded" class="section stats-results-tags">
+            <include-transfers-checkbox
+                chart-name="tags"
+                v-bind:include-transfers="includeTransfers"
+                v-on:update-checkradio="includeTransfers = $event"
+            ></include-transfers-checkbox>
             <bar-chart
                 v-if="dataLoaded"
-                v-bind:chart-data="this.chartData"
-                v-bind:options="this.chartOptions"
+                v-bind:chart-data="chartData"
+                v-bind:options="chartOptions"
             >Your browser does not support the canvas element.</bar-chart>
         </section>
         <section v-else class="section has-text-centered has-text-weight-semibold is-size-6 stats-results-tags">
@@ -53,7 +58,9 @@
     import AccountAccountTypeTogglingSelector from "../account-account-type-toggling-selector";
     import BarChart from "./chart-defaults/bar-chart";
     import BulmaCalendar from '../bulma-calendar';
+    import IncludeTransfersCheckbox from "../include-transfers-checkbox";
     import VoerroTagsInput from '@voerro/vue-tagsinput';
+
     import {entriesObjectMixin} from "../../mixins/entries-object-mixin";
     import {statsChartMixin} from "../../mixins/stats-chart-mixin";
     import {tagsObjectMixin} from "../../mixins/tags-object-mixin";
@@ -61,13 +68,9 @@
     export default {
         name: "tags-chart",
         mixins: [entriesObjectMixin, statsChartMixin, tagsObjectMixin],
-        components: {AccountAccountTypeTogglingSelector, BarChart, BulmaCalendar, VoerroTagsInput},
+        components: {AccountAccountTypeTogglingSelector, BarChart, BulmaCalendar, IncludeTransfersCheckbox, VoerroTagsInput},
         data: function(){
             return {
-                chartConfig: {
-                    titleText: "Generated data"
-                },
-
                 accountOrAccountTypeToggle: true,
                 accountOrAccountTypeId: '',
                 chartTagIds: []
@@ -116,6 +119,7 @@
                 let standardisedChartData = {};
 
                 this.largeBatchEntryData
+                    .filter(this.filterIncludeTransferEntries)
                     .forEach(function(entryDatum){
                         let tempDatum = _.cloneDeep(entryDatum);
                         if(tempDatum.tags.length === 0){

@@ -22,11 +22,16 @@
 
         <hr />
 
-        <section v-if="areEntriesAvailable" class="section stats-results-trending">
+        <section v-if="areEntriesAvailable && dataLoaded" class="section stats-results-trending">
+            <include-transfers-checkbox
+                chart-name="trending"
+                v-bind:include-transfers="includeTransfers"
+                v-on:update-checkradio="includeTransfers = $event"
+            ></include-transfers-checkbox>
             <line-chart
                 v-if="dataLoaded"
-                v-bind:chart-data="this.chartData"
-                v-bind:options="this.chartOptions"
+                v-bind:chart-data="chartData"
+                v-bind:options="chartOptions"
             >Your browser does not support the canvas element.</line-chart>
         </section>
         <section v-else class="section has-text-centered has-text-weight-semibold is-size-6 stats-results-trending">
@@ -38,6 +43,7 @@
 <script>
     import AccountAccountTypeTogglingSelector from "../account-account-type-toggling-selector";
     import BulmaCalendar from "../bulma-calendar";
+    import IncludeTransfersCheckbox from "../include-transfers-checkbox";
     import LineChart from "./chart-defaults/line-chart";
     import {entriesObjectMixin} from "../../mixins/entries-object-mixin";
     import {statsChartMixin} from "../../mixins/stats-chart-mixin";
@@ -45,7 +51,7 @@
     export default {
         name: "trending-chart",
         mixins: [entriesObjectMixin, statsChartMixin],
-        components: {BulmaCalendar, LineChart, AccountAccountTypeTogglingSelector},
+        components: {IncludeTransfersCheckbox, BulmaCalendar, LineChart, AccountAccountTypeTogglingSelector},
         data: function(){
             return {
                 chartConfig: {
@@ -56,8 +62,7 @@
                     datasetDefault: {
                         fill: false
                     },
-                    timeUnit: 'day',
-                    titleText: "Generated data"
+                    timeUnit: 'day'
                 },
 
                 accountOrAccountTypeToggle: true,
@@ -108,6 +113,7 @@
             },
             chartOptions: function(){
                 return {
+                    responsive: true,
                     maintainAspectRatio: false,
                     title: {
                         display: true,
@@ -142,6 +148,7 @@
             standardiseData: function(isExpense){
                 let standardisedChartData = [];
                 this.largeBatchEntryData
+                    .filter(this.filterIncludeTransferEntries)
                     .filter(function(chartDatum){ return chartDatum.expense === isExpense })
                     .forEach(function(datum){
                         // condense data points with similar entry_date values
@@ -151,7 +158,7 @@
                         }
                         standardisedChartData[key].y += parseFloat(datum.entry_value);
                         standardisedChartData[key].y = _.round(standardisedChartData[key].y, 2);
-                    });
+                    }.bind(this));
 
                 return _.sortBy(
                     Object.values(standardisedChartData),
