@@ -3,7 +3,7 @@
 namespace Tests\Browser;
 
 use App\Entry;
-use App\Http\Controllers\Api\EntryController;
+use App\Traits\EntryTransferKeys;
 use App\Traits\Tests\Dusk\BulmaColors as DuskTraitBulmaColors;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
@@ -29,6 +29,7 @@ use Throwable;
  */
 class EntryModalExistingEntryTest extends DuskTestCase {
 
+    use EntryTransferKeys;
     use WaitTimes;
     use HomePageSelectors;
     use DuskTraitBulmaColors;
@@ -748,7 +749,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                 $entry_selector = $this->randomEntrySelector(['is_transfer'=>true]);
                 $entry_id = $this->getEntryIdFromSelector($entry_selector);
                 $entry_data = $this->getApiEntry($entry_id);
-            } while($entry_data['transfer_entry_id'] !== EntryController::TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID);
+            } while($entry_data['transfer_entry_id'] !== self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID);
             $this->assertEquals($entry_id, $entry_data['id']);
             $entry_selector .= '.'.$this->_class_is_transfer;
 

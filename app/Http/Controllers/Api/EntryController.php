@@ -6,6 +6,7 @@ use App\Entry;
 use App\AccountType;
 use App\Attachment;
 use App\Traits\EntryFilterKeys;
+use App\Traits\EntryTransferKeys;
 use App\Traits\MaxEntryResponseValue;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -18,6 +19,7 @@ class EntryController extends Controller {
 
     use EntryFilterKeys;
     use MaxEntryResponseValue;
+    use EntryTransferKeys;
 
     const ERROR_ENTRY_ID = 0;
     const RESPONSE_SAVE_KEY_ID = 'id';
@@ -30,9 +32,6 @@ class EntryController extends Controller {
     const ERROR_MSG_SAVE_ENTRY_DOES_NOT_EXIST = "Entry does not exist";
     const ERROR_MSG_SAVE_TRANSFER_BOTH_EXTERNAL = "A transfer can not consist with both entries belonging to external accounts";
     const ERROR_MSG_FILTER_INVALID = 'invalid filter provided';
-    const TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID = 0;
-    const TRANSFER_KEY_FROM_ACCOUNT_TYPE = 'from_account_type_id';
-    const TRANSFER_KEY_TO_ACCOUNT_TYPE = 'to_account_type_id';
 
     /**
      * GET /api/entry/{entry_id}
@@ -233,7 +232,7 @@ class EntryController extends Controller {
             $required_transfer_fields[array_search('expense', $required_transfer_fields)],
             $required_transfer_fields[array_search('confirm', $required_transfer_fields)]
         );
-        $transfer_specific_fields = [self::TRANSFER_KEY_FROM_ACCOUNT_TYPE, self::TRANSFER_KEY_TO_ACCOUNT_TYPE];
+        $transfer_specific_fields = [self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE, self::$TRANSFER_KEY_TO_ACCOUNT_TYPE];
         $required_transfer_fields = array_merge($required_transfer_fields, $transfer_specific_fields);
 
         // missing (required) data check
@@ -246,9 +245,9 @@ class EntryController extends Controller {
         }
 
         $from_entry = null;
-        if(isset($transfer_data[self::TRANSFER_KEY_FROM_ACCOUNT_TYPE]) && $transfer_data[self::TRANSFER_KEY_FROM_ACCOUNT_TYPE] != self::TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID){
+        if(isset($transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE]) && $transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE] != self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID){
             // check validity of account_type_id value
-            $account_type = AccountType::find($transfer_data[self::TRANSFER_KEY_FROM_ACCOUNT_TYPE]);
+            $account_type = AccountType::find($transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE]);
             if(empty($account_type)){
                 return response(
                     [self::RESPONSE_SAVE_KEY_ERROR=>self::ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE, self::RESPONSE_SAVE_KEY_ID=>[]],
@@ -260,7 +259,7 @@ class EntryController extends Controller {
             foreach($transfer_data as $property=>$value){
                 if(in_array($property, $required_transfer_fields)){
                     if(in_array($property, $transfer_specific_fields)){
-                        if($property == self::TRANSFER_KEY_FROM_ACCOUNT_TYPE){
+                        if($property == self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE){
                             $property = 'account_type_id';
                         } else {
                             continue;
@@ -274,9 +273,9 @@ class EntryController extends Controller {
         }
 
         $to_entry = null;
-        if(isset($transfer_data[self::TRANSFER_KEY_TO_ACCOUNT_TYPE]) && $transfer_data[self::TRANSFER_KEY_TO_ACCOUNT_TYPE] != self::TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID){
+        if(isset($transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE]) && $transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE] != self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID){
             // check validity of account_type_id value
-            $account_type = AccountType::find($transfer_data[self::TRANSFER_KEY_TO_ACCOUNT_TYPE]);
+            $account_type = AccountType::find($transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE]);
             if(empty($account_type)){
                 return response(
                     [self::RESPONSE_SAVE_KEY_ERROR=>self::ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE, self::RESPONSE_SAVE_KEY_ID=>[]],
@@ -288,7 +287,7 @@ class EntryController extends Controller {
             foreach($transfer_data as $property=>$value){
                 if(in_array($property, $required_transfer_fields)){
                     if(in_array($property, $transfer_specific_fields)){
-                        if($property == self::TRANSFER_KEY_TO_ACCOUNT_TYPE){
+                        if($property == self::$TRANSFER_KEY_TO_ACCOUNT_TYPE){
                             $property = 'account_type_id';
                         } else {
                             continue;
@@ -352,7 +351,7 @@ class EntryController extends Controller {
             );
         } elseif(is_null($to_entry) && !is_null($from_entry)){
             // "TO" entry is EXTERNAL
-            $from_entry->transfer_entry_id = self::TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
+            $from_entry->transfer_entry_id = self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
             $from_entry->save();
             $this->attach_attachments_to_entry($from_entry, $entry_attachments);
             return response(
@@ -361,7 +360,7 @@ class EntryController extends Controller {
             );
         } elseif(!is_null($to_entry) && is_null($from_entry)){
             // "FROM" entry is EXTERNAL
-            $to_entry->transfer_entry_id = self::TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
+            $to_entry->transfer_entry_id = self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
             $to_entry->save();
             $this->attach_attachments_to_entry($to_entry, $entry_attachments);
             return response(

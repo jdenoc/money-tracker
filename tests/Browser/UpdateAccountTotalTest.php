@@ -3,7 +3,7 @@
 namespace Tests\Browser;
 
 use App\Entry;
-use App\Http\Controllers\Api\EntryController;
+use App\Traits\EntryTransferKeys;
 use App\Traits\Tests\Dusk\Loading;
 use App\Traits\Tests\Dusk\Navbar;
 use App\Traits\Tests\WaitTimes;
@@ -25,6 +25,7 @@ use Throwable;
  */
 class UpdateAccountTotalTest extends DuskTestCase {
 
+    use EntryTransferKeys;
     use HomePageSelectors;
     use WaitTimes;
     use Loading;
@@ -258,12 +259,12 @@ class UpdateAccountTotalTest extends DuskTestCase {
 
         } elseif($is_to_account_external){
             $account['to']['id'] = 0;
-            $account['to']['account_type_id'] = EntryController::TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
+            $account['to']['account_type_id'] = self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
             $account['from'] = $this->_account;
             $account['from']['account_type_id'] = $this->_account_type_id;
         } elseif($is_from_account_external){
             $account['from']['id'] = 0;
-            $account['from']['account_type_id'] = EntryController::TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
+            $account['from']['account_type_id'] = self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
             $account['to'] = $this->_account;
             $account['to']['account_type_id'] = $this->_account_type_id;
         }

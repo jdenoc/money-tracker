@@ -8,14 +8,17 @@ use App\Attachment;
 use App\Entry;
 use App\Http\Controllers\Api\EntryController;
 use App\Tag;
+use App\Traits\EntryTransferKeys;
 use App\Traits\Tests\StorageTestFiles;
-use Faker\Factory as FakerFactory;
+use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Illuminate\Http\Response as HttpStatus;
 
 class PostEntryTransferTest extends TestCase {
 
+    use EntryTransferKeys;
     use StorageTestFiles;
+    use WithFaker;
 
     const CALL_METHOD = "POST";
     const FLAG_HAS_TAGS = 'has_tags';
@@ -81,13 +84,13 @@ class PostEntryTransferTest extends TestCase {
     public function testCreateEntryTransferWithMissingData($transfer_data, $expected_response_error_msg){
         // GIVEN - $transfer_data by providerCreateEntryTransferWithMissingData
         $account = factory(Account::class)->create();
-        if(isset($transfer_data[EntryController::TRANSFER_KEY_FROM_ACCOUNT_TYPE])){
+        if(isset($transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE])){
             $account_type1 = factory(AccountType::class)->create(['account_id'=>$account->id]);
-            $transfer_data[EntryController::TRANSFER_KEY_FROM_ACCOUNT_TYPE] = $account_type1->id;
+            $transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE] = $account_type1->id;
         }
-        if(isset($transfer_data[EntryController::TRANSFER_KEY_TO_ACCOUNT_TYPE])){
+        if(isset($transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE])){
             $account_type2 = factory(AccountType::class)->create(['account_id'=>$account->id]);
-            $transfer_data[EntryController::TRANSFER_KEY_TO_ACCOUNT_TYPE] = $account_type2->id;
+            $transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE] = $account_type2->id;
         }
 
         // WHEN
@@ -123,10 +126,10 @@ class PostEntryTransferTest extends TestCase {
         $account = factory(Account::class)->create();
         $account_type = factory(AccountType::class)->create(['account_id'=>$account->id]);
         if($override_account_type_id[self::FLAG_OVERRIDE_TO]){
-            $transfer_data[EntryController::TRANSFER_KEY_TO_ACCOUNT_TYPE] = $account_type->id;
+            $transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE] = $account_type->id;
         }
         if($override_account_type_id[self::FLAG_OVERRIDE_FROM]){
-            $account_type[EntryController::TRANSFER_KEY_FROM_ACCOUNT_TYPE] = $account_type->id;
+            $account_type[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE] = $account_type->id;
         }
 
         // WHEN
@@ -141,8 +144,8 @@ class PostEntryTransferTest extends TestCase {
     public function testCreateEntryTransferWithOnlyExternalAccountTypeIds(){
         // GIVEN - $transfer_data
         $transfer_data = $this->generateTransferData();
-        $transfer_data[EntryController::TRANSFER_KEY_TO_ACCOUNT_TYPE] = EntryController::TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
-        $transfer_data[EntryController::TRANSFER_KEY_FROM_ACCOUNT_TYPE] = EntryController::TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
+        $transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE] = self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
+        $transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE] = self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
 
         // WHEN
         $response = $this->json(self::CALL_METHOD, $this->_base_uri, $transfer_data);
@@ -160,8 +163,8 @@ class PostEntryTransferTest extends TestCase {
         $valid_transfer_data = [];
         foreach($this->getAccountIdOverrideOptions() as $account_type_id_override_option){
             $transfer_data = $this->generateTransferData();
-            $transfer_data[EntryController::TRANSFER_KEY_FROM_ACCOUNT_TYPE] = EntryController::TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
-            $transfer_data[EntryController::TRANSFER_KEY_TO_ACCOUNT_TYPE] = EntryController::TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
+            $transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE] = self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
+            $transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE] = self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
 
             $valid_transfer_data["external account_type ID:".json_encode($account_type_id_override_option)] = [
                 $transfer_data,
@@ -182,12 +185,12 @@ class PostEntryTransferTest extends TestCase {
         $account = factory(Account::class)->create();
         if(!$remain_external_account_type_id[self::FLAG_OVERRIDE_TO]){
             $account_type = factory(AccountType::class)->create(['account_id'=>$account->id]);
-            $transfer_data[EntryController::TRANSFER_KEY_TO_ACCOUNT_TYPE] = $account_type->id;
+            $transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE] = $account_type->id;
             $non_external_account_counter++;
         }
         if(!$remain_external_account_type_id[self::FLAG_OVERRIDE_FROM]){
             $account_type = factory(AccountType::class)->create(['account_id'=>$account->id]);
-            $transfer_data[EntryController::TRANSFER_KEY_FROM_ACCOUNT_TYPE] = $account_type->id;
+            $transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE] = $account_type->id;
             $non_external_account_counter++;
         }
 
@@ -213,9 +216,9 @@ class PostEntryTransferTest extends TestCase {
             $this->assertEquals($transfer_data['entry_value'], $get_entry_response_as_array['entry_value'], $failure_message);
             $this->assertEquals($transfer_data['memo'], $get_entry_response_as_array['memo'], $failure_message);
             if($get_entry_response_as_array['expense'] == 1){
-                $this->assertEquals($transfer_data[EntryController::TRANSFER_KEY_FROM_ACCOUNT_TYPE], $get_entry_response_as_array['account_type_id'], $failure_message);
+                $this->assertEquals($transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE], $get_entry_response_as_array['account_type_id'], $failure_message);
             } elseif($get_entry_response_as_array['expense'] == 0){
-                $this->assertEquals($transfer_data[EntryController::TRANSFER_KEY_TO_ACCOUNT_TYPE], $get_entry_response_as_array['account_type_id'], $failure_message);
+                $this->assertEquals($transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE], $get_entry_response_as_array['account_type_id'], $failure_message);
             } else {
                 $this->fail("Entry Expense value returned is not valid. Response:".$get_entry_response->getContent());
             }
@@ -223,7 +226,7 @@ class PostEntryTransferTest extends TestCase {
             if($non_external_account_counter > 1){
                 $this->assertTrue(in_array($get_entry_response_as_array['transfer_entry_id'], $response_as_array[EntryController::RESPONSE_SAVE_KEY_ID]), $failure_message);
             } else {
-                $this->assertEquals(EntryController::TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID, $get_entry_response_as_array['transfer_entry_id'], $failure_message);
+                $this->assertEquals(self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID, $get_entry_response_as_array['transfer_entry_id'], $failure_message);
             }
         }
     }
@@ -248,8 +251,8 @@ class PostEntryTransferTest extends TestCase {
         $generated_account_type2 = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
         $transfer_data = $this->generateTransferData();
 
-        $transfer_data[EntryController::TRANSFER_KEY_FROM_ACCOUNT_TYPE] = $generated_account_type1->id;
-        $transfer_data[EntryController::TRANSFER_KEY_TO_ACCOUNT_TYPE] = $generated_account_type2->id;
+        $transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE] = $generated_account_type1->id;
+        $transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE] = $generated_account_type2->id;
 
         $generated_tag_ids = [];
         if($flags[self::FLAG_HAS_TAGS]){
@@ -260,8 +263,7 @@ class PostEntryTransferTest extends TestCase {
         }
 
         if($flags[self::FLAG_HAS_ATTACHMENTS]){
-            $faker = FakerFactory::create();
-            $generated_attachments = factory(Attachment::class, $faker->randomDigitNotNull)->make();
+            $generated_attachments = factory(Attachment::class, $this->faker->randomDigitNotNull)->make();
 
             $transfer_data['attachments'] = [];
             foreach($generated_attachments as $generated_attachment){
@@ -298,9 +300,9 @@ class PostEntryTransferTest extends TestCase {
             $this->assertEquals($transfer_data['entry_value'], $get_entry_response_as_array['entry_value'], $failure_message);
             $this->assertEquals($transfer_data['memo'], $get_entry_response_as_array['memo'], $failure_message);
             if($get_entry_response_as_array['expense'] == 1){
-                $this->assertEquals($transfer_data[EntryController::TRANSFER_KEY_FROM_ACCOUNT_TYPE], $get_entry_response_as_array['account_type_id'], $failure_message);
+                $this->assertEquals($transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE], $get_entry_response_as_array['account_type_id'], $failure_message);
             } elseif($get_entry_response_as_array['expense'] == 0){
-                $this->assertEquals($transfer_data[EntryController::TRANSFER_KEY_TO_ACCOUNT_TYPE], $get_entry_response_as_array['account_type_id'], $failure_message);
+                $this->assertEquals($transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE], $get_entry_response_as_array['account_type_id'], $failure_message);
             } else {
                 $this->fail("Entry Expense value returned is not valid. Response:".$get_entry_response->getContent());
             }
@@ -341,8 +343,8 @@ class PostEntryTransferTest extends TestCase {
             'entry_date'=>$entry_data->entry_date,
             'entry_value'=>$entry_data->entry_value,
             'memo'=>$entry_data->memo,
-            EntryController::TRANSFER_KEY_FROM_ACCOUNT_TYPE=>$entry_data->account_type_id,
-            EntryController::TRANSFER_KEY_TO_ACCOUNT_TYPE=>$entry_data->account_type_id
+            self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE=>$entry_data->account_type_id,
+            self::$TRANSFER_KEY_TO_ACCOUNT_TYPE=>$entry_data->account_type_id
         ];
     }
 
@@ -353,7 +355,7 @@ class PostEntryTransferTest extends TestCase {
             $required_transfer_fields[array_search('expense', $required_transfer_fields)],
             $required_transfer_fields[array_search('confirm', $required_transfer_fields)]
         );
-        return array_merge($required_transfer_fields, [EntryController::TRANSFER_KEY_FROM_ACCOUNT_TYPE, EntryController::TRANSFER_KEY_TO_ACCOUNT_TYPE]);
+        return array_merge($required_transfer_fields, [self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE, self::$TRANSFER_KEY_TO_ACCOUNT_TYPE]);
     }
 
     /**
