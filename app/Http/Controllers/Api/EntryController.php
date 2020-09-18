@@ -234,71 +234,32 @@ class EntryController extends Controller {
             );
         }
 
-        $from_entry = null;
-        if(isset($transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE]) && $transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE] != self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID){
-            // check validity of account_type_id value
-            $account_type = AccountType::find($transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE]);
-            if(empty($account_type)){
-                return response(
-                    [self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE, self::$RESPONSE_SAVE_KEY_ID=>[]],
-                    HttpStatus::HTTP_BAD_REQUEST
-                );
-            }
-
-            $from_entry = new Entry();
-            foreach($transfer_data as $property=>$value){
-                if(in_array($property, $required_transfer_fields)){
-                    if(in_array($property, $transfer_specific_fields)){
-                        if($property == self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE){
-                            $property = 'account_type_id';
-                        } else {
-                            continue;
-                        }
-                    }
-                    $from_entry->$property = $value;
-                }
-            }
-            $from_entry->expense = 1;
-
-        }
-
-        $to_entry = null;
-        if(isset($transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE]) && $transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE] != self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID){
-            // check validity of account_type_id value
-            $account_type = AccountType::find($transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE]);
-            if(empty($account_type)){
-                return response(
-                    [self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE, self::$RESPONSE_SAVE_KEY_ID=>[]],
-                    HttpStatus::HTTP_BAD_REQUEST
-                );
-            }
-
-            $to_entry = new Entry();
-            foreach($transfer_data as $property=>$value){
-                if(in_array($property, $required_transfer_fields)){
-                    if(in_array($property, $transfer_specific_fields)){
-                        if($property == self::$TRANSFER_KEY_TO_ACCOUNT_TYPE){
-                            $property = 'account_type_id';
-                        } else {
-                            continue;
-                        }
-                    }
-                    $to_entry->$property = $value;
-                }
-            }
-            $to_entry->expense = 0;
-        }
-
         $entry_tags = !empty($transfer_data['tags']) && is_array($transfer_data['tags']) ? $transfer_data['tags'] : [];
 
-        if(!is_null($to_entry)){
-            $to_entry->save();
-            $this->update_entry_tags($to_entry, $entry_tags);
+        if(isset($transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE]) && $transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE] != self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID){
+            try {
+                $from_entry = $this->initTransferEntry($transfer_data, self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE, $required_transfer_fields, $transfer_specific_fields, $entry_tags);
+            } catch(\OutOfRangeException $e){
+                return response(
+                    [self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE, self::$RESPONSE_SAVE_KEY_ID=>[]],
+                    HttpStatus::HTTP_BAD_REQUEST
+                );
+            }
+        } else {
+            $from_entry = null;
         }
 
-        if(!is_null($from_entry)){
-            $from_entry->save();
-            $this->update_entry_tags($from_entry, $entry_tags);
+        if(isset($transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE]) && $transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE] != self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID){
+            try{
+                $to_entry = $this->initTransferEntry($transfer_specific_fields, self::$TRANSFER_KEY_TO_ACCOUNT_TYPE, $transfer_specific_fields, $transfer_specific_fields, $entry_tags);
+            } catch(\OutOfRangeException $e){
+                return response(
+                    [self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE, self::$RESPONSE_SAVE_KEY_ID=>[]],
+                    HttpStatus::HTTP_BAD_REQUEST
+                );
+            }
+        } else {
+            $to_entry = null;
         }
 
         $entry_attachments = !empty($transfer_data['attachments']) && is_array($transfer_data['attachments']) ? $transfer_data['attachments'] : [];
@@ -364,6 +325,48 @@ class EntryController extends Controller {
                 HttpStatus::HTTP_BAD_REQUEST
             );
         }
+    }
+
+    /**
+     * @param array $transfer_data
+     * @param string $transfer_side
+     * @param array $required_transfer_fields
+     * @param array $transfer_specific_fields
+     * @param array $transfer_entry_tags
+     * @return Entry
+     *
+     * @throws \OutOfRangeException
+     */
+    private function initTransferEntry($transfer_data, $transfer_side, $required_transfer_fields, $transfer_specific_fields, $transfer_entry_tags){
+        // check validity of account_type_id value
+        $account_type = AccountType::find($transfer_data);
+        if(empty($account_type)){
+            throw new \OutOfRangeException();
+        }
+
+        $transfer_entry = new Entry();
+        foreach($transfer_data as $property=>$value){
+            if(in_array($property, $required_transfer_fields)){
+                if(in_array($property, $transfer_specific_fields)){
+                    if($property == $transfer_side){
+                        $property = 'account_type_id';
+                        if($transfer_side == self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE){
+                            $transfer_entry->expense = 1;
+                        } elseif($transfer_side == self::$TRANSFER_KEY_TO_ACCOUNT_TYPE){
+                            $transfer_entry->expense = 0;
+                        }
+                    } else {
+                        continue;
+                    }
+                }
+                $transfer_entry->$property = $value;
+            }
+        }
+
+        $transfer_entry->save();
+        $this->update_entry_tags($transfer_entry, $transfer_entry_tags);
+
+        return $transfer_entry;
     }
 
     /**
