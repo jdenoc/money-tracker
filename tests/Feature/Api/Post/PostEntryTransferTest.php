@@ -6,8 +6,8 @@ use App\Account;
 use App\AccountType;
 use App\Attachment;
 use App\Entry;
-use App\Http\Controllers\Api\EntryController;
 use App\Tag;
+use App\Traits\EntryResponseKeys;
 use App\Traits\EntryTransferKeys;
 use App\Traits\Tests\StorageTestFiles;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -17,6 +17,7 @@ use Illuminate\Http\Response as HttpStatus;
 class PostEntryTransferTest extends TestCase {
 
     use EntryTransferKeys;
+    use EntryResponseKeys;
     use StorageTestFiles;
     use WithFaker;
 
@@ -38,7 +39,7 @@ class PostEntryTransferTest extends TestCase {
         // THEN
         $this->assertResponseStatus($response, HttpStatus::HTTP_BAD_REQUEST);
         $this->assertPostResponseHasCorrectKeys($response->json());
-        $this->assertFailedPostResponse($response->json(), EntryController::ERROR_MSG_SAVE_ENTRY_NO_DATA);
+        $this->assertFailedPostResponse($response->json(), self::$ERROR_MSG_SAVE_ENTRY_NO_DATA);
     }
 
     public function providerCreateEntryTransferWithMissingData(){
@@ -54,7 +55,7 @@ class PostEntryTransferTest extends TestCase {
             unset($transfer_data[$required_transfer_fields[$i]]);
             $missing_data['missing ['.$required_transfer_fields[$i].']'] = [
                 $transfer_data,
-                sprintf(EntryController::ERROR_MSG_SAVE_ENTRY_MISSING_PROPERTY, json_encode([$required_transfer_fields[$i]]))
+                sprintf(self::$ERROR_MSG_SAVE_ENTRY_MISSING_PROPERTY, json_encode([$required_transfer_fields[$i]]))
             ];
         }
 
@@ -70,7 +71,7 @@ class PostEntryTransferTest extends TestCase {
         }
         $missing_data['missing ['.implode(',', $removed_keys).']'] = [
             $transfer_data,
-            sprintf(EntryController::ERROR_MSG_SAVE_ENTRY_MISSING_PROPERTY, json_encode($removed_keys))
+            sprintf(self::$ERROR_MSG_SAVE_ENTRY_MISSING_PROPERTY, json_encode($removed_keys))
         ];
 
         return $missing_data;
@@ -138,7 +139,7 @@ class PostEntryTransferTest extends TestCase {
         // THEN
         $this->assertResponseStatus($response, HttpStatus::HTTP_BAD_REQUEST);
         $this->assertPostResponseHasCorrectKeys($response->json());
-        $this->assertFailedPostResponse($response->json(), EntryController::ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE);
+        $this->assertFailedPostResponse($response->json(), self::$ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE);
     }
 
     public function testCreateEntryTransferWithOnlyExternalAccountTypeIds(){
@@ -153,7 +154,7 @@ class PostEntryTransferTest extends TestCase {
         // THEN
         $this->assertResponseStatus($response, HttpStatus::HTTP_BAD_REQUEST);
         $this->assertPostResponseHasCorrectKeys($response->json());
-        $this->assertFailedPostResponse($response->json(), EntryController::ERROR_MSG_SAVE_TRANSFER_BOTH_EXTERNAL);
+        $this->assertFailedPostResponse($response->json(), self::$ERROR_MSG_SAVE_TRANSFER_BOTH_EXTERNAL);
     }
 
     public function providerCreateEntryTransfer(){
@@ -202,12 +203,12 @@ class PostEntryTransferTest extends TestCase {
         $response_as_array = $response->json();
         $failure_message = "Response:".$response->getContent();
         $this->assertPostResponseHasCorrectKeys($response_as_array);
-        $this->assertEquals(EntryController::ERROR_MSG_SAVE_ENTRY_NO_ERROR, $response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR], $failure_message);
-        $this->assertTrue(is_array($response_as_array[EntryController::RESPONSE_SAVE_KEY_ID]), $failure_message);
-        $this->assertNotEmpty($response_as_array[EntryController::RESPONSE_SAVE_KEY_ID], $failure_message);
-        $this->assertCount($non_external_account_counter, $response_as_array[EntryController::RESPONSE_SAVE_KEY_ID], $failure_message);
+        $this->assertEquals(self::$ERROR_MSG_SAVE_ENTRY_NO_ERROR, $response_as_array[self::$RESPONSE_SAVE_KEY_ERROR], $failure_message);
+        $this->assertTrue(is_array($response_as_array[self::$RESPONSE_SAVE_KEY_ID]), $failure_message);
+        $this->assertNotEmpty($response_as_array[self::$RESPONSE_SAVE_KEY_ID], $failure_message);
+        $this->assertCount($non_external_account_counter, $response_as_array[self::$RESPONSE_SAVE_KEY_ID], $failure_message);
 
-        foreach($response_as_array[EntryController::RESPONSE_SAVE_KEY_ID] as $entry_id){
+        foreach($response_as_array[self::$RESPONSE_SAVE_KEY_ID] as $entry_id){
             $get_entry_response = $this->get(str_replace('transfer', $entry_id, $this->_base_uri));
             $this->assertResponseStatus($get_entry_response, HttpStatus::HTTP_OK);
             $failure_message = "Transfer data:".print_r($transfer_data, true)."\nGet Response:".$get_entry_response->getContent()."\n";
@@ -224,7 +225,7 @@ class PostEntryTransferTest extends TestCase {
             }
             $this->assertNotNull($get_entry_response_as_array['transfer_entry_id'], $failure_message);
             if($non_external_account_counter > 1){
-                $this->assertTrue(in_array($get_entry_response_as_array['transfer_entry_id'], $response_as_array[EntryController::RESPONSE_SAVE_KEY_ID]), $failure_message);
+                $this->assertTrue(in_array($get_entry_response_as_array['transfer_entry_id'], $response_as_array[self::$RESPONSE_SAVE_KEY_ID]), $failure_message);
             } else {
                 $this->assertEquals(self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID, $get_entry_response_as_array['transfer_entry_id'], $failure_message);
             }
@@ -283,12 +284,12 @@ class PostEntryTransferTest extends TestCase {
         $failure_message = "Response is ".$post_response->getContent();
         $post_response_as_array = $post_response->json();
         $this->assertPostResponseHasCorrectKeys($post_response_as_array);
-        $this->assertEquals(EntryController::ERROR_MSG_SAVE_ENTRY_NO_ERROR, $post_response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR], $failure_message);
-        $this->assertTrue(is_array($post_response_as_array[EntryController::RESPONSE_SAVE_KEY_ID]), $failure_message);
-        $this->assertNotEmpty($post_response_as_array[EntryController::RESPONSE_SAVE_KEY_ID], $failure_message);
-        $this->assertCount(2, $post_response_as_array[EntryController::RESPONSE_SAVE_KEY_ID], $failure_message);
+        $this->assertEquals(self::$ERROR_MSG_SAVE_ENTRY_NO_ERROR, $post_response_as_array[self::$RESPONSE_SAVE_KEY_ERROR], $failure_message);
+        $this->assertTrue(is_array($post_response_as_array[self::$RESPONSE_SAVE_KEY_ID]), $failure_message);
+        $this->assertNotEmpty($post_response_as_array[self::$RESPONSE_SAVE_KEY_ID], $failure_message);
+        $this->assertCount(2, $post_response_as_array[self::$RESPONSE_SAVE_KEY_ID], $failure_message);
 
-        foreach($post_response_as_array[EntryController::RESPONSE_SAVE_KEY_ID] as $created_entry_id){
+        foreach($post_response_as_array[self::$RESPONSE_SAVE_KEY_ID] as $created_entry_id){
             // WHEN
             $get_entry_response = $this->get(str_replace('transfer', $created_entry_id, $this->_base_uri));
 
@@ -307,7 +308,7 @@ class PostEntryTransferTest extends TestCase {
                 $this->fail("Entry Expense value returned is not valid. Response:".$get_entry_response->getContent());
             }
             $this->assertNotNull($get_entry_response_as_array['transfer_entry_id'], $failure_message);
-            $this->assertTrue(in_array($get_entry_response_as_array['transfer_entry_id'], $post_response_as_array[EntryController::RESPONSE_SAVE_KEY_ID]), $failure_message);
+            $this->assertTrue(in_array($get_entry_response_as_array['transfer_entry_id'], $post_response_as_array[self::$RESPONSE_SAVE_KEY_ID]), $failure_message);
 
             if($flags[self::FLAG_HAS_TAGS]){
                 // check tags are set
@@ -364,8 +365,8 @@ class PostEntryTransferTest extends TestCase {
     private function assertPostResponseHasCorrectKeys($response_as_array){
         $failure_message = "Response is ".json_encode($response_as_array);
         $this->assertTrue(is_array($response_as_array), $failure_message);
-        $this->assertArrayHasKey(EntryController::RESPONSE_SAVE_KEY_ID, $response_as_array, $failure_message);
-        $this->assertArrayHasKey(EntryController::RESPONSE_SAVE_KEY_ERROR, $response_as_array, $failure_message);
+        $this->assertArrayHasKey(self::$RESPONSE_SAVE_KEY_ID, $response_as_array, $failure_message);
+        $this->assertArrayHasKey(self::$RESPONSE_SAVE_KEY_ERROR, $response_as_array, $failure_message);
     }
 
     /**
@@ -374,10 +375,10 @@ class PostEntryTransferTest extends TestCase {
      */
     private function assertFailedPostResponse($response_as_array, $response_error_msg){
         $failure_message = "Response is ".json_encode($response_as_array);
-        $this->assertTrue(is_array($response_as_array[EntryController::RESPONSE_SAVE_KEY_ID]), $failure_message);
-        $this->assertEmpty($response_as_array[EntryController::RESPONSE_SAVE_KEY_ID], $failure_message);
-        $this->assertNotEmpty($response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR], $failure_message);
-        $this->assertStringContainsString($response_error_msg, $response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR], $failure_message);
+        $this->assertTrue(is_array($response_as_array[self::$RESPONSE_SAVE_KEY_ID]), $failure_message);
+        $this->assertEmpty($response_as_array[self::$RESPONSE_SAVE_KEY_ID], $failure_message);
+        $this->assertNotEmpty($response_as_array[self::$RESPONSE_SAVE_KEY_ERROR], $failure_message);
+        $this->assertStringContainsString($response_error_msg, $response_as_array[self::$RESPONSE_SAVE_KEY_ERROR], $failure_message);
     }
 
     private function getAccountIdOverrideOptions(){

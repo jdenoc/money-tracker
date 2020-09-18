@@ -6,14 +6,15 @@ use App\Account;
 use App\AccountType;
 use App\Attachment;
 use App\Entry;
-use App\Http\Controllers\Api\EntryController;
 use App\Tag;
+use App\Traits\EntryResponseKeys;
 use Illuminate\Foundation\Testing\WithFaker;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 
 class PostEntryTest extends TestCase {
 
+    use EntryResponseKeys;
     use WithFaker;
 
     private $_base_uri = '/api/entry';
@@ -29,7 +30,7 @@ class PostEntryTest extends TestCase {
         $this->assertResponseStatus($response, HttpStatus::HTTP_BAD_REQUEST);
         $response_as_array = $response->json();
         $this->assertPostResponseHasCorrectKeys($response_as_array);
-        $this->assertFailedPostResponse($response_as_array, EntryController::ERROR_MSG_SAVE_ENTRY_NO_DATA);
+        $this->assertFailedPostResponse($response_as_array, self::$ERROR_MSG_SAVE_ENTRY_NO_DATA);
     }
 
     public function providerCreateEntryWithMissingData(){
@@ -50,7 +51,7 @@ class PostEntryTest extends TestCase {
             unset($entry_data[$required_entry_fields[$i]]);
             $missing_data_entries['missing ['.$required_entry_fields[$i].']'] = [
                 $entry_data,
-                sprintf(EntryController::ERROR_MSG_SAVE_ENTRY_MISSING_PROPERTY, json_encode([$required_entry_fields[$i]]))
+                sprintf(self::$ERROR_MSG_SAVE_ENTRY_MISSING_PROPERTY, json_encode([$required_entry_fields[$i]]))
             ];
         }
 
@@ -65,7 +66,7 @@ class PostEntryTest extends TestCase {
         }
         $missing_data_entries['missing ['.implode(',', $removed_keys).']'] = [
             $entry_data,
-            sprintf(EntryController::ERROR_MSG_SAVE_ENTRY_MISSING_PROPERTY, json_encode($removed_keys))
+            sprintf(self::$ERROR_MSG_SAVE_ENTRY_MISSING_PROPERTY, json_encode($removed_keys))
         ];
 
         return $missing_data_entries;
@@ -100,7 +101,7 @@ class PostEntryTest extends TestCase {
         $this->assertResponseStatus($response, HttpStatus::HTTP_BAD_REQUEST);
         $response_as_array = $response->json();
         $this->assertPostResponseHasCorrectKeys($response_as_array);
-        $this->assertFailedPostResponse($response_as_array, EntryController::ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE);
+        $this->assertFailedPostResponse($response_as_array, self::$ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE);
     }
 
     public function testCreateEntryAndAccountTotalUpdate(){
@@ -127,9 +128,9 @@ class PostEntryTest extends TestCase {
         $this->assertResponseStatus($post_response, HttpStatus::HTTP_CREATED);
         $post_response_as_array = $post_response->json();
         $this->assertPostResponseHasCorrectKeys($post_response_as_array);
-        $this->assertEmpty($post_response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR]);
-        $created_entry_id = $post_response_as_array[EntryController::RESPONSE_SAVE_KEY_ID];
-        $this->assertGreaterThan(EntryController::ERROR_ENTRY_ID, $created_entry_id);
+        $this->assertEmpty($post_response_as_array[self::$RESPONSE_SAVE_KEY_ERROR]);
+        $created_entry_id = $post_response_as_array[self::$RESPONSE_SAVE_KEY_ID];
+        $this->assertGreaterThan(self::$ERROR_ENTRY_ID, $created_entry_id);
 
         // WHEN
         $get_entry_response = $this->get($this->_base_uri.'/'.$created_entry_id);
@@ -178,9 +179,9 @@ class PostEntryTest extends TestCase {
         $this->assertResponseStatus($post_response, HttpStatus::HTTP_CREATED);
         $post_response_as_array = $post_response->json();
         $this->assertPostResponseHasCorrectKeys($post_response_as_array);
-        $this->assertEmpty($post_response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR]);
-        $created_entry_id = $post_response_as_array[EntryController::RESPONSE_SAVE_KEY_ID];
-        $this->assertGreaterThan(EntryController::ERROR_ENTRY_ID, $created_entry_id);
+        $this->assertEmpty($post_response_as_array[self::$RESPONSE_SAVE_KEY_ERROR]);
+        $created_entry_id = $post_response_as_array[self::$RESPONSE_SAVE_KEY_ID];
+        $this->assertGreaterThan(self::$ERROR_ENTRY_ID, $created_entry_id);
 
         // WHEN
         $get_response = $this->get($this->_base_uri.'/'.$created_entry_id);
@@ -229,9 +230,9 @@ class PostEntryTest extends TestCase {
         $this->assertResponseStatus($post_response, HttpStatus::HTTP_CREATED);
         $post_response_as_array = $post_response->json();
         $this->assertPostResponseHasCorrectKeys($post_response_as_array);
-        $this->assertEmpty($post_response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR]);
-        $created_entry_id = $post_response_as_array[EntryController::RESPONSE_SAVE_KEY_ID];
-        $this->assertGreaterThan(EntryController::ERROR_ENTRY_ID, $created_entry_id);
+        $this->assertEmpty($post_response_as_array[self::$RESPONSE_SAVE_KEY_ERROR]);
+        $created_entry_id = $post_response_as_array[self::$RESPONSE_SAVE_KEY_ID];
+        $this->assertGreaterThan(self::$ERROR_ENTRY_ID, $created_entry_id);
 
         // WHEN
         $get_response = $this->get($this->_base_uri.'/'.$created_entry_id);
@@ -274,9 +275,9 @@ class PostEntryTest extends TestCase {
         $this->assertResponseStatus($post_response, HttpStatus::HTTP_CREATED);
         $post_response_as_array = $post_response->json();
         $this->assertPostResponseHasCorrectKeys($post_response_as_array);
-        $this->assertEmpty($post_response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR]);
-        $created_entry_id = $post_response_as_array[EntryController::RESPONSE_SAVE_KEY_ID];
-        $this->assertGreaterThan(EntryController::ERROR_ENTRY_ID, $created_entry_id);
+        $this->assertEmpty($post_response_as_array[self::$RESPONSE_SAVE_KEY_ERROR]);
+        $created_entry_id = $post_response_as_array[self::$RESPONSE_SAVE_KEY_ID];
+        $this->assertGreaterThan(self::$ERROR_ENTRY_ID, $created_entry_id);
 
         // WHEN
         $get_response = $this->get($this->_base_uri.'/'.$created_entry_id);
@@ -313,8 +314,8 @@ class PostEntryTest extends TestCase {
     private function assertPostResponseHasCorrectKeys($response_as_array){
         $failure_message = "POST Response is ".json_encode($response_as_array);
         $this->assertTrue(is_array($response_as_array), $failure_message);
-        $this->assertArrayHasKey(EntryController::RESPONSE_SAVE_KEY_ID, $response_as_array, $failure_message);
-        $this->assertArrayHasKey(EntryController::RESPONSE_SAVE_KEY_ERROR, $response_as_array, $failure_message);
+        $this->assertArrayHasKey(self::$RESPONSE_SAVE_KEY_ID, $response_as_array, $failure_message);
+        $this->assertArrayHasKey(self::$RESPONSE_SAVE_KEY_ERROR, $response_as_array, $failure_message);
     }
 
     /**
@@ -323,9 +324,9 @@ class PostEntryTest extends TestCase {
      */
     private function assertFailedPostResponse($response_as_array, $response_error_msg){
         $failure_message = "POST Response is ".json_encode($response_as_array);
-        $this->assertEquals(EntryController::ERROR_ENTRY_ID, $response_as_array[EntryController::RESPONSE_SAVE_KEY_ID], $failure_message);
-        $this->assertNotEmpty($response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR], $failure_message);
-        $this->assertStringContainsString($response_error_msg, $response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR], $failure_message);
+        $this->assertEquals(self::$ERROR_ENTRY_ID, $response_as_array[self::$RESPONSE_SAVE_KEY_ID], $failure_message);
+        $this->assertNotEmpty($response_as_array[self::$RESPONSE_SAVE_KEY_ERROR], $failure_message);
+        $this->assertStringContainsString($response_error_msg, $response_as_array[self::$RESPONSE_SAVE_KEY_ERROR], $failure_message);
     }
 
 }
