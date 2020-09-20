@@ -339,7 +339,7 @@ class EntryController extends Controller {
      */
     private function initTransferEntry($transfer_data, $transfer_side, $required_transfer_fields, $transfer_specific_fields, $transfer_entry_tags){
         // check validity of account_type_id value
-        $account_type = AccountType::find($transfer_data);
+        $account_type = AccountType::find($transfer_data[$transfer_side]);
         if(empty($account_type)){
             throw new \OutOfRangeException();
         }
