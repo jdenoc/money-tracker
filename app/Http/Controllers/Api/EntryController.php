@@ -251,7 +251,7 @@ class EntryController extends Controller {
 
         if(isset($transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE]) && $transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE] != self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID){
             try{
-                $to_entry = $this->initTransferEntry($transfer_data, self::$TRANSFER_KEY_TO_ACCOUNT_TYPE, $transfer_specific_fields, $transfer_specific_fields, $entry_tags);
+                $to_entry = $this->initTransferEntry($transfer_data, self::$TRANSFER_KEY_TO_ACCOUNT_TYPE, $required_transfer_fields, $transfer_specific_fields, $entry_tags);
             } catch(\OutOfRangeException $e){
                 return response(
                     [self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE, self::$RESPONSE_SAVE_KEY_ID=>[]],
@@ -341,7 +341,7 @@ class EntryController extends Controller {
         // check validity of account_type_id value
         $account_type = AccountType::find($transfer_data[$transfer_side]);
         if(empty($account_type)){
-            throw new \OutOfRangeException();
+            throw new \OutOfRangeException(self::$ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE);
         }
 
         $transfer_entry = new Entry();

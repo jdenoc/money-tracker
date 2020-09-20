@@ -24,8 +24,8 @@ class PostEntryTransferTest extends TestCase {
     const CALL_METHOD = "POST";
     const FLAG_HAS_TAGS = 'has_tags';
     const FLAG_HAS_ATTACHMENTS = 'has_attachments';
-    const FLAG_OVERRIDE_TO = "to";
-    const FLAG_OVERRIDE_FROM = "from";
+    const FLAG_OVERRIDE_TO = "override_to_account_type_id";
+    const FLAG_OVERRIDE_FROM = "override_from_account_type_id";
 
     private $_base_uri = '/api/entry/transfer';
 
