@@ -128,6 +128,10 @@ class StatsSummaryTest extends StatsBase {
             [$this->previous_year_start, $this->today, true, true, false, false],     // test 14/25
             // date-picker previous year start to present & random disabled account-type & include transfers
             [$this->previous_year_start, $this->today, true, true, false, true],      // test 15/25
+            // defaults account/account-type & date-picker values; date range today only
+            [$this->today, $this->today, false, false, false, false],                 // test 16/25
+            // defaults account/account-type & date-picker values; date range today only; include transfers
+            [$this->today, $this->today, false, false, false, true],                  // test 17/25
         ];
     }
 

@@ -121,53 +121,57 @@ class StatsDistributionTest extends StatsBase {
         //[$datepicker_start, $datepicker_end, $is_account_switch_toggled, $is_expense_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $include_transfers]
         return [
             //  default state of account/account-types; expense; default date range
-            [null, null, false, false, false, false, false],                   // test 4/25
+            [null, null, false, false, false, false, false],                   // test 1/25
             //  default state of account/account-types; expense; default date range; include transfers
-            [null, null, false, false, false, false, true],                   // test 4/25
+            [null, null, false, false, false, false, true],                   // test 2/25
             // default state of account/account-types; income; default date range
-            [null, null, false, true, false, false, false],                    // test 5/25
+            [null, null, false, true, false, false, false],                    // test 3/25
             // default state of account/account-types; income; default date range; include transfers
-            [null, null, false, true, false, false, true],                    // test 6/25
+            [null, null, false, true, false, false, true],                    // test 4/25
             // default state of account/account-types; expense; date range a year past to today
-            [$this->previous_year_start, $this->today, false, false, false, false, false], // test 7/25
+            [$this->previous_year_start, $this->today, false, false, false, false, false], // test 5/25
             // default state of account/account-types; expense; date range a year past to today; include transfers
-            [$this->previous_year_start, $this->today, false, false, false, false, true], // test 8/25
+            [$this->previous_year_start, $this->today, false, false, false, false, true], // test 6/25
             // default state of account/account-types; income; date range a year past to today
-            [$this->previous_year_start, $this->today, false, true, false, false, false],  // test 9/25
+            [$this->previous_year_start, $this->today, false, true, false, false, false],  // test 7/25
             // default state of account/account-types; income; date range a year past to today; include transfers
-            [$this->previous_year_start, $this->today, false, true, false, false, true],  // test 10/25
+            [$this->previous_year_start, $this->today, false, true, false, false, true],  // test 8/25
             // random account; expense; date range a year past to today
-            [$this->previous_year_start, $this->today, false, false, true, false, false],  // test 11/25
+            [$this->previous_year_start, $this->today, false, false, true, false, false],  // test 9/25
             // random account; expense; date range a year past to today; include transfers
-            [$this->previous_year_start, $this->today, false, false, true, false, true],  // test 12/25
+            [$this->previous_year_start, $this->today, false, false, true, false, true],  // test 10/25
             // random account; income; date range a year past to today
-            [$this->previous_year_start, $this->today, false, true, true, false, false],   // test 13/25
+            [$this->previous_year_start, $this->today, false, true, true, false, false],   // test 11/25
             // random account; income; date range a year past to today; include transfers
-            [$this->previous_year_start, $this->today, false, true, true, false, true],   // test 14/25
+            [$this->previous_year_start, $this->today, false, true, true, false, true],   // test 12/25
             // random account-type; expense; date range a year past to today
-            [$this->previous_year_start, $this->today, true, false, true, false, false],   // test 15/25
+            [$this->previous_year_start, $this->today, true, false, true, false, false],   // test 13/25
             // random account-type; expense; date range a year past to today; include transfers
-            [$this->previous_year_start, $this->today, true, false, true, false, true],   // test 16/25
+            [$this->previous_year_start, $this->today, true, false, true, false, true],   // test 14/25
             // random account-type; income; date range a year past to today
-            [$this->previous_year_start, $this->today, true, true, true, false, false],    // test 17/25
+            [$this->previous_year_start, $this->today, true, true, true, false, false],    // test 15/25
             // random account-type; income; date range a year past to today; include transfers
-            [$this->previous_year_start, $this->today, true, true, true, false, true],    // test 18/25
+            [$this->previous_year_start, $this->today, true, true, true, false, true],    // test 16/25
             // random disabled account; expense; date range a year past to today
-            [$this->previous_year_start, $this->today, false, false, true, true, false],   // test 19/25
+            [$this->previous_year_start, $this->today, false, false, true, true, false],   // test 17/25
             // random disabled account; expense; date range a year past to today; include transfers
-            [$this->previous_year_start, $this->today, false, false, true, true, true],   // test 20/25
+            [$this->previous_year_start, $this->today, false, false, true, true, true],   // test 18/25
             // random disabled account; income; date range a year past to today
-            [$this->previous_year_start, $this->today, false, true, true, true, false],    // test 21/25
+            [$this->previous_year_start, $this->today, false, true, true, true, false],    // test 19/25
             // random disabled account; income; date range a year past to today; include transfers
-            [$this->previous_year_start, $this->today, false, true, true, true, true],    // test 22/25
+            [$this->previous_year_start, $this->today, false, true, true, true, true],    // test 20/25
             // random disabled account-type; expense; date range a year past to today
-            [$this->previous_year_start, $this->today, true, false, true, true, false],    // test 23/25
+            [$this->previous_year_start, $this->today, true, false, true, true, false],    // test 21/25
             // random disabled account-type; expense; date range a year past to today; include transfers
-            [$this->previous_year_start, $this->today, true, false, true, true, true],    // test 24/25
+            [$this->previous_year_start, $this->today, true, false, true, true, true],    // test 22/25
             // random disabled account-type; income; date range a year past to today
-            [$this->previous_year_start, $this->today, true, true, true, true, false],     // test 25/25
+            [$this->previous_year_start, $this->today, true, true, true, true, false],     // test 23/25
             // random disabled account-type; income; date range a year past to today; include transfers
-            [$this->previous_year_start, $this->today, true, true, true, true, true],     // test 26/25
+            [$this->previous_year_start, $this->today, true, true, true, true, true],     // test 24/25
+            //  default state of account/account-types; expense; date range today only
+            [$this->today, $this->today, false, false, false, false, false],              // test 25/25
+            //  default state of account/account-types; expense; date range today only; include transfers
+            [$this->today, $this->today, false, false, false, false, true],               // test 26/25
         ];
     }
 
@@ -184,7 +188,7 @@ class StatsDistributionTest extends StatsBase {
      *
      * @throws Throwable
      *
-     * @group stats-distribution-1
+     * @group stats-distribution-2
      * test (see provider)/25
      */
     public function testGenerateDistributionChart($datepicker_start, $datepicker_end, $is_account_switch_toggled, $is_expense_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $include_transfers){
