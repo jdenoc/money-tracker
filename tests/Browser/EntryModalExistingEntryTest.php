@@ -424,13 +424,20 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         $this->browse(function(Browser $browser){
             $entry_selector = $this->randomUnconfirmedEntrySelector(true);
             $old_value = "";
-            $new_value = date("Y-m-d", strtotime("-90 days"));
+            $new_value = '';
 
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $browser->openExistingEntryModal($entry_selector)
-                ->with($this->_selector_modal_body, function(Browser $modal_body) use (&$old_value, $new_value){
+                ->with($this->_selector_modal_body, function(Browser $modal_body) use (&$old_value, &$new_value){
                     $old_value = $modal_body->value($this->_selector_modal_entry_field_date);
+                    // just in case the old and new values match
+                    $day_diff = -90;
+                    do{
+                        $new_value = date("Y-m-d", strtotime(sprintf("%d days", $day_diff)));
+                        $day_diff--;
+                    } while ($new_value === $old_value);
+
                     // clear input[type="date"]
                     for($i=0; $i<strlen($old_value); $i++){
                         $modal_body->keys($this->_selector_modal_entry_field_date, "{backspace}");
