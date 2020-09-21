@@ -1,15 +1,19 @@
 <?php
 
 use App\Helpers\CurrencyHelper;
+use App\Traits\EntryTransferKeys;
+use App\Traits\MaxEntryResponseValue;
+use App\Traits\Tests\StorageTestFiles as TestStorageTestFilesTrait;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Foundation\Testing\WithFaker;
 
 class UiSampleDatabaseSeeder extends Seeder {
 
-    use App\Traits\Tests\StorageTestFiles;
+    use TestStorageTestFilesTrait;
+    use EntryTransferKeys;
+    use MaxEntryResponseValue;
     use WithFaker;
-    use \App\Traits\MaxEntryResponseValue;
 
     const CLI_OUTPUT_PREFIX = "<info>".__CLASS__.":</info> ";
 
@@ -94,16 +98,32 @@ class UiSampleDatabaseSeeder extends Seeder {
         $this->command->line(self::CLI_OUTPUT_PREFIX."Randomly assigned tags to entries");
 
         // randomly select some entries and mark them as transfers
-        $transfer_to_entries = $entries_not_disabled->where('expense', 0)->random(self::COUNT_ENTRY);
-        $transfer_from_entries = $entries_not_disabled->where('expense', 1)->random(self::COUNT_ENTRY);
+        $transfer_to_entries = collect();
+        $transfer_from_entries = collect();
         for($transfer_i=0; $transfer_i<self::COUNT_ENTRY; $transfer_i++){
-            $transfer_from_entry = $transfer_from_entries->get($transfer_i);
-            $transfer_to_entry = $transfer_to_entries->get($transfer_i);
-            $transfer_from_entry->transfer_entry_id = $transfer_to_entry->id;
+            $transfer_to_entry = $entries_not_disabled->where('expense', 0)->random();
+            do{
+                $transfer_from_entry = $entries_not_disabled->where('expense', 1)->random();
+            }while($transfer_from_entry['account_type_id'] == $transfer_to_entry['account_type_id']);
+
+            // make transfer entries match each other
+            if($this->faker->boolean){
+                $transfer_from_entry->entry_date = $transfer_to_entry->entry_date;
+                $transfer_from_entry->entry_value = $transfer_to_entry->entry_value;
+                $transfer_from_entry->memo = $transfer_to_entry->memo;
+                $transfer_from_entry->transfer_entry_id = $transfer_to_entry->id;
+                $transfer_to_entry->transfer_entry_id = $transfer_from_entry->id;
+            } else {
+                $transfer_to_entry->entry_date = $transfer_from_entry->entry_date;
+                $transfer_to_entry->entry_value = $transfer_from_entry->entry_value;
+                $transfer_to_entry->memo = $transfer_from_entry->memo;
+                $transfer_to_entry->transfer_entry_id = $transfer_from_entry->id;
+                $transfer_from_entry->transfer_entry_id = $transfer_to_entry->id;
+            }
             $transfer_from_entry->save();
-            $transfer_to_entry->transfer_entry_id = $transfer_from_entry->id;
-            $transfer_to_entry->entry_value = $transfer_from_entry->entry_value;
+            $transfer_from_entries->push($transfer_from_entry);
             $transfer_to_entry->save();
+            $transfer_to_entries->push($transfer_to_entry);
         }
         $external_transfer_entry = $entries_not_disabled
             ->sortByDesc('entry_date')
@@ -111,7 +131,7 @@ class UiSampleDatabaseSeeder extends Seeder {
             ->first()
             ->where('transfer_entry_id', null)
             ->random();
-        $external_transfer_entry->transfer_entry_id = self::$MAX_ENTRIES_IN_RESPONSE;
+        $external_transfer_entry->transfer_entry_id = self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
         $external_transfer_entry->save();
         $this->command->line(self::CLI_OUTPUT_PREFIX."Randomly marked entries as transfers");
 
