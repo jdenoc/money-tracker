@@ -3,7 +3,7 @@
 namespace Tests\Browser;
 
 use App\Entry;
-use App\Http\Controllers\Api\EntryController;
+use App\Traits\EntryTransferKeys;
 use App\Traits\Tests\Dusk\BulmaColors as DuskTraitBulmaColors;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
@@ -29,6 +29,7 @@ use Throwable;
  */
 class EntryModalExistingEntryTest extends DuskTestCase {
 
+    use EntryTransferKeys;
     use WaitTimes;
     use HomePageSelectors;
     use DuskTraitBulmaColors;
@@ -423,13 +424,20 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         $this->browse(function(Browser $browser){
             $entry_selector = $this->randomUnconfirmedEntrySelector(true);
             $old_value = "";
-            $new_value = date("Y-m-d", strtotime("-90 days"));
+            $new_value = '';
 
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $browser->openExistingEntryModal($entry_selector)
-                ->with($this->_selector_modal_body, function(Browser $modal_body) use (&$old_value, $new_value){
+                ->with($this->_selector_modal_body, function(Browser $modal_body) use (&$old_value, &$new_value){
                     $old_value = $modal_body->value($this->_selector_modal_entry_field_date);
+                    // just in case the old and new values match
+                    $day_diff = -90;
+                    do{
+                        $new_value = date("Y-m-d", strtotime(sprintf("%d days", $day_diff)));
+                        $day_diff--;
+                    } while ($new_value === $old_value);
+
                     // clear input[type="date"]
                     for($i=0; $i<strlen($old_value); $i++){
                         $modal_body->keys($this->_selector_modal_entry_field_date, "{backspace}");
@@ -748,7 +756,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                 $entry_selector = $this->randomEntrySelector(['is_transfer'=>true]);
                 $entry_id = $this->getEntryIdFromSelector($entry_selector);
                 $entry_data = $this->getApiEntry($entry_id);
-            } while($entry_data['transfer_entry_id'] !== EntryController::TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID);
+            } while($entry_data['transfer_entry_id'] !== self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID);
             $this->assertEquals($entry_id, $entry_data['id']);
             $entry_selector .= '.'.$this->_class_is_transfer;
 

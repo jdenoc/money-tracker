@@ -3,7 +3,7 @@
 namespace Tests;
 
 use App\Entry;
-use App\Http\Controllers\Api\EntryController;
+use App\Traits\EntryFilterKeys;
 use App\Traits\Tests\LogTestName;
 use App\Traits\Tests\StorageTestFiles;
 use Laravel\Dusk\Browser;
@@ -14,6 +14,7 @@ use Facebook\WebDriver\Remote\DesiredCapabilities;
 abstract class DuskTestCase extends BaseTestCase {
 
     use CreatesApplication;
+    use EntryFilterKeys;
     use StorageTestFiles;
     use LogTestName;
 
@@ -151,11 +152,11 @@ abstract class DuskTestCase extends BaseTestCase {
      * @return array
      */
     public function getApiEntries($page_number=0, $filter_data=[]){
-        // See resources/assets/js/entries.js:16-38
-        // See app/Http/Controllers/Api/EntryController.php:30-43
-        $sort = [EntryController::FILTER_KEY_SORT=>[
-            EntryController::FILTER_KEY_SORT_PARAMETER=>"entry_date",
-            EntryController::FILTER_KEY_SORT_DIRECTION=>Entry::DEFAULT_SORT_DIRECTION
+        // See resources/js/entries.js:16-38
+        // See app/Traits/EntryFilterKeys.php:7-20
+        $sort = [self::$FILTER_KEY_SORT=>[
+            self::$FILTER_KEY_SORT_PARAMETER=>"entry_date",
+            self::$FILTER_KEY_SORT_DIRECTION=>Entry::DEFAULT_SORT_DIRECTION
         ]];
         $filter_data = array_merge($filter_data, $sort);
         $entries_response = $this->json('POST', '/api/entries/'.$page_number, $filter_data);
