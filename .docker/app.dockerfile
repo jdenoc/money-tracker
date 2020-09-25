@@ -5,12 +5,28 @@ RUN touch /etc/apache2/conf-available/servername.conf \
   && echo 'ServerName app.money-tracker' > /etc/apache2/conf-available/servername.conf \
   && a2enconf servername
 
-# install php extensions
-RUN apt-get update \
-  && apt-get upgrade -y
-RUN apt-get install -y apt-utils curl  default-mysql-client libzip-dev zlib1g-dev libicu-dev g++ --no-install-recommends
-RUN docker-php-ext-configure intl \
-  && docker-php-ext-install pdo_mysql zip intl
+# install generic packages & extensions
+RUN apt update --fix-missing \
+  && apt upgrade -y
+RUN apt install -y apt-utils curl zlib1g-dev libicu-dev g++ --no-install-recommends
+RUN docker-php-ext-configure intl
+RUN docker-php-ext-install intl
+
+# install php mysql extension
+RUN apt install -y default-mysql-client --no-install-recommends
+RUN docker-php-ext-install pdo_mysql
+
+# install php zip extension
+RUN apt install -y libzip-dev --no-install-recommends
+RUN docker-php-ext-install zip
+
+# install php gd extension
+RUN apt install -y libpng-dev libjpeg-dev libfreetype6-dev --no-install-recommends
+RUN docker-php-ext-configure gd --with-gd --with-png-dir=/usr/include/ --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
+RUN docker-php-ext-install gd
+
+# clean up after installs
+RUN apt autoremove -y
 
 # enable mod_rewrite apache module
 RUN a2enmod rewrite
