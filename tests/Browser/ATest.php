@@ -26,23 +26,38 @@ class ATest extends DuskTestCase {
         });
     }
 
-    /**
-     * @throws \Throwable
-     */
-    public function testTitleIsCorrect(){
-        $this->browse(function (Browser $browser){
-            $browser->visit('/')
-                ->assertTitleContains("Money Tracker | HOME");
-        });
+    public function providerTitleIsCorrect(){
+        return [
+            // [$url, $title]
+            'home'=>['/', "Money Tracker | HOME"],
+            'stats'=>['/stats', "Money Tracker | STATS"],
+        ];
     }
 
     /**
+     * @dataProvider providerTitleIsCorrect
+     * @param string $url
+     * @param string $title
      * @throws \Throwable
      */
-    public function testTitleIsCorrectOnStatsPage(){
-        $this->browse(function (Browser $browser){
-            $browser->visit('/stats')
-                ->assertTitleContains("Money Tracker | STATS");
+    public function testTitleAndFaviconAreCorrectAndPresent($url, $title){
+        $this->browse(function (Browser $browser) use ($url, $title){
+            $browser->visit($url)
+                ->assertTitleContains($title)
+                ->assertSourceHas('<link rel="icon" type="image/png" sizes="32x32" href="/laravel-favicon/');
+
+            $favicon_file_paths = [
+                'public/imgs/favicon/favicon-16x16.png',
+                'public/imgs/favicon/favicon-32x32.png',
+                'public/imgs/favicon/apple-touch-icon.png',
+                'public/imgs/favicon/android-chrome-192x192.png',
+                'public/imgs/favicon/android-chrome-512x512.png',
+                'public/imgs/favicon/site.webmanifest'
+            ];
+            foreach($favicon_file_paths as $favicon_file_path){
+                $this->assertFileExists($favicon_file_path);
+            }
         });
     }
+
 }
