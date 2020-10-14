@@ -70,10 +70,6 @@ Set `DOCKER_HOST_IP` environment variable
 - Linux/Mac: `export DOCKER_HOST_IP="192.168.x.y"`
 - Windows: `setx DOCKER_HOST_IP="192.168.x.y"`
 
-Set `COMPOSE_PROJECT_NAME` environment variable
-- Linux/Mac: `export COMPOSE_PROJECT_NAME="moneytracker"`
-- Windows: `setx COMPOSE_PROJECT_NAME="moneytracker"`
-
 ##### Clone repo
 ```bash
 git clone https://github.com/jdenoc/money-tracker.git --branch=develop
@@ -100,7 +96,7 @@ This will generate Laravel Facades that PhpStorm can use.
 
 ##### Bring "up" application container(s)
 ```bash
-docker-compose -f .docker/docker-compose.yml up -d
+docker-compose -f .docker/docker-compose.yml -p "moneytracker" up -d
 # composer doesn't write to the correct .env file during setup
 # so we need to generate the APP_KEY value again
 .docker/cmd/artisan.sh key:generate
@@ -110,7 +106,7 @@ docker-compose -f .docker/docker-compose.yml up -d
 If you wish to run docker without xdebug, prefix the above command with `DISABLE_XDEBUG=true`  
 For Example:
 ```bash
-DISABLE_XDEBUG=true docker-compose -f .docker/docker-compose.yml up -d
+DISABLE_XDEBUG=true docker-compose -f .docker/docker-compose.yml -p "moneytracker" up -d
 ```
 `DISABLE_XDEBUG=true` is required _once_ to build the docker image. Afterwards, it is never used again.
 
@@ -233,12 +229,12 @@ That being said, there are certainly variables that should be modified at this p
 ***
 
 ### Scheduled tasks Setup
-This is most likely an item to add to your production server, but is also potentially something you'll want running in the background for you dev environment.
+This is most likely an item to add to your production server, but is also potentially something you'll want running in the background for your dev environment.
 To set this up you will need to add the following Cron entry to your server.
 ```bash
 * * * * * php /path-to-your-project/artisan schedule:run >> /dev/null 2>&1
 ```
-This Cron will call the Laravel command scheduler every minute. When the `schedule:run` command is executed, Laravel will evaluate your scheduled tasks and runs the tasks that are due.  
+This Cron will call the Laravel command scheduler every minute. When the command `schedule:run` is executed, Laravel will evaluate your scheduled tasks and runs the tasks that are due.  
 Here is a list of commands that will _scheduled_ as part of this setup:  
 - `artisan storage:clear-tmp-uploads`
 - `artisan sanity-check:account-total`
