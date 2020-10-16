@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Entry;
 use App\AccountType;
 use App\Attachment;
-use App\Tag;
+use App\Traits\EntryFilterKeys;
+use App\Traits\EntryResponseKeys;
+use App\Traits\EntryTransferKeys;
+use App\Traits\MaxEntryResponseValue;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
@@ -15,35 +18,10 @@ use Symfony\Component\HttpFoundation\Response as HttpStatus;
 
 class EntryController extends Controller {
 
-    const MAX_ENTRIES_IN_RESPONSE = 50;
-    const ERROR_ENTRY_ID = 0;
-    const RESPONSE_SAVE_KEY_ID = 'id';
-    const RESPONSE_SAVE_KEY_ERROR = 'error';
-    const RESPONSE_FILTER_KEY_ERROR = 'error';
-    const ERROR_MSG_SAVE_ENTRY_NO_ERROR = '';
-    const ERROR_MSG_SAVE_ENTRY_NO_DATA = "No data provided";
-    const ERROR_MSG_SAVE_ENTRY_MISSING_PROPERTY = "Missing data: %s";
-    const ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE = "Account type provided does not exist";
-    const ERROR_MSG_SAVE_ENTRY_DOES_NOT_EXIST = "Entry does not exist";
-    const ERROR_MSG_SAVE_TRANSFER_BOTH_EXTERNAL = "A transfer can not consist with both entries belonging to external accounts";
-    const ERROR_MSG_FILTER_INVALID = 'invalid filter provided';
-    const FILTER_KEY_ACCOUNT = 'account';
-    const FILTER_KEY_ACCOUNT_TYPE = 'account_type';
-    const FILTER_KEY_ATTACHMENTS = 'attachments';
-    const FILTER_KEY_END_DATE = 'end_date';
-    const FILTER_KEY_EXPENSE = 'expense';
-    const FILTER_KEY_IS_TRANSFER = 'is_transfer';
-    const FILTER_KEY_MAX_VALUE = 'max_value';
-    const FILTER_KEY_MIN_VALUE = 'min_value';
-    const FILTER_KEY_START_DATE = 'start_date';
-    const FILTER_KEY_TAGS = 'tags';
-    const FILTER_KEY_UNCONFIRMED = 'unconfirmed';
-    const FILTER_KEY_SORT = 'sort';
-    const FILTER_KEY_SORT_PARAMETER = 'parameter';
-    const FILTER_KEY_SORT_DIRECTION = 'direction';
-    const TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID = 0;
-    const TRANSFER_KEY_FROM_ACCOUNT_TYPE = 'from_account_type_id';
-    const TRANSFER_KEY_TO_ACCOUNT_TYPE = 'to_account_type_id';
+    use EntryFilterKeys;
+    use EntryTransferKeys;
+    use EntryResponseKeys;
+    use MaxEntryResponseValue;
 
     /**
      * GET /api/entry/{entry_id}
@@ -87,22 +65,22 @@ class EntryController extends Controller {
             return $this->provide_paged_entries_response([], $page_number);
         }
 
-        if(empty($filter_data[self::FILTER_KEY_SORT]) || !is_array($filter_data[self::FILTER_KEY_SORT])){
+        if(empty($filter_data[self::$FILTER_KEY_SORT]) || !is_array($filter_data[self::$FILTER_KEY_SORT])){
             $sort_by = Entry::DEFAULT_SORT_PARAMETER;
             $sort_direction = Entry::DEFAULT_SORT_DIRECTION;
         } else {
-            $sort_by = empty($filter_data[self::FILTER_KEY_SORT][self::FILTER_KEY_SORT_PARAMETER]) ? Entry::DEFAULT_SORT_PARAMETER : $filter_data[self::FILTER_KEY_SORT][self::FILTER_KEY_SORT_PARAMETER];
-            if(empty($filter_data[self::FILTER_KEY_SORT][self::FILTER_KEY_SORT_DIRECTION]) || !in_array($filter_data[self::FILTER_KEY_SORT][self::FILTER_KEY_SORT_DIRECTION], [Entry::SORT_DIRECTION_ASC, Entry::SORT_DIRECTION_DESC])){
+            $sort_by = empty($filter_data[self::$FILTER_KEY_SORT][self::$FILTER_KEY_SORT_PARAMETER]) ? Entry::DEFAULT_SORT_PARAMETER : $filter_data[self::$FILTER_KEY_SORT][self::$FILTER_KEY_SORT_PARAMETER];
+            if(empty($filter_data[self::$FILTER_KEY_SORT][self::$FILTER_KEY_SORT_DIRECTION]) || !in_array($filter_data[self::$FILTER_KEY_SORT][self::$FILTER_KEY_SORT_DIRECTION], [Entry::SORT_DIRECTION_ASC, Entry::SORT_DIRECTION_DESC])){
                 $sort_direction = Entry::DEFAULT_SORT_DIRECTION;
             } else {
-                $sort_direction = $filter_data[self::FILTER_KEY_SORT][self::FILTER_KEY_SORT_DIRECTION];
+                $sort_direction = $filter_data[self::$FILTER_KEY_SORT][self::$FILTER_KEY_SORT_DIRECTION];
             }
-            unset($filter_data[self::FILTER_KEY_SORT]);
+            unset($filter_data[self::$FILTER_KEY_SORT]);
         }
 
-        $filter_validator = Validator::make($filter_data, self::get_filter_details(isset($filter_data[self::FILTER_KEY_TAGS])));
+        $filter_validator = Validator::make($filter_data, self::getFilterValidationRules(isset($filter_data[self::$FILTER_KEY_TAGS])));
         if($filter_validator->fails()){
-            return response([self::RESPONSE_FILTER_KEY_ERROR=>self::ERROR_MSG_FILTER_INVALID], HttpStatus::HTTP_BAD_REQUEST);
+            return response([self::$RESPONSE_FILTER_KEY_ERROR=>self::$ERROR_MSG_FILTER_INVALID], HttpStatus::HTTP_BAD_REQUEST);
         }
 
         return $this->provide_paged_entries_response($filter_data, $page_number, $sort_by, $sort_direction);
@@ -125,8 +103,10 @@ class EntryController extends Controller {
 
     /**
      * POST /api/entry
+     *
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory
+     * @throws \JsonException
      */
     public function create_entry(Request $request){
         return $this->modify_entry($request);
@@ -134,9 +114,11 @@ class EntryController extends Controller {
 
     /**
      * PUT /api/entry/{entry_id}
+     *
      * @param int $entry_id
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory
+     * @throws \JsonException
      */
     public function update_entry($entry_id, Request $request){
         return $this->modify_entry($request, $entry_id);
@@ -146,6 +128,7 @@ class EntryController extends Controller {
      * @param Request $request
      * @param int|false $update_id
      * @return \Illuminate\Contracts\Routing\ResponseFactory
+     * @throws \JsonException
      */
     private function modify_entry(Request $request, $update_id=false){
         $request_body = $request->getContent();
@@ -154,7 +137,7 @@ class EntryController extends Controller {
         // no data check
         if(empty($entry_data)){
             return response(
-                [self::RESPONSE_SAVE_KEY_ID=>self::ERROR_ENTRY_ID, self::RESPONSE_SAVE_KEY_ERROR=>self::ERROR_MSG_SAVE_ENTRY_NO_DATA],
+                [self::$RESPONSE_SAVE_KEY_ID=>self::$ERROR_ENTRY_ID, self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_NO_DATA],
                 HttpStatus::HTTP_BAD_REQUEST
             );
         }
@@ -167,7 +150,7 @@ class EntryController extends Controller {
             $missing_properties = array_diff_key(array_flip($required_fields), $entry_data);
             if(count($missing_properties) > 0){
                 return response(
-                    [self::RESPONSE_SAVE_KEY_ID=>self::ERROR_ENTRY_ID, self::RESPONSE_SAVE_KEY_ERROR=>sprintf(self::ERROR_MSG_SAVE_ENTRY_MISSING_PROPERTY, json_encode(array_keys($missing_properties)))],
+                    [self::$RESPONSE_SAVE_KEY_ID=>self::$ERROR_ENTRY_ID, self::$RESPONSE_SAVE_KEY_ERROR=>sprintf(self::$ERROR_MSG_SAVE_ENTRY_MISSING_PROPERTY, json_encode(array_keys($missing_properties)))],
                     HttpStatus::HTTP_BAD_REQUEST
                 );
             }
@@ -181,7 +164,7 @@ class EntryController extends Controller {
             $entry_being_modified = Entry::find($update_id);
             if(is_null($entry_being_modified)){
                 return response(
-                    [self::RESPONSE_SAVE_KEY_ID=>self::ERROR_ENTRY_ID, self::RESPONSE_SAVE_KEY_ERROR=>self::ERROR_MSG_SAVE_ENTRY_DOES_NOT_EXIST],
+                    [self::$RESPONSE_SAVE_KEY_ID=>self::$ERROR_ENTRY_ID, self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_DOES_NOT_EXIST],
                     HttpStatus::HTTP_NOT_FOUND
                 );
             }
@@ -192,7 +175,7 @@ class EntryController extends Controller {
             $account_type = AccountType::find($entry_data['account_type_id']);
             if(empty($account_type)){
                 return response(
-                    [self::RESPONSE_SAVE_KEY_ERROR=>self::ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE, self::RESPONSE_SAVE_KEY_ID=>self::ERROR_ENTRY_ID],
+                    [self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE, self::$RESPONSE_SAVE_KEY_ID=>self::$ERROR_ENTRY_ID],
                     HttpStatus::HTTP_BAD_REQUEST
                 );
             }
@@ -215,7 +198,7 @@ class EntryController extends Controller {
         $this->attach_attachments_to_entry($entry_being_modified, $entry_attachments);
 
         return response(
-            [self::RESPONSE_SAVE_KEY_ERROR=>self::ERROR_MSG_SAVE_ENTRY_NO_ERROR, self::RESPONSE_SAVE_KEY_ID=>$entry_being_modified->id],
+            [self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_NO_ERROR, self::$RESPONSE_SAVE_KEY_ID=>$entry_being_modified->id],
             $successful_http_status_code
         );
     }
@@ -227,7 +210,7 @@ class EntryController extends Controller {
 
         if(empty($transfer_data)){
             return response(
-                [self::RESPONSE_SAVE_KEY_ERROR=>self::ERROR_MSG_SAVE_ENTRY_NO_DATA, self::RESPONSE_SAVE_KEY_ID=>[]],
+                [self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_NO_DATA, self::$RESPONSE_SAVE_KEY_ID=>[]],
             HttpStatus::HTTP_BAD_REQUEST
             );
         }
@@ -239,83 +222,44 @@ class EntryController extends Controller {
             $required_transfer_fields[array_search('expense', $required_transfer_fields)],
             $required_transfer_fields[array_search('confirm', $required_transfer_fields)]
         );
-        $transfer_specific_fields = [self::TRANSFER_KEY_FROM_ACCOUNT_TYPE, self::TRANSFER_KEY_TO_ACCOUNT_TYPE];
+        $transfer_specific_fields = [self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE, self::$TRANSFER_KEY_TO_ACCOUNT_TYPE];
         $required_transfer_fields = array_merge($required_transfer_fields, $transfer_specific_fields);
 
         // missing (required) data check
         $missing_properties = array_diff_key(array_flip($required_transfer_fields), $transfer_data);
         if(count($missing_properties) > 0){
             return response(
-                [self::RESPONSE_SAVE_KEY_ERROR=>sprintf(self::ERROR_MSG_SAVE_ENTRY_MISSING_PROPERTY, json_encode(array_keys($missing_properties))), self::RESPONSE_SAVE_KEY_ID=>[]],
+                [self::$RESPONSE_SAVE_KEY_ERROR=>sprintf(self::$ERROR_MSG_SAVE_ENTRY_MISSING_PROPERTY, json_encode(array_keys($missing_properties))), self::$RESPONSE_SAVE_KEY_ID=>[]],
                 HttpStatus::HTTP_BAD_REQUEST
             );
         }
 
-        $from_entry = null;
-        if(isset($transfer_data[self::TRANSFER_KEY_FROM_ACCOUNT_TYPE]) && $transfer_data[self::TRANSFER_KEY_FROM_ACCOUNT_TYPE] != self::TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID){
-            // check validity of account_type_id value
-            $account_type = AccountType::find($transfer_data[self::TRANSFER_KEY_FROM_ACCOUNT_TYPE]);
-            if(empty($account_type)){
-                return response(
-                    [self::RESPONSE_SAVE_KEY_ERROR=>self::ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE, self::RESPONSE_SAVE_KEY_ID=>[]],
-                    HttpStatus::HTTP_BAD_REQUEST
-                );
-            }
-
-            $from_entry = new Entry();
-            foreach($transfer_data as $property=>$value){
-                if(in_array($property, $required_transfer_fields)){
-                    if(in_array($property, $transfer_specific_fields)){
-                        if($property == self::TRANSFER_KEY_FROM_ACCOUNT_TYPE){
-                            $property = 'account_type_id';
-                        } else {
-                            continue;
-                        }
-                    }
-                    $from_entry->$property = $value;
-                }
-            }
-            $from_entry->expense = 1;
-
-        }
-
-        $to_entry = null;
-        if(isset($transfer_data[self::TRANSFER_KEY_TO_ACCOUNT_TYPE]) && $transfer_data[self::TRANSFER_KEY_TO_ACCOUNT_TYPE] != self::TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID){
-            // check validity of account_type_id value
-            $account_type = AccountType::find($transfer_data[self::TRANSFER_KEY_TO_ACCOUNT_TYPE]);
-            if(empty($account_type)){
-                return response(
-                    [self::RESPONSE_SAVE_KEY_ERROR=>self::ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE, self::RESPONSE_SAVE_KEY_ID=>[]],
-                    HttpStatus::HTTP_BAD_REQUEST
-                );
-            }
-
-            $to_entry = new Entry();
-            foreach($transfer_data as $property=>$value){
-                if(in_array($property, $required_transfer_fields)){
-                    if(in_array($property, $transfer_specific_fields)){
-                        if($property == self::TRANSFER_KEY_TO_ACCOUNT_TYPE){
-                            $property = 'account_type_id';
-                        } else {
-                            continue;
-                        }
-                    }
-                    $to_entry->$property = $value;
-                }
-            }
-            $to_entry->expense = 0;
-        }
-
         $entry_tags = !empty($transfer_data['tags']) && is_array($transfer_data['tags']) ? $transfer_data['tags'] : [];
 
-        if(!is_null($to_entry)){
-            $to_entry->save();
-            $this->update_entry_tags($to_entry, $entry_tags);
+        if(isset($transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE]) && $transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE] != self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID){
+            try {
+                $from_entry = $this->initTransferEntry($transfer_data, self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE, $required_transfer_fields, $transfer_specific_fields, $entry_tags);
+            } catch(\OutOfRangeException $e){
+                return response(
+                    [self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE, self::$RESPONSE_SAVE_KEY_ID=>[]],
+                    HttpStatus::HTTP_BAD_REQUEST
+                );
+            }
+        } else {
+            $from_entry = null;
         }
 
-        if(!is_null($from_entry)){
-            $from_entry->save();
-            $this->update_entry_tags($from_entry, $entry_tags);
+        if(isset($transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE]) && $transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE] != self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID){
+            try{
+                $to_entry = $this->initTransferEntry($transfer_data, self::$TRANSFER_KEY_TO_ACCOUNT_TYPE, $required_transfer_fields, $transfer_specific_fields, $entry_tags);
+            } catch(\OutOfRangeException $e){
+                return response(
+                    [self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE, self::$RESPONSE_SAVE_KEY_ID=>[]],
+                    HttpStatus::HTTP_BAD_REQUEST
+                );
+            }
+        } else {
+            $to_entry = null;
         }
 
         $entry_attachments = !empty($transfer_data['attachments']) && is_array($transfer_data['attachments']) ? $transfer_data['attachments'] : [];
@@ -353,62 +297,76 @@ class EntryController extends Controller {
             $this->attach_attachments_to_entry($from_entry, $cloned_entry_attachments);
 
             return response(
-                [self::RESPONSE_SAVE_KEY_ID=>[$to_entry->id, $from_entry->id], self::RESPONSE_SAVE_KEY_ERROR=>self::ERROR_MSG_SAVE_ENTRY_NO_ERROR],
+                [self::$RESPONSE_SAVE_KEY_ID=>[$to_entry->id, $from_entry->id], self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_NO_ERROR],
                 HttpStatus::HTTP_CREATED
             );
         } elseif(is_null($to_entry) && !is_null($from_entry)){
             // "TO" entry is EXTERNAL
-            $from_entry->transfer_entry_id = self::TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
+            $from_entry->transfer_entry_id = self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
             $from_entry->save();
             $this->attach_attachments_to_entry($from_entry, $entry_attachments);
             return response(
-                [self::RESPONSE_SAVE_KEY_ID=>[$from_entry->id], self::RESPONSE_SAVE_KEY_ERROR=>self::ERROR_MSG_SAVE_ENTRY_NO_ERROR],
+                [self::$RESPONSE_SAVE_KEY_ID=>[$from_entry->id], self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_NO_ERROR],
                 HttpStatus::HTTP_CREATED
             );
         } elseif(!is_null($to_entry) && is_null($from_entry)){
             // "FROM" entry is EXTERNAL
-            $to_entry->transfer_entry_id = self::TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
+            $to_entry->transfer_entry_id = self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
             $to_entry->save();
             $this->attach_attachments_to_entry($to_entry, $entry_attachments);
             return response(
-                [self::RESPONSE_SAVE_KEY_ID=>[$to_entry->id], self::RESPONSE_SAVE_KEY_ERROR=>self::ERROR_MSG_SAVE_ENTRY_NO_ERROR],
+                [self::$RESPONSE_SAVE_KEY_ID=>[$to_entry->id], self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_NO_ERROR],
                 HttpStatus::HTTP_CREATED
             );
         } else {
             // "FROM" & "TO" entries are EXTERNAL
             return response(
-                [self::RESPONSE_SAVE_KEY_ID=>[], self::RESPONSE_SAVE_KEY_ERROR=>self::ERROR_MSG_SAVE_TRANSFER_BOTH_EXTERNAL],
+                [self::$RESPONSE_SAVE_KEY_ID=>[], self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_TRANSFER_BOTH_EXTERNAL],
                 HttpStatus::HTTP_BAD_REQUEST
             );
         }
     }
 
     /**
-     * @param bool $include_tag_ids
-     * @return array
+     * @param array $transfer_data
+     * @param string $transfer_side
+     * @param array $required_transfer_fields
+     * @param array $transfer_specific_fields
+     * @param array $transfer_entry_tags
+     * @return Entry
+     *
+     * @throws \OutOfRangeException
      */
-    public static function get_filter_details($include_tag_ids = true){
-        $filter_details = [
-            self::FILTER_KEY_START_DATE=>'date_format:Y-m-d',
-            self::FILTER_KEY_END_DATE=>'date_format:Y-m-d',
-            self::FILTER_KEY_ACCOUNT=>'integer',
-            self::FILTER_KEY_ACCOUNT_TYPE=>'integer',
-            self::FILTER_KEY_TAGS=>'array',
-            self::FILTER_KEY_EXPENSE=>'boolean',
-            self::FILTER_KEY_ATTACHMENTS=>'boolean',
-            self::FILTER_KEY_MIN_VALUE=>'numeric',
-            self::FILTER_KEY_MAX_VALUE=>'numeric',
-            self::FILTER_KEY_UNCONFIRMED=>'boolean',
-            self::FILTER_KEY_IS_TRANSFER=>'boolean'
-        ];
-
-        if($include_tag_ids){
-            $tags = Tag::all();
-            $tag_ids = $tags->pluck('id')->toArray();
-            $filter_details['tags.*'] = 'in:'.implode(',', $tag_ids);
+    private function initTransferEntry($transfer_data, $transfer_side, $required_transfer_fields, $transfer_specific_fields, $transfer_entry_tags){
+        // check validity of account_type_id value
+        $account_type = AccountType::find($transfer_data[$transfer_side]);
+        if(empty($account_type)){
+            throw new \OutOfRangeException(self::$ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE);
         }
 
-        return $filter_details;
+        $transfer_entry = new Entry();
+        foreach($transfer_data as $property=>$value){
+            if(in_array($property, $required_transfer_fields)){
+                if(in_array($property, $transfer_specific_fields)){
+                    if($property == $transfer_side){
+                        $property = 'account_type_id';
+                        if($transfer_side == self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE){
+                            $transfer_entry->expense = 1;
+                        } elseif($transfer_side == self::$TRANSFER_KEY_TO_ACCOUNT_TYPE){
+                            $transfer_entry->expense = 0;
+                        }
+                    } else {
+                        continue;
+                    }
+                }
+                $transfer_entry->$property = $value;
+            }
+        }
+
+        $transfer_entry->save();
+        $this->update_entry_tags($transfer_entry, $transfer_entry_tags);
+
+        return $transfer_entry;
     }
 
     /**
@@ -460,8 +418,8 @@ class EntryController extends Controller {
     private function provide_paged_entries_response($filters, $page_number=0, $sort_by=Entry::DEFAULT_SORT_PARAMETER, $sort_direction=Entry::DEFAULT_SORT_DIRECTION){
         $entries_collection = Entry::get_collection_of_non_disabled_entries(
             $filters,
-            EntryController::MAX_ENTRIES_IN_RESPONSE,
-            EntryController::MAX_ENTRIES_IN_RESPONSE*$page_number,
+            self::$MAX_ENTRIES_IN_RESPONSE,
+            self::$MAX_ENTRIES_IN_RESPONSE*$page_number,
             $sort_by,
             $sort_direction
         );

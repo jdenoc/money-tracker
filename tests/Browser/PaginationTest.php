@@ -3,7 +3,7 @@
 namespace Tests\Browser;
 
 use App\Entry;
-use App\Http\Controllers\Api\EntryController;
+use App\Traits\MaxEntryResponseValue;
 use App\Traits\Tests\Dusk\Loading;
 use App\Traits\Tests\Dusk\Navbar;
 use Illuminate\Support\Facades\DB;
@@ -26,14 +26,22 @@ class PaginationTest extends DuskTestCase {
     use HomePageSelectors;
     use Loading;
     use Navbar;
+    use MaxEntryResponseValue;
 
     const PAGE_NUMBER_ZERO = 0;
     const PAGE_NUMBER_ONE = 1;
     const PAGE_NUMBER_TWO = 2;
 
-    const ENTRY_COUNT_ONE = 10;                                                 // number of entries needed to be generated for 1 page of results
-    const ENTRY_COUNT_TWO = (EntryController::MAX_ENTRIES_IN_RESPONSE*2)-10;    // number of entries needed to be generated for 2 pages of results
-    const ENTRY_COUNT_THREE = (EntryController::MAX_ENTRIES_IN_RESPONSE*3)-25;  // number of entries needed to be generated for 3 pages of results
+    private static $ENTRY_COUNT_ONE = 10;   // number of entries needed to be generated for 1 page of results
+    private static $ENTRY_COUNT_TWO = 0;    // number of entries needed to be generated for 2 pages of results; set in constructor
+    private static $ENTRY_COUNT_THREE = 0;  // number of entries needed to be generated for 3 pages of results; set in constructor
+
+    public function __construct($name = null, array $data = [], $dataName = ''){
+        parent::__construct($name, $data, $dataName);
+
+        self::$ENTRY_COUNT_TWO = (self::$MAX_ENTRIES_IN_RESPONSE*2)-10;
+        self::$ENTRY_COUNT_THREE = (self::$MAX_ENTRIES_IN_RESPONSE*3)-25;
+    }
 
     private $_account_types = [];
 
@@ -51,9 +59,9 @@ class PaginationTest extends DuskTestCase {
      * test 1/25
      */
     public function testPaginationButtonsNotVisibleIfEntryCountLessThanPageMax(){
-        factory(Entry::class, self::ENTRY_COUNT_ONE)->create($this->entryOverrideAttributes());
+        factory(Entry::class, self::$ENTRY_COUNT_ONE)->create($this->entryOverrideAttributes());
         $entries = $this->getApiEntries();
-        $this->assertLessThan(EntryController::MAX_ENTRIES_IN_RESPONSE, $entries['count']);
+        $this->assertLessThan(self::$MAX_ENTRIES_IN_RESPONSE, $entries['count']);
 
         $this->browse(function (Browser $browser){
             $browser->visit(new HomePage());
@@ -71,9 +79,9 @@ class PaginationTest extends DuskTestCase {
      * test 2/25
      */
     public function testNextPaginationButtonVisibleIfEntryCountGreaterThanPageMax(){
-        factory(Entry::class, self::ENTRY_COUNT_TWO)->create($this->entryOverrideAttributes());
+        factory(Entry::class, self::$ENTRY_COUNT_TWO)->create($this->entryOverrideAttributes());
         $entries = $this->getApiEntries();
-        $this->assertGreaterThanOrEqual(EntryController::MAX_ENTRIES_IN_RESPONSE, $entries['count']);
+        $this->assertGreaterThanOrEqual(self::$MAX_ENTRIES_IN_RESPONSE, $entries['count']);
 
         $this->browse(function (Browser $browser){
             $browser->visit(new HomePage());
@@ -91,13 +99,13 @@ class PaginationTest extends DuskTestCase {
      * test 3/25
      */
     public function testPreviousPaginationButtonsVisiblePagedToNextPage(){
-        factory(Entry::class, self::ENTRY_COUNT_THREE)->create($this->entryOverrideAttributes());
+        factory(Entry::class, self::$ENTRY_COUNT_THREE)->create($this->entryOverrideAttributes());
         $entries_page1 = $this->getApiEntries(self::PAGE_NUMBER_ONE);
         $entries_page2 = $this->getApiEntries(self::PAGE_NUMBER_TWO);
 
         $this->assertEquals($entries_page1['count'], $entries_page2['count']);
-        $this->assertGreaterThanOrEqual(EntryController::MAX_ENTRIES_IN_RESPONSE*2, $entries_page1['count']);
-        $this->assertLessThan(EntryController::MAX_ENTRIES_IN_RESPONSE*3, $entries_page2['count']);
+        $this->assertGreaterThanOrEqual(self::$MAX_ENTRIES_IN_RESPONSE*2, $entries_page1['count']);
+        $this->assertLessThan(self::$MAX_ENTRIES_IN_RESPONSE*3, $entries_page2['count']);
 
         $this->browse(function (Browser $browser) use ($entries_page1, $entries_page2){
             unset($entries_page1['count'], $entries_page2['count']);
@@ -128,9 +136,9 @@ class PaginationTest extends DuskTestCase {
      * test 4/25
      */
     public function testClickPreviousPaginationButtonToViewFirstPageOfEntries(){
-        factory(Entry::class, self::ENTRY_COUNT_TWO)->create($this->entryOverrideAttributes());
+        factory(Entry::class, self::$ENTRY_COUNT_TWO)->create($this->entryOverrideAttributes());
         $entries = $this->getApiEntries();
-        $this->assertGreaterThanOrEqual(EntryController::MAX_ENTRIES_IN_RESPONSE, $entries['count']);
+        $this->assertGreaterThanOrEqual(self::$MAX_ENTRIES_IN_RESPONSE, $entries['count']);
         unset($entries['count']);
 
         $this->browse(function (Browser $browser) use ($entries){
@@ -156,9 +164,9 @@ class PaginationTest extends DuskTestCase {
      * test 5/25
      */
     public function testPaginationWithEntryCreationUsingEntryModal(){
-        factory(Entry::class, self::ENTRY_COUNT_TWO)->create($this->entryOverrideAttributes());
+        factory(Entry::class, self::$ENTRY_COUNT_TWO)->create($this->entryOverrideAttributes());
         $entries_original = $this->getApiEntries(self::PAGE_NUMBER_ONE);
-        $this->assertGreaterThan(EntryController::MAX_ENTRIES_IN_RESPONSE, $entries_original['count']);
+        $this->assertGreaterThan(self::$MAX_ENTRIES_IN_RESPONSE, $entries_original['count']);
 
         $this->browse(function(Browser $browser) use ($entries_original){
             $browser->visit(new HomePage());
@@ -202,9 +210,9 @@ class PaginationTest extends DuskTestCase {
      * test 6/25
      */
     public function testPaginationWithEntryCreationUsingTransferModal(){
-        factory(Entry::class, self::ENTRY_COUNT_TWO)->create($this->entryOverrideAttributes());
+        factory(Entry::class, self::$ENTRY_COUNT_TWO)->create($this->entryOverrideAttributes());
         $entries_original = $this->getApiEntries(self::PAGE_NUMBER_ONE);
-        $this->assertGreaterThan(EntryController::MAX_ENTRIES_IN_RESPONSE, $entries_original['count']);
+        $this->assertGreaterThan(self::$MAX_ENTRIES_IN_RESPONSE, $entries_original['count']);
 
         $all_account_types = $this->getApiAccountTypes();
         $account_type_ids = collect($all_account_types)->pluck('id')->random(2)->toArray();
@@ -251,7 +259,7 @@ class PaginationTest extends DuskTestCase {
      * test 7/25
      */
     public function testNextButtonNotVisibleWhenNoEntriesProvidedByFilter(){
-        factory(Entry::class, self::ENTRY_COUNT_TWO)->create($this->entryOverrideAttributes());
+        factory(Entry::class, self::$ENTRY_COUNT_TWO)->create($this->entryOverrideAttributes());
 
         $this->browse(function (Browser $browser){
             $browser->visit(new HomePage());

@@ -52,7 +52,7 @@
             const calendar = bulmaCalendar.attach(this.calendarRefs, {
                 color: 'info',
                 isRange: "true",
-                allowSameDayRange: false,
+                allowSameDayRange: true,
                 dateFormat: "YYYY-MM-DD",
                 showTodayButton: false,
             })[0];

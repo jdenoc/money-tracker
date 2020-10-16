@@ -70,10 +70,6 @@ Set `DOCKER_HOST_IP` environment variable
 - Linux/Mac: `export DOCKER_HOST_IP="192.168.x.y"`
 - Windows: `setx DOCKER_HOST_IP="192.168.x.y"`
 
-Set `COMPOSE_PROJECT_NAME` environment variable
-- Linux/Mac: `export COMPOSE_PROJECT_NAME="moneytracker"`
-- Windows: `setx COMPOSE_PROJECT_NAME="moneytracker"`
-
 ##### Clone repo
 ```bash
 git clone https://github.com/jdenoc/money-tracker.git --branch=develop
@@ -100,7 +96,7 @@ This will generate Laravel Facades that PhpStorm can use.
 
 ##### Bring "up" application container(s)
 ```bash
-docker-compose -f .docker/docker-compose.yml up -d
+docker-compose -f .docker/docker-compose.yml -p "moneytracker" up -d
 # composer doesn't write to the correct .env file during setup
 # so we need to generate the APP_KEY value again
 .docker/cmd/artisan.sh key:generate
@@ -110,7 +106,7 @@ docker-compose -f .docker/docker-compose.yml up -d
 If you wish to run docker without xdebug, prefix the above command with `DISABLE_XDEBUG=true`  
 For Example:
 ```bash
-DISABLE_XDEBUG=true docker-compose -f .docker/docker-compose.yml up -d
+DISABLE_XDEBUG=true docker-compose -f .docker/docker-compose.yml -p "moneytracker" up -d
 ```
 `DISABLE_XDEBUG=true` is required _once_ to build the docker image. Afterwards, it is never used again.
 
@@ -233,12 +229,12 @@ That being said, there are certainly variables that should be modified at this p
 ***
 
 ### Scheduled tasks Setup
-This is most likely an item to add to your production server, but is also potentially something you'll want running in the background for you dev environment.
+This is most likely an item to add to your production server, but is also potentially something you'll want running in the background for your dev environment.
 To set this up you will need to add the following Cron entry to your server.
 ```bash
 * * * * * php /path-to-your-project/artisan schedule:run >> /dev/null 2>&1
 ```
-This Cron will call the Laravel command scheduler every minute. When the `schedule:run` command is executed, Laravel will evaluate your scheduled tasks and runs the tasks that are due.  
+This Cron will call the Laravel command scheduler every minute. When the command `schedule:run` is executed, Laravel will evaluate your scheduled tasks and runs the tasks that are due.  
 Here is a list of commands that will _scheduled_ as part of this setup:  
 - `artisan storage:clear-tmp-uploads`
 - `artisan sanity-check:account-total`
@@ -266,7 +262,7 @@ git fetch --tags
 MOST_RECENT_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
 git checkout -q tags/$MOST_RECENT_TAG
 ```
-- <a name="prod-updates-2a">Step 2.a</a>
+- <a name="prod-updates-2a">Step 2.a</a> <small>_(optional)_</small>
 ```
 # *** OPTIONAL ***
 # Edit .env file
@@ -274,21 +270,21 @@ git checkout -q tags/$MOST_RECENT_TAG
 cp .env .env.bkup
 # Perform modifications described in release notes.
 ```
-- <a name="prod-updates-2b">Step 2.b</a>
+- <a name="prod-updates-2b">Step 2.b</a> <small>_(optional)_</small>
 ```
 # *** OPTIONAL ***
 # New/Updates to composer packages
 # Note: check update release notes. 
 composer update --no-dev -o
 ```
-- <a name="prod-updates-2c">Step 2.c</a>
+- <a name="prod-updates-2c">Step 2.c</a> <small>_(optional)_</small>
 ```
 # *** OPTIONAL ***
 # New/Updates to yarn packages
 # Note: check update release notes. 
 yarn install
 ```
-- <a name="prod-updates-2d">Step 2.d</a>
+- <a name="prod-updates-2d">Step 2.d</a> <small>_(optional)_</small>
 ```
 # *** OPTIONAL ***
 # Database updates
@@ -311,6 +307,7 @@ php artisan app:version $MOST_RECENT_TAG
 
 # setup new cache
 php artisan config:cache
+php artisan view:cache
 ```
 - <a name="prod-updates-5">Step 5</a>
 ```
@@ -355,6 +352,8 @@ php artisan dusk --stop-on-failure
 ## Other Documentation
 - [Laravel](https://laravel.com/docs/6.x/)
 - [VueJS](https://vuejs.org/v2/guide/)
+- [Bulma](https://bulma.io/documentation/)
+- [ChartJs](https://www.chartjs.org/)
 - [Docker](https://docs.docker.com/)
 - [Composer](https://getcomposer.org/doc/)
 - [Yarn](https://yarnpkg.com/en/docs)
@@ -362,4 +361,3 @@ php artisan dusk --stop-on-failure
 - [Laravel Dusk](https://laravel.com/docs/6.x/dusk)
 - [Travis CI](https://docs.travis-ci.com/user/languages/php/)
 - [git](https://git-scm.com/doc)
-- [ChartJs](https://www.chartjs.org/)

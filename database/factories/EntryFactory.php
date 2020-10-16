@@ -12,6 +12,7 @@ $factory->define(App\Entry::class, static function(Faker $faker){
         'memo'=>$faker->words(3, true),
         'expense'=>$faker->boolean,
         'confirm'=>$faker->boolean,
+        'disabled'=>false,
         'transfer_entry_id'=>null
     ];
 });

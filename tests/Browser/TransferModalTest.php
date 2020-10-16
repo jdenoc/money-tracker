@@ -4,7 +4,7 @@ namespace Tests\Browser;
 
 use App\Account;
 use App\AccountType;
-use App\Http\Controllers\Api\EntryController;
+use App\Traits\EntryTransferKeys;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
 use App\Traits\Tests\Dusk\Notification as DuskTraitNotification;
@@ -28,6 +28,7 @@ use Throwable;
 class TransferModalTest extends DuskTestCase {
 
     use HomePageSelectors;
+    use EntryTransferKeys;
     use DuskTraitLoading;
     use DuskTraitNavbar;
     use DuskTraitNotification;
@@ -549,8 +550,8 @@ class TransferModalTest extends DuskTestCase {
             $transfer_entry_data = [
                 'memo'=>"Test transfer - save".($has_tags?" w/ tags":'').($has_attachments?" w/ attachments":'').' - '.$this->faker->uuid,
                 'value'=>$this->faker->randomFloat(2, 0, 100),
-                'from_account_type_id'=>($is_from_account_external ? EntryController::TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID : $account_types[0]['id']),
-                'to_account_type_id'=>($is_to_account_external ? EntryController::TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID : $account_types[1]['id']),
+                'from_account_type_id'=>($is_from_account_external ? self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID : $account_types[0]['id']),
+                'to_account_type_id'=>($is_to_account_external ? self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID : $account_types[1]['id']),
                 'tag'=>$tag,
                 'attachment_path'=>\Storage::path($this->getRandomTestFileStoragePath()),
             ];

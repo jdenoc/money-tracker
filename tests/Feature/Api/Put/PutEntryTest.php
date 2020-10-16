@@ -6,15 +6,15 @@ use App\Account;
 use App\AccountType;
 use App\Attachment;
 use App\Entry;
-use App\Http\Controllers\Api\EntryController;
 use App\Tag;
-use Faker\Factory as FakerFactory;
+use App\Traits\EntryResponseKeys;
 use Illuminate\Foundation\Testing\WithFaker;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 
 class PutEntryTest extends TestCase {
 
+    use EntryResponseKeys;
     use WithFaker;
 
     private $_base_uri = '/api/entry/';
@@ -41,7 +41,7 @@ class PutEntryTest extends TestCase {
         $response->assertStatus(HttpStatus::HTTP_BAD_REQUEST);
         $response_as_array = $response->json();
         $this->assertPutResponseHasCorrectKeys($response_as_array);
-        $this->assertFailedPutResponse($response_as_array, EntryController::ERROR_MSG_SAVE_ENTRY_NO_DATA);
+        $this->assertFailedPutResponse($response_as_array, self::$ERROR_MSG_SAVE_ENTRY_NO_DATA);
     }
 
     public function testUpdateEntryButNewAccountTypeDoesNotExist(){
@@ -61,7 +61,7 @@ class PutEntryTest extends TestCase {
         $response->assertStatus(HttpStatus::HTTP_BAD_REQUEST);
         $response_as_array = $response->json();
         $this->assertPutResponseHasCorrectKeys($response_as_array);
-        $this->assertFailedPutResponse($response_as_array, EntryController::ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE);
+        $this->assertFailedPutResponse($response_as_array, self::$ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE);
     }
 
     public function testUpdateEntryButEntryDoesNotExist(){
@@ -81,7 +81,7 @@ class PutEntryTest extends TestCase {
         $this->assertResponseStatus($response, HttpStatus::HTTP_NOT_FOUND);
         $response_as_array = $response->json();
         $this->assertPutResponseHasCorrectKeys($response_as_array);
-        $this->assertFailedPutResponse($response_as_array, EntryController::ERROR_MSG_SAVE_ENTRY_DOES_NOT_EXIST);
+        $this->assertFailedPutResponse($response_as_array, self::$ERROR_MSG_SAVE_ENTRY_DOES_NOT_EXIST);
     }
 
     public function testUpdateEntryAndConfirmAccountTotalUpdated(){
@@ -224,8 +224,8 @@ class PutEntryTest extends TestCase {
         $put_response->assertStatus(HttpStatus::HTTP_OK);
         $put_response_as_array = $put_response->json();
         $this->assertPutResponseHasCorrectKeys($put_response_as_array);
-        $this->assertEmpty($put_response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR]);
-        $this->assertGreaterThan(EntryController::ERROR_ENTRY_ID, $put_response_as_array[EntryController::RESPONSE_SAVE_KEY_ID]);
+        $this->assertEmpty($put_response_as_array[self::$RESPONSE_SAVE_KEY_ERROR]);
+        $this->assertGreaterThan(self::$ERROR_ENTRY_ID, $put_response_as_array[self::$RESPONSE_SAVE_KEY_ID]);
 
         // WHEN
         $get_entry_response = $this->get($this->_base_uri.$this->_generated_entry->id);
@@ -316,9 +316,8 @@ class PutEntryTest extends TestCase {
     }
 
     public function testUpdateEntryToHaveTransferEntryCounterpart(){
-        $faker = FakerFactory::create();
         // GIVEN - see setup()
-        $entry_data = ['transfer_entry_id'=>$faker->randomDigitNotNull];
+        $entry_data = ['transfer_entry_id'=>$this->faker->randomDigitNotNull];
 
         // WHEN
         $get_response = $this->get($this->_base_uri.$this->_generated_entry->id);
@@ -344,12 +343,11 @@ class PutEntryTest extends TestCase {
 
     public function testUpdateEntryWithTagThatDoesNotExist(){
         // GIVEN - see setUp()
-        $faker = FakerFactory::create();
-        $generate_tag_count = $faker->numberBetween(2, 5);
+        $generate_tag_count = $this->faker->numberBetween(2, 5);
         factory(Tag::class, $generate_tag_count)->create();
         $put_entry_data = ['tags'=>Tag::all()->pluck('id')->toArray()];
         do{
-            $non_existent_tag_id = $faker->randomDigitNotNull;
+            $non_existent_tag_id = $this->faker->randomDigitNotNull;
         }while(in_array($non_existent_tag_id, $put_entry_data['tags']));
         $put_entry_data['tags'][] = $non_existent_tag_id;
 
@@ -377,18 +375,17 @@ class PutEntryTest extends TestCase {
     }
 
     public function testUpdateEntryWithTagsSoTheyAreNotDuplicated(){
-        $faker = FakerFactory::create();
         // GIVEN - see setUp()
-        $generate_tag_count = $faker->numberBetween(2, 5);
+        $generate_tag_count = $this->faker->numberBetween(2, 5);
         $generated_tags = factory(Tag::class, $generate_tag_count)->create();
         $generated_tag_ids = $generated_tags->pluck('pivot.tag_id')->toArray();
-        $attaching_tag_id = $faker->randomElement($generated_tag_ids);
+        $attaching_tag_id = $this->faker->randomElement($generated_tag_ids);
         $this->_generated_entry->tags()->attach($attaching_tag_id);
         $put_entry_data = ['tags'=>[$attaching_tag_id]];
         $put_entry_data['tags'] = array_merge(
             $put_entry_data['tags'],
             [$attaching_tag_id],
-            $faker->randomElements($generated_tag_ids, 2)
+            $this->faker->randomElements($generated_tag_ids, 2)
         );
 
         // WHEN
@@ -511,8 +508,8 @@ class PutEntryTest extends TestCase {
     private function assertPutResponseHasCorrectKeys($response_as_array){
         $failure_message = "PUT Response is ".json_encode($response_as_array);
         $this->assertTrue(is_array($response_as_array), $failure_message);
-        $this->assertArrayHasKey(EntryController::RESPONSE_SAVE_KEY_ID, $response_as_array, $failure_message);
-        $this->assertArrayHasKey(EntryController::RESPONSE_SAVE_KEY_ERROR, $response_as_array, $failure_message);
+        $this->assertArrayHasKey(self::$RESPONSE_SAVE_KEY_ID, $response_as_array, $failure_message);
+        $this->assertArrayHasKey(self::$RESPONSE_SAVE_KEY_ERROR, $response_as_array, $failure_message);
     }
 
     /**
@@ -521,9 +518,9 @@ class PutEntryTest extends TestCase {
      */
     private function assertFailedPutResponse($response_as_array, $response_error_msg){
         $failure_message = "PUT response is ".json_encode($response_as_array);
-        $this->assertEquals(EntryController::ERROR_ENTRY_ID, $response_as_array[EntryController::RESPONSE_SAVE_KEY_ID], $failure_message);
-        $this->assertNotEmpty($response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR], $failure_message);
-        $this->assertStringContainsString($response_error_msg, $response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR], $failure_message);
+        $this->assertEquals(self::$ERROR_ENTRY_ID, $response_as_array[self::$RESPONSE_SAVE_KEY_ID], $failure_message);
+        $this->assertNotEmpty($response_as_array[self::$RESPONSE_SAVE_KEY_ERROR], $failure_message);
+        $this->assertStringContainsString($response_error_msg, $response_as_array[self::$RESPONSE_SAVE_KEY_ERROR], $failure_message);
     }
 
     /**
@@ -531,9 +528,9 @@ class PutEntryTest extends TestCase {
      */
     private function assertSuccessPutResponse($response_as_array){
         $failure_message = "PUT response is ".json_encode($response_as_array);
-        $this->assertEmpty($response_as_array[EntryController::RESPONSE_SAVE_KEY_ERROR], $failure_message);
-        $this->assertGreaterThan(EntryController::ERROR_ENTRY_ID, $response_as_array[EntryController::RESPONSE_SAVE_KEY_ID], $failure_message);
-        $this->assertEquals($this->_generated_entry->id, $response_as_array[EntryController::RESPONSE_SAVE_KEY_ID], $failure_message." while updating entry ID ".$this->_generated_entry->id);
+        $this->assertEmpty($response_as_array[self::$RESPONSE_SAVE_KEY_ERROR], $failure_message);
+        $this->assertGreaterThan(self::$ERROR_ENTRY_ID, $response_as_array[self::$RESPONSE_SAVE_KEY_ID], $failure_message);
+        $this->assertEquals($this->_generated_entry->id, $response_as_array[self::$RESPONSE_SAVE_KEY_ID], $failure_message." while updating entry ID ".$this->_generated_entry->id);
     }
 
 }

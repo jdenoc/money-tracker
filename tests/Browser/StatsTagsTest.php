@@ -120,31 +120,59 @@ class StatsTagsTest extends StatsBase {
 
     public function providerTestGenerateTagsChart(){
         return [
-            //[$datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $tag_count]
+            //[$datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $tag_count, $include_transfers]
             // defaults account/account-type & tags & date-picker values
-            [null, null, false, false, false, 0],   // test 3/25
+            [null, null, false, false, false, 0, false],   // test 1/25
+            // defaults account/account-type & tags & date-picker values & include transfers checkbox button clicked
+            [null, null, false, false, false, 0, true],   // test 2/25
             // date-picker previous year start to present & default tags & default account/account-type
-            [$this->previous_year_start, $this->today, false, false, false, 0], // test 4/25
+            [$this->previous_year_start, $this->today, false, false, false, 0, false], // test 3/25
+            // date-picker previous year start to present & default tags & default account/account-type & include transfers checkbox button clicked
+            [$this->previous_year_start, $this->today, false, false, false, 0, true], // test 4/25
             // date-picker previous year start to present & default tags & random account
-            [$this->previous_year_start, $this->today, false, true, false, 0],  // test 5/25
+            [$this->previous_year_start, $this->today, false, true, false, 0, false],  // test 5/25
+            // date-picker previous year start to present & default tags & random account & include transfers checkbox button clicked
+            [$this->previous_year_start, $this->today, false, true, false, 0, true],  // test 6/25
             // date-picker previous year start to present & default tags & random account-type
-            [$this->previous_year_start, $this->today, true, true, false, 0],   // test 6/25
+            [$this->previous_year_start, $this->today, true, true, false, 0, false],   // test 7/25
+            // date-picker previous year start to present & default tags & random account-type & include transfers checkbox button clicked
+            [$this->previous_year_start, $this->today, true, true, false, 0, true],   // test 8/25
             // date-picker previous year start to present & default tags & random disabled account
-            [$this->previous_year_start, $this->today, false, true, true, 0],   // test 7/25
+            [$this->previous_year_start, $this->today, false, true, true, 0, false],   // test 9/25
+            // date-picker previous year start to present & default tags & random disabled account & include transfers checkbox button clicked
+            [$this->previous_year_start, $this->today, false, true, true, 0, true],   // test 10/25
             // date-picker previous year start to present & default tags & random disabled account-type
-            [$this->previous_year_start, $this->today, true, true, true, 0],    // test 8/25
+            [$this->previous_year_start, $this->today, true, true, true, 0, false],    // test 11/25
+            // date-picker previous year start to present & default tags & random disabled account-type & include transfers checkbox button clicked
+            [$this->previous_year_start, $this->today, true, true, true, 0, true],    // test 12/25
             // date-picker previous year start to present & random tag & default account/account-type
-            [$this->previous_year_start, $this->today, false, false, false, 1], // test 9/25
+            [$this->previous_year_start, $this->today, false, false, false, 1, false], // test 13/25
+            // date-picker previous year start to present & random tag & default account/account-type & include transfers checkbox button clicked
+            [$this->previous_year_start, $this->today, false, false, false, 1, true], // test 14/25
             // date-picker previous year start to present & random tag & random account
-            [$this->previous_year_start, $this->today, false, true, false, 1],  // test 10/25
+            [$this->previous_year_start, $this->today, false, true, false, 1, false],  // test 15/25
+            // date-picker previous year start to present & random tag & random account & include transfers checkbox button clicked
+            [$this->previous_year_start, $this->today, false, true, false, 1, true],  // test 16/25
             // date-picker previous year start to present & random tag & random account-type
-            [$this->previous_year_start, $this->today, true, true, false, 1],   // test 11/25
+            [$this->previous_year_start, $this->today, true, true, false, 1, false],   // test 17/25
+            // date-picker previous year start to present & random tag & random account-type & include transfers checkbox button clicked
+            [$this->previous_year_start, $this->today, true, true, false, 1, true],   // test 18/25
             // date-picker previous year start to present & random tag & random disabled account
-            [$this->previous_year_start, $this->today, false, true, true, 1],   // test 12/25
+            [$this->previous_year_start, $this->today, false, true, true, 1, false],   // test 19/25
+            // date-picker previous year start to present & random tag & random disabled account & include transfers checkbox button clicked
+            [$this->previous_year_start, $this->today, false, true, true, 1, true],   // test 20/25
             // date-picker previous year start to present & random tag & random disabled account-type
-            [$this->previous_year_start, $this->today, true, true, true, 1],    // test 13/25
+            [$this->previous_year_start, $this->today, true, true, true, 1, false],    // test 21/25
+            // date-picker previous year start to present & random tag & random disabled account-type & include transfers checkbox button clicked
+            [$this->previous_year_start, $this->today, true, true, true, 1, true],    // test 22/25
             // date-picker previous year start to present & random tags & default account/account-type
-            [$this->previous_year_start, $this->today, false, false, false, 2]  // test 14/25
+            [$this->previous_year_start, $this->today, false, false, false, 2, false],  // test 23/25
+            // date-picker previous year start to present & random tags & default account/account-type & include transfers checkbox button clicked
+            [$this->previous_year_start, $this->today, false, false, false, 2, true],  // test 24/25
+            // defaults account/account-type & tags; date-picker today ONLY
+            [$this->today, $this->today, false, false, false, 0, false],   // test 25/25
+            // defaults account/account-type & tags; date-picker today ONLY; include transfers
+            [$this->today, $this->today, false, false, false, 0, true],   // test 26/25
         ];
     }
 
@@ -157,18 +185,19 @@ class StatsTagsTest extends StatsBase {
      * @param bool $is_random_selector_value
      * @param bool $are_disabled_select_options_available
      * @param int $tag_count
+     * @param bool $include_transfers
      *
      * @throws Throwable
      *
-     * @group stats-tags-1
+     * @group stats-tags-2
      * test (see provider)/25
      */
-    public function testGenerateTagsChart($datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $tag_count){
+    public function testGenerateTagsChart($datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $tag_count, $include_transfers){
         $accounts = collect($this->getApiAccounts());
         $account_types = collect($this->getApiAccountTypes());
         $tags = collect($this->getApiTags());
 
-        $this->browse(function(Browser $browser) use ($datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $accounts, $account_types, $tag_count, $tags){
+        $this->browse(function(Browser $browser) use ($datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $accounts, $account_types, $tag_count, $tags, $include_transfers){
             $filter_data = [];
 
             $browser->visit(new StatsPage());
@@ -209,17 +238,24 @@ class StatsTagsTest extends StatsBase {
                     }
                     $filter_data = $this->generateFilterArrayElementDatepicker($filter_data, $datepicker_start, $datepicker_end);
 
-                    $this->generateEntryFromFilterData($filter_data);
+                    $this->generateEntryFromFilterData($filter_data, $this->getName(true));
                     $this->createEntryWithAllTags($is_switch_toggled, $account_or_account_type_id, $account_types, $tags);
                     $form->click(self::$SELECTOR_BUTTON_GENERATE);
                 });
 
-            $entries = $this->getBatchedFilteredEntries($filter_data);
-
             $this->waitForLoadingToStop($browser);
+            $entries = $this->getBatchedFilteredEntries($filter_data);
+            $entries = $this->filterTransferEntries($entries, $include_transfers);
+
             $browser
                 ->assertDontSeeIn(self::$SELECTOR_STATS_RESULTS_TAGS, self::$LABEL_NO_STATS_DATA)
-                ->with(self::$SELECTOR_STATS_RESULTS_TAGS, function(Browser $stats_results_area){
+                ->with(self::$SELECTOR_STATS_RESULTS_TAGS, function(Browser $stats_results_area) use ($include_transfers){
+                    $this->assertIncludeTransfersCheckboxButtonDefaultState($stats_results_area);
+                    if($include_transfers){
+                        $this->clickIncludeTransfersCheckboxButton($stats_results_area);
+                        $this->assertIncludesTransfersCheckboxButtonStateActive($stats_results_area);
+                    }
+
                     $stats_results_area->assertVisible(self::$SELECTOR_CHART_TAGS);
                 })
                 ->assertVue(self::$VUE_KEY_STANDARDISEDATA, $this->standardiseData($entries, $tags), self::$SELECTOR_STATS_TAGS);
@@ -273,10 +309,6 @@ class StatsTagsTest extends StatsBase {
     }
 
     /**
-     * Database seeder doesn't assign tags to disabled entries.
-     * It's a waste of resources to do that for every test when most tests don't need that kind of data.
-     * So instead for these tests, we'll create a disabled with all the tags
-     *
      * @param bool $is_account_type_rather_than_account_toggled
      * @param int $account_or_account_type_id
      * @param Collection $account_types
@@ -293,7 +325,7 @@ class StatsTagsTest extends StatsBase {
             $account_type_id = $account_types->pluck('id')->random();
         }
 
-        $entry_with_tags = factory(Entry::class)->create(['account_type_id'=>$account_type_id, 'disabled'=>false, 'entry_date'=>date('Y-m-d')]);
+        $entry_with_tags = factory(Entry::class)->create(['memo'=>$this->getName(true).' - ALL TAGS', 'account_type_id'=>$account_type_id, 'disabled'=>false, 'entry_date'=>date('Y-m-d')]);
         foreach($tags->pluck('id')->all() as $tag_id){
             $entry_with_tags->tags()->attach($tag_id);
         }

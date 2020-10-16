@@ -1,14 +1,11 @@
 <script>
-    import { Line } from 'vue-chartjs';
+    import { Line, mixins } from 'vue-chartjs'
 
     export default {
         name: "line-chart",
         extends: Line,
+        mixins: [mixins.reactiveProp],
         props: {
-            chartData: {
-                type: Object,
-                default: null
-            },
             options: {
                 type: Object,
                 default: null

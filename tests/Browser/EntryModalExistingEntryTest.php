@@ -3,7 +3,7 @@
 namespace Tests\Browser;
 
 use App\Entry;
-use App\Http\Controllers\Api\EntryController;
+use App\Traits\EntryTransferKeys;
 use App\Traits\Tests\Dusk\BulmaColors as DuskTraitBulmaColors;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
@@ -29,6 +29,7 @@ use Throwable;
  */
 class EntryModalExistingEntryTest extends DuskTestCase {
 
+    use EntryTransferKeys;
     use WaitTimes;
     use HomePageSelectors;
     use DuskTraitBulmaColors;
@@ -55,7 +56,6 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     private $_class_existing_attachment = "existing-attachment";
 
     private $_cached_entries_collection = [];
-
 
     public function __construct($name = null, array $data = [], $dataName = ''){
         parent::__construct($name, $data, $dataName);
@@ -424,13 +424,20 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         $this->browse(function(Browser $browser){
             $entry_selector = $this->randomUnconfirmedEntrySelector(true);
             $old_value = "";
-            $new_value = date("Y-m-d", strtotime("-90 days"));
+            $new_value = '';
 
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $browser->openExistingEntryModal($entry_selector)
-                ->with($this->_selector_modal_body, function(Browser $modal_body) use (&$old_value, $new_value){
+                ->with($this->_selector_modal_body, function(Browser $modal_body) use (&$old_value, &$new_value){
                     $old_value = $modal_body->value($this->_selector_modal_entry_field_date);
+                    // just in case the old and new values match
+                    $day_diff = -90;
+                    do{
+                        $new_value = date("Y-m-d", strtotime(sprintf("%d days", $day_diff)));
+                        $day_diff--;
+                    } while ($new_value === $old_value);
+
                     // clear input[type="date"]
                     for($i=0; $i<strlen($old_value); $i++){
                         $modal_body->keys($this->_selector_modal_entry_field_date, "{backspace}");
@@ -691,13 +698,12 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                 ->with($this->_selector_modal_entry, function(Browser $entry_modal) use ($transfer_entry_data){
                     $entry_modal
                         ->with($this->_selector_modal_body, function(Browser $modal_body) use ($transfer_entry_data){
-                            $expense_switch_label = $transfer_entry_data['expense'] ? $this->_label_expense_switch_expense : $this->_label_expense_switch_income;
-
                             $modal_body
                                 ->assertInputValue($this->_selector_modal_entry_field_date, $transfer_entry_data['entry_date'])
                                 ->assertInputValue($this->_selector_modal_entry_field_value, $transfer_entry_data['entry_value'])
                                 ->assertSelected($this->_selector_modal_entry_field_account_type, $transfer_entry_data['account_type_id'])
                                 ->assertInputValue($this->_selector_modal_entry_field_memo, $transfer_entry_data['memo']);
+                            $expense_switch_label = $transfer_entry_data['expense'] ? $this->_label_expense_switch_expense : $this->_label_expense_switch_income;
                             $this->assertToggleButtonState($modal_body, $this->_selector_modal_entry_field_expense, $expense_switch_label);
                         })
                         ->with($this->_selector_modal_head, function(Browser $modal_head) use ($transfer_entry_data){
@@ -710,19 +716,19 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                                 ->assertVisible($this->_selector_modal_entry_btn_transfer)
                                 ->click($this->_selector_modal_entry_btn_transfer);
                         });
-                })
-
+                });
+            $this->waitForLoadingToStop($browser);
+            $browser
                 ->assertVisible($this->_selector_modal_entry)
                 ->with($this->_selector_modal_entry, function(Browser $entry_modal) use ($entry_data){
                     $entry_modal
                         ->with($this->_selector_modal_body, function(Browser $modal_body) use ($entry_data){
-                            $expense_switch_label = $entry_data['expense'] ? $this->_label_expense_switch_expense : $this->_label_expense_switch_income;
-
                             $modal_body
                                 ->assertInputValue($this->_selector_modal_entry_field_date, $entry_data['entry_date'])
                                 ->assertInputValue($this->_selector_modal_entry_field_value, $entry_data['entry_value'])
                                 ->assertSelected($this->_selector_modal_entry_field_account_type, $entry_data['account_type_id'])
                                 ->assertInputValue($this->_selector_modal_entry_field_memo, $entry_data['memo']);
+                            $expense_switch_label = $entry_data['expense'] ? $this->_label_expense_switch_expense : $this->_label_expense_switch_income;
                             $this->assertToggleButtonState($modal_body, $this->_selector_modal_entry_field_expense, $expense_switch_label);
                         })
                         ->with($this->_selector_modal_head, function(Browser $modal_head) use ($entry_data){
@@ -750,7 +756,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                 $entry_selector = $this->randomEntrySelector(['is_transfer'=>true]);
                 $entry_id = $this->getEntryIdFromSelector($entry_selector);
                 $entry_data = $this->getApiEntry($entry_id);
-            } while($entry_data['transfer_entry_id'] !== EntryController::TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID);
+            } while($entry_data['transfer_entry_id'] !== self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID);
             $this->assertEquals($entry_id, $entry_data['id']);
             $entry_selector .= '.'.$this->_class_is_transfer;
 
@@ -1021,7 +1027,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     }
 
     /**
-     * @param bool $get_id
+     * @param int|bool $get_id
      * @return string
      */
     private function randomConfirmedEntrySelector($get_id=false){

@@ -22,6 +22,12 @@
         <hr />
 
         <section class="section stats-results-summary" v-if="areEntriesAvailable && dataLoaded">
+            <include-transfers-checkbox
+                chart-name="summary"
+                v-bind:include-transfers="includeTransfers"
+                v-on:update-checkradio="includeTransfers = $event"
+            ></include-transfers-checkbox>
+
             <table class="table">
                 <caption class="subtitle is-5 has-text-left">Total Income/Expenses</caption>
                 <thead>
@@ -77,6 +83,7 @@
 <script>
     import bulmaCalendar from '../bulma-calendar';
     import AccountAccountTypeTogglingSelector from "../account-account-type-toggling-selector";
+    import IncludeTransfersCheckbox from "../include-transfers-checkbox";
     import {Currency} from "../../currency";
 
     import {accountsObjectMixin} from "../../mixins/accounts-object-mixin";
@@ -87,9 +94,10 @@
     export default {
         name: "summary-chart",
         mixins: [statsChartMixin, entriesObjectMixin, accountsObjectMixin, accountTypesObjectMixin],
-        components: {AccountAccountTypeTogglingSelector, bulmaCalendar},
+        components: {IncludeTransfersCheckbox, AccountAccountTypeTogglingSelector, bulmaCalendar},
         data: function(){
           return {
+              chartConfig: { titleText: null},
               currencyObject: new Currency(),
 
               accountOrAccountTypeToggle: true,
@@ -144,14 +152,16 @@
                     });
 
                 // tally up values for total
-                this.largeBatchEntryData.forEach(function(datum){
-                    let accountCurrency = this.getAccountCurrencyFromAccountTypeId(datum.account_type_id);
-                    if(datum.expense){
-                        total[accountCurrency].expense += parseFloat(datum.entry_value);
-                    } else {
-                        total[accountCurrency].income += parseFloat(datum.entry_value);
-                    }
-                }.bind(this));
+                this.largeBatchEntryData
+                    .filter(this.filterIncludeTransferEntries)
+                    .forEach(function(datum){
+                        let accountCurrency = this.getAccountCurrencyFromAccountTypeId(datum.account_type_id);
+                        if(datum.expense){
+                            total[accountCurrency].expense += parseFloat(datum.entry_value);
+                        } else {
+                            total[accountCurrency].income += parseFloat(datum.entry_value);
+                        }
+                    }.bind(this));
 
                 // prune empty currencies
                 Object.keys(total).map(function(currency, index) {
@@ -174,12 +184,13 @@
             },
             filteredEntries: function(isExpense){
                 return this.largeBatchEntryData
+                    .filter(this.filterIncludeTransferEntries)
+                    .filter(function(datum){ return datum.expense === isExpense; })
                     .map(function(entry){
                         let e = _.clone(entry);
                         e.entry_value = _.round(entry.entry_value, 2);
                         return e;
-                    })
-                    .filter(function(datum){ return datum.expense === isExpense; });
+                    });
             },
 
             getAccountCurrencyFromAccountTypeId: function(accountTypeId){
