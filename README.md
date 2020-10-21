@@ -72,7 +72,7 @@ Set `DOCKER_HOST_IP` environment variable
 
 ##### Clone repo
 ```bash
-git clone https://github.com/jdenoc/money-tracker.git --branch=develop
+git clone git@github.com:jdenoc/money-tracker.git --branch=develop
 cd money-tracker/
 ```
 
@@ -152,7 +152,7 @@ Sometimes, you just don't want to use Docker. That's fine. We support your decis
 #### <a name="dev-application">Application setup</a>
 ```bash
 # Clone repo
-git clone https://github.com/jdenoc/money-tracker.git --branch=develop
+git clone git@github.com:jdenoc/money-tracker.git --branch=develop
 cd money-tracker/
 
 # setup composer packages & environment variables
@@ -189,16 +189,17 @@ _**Note:** If you changed the database, user or password in the above commands, 
 #### <a name="prod-application">Application Setup</a>
 ```bash
 # clone & checkout the most recent git tag
-git clone https://github.com/jdenoc/money-tracker.git --depth=1 --no-checkout
+git clone git@github.com:jdenoc/money-tracker.git --depth=1 --no-checkout
 cd money-tracker/
 git fetch --tags
 MOST_RECENT_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
 git checkout -q tags/$MOST_RECENT_TAG
 
 # setup composer packages, database tables & environment variables
-composer install --no-dev -o
+cp .env.example .env
 sed "s/APP_ENV=.*/APP_ENV=production/" .env > .env.tmp; mv .env.tmp .env
 sed "s/APP_DEBUG=.*/APP_DEBUG=false/" .env > .env.tmp; mv .env.tmp .env
+composer install --no-dev -a
 php artisan app:version $MOST_RECENT_TAG
 
 # setup Yarn packages
@@ -225,6 +226,7 @@ That being said, there are certainly variables that should be modified at this p
 - `DB_DATABASE`
 - `DB_USERNAME`
 - `DB_PASSWORD`
+- `DISCORD_WEBHOOK_URL`
 
 ***
 
@@ -275,7 +277,7 @@ cp .env .env.bkup
 # *** OPTIONAL ***
 # New/Updates to composer packages
 # Note: check update release notes. 
-composer update --no-dev -o
+composer update --no-dev -a
 ```
 - <a name="prod-updates-2c">Step 2.c</a> <small>_(optional)_</small>
 ```
