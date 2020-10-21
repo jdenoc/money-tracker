@@ -795,7 +795,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                 ->with($this->_selector_modal_entry, function(Browser $entry_modal) use ($entry_selector, &$entry_id){
                     $entry_id = $entry_modal->value($this->_selector_modal_entry_field_entry_id);
                     $entry = Entry::findOrFail($entry_id);
-                    foreach($entry->tags->pluck('name') as $tag){
+                    foreach($entry->tags->pluck('name')->unique()->values() as $tag){
                         $this->assertTagInInput($entry_modal, $tag);
                         $entry_modal->click(self::$SELECTOR_TAGS_INPUT_TAG.' .tags-input-remove');
                     }
