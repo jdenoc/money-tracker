@@ -8,7 +8,6 @@ use App\Entry;
 use App\Tag;
 use Carbon\Carbon;
 use Faker\Factory as FakerFactory;
-use Faker\Generator;
 use Illuminate\Support\Collection;
 use Tests\TestCase;
 
@@ -17,7 +16,7 @@ class ListEntriesBase extends TestCase {
     const MIN_TEST_ENTRIES = 4;
 
     /**
-     * @var Generator
+     * @var \Faker\Generator
      */
     protected $_faker;
 
@@ -52,7 +51,6 @@ class ListEntriesBase extends TestCase {
      * @param bool $entry_disabled
      * @param array $override_entry_components
      * @return Entry
-     * @throws \Exception
      */
     protected function generate_entry_record($account_type_id, $entry_disabled, $override_entry_components=[]){
         $default_entry_data = ['account_type_id'=>$account_type_id, 'disabled'=>$entry_disabled];
@@ -62,6 +60,7 @@ class ListEntriesBase extends TestCase {
         if($new_entry_data['disabled']){
             $new_entry_data['disabled_stamp'] = new Carbon();
         }
+        /** @var Entry $generated_entry */
         $generated_entry = factory(Entry::class)->create($new_entry_data);
 
         if(!$entry_disabled){    // no sense cluttering up the database with test data for something that isn't supposed to appear anyway
@@ -75,14 +74,12 @@ class ListEntriesBase extends TestCase {
             factory(Attachment::class, $generate_attachment_count)->create(['entry_id' => $generated_entry->id]);
 
             if(isset($override_entry_components['tags'])){
-                foreach($override_entry_components['tags'] as $attachable_tag){
-                    $generated_entry->tags()->attach($attachable_tag);
-                }
+                $generated_entry->tags()->sync($override_entry_components['tags']);
             } else {
                 $assign_tag_to_entry_count = $this->_faker->numberBetween(0, $this->_generated_tags->count());
                 for($j = 0; $j < $assign_tag_to_entry_count; $j++){
                     $randomly_selected_tag = $this->_generated_tags->random();
-                    $generated_entry->tags()->attach($randomly_selected_tag->id);
+                    $generated_entry->tags()->syncWithoutDetaching([$randomly_selected_tag->id]);
                 }
             }
         }
@@ -97,7 +94,6 @@ class ListEntriesBase extends TestCase {
      * @param bool $randomly_mark_entries_disabled
      * @param bool $mark_entries_disabled
      * @return Collection
-     * @throws \Exception
      */
     protected function batch_generate_entries($generate_entry_count, $generated_account_type_id, $filter_details=[], $randomly_mark_entries_disabled=false, $mark_entries_disabled=false){
         $generated_entries = collect();
@@ -167,7 +163,7 @@ class ListEntriesBase extends TestCase {
      * @param string $sort_direction
      */
     protected function runEntryListAssertions($generate_entry_count, $entries_in_response, $generated_entries, $generated_disabled_entries=[], $sort_parameter=Entry::DEFAULT_SORT_PARAMETER, $sort_direction=Entry::DEFAULT_SORT_DIRECTION){
-        $this->assertEquals($generate_entry_count, count($entries_in_response));
+        $this->assertcount($generate_entry_count, $entries_in_response);
 
         $previous_entry_in_response = null;
         foreach($entries_in_response as $entry_in_response){

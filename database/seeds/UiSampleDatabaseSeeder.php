@@ -235,7 +235,7 @@ class UiSampleDatabaseSeeder extends Seeder {
         } else {
             $entry_tag_ids = $this->faker->randomElements($tag_ids, $this->faker->numberBetween(self::COUNT_MIN, self::COUNT_TAG/2));
         }
-        $entry->tags()->attach($entry_tag_ids);
+        $entry->tags()->syncWithoutDetaching($entry_tag_ids);
     }
 
     /**
