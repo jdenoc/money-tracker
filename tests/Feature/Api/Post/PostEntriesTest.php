@@ -106,6 +106,7 @@ class PostEntriesTest extends \Tests\Feature\Api\ListEntriesBase {
     public function testPostEntries($filter_details){
         // GIVEN
         $generate_entry_count = $this->_faker->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE);
+        /** @var AccountType $generated_account_type */
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
         $filter_details = $this->set_test_specific_filters($filter_details);
 
@@ -381,7 +382,7 @@ class PostEntriesTest extends \Tests\Feature\Api\ListEntriesBase {
                     $entry_components['has_attachments'] = $constraint;
                     break;
                 case self::$FILTER_KEY_TAGS:
-                    $entry_components[$filter_name] = [$this->_faker->randomElement($constraint)];
+                    $entry_components[$filter_name] = is_array($constraint) ? $constraint : [$constraint];
                     break;
                 case self::$FILTER_KEY_IS_TRANSFER:
                     if($constraint == true){

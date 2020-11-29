@@ -114,7 +114,9 @@ class GetEntriesTest extends \Tests\Feature\Api\ListEntriesBase {
     public function testLargeDataSets($entry_count){
         // GIVEN
         $table = with(new Entry)->getTable();
+        /** @var AccountType $generated_account_type */
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
+        /** @var Entry $generated_entries */
         $generated_entries = factory(Entry::class, self::$MAX_ENTRIES_IN_RESPONSE)->make(['account_type_id'=>$generated_account_type->id]);
         // generating entries in batches and using database insert methods because it's faster
         for($i=0; $i<($entry_count/self::$MAX_ENTRIES_IN_RESPONSE); $i++){

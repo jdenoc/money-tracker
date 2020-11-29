@@ -106,7 +106,6 @@ class EntryController extends Controller {
      *
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory
-     * @throws \JsonException
      */
     public function create_entry(Request $request){
         return $this->modify_entry($request);
@@ -118,7 +117,6 @@ class EntryController extends Controller {
      * @param int $entry_id
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory
-     * @throws \JsonException
      */
     public function update_entry($entry_id, Request $request){
         return $this->modify_entry($request, $entry_id);
@@ -128,11 +126,10 @@ class EntryController extends Controller {
      * @param Request $request
      * @param int|false $update_id
      * @return \Illuminate\Contracts\Routing\ResponseFactory
-     * @throws \JsonException
      */
     private function modify_entry(Request $request, $update_id=false){
         $request_body = $request->getContent();
-        $entry_data = json_decode($request_body, true, 512, JSON_THROW_ON_ERROR);
+        $entry_data = json_decode($request_body, true);
 
         // no data check
         if(empty($entry_data)){
