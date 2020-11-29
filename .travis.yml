@@ -36,7 +36,7 @@ before_script:
   # make sure user `www-data` has ownership of everything
   - docker container exec -t app.money-tracker chown -R www-data:www-data .
   # general application setup
-  - cp public/vue/mix-manifest.json public/mix-manifest.json  # putting cached file back in the correct spot
+  - docker container exec -t --user www-data app.money-tracker cp public/vue/mix-manifest.json public/mix-manifest.json  # putting cached file back in the correct spot
   - .docker/cmd/artisan.sh cache:clear
   - .docker/cmd/artisan.sh view:clear
   - .docker/cmd/artisan.sh key:generate
