@@ -4,6 +4,7 @@ namespace App;
 
 use App\Traits\EntryFilterKeys;
 use Carbon\Carbon;
+use Illuminate\Database\Query\Builder;
 
 class Entry extends BaseModel {
 
@@ -103,7 +104,7 @@ class Entry extends BaseModel {
      * @param int $offset
      * @param string $sort_by
      * @param string $sort_direction
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Support\Collection
      */
     public static function get_collection_of_non_disabled_entries($filters = [], $limit=10, $offset=0, $sort_by=self::DEFAULT_SORT_PARAMETER, $sort_direction=self::DEFAULT_SORT_DIRECTION){
         $entries_query = self::build_entry_query($filters);
@@ -120,7 +121,9 @@ class Entry extends BaseModel {
      */
     public static function count_non_disabled_entries($filters = []){
         $entries_query = self::build_entry_query($filters);
-        return $entries_query->distinct()->count("entries.id");
+        // due to the risk of failure with potentially adding GROUP BY to the query
+        // we're going to use the generated query as a subquery and count from that
+        return \DB::table($entries_query->select('entries.id'))->count();
     }
 
     /**
@@ -132,6 +135,11 @@ class Entry extends BaseModel {
         return self::filter_entry_collection($entries_query, $filters);
     }
 
+    /**
+     * @param Builder $entries_query
+     * @param array $filters
+     * @return mixed
+     */
     private static function filter_entry_collection($entries_query, $filters){
         foreach($filters as $filter_name => $filter_constraint){
             switch($filter_name){
@@ -186,12 +194,14 @@ class Entry extends BaseModel {
                 case self::$FILTER_KEY_TAGS:
                     // RIGHT JOIN entry_tags
                     //   ON entry_tags.entry_id=entries.id
-                    //   AND entry_tags.tag_id IN ($tags)
+                    //   AND entry_tags.tag_id IN ($tag_ids)
                     $tag_ids = (is_array($filter_constraint)) ? $filter_constraint : [$filter_constraint];
                     $entries_query->rightJoin('entry_tags', static function($join) use ($tag_ids){
                         $join->on('entry_tags.entry_id', '=', 'entries.id')
                             ->whereIn('entry_tags.tag_id', $tag_ids);
-                    });
+                    })
+                        ->groupBy('entries.id')
+                        ->havingRaw('count(entries.id) >= ?', [count($tag_ids)]);
                     break;
                 case self::$FILTER_KEY_IS_TRANSFER:
                     if($filter_constraint === true){

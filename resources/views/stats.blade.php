@@ -26,6 +26,6 @@
         <notification></notification>
     </div>
 </div>
-<script type="text/javascript" src="{{asset('vue/js/app-stats.js')}}"></script>
+<script type="text/javascript" src="{{mix('vue/js/app-stats.js')}}"></script>
 </body>
 </html>
