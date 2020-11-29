@@ -2,6 +2,7 @@
 
 namespace Tests\Browser;
 
+use Facebook\WebDriver\WebDriverBy;
 use Tests\DuskTestCase;
 use Laravel\Dusk\Browser;
 
@@ -13,6 +14,9 @@ use Laravel\Dusk\Browser;
  * @group demo
  */
 class ATest extends DuskTestCase {
+
+    private static $LARAVEL_FAVICON_PATH_PREFIX = '/laravel-favicon/';
+    private static $FAVICON_PATH_PREFIX = 'imgs/favicon/';
 
     /**
      * A basic browser test to make sure selenium integration works
@@ -41,21 +45,30 @@ class ATest extends DuskTestCase {
      * @throws \Throwable
      */
     public function testTitleAndFaviconAreCorrectAndPresent($url, $title){
-        $this->browse(function (Browser $browser) use ($url, $title){
-            $browser->visit($url)
-                ->assertTitleContains($title)
-                ->assertSourceHas('<link rel="icon" type="image/png" sizes="32x32" href="/laravel-favicon/');
+        $favicon_file_paths = [
+            self::$FAVICON_PATH_PREFIX.'favicon-16x16.png',
+            self::$FAVICON_PATH_PREFIX.'favicon-32x32.png',
+            self::$FAVICON_PATH_PREFIX.'apple-touch-icon.png',
+            self::$FAVICON_PATH_PREFIX.'android-chrome-192x192.png',
+            self::$FAVICON_PATH_PREFIX.'android-chrome-512x512.png',
+            self::$FAVICON_PATH_PREFIX.'site.webmanifest'
+        ];
+        foreach($favicon_file_paths as $favicon_file_path){
+            $this->assertFileExists(public_path($favicon_file_path));
+        }
 
-            $favicon_file_paths = [
-                'public/imgs/favicon/favicon-16x16.png',
-                'public/imgs/favicon/favicon-32x32.png',
-                'public/imgs/favicon/apple-touch-icon.png',
-                'public/imgs/favicon/android-chrome-192x192.png',
-                'public/imgs/favicon/android-chrome-512x512.png',
-                'public/imgs/favicon/site.webmanifest'
-            ];
-            foreach($favicon_file_paths as $favicon_file_path){
-                $this->assertFileExists($favicon_file_path);
+        $this->browse(function (Browser $browser) use ($url, $title){
+            $browser->visit($url)->assertTitleContains($title);
+
+            $link_elements = $browser->driver
+                ->findElements(WebDriverBy::cssSelector('link'));
+            foreach($link_elements as $link_element){
+                if(in_array($link_element->getAttribute('rel'), ['apple-touch-icon', 'icon'])){
+                    $this->assertStringContainsString(
+                        self::$LARAVEL_FAVICON_PATH_PREFIX.self::$FAVICON_PATH_PREFIX,
+                        $link_element->getAttribute('href')
+                    );
+                }
             }
         });
     }
