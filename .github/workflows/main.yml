@@ -44,7 +44,7 @@ jobs:
         uses: ./.github/actions/setup-composer.yml
         with:
           is-cached: steps.composer-cache.outputs.cache-hit
-          github-token: ${{ secrets.composer_oauth_token }}
+          github-token: ${{ secrets.COMPOSER_OAUTH_TOKEN }}
 
       - name: Cache npm/Yarn packages
         id: yarn-cache
@@ -152,5 +152,5 @@ jobs:
       - name: discord
         uses: nobrayner/discord-webhook@v1
         with:
-          github-token: ${{ secrets.discord_github_token }}
+          github-token: ${{ secrets.DISCORD_GITHUB_TOKEN }}
           discord-webhook: ${{ secrets.DISCORD_WEBHOOK }}
