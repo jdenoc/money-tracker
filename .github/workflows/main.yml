@@ -29,7 +29,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Docker build
-        uses: ./.github/actions/setup-docker.yml
+        uses: ./.github/actions/setup-docker
         with:
           docker-host-ip: ${{ env.DOCKER_HOST_IP }}
 
@@ -41,7 +41,7 @@ jobs:
           key: ${{ runner.os }}-php-${{ hashFiles('composer.lock') }}
 
       - name: Composer setup
-        uses: ./.github/actions/setup-composer.yml
+        uses: ./.github/actions/setup-composer
         with:
           is-cached: steps.composer-cache.outputs.cache-hit
           github-token: ${{ secrets.COMPOSER_OAUTH_TOKEN }}
@@ -64,13 +64,13 @@ jobs:
 #          key: ${{ runner.os }}-vue- # TODO: TBD
 
       - name: Yarn setup
-        uses: ./.github/actions/setup-yarn.yml
+        uses: ./.github/actions/setup-yarn
         with:
           is-cached-dependancies: steps.yarn-cache.outputs.cache-hit
 #          is-cached-vue: steps.vue-cache.outputs.cache-hit # TODO: get this working in the future
 
       - name: App Setup
-        uses: ./.github/actions/app-init.yml
+        uses: ./.github/actions/app-init
 
   tests-unit:
     runs-on: ubuntu-latest
