@@ -1,0 +1,23 @@
+#actions/app-init.yml
+name: App Init
+description: Initialise app for use
+runs:
+  using: composite
+  steps:
+    # make sure user `www-data` has ownership of everything
+    - run: docker container exec -t app.money-tracker chown -R www-data:www-data .
+      shell: bash
+    # general application setup
+    - run: |
+        .docker/cmd/artisan.sh cache:clear
+        .docker/cmd/artisan.sh view:clear
+        .docker/cmd/artisan.sh key:generate
+        .docker/cmd/artisan.sh app:version `git describe --always`
+        .docker/cmd/artisan.sh config:cache
+        docker container exec -t app.money-tracker env
+      shell: bash
+    # setup laravel log files
+    - run: |
+        docker container exec -t --user www-data app.money-tracker touch storage/logs/php_error.log
+        docker container exec -t --user www-data app.money-tracker touch storage/logs/laravel.log
+      shell: bash
