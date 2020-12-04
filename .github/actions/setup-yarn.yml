@@ -20,3 +20,7 @@ runs:
     - name: Build/Compile website
       if: ${{ inputs.is-cached-vue }} != 'true'
       run: .docker/cmd/yarn.sh run build-prod
+
+branding:
+  icon: package
+  color: blue

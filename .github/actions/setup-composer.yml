@@ -22,3 +22,7 @@ runs:
       if: ${{ inputs.is-cached }} != 'true'
       run: .docker/cmd/composer.sh install --no-interaction --optimize-autoloader
       shell: bash
+
+branding:
+  icon: package
+  color: blue

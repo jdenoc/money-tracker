@@ -8,14 +8,15 @@ inputs:
 runs:
   using: composite
   steps:
-    - id: docker-compose-build
-      run: DISABLE_XDEBUG=true docker-compose -f .docker/docker-compose.yml -p "moneytracker" up -d
+    - run: DISABLE_XDEBUG=true docker-compose -f .docker/docker-compose.yml -p "moneytracker" up -d
       env:
         DOCKER_HOST_IP: ${{ inputs.docker-host-ip }}
       shell: bash
-    - id: docker-mysql-health-check
-      run: docker container exec -t mysql.money-tracker iterate-mysql-health-check
+    - run: docker container exec -t mysql.money-tracker iterate-mysql-health-check
       shell: bash
-    - id: docker-ls
-      run: docker container ls -a
+    - run: docker container ls -a
       shell: bash
+
+branding:
+  icon: package
+  color: blue

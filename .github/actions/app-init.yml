@@ -21,3 +21,7 @@ runs:
         docker container exec -t --user www-data app.money-tracker touch storage/logs/php_error.log
         docker container exec -t --user www-data app.money-tracker touch storage/logs/laravel.log
       shell: bash
+
+branding:
+  icon: settings
+  color: blue
