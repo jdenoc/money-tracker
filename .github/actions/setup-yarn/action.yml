@@ -1,4 +1,4 @@
-#actions/setup-composer.yml
+# .github/actions/setup-yarn/action.yml
 name: Yarn Setup
 description: load composer dependancies
 inputs:

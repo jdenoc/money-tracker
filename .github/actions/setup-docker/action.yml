@@ -1,4 +1,4 @@
-#actions/setup-docker.yml
+# .github/actions/setup-docker/action.yml
 name: Docker Setup
 description: build docker containers for use while testing
 inputs:

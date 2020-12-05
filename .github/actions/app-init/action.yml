@@ -1,4 +1,4 @@
-#actions/app-init.yml
+# .github/actions/app-init/action.yml
 name: App Init
 description: Initialise app for use
 runs:
