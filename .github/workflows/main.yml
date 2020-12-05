@@ -31,7 +31,7 @@ jobs:
       - name: Docker build
         uses: ./.github/actions/setup-docker
         with:
-          docker-host-ip: ${{ env.DOCKER_HOST_IP }}
+          docker_host_ip: ${{ env.DOCKER_HOST_IP }}
 
       - name: Cache Composer packages
         id: composer-cache
@@ -44,7 +44,7 @@ jobs:
         uses: ./.github/actions/setup-composer
         if: steps.composer-cache.outputs.cache-hit != 'true'
         with:
-          github-token: ${{ secrets.COMPOSER_OAUTH_TOKEN }}
+          github_token: ${{ secrets.COMPOSER_OAUTH_TOKEN }}
 
       - name: Cache npm/Yarn packages
         id: yarn-cache
