@@ -31,7 +31,7 @@ jobs:
       - name: Docker build
         uses: ./.github/actions/setup-docker
         with:
-          docker_host_ip: ${{ env.DOCKER_HOST_IP }}
+          host_ip: $DOCKER_HOST_IP
 
       - name: Cache Composer packages
         id: composer-cache

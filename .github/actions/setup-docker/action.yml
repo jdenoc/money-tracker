@@ -2,7 +2,7 @@
 name: Docker Setup
 description: build docker containers for use while testing
 inputs:
-  docker_host_ip:
+  host_ip:
     description: 'IP address of host machine using docker'
     required: true
 runs:
@@ -10,7 +10,7 @@ runs:
   steps:
     - run: DISABLE_XDEBUG=true docker-compose -f .docker/docker-compose.yml -p "moneytracker" up -d
       env:
-        DOCKER_HOST_IP: $INPUT_DOCKER_HOST_IP
+        DOCKER_HOST_IP: $INPUT_HOST_IP
       shell: bash
     - run: docker container exec -t mysql.money-tracker iterate-mysql-health-check
       shell: bash
