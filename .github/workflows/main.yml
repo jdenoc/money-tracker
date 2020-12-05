@@ -1,4 +1,4 @@
-# github-actions.main.yml
+# .github/workflows/main.yml
 name: Money-tracker CI
 
 # Controls when the action will run.
@@ -42,7 +42,7 @@ jobs:
 
       - name: Composer setup
         uses: ./.github/actions/setup-composer
-        if: steps.composer-cache.outputs.cache-hit
+        if: steps.composer-cache.outputs.cache-hit != 'true'
         with:
           github-token: ${{ secrets.COMPOSER_OAUTH_TOKEN }}
 
@@ -55,7 +55,7 @@ jobs:
 
       - name: Yarn setup
         uses: ./.github/actions/setup-yarn
-        if: steps.yarn-cache.outputs.cache-hit
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
 
 # TODO: get this working at some point in the future
 #      - name: Cache vue
@@ -69,7 +69,7 @@ jobs:
 
       - name: Build Vue
         uses: ./.github/actions/build-vue
-#        if: steps.vue-cache.outputs.cache-hit # TODO: get this working in the future
+#        if: steps.vue-cache.outputs.cache-hit != 'true' # TODO: get this working in the future
 
       - name: App Setup
         uses: ./.github/actions/app-init
