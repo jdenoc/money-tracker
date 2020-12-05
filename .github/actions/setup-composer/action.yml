@@ -1,14 +1,10 @@
 # .github/actions/setup-composer/action.yml
 name: Composer Setup
-description: load composer dependancies
+description: Load composer dependancies
 inputs:
   github-token:
     description: 'Github oAuth token'
     required: true
-  is-cached:
-    description: "Indicates composer dependancies are cached"
-    required: false
-    default: false
 runs:
   using: composite
   steps:
@@ -19,7 +15,6 @@ runs:
       run: .docker/cmd/composer.sh config github-oauth.github.com ${{ inputs.github-token }}
       shell: bash
     - id: composer-install
-      if: ${{ inputs.is-cached }} != 'true'
       run: .docker/cmd/composer.sh install --no-interaction --optimize-autoloader
       shell: bash
 

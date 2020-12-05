@@ -38,12 +38,12 @@ jobs:
         uses: actions/cache@v2
         with:
           path: vendor
-          key: ${{ runner.os }}-php-${{ hashFiles('composer.lock') }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
 
       - name: Composer setup
         uses: ./.github/actions/setup-composer
+        if: steps.composer-cache.outputs.cache-hit
         with:
-          is-cached: steps.composer-cache.outputs.cache-hit
           github-token: ${{ secrets.COMPOSER_OAUTH_TOKEN }}
 
       - name: Cache npm/Yarn packages
@@ -52,6 +52,10 @@ jobs:
         with:
           path: node_modules
           key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+
+      - name: Yarn setup
+        uses: ./.github/actions/setup-yarn
+        if: steps.yarn-cache.outputs.cache-hit
 
 # TODO: get this working at some point in the future
 #      - name: Cache vue
@@ -63,11 +67,9 @@ jobs:
 #            mix-manifest.json
 #          key: ${{ runner.os }}-vue- # TODO: TBD
 
-      - name: Yarn setup
-        uses: ./.github/actions/setup-yarn
-        with:
-          is-cached-dependancies: steps.yarn-cache.outputs.cache-hit
-#          is-cached-vue: steps.vue-cache.outputs.cache-hit # TODO: get this working in the future
+      - name: Build Vue
+        uses: ./.github/actions/build-vue
+#        if: steps.vue-cache.outputs.cache-hit # TODO: get this working in the future
 
       - name: App Setup
         uses: ./.github/actions/app-init

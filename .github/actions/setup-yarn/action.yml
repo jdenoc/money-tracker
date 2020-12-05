@@ -1,25 +1,12 @@
 # .github/actions/setup-yarn/action.yml
 name: Yarn Setup
-description: load composer dependancies
-inputs:
-  is-cached-dependancies:
-    description: "Indicates yarn dependancies are cached"
-    required: false
-    default: false
-  is-cached-vue:
-    description: "Indicates vue generated files are cached"
-    required: false
-    default: false
+description: Load Yarn/npm dependancies
 runs:
   using: composite
   steps:
     - name: Yarn package install
-      if: ${{ inputs.is-cached-dependancies }} != 'true'
       run: .docker/cmd/yarn.sh install --non-interactive    #TODO: once yarn.lock is added to repo, add `--frozen-lockfile` option to above command
       shell: bash
-    - name: Build/Compile website
-      if: ${{ inputs.is-cached-vue }} != 'true'
-      run: .docker/cmd/yarn.sh run build-prod
 
 branding:
   icon: package
