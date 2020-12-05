@@ -41,7 +41,7 @@ jobs:
         uses: ./.github/actions/setup-composer
         if: steps.composer-cache.outputs.cache-hit != 'true'
         with:
-          github_token: ${{ secrets.COMPOSER_OAUTH_TOKEN }}
+          github_token: ${{ secrets.COMPOSER_GITHUB_ACTIONS }}
 
       - name: Cache npm/Yarn packages
         id: yarn-cache
