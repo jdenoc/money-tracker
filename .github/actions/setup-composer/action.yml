@@ -2,7 +2,7 @@
 name: Composer Setup
 description: Load composer dependancies
 inputs:
-  github_token:
+  github-token:
     description: 'Github oAuth token'
     required: true
 runs:
@@ -12,7 +12,7 @@ runs:
 #      run: .docker/cmd/composer.sh validate
 #      shell: bash
     - id: composer-github-token
-      run: .docker/cmd/composer.sh config github-oauth.github.com $INPUT_GITHUB_TOKEN
+      run: .docker/cmd/composer.sh config github-oauth.github.com ${{ inputs.github-token }}
       shell: bash
     - id: composer-install
       run: .docker/cmd/composer.sh install --no-interaction --optimize-autoloader
