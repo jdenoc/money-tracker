@@ -7,7 +7,3 @@ runs:
     - name: Build/Compile website
       run: .docker/cmd/yarn.sh run build-prod
       shell: bash
-
-branding:
-  icon: package
-  color: blue

@@ -7,7 +7,3 @@ runs:
     - name: Yarn package install
       run: .docker/cmd/yarn.sh install --non-interactive    #TODO: once yarn.lock is added to repo, add `--frozen-lockfile` option to above command
       shell: bash
-
-branding:
-  icon: package
-  color: blue

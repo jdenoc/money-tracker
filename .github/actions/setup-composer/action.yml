@@ -17,7 +17,3 @@ runs:
     - id: composer-install
       run: .docker/cmd/composer.sh install --no-interaction --optimize-autoloader
       shell: bash
-
-branding:
-  icon: package
-  color: blue

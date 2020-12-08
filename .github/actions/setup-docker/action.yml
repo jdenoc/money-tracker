@@ -10,7 +10,3 @@ runs:
       shell: bash
     - run: docker container ls -a
       shell: bash
-
-branding:
-  icon: package
-  color: blue
