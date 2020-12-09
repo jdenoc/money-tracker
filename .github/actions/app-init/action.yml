@@ -15,17 +15,22 @@ runs:
     # make sure user `www-data` has ownership of everything
     - run: |
         echo "chown'ing directory in docker container"
-        docker container exec app.money-tracker chown -R www-data:www-data .
+        docker container exec -t app.money-tracker chown -R www-data:www-data .
         echo "directory in docker container chown'd"
       shell: bash
     # general application setup
     - run: |
-        echo "performing artisan commands"
+        echo ".docker/cmd/artisan.sh cache:clear"
         .docker/cmd/artisan.sh cache:clear
+        echo ".docker/cmd/artisan.sh view:clear"
         .docker/cmd/artisan.sh view:clear
+        echo ".docker/cmd/artisan.sh key:generate"
         .docker/cmd/artisan.sh key:generate
+        echo ".docker/cmd/artisan.sh app:version `git describe --always`"
         .docker/cmd/artisan.sh app:version `git describe --always`
-        .docker/cmd/artisan.sh config:cache
+        echo ".docker/cmd/artisan.sh config:clear"
+        .docker/cmd/artisan.sh config:clear
+        echo "docker container exec -t app.money-tracker env"
         docker container exec -t app.money-tracker env
         echo "artisan commands completed"
       shell: bash
