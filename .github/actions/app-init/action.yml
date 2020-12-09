@@ -4,6 +4,17 @@ description: Initialise app for use
 runs:
   using: composite
   steps:
+    # Debug steps # TODO: remove
+    - run: docker container ls -a
+      shell: bash
+    - run: pwd
+      shell: bash
+    - run: ls -lah
+      shell: bash
+    - run: ls -lah .docker
+      shell: bash
+    - run: ls -lah .docker/cmd
+      shell: bash
     # make sure user `www-data` has ownership of everything
     - run: docker container exec app.money-tracker chown -R www-data:www-data .
       shell: bash
