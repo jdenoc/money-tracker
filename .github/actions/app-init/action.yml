@@ -5,7 +5,7 @@ runs:
   using: composite
   steps:
     # make sure user `www-data` has ownership of everything
-    - run: docker container exec -t app.money-tracker chown -R www-data:www-data .
+    - run: docker container exec app.money-tracker chown -R www-data:www-data .
       shell: bash
     # general application setup
     - run: |
