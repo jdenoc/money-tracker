@@ -5,30 +5,34 @@ runs:
   using: composite
   steps:
     # Debug steps # TODO: remove
-    - run: docker container ls -a
-      shell: bash
-    - run: pwd
-      shell: bash
-    - run: ls -lah
-      shell: bash
-    - run: ls -lah .docker
-      shell: bash
-    - run: ls -lah .docker/cmd
+    - run: |
+        docker container ls -a
+        pwd
+        ls -lah
+        ls -lah .docker
+        ls -lah .docker/cmd
       shell: bash
     # make sure user `www-data` has ownership of everything
-    - run: docker container exec app.money-tracker chown -R www-data:www-data .
+    - run: |
+        echo "chown'ing directory in docker container"
+        docker container exec app.money-tracker chown -R www-data:www-data .
+        echo "directory in docker container chown'd"
       shell: bash
     # general application setup
     - run: |
+        echo "performing artisan commands"
         .docker/cmd/artisan.sh cache:clear
         .docker/cmd/artisan.sh view:clear
         .docker/cmd/artisan.sh key:generate
         .docker/cmd/artisan.sh app:version `git describe --always`
         .docker/cmd/artisan.sh config:cache
         docker container exec -t app.money-tracker env
+        echo "artisan commands completed"
       shell: bash
     # setup laravel log files
     - run: |
+        echo "creating log files in docker container"
         docker container exec -t --user www-data app.money-tracker touch storage/logs/php_error.log
         docker container exec -t --user www-data app.money-tracker touch storage/logs/laravel.log
+        echo "log files created in docker container"
       shell: bash
