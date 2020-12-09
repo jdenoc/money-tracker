@@ -20,6 +20,10 @@ runs:
       shell: bash
     # general application setup
     - run: |
+        echo "cat .docker/cmd/artisan.sh"
+        cat .docker/cmd/artisan.sh
+        echo "docker container exec -t app.money-tracker artisan cache:clear"
+        docker container exec -t app.money-tracker artisan cache:clear
         echo ".docker/cmd/artisan.sh cache:clear"
         .docker/cmd/artisan.sh cache:clear
         echo ".docker/cmd/artisan.sh view:clear"
