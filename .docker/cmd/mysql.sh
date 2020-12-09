@@ -11,13 +11,13 @@ OPTIONS=$1
 FLAGS=-i
 
 case "$OPTIONS" in
-  -h|--help)
+  -h|--help|?)
     echo "Usage:"
     echo "  $0 [options]"
     echo "  echo \"show tables;\" | $0"
     echo "  $0 | < /path/to/import/file.sql"
     echo "Options:"
-    echo "  -h|--help           display this \"help\" message"
+    echo "  -h|--help|?         display this \"help\" message"
     echo "  -i|--interactive    allows access to the mysql command in an interactive state"
     echo ""
     exit
