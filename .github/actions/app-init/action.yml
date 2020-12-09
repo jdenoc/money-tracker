@@ -4,37 +4,28 @@ description: Initialise app for use
 runs:
   using: composite
   steps:
+    # re-load docker images
+    - run: |
+        docker load < .docker/images/application.tar.gz
+        docker load < .docker/images/database.tar.gz
+        docker load < .docker/images/selenium.tar.gz
+        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME up -d
+        docker container exec -t mysql.money-tracker iterate-mysql-health-check
+      shell: bash
     # make sure user `www-data` has ownership of everything
     - run: docker container exec -t app.money-tracker chown -R www-data:www-data .
       shell: bash
     # general application setup
     - run: |
-        echo "echo $SHELL"
-        echo $SHELL
-        echo "ls -lah /usr/bin"
-        ls -lah /usr/bin
-        echo "cat .docker/cmd/artisan.sh"
-        cat .docker/cmd/artisan.sh
-        echo "docker container exec -t app.money-tracker artisan cache:clear"
-        docker container exec -t app.money-tracker artisan cache:clear
-        echo ".docker/cmd/artisan.sh cache:clear"
         .docker/cmd/artisan.sh cache:clear
-        echo ".docker/cmd/artisan.sh view:clear"
         .docker/cmd/artisan.sh view:clear
-        echo ".docker/cmd/artisan.sh key:generate"
         .docker/cmd/artisan.sh key:generate
-        echo ".docker/cmd/artisan.sh app:version `git describe --always`"
         .docker/cmd/artisan.sh app:version `git describe --always`
-        echo ".docker/cmd/artisan.sh config:clear"
         .docker/cmd/artisan.sh config:clear
-        echo "docker container exec -t app.money-tracker env"
         docker container exec -t app.money-tracker env
-        echo "artisan commands completed"
       shell: bash
     # setup laravel log files
     - run: |
-        echo "creating log files in docker container"
         docker container exec -t --user www-data app.money-tracker touch storage/logs/php_error.log
         docker container exec -t --user www-data app.money-tracker touch storage/logs/laravel.log
-        echo "log files created in docker container"
       shell: bash
