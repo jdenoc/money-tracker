@@ -4,22 +4,15 @@ description: Initialise app for use
 runs:
   using: composite
   steps:
-    # Debug steps # TODO: remove
-    - run: |
-        docker container ls -a
-        pwd
-        ls -lah
-        ls -lah .docker
-        ls -lah .docker/cmd
-      shell: bash
     # make sure user `www-data` has ownership of everything
-    - run: |
-        echo "chown'ing directory in docker container"
-        docker container exec -t app.money-tracker chown -R www-data:www-data .
-        echo "directory in docker container chown'd"
+    - run: docker container exec -t app.money-tracker chown -R www-data:www-data .
       shell: bash
     # general application setup
     - run: |
+        echo "echo $SHELL"
+        echo $SHELL
+        echo "ls -lah /usr/bin"
+        ls -lah /usr/bin
         echo "cat .docker/cmd/artisan.sh"
         cat .docker/cmd/artisan.sh
         echo "docker container exec -t app.money-tracker artisan cache:clear"
