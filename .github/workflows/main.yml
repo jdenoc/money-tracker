@@ -183,7 +183,6 @@ jobs:
   tests-e2e:
     needs:
       - build
-      - tests-unit
     runs-on: ubuntu-latest
     env:
       DUSK_SCREENSHOT_DIR: 'tests/Browser/screenshots/'
