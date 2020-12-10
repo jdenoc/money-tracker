@@ -125,28 +125,65 @@ jobs:
 
       - name: unit tests - GET API endpoints
         run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-get
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: ${{ github.sha }}-unit-get
+          path: storage/logs/*.log
+          retention-days: 30
 
       - name: unit tests - POST API endpoints
         run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-post
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: ${{ github.sha }}-unit-post
+          path: storage/logs/*.log
+          retention-days: 30
 
       - name: unit tests - DELETE API endpoints
         run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-delete
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: ${{ github.sha }}-unit-delete
+          path: storage/logs/*.log
+          retention-days: 30
 
       - name: unit tests - console
         run: |
           .docker/cmd/artisan.sh config:clear # artisan app:version testing doesn't work well when configs have been cached
           docker container exec -t --user www-data app.money-tracker cp .env.docker .env.testing  # because we're not caching, we need to create a new .env file
           docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite console
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: ${{ github.sha }}-unit-console
+          path: storage/logs/*.log
+          retention-days: 30
 
       - name: unit tests - web
         run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite web
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: ${{ github.sha }}-unit-web
+          path: storage/logs/*.log
+          retention-days: 30
 
       - name: unit tests - unit (generic)
         run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite unit
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: ${{ github.sha }}-unit-generic
+          path: storage/logs/*.log
+          retention-days: 30
 
   tests-e2e:
     needs:
       - build
+      - tests-unit
     runs-on: ubuntu-latest
     env:
       DUSK_SCREENSHOT_DIR: 'tests/Browser/screenshots/'
@@ -192,7 +229,7 @@ jobs:
 
       # end-2-end tests
       - name: e2e tests - demo
-        run: .docker/cmd/artisan.sh dusk --group demo --stop-on-failure
+        run: .docker/cmd/artisan.sh -i -- dusk --group demo --stop-on-failure
       - uses: actions/upload-artifact@v2
         if: failure()
         with:
@@ -204,32 +241,78 @@ jobs:
           retention-days: 30
 
       - name: e2e tests - notifications
-        run: .docker/cmd/artisan.sh dusk --group notifications-1 --stop-on-failure
+        run: .docker/cmd/artisan.sh -i -- dusk --group notifications-1 --stop-on-failure
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: ${{ github.sha }}-e2e-notifications
+          path: |
+            $DUSK_SCREENSHOT_DIR*
+            $DUSK_DB_DUMP_DIR*
+            storage/logs/*.log
+          retention-days: 30
+
       - name: e2e tests - navigation
         run: |
-          .docker/cmd/artisan.sh dusk --group navigation-1 --stop-on-failure
-          .docker/cmd/artisan.sh dusk --group navigation-2 --stop-on-failure
-          .docker/cmd/artisan.sh dusk --group navigation-3 --stop-on-failure
-          .docker/cmd/artisan.sh dusk --group navigation-4 --stop-on-failure
+          .docker/cmd/artisan.sh -i -- dusk --group navigation-1 --stop-on-failure
+          .docker/cmd/artisan.sh -i -- dusk --group navigation-2 --stop-on-failure
+          .docker/cmd/artisan.sh -i -- dusk --group navigation-3 --stop-on-failure
+          .docker/cmd/artisan.sh -i -- dusk --group navigation-4 --stop-on-failure
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: ${{ github.sha }}-e2e-navigation
+          path: |
+            $DUSK_SCREENSHOT_DIR*
+            $DUSK_DB_DUMP_DIR*
+            storage/logs/*.log
+          retention-days: 30
 
       - name: e2e tests - entry-modal
         run: |
-          .docker/cmd/artisan.sh dusk --group entry-modal-1 --stop-on-failure
-          .docker/cmd/artisan.sh dusk --group entry-modal-2 --stop-on-failure
+          .docker/cmd/artisan.sh -i -- dusk --group entry-modal-1 --stop-on-failure
+          .docker/cmd/artisan.sh -i -- dusk --group entry-modal-2 --stop-on-failure
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: ${{ github.sha }}-e2e-entry-modal
+          path: |
+            $DUSK_SCREENSHOT_DIR*
+            $DUSK_DB_DUMP_DIR*
+            storage/logs/*.log
+          retention-days: 30
 
       - name: e2e tests - transfer-modal
         run: |
-          .docker/cmd/artisan.sh dusk --group transfer-modal-1 --stop-on-failure
-          .docker/cmd/artisan.sh dusk --group transfer-modal-2 --stop-on-failure
+          .docker/cmd/artisan.sh -i -- dusk --group transfer-modal-1 --stop-on-failure
+          .docker/cmd/artisan.sh -i -- dusk --group transfer-modal-2 --stop-on-failure
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: ${{ github.sha }}-e2e-transfer-modal
+          path: |
+            $DUSK_SCREENSHOT_DIR*
+            $DUSK_DB_DUMP_DIR*
+            storage/logs/*.log
+          retention-days: 30
 
       - name: e2e tests - stats
         run: |
-          .docker/cmd/artisan.sh dusk --group stats-summary --stop-on-failure
-          .docker/cmd/artisan.sh dusk --group stats-trending --stop-on-failure
-          .docker/cmd/artisan.sh dusk --group stats-distribution-1 --stop-on-failure
-          .docker/cmd/artisan.sh dusk --group stats-distribution-2 --stop-on-failure
-          .docker/cmd/artisan.sh dusk --group stats-tags-1 --stop-on-failure
-          .docker/cmd/artisan.sh dusk --group stats-tags-2 --stop-on-failure
+          .docker/cmd/artisan.sh -i -- dusk --group stats-summary --stop-on-failure
+          .docker/cmd/artisan.sh -i -- dusk --group stats-trending --stop-on-failure
+          .docker/cmd/artisan.sh -i -- dusk --group stats-distribution-1 --stop-on-failure
+          .docker/cmd/artisan.sh -i -- dusk --group stats-distribution-2 --stop-on-failure
+          .docker/cmd/artisan.sh -i -- dusk --group stats-tags-1 --stop-on-failure
+          .docker/cmd/artisan.sh -i -- dusk --group stats-tags-2 --stop-on-failure
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: ${{ github.sha }}-e2e-stats
+          path: |
+            $DUSK_SCREENSHOT_DIR*
+            $DUSK_DB_DUMP_DIR*
+            storage/logs/*.log
+          retention-days: 30
 
   notification:
     runs-on: ubuntu-latest
