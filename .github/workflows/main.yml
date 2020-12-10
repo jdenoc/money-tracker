@@ -150,9 +150,11 @@ jobs:
           retention-days: 30
 
       - name: unit tests - console
+        # artisan app:version testing doesn't work well when configs have been cached
+        # because we're not caching, we need to create a new .env file
         run: |
-          .docker/cmd/artisan.sh config:clear # artisan app:version testing doesn't work well when configs have been cached
-          docker container exec -t --user www-data app.money-tracker cp .env.docker .env.testing  # because we're not caching, we need to create a new .env file
+          .docker/cmd/artisan.sh config:clear
+          docker container exec -t --user www-data app.money-tracker cp .env.docker .env.testing
           docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite console
       - uses: actions/upload-artifact@v2
         if: failure()
@@ -189,6 +191,29 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
+      - name: debug env variables as paths
+        run: |
+          echo $DUSK_SCREENSHOT_DIR
+          echo $DUSK_SCREENSHOT_DIR*
+          if [ -d $DUSK_SCREENSHOT_DIR ]; then echo "DIR EXISTS \$DUSK_SCREENSHOT_DIR"; fi
+          echo ${{DUSK_SCREENSHOT_DIR}}
+          echo ${{DUSK_SCREENSHOT_DIR}}*
+          if [ -d ${{DUSK_SCREENSHOT_DIR}} ]; then echo "DIR EXISTS \$\{\{DUSK_SCREENSHOT_DIR\}\}"; fi
+          echo jobs.tests-e2e.env.DUSK_SCREENSHOT_DIR
+          if [ -d jobs.tests-e2e.env.DUSK_SCREENSHOT_DIR ]; then echo "DIR EXISTS jobs.tests-e2e.env.DUSK_SCREENSHOT_DIR"; fi
+          echo ${{ jobs.tests-e2e.env.DUSK_SCREENSHOT_DIR }}
+          if [ -d ${{ jobs.tests-e2e.env.DUSK_SCREENSHOT_DIR }} ]; then echo "DIR EXISTS \$\{\{ jobs.tests-e2e.env.DUSK_SCREENSHOT_DIR \}\}"; fi
+          echo $DUSK_DB_DUMP_DIR
+          echo $DUSK_DB_DUMP_DIR*
+          if [ -d $DUSK_DB_DUMP_DIR ]; then echo "DIR EXISTS \$DUSK_DB_DUMP_DIR"; fi
+          echo ${{DUSK_DB_DUMP_DIR}}
+          echo ${{DUSK_DB_DUMP_DIR}}*
+          if [ -d ${{DUSK_DB_DUMP_DIR}} ]; then echo "DIR EXISTS \$\{\{DUSK_DB_DUMP_DIR\}\}"; fi
+          echo jobs.tests-e2e.env.DUSK_DB_DUMP_DIR
+          if [ -d jobs.tests-e2e.env.DUSK_DB_DUMP_DIR ]; then echo "DIR EXISTS jobs.tests-e2e.env.DUSK_DB_DUMP_DIR"; fi
+          echo ${{ jobs.tests-e2e.env.DUSK_DB_DUMP_DIR }}
+          if [ -d ${{ jobs.tests-e2e.env.DUSK_DB_DUMP_DIR }} ]; then echo "DIR EXISTS \$\{\{ jobs.tests-e2e.env.DUSK_DB_DUMP_DIR \}\}"; fi
 
       # retrieve cache
       - name: Cache Docker images
