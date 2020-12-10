@@ -24,6 +24,7 @@ runs:
         .docker/cmd/artisan.sh app:version `git describe --always`
         .docker/cmd/artisan.sh config:clear
         docker container exec -t app.money-tracker env
+        .docker/cmd/artisan.sh app:config
       shell: bash
     # setup laravel log files
     - run: |
