@@ -51,7 +51,6 @@ jobs:
         if: steps.composer-cache.outputs.cache-hit != 'true'
         with:
           github-token: ${{ github.token }}
-#          github-token: ${{ secrets.COMPOSER_GITHUB_ACTIONS }}
 
       - name: Cache npm/Yarn packages
         id: yarn-cache
@@ -326,4 +325,3 @@ jobs:
         with:
           github-token: ${{ github.token }}
           discord-webhook: ${{ secrets.DISCORD_WEBHOOK }}
-#          github-token: ${{ secrets.DISCORD_GITHUB_TOKEN }}
