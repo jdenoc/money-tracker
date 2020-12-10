@@ -25,5 +25,7 @@ trait CreatesApplication {
         if(!$this->app){
             $this->initialiseApplication();
         }
+        \Artisan::call('app:config');   // TODO: remove
+        print_r(\Artisan::output());             // TODO: remove
     }
 }
