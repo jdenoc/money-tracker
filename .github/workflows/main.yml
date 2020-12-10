@@ -71,7 +71,7 @@ jobs:
           path: |
             public/vue
             public/mix-manifest.json
-          key: ${{ runner.os }}-vue-${{ hashFiles('resources/js/*') }}-${{ hashFiles('resources/sasss/*') }}
+          key: ${{ runner.os }}-vue-${{ hashFiles('resources/js/*') }}-${{ hashFiles('resources/sass/*') }}
 
       - name: Build Vue
         uses: ./.github/actions/build-vue
