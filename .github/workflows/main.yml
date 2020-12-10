@@ -240,7 +240,7 @@ jobs:
           retention-days: 30
 
       - name: e2e tests - notifications
-        run: .docker/cmd/artisan.sh -i -- dusk --group notifications-1 --stop-on-failure
+        run: .docker/cmd/artisan.sh dusk --group notifications-1 --stop-on-failure
       - uses: actions/upload-artifact@v2
         if: failure()
         with:
@@ -253,10 +253,10 @@ jobs:
 
       - name: e2e tests - navigation
         run: |
-          .docker/cmd/artisan.sh -i -- dusk --group navigation-1 --stop-on-failure
-          .docker/cmd/artisan.sh -i -- dusk --group navigation-2 --stop-on-failure
-          .docker/cmd/artisan.sh -i -- dusk --group navigation-3 --stop-on-failure
-          .docker/cmd/artisan.sh -i -- dusk --group navigation-4 --stop-on-failure
+          .docker/cmd/artisan.sh dusk --group navigation-1 --stop-on-failure
+          .docker/cmd/artisan.sh dusk --group navigation-2 --stop-on-failure
+          .docker/cmd/artisan.sh dusk --group navigation-3 --stop-on-failure
+          .docker/cmd/artisan.sh dusk --group navigation-4 --stop-on-failure
       - uses: actions/upload-artifact@v2
         if: failure()
         with:
@@ -269,8 +269,8 @@ jobs:
 
       - name: e2e tests - entry-modal
         run: |
-          .docker/cmd/artisan.sh -i -- dusk --group entry-modal-1 --stop-on-failure
-          .docker/cmd/artisan.sh -i -- dusk --group entry-modal-2 --stop-on-failure
+          .docker/cmd/artisan.sh dusk --group entry-modal-1 --stop-on-failure
+          .docker/cmd/artisan.sh dusk --group entry-modal-2 --stop-on-failure
       - uses: actions/upload-artifact@v2
         if: failure()
         with:
@@ -283,8 +283,8 @@ jobs:
 
       - name: e2e tests - transfer-modal
         run: |
-          .docker/cmd/artisan.sh -i -- dusk --group transfer-modal-1 --stop-on-failure
-          .docker/cmd/artisan.sh -i -- dusk --group transfer-modal-2 --stop-on-failure
+          .docker/cmd/artisan.sh dusk --group transfer-modal-1 --stop-on-failure
+          .docker/cmd/artisan.sh dusk --group transfer-modal-2 --stop-on-failure
       - uses: actions/upload-artifact@v2
         if: failure()
         with:
@@ -297,12 +297,12 @@ jobs:
 
       - name: e2e tests - stats
         run: |
-          .docker/cmd/artisan.sh -i -- dusk --group stats-summary --stop-on-failure
-          .docker/cmd/artisan.sh -i -- dusk --group stats-trending --stop-on-failure
-          .docker/cmd/artisan.sh -i -- dusk --group stats-distribution-1 --stop-on-failure
-          .docker/cmd/artisan.sh -i -- dusk --group stats-distribution-2 --stop-on-failure
-          .docker/cmd/artisan.sh -i -- dusk --group stats-tags-1 --stop-on-failure
-          .docker/cmd/artisan.sh -i -- dusk --group stats-tags-2 --stop-on-failure
+          .docker/cmd/artisan.sh dusk --group stats-summary --stop-on-failure
+          .docker/cmd/artisan.sh dusk --group stats-trending --stop-on-failure
+          .docker/cmd/artisan.sh dusk --group stats-distribution-1 --stop-on-failure
+          .docker/cmd/artisan.sh dusk --group stats-distribution-2 --stop-on-failure
+          .docker/cmd/artisan.sh dusk --group stats-tags-1 --stop-on-failure
+          .docker/cmd/artisan.sh dusk --group stats-tags-2 --stop-on-failure
       - uses: actions/upload-artifact@v2
         if: failure()
         with:
