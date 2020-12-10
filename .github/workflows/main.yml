@@ -228,7 +228,7 @@ jobs:
 
       # end-2-end tests
       - name: e2e tests - demo
-        run: .docker/cmd/artisan.sh -i -- dusk --group demo --stop-on-failure
+        run: .docker/cmd/artisan.sh dusk --group demo --stop-on-failure
       - uses: actions/upload-artifact@v2
         if: failure()
         with:
