@@ -50,7 +50,8 @@ jobs:
         uses: ./.github/actions/setup-composer
         if: steps.composer-cache.outputs.cache-hit != 'true'
         with:
-          github-token: ${{ secrets.COMPOSER_GITHUB_ACTIONS }}
+          github-token: ${{ github.token }}
+#          github-token: ${{ secrets.COMPOSER_GITHUB_ACTIONS }}
 
       - name: Cache npm/Yarn packages
         id: yarn-cache
@@ -115,6 +116,12 @@ jobs:
       # unit tests
       - name: unit tests - PUT API endpoints
         run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-put
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: ${{ github.sha }}-unit-put
+          path: storage/logs/*.log
+          retention-days: 30
 
       - name: unit tests - GET API endpoints
         run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-get
@@ -177,7 +184,7 @@ jobs:
           path: |
             public/vue
             public/mix-manifest.json
-          key: ${{ runner.os }}-vue-${{ hashFiles('resources/js/*') }}-${{ hashFiles('resources/sasss/*') }}
+          key: ${{ runner.os }}-vue-${{ hashFiles('resources/js/*') }}-${{ hashFiles('resources/sass/*') }}
 
       # init application for testing
       - name: App Setup
@@ -186,6 +193,15 @@ jobs:
       # end-2-end tests
       - name: e2e tests - demo
         run: .docker/cmd/artisan.sh dusk --group demo --stop-on-failure
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: ${{ github.sha }}-e2e-demo
+          path: |
+            $DUSK_SCREENSHOT_DIR*
+            $DUSK_DB_DUMP_DIR*
+            storage/logs/*.log
+          retention-days: 30
 
       - name: e2e tests - notifications
         run: .docker/cmd/artisan.sh dusk --group notifications-1 --stop-on-failure
@@ -226,5 +242,6 @@ jobs:
       - name: discord
         uses: nobrayner/discord-webhook@v1
         with:
-          github-token: ${{ secrets.DISCORD_GITHUB_TOKEN }}
+          github-token: ${{ github.token }}
           discord-webhook: ${{ secrets.DISCORD_WEBHOOK }}
+#          github-token: ${{ secrets.DISCORD_GITHUB_TOKEN }}
