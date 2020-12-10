@@ -666,11 +666,19 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      */
     public function testExistingTransferEntryHasEntryButton(){
         $this->browse(function(Browser $browser){
+            $invalid_entry_ids = [];
             do{
                 $entry_selector = $this->randomEntrySelector(['is_transfer'=>true]);
                 $entry_id = $this->getEntryIdFromSelector($entry_selector);
-                $entry_data = $this->getApiEntry($entry_id);
-            }while($entry_data['transfer_entry_id'] === 0);
+                if(in_array($entry_id, $invalid_entry_ids)){
+                    // already processed this ID, lets just get another one
+                    $entry_data['transfer_entry_id'] = self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
+                } else {
+                    $invalid_entry_ids = $entry_id;
+                    $entry_data = $this->getApiEntry($entry_id);
+                }
+            }while($entry_data['transfer_entry_id'] === self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID);
+            unset($invalid_entry_ids);
             $transfer_entry_data = $this->getApiEntry($entry_data['transfer_entry_id']);
             $this->assertEquals($entry_id, $entry_data['id']);
             $this->assertEquals($entry_data['transfer_entry_id'], $transfer_entry_data['id']);
@@ -752,10 +760,16 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      */
     public function testExistingExternalTransferEntryHasButtonButIsDisabled(){
         $this->browse(function(Browser $browser){
+            $invalid_entry_id = [];
             do{
                 $entry_selector = $this->randomEntrySelector(['is_transfer'=>true]);
                 $entry_id = $this->getEntryIdFromSelector($entry_selector);
-                $entry_data = $this->getApiEntry($entry_id);
+                if(in_array($entry_id, $invalid_entry_id)){
+                    // entry ID has already been processed (unsuccessfully), lets just get another ID
+                    $entry_data['transfer_entry_id'] = mt_rand(1, 50);  // doesn't matter what this value is as long as it isn't 0
+                } else {
+                    $entry_data = $this->getApiEntry($entry_id);
+                }
             } while($entry_data['transfer_entry_id'] !== self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID);
             $this->assertEquals($entry_id, $entry_data['id']);
             $entry_selector .= '.'.$this->_class_is_transfer;
