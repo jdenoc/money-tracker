@@ -108,9 +108,6 @@ jobs:
 
       # NOTE: vue cache not needed for unit tests
 
-      - name: Config/Env
-        run: .docker/cmd/artisan.sh app:config-list
-
       - name: unit tests - PUT API endpoints
         uses: ./.github/actions/app-init
       - run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-put
@@ -227,9 +224,6 @@ jobs:
             public/vue
             public/mix-manifest.json
           key: ${{ runner.os }}-vue-${{ hashFiles('resources/js/*') }}-${{ hashFiles('resources/sass/*') }}
-
-      - name: Config/Env
-        run: .docker/cmd/artisan.sh app:config-list
 
       # end-2-end tests
       - name: e2e tests - demo
