@@ -113,7 +113,7 @@ jobs:
 
       - name: unit tests - PUT API endpoints
         uses: ./.github/actions/app-init
-        run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-put
+      - run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-put
       - uses: actions/upload-artifact@v2
         if: failure()
         with:
