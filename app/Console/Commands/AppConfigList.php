@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 
-class AppConfig extends Command {
+class AppConfigList extends Command {
 
     const OPTION_ONLY_CONFIG = 'only-config';
     const OPTION_ONLY_ENV = 'only-env';
@@ -15,7 +15,7 @@ class AppConfig extends Command {
      *
      * @var string
      */
-    protected $signature = 'app:config
+    protected $signature = 'app:config-list
                             {--only-env : only output environment variables and values}
                             {--only-config : only output config variables and values}';
 
