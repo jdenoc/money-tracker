@@ -25,7 +25,10 @@ trait CreatesApplication {
         if(!$this->app){
             $this->initialiseApplication();
         }
-        \Artisan::call('app:config');   // TODO: remove
-        print_r(\Artisan::output());             // TODO: remove
+        print_r( 'APP_ENV:'.env('APP_ENV') );  // TODO: remove
+        print_r( "\n".'app.env:'.config('app.env') );   // TODO: remove
+        print_r( "\n".'DB_DATABASE:'.env('DB_DATABASE') );  // TODO: remove
+        print "\n".'database.connections.mysql:';   // TODO: remove
+        print_r( config('database.connections.mysql') );    // TODO: remove
     }
 }
