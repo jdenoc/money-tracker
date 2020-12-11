@@ -142,7 +142,7 @@ jobs:
       - run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite unit
 
       - name: Failure upload
-      - uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v2
         if: failure()
         with:
           name: ${{ github.sha }}-unit
