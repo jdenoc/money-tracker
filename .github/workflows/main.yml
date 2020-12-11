@@ -111,42 +111,18 @@ jobs:
       - name: unit tests - PUT API endpoints
         uses: ./.github/actions/app-init
       - run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-put
-      - uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: ${{ github.sha }}-unit-put
-          path: storage/logs/*.log
-          retention-days: 30
 
       - name: unit tests - GET API endpoints
         uses: ./.github/actions/app-init
       - run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-get
-      - uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: ${{ github.sha }}-unit-get
-          path: storage/logs/*.log
-          retention-days: 30
 
       - name: unit tests - POST API endpoints
         uses: ./.github/actions/app-init
       - run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-post
-      - uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: ${{ github.sha }}-unit-post
-          path: storage/logs/*.log
-          retention-days: 30
 
       - name: unit tests - DELETE API endpoints
         uses: ./.github/actions/app-init
       - run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-delete
-      - uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: ${{ github.sha }}-unit-delete
-          path: storage/logs/*.log
-          retention-days: 30
 
       - name: unit tests - console
         uses: ./.github/actions/app-init
@@ -156,30 +132,20 @@ jobs:
           .docker/cmd/artisan.sh config:clear
           docker container exec -t --user www-data app.money-tracker cp .env.docker .env.testing
           docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite console
-      - uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: ${{ github.sha }}-unit-console
-          path: storage/logs/*.log
-          retention-days: 30
 
       - name: unit tests - web
         uses: ./.github/actions/app-init
       - run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite web
-      - uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: ${{ github.sha }}-unit-web
-          path: storage/logs/*.log
-          retention-days: 30
 
       - name: unit tests - unit (generic)
         uses: ./.github/actions/app-init
       - run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite unit
+
+      - name: Failure upload
       - uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: ${{ github.sha }}-unit-generic
+          name: ${{ github.sha }}-unit
           path: storage/logs/*.log
           retention-days: 30
 
@@ -229,28 +195,10 @@ jobs:
       - name: e2e tests - demo
         uses: ./.github/actions/app-init
       - run: .docker/cmd/artisan.sh dusk --group demo --stop-on-failure
-      - uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: ${{ github.sha }}-e2e-demo
-          path: |
-            $DUSK_SCREENSHOT_DIR*
-            $DUSK_DB_DUMP_DIR*
-            storage/logs/*.log
-          retention-days: 30
 
       - name: e2e tests - notifications
         uses: ./.github/actions/app-init
       - run: .docker/cmd/artisan.sh dusk --group notifications-1 --stop-on-failure
-      - uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: ${{ github.sha }}-e2e-notifications
-          path: |
-            $DUSK_SCREENSHOT_DIR*
-            $DUSK_DB_DUMP_DIR*
-            storage/logs/*.log
-          retention-days: 30
 
       - name: e2e tests - navigation
         uses: ./.github/actions/app-init
@@ -259,45 +207,18 @@ jobs:
           .docker/cmd/artisan.sh dusk --group navigation-2 --stop-on-failure
           .docker/cmd/artisan.sh dusk --group navigation-3 --stop-on-failure
           .docker/cmd/artisan.sh dusk --group navigation-4 --stop-on-failure
-      - uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: ${{ github.sha }}-e2e-navigation
-          path: |
-            $DUSK_SCREENSHOT_DIR*
-            $DUSK_DB_DUMP_DIR*
-            storage/logs/*.log
-          retention-days: 30
 
       - name: e2e tests - entry-modal
         uses: ./.github/actions/app-init
       - run: |
           .docker/cmd/artisan.sh dusk --group entry-modal-1 --stop-on-failure
           .docker/cmd/artisan.sh dusk --group entry-modal-2 --stop-on-failure
-      - uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: ${{ github.sha }}-e2e-entry-modal
-          path: |
-            $DUSK_SCREENSHOT_DIR*
-            $DUSK_DB_DUMP_DIR*
-            storage/logs/*.log
-          retention-days: 30
 
       - name: e2e tests - transfer-modal
         uses: ./.github/actions/app-init
       - run: |
           .docker/cmd/artisan.sh dusk --group transfer-modal-1 --stop-on-failure
           .docker/cmd/artisan.sh dusk --group transfer-modal-2 --stop-on-failure
-      - uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: ${{ github.sha }}-e2e-transfer-modal
-          path: |
-            $DUSK_SCREENSHOT_DIR*
-            $DUSK_DB_DUMP_DIR*
-            storage/logs/*.log
-          retention-days: 30
 
       - name: e2e tests - stats
         uses: ./.github/actions/app-init
@@ -308,10 +229,12 @@ jobs:
           .docker/cmd/artisan.sh dusk --group stats-distribution-2 --stop-on-failure
           .docker/cmd/artisan.sh dusk --group stats-tags-1 --stop-on-failure
           .docker/cmd/artisan.sh dusk --group stats-tags-2 --stop-on-failure
-      - uses: actions/upload-artifact@v2
+
+      - name: Failure upload
+        uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e-stats
+          name: ${{ github.sha }}-e2e
           path: |
             $DUSK_SCREENSHOT_DIR*
             $DUSK_DB_DUMP_DIR*
