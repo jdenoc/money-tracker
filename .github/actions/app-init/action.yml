@@ -19,15 +19,15 @@ runs:
     # general application setup
     - run: |
         .docker/cmd/artisan.sh cache:clear
-        .docker/cmd/artisan.sh view:clear
+        .docker/cmd/artisan.sh config:clear
         .docker/cmd/artisan.sh key:generate
         .docker/cmd/artisan.sh app:version `git describe --always`
-        .docker/cmd/artisan.sh config:clear
-        docker container exec -t app.money-tracker env
-        .docker/cmd/artisan.sh app:config
+        .docker/cmd/artisan.sh config:cache
+        .docker/cmd/artisan.sh view:cache
+        .docker/cmd/artisan.sh app:config-list
       shell: bash
     # setup laravel log files
     - run: |
-        docker container exec -t --user www-data app.money-tracker touch storage/logs/php_error.log
-        docker container exec -t --user www-data app.money-tracker touch storage/logs/laravel.log
+        docker container exec -t --user www-data app.money-tracker echo -n > storage/logs/php_error.log
+        docker container exec -t --user www-data app.money-tracker echo -n > storage/logs/laravel.log
       shell: bash

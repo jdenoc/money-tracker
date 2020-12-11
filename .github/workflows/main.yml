@@ -108,11 +108,8 @@ jobs:
 
       # NOTE: vue cache not needed for unit tests
 
-      # init application for testing
       - name: App Setup
         uses: ./.github/actions/app-init
-
-      # unit tests
       - name: unit tests - PUT API endpoints
         run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-put
       - uses: actions/upload-artifact@v2
@@ -122,6 +119,8 @@ jobs:
           path: storage/logs/*.log
           retention-days: 30
 
+      - name: App Setup
+        uses: ./.github/actions/app-init
       - name: unit tests - GET API endpoints
         run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-get
       - uses: actions/upload-artifact@v2
@@ -131,6 +130,8 @@ jobs:
           path: storage/logs/*.log
           retention-days: 30
 
+      - name: App Setup
+        uses: ./.github/actions/app-init
       - name: unit tests - POST API endpoints
         run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-post
       - uses: actions/upload-artifact@v2
@@ -140,6 +141,8 @@ jobs:
           path: storage/logs/*.log
           retention-days: 30
 
+      - name: App Setup
+        uses: ./.github/actions/app-init
       - name: unit tests - DELETE API endpoints
         run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-delete
       - uses: actions/upload-artifact@v2
@@ -149,6 +152,8 @@ jobs:
           path: storage/logs/*.log
           retention-days: 30
 
+      - name: App Setup
+        uses: ./.github/actions/app-init
       - name: unit tests - console
         # artisan app:version testing doesn't work well when configs have been cached
         # because we're not caching, we need to create a new .env file
@@ -163,6 +168,8 @@ jobs:
           path: storage/logs/*.log
           retention-days: 30
 
+      - name: App Setup
+        uses: ./.github/actions/app-init
       - name: unit tests - web
         run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite web
       - uses: actions/upload-artifact@v2
@@ -172,6 +179,8 @@ jobs:
           path: storage/logs/*.log
           retention-days: 30
 
+      - name: App Setup
+        uses: ./.github/actions/app-init
       - name: unit tests - unit (generic)
         run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite unit
       - uses: actions/upload-artifact@v2
@@ -223,11 +232,9 @@ jobs:
             public/mix-manifest.json
           key: ${{ runner.os }}-vue-${{ hashFiles('resources/js/*') }}-${{ hashFiles('resources/sass/*') }}
 
-      # init application for testing
+      # end-2-end tests
       - name: App Setup
         uses: ./.github/actions/app-init
-
-      # end-2-end tests
       - name: e2e tests - demo
         run: .docker/cmd/artisan.sh dusk --group demo --stop-on-failure
       - uses: actions/upload-artifact@v2
@@ -240,6 +247,8 @@ jobs:
             storage/logs/*.log
           retention-days: 30
 
+      - name: App Setup
+        uses: ./.github/actions/app-init
       - name: e2e tests - notifications
         run: .docker/cmd/artisan.sh dusk --group notifications-1 --stop-on-failure
       - uses: actions/upload-artifact@v2
@@ -252,6 +261,8 @@ jobs:
             storage/logs/*.log
           retention-days: 30
 
+      - name: App Setup
+        uses: ./.github/actions/app-init
       - name: e2e tests - navigation
         run: |
           .docker/cmd/artisan.sh dusk --group navigation-1 --stop-on-failure
@@ -268,6 +279,8 @@ jobs:
             storage/logs/*.log
           retention-days: 30
 
+      - name: App Setup
+        uses: ./.github/actions/app-init
       - name: e2e tests - entry-modal
         run: |
           .docker/cmd/artisan.sh dusk --group entry-modal-1 --stop-on-failure
@@ -282,6 +295,8 @@ jobs:
             storage/logs/*.log
           retention-days: 30
 
+      - name: App Setup
+        uses: ./.github/actions/app-init
       - name: e2e tests - transfer-modal
         run: |
           .docker/cmd/artisan.sh dusk --group transfer-modal-1 --stop-on-failure
@@ -296,6 +311,8 @@ jobs:
             storage/logs/*.log
           retention-days: 30
 
+      - name: App Setup
+        uses: ./.github/actions/app-init
       - name: e2e tests - stats
         run: |
           .docker/cmd/artisan.sh dusk --group stats-summary --stop-on-failure
