@@ -1,0 +1,9 @@
+# .github/actions/setup-yarn/action.yml
+name: Yarn Setup
+description: Load Yarn/npm dependancies
+runs:
+  using: composite
+  steps:
+    - name: Yarn package install
+      run: .docker/cmd/yarn.sh install --non-interactive    #TODO: once yarn.lock is added to repo, add `--frozen-lockfile` option to above command
+      shell: bash
