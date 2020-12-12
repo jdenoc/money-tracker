@@ -674,7 +674,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                     // already processed this ID, lets just get another one
                     $entry_data['transfer_entry_id'] = self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
                 } else {
-                    $invalid_entry_ids = $entry_id;
+                    $invalid_entry_ids[] = $entry_id;
                     $entry_data = $this->getApiEntry($entry_id);
                 }
             }while($entry_data['transfer_entry_id'] === self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID);
@@ -768,9 +768,11 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                     // entry ID has already been processed (unsuccessfully), lets just get another ID
                     $entry_data['transfer_entry_id'] = mt_rand(1, 50);  // doesn't matter what this value is as long as it isn't 0
                 } else {
+                    $invalid_entry_id[] = $entry_id;
                     $entry_data = $this->getApiEntry($entry_id);
                 }
             } while($entry_data['transfer_entry_id'] !== self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID);
+            unset($invalid_entry_id);
             $this->assertEquals($entry_id, $entry_data['id']);
             $entry_selector .= '.'.$this->_class_is_transfer;
 
