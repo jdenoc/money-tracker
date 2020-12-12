@@ -10,10 +10,10 @@ trait LogTestName {
      * @param string $testName
      */
     public function runTestNameLogging($testName){
-        $this->logTestNameStatement($testName." - start");
+        $this->logTestNameStatement("[TEST-START] ".$testName);
 
         $this->beforeApplicationDestroyed(function() use ($testName) {
-            $this->logTestNameStatement($testName." - end");
+            $this->logTestNameStatement("[TEST-END] ".$testName);
         });
     }
 

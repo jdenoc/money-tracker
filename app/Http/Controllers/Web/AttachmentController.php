@@ -73,7 +73,6 @@ class AttachmentController extends Controller {
             );
 
         } else {
-            $upload_file_request->getError();
             return response(
                 ['error'=>$upload_file_request->getErrorMessage()],
                 HttpStatus::HTTP_BAD_REQUEST
