@@ -45,6 +45,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     private static $HTACCESS_FILEPATH = 'public/.htaccess';
     private static $BKUP_EXT = '.bkup';
 
+    private static $TEST_NAME_SPECIAL_SETUP = 'testAttemptToAddAnAttachmentTooLargeToAnExistingEntry';
+
     private $_class_lock = "fa-lock";
     private $_class_unlock = "fa-unlock-alt";
     private $_class_disabled = "disabled";
@@ -66,7 +68,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     public function setUp(): void{
         parent::setUp();
         $this->_cached_entries_collection = [];
-        if($this->getName(false) === 'testAttemptToAddAnAttachmentTooLargeToAnExistingEntry'){
+        if($this->getName(false) === self::$TEST_NAME_SPECIAL_SETUP){
             $this->addRulesToHtaccessToDisableDisplayErrors();
         }
     }
@@ -1141,7 +1143,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @return string
      */
     private function getTestDummyFilename(){
-        return \Storage::path(self::$storage_path).'/'.$this->getName(false).'.txt';
+        return \Storage::path(self::$storage_path.$this->getName(false).'.txt');
     }
 
     private function addRulesToHtaccessToDisableDisplayErrors(){
@@ -1162,10 +1164,14 @@ HTACCESS_RULES;
     }
 
     protected function tearDown(): void{
-        if($this->getName(false) === 'testAttemptToAddAnAttachmentTooLargeToAnExistingEntry'){
+        if($this->getName(false) === self::$TEST_NAME_SPECIAL_SETUP){
             $this->revertHtaccessToOriginalState();
-            \Storage::delete($this->getTestDummyFilename());    // remove any files that any tests may have created
+            \Storage::delete(   // remove any files that any tests may have created
+                // need to remove the filepath prefix before we can delete the file from storage
+                str_replace(\Storage::path(''), '',$this->getTestDummyFilename())
+            );
         }
+        $this->assertFileNotExists($this->getTestDummyFilename());
         parent::tearDown();
     }
 
