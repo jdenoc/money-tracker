@@ -237,6 +237,7 @@ jobs:
           name: ${{ github.sha }}-e2e
           path: |
             storage/logs/*.log
+            tests/Browser/console/*.log
             ${{ env.DUSK_DB_DUMP_DIR }}/*.sql
             ${{ env.DUSK_SCREENSHOT_DIR }}
             !${{ env.DUSK_SCREENSHOT_DIR }}/.gitignore
