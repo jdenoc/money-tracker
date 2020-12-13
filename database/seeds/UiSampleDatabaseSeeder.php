@@ -101,9 +101,15 @@ class UiSampleDatabaseSeeder extends Seeder {
         $transfer_to_entries = collect();
         $transfer_from_entries = collect();
         for($transfer_i=0; $transfer_i<self::COUNT_ENTRY; $transfer_i++){
-            $transfer_to_entry = $entries_not_disabled->where('expense', 0)->random();
+            $transfer_to_entry = $entries_not_disabled
+                ->where('expense', 0)
+                ->whereNull('transfer_entry_id')
+                ->random();
             do{
-                $transfer_from_entry = $entries_not_disabled->where('expense', 1)->random();
+                $transfer_from_entry = $entries_not_disabled
+                    ->where('expense', 1)
+                    ->whereNull('transfer_entry_id')
+                    ->random();
             }while($transfer_from_entry['account_type_id'] == $transfer_to_entry['account_type_id']);
 
             // make transfer entries match each other
@@ -125,11 +131,12 @@ class UiSampleDatabaseSeeder extends Seeder {
             $transfer_to_entry->save();
             $transfer_to_entries->push($transfer_to_entry);
         }
+        // randomly select an entry to be an "external" transfer
         $external_transfer_entry = $entries_not_disabled
             ->sortByDesc('entry_date')
             ->chunk(self::$MAX_ENTRIES_IN_RESPONSE)
             ->first()
-            ->where('transfer_entry_id', null)
+            ->whereNull('transfer_entry_id')
             ->random();
         $external_transfer_entry->transfer_entry_id = self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
         $external_transfer_entry->save();

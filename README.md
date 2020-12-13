@@ -1,4 +1,5 @@
-# Money Tracker  [![Build Status](https://travis-ci.org/jdenoc/money-tracker.svg?branch=master)](https://travis-ci.org/jdenoc/money-tracker) [![GitHub release](https://img.shields.io/github/release/jdenoc/money-tracker.svg)](https://github.com/jdenoc/money-tracker/releases/latest)
+# Money Tracker  
+![Github Actions](https://github.com/jdenoc/money-tracker/workflows/Money-tracker%20CI/badge.svg?branch=master) [![GitHub release](https://img.shields.io/github/release/jdenoc/money-tracker.svg)](https://github.com/jdenoc/money-tracker/releases/latest)
 
 ## About
 Money Tracker is a web portal dedicated to help record and manage income & expenses, built on the [Laravel framework](https://laravel.com/docs/5.5)
@@ -21,7 +22,7 @@ For a list of features currently available, what their expected outcome is and t
   - [Environment Variables](#environment-variable-setup)
   - [Scheduled Tasks](#scheduled-tasks-setup)
 - [Testing](#testing)
-  - [Travis-ci](#testing-travisci)
+  - [Github Actions](#testing-ci)
   - [Docker](#testing-docker)
   - [Local/Dev](#testing-locally)
 - [Other Documentation](#other-documentation)
@@ -116,7 +117,7 @@ _**Note:** you can replace_ `git describe --always` _with any value you want_
 .docker/cmd/artisan.sh app:version `git describe --always`
 ```
 
-##### Setup database/clear existing database and re-initialise it empty
+##### Setup database/clear existing database and re-initialise it as empty
 ```bash
 .docker/cmd/artisan.sh migrate:fresh
 ```
@@ -165,20 +166,37 @@ php artisan app:version `git describe --always`
 # It will generate Laravel Facades that PhpStorm can use.
 composer run-script ide-helper
 
-# construct the database tables
-# NOTE: Make sure database has been created/setup first. See next section.
-php artisan migrate:fresh
-
 # setup Yarn packages
 yarn install
 yarn run build-dev
 ```
 
+### Environment variable setup
+Be sure to edit the `.env` file generated during setup. A few of the default values should be fine to use. Modify those as needed.  
+That being said, there are certainly variables that should be modified at this point. They are: 
+- `APP_ENV`
+- `APP_DEBUG`
+- `APP_NAME`
+- `APP_VERSION` (can be set by `php artisan app:version`)
+- `APP_URL`
+- `DB_HOST`
+- `DB_DATABASE`
+- `DB_USERNAME`
+- `DB_PASSWORD`
+- `DISCORD_WEBHOOK_URL`
+
+***
+
 #### <a name="dev-database">Database setup</a> 
 ```bash
-mysql -e "CREATE DATABASE money_tracker;"                                # The database can be named whatever you want. This is just an example.
-mysql -e "CREATE USER 'jdenoc'@'localhost' IDENTIFIED BY 'password';"    # Once again, you can use any database username & password you want. This is just an example.
+mysql -e "CREATE DATABASE money_tracker;"
+mysql -e "CREATE DATABASE $(grep DB_DATABASE .env | sed 's/DB_DATABASE=//');"
+mysql -e "CREATE USER '$(grep DB_USERNAME .env | sed 's/DB_USERNAME=//')'@'localhost' IDENTIFIED BY '$(grep DB_PASSWORD .env | sed 's/DB_PASSWORD=//')';"
+mysql -e "CREATE USER 'jdenoc'@'localhost' IDENTIFIED BY 'password';"
 mysql -e "GRANT ALL PRIVILEGES ON money_tracker.* TO 'jdenoc'@'localhost';"
+mysql -e "GRANT ALL PRIVILEGES ON $(grep DB_DATABASE .env | sed 's/DB_DATABASE=//').* TO '$(grep DB_USERNAME .env | sed 's/DB_USERNAME=//')'@'localhost';"
+php artisan migrate:fresh
+
 ```
 _**Note:** If you changed the database, user or password in the above commands, be sure to assign those new values in the .env file._
 
@@ -208,25 +226,10 @@ yarn run build-prod
 
 # setup cache
 php artisan config:cache
-
-# NOTE: Make sure database has been setup prior to running migrations
-# i.e.: the database is running and configured correctly.
-php artisan migrate:fresh
 ```
 
-### Environment variable setup
-Be sure to edit the `.env` file generated during setup. A few of the default values should be fine to use. Modify those as needed.  
-That being said, there are certainly variables that should be modified at this point. They are: 
-- `APP_ENV`
-- `APP_DEBUG`
-- `APP_NAME`
-- `APP_VERSION` (can be set by `php artisan app:version`)
-- `APP_URL`
-- `DB_HOST`
-- `DB_DATABASE`
-- `DB_USERNAME`
-- `DB_PASSWORD`
-- `DISCORD_WEBHOOK_URL`
+#### <a name="prod-database">Database Setup</a>
+This is the exact same process as we do for our Local/dev setup. See instructions [here](#dev-database).
 
 ***
 
@@ -240,11 +243,6 @@ This Cron will call the Laravel command scheduler every minute. When the command
 Here is a list of commands that will _scheduled_ as part of this setup:  
 - `artisan storage:clear-tmp-uploads`
 - `artisan sanity-check:account-total`
-
-***
-
-#### <a name="prod-database">Database Setup</a>
-This is the exact same process as we do for our Local/dev setup. See instructions [here](#dev-database).
 
 ***
 
@@ -321,8 +319,8 @@ php artisan up
 
 ## Testing
 
-### <a name="testing-travisci">Travis-ci</a>
-This project has been setup to use [travis-ci](https://travis-ci.org/jdenoc/money-tracker) for continuous integration testing.  
+### <a name="testing-ci">Github Actions</a>
+This project has been set up to use [Github-Actions](https://github.com/jdenoc/money-tracker/actions) for continuous integration (CI) testing.  
 
 ### <a name="testing-docker">Docker</a>
 Assuming we already have our docker environment already setup ([instructions here](#docker-environment)), performing the following commands should run the tests we want.
@@ -361,5 +359,5 @@ php artisan dusk --stop-on-failure
 - [Yarn](https://yarnpkg.com/en/docs)
 - [PhpUnit](https://phpunit.readthedocs.io/en/8.5/)
 - [Laravel Dusk](https://laravel.com/docs/6.x/dusk)
-- [Travis CI](https://docs.travis-ci.com/user/languages/php/)
+- [Github Actions](https://docs.github.com/en/free-pro-team@latest/actions)
 - [git](https://git-scm.com/doc)
