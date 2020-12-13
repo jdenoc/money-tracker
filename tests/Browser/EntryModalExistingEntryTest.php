@@ -45,6 +45,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     private static $HTACCESS_FILEPATH = 'public/.htaccess';
     private static $BKUP_EXT = '.bkup';
 
+    private static $TEST_NAME_SPECIAL_SETUP = 'testAttemptToAddAnAttachmentTooLargeToAnExistingEntry';
+
     private $_class_lock = "fa-lock";
     private $_class_unlock = "fa-unlock-alt";
     private $_class_disabled = "disabled";
@@ -66,7 +68,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     public function setUp(): void{
         parent::setUp();
         $this->_cached_entries_collection = [];
-        if($this->getName(false) === 'testAttemptToAddAnAttachmentTooLargeToAnExistingEntry'){
+        if($this->getName(false) === self::$TEST_NAME_SPECIAL_SETUP){
             $this->addRulesToHtaccessToDisableDisplayErrors();
         }
     }
@@ -674,7 +676,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                     // already processed this ID, lets just get another one
                     $entry_data['transfer_entry_id'] = self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
                 } else {
-                    $invalid_entry_ids = $entry_id;
+                    $invalid_entry_ids[] = $entry_id;
                     $entry_data = $this->getApiEntry($entry_id);
                 }
             }while($entry_data['transfer_entry_id'] === self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID);
@@ -768,9 +770,11 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                     // entry ID has already been processed (unsuccessfully), lets just get another ID
                     $entry_data['transfer_entry_id'] = mt_rand(1, 50);  // doesn't matter what this value is as long as it isn't 0
                 } else {
+                    $invalid_entry_id[] = $entry_id;
                     $entry_data = $this->getApiEntry($entry_id);
                 }
             } while($entry_data['transfer_entry_id'] !== self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID);
+            unset($invalid_entry_id);
             $this->assertEquals($entry_id, $entry_data['id']);
             $entry_selector .= '.'.$this->_class_is_transfer;
 
@@ -1139,7 +1143,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @return string
      */
     private function getTestDummyFilename(){
-        return \Storage::path(self::$storage_path).'/'.$this->getName(false).'.txt';
+        return \Storage::path(self::$storage_path.$this->getName(false).'.txt');
     }
 
     private function addRulesToHtaccessToDisableDisplayErrors(){
@@ -1160,10 +1164,14 @@ HTACCESS_RULES;
     }
 
     protected function tearDown(): void{
-        if($this->getName(false) === 'testAttemptToAddAnAttachmentTooLargeToAnExistingEntry'){
+        if($this->getName(false) === self::$TEST_NAME_SPECIAL_SETUP){
             $this->revertHtaccessToOriginalState();
-            \Storage::delete($this->getTestDummyFilename());    // remove any files that any tests may have created
+            \Storage::delete(   // remove any files that any tests may have created
+                // need to remove the filepath prefix before we can delete the file from storage
+                str_replace(\Storage::path(''), '',$this->getTestDummyFilename())
+            );
         }
+        $this->assertFileNotExists($this->getTestDummyFilename());
         parent::tearDown();
     }
 
