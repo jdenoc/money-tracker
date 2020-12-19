@@ -33,6 +33,7 @@ class StatsTrendingTest extends StatsBase {
 
     private static $VUE_KEY_EXPENSEDATA = "expenseData";
     private static $VUE_KEY_INCOMEDATA = "incomeData";
+    private static $VUE_KEY_COMPARISONDATA = 'comparisonData';
 
     public function __construct($name = null, array $data = [], $dataName = ''){
         parent::__construct($name, $data, $dataName);
@@ -201,24 +202,45 @@ class StatsTrendingTest extends StatsBase {
                     $form->click(self::$SELECTOR_BUTTON_GENERATE);
                 });
 
-                $this->waitForLoadingToStop($browser);
-                $entries = $this->getBatchedFilteredEntries($filter_data);
-                $entries = $this->filterTransferEntries($entries, $include_transfers);
+            $this->waitForLoadingToStop($browser);
+            $entries = $this->getBatchedFilteredEntries($filter_data);
+            $entries = $this->filterTransferEntries($entries, $include_transfers);
 
-                $browser
-                    ->assertDontSeeIn(self::$SELECTOR_STATS_RESULTS_TRENDING, self::$LABEL_NO_STATS_DATA)
-                    ->with(self::$SELECTOR_STATS_RESULTS_TRENDING, function(Browser $stats_results) use ($include_transfers){
-                        $this->assertIncludeTransfersCheckboxButtonDefaultState($stats_results);
-                        if($include_transfers){
-                            $this->clickIncludeTransfersCheckboxButton($stats_results);
-                            $this->assertIncludesTransfersCheckboxButtonStateActive($stats_results);
-                        }
+            $income_data = $this->standardiseChartData($entries, false);
+            $expense_data = $this->standardiseChartData($entries, true);
+            $comparison_data = [];
+            foreach($income_data as $datum){
+                $key = $datum['x'];
+                if(!isset($comparison_data[$key])){
+                    $comparison_data[$key] = ['x'=>$key, 'y'=>0];
+                }
+                $comparison_data[$key]['y'] += $datum['y'];
+            }
+            foreach($expense_data as $datum){
+                $key = $datum['x'];
+                if(!isset($comparison_data[$key])){
+                    $comparison_data[$key] = ['x'=>$key, 'y'=>0];
+                }
+                $comparison_data[$key]['y'] -= $datum['y'];
+            }
+            ksort($comparison_data);
+            $comparison_data = array_values($comparison_data);
 
-                        //  line-chart graph canvas should be visible
-                        $stats_results->assertVisible(self::$SELECTOR_CHART_TRENDING);
-                    })
-                    ->assertVue(self::$VUE_KEY_EXPENSEDATA, $this->standardiseChartData($entries, true), self::$SELECTOR_STATS_TRENDING)
-                    ->assertVue(self::$VUE_KEY_INCOMEDATA, $this->standardiseChartData($entries, false), self::$SELECTOR_STATS_TRENDING);
+            $browser
+                ->assertDontSeeIn(self::$SELECTOR_STATS_RESULTS_TRENDING, self::$LABEL_NO_STATS_DATA)
+                ->with(self::$SELECTOR_STATS_RESULTS_TRENDING, function(Browser $stats_results) use ($include_transfers){
+                    $this->assertIncludeTransfersCheckboxButtonDefaultState($stats_results);
+                    if($include_transfers){
+                        $this->clickIncludeTransfersCheckboxButton($stats_results);
+                        $this->assertIncludesTransfersCheckboxButtonStateActive($stats_results);
+                    }
+
+                    //  line-chart graph canvas should be visible
+                    $stats_results->assertVisible(self::$SELECTOR_CHART_TRENDING);
+                })
+                ->assertVue(self::$VUE_KEY_INCOMEDATA, $income_data, self::$SELECTOR_STATS_TRENDING)
+                ->assertVue(self::$VUE_KEY_EXPENSEDATA, $expense_data, self::$SELECTOR_STATS_TRENDING)
+                ->assertVue(self::$VUE_KEY_COMPARISONDATA, $comparison_data, self::$SELECTOR_STATS_TRENDING);
         });
     }
 
