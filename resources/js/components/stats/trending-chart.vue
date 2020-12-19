@@ -58,6 +58,7 @@
                     colors: {
                         blue: 'rgba(0, 178, 255, 1)',
                         red: 'rgba(255, 64, 53, 1)',
+                        purple: 'rgba(128,0,128,1)',
                     },
                     datasetDefault: {
                         fill: false
@@ -80,6 +81,32 @@
             expenseData: function(){
                 return this.standardiseData(true);
             },
+            comparisonData: function(){
+              let comparisonChartData = [];
+              this.expenseData
+                  .forEach(function(datum){
+                    let key = datum.x;
+                    if(!comparisonChartData.hasOwnProperty(key)){
+                      comparisonChartData[key] = {x: key, y: 0}
+                    }
+                    comparisonChartData[key].y -= parseFloat(datum.y);
+                    comparisonChartData[key].y = _.round(comparisonChartData[key].y, 2);
+                  }.bind(this));
+              this.incomeData
+                  .forEach(function(datum){
+                    let key = datum.x;
+                    if(!comparisonChartData.hasOwnProperty(key)){
+                      comparisonChartData[key] = {x: key, y: 0}
+                    }
+                    comparisonChartData[key].y += parseFloat(datum.y);
+                    comparisonChartData[key].y = _.round(comparisonChartData[key].y, 2);
+                  }.bind(this));
+
+              return _.sortBy(
+                  Object.values(comparisonChartData),
+                  function(o){ return o.x;}
+              );
+            },
 
             chartData: function(){
                 let incomeDataset = _.merge(
@@ -100,11 +127,21 @@
                     },
                     this.chartConfig.datasetDefault
                 );
+                let comparisonDataset = _.merge(
+                    {
+                      data: this.comparisonData,
+                      label: 'comparison',
+                      backgroundColor: this.chartConfig.colors.purple,
+                      borderColor: this.chartConfig.colors.purple
+                    },
+                    this.chartConfig.datasetDefault
+                )
 
                 return {
                     datasets: [
                         incomeDataset,
-                        expenseDataset
+                        expenseDataset,
+                        comparisonDataset,
                     ],
                     legend: {
                         display: true
