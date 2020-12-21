@@ -840,18 +840,25 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         $tags_from_api = collect($this->getApiTags());
 
         $this->browse(function(Browser $browser) use ($tags_from_api){
-            $entry_selector = $this->randomUnconfirmedEntrySelector(false);
-            $entry_id = null;
+            $invalid_entry_ids = [];
+            do{
+                $entry_selector = $this->randomUnconfirmedEntrySelector(true);
+                $entry_id = $this->getEntryIdFromSelector($entry_selector);
+                if(in_array($entry_id, $invalid_entry_ids)){
+                    continue;
+                }
+                $entry = Entry::findOrFail($entry_id);
+                $invalid_entry_ids[] = $entry_id;
+            }while($entry->tags->count() == $tags_from_api->count());
+            unset($invalid_entry_ids);
+
             $new_tag = '';
 
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $browser
                 ->openExistingEntryModal($entry_selector)
-                ->with($this->_selector_modal_entry, function(Browser $entry_modal) use ($entry_selector, &$entry_id, $tags_from_api, &$new_tag){
-                    $entry_id = $entry_modal->value($this->_selector_modal_entry_field_entry_id);
-                    $entry = Entry::findOrFail($entry_id);
-
+                ->with($this->_selector_modal_entry, function(Browser $entry_modal) use ($entry, $tags_from_api, &$new_tag){
                     $existing_entry_tags = $entry->tags->pluck('name')->all();
                     do{
                         $new_tag = $tags_from_api->pluck('name')->random();
