@@ -19,8 +19,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Create Release
-        id: create_release
+      - name: Get tag name
+        id: get-tag-name
+        run: echo ::set-output name=name::$(git describe --tags)
+
+      - name: Get tag message
+        id: get-tag-message
+        run: echo ::set-output name=message::$(git cat-file -p $(git rev-parse $(git describe --tags)) | tail -n +6)
+
+      - name: Create Draft Release
+        id: create-draft-release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -28,15 +36,22 @@ jobs:
           tag_name: ${{ github.ref }}
           release_name: ${{ github.ref }}
           body: |
-            *ref:* ${{ github.ref }}
-            *event.release.tag_name:* ${{ github.event.release.tag_name }}
-            *event.release.message:* ${{ github.event.release.message }}
+            *steps.get-tag-name.outputs.name:* ${{ steps.get-tag-name.outputs.name }}
+            *steps.get-tag-message.outputs.message:* ${{ steps.get-tag-message.outputs.message }}
 
-            *event.head.commit:* ${{ github.event.head.commit }}
-            *event.head.commit.message:* ${{ github.event.head.commit.message }}
+            *ref:* ${{ github.ref }}
+
+            *event:* ${{ toJson(github.event) }}
+
+            *event.release:* ${{ toJson(github.event.release) }}
+            *event.release.commit:* ${{ toJson(github.event.release.commit) }}
+            *event.release.commit.message:* ${{ github.event.release.commit.message }}
+
+            *event.head_commit:* ${{ toJson(github.event.head_commit) }}
+            *event.head_commit.message:* ${{ github.event.head_commit.message }}
 
             ---
-            See [here](https://github.com/jdenoc/money-tracker/blob/${{ github.ref }}/README.md#prod-updates) for comprehensive instructions.
+            See [here](https://github.com/jdenoc/money-tracker/blob/${{ steps.get-tag-name.outputs.name }}/README.md#prod-updates) for comprehensive instructions.
           draft: true
           prerelease: true
 
