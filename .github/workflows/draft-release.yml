@@ -21,13 +21,17 @@ jobs:
         with:
           ref: ${{ github.ref }}
 
-      - name: Get tag name
-        id: get-tag-name
-        run: echo ::set-output name=name::$(git describe --tags)
+      - name: Get tag details
+        id: get-tag-details
+        run: |
+          echo ::set-output name=release::$(git describe --tags)
 
-      - name: Get tag message
-        id: get-tag-message
-        run: echo ::set-output name=message::$(git cat-file -p $(git rev-parse $(git describe --tags)) | tail -n +6)
+          # TODO: find something that preserves multiline text
+          echo 'JSON_RESPONSE<<EOF' >> $MULTILINE_TEST_ENV
+          curl https://httpbin.org/json >> $MULTILINE_TEST_ENV
+          echo 'EOF' >> $MULTILINE_TEST_ENV
+
+          echo ::set-output name=message::$(git cat-file -p $(git rev-parse $(git describe --tags)) | tail -n +6)
 
       - name: Create Draft Release
         id: create-draft-release
@@ -38,22 +42,12 @@ jobs:
           tag_name: ${{ github.ref }}
           release_name: ${{ github.ref }}
           body: |
-            *steps.get-tag-name.outputs.name:* ${{ steps.get-tag-name.outputs.name }}
-            *steps.get-tag-message.outputs.message:* ${{ steps.get-tag-message.outputs.message }}
+            ${{ steps.get-tag-details.outputs.message }}
 
-            *ref:* ${{ github.ref }}
-
-            *event:* ${{ toJson(github.event) }}
-
-            *event.release:* ${{ toJson(github.event.release) }}
-            *event.release.commit:* ${{ toJson(github.event.release.commit) }}
-            *event.release.commit.message:* ${{ github.event.release.commit.message }}
-
-            *event.head_commit:* ${{ toJson(github.event.head_commit) }}
-            *event.head_commit.message:* ${{ github.event.head_commit.message }}
+            ${{ env.MULTILINE_TEST_ENV }}
 
             ---
-            See [here](https://github.com/jdenoc/money-tracker/blob/${{ steps.get-tag-name.outputs.name }}/README.md#prod-updates) for comprehensive instructions.
+            See [here](https://github.com/jdenoc/money-tracker/blob/${{ steps.get-tag-details.outputs.release }}/README.md#prod-updates) for comprehensive instructions.
           draft: true
           prerelease: true
 
