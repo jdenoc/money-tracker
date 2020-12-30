@@ -15,25 +15,21 @@ jobs:
   draft-release:
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    env:
-      MULTILINE_TEST_ENV: ''
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
           ref: ${{ github.ref }}
 
-      - name: Get tag details
-        id: get-tag-details
+      - id: set-release-name
+        run: echo "RELEASE_NAME=$(git describe --tags)" >> $GITHUB_ENV
+
+      - id: set-release-message
         run: |
-          echo ::set-output name=release::$(git describe --tags)
-
-          # TODO: find something that preserves multiline text
-          echo 'JSON_RESPONSE<<EOF' >> $MULTILINE_TEST_ENV
-          curl https://httpbin.org/json >> $MULTILINE_TEST_ENV
-          echo 'EOF' >> $MULTILINE_TEST_ENV
-
-          echo ::set-output name=message::$(git cat-file -p $(git rev-parse $(git describe --tags)) | tail -n +6)
+          message=$(git cat-file -p $(git rev-parse $(git describe --tags)) | tail -n +6)
+          echo 'RELEASE_MESSAGE<<GIT' >> $GITHUB_ENV
+          echo "$message" >> $GITHUB_ENV
+          echo 'GIT' >> $GITHUB_ENV
 
       - name: Create Draft Release
         id: create-draft-release
@@ -44,12 +40,10 @@ jobs:
           tag_name: ${{ github.ref }}
           release_name: ${{ github.ref }}
           body: |
-            ${{ steps.get-tag-details.outputs.message }}
-
-            ${{ env.MULTILINE_TEST_ENV }}
+            ${{ env.RELEASE_MESSAGE }}
 
             ---
-            See [here](https://github.com/jdenoc/money-tracker/blob/${{ steps.get-tag-details.outputs.release }}/README.md#prod-updates) for comprehensive instructions.
+            See [here](https://github.com/jdenoc/money-tracker/blob/${{ env.RELEASE_NAME }}/README.md#prod-updates) for comprehensive instructions.
           draft: true
           prerelease: true
 
