@@ -1,0 +1,58 @@
+# .github/workflows/main.yml
+name: Money-tracker CI - Create draft release
+
+# Triggers the workflow when a tag is pushed
+on:
+  push:
+    tags:
+      - '*'
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+
+  draft-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
+
+      - id: set-release-name
+        run: echo "RELEASE_NAME=$(git describe --tags)" >> $GITHUB_ENV
+
+      - id: set-release-message
+        run: |
+          message=$(git cat-file -p $(git rev-parse $(git describe --tags)) | tail -n +6)
+          echo 'RELEASE_MESSAGE<<GIT' >> $GITHUB_ENV
+          echo "$message" >> $GITHUB_ENV
+          echo 'GIT' >> $GITHUB_ENV
+
+      - name: Create Draft Release
+        id: create-draft-release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          body: |
+            ${{ env.RELEASE_MESSAGE }}
+
+            ---
+            See [here](https://github.com/jdenoc/money-tracker/blob/${{ env.RELEASE_NAME }}/README.md#prod-updates) for comprehensive instructions.
+          draft: true
+          prerelease: true
+
+  notification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: discord
+        uses: nobrayner/discord-webhook@v1
+        with:
+          github-token: ${{ github.token }}
+          discord-webhook: ${{ secrets.DISCORD_WEBHOOK }}
