@@ -34,6 +34,7 @@ class StatsTrendingTest extends StatsBase {
     private static $VUE_KEY_EXPENSEDATA = "expenseData";
     private static $VUE_KEY_INCOMEDATA = "incomeData";
     private static $VUE_KEY_COMPARISONDATA = 'comparisonData';
+    private static $VUE_KEY_PERIODTOTALSDATA = 'periodTotalsData';
 
     public function __construct($name = null, array $data = [], $dataName = ''){
         parent::__construct($name, $data, $dataName);
@@ -114,7 +115,7 @@ class StatsTrendingTest extends StatsBase {
         });
     }
 
-    public function providerTestGenerateTrendingChart(){
+    public function providerTestGenerateTrendingChart(): array{
         return [
             //[$datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $include_transfers]
             // defaults account/account-type & date-picker values
@@ -208,23 +209,8 @@ class StatsTrendingTest extends StatsBase {
 
             $income_data = $this->standardiseChartData($entries, false);
             $expense_data = $this->standardiseChartData($entries, true);
-            $comparison_data = [];
-            foreach($income_data as $datum){
-                $key = $datum['x'];
-                if(!isset($comparison_data[$key])){
-                    $comparison_data[$key] = ['x'=>$key, 'y'=>0];
-                }
-                $comparison_data[$key]['y'] += $datum['y'];
-            }
-            foreach($expense_data as $datum){
-                $key = $datum['x'];
-                if(!isset($comparison_data[$key])){
-                    $comparison_data[$key] = ['x'=>$key, 'y'=>0];
-                }
-                $comparison_data[$key]['y'] -= $datum['y'];
-            }
-            ksort($comparison_data);
-            $comparison_data = array_values($comparison_data);
+            $comparison_data = $this->comparisonChartData($income_data, $expense_data);
+            $period_totals_data = $this->periodTotalsChartData($comparison_data);
 
             $browser
                 ->assertDontSeeIn(self::$SELECTOR_STATS_RESULTS_TRENDING, self::$LABEL_NO_STATS_DATA)
@@ -240,7 +226,8 @@ class StatsTrendingTest extends StatsBase {
                 })
                 ->assertVue(self::$VUE_KEY_INCOMEDATA, $income_data, self::$SELECTOR_STATS_TRENDING)
                 ->assertVue(self::$VUE_KEY_EXPENSEDATA, $expense_data, self::$SELECTOR_STATS_TRENDING)
-                ->assertVue(self::$VUE_KEY_COMPARISONDATA, $comparison_data, self::$SELECTOR_STATS_TRENDING);
+                ->assertVue(self::$VUE_KEY_COMPARISONDATA, $comparison_data, self::$SELECTOR_STATS_TRENDING)
+                ->assertVue(self::$VUE_KEY_PERIODTOTALSDATA, $period_totals_data, self::$SELECTOR_STATS_TRENDING);
         });
     }
 
@@ -259,11 +246,15 @@ class StatsTrendingTest extends StatsBase {
     }
 
     /**
+     * Code in the method is translated from JavaScript located here:
+     *  resources/js/components/stats/trending-chart.vue => methods.standardiseData()
+     *
      * @param Collection $entries
      * @param bool $is_expense
      * @return array
+     *
      */
-    private function standardiseChartData($entries, $is_expense){
+    private function standardiseChartData(Collection $entries, bool $is_expense): array{
         $standardised_chart_data = [];
         $filtered_entries = $entries->where('expense', $is_expense);
         foreach($filtered_entries as $entry){
@@ -277,6 +268,52 @@ class StatsTrendingTest extends StatsBase {
 
         ksort($standardised_chart_data);
         return array_values($standardised_chart_data);
+    }
+
+    /**
+     * Code in the method is translated from JavaScript located here:
+     *  resources/js/components/stats/trending-chart.vue => computed.comparisonData()
+     *
+     * @param array $income_data
+     * @param array $expense_data
+     * @return array
+     */
+    private function comparisonChartData(array $income_data, array $expense_data): array{
+        $comparison_data = [];
+        foreach($income_data as $datum){
+            $key = $datum['x'];
+            if(!isset($comparison_data[$key])){
+                $comparison_data[$key] = ['x'=>$key, 'y'=>0];
+            }
+            $comparison_data[$key]['y'] += $datum['y'];
+        }
+        foreach($expense_data as $datum){
+            $key = $datum['x'];
+            if(!isset($comparison_data[$key])){
+                $comparison_data[$key] = ['x'=>$key, 'y'=>0];
+            }
+            $comparison_data[$key]['y'] -= $datum['y'];
+        }
+        ksort($comparison_data);
+        return array_values($comparison_data);
+    }
+
+    /**
+     * Code in the method is translated from JavaScript located here:
+     *  resources/js/components/stats/trending-chart.vue => computed.periodTotalData
+     *
+     * @param array $comparison_chart_data
+     * @return array
+     */
+    private function periodTotalsChartData(array $comparison_chart_data) : array{
+        $period_totals_data = [];
+        $previous_value = 0;
+        foreach($comparison_chart_data as $i=>$chart_datum){
+            $new_total = $previous_value+$chart_datum['y'];
+            $period_totals_data[$i] = ['x'=>$chart_datum['x'], 'y'=>$new_total];
+            $previous_value = $new_total;
+        }
+        return $period_totals_data;
     }
 
 }
