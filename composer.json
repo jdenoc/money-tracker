@@ -11,6 +11,7 @@
         "doctrine/dbal": "^2.5",
         "eklundkristoffer/laravel-discord-webhook": "dev-master",
         "fideloper/proxy": "^4.0",
+        "jdenoc/laravel-make-trait": "dev-main",
         "laravel/framework": "^6.18.35",
         "laravel/helpers": "^1.2",
         "laravel/tinker": "^2.0",
@@ -63,10 +64,16 @@
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
-    "repositories": [{
-        "type": "vcs",
-        "url": "https://github.com/jdenoc/laravel-discord-webhook"
-    }],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/jdenoc/laravel-discord-webhook"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/jdenoc/laravel-make-trait"
+        }
+    ],
     "extra": {
         "laravel": {
             "dont-discover": [
