@@ -67,10 +67,6 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/jdenoc/laravel-app-version"
-        },
-        {
-            "type": "vcs",
             "url": "https://github.com/jdenoc/laravel-discord-webhook"
         }
     ],

@@ -2,6 +2,8 @@
 
 namespace App\Traits\Tests;
 
+use Illuminate\Support\Facades\Storage;
+
 trait StorageTestFiles {
 
     protected static $storage_path = "test/";
@@ -9,11 +11,11 @@ trait StorageTestFiles {
     /**
      * @return array
      */
-    public static function getTestFilePaths(){
-        $file_paths =  \Storage::files(self::$storage_path);
-        $file_paths = array_filter($file_paths, function($file_name){
-            if(strpos($file_name, 'git') === false){
-                return $file_name;
+    public static function getTestFilePaths(): array{
+        $file_paths =  Storage::files(self::$storage_path);
+        $file_paths = array_filter($file_paths, function(string $filename){
+            if(strpos($filename, 'git') === false){
+                return $filename;
             }
         });
         return array_values($file_paths);
@@ -22,19 +24,19 @@ trait StorageTestFiles {
     /**
      * @return array
      */
-    public static function getTestFilenames(){
+    public static function getTestFilenames(): array{
         $file_paths = self::getTestFilePaths();
-        $file_names = array_map(function($file_path){
+        $filenames = array_map(function(string $file_path){
             return str_replace(self::$storage_path, '', $file_path);
         }, $file_paths);
-        return $file_names;
+        return $filenames;
     }
 
     /**
      * @param string $filename
      * @return string
      */
-    public function getTestFileStoragePathFromFilename($filename){
+    public function getTestFileStoragePathFromFilename(string $filename): string{
         $storage_filepath_key = array_search(self::$storage_path.$filename, self::getTestFilePaths());
         if($storage_filepath_key === false){
             throw new \OutOfBoundsException("Filename provided does not match any ");
@@ -45,9 +47,9 @@ trait StorageTestFiles {
     /**
      * @return string
      */
-    public function getRandomTestFileStoragePath(){
-        $file_names = self::getTestFilenames();
-        return self::$storage_path.$file_names[array_rand($file_names, 1)];
+    public function getRandomTestFileStoragePath(): string{
+        $filenames = self::getTestFilenames();
+        return self::$storage_path.$filenames[array_rand($filenames, 1)];
     }
 
 }
