@@ -48,7 +48,7 @@ For a list of features currently available, what their expected outcome is and t
   - Mbstring PHP Extension
   - Tokenizer PHP Extension
   - XML PHP Extension
-- Composer 1.9
+- Composer 2.0
   ```bash
   # confirm installation and version of PHP
   composer --version
