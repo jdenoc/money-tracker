@@ -11,13 +11,14 @@ const mix = require('laravel-mix');
  |
  */
 
-let cssDirectory            = 'public/vue/css';
-let nodeDirectory           = 'node_modules';
-let jsDirectory             = 'public/vue/js';
-let webFontDirectory        = 'public/vue/webfonts';
+let cssDirectory      = 'public/vue/css';
+let nodeDirectory     = 'node_modules';
+let jsDirectory       = 'public/vue/js';
+let webFontDirectory  = 'public/vue/webfonts';
 let resourceDirectory = 'resources';
 
-mix.js(resourceDirectory+'/js/app-home.js', jsDirectory)
+mix
+    .js(resourceDirectory+'/js/app-home.js', jsDirectory)
     .js(resourceDirectory+'/js/app-stats.js', jsDirectory)
     // font-awesome
     .copy(nodeDirectory+'/@fortawesome/fontawesome-free/css/all.min.css', cssDirectory+'/font-awesome.css')

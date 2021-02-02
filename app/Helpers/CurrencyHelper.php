@@ -4,6 +4,7 @@ namespace App\Helpers;
 
 use App\Currency;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 
 class CurrencyHelper {
 
@@ -21,7 +22,7 @@ class CurrencyHelper {
      * @return Collection
      */
     public static function fetchCurrencies(){
-        $currency_json = \Storage::get(self::$CURRENCY_FILE_PATH);
+        $currency_json = Storage::get(self::$CURRENCY_FILE_PATH);
         $raw_currency_data = json_decode($currency_json, true);
         $currency_collection = collect();
         foreach($raw_currency_data as $currency_data){
