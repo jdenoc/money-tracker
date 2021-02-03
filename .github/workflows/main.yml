@@ -52,6 +52,7 @@ jobs:
         if: steps.composer-cache.outputs.cache-hit != 'true'
         with:
           github-token: ${{ github.token }}
+          php-version: 7.3
 
       - name: Cache npm/Yarn packages
         id: yarn-cache
