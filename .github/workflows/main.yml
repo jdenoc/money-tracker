@@ -34,7 +34,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: cache-docker-${{ hashFiles('.docker/*.dockerfile') }}-${{ hashFiles('.docker/docker-compose.yml') }}
+          key: cache-docker-${{ hashFiles('.docker/*.dockerfile') }}-${{ hashFiles('.docker/docker-compose.yml') }}.${{ secrets.CACHE_VERSION }}
 
       - name: Docker build
         uses: ./.github/actions/setup-docker
@@ -45,20 +45,21 @@ jobs:
         uses: actions/cache@v2
         with:
           path: vendor
-          key: cache-composer-${{ hashFiles('composer.lock') }}
+          key: cache-composer-${{ hashFiles('composer.lock') }}.${{ secrets.CACHE_VERSION }}
 
       - name: Composer setup
         uses: ./.github/actions/setup-composer
         if: steps.composer-cache.outputs.cache-hit != 'true'
         with:
           github-token: ${{ github.token }}
+          php-version: 7.3
 
       - name: Cache npm/Yarn packages
         id: yarn-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-yarn-${{ hashFiles('yarn.lock') }}
+          key: cache-yarn-${{ hashFiles('yarn.lock') }}.${{ secrets.CACHE_VERSION }}
 
       - name: Yarn setup
         uses: ./.github/actions/setup-yarn
@@ -71,7 +72,7 @@ jobs:
           path: |
             public/vue
             public/mix-manifest.json
-          key: ${{ runner.os }}-vue-${{ hashFiles('resources/js/*') }}-${{ hashFiles('resources/sass/*') }}
+          key: ${{ runner.os }}-vue-${{ hashFiles('resources/js/*') }}-${{ hashFiles('resources/sass/*') }}.${{ secrets.CACHE_VERSION }}
 
       - name: Build Vue
         uses: ./.github/actions/build-vue
@@ -92,21 +93,21 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: cache-docker-${{ hashFiles('.docker/*.dockerfile') }}-${{ hashFiles('.docker/docker-compose.yml') }}
+          key: cache-docker-${{ hashFiles('.docker/*.dockerfile') }}-${{ hashFiles('.docker/docker-compose.yml') }}.${{ secrets.CACHE_VERSION }}
 
       - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
           path: vendor
-          key: cache-composer-${{ hashFiles('composer.lock') }}
+          key: cache-composer-${{ hashFiles('composer.lock') }}.${{ secrets.CACHE_VERSION }}
 
       - name: Cache npm/Yarn packages
         id: yarn-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-yarn-${{ hashFiles('yarn.lock') }}
+          key: cache-yarn-${{ hashFiles('yarn.lock') }}.${{ secrets.CACHE_VERSION }}
 
       # NOTE: vue cache not needed for unit tests
 
@@ -169,21 +170,21 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: cache-docker-${{ hashFiles('.docker/*.dockerfile') }}-${{ hashFiles('.docker/docker-compose.yml') }}
+          key: cache-docker-${{ hashFiles('.docker/*.dockerfile') }}-${{ hashFiles('.docker/docker-compose.yml') }}.${{ secrets.CACHE_VERSION }}
 
       - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
           path: vendor
-          key: cache-composer-${{ hashFiles('composer.lock') }}
+          key: cache-composer-${{ hashFiles('composer.lock') }}.${{ secrets.CACHE_VERSION }}
 
       - name: Cache npm/Yarn packages
         id: yarn-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-yarn-${{ hashFiles('yarn.lock') }}
+          key: cache-yarn-${{ hashFiles('yarn.lock') }}.${{ secrets.CACHE_VERSION }}
 
       - name: Cache vue
         id: vue-cache
@@ -192,7 +193,7 @@ jobs:
           path: |
             public/vue
             public/mix-manifest.json
-          key: ${{ runner.os }}-vue-${{ hashFiles('resources/js/*') }}-${{ hashFiles('resources/sass/*') }}
+          key: ${{ runner.os }}-vue-${{ hashFiles('resources/js/*') }}-${{ hashFiles('resources/sass/*') }}.${{ secrets.CACHE_VERSION }}
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
