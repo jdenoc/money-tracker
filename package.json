@@ -1,4 +1,7 @@
 {
+  "name": "money-tracker",
+  "homepage": "https://github.com/jdenoc/money-tracker",
+  "license": "MIT",
   "private": true,
   "scripts": {
     "build-dev": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js && echo 'process completed @ ' `date`",

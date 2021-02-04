@@ -1,5 +1,7 @@
 # Money Tracker  
-![Github Actions](https://github.com/jdenoc/money-tracker/workflows/Money-tracker%20CI/badge.svg?branch=master) [![GitHub release](https://img.shields.io/github/release/jdenoc/money-tracker.svg)](https://github.com/jdenoc/money-tracker/releases/latest)
+![Github Actions](https://github.com/jdenoc/money-tracker/workflows/Money-tracker%20CI/badge.svg?branch=master)
+[![Latest Release](https://img.shields.io/github/release/jdenoc/money-tracker.svg?style=flat-square)](https://github.com/jdenoc/money-tracker/releases/latest)
+[![License](https://img.shields.io/github/license/jdenoc/laravel-app-version?style=flat-square)](LICENSE)
 
 ## About
 Money Tracker is a web portal dedicated to help record and manage income & expenses, built on the [Laravel framework](https://laravel.com/docs/5.5)
@@ -48,7 +50,7 @@ For a list of features currently available, what their expected outcome is and t
   - Mbstring PHP Extension
   - Tokenizer PHP Extension
   - XML PHP Extension
-- Composer 1.9
+- Composer 2.0
   ```bash
   # confirm installation and version of PHP
   composer --version
@@ -136,12 +138,12 @@ If you have a database dump file, you can load it with this command:
 
 ##### Tear-down 
 ```bash
-docker-compose -f .docker/docker-compose.yml down
+docker-compose -f .docker/docker-compose.yml -p "moneytracker" down
 ```
 
 _**Note:** You can tear down the docker containers as well as their associated volumes with this command:_
 ```bash
-docker-compose -f .docker/docker-compose.yml down -v
+docker-compose -f .docker/docker-compose.yml -p "moneytracker" down -v
 ```
 _**Note:** You do not need to worry about "tearing down" the yarn and/or composer containers. They will "remove" themselves once they have completed their tasks._  
 

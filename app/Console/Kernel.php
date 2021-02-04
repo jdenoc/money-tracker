@@ -14,7 +14,6 @@ class Kernel extends ConsoleKernel {
      */
     protected $commands = [
         Commands\AccountTotalSanityCheck::class,
-        Commands\AppVersion::class,
         Commands\ClearTmpUploads::class,
     ];
 
