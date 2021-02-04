@@ -5,5 +5,5 @@ runs:
   using: composite
   steps:
     - name: Yarn package install
-      run: .docker/cmd/yarn.sh install --non-interactive    #TODO: once yarn.lock is added to repo, add `--frozen-lockfile` option to above command
+      run: .docker/cmd/yarn.sh install --non-interactive --frozen-lockfile
       shell: bash
