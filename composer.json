@@ -1,8 +1,10 @@
 {
     "name": "jdenoc/money-tracker",
     "description": "income/expense tracker with receipt retention",
+    "homepage": "https://github.com/jdenoc/money-tracker",
     "keywords": ["laravel", "finance"],
     "type": "project",
+    "license": "MIT",
     "require": {
         "php": "^7.2",
         "ext-json": "*",
