@@ -12,9 +12,10 @@ use App\Traits\Tests\Dusk\TagsInput as DuskTraitTagsInput;
 use App\Traits\Tests\Dusk\ToggleButton as DuskTraitToggleButton;
 use App\Traits\Tests\WaitTimes;
 use Facebook\WebDriver\WebDriverBy;
+use Laravel\Dusk\Browser;
+use Storage;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
-use Laravel\Dusk\Browser;
 use Tests\Traits\HomePageSelectors;
 use Throwable;
 
@@ -73,7 +74,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         }
     }
 
-    public function providerUnconfirmedEntry(){
+    public function providerUnconfirmedEntry(): array{
         return [
             // test 1/25
             "Expense"=>[$this->_selector_table_unconfirmed_expense, $this->_label_expense_switch_expense, $this->_color_expense_switch_expense],
@@ -93,7 +94,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @group entry-modal-1
      * test (see provider)/25
      */
-    public function testClickingOnEntryTableEditButtonOfUnconfirmedEntry($data_entry_selector, $data_expense_switch_label, $expense_switch_colour){
+    public function testClickingOnEntryTableEditButtonOfUnconfirmedEntry(string $data_entry_selector, string $data_expense_switch_label, string $expense_switch_colour){
         $this->browse(function(Browser $browser) use ($data_entry_selector, $data_expense_switch_label, $expense_switch_colour){
             $browser
                 ->visit(new HomePage());
@@ -141,7 +142,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         });
     }
 
-    public function providerConfirmedEntry(){
+    public function providerConfirmedEntry(): array{
         return [
             // test 3/25
             "Expense"=>[$this->_selector_table_confirmed_expense, $this->_label_expense_switch_expense, $this->_color_expense_switch_expense],
@@ -161,7 +162,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @group entry-modal-1
      * test (see provider)/25
      */
-    public function testClickingOnEntryTableEditButtonOfConfirmedEntry($data_entry_selector, $data_expense_switch_label, $expense_switch_color){
+    public function testClickingOnEntryTableEditButtonOfConfirmedEntry(string $data_entry_selector, string $data_expense_switch_label, string $expense_switch_color){
         $this->browse(function(Browser $browser) use ($data_entry_selector, $data_expense_switch_label, $expense_switch_color){
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
@@ -305,7 +306,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         });
     }
 
-    public function providerEntryWithTags(){
+    public function providerEntryWithTags(): array{
         // [$data_entry_selector, $data_tags_container_selector, $data_tag_selector]
         return [
             // test 7/25
@@ -326,7 +327,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @group entry-modal-1
      * test (see provider)/25
      */
-    public function testClickingOnEntryTableEditButtonOfEntryWithTags($data_entry_selector, $data_tags_container_selector, $data_tag_selector){
+    public function testClickingOnEntryTableEditButtonOfEntryWithTags(string $data_entry_selector, string $data_tags_container_selector, string $data_tag_selector){
         $this->browse(function(Browser $browser) use ($data_entry_selector, $data_tags_container_selector, $data_tag_selector){
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
@@ -434,7 +435,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                 ->with($this->_selector_modal_body, function(Browser $modal_body) use (&$old_value, &$new_value){
                     $old_value = $modal_body->value($this->_selector_modal_entry_field_date);
                     // just in case the old and new values match
-                    $day_diff = -90;
+                    $day_diff = -10;
                     do{
                         $new_value = date("Y-m-d", strtotime(sprintf("%d days", $day_diff)));
                         $day_diff--;
@@ -500,7 +501,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         });
     }
 
-    public function providerUpdateEntry(){
+    public function providerUpdateEntry(): array{
         return [
             'entry_value'=>[$this->_selector_modal_entry_field_value, 0.01],                                    // test 13/25
             'memo'=>[$this->_selector_modal_entry_field_memo, "hfrsighesiugbeusigbweuisgbeisugsebuibseiugbg"],  // test 14/25
@@ -517,7 +518,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @group entry-modal-1
      * test (see provider)/25
      */
-    public function testUpdateExistingEntryValue($field_selector, $new_value){
+    public function testUpdateExistingEntryValue(string $field_selector, $new_value){
         $this->browse(function(Browser $browser) use ($field_selector, $new_value){
             $entry_selector = $this->randomUnconfirmedEntrySelector(true);
             $old_value = "";
@@ -543,7 +544,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         });
     }
 
-    public function providerOpenExistingEntryInModalThenChangeConfirmSwitch(){
+    public function providerOpenExistingEntryInModalThenChangeConfirmSwitch(): array{
         return [
             'unconfirmed->confirmed'=>[false],  // test 15/25
             'confirmed->unconfirmed'=>[true]    // test 16/25
@@ -559,7 +560,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @group entry-modal-1
      * test (see provider)/25
      */
-    public function testOpenExistingEntryInModalThenChangeConfirmSwitch($selector_bool){
+    public function testOpenExistingEntryInModalThenChangeConfirmSwitch(bool $selector_bool){
         $entry_selector = $this->randomEntrySelector(['confirm'=>$selector_bool]);
         $this->browse(function(Browser $browser) use ($entry_selector, $selector_bool){
             $browser->visit(new HomePage());
@@ -617,7 +618,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         });
     }
 
-    public function providerOpenExistingEntryInModalThenChangeExpenseIncomeSwitch(){
+    public function providerOpenExistingEntryInModalThenChangeExpenseIncomeSwitch(): array{
         return [
             'expense->income'=>[true],  // test 17/25
             'income->expense'=>[false], // test 18/25
@@ -633,7 +634,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @group entry-modal-1
      * test (see provider)/25
      */
-    public function testOpenExistingEntryInModalThenChangeExpenseIncomeSwitch($selector_bool){
+    public function testOpenExistingEntryInModalThenChangeExpenseIncomeSwitch(bool $selector_bool){
         $entry_selector = $this->randomEntrySelector(['expense'=>$selector_bool, 'confirm'=>false]);
         $this->browse(function(Browser $browser) use ($entry_selector, $selector_bool){
             $browser->visit(new HomePage());
@@ -892,7 +893,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $browser->openExistingEntryModal($entry_selector)
                 ->with($this->_selector_modal_body, function($entry_modal_body){
-                    $upload_file_path = \Storage::path($this->getRandomTestFileStoragePath());
+                    $upload_file_path = Storage::path($this->getRandomTestFileStoragePath());
                     $this->assertFileExists($upload_file_path);
                     $entry_modal_body
                         ->assertVisible($this->_selector_modal_entry_field_upload)
@@ -990,7 +991,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         });
     }
 
-    public function providerAttemptToAddAnAttachmentTooLargeToAnExistingEntry(){
+    public function providerAttemptToAddAnAttachmentTooLargeToAnExistingEntry(): array{
         $upload_max_filesize=$this->convertPhpIniFileSizeToBytes(ini_get(self::INI_UPLOADMAXFILESIZE));
         $post_max_size=$this->convertPhpIniFileSizeToBytes(ini_get(self::INI_POSTMAXSIZE));
 
@@ -1019,7 +1020,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @group entry-modal-1
      * test (see provider)/25
      */
-    public function testAttemptToAddAnAttachmentTooLargeToAnExistingEntry($max_upload_filesize, $error_message){
+    public function testAttemptToAddAnAttachmentTooLargeToAnExistingEntry(int $max_upload_filesize, string $error_message){
         $dummy_filename = $this->getTestDummyFilename();
         $this->generateDummyFile(
             $dummy_filename,
@@ -1055,7 +1056,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @param int|bool $get_id
      * @return string
      */
-    private function randomConfirmedEntrySelector($get_id=false){
+    private function randomConfirmedEntrySelector($get_id=false): string{
         if($get_id){
             return $this->randomEntrySelector(['confirm'=>true]);
         } else {
@@ -1068,7 +1069,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @param bool $get_id
      * @return string
      */
-    private function randomUnconfirmedEntrySelector($get_id=false){
+    private function randomUnconfirmedEntrySelector($get_id=false): string{
         if($get_id){
             return $this->randomEntrySelector(['confirm'=>false]);
         } else {
@@ -1081,7 +1082,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @param array $entry_constraints
      * @return string
      */
-    private function randomEntrySelector($entry_constraints = []){
+    private function randomEntrySelector($entry_constraints = []): string{
         $entries_collection = $this->getCachedEntriesAsCollection();
         if(!empty($entry_constraints)){
             foreach(array_keys($entry_constraints) as $constraint){
@@ -1096,7 +1097,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @param string $selector
      * @return string
      */
-    private function getEntryIdFromSelector($selector){
+    private function getEntryIdFromSelector(string $selector): string{
         return str_replace(
             str_replace("%s", '', self::$PLACEHOLDER_SELECTOR_EXISTING_ENTRY_ROW),
             '',
@@ -1120,7 +1121,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @param string $ini_value
      * @return int
      */
-    private function convertPhpIniFileSizeToBytes($ini_value){
+    private function convertPhpIniFileSizeToBytes(string $ini_value): int{
         $size_type = strtolower($ini_value[strlen($ini_value)-1]);
         $val = intval($ini_value);
         switch($size_type) {
@@ -1139,7 +1140,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @param string $file_name
      * @param int $file_size    size of file to be created in bytes
      */
-    private function generateDummyFile($file_name, $file_size){
+    private function generateDummyFile(string $file_name, int $file_size){
         $fp = fopen($file_name, 'w');
         fseek($fp, $file_size-1, SEEK_CUR);
         fwrite($fp, 'z');
@@ -1149,8 +1150,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     /**
      * @return string
      */
-    private function getTestDummyFilename(){
-        return \Storage::path(self::$storage_path.$this->getName(false).'.txt');
+    private function getTestDummyFilename(): string{
+        return Storage::path(self::$storage_path.$this->getName(false).'.txt');
     }
 
     private function addRulesToHtaccessToDisableDisplayErrors(){
@@ -1173,9 +1174,9 @@ HTACCESS_RULES;
     protected function tearDown(): void{
         if($this->getName(false) === self::$TEST_NAME_SPECIAL_SETUP){
             $this->revertHtaccessToOriginalState();
-            \Storage::delete(   // remove any files that any tests may have created
+            Storage::delete(   // remove any files that any tests may have created
                 // need to remove the filepath prefix before we can delete the file from storage
-                str_replace(\Storage::path(''), '',$this->getTestDummyFilename())
+                str_replace(Storage::path(''), '',$this->getTestDummyFilename())
             );
         }
         $this->assertFileNotExists($this->getTestDummyFilename());
