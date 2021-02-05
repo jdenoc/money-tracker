@@ -207,9 +207,9 @@ jobs:
           path: |
             storage/logs/*.log
             tests/Browser/console/*.log
-            ${{ env.DUSK_DB_DUMP_DIR }}/*.sql
+            ${{ env.DUSK_DB_DUMP_DIR }}*.sql
             ${{ env.DUSK_SCREENSHOT_DIR }}
-            !${{ env.DUSK_SCREENSHOT_DIR }}/.gitignore
+            !${{ env.DUSK_SCREENSHOT_DIR }}.gitignore
           retention-days: 30
 
   tests-e2e-notifications:
@@ -267,9 +267,9 @@ jobs:
           path: |
             storage/logs/*.log
             tests/Browser/console/*.log
-            ${{ env.DUSK_DB_DUMP_DIR }}/*.sql
+            ${{ env.DUSK_DB_DUMP_DIR }}*.sql
             ${{ env.DUSK_SCREENSHOT_DIR }}
-            !${{ env.DUSK_SCREENSHOT_DIR }}/.gitignore
+            !${{ env.DUSK_SCREENSHOT_DIR }}.gitignore
           retention-days: 30
 
   tests-e2e-navigation:
@@ -336,9 +336,9 @@ jobs:
           path: |
             storage/logs/*.log
             tests/Browser/console/*.log
-            ${{ env.DUSK_DB_DUMP_DIR }}/*.sql
+            ${{ env.DUSK_DB_DUMP_DIR }}*.sql
             ${{ env.DUSK_SCREENSHOT_DIR }}
-            !${{ env.DUSK_SCREENSHOT_DIR }}/.gitignore
+            !${{ env.DUSK_SCREENSHOT_DIR }}.gitignore
           retention-days: 30
 
   tests-e2e-entry-modal:
@@ -399,9 +399,9 @@ jobs:
           path: |
             storage/logs/*.log
             tests/Browser/console/*.log
-            ${{ env.DUSK_DB_DUMP_DIR }}/*.sql
+            ${{ env.DUSK_DB_DUMP_DIR }}*.sql
             ${{ env.DUSK_SCREENSHOT_DIR }}
-            !${{ env.DUSK_SCREENSHOT_DIR }}/.gitignore
+            !${{ env.DUSK_SCREENSHOT_DIR }}.gitignore
           retention-days: 30
 
   tests-e2e-transfer-modal:
@@ -462,9 +462,9 @@ jobs:
           path: |
             storage/logs/*.log
             tests/Browser/console/*.log
-            ${{ env.DUSK_DB_DUMP_DIR }}/*.sql
+            ${{ env.DUSK_DB_DUMP_DIR }}*.sql
             ${{ env.DUSK_SCREENSHOT_DIR }}
-            !${{ env.DUSK_SCREENSHOT_DIR }}/.gitignore
+            !${{ env.DUSK_SCREENSHOT_DIR }}.gitignore
           retention-days: 30
 
   tests-e2e-stats:
@@ -537,9 +537,9 @@ jobs:
           path: |
             storage/logs/*.log
             tests/Browser/console/*.log
-            ${{ env.DUSK_DB_DUMP_DIR }}/*.sql
+            ${{ env.DUSK_DB_DUMP_DIR }}*.sql
             ${{ env.DUSK_SCREENSHOT_DIR }}
-            !${{ env.DUSK_SCREENSHOT_DIR }}/.gitignore
+            !${{ env.DUSK_SCREENSHOT_DIR }}.gitignore
           retention-days: 30
 
   notification:
