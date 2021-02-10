@@ -866,10 +866,10 @@
   resolved "https://registry.yarnpkg.com/@types/q/-/q-1.5.4.tgz#15925414e0ad2cd765bfef58842f7e26a7accb24"
   integrity sha512-1HcDas8SEj4z1Wc696tH56G8OlRaH/sqZOynNNB+HF0WOeXPaxTtbYzJY2oEfiUxjSKjhCKr+MvR7dCHcEelug==
 
-"@voerro/vue-tagsinput@1.9.1":
-  version "1.9.1"
-  resolved "https://registry.yarnpkg.com/@voerro/vue-tagsinput/-/vue-tagsinput-1.9.1.tgz#99f984d28248c981e95d4d02312f9e26b631ee16"
-  integrity sha512-90Lelfm1LHQrXUTZVeylt3ga6Oe9TLSDZjkMdG/FBYlHJgmyVXO4R5DFxEQF6Ra1levx8QwcOI/6M2gnW02/cA==
+"@voerro/vue-tagsinput@1.11.2":
+  version "1.11.2"
+  resolved "https://registry.yarnpkg.com/@voerro/vue-tagsinput/-/vue-tagsinput-1.11.2.tgz#61bc701b198c87d0b2e102c1425954068818b6fd"
+  integrity sha512-+vcAELV/egIYTEWqTCUDiLMNs5AcXUX4bwhbJwhFPr8No6WqNNcDPzfhl04tHj6ljOP30NFlSpCDnxPZgN+mmA==
   dependencies:
     vue "^2.5.0"
 
