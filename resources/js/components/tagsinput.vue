@@ -45,14 +45,5 @@ export default {
 
 <style scoped>
   @import '~@voerro/vue-tagsinput/dist/style.css';
-
-  .tags-input input{
-    font-size: 0.75rem;
-  }
-  .tags-input span{
-    margin: 0 0.3rem 0 0;
-  }
-  .typeahead-badges{
-    margin-top: 0.125rem;
-  }
+  @import "../../sass/tags-input.scss";
 </style>
