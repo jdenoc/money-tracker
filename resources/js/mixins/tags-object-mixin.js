@@ -18,6 +18,9 @@ export const tagsObjectMixin = {
                 return result;
             }, {});
         },
+        listTags: function(){
+            return this.rawTagsData;
+        },
         areTagsSet: function(){
             return !_.isEmpty(this.rawTagsData);
         },

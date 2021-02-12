@@ -112,15 +112,12 @@
                 <div class="field is-horizontal">
                     <div class="field-label is-normal"><label class="label">Tags:</label></div>
                     <div class="field-body"><div class="field"><div class="control" v-bind:class="{'is-loading': !areTagsSet}">
-                        <voerro-tags-input
-                            v-show="!isLocked"
-                            element-id="entry-tags"
-                            v-model="entryData.tags"
-                            v-bind:existing-tags="listTagsAsObject"
-                            v-bind:only-existing-tags="true"
-                            v-bind:typeahead="true"
-                            v-bind:typeahead-max-results="5"
-                        ></voerro-tags-input>
+                        <tagsinput v-show="!isLocked"
+                            tagsInputName="entry-tags"
+                            v-bind:existingTags="listTags"
+                            v-bind:selected-tags="entryData.tags"
+                            v-on:update-tags-input="entryData.tags = $event"
+                        ></tagsinput>
                         <div class="box" v-show="isLocked"><div class="tags">
                             <span class="tag"
                                 v-for="tag in displayReadOnlyTags"
@@ -197,7 +194,7 @@
     import EntryModalAttachment from "./entry-modal-attachment";
     import Store from '../store';
     import { ToggleButton } from 'vue-js-toggle-button';
-    import VoerroTagsInput from '@voerro/vue-tagsinput';
+    import tagsinput from "./tagsinput";
     import vue2Dropzone from 'vue2-dropzone';
     import {bulmaColorsMixin} from "../mixins/bulma-colors-mixin";
 
@@ -207,7 +204,7 @@
         components: {
             EntryModalAttachment,
             ToggleButton,
-            VoerroTagsInput,
+            tagsinput,
             VueDropzone: vue2Dropzone,
         },
         data: function(){
@@ -266,7 +263,7 @@
             },
             displayReadOnlyTags: function(){
                 let currentTags = typeof this.entryData.tags == 'undefined' ? [] : this.entryData.tags;
-                return currentTags.map(function(item){ return this.listTagsAsObject[item]; }.bind(this));
+                return currentTags.map(function(tag){ return tag.name; });
             },
             listAccountTypes: function(){
                 return _.orderBy(this.rawAccountTypesData, 'name');
@@ -343,10 +340,6 @@
                 this.setModalState(Store.getters.STORE_MODAL_ENTRY);
                 if(!_.isEmpty(entryData)){
                     this.entryData = _.clone(entryData);
-                    // our input-tags field requires that tag values are strings
-                    this.entryData.tags = this.entryData.tags.map(function(tag){
-                        return tag.id.toString();
-                    });
                     this.entryData.confirm ? this.lockModal() : this.unlockModal();
                     this.isDeletable = true;
                 } else {
@@ -452,13 +445,10 @@
                 }
                 // tags
                 if(_.isArray(this.entryData.tags)){
-                    newEntryData.tags = [];
-                    this.entryData.tags.forEach(function(tagId){
-                        // each "tag" MUST be an int
-                        if(!_.isArray(tagId) && _.isNumber(parseInt(tagId))){
-                            newEntryData.tags.push(tagId);
-                        }
-                    });
+                  newEntryData.tags = [];
+                  this.entryData.tags.forEach(function(tag){
+                    newEntryData.tags.push(tag.id);
+                  });
                 }
                 // attachments
                 if(_.isArray(this.entryData.attachments)){
@@ -559,8 +549,6 @@
 </script>
 
 <style lang="scss" scoped>
-    @import '~@voerro/vue-tagsinput/dist/style.css';
-    @import '../../sass/tags-input';
     @import '~dropzone/dist/min/dropzone.min.css';
     @import "~vue2-dropzone/dist/vue2Dropzone.min.css";
 
