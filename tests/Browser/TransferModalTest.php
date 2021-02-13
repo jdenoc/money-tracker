@@ -8,6 +8,7 @@ use App\Traits\EntryTransferKeys;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
 use App\Traits\Tests\Dusk\Notification as DuskTraitNotification;
+use App\Traits\Tests\Dusk\TagsInput as DuskTraitTagsInput;
 use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\Browser\Pages\HomePage;
@@ -32,6 +33,7 @@ class TransferModalTest extends DuskTestCase {
     use DuskTraitLoading;
     use DuskTraitNavbar;
     use DuskTraitNotification;
+    use DuskTraitTagsInput;
 
     use WithFaker;
 
@@ -445,7 +447,7 @@ class TransferModalTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openTransferModal($browser);
             $browser
-                ->with($this->_selector_modal_transfer, function($modal) use ($account_types){
+                ->with($this->_selector_modal_transfer, function(Browser $modal) use ($account_types){
                     $modal
                         // make sure (almost) all the fields are empty first
                         ->assertInputValue($this->_selector_modal_transfer_field_date, date('Y-m-d'))
@@ -453,7 +455,7 @@ class TransferModalTest extends DuskTestCase {
                         ->assertSelected($this->_selector_modal_transfer_field_from, "")
                         ->assertSelected($this->_selector_modal_transfer_field_to, "")
                         ->assertInputValue($this->_selector_modal_transfer_field_memo, "")
-                        ->assertInputValue($this->_selector_modal_transfer_field_tags, "")
+                        ->assertInputValue(self::$SELECTOR_TAGS_INPUT_INPUT, "")
                         ->assertVisible($this->_selector_modal_transfer_field_upload)
                         ->assertMissing($this->_selector_modal_transfer_dropzone_upload_thumbnail)
                         // fill in fields
@@ -467,8 +469,9 @@ class TransferModalTest extends DuskTestCase {
                     // select tag at random and input the first character into the tags-input field
                     $tags = $this->getApiTags();
                     $tag = $this->faker->randomElement($tags);
-
-                    $this->fillTagsInputUsingAutocomplete($browser, $tag['name']);
+                    $browser->with($this->_selector_modal_transfer, function(Browser $modal) use ($tag){
+                        $this->fillTagsInputUsingAutocomplete($modal, $tag['name']);
+                    });
                 }
 
                 if($has_attachments){
@@ -490,7 +493,7 @@ class TransferModalTest extends DuskTestCase {
                         ->assertSelected($this->_selector_modal_transfer_field_from, "")
                         ->assertSelected($this->_selector_modal_transfer_field_to, "")
                         ->assertInputValue($this->_selector_modal_transfer_field_memo, "")
-                        ->assertInputValue($this->_selector_modal_transfer_field_tags, "")
+                        ->assertInputValue(self::$SELECTOR_TAGS_INPUT_INPUT, "")
                         ->assertVisible($this->_selector_modal_transfer_field_upload)
                         ->with($this->_selector_modal_transfer_field_upload, function($upload_field){
                             $upload_field
@@ -501,7 +504,7 @@ class TransferModalTest extends DuskTestCase {
         });
     }
 
-    public function providerSaveTransferEntry(){
+    public function providerSaveTransferEntry(): array{
         return [
             // [$is_to_account_external, $is_from_account_external, $has_tags, $has_attachments]
             'TO account is external'                                   => [true,  false, false, false],    // test 1/25
@@ -624,8 +627,8 @@ class TransferModalTest extends DuskTestCase {
 
     public function testOpeningMoreThanOneTransferEntryPairPerSession(){
         // GIVEN:
-        $account_type_id1 = \App\AccountType::where('disabled', true)->get()->random();
-        $account_type_id2 = \App\AccountType::where('disabled', true)->whereNotIn('id', [$account_type_id1->id])->get()->random();
+        $account_type_id1 = AccountType::where('disabled', true)->get()->random();
+        $account_type_id2 = AccountType::where('disabled', true)->whereNotIn('id', [$account_type_id1->id])->get()->random();
         $default_entry_data = ['disabled'=>false, 'entry_date'=>date('Y-m-d'), 'expense'=>true, 'entry_value'=>$this->faker->randomFloat(2)];
         $entry_data_income = ['account_type_id'=>$account_type_id2->id, 'entry_date'=>date("Y-m-d", strtotime("-18 months")), 'expense'=>false];
 
@@ -690,20 +693,6 @@ class TransferModalTest extends DuskTestCase {
 
                     $modal->click($this->_selector_modal_entry_btn_cancel);
                 });
-        });
-    }
-
-    private function fillTagsInputUsingAutocomplete(Browser $browser, $tag){
-        $browser->with($this->_selector_modal_transfer, function($modal) use ($tag){
-            $modal
-                ->waitUntilMissing($this->_selector_modal_transfer_field_tags_container_is_loading, self::$WAIT_SECONDS)
-                // using safeColorName as our tag, we can be guaranteed after 3 characters we will have a unique word available
-                ->keys($this->_selector_modal_transfer_field_tags, substr($tag, 0, 1))  // 1st char
-                ->keys($this->_selector_modal_transfer_field_tags, substr($tag, 1, 1))  // 2nd char
-                ->keys($this->_selector_modal_transfer_field_tags, substr($tag, 2, 1))  // 3rd char
-                ->waitFor($this->_selector_modal_tag_autocomplete_options)
-                ->assertSee($tag)
-                ->click($this->_selector_modal_tag_autocomplete_options);
         });
     }
 
