@@ -8,7 +8,6 @@
     "build-prod": "cross-env NODE_ENV=production  node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js && echo 'process completed @ ' `date`"
   },
   "devDependencies": {
-    "@creativebulma/bulma-badge": "^1.0.1",
     "@fortawesome/fontawesome-free": "5.15.2",
     "@voerro/vue-tagsinput": "^2",
     "axios": "^0.21.0",
