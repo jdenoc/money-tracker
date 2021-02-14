@@ -48,9 +48,6 @@ trait HomePageSelectors {
     private $_selector_modal_entry_meta = "#entry-account-type-meta";
     private $_selector_modal_entry_field_memo = "textarea#entry-memo";
     private $_selector_modal_entry_field_expense = "#entry-expense";
-    private $_selector_modal_entry_field_tags_container_is_loading = ".field:nth-child(6) .control.is-loading";
-    private $_selector_modal_entry_field_tags = ".tags-input input";
-    private $_selector_modal_entry_field_tags_input_tag = ".tags-input span.badge-pill";
     private $_selector_tags = ".tags";
     private $_selector_tags_tag = ".tags .tag";
     private $_selector_modal_entry_field_upload = "#entry-modal-file-upload";
@@ -82,8 +79,6 @@ trait HomePageSelectors {
     private $_selector_modal_transfer_meta_account_name_to = "#to-account-type-meta-account-name";
     private $_selector_modal_transfer_meta_last_digits_to = "#to-account-type-meta-last-digits";
     private $_selector_modal_transfer_field_memo = "#transfer-memo";
-    private $_selector_modal_transfer_field_tags_container_is_loading = ".field:nth-child(6) .control.is-loading";
-    private $_selector_modal_transfer_field_tags = ".tags-input input";
     private $_selector_modal_transfer_field_upload = "#transfer-modal-file-upload";
     private $_selector_modal_transfer_dropzone_hidden_file_input = "#transfer-modal-hidden-file-input";
     private $_selector_modal_transfer_dropzone_upload_thumbnail = "#transfer-modal-file-upload .dz-complete:last-child";

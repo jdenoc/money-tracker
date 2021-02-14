@@ -3,6 +3,7 @@
 namespace Tests\Browser;
 
 use App\Entry;
+use App\Tag;
 use App\Traits\EntryTransferKeys;
 use App\Traits\Tests\Dusk\BulmaColors as DuskTraitBulmaColors;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
@@ -307,37 +308,50 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     }
 
     public function providerEntryWithTags(): array{
-        // [$data_entry_selector, $data_tags_container_selector, $data_tag_selector]
+        // [$data_entry_selector, $data_is_tags_input_visible]
         return [
             // test 7/25
-            "Confirmed"=>[$this->randomConfirmedEntrySelector().'.'.$this->_class_has_tags, $this->_selector_tags, $this->_selector_tags_tag],
+            "Confirmed"=>[$this->randomConfirmedEntrySelector().'.'.$this->_class_has_tags, false],
             // test 8/25
-            "Unconfirmed"=>[$this->randomUnconfirmedEntrySelector().'.'.$this->_class_has_tags, $this->_selector_modal_entry_field_tags, $this->_selector_modal_entry_field_tags_input_tag],
+            "Unconfirmed"=>[$this->randomUnconfirmedEntrySelector().'.'.$this->_class_has_tags, true],
         ];
     }
 
     /**
      * @dataProvider providerEntryWithTags
      * @param string $data_entry_selector
-     * @param string $data_tags_container_selector
-     * @param string $data_tag_selector
+     * @param bool $data_is_tags_input_visible
      *
      * @throws Throwable
      *
      * @group entry-modal-1
      * test (see provider)/25
      */
-    public function testClickingOnEntryTableEditButtonOfEntryWithTags(string $data_entry_selector, string $data_tags_container_selector, string $data_tag_selector){
-        $this->browse(function(Browser $browser) use ($data_entry_selector, $data_tags_container_selector, $data_tag_selector){
+    public function testClickingOnEntryTableEditButtonOfEntryWithTags(string $data_entry_selector, bool $data_is_tags_input_visible){
+        $this->browse(function(Browser $browser) use ($data_entry_selector, $data_is_tags_input_visible){
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $browser
                 ->openExistingEntryModal($data_entry_selector)
-                ->with($this->_selector_modal_entry, function($entry_modal) use ($data_entry_selector, $data_tags_container_selector, $data_tag_selector){
-                    $entry_modal->assertVisible($data_tags_container_selector);
+                ->with($this->_selector_modal_entry, function(Browser $entry_modal) use ($data_entry_selector, $data_is_tags_input_visible){
+                    $entry_id = $entry_modal->value($this->_selector_modal_entry_field_entry_id);
+                    $entry_data = Entry::findOrFail($entry_id);
+                    $this->assertTrue($entry_data->has_tags());
+                    $entry_tags = $entry_data->tags->pluck('name');
 
-                    $elements = $entry_modal->driver->findElements(WebDriverBy::cssSelector($data_tag_selector));
-                    $this->assertGreaterThan(0, count($elements), "Selector:\"".$data_entry_selector."\" opened entry-modal, but tags not present");
+                    if($data_is_tags_input_visible){
+                        $entry_modal->assertVisible(self::$SELECTOR_TAGS_INPUT_INPUT);
+                        foreach($entry_tags as $entry_tag){
+                            $this->assertTagInInput($entry_modal, $entry_tag);
+                        }
+                    } else {
+                        $entry_modal
+                            ->assertVisible($this->_selector_tags)
+                            ->assertVisible($this->_selector_tags_tag);
+                        foreach($entry_tags as $entry_tag){
+                            $entry_modal->assertSeeIn($this->_selector_tags, $entry_tag);
+                        }
+                    }
                 });
         });
     }
@@ -472,6 +486,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      */
     public function testUpdateExistingEntryAccountType(){
         $account_types = $this->getApiAccountTypes();
+        $this->assertGreaterThan(1, count($account_types), "Account-types available are not suffient for running this test");
         $this->browse(function(Browser $browser) use ($account_types){
             $entry_selector = $this->randomUnconfirmedEntrySelector(true);
             $old_value = "";
@@ -674,12 +689,11 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                 $entry_selector = $this->randomEntrySelector(['is_transfer'=>true]);
                 $entry_id = $this->getEntryIdFromSelector($entry_selector);
                 if(in_array($entry_id, $invalid_entry_ids)){
-                    // already processed this ID, lets just get another one
-                    $entry_data['transfer_entry_id'] = self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
-                } else {
-                    $invalid_entry_ids[] = $entry_id;
-                    $entry_data = $this->getApiEntry($entry_id);
+                    // already processed this ID, continue to the next iteration
+                    continue;
                 }
+                $invalid_entry_ids[] = $entry_id;
+                $entry_data = $this->getApiEntry($entry_id);
             }while($entry_data['transfer_entry_id'] === self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID);
             unset($invalid_entry_ids);
             $transfer_entry_data = $this->getApiEntry($entry_data['transfer_entry_id']);
@@ -768,12 +782,11 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                 $entry_selector = $this->randomEntrySelector(['is_transfer'=>true]);
                 $entry_id = $this->getEntryIdFromSelector($entry_selector);
                 if(in_array($entry_id, $invalid_entry_id)){
-                    // entry ID has already been processed (unsuccessfully), lets just get another ID
-                    $entry_data['transfer_entry_id'] = mt_rand(1, 50);  // doesn't matter what this value is as long as it isn't 0
-                } else {
-                    $invalid_entry_id[] = $entry_id;
-                    $entry_data = $this->getApiEntry($entry_id);
+                    // entry ID has already been processed (unsuccessfully), continue to the next iteration
+                    continue;
                 }
+                $invalid_entry_id[] = $entry_id;
+                $entry_data = $this->getApiEntry($entry_id);
             } while($entry_data['transfer_entry_id'] !== self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID);
             unset($invalid_entry_id);
             $this->assertEquals($entry_id, $entry_data['id']);
@@ -838,28 +851,24 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * test 22/25
      */
     public function testUpdateTagsInExistingEntry(){
+        // make sure there is at least one tag that doesn't belong to an entry
+        // to doubly make sure there is no overlap, name the tag after the test
+        // which is outside the typical tag name assignment
+        factory(Tag::class)->create(['name'=>$this->getName(false)]);
         $tags_from_api = collect($this->getApiTags());
 
         $this->browse(function(Browser $browser) use ($tags_from_api){
-            $invalid_entry_ids = [];
-            do{
-                $entry_selector = $this->randomUnconfirmedEntrySelector(true);
-                $entry_id = $this->getEntryIdFromSelector($entry_selector);
-                if(in_array($entry_id, $invalid_entry_ids)){
-                    continue;
-                }
-                $entry = Entry::findOrFail($entry_id);
-                $invalid_entry_ids[] = $entry_id;
-            }while($entry->tags->count() == $tags_from_api->count());
-            unset($invalid_entry_ids);
-
+            $entry_selector = $this->randomUnconfirmedEntrySelector(true);
+            $entry_id = $this->getEntryIdFromSelector($entry_selector);
             $new_tag = '';
 
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $browser
                 ->openExistingEntryModal($entry_selector)
-                ->with($this->_selector_modal_entry, function(Browser $entry_modal) use ($entry, $tags_from_api, &$new_tag){
+                ->with($this->_selector_modal_entry, function(Browser $entry_modal) use ($entry_id, $tags_from_api, &$new_tag){
+                    $entry = Entry::findOrFail($entry_id);
+
                     $existing_entry_tags = $entry->tags->pluck('name')->all();
                     do{
                         $new_tag = $tags_from_api->pluck('name')->random();
