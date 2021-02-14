@@ -565,7 +565,7 @@ class TransferModalTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openTransferModal($browser);
             $browser
-                ->with($this->_selector_modal_transfer, function($modal) use ($transfer_entry_data, $browser_locale_date_for_typing){
+                ->with($this->_selector_modal_transfer, function($modal) use ($transfer_entry_data, $browser_locale_date_for_typing, $has_tags){
                     // laravel dusk has an issue typing into input[type="date"] fields
                     // work-around for this is to use individual key-strokes
                     $backspace_count = strlen($modal->value($this->_selector_modal_transfer_field_date));
@@ -581,11 +581,11 @@ class TransferModalTest extends DuskTestCase {
                         ->waitUntilMissing($this->_selector_modal_transfer_field_to_is_loading)
                         ->select($this->_selector_modal_transfer_field_to, $transfer_entry_data['to_account_type_id'])
                         ->type($this->_selector_modal_transfer_field_memo, $transfer_entry_data['memo']);
-                });
 
-            if($has_tags){
-                $this->fillTagsInputUsingAutocomplete($browser, $transfer_entry_data['tag']);
-            }
+                    if($has_tags){
+                        $this->fillTagsInputUsingAutocomplete($modal, $transfer_entry_data['tag']);
+                    }
+                });
 
             if($has_attachments){
                 $this->attachFile($browser, $transfer_entry_data['attachment_path']);
@@ -752,7 +752,7 @@ class TransferModalTest extends DuskTestCase {
                     ->assertSee($entry_switch_expense_label);
 
                 if($has_tags){
-                    $this->assertDefaultStateOfTagsInput($modal);
+                    $modal->assertVisible(self::$SELECTOR_TAGS_INPUT_CONTAINER);
                     $this->assertTagInInput($modal, $transfer_entry_data['tag']);
                 }
 
