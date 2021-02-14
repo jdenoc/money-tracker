@@ -104,14 +104,12 @@
                 <div class="field is-horizontal">
                     <div class="field-label is-normal"><label class="label">Tags:</label></div>
                     <div class="field-body"><div class="field"><div class="control" v-bind:class="{'is-loading': !areTagsSet}">
-                        <voerro-tags-input
-                            element-id="transfer-tags"
-                            v-model="transferData.tags"
-                            v-bind:existing-tags="listTagsAsObject"
-                            v-bind:only-existing-tags="true"
-                            v-bind:typeahead="true"
-                            v-bind:typeahead-max-results="5"
-                        ></voerro-tags-input>
+                        <tagsinput
+                           tagsInputName="transfer-tags"
+                           v-bind:existingTags="listTags"
+                           v-bind:selected-tags="transferData.tags"
+                           v-on:update-tags-input="transferData.tags = $event"
+                        ></tagsinput>
                     </div></div></div>
                 </div>
 
@@ -153,14 +151,14 @@
     import {SnotifyStyle} from 'vue-snotify';
     import {tagsObjectMixin} from "../mixins/tags-object-mixin";
     import Store from '../store';
-    import VoerroTagsInput from '@voerro/vue-tagsinput';
+    import tagsinput from "./tagsinput";
     import vue2Dropzone from 'vue2-dropzone';
 
     export default {
         name: "transfer-modal",
         mixins: [accountTypesObjectMixin, tagsObjectMixin],
         components: {
-            VoerroTagsInput,
+            tagsinput,
             VueDropzone: vue2Dropzone,
         },
         data: function(){
@@ -337,11 +335,8 @@
                 // tags
                 if(_.isArray(this.transferData.tags)){
                     transferData.tags = [];
-                    this.transferData.tags.forEach(function(tagId){
-                        // each "tag" MUST be an int
-                        if(!_.isArray(tagId) && _.isNumber(parseInt(tagId))){
-                            transferData.tags.push(tagId);
-                        }
+                    this.transferData.tags.forEach(function(tag){
+                      transferData.tags.push(tag.id);
                     });
                 }
                 // attachments

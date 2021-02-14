@@ -4,6 +4,5 @@ description: Load Yarn/npm dependancies
 runs:
   using: composite
   steps:
-    - name: Yarn package install
-      run: .docker/cmd/yarn.sh install --non-interactive --frozen-lockfile
+    - run: .docker/cmd/yarn.sh install --non-interactive --check-files --frozen-lockfile
       shell: bash

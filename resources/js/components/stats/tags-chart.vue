@@ -12,14 +12,12 @@
             <div class="field is-horizontal">
                 <div class="field-label is-normal"><label class="label">Tags:</label></div>
                 <div class="field-body"><div class="field"><div class="control" v-bind:class="{'is-loading': !areTagsSet}">
-                    <voerro-tags-input
-                        element-id="stats-tags-chart-tag-input"
-                        v-model="chartTagIds"
-                        v-bind:existing-tags="listTagsAsObject"
-                        v-bind:only-existing-tags="true"
-                        v-bind:typeahead="true"
-                        v-bind:typeahead-max-results="5"
-                    ></voerro-tags-input>
+                    <tagsinput
+                        tagsInputName="stats-tags-chart-tag-input"
+                        v-bind:existingTags="listTags"
+                        v-bind:selected-tags="chartTagIds"
+                        v-on:update-tags-input="chartTagIds = $event"
+                    ></tagsinput>
                 </div></div></div>
             </div>
 
@@ -59,7 +57,7 @@
     import BarChart from "./chart-defaults/bar-chart";
     import BulmaCalendar from '../bulma-calendar';
     import IncludeTransfersCheckbox from "../include-transfers-checkbox";
-    import VoerroTagsInput from '@voerro/vue-tagsinput';
+    import tagsinput from "../tagsinput";
 
     import {entriesObjectMixin} from "../../mixins/entries-object-mixin";
     import {statsChartMixin} from "../../mixins/stats-chart-mixin";
@@ -68,7 +66,7 @@
     export default {
         name: "tags-chart",
         mixins: [entriesObjectMixin, statsChartMixin, tagsObjectMixin],
-        components: {AccountAccountTypeTogglingSelector, BarChart, BulmaCalendar, IncludeTransfersCheckbox, VoerroTagsInput},
+        components: {AccountAccountTypeTogglingSelector, BarChart, BulmaCalendar, IncludeTransfersCheckbox, tagsinput},
         data: function(){
             return {
                 accountOrAccountTypeToggle: true,
@@ -165,7 +163,7 @@
                 }
 
                 if(!_.isEmpty(this.chartTagIds)){
-                    chartDataFilterParameters.tags = this.chartTagIds;
+                    chartDataFilterParameters.tags = this.chartTagIds.map(function(tag){ return tag.id; });
                 }
 
                 this.setChartTitle(chartDataFilterParameters.start_date, chartDataFilterParameters.end_date);
@@ -180,8 +178,6 @@
 
 <style lang="scss" scoped>
     @import '../../../sass/stats-chart';
-    @import '~@voerro/vue-tagsinput/dist/style.css';
-    @import '../../../sass/tags-input';
 
     .field.is-horizontal:nth-child(2){
         margin-bottom: 0;
