@@ -118,7 +118,7 @@ class StatsTagsTest extends StatsBase {
         });
     }
 
-    public function providerTestGenerateTagsChart(){
+    public function providerTestGenerateTagsChart(): array{
         return [
             //[$datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $tag_count, $include_transfers]
             // defaults account/account-type & tags & date-picker values
@@ -192,7 +192,7 @@ class StatsTagsTest extends StatsBase {
      * @group stats-tags-2
      * test (see provider)/25
      */
-    public function testGenerateTagsChart($datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $tag_count, $include_transfers){
+    public function testGenerateTagsChart($datepicker_start, $datepicker_end, bool $is_switch_toggled, bool $is_random_selector_value, bool $are_disabled_select_options_available, int $tag_count, bool $include_transfers){
         $accounts = collect($this->getApiAccounts());
         $account_types = collect($this->getApiAccountTypes());
         $tags = collect($this->getApiTags());
@@ -281,7 +281,7 @@ class StatsTagsTest extends StatsBase {
      * @param Collection $tags
      * @return array
      */
-    private function standardiseData($entries, $tags){
+    private function standardiseData($entries, $tags): array{
         $standardised_chart_data = [];
 
         foreach($entries as $entry){
@@ -310,11 +310,11 @@ class StatsTagsTest extends StatsBase {
 
     /**
      * @param bool $is_account_type_rather_than_account_toggled
-     * @param int $account_or_account_type_id
+     * @param string|int $account_or_account_type_id
      * @param Collection $account_types
      * @param Collection $tags
      */
-    private function createEntryWithAllTags($is_account_type_rather_than_account_toggled, $account_or_account_type_id, $account_types, $tags){
+    private function createEntryWithAllTags(bool $is_account_type_rather_than_account_toggled, $account_or_account_type_id, $account_types, $tags){
         if(!empty($account_or_account_type_id)){
             if($is_account_type_rather_than_account_toggled){
                 $account_type_id = $account_or_account_type_id;

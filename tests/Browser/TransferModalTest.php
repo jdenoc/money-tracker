@@ -4,6 +4,7 @@ namespace Tests\Browser;
 
 use App\Account;
 use App\AccountType;
+use App\Entry;
 use App\Traits\EntryTransferKeys;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
@@ -11,6 +12,7 @@ use App\Traits\Tests\Dusk\Notification as DuskTraitNotification;
 use App\Traits\Tests\Dusk\TagsInput as DuskTraitTagsInput;
 use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Storage;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Laravel\Dusk\Browser;
@@ -134,10 +136,10 @@ class TransferModalTest extends DuskTestCase {
                         ->assertVisible($this->_selector_modal_transfer_field_memo)
                         ->assertInputValue($this->_selector_modal_transfer_field_memo, "")
 
-                        ->assertSee("Tags:")
-                        ->assertVisible($this->_selector_modal_transfer_field_tags)  // auto-complete tags-input field
-                        ->assertInputValue($this->_selector_modal_transfer_field_tags, "")
+                        ->assertSee("Tags:");
+                    $this->assertDefaultStateOfTagsInput($modal);
 
+                    $modal
                         ->assertVisible($this->_selector_modal_transfer_field_upload) // drag-n-drop file upload field
                         ->with($this->_selector_modal_transfer_field_upload, function($file_upload){
                             $file_upload->assertSee($this->_label_file_upload);
@@ -351,7 +353,7 @@ class TransferModalTest extends DuskTestCase {
         });
     }
 
-    public function providerSelectingDisabledTransferAccountTypeMetaDataIsGrey(){
+    public function providerSelectingDisabledTransferAccountTypeMetaDataIsGrey(): array{
         // [$transfer_field, $account_type_method]
         return [
             [$this->method_to, $this->method_account],          // test 11/25
@@ -371,7 +373,7 @@ class TransferModalTest extends DuskTestCase {
      * @group transfer-modal-1
      * test (see provider)/25
      */
-    public function testSelectingDisabledTransferAccountTypeMetaDataIsGrey($transfer_field, $account_type_method){
+    public function testSelectingDisabledTransferAccountTypeMetaDataIsGrey(string $transfer_field, string $account_type_method){
         $account_types = AccountType::all();
         $disabled_account_type = [];
         if($account_type_method == $this->method_account){
@@ -418,7 +420,7 @@ class TransferModalTest extends DuskTestCase {
         });
     }
 
-    public function providerResetTransferModalFields(){
+    public function providerResetTransferModalFields():array{
         return [
             // [$has_tags, $has_attachments]
             'standard fields'=>[false, false],                           // test 15/25
@@ -475,7 +477,7 @@ class TransferModalTest extends DuskTestCase {
                 }
 
                 if($has_attachments){
-                    $upload_file_path = \Storage::path($this->getRandomTestFileStoragePath());
+                    $upload_file_path = Storage::path($this->getRandomTestFileStoragePath());
                     $this->attachFile($browser, $upload_file_path);
                 }
 
@@ -534,7 +536,7 @@ class TransferModalTest extends DuskTestCase {
      * @group transfer-modal-2
      * test (see provider)/25
      */
-    public function testSaveTransferEntry($is_to_account_external, $is_from_account_external, $has_tags, $has_attachments){
+    public function testSaveTransferEntry(bool $is_to_account_external, bool $is_from_account_external, bool $has_tags, bool $has_attachments){
         $this->browse(function(Browser $browser) use ($is_to_account_external, $is_from_account_external, $has_tags, $has_attachments){
             $all_account_types = $this->getApiAccountTypes();
             $account_types = $this->faker->randomElements($all_account_types, 2);
@@ -633,11 +635,11 @@ class TransferModalTest extends DuskTestCase {
         $entry_data_income = ['account_type_id'=>$account_type_id2->id, 'entry_date'=>date("Y-m-d", strtotime("-18 months")), 'expense'=>false];
 
         // transfer pair 1
-        $e1_1 = factory(\App\Entry::class)->create(array_merge(
+        $e1_1 = factory(Entry::class)->create(array_merge(
             $default_entry_data,
             ['account_type_id'=>$account_type_id1->id, 'memo'=>$this->getName(false).'1']
         ));
-        $e1_2 = factory(\App\Entry::class)->create(array_merge(
+        $e1_2 = factory(Entry::class)->create(array_merge(
             $default_entry_data,
             $entry_data_income,
             ['transfer_entry_id'=>$e1_1->id, 'memo'=>$this->getName(false).'1']
@@ -646,11 +648,11 @@ class TransferModalTest extends DuskTestCase {
         $e1_1->save();
 
         // transfer pair 2
-        $e2_1 = factory(\App\Entry::class)->create(array_merge(
+        $e2_1 = factory(Entry::class)->create(array_merge(
             $default_entry_data,
             ['account_type_id'=>$account_type_id1->id, 'memo'=>$this->getName(false).'2']
         ));
-        $e2_2 = factory(\App\Entry::class)->create(array_merge(
+        $e2_2 = factory(Entry::class)->create(array_merge(
             $default_entry_data,
             $entry_data_income,
             ['transfer_entry_id'=>$e2_1->id, 'memo'=>$this->getName(false).'2']
@@ -717,7 +719,7 @@ class TransferModalTest extends DuskTestCase {
      * @param bool $has_tags
      * @param bool $has_attachments
      */
-    private function assertTransferEntrySaved(Browser $browser, $table_row_selector, $transfer_entry_data, $entry_modal_date_input_value, $account_type_key, $entry_switch_expense_label, $has_tags, $has_attachments){
+    private function assertTransferEntrySaved(Browser $browser, string $table_row_selector, array $transfer_entry_data, string $entry_modal_date_input_value, string $account_type_key, string $entry_switch_expense_label, bool $has_tags, bool $has_attachments){
         if($has_tags){
             $table_row_selector .= '.has-tags';
         }
@@ -750,11 +752,8 @@ class TransferModalTest extends DuskTestCase {
                     ->assertSee($entry_switch_expense_label);
 
                 if($has_tags){
-                    $modal->assertVisible($this->_selector_modal_transfer_field_tags);
-
-                    $elements = $modal->driver->findElements(WebDriverBy::cssSelector($this->_selector_modal_transfer_field_tags));
-                    $this->assertGreaterThan(0, count($elements), "tag \"".$transfer_entry_data['tag']."\" not present in entry modal");
-                    $modal->assertSee($transfer_entry_data['tag']);
+                    $this->assertDefaultStateOfTagsInput($modal);
+                    $this->assertTagInInput($modal, $transfer_entry_data['tag']);
                 }
 
                 if($has_attachments){
