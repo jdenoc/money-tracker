@@ -19,7 +19,7 @@ trait ToggleButton {
      * @param string $label
      * @param string|null $color
      */
-    public function assertToggleButtonState(Browser $browser, $selector, $label, $color=null){
+    public function assertToggleButtonState(Browser $browser, string $selector, string $label, $color=null){
         $browser
             ->assertVisible($selector)
             ->assertSeeIn($selector, $label);
@@ -29,7 +29,11 @@ trait ToggleButton {
         }
     }
 
-    public function toggleToggleButton(Browser $browser, $selector){
+    /**
+     * @param Browser $browser
+     * @param string $selector
+     */
+    public function toggleToggleButton(Browser $browser, string $selector){
         $browser
             ->click($selector)
             ->pause(self::$WAIT_HALF_SECOND_IN_MILLISECONDS);   // wait for transition to complete
