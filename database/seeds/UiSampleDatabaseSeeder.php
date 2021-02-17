@@ -102,6 +102,9 @@ class UiSampleDatabaseSeeder extends Seeder {
         $transfer_from_entries = collect();
         for($transfer_i=0; $transfer_i<self::COUNT_ENTRY; $transfer_i++){
             $transfer_to_entry = $entries_not_disabled
+                ->sortByDesc('entry_date')
+                ->chunk(self::$MAX_ENTRIES_IN_RESPONSE)
+                ->first()
                 ->where('expense', 0)
                 ->whereNull('transfer_entry_id')
                 ->random();
