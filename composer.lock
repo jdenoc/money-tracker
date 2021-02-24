@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "645fc579f60c7690b086de63a4f46cf4",
+    "content-hash": "8fbf8d68b3a5cb30daed8e23a989607f",
     "packages": [
         {
             "name": "beyondcode/laravel-favicon",
@@ -8051,5 +8051,8 @@
         "ext-pdo": "*"
     },
     "platform-dev": [],
+    "platform-overrides": {
+        "php": "7.3"
+    },
     "plugin-api-version": "2.0.0"
 }
