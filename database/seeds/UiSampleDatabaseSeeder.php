@@ -7,6 +7,7 @@ use App\Traits\Tests\StorageTestFiles as TestStorageTestFilesTrait;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Collection;
 
 class UiSampleDatabaseSeeder extends Seeder {
 
@@ -91,10 +92,10 @@ class UiSampleDatabaseSeeder extends Seeder {
         $entries_not_confirmed = $entries_not_disabled->where('confirm', 0);
 
         // just in case we missed an entry necessary for testing, we're going to assign tags to random confirmed & unconfirmed entries
-        $this->attachTagToEntry($tag_ids, $entries_not_confirmed->where('expense', 1)->sortByDesc('entry_date')->chunk(self::$MAX_ENTRIES_IN_RESPONSE/2)->first()->random());
-        $this->attachTagToEntry($tag_ids, $entries_not_confirmed->where('expense', 0)->sortByDesc('entry_date')->chunk(self::$MAX_ENTRIES_IN_RESPONSE/2)->first()->random());
-        $this->attachTagToEntry($tag_ids, $entries_confirmed->where('expense', 1)->sortByDesc('entry_date')->chunk(self::$MAX_ENTRIES_IN_RESPONSE/2)->first()->random());
-        $this->attachTagToEntry($tag_ids, $entries_confirmed->where('expense', 0)->sortByDesc('entry_date')->chunk(self::$MAX_ENTRIES_IN_RESPONSE/2)->first()->random());
+        $this->attachTagToEntry($tag_ids, $this->firstFromApiCall($entries_not_confirmed->where('expense', 1))->random());
+        $this->attachTagToEntry($tag_ids, $this->firstFromApiCall($entries_not_confirmed->where('expense', 0))->random());
+        $this->attachTagToEntry($tag_ids, $this->firstFromApiCall($entries_confirmed->where('expense', 1))->random());
+        $this->attachTagToEntry($tag_ids, $this->firstFromApiCall($entries_confirmed->where('expense', 0))->random());
         $this->command->line(self::CLI_OUTPUT_PREFIX."Randomly assigned tags to entries");
 
         // randomly select some entries and mark them as transfers
@@ -135,12 +136,7 @@ class UiSampleDatabaseSeeder extends Seeder {
             $transfer_to_entries->push($transfer_to_entry);
         }
         // randomly select an entry to be an "external" transfer
-        $external_transfer_entry = $entries_not_disabled
-            ->sortByDesc('entry_date')
-            ->chunk(self::$MAX_ENTRIES_IN_RESPONSE)
-            ->first()
-            ->whereNull('transfer_entry_id')
-            ->random();
+        $external_transfer_entry = $this->firstFromApiCall($entries_not_disabled)->whereNull('transfer_entry_id')->random();
         $external_transfer_entry->transfer_entry_id = self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
         $external_transfer_entry->save();
         $this->command->line(self::CLI_OUTPUT_PREFIX."Randomly marked entries as transfers");
@@ -158,37 +154,25 @@ class UiSampleDatabaseSeeder extends Seeder {
 
         // income confirmed
         $this->assignAttachmentToEntry(
-            $entries_confirmed
-                ->chunk(self::$MAX_ENTRIES_IN_RESPONSE)->shift()
-                ->where('expense', 0)->pluck('id')
-                ->random(),
+            $this->firstFromApiCall($entries_confirmed)->where('expense', 0)->pluck('id')->random(),
             $transfer_to_entries->pluck('id')->toArray(),
             $entries
         );
         // income unconfirmed
         $this->assignAttachmentToEntry(
-            $entries_not_confirmed
-                ->chunk(self::$MAX_ENTRIES_IN_RESPONSE)->shift()
-                ->where('expense', 0)->pluck('id')
-                ->random(),
+            $this->firstFromApiCall($entries_not_confirmed)->where('expense', 0)->pluck('id')->random(),
             $transfer_to_entries->pluck('id')->toArray(),
             $entries
         );
         // expense confirmed
         $this->assignAttachmentToEntry(
-            $entries_confirmed
-                ->chunk(self::$MAX_ENTRIES_IN_RESPONSE)->shift()
-                ->where('expense', 1)->pluck('id')
-                ->random(),
+            $this->firstFromApiCall($entries_confirmed)->where('expense', 1)->pluck('id')->random(),
             $transfer_from_entries->pluck('id')->toArray(),
             $entries
         );
         // expense unconfirmed
         $this->assignAttachmentToEntry(
-            $entries_not_confirmed
-                ->chunk(self::$MAX_ENTRIES_IN_RESPONSE)->shift()
-                ->where('expense', 1)->pluck('id')
-                ->random(),
+            $this->firstFromApiCall($entries_not_confirmed)->where('expense', 1)->pluck('id')->random(),
             $transfer_from_entries->pluck('id')->toArray(),
             $entries
         );
@@ -196,40 +180,50 @@ class UiSampleDatabaseSeeder extends Seeder {
     }
 
     /**
-     * @param Illuminate\Support\Collection $account_collection
-     * @param array $data
-     * @return Illuminate\Support\Collection
+     * @param Collection $entries
+     * @return Collection
      */
-    private function addAccountToCollection($account_collection, $data){
+    private function firstFromApiCall(Collection $entries): Collection{
+        return $entries
+            ->sortByDesc('entry_date')
+            ->chunk(self::$MAX_ENTRIES_IN_RESPONSE)->first();
+    }
+
+    /**
+     * @param Collection $account_collection
+     * @param array $data
+     * @return Collection
+     */
+    private function addAccountToCollection(Collection $account_collection, array $data): Collection{
         return $this->addToCollection($account_collection, App\Account::class, $data);
     }
 
     /**
-     * @param Illuminate\Support\Collection $account_type_collection
+     * @param Collection $account_type_collection
      * @param array $data
-     * @return Illuminate\Support\Collection
+     * @return Collection
      */
-    private function addAccountTypeToCollection($account_type_collection, $data){
+    private function addAccountTypeToCollection(Collection $account_type_collection, array $data): Collection{
         return $this->addToCollection($account_type_collection, App\AccountType::class, $data, $this->faker->numberBetween(self::COUNT_MIN, self::COUNT_ACCOUNT_TYPE));
     }
 
     /**
-     * @param Illuminate\Support\Collection $entry_collection
+     * @param Collection $entry_collection
      * @param array $data
-     * @return Illuminate\Support\Collection
+     * @return Collection
      */
-    private function addEntryToCollection($entry_collection, $data){
+    private function addEntryToCollection(Collection $entry_collection, array $data): Collection{
         return $this->addToCollection($entry_collection, App\Entry::class, $data, $this->faker->numberBetween(self::COUNT_MIN, self::COUNT_ENTRY*2));
     }
 
     /**
-     * @param Illuminate\Support\Collection $collection
+     * @param Collection $collection
      * @param $type_class
      * @param array $data
      * @param int $count
-     * @return Illuminate\Support\Collection mixed
+     * @return Collection
      */
-    private function addToCollection($collection, $type_class, $data, $count=1){
+    private function addToCollection(Collection $collection, $type_class, array $data, int $count=1): Collection{
         $object = factory($type_class, $count)->create($data);  // when passing a count value to a factory, a collection is ALWAYS returned
         return $collection->merge($object);
     }
@@ -239,7 +233,7 @@ class UiSampleDatabaseSeeder extends Seeder {
      * @param App\Entry $entry
      * @param bool $attach_all
      */
-    private function attachTagToEntry($tag_ids, $entry, $attach_all=false){
+    private function attachTagToEntry($tag_ids, App\Entry $entry, bool $attach_all=false): void{
         if($attach_all){
             $entry_tag_ids = $tag_ids;
         } else {
@@ -251,9 +245,9 @@ class UiSampleDatabaseSeeder extends Seeder {
     /**
      * @param int $entry_id
      * @param int[] $transfer_entry_ids
-     * @param Illuminate\Support\Collection $entries_collection
+     * @param Collection $entries_collection
      */
-    private function assignAttachmentToEntry($entry_id, $transfer_entry_ids, $entries_collection){
+    private function assignAttachmentToEntry(int $entry_id, $transfer_entry_ids, Collection $entries_collection): void{
         if(in_array($entry_id, $transfer_entry_ids)){
             $new_attachment = factory(App\Attachment::class)->create(['entry_id'=>$entry_id]);
             $this->storeAttachment($new_attachment);
@@ -269,7 +263,7 @@ class UiSampleDatabaseSeeder extends Seeder {
     /**
      * @param App\Attachment $attachment
      */
-    private function storeAttachment($attachment){
+    private function storeAttachment(App\Attachment $attachment): void{
         $test_file_path = $this->getTestFileStoragePathFromFilename($attachment->name);
         if(Storage::exists($test_file_path)){
             Storage::copy($test_file_path, $attachment->get_storage_file_path());
