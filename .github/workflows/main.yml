@@ -59,7 +59,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-yarn-${{ hashFiles('yarn.lock') }}.${{ hashFiles('patches') }}
+          key: cache-yarn-${{ hashFiles('yarn.lock') }}
 
       - name: Yarn setup
         uses: ./.github/actions/setup-yarn
