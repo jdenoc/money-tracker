@@ -3,17 +3,17 @@
 namespace App\Http\Controllers\Api;
 
 use App\Institution;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 
 class InstitutionController extends Controller {
 
     /**
      * GET /api/institutions
-     * @return \Illuminate\Contracts\Routing\ResponseFactory
+     * @return ResponseFactory
      */
-    public function get_institutions(){
+    public function get_institutions():ResponseFactory{
         $institutions = Institution::all();
         if(is_null($institutions) || $institutions->isEmpty()){
             return response([], HttpStatus::HTTP_NOT_FOUND);

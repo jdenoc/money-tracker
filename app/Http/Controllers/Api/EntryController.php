@@ -9,10 +9,12 @@ use App\Traits\EntryFilterKeys;
 use App\Traits\EntryResponseKeys;
 use App\Traits\EntryTransferKeys;
 use App\Traits\MaxEntryResponseValue;
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use OutOfRangeException;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 
@@ -26,9 +28,9 @@ class EntryController extends Controller {
     /**
      * GET /api/entry/{entry_id}
      * @param int $entry_id
-     * @return \Illuminate\Contracts\Routing\ResponseFactory
+     * @return ResponseFactory
      */
-    public function get_entry($entry_id){
+    public function get_entry(int $entry_id):ResponseFactory{
         $entry = Entry::get_entry_with_tags_and_attachments($entry_id);
         if(is_null($entry) || empty($entry) || $entry->disabled == 1){
             return response([], HttpStatus::HTTP_NOT_FOUND);
@@ -45,9 +47,9 @@ class EntryController extends Controller {
     /**
      * GET /api/entries/{page}
      * @param int $page_number
-     * @return \Illuminate\Contracts\Routing\ResponseFactory
+     * @return ResponseFactory
      */
-    public function get_paged_entries($page_number = 0){
+    public function get_paged_entries(int $page_number = 0):ResponseFactory{
         return $this->provide_paged_entries_response([], $page_number);
     }
 
@@ -55,9 +57,9 @@ class EntryController extends Controller {
      * POST /api/entries/{page}
      * @param int $page_number
      * @param Request $request
-     * @return \Illuminate\Contracts\Routing\ResponseFactory
+     * @return ResponseFactory
      */
-    public function filter_paged_entries(Request $request, $page_number = 0){
+    public function filter_paged_entries(Request $request, $page_number = 0):ResponseFactory{
         $post_body = $request->getContent();
         $filter_data = json_decode($post_body, true);
 
@@ -89,9 +91,9 @@ class EntryController extends Controller {
     /**
      * DELETE /api/entry/{entry_id}
      * @param int $entry_id
-     * @return \Illuminate\Contracts\Routing\ResponseFactory
+     * @return ResponseFactory
      */
-    public function delete_entry($entry_id){
+    public function delete_entry(int $entry_id):ResponseFactory{
         $entry = Entry::find($entry_id);
         if(empty($entry)){
             return response('', HttpStatus::HTTP_NOT_FOUND);
@@ -105,9 +107,9 @@ class EntryController extends Controller {
      * POST /api/entry
      *
      * @param Request $request
-     * @return \Illuminate\Contracts\Routing\ResponseFactory
+     * @return ResponseFactory
      */
-    public function create_entry(Request $request){
+    public function create_entry(Request $request):ResponseFactory{
         return $this->modify_entry($request);
     }
 
@@ -116,18 +118,18 @@ class EntryController extends Controller {
      *
      * @param int $entry_id
      * @param Request $request
-     * @return \Illuminate\Contracts\Routing\ResponseFactory
+     * @return ResponseFactory
      */
-    public function update_entry($entry_id, Request $request){
+    public function update_entry(int $entry_id, Request $request):ResponseFactory{
         return $this->modify_entry($request, $entry_id);
     }
 
     /**
      * @param Request $request
      * @param int|false $update_id
-     * @return \Illuminate\Contracts\Routing\ResponseFactory
+     * @return ResponseFactory
      */
-    private function modify_entry(Request $request, $update_id=false){
+    private function modify_entry(Request $request, $update_id=false):ResponseFactory{
         $request_body = $request->getContent();
         $entry_data = json_decode($request_body, true);
 
@@ -236,7 +238,7 @@ class EntryController extends Controller {
         if(isset($transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE]) && $transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE] != self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID){
             try {
                 $from_entry = $this->initTransferEntry($transfer_data, self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE, $required_transfer_fields, $transfer_specific_fields, $entry_tags);
-            } catch(\OutOfRangeException $e){
+            } catch(OutOfRangeException $e){
                 return response(
                     [self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE, self::$RESPONSE_SAVE_KEY_ID=>[]],
                     HttpStatus::HTTP_BAD_REQUEST
@@ -249,7 +251,7 @@ class EntryController extends Controller {
         if(isset($transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE]) && $transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE] != self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID){
             try{
                 $to_entry = $this->initTransferEntry($transfer_data, self::$TRANSFER_KEY_TO_ACCOUNT_TYPE, $required_transfer_fields, $transfer_specific_fields, $entry_tags);
-            } catch(\OutOfRangeException $e){
+            } catch(OutOfRangeException $e){
                 return response(
                     [self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE, self::$RESPONSE_SAVE_KEY_ID=>[]],
                     HttpStatus::HTTP_BAD_REQUEST
@@ -332,13 +334,13 @@ class EntryController extends Controller {
      * @param array $transfer_entry_tags
      * @return Entry
      *
-     * @throws \OutOfRangeException
+     * @throws OutOfRangeException
      */
     private function initTransferEntry($transfer_data, $transfer_side, $required_transfer_fields, $transfer_specific_fields, $transfer_entry_tags){
         // check validity of account_type_id value
         $account_type = AccountType::find($transfer_data[$transfer_side]);
         if(empty($account_type)){
-            throw new \OutOfRangeException(self::$ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE);
+            throw new OutOfRangeException(self::$ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE);
         }
 
         $transfer_entry = new Entry();
@@ -387,7 +389,7 @@ class EntryController extends Controller {
      * @param Entry $entry
      * @param array $entry_attachments
      */
-    private function attach_attachments_to_entry($entry, $entry_attachments){
+    private function attach_attachments_to_entry(Entry $entry, array $entry_attachments){
         foreach($entry_attachments as $attachment_data){
             if(!is_array($attachment_data)){
                 continue;
@@ -410,9 +412,9 @@ class EntryController extends Controller {
      * @param int $page_number
      * @param string $sort_by
      * @param string $sort_direction
-     * @return \Illuminate\Contracts\Routing\ResponseFactory
+     * @return ResponseFactory
      */
-    private function provide_paged_entries_response($filters, $page_number=0, $sort_by=Entry::DEFAULT_SORT_PARAMETER, $sort_direction=Entry::DEFAULT_SORT_DIRECTION){
+    private function provide_paged_entries_response(array $filters, int $page_number=0, string $sort_by=Entry::DEFAULT_SORT_PARAMETER, string $sort_direction=Entry::DEFAULT_SORT_DIRECTION):ResponseFactory{
         $entries_collection = Entry::get_collection_of_non_disabled_entries(
             $filters,
             self::$MAX_ENTRIES_IN_RESPONSE,
