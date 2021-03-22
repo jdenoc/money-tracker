@@ -227,7 +227,7 @@ yarn install
 yarn run build-prod
 
 # setup cache
-php artisan config:cache
+php artisan optimize
 ```
 
 #### <a name="prod-database">Database Setup</a>
@@ -301,14 +301,13 @@ yarn run build-prod
 - <a name="prod-updates-4">Step 4</a>
 ```
 # clear existing cache
-php artisan cache:clear
-php artisan view:clear
+php artisan optimize:clear
 
 # Label the latest version
 php artisan app:version $MOST_RECENT_TAG
 
 # setup new cache
-php artisan config:cache
+php artisan optimize
 php artisan view:cache
 ```
 - <a name="prod-updates-5">Step 5</a>

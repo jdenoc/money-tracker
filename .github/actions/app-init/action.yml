@@ -18,11 +18,10 @@ runs:
       shell: bash
     # general application setup
     - run: |
-        .docker/cmd/artisan.sh cache:clear
-        .docker/cmd/artisan.sh config:clear
+        .docker/cmd/artisan.sh optimize:clear
         .docker/cmd/artisan.sh key:generate
         .docker/cmd/artisan.sh app:version `git describe --always`
-        .docker/cmd/artisan.sh config:cache
+        .docker/cmd/artisan.sh optimize
         .docker/cmd/artisan.sh view:cache
       shell: bash
     # setup laravel log files
