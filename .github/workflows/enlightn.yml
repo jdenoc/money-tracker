@@ -22,21 +22,21 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: cache-docker-${{ hashFiles('.docker/*.dockerfile') }}-${{ hashFiles('.docker/docker-compose.yml') }}.${{ secrets.CACHE_VERSION }}
+          key: cache-docker-${{ hashFiles('.docker/*.dockerfile') }}-${{ hashFiles('.docker/docker-compose.yml') }}
 
       - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
           path: vendor
-          key: cache-composer-${{ hashFiles('composer.lock') }}.${{ secrets.CACHE_VERSION }}
+          key: cache-composer-${{ hashFiles('composer.lock') }}
 
       - name: Cache npm/Yarn packages
         id: yarn-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-yarn-${{ hashFiles('yarn.lock') }}.${{ secrets.CACHE_VERSION }}
+          key: cache-yarn-${{ hashFiles('yarn.lock') }}
 
       - name: Cache vue
         id: vue-cache
@@ -45,7 +45,7 @@ jobs:
           path: |
             public/vue
             public/mix-manifest.json
-          key: ${{ runner.os }}-vue-${{ hashFiles('resources/js/*') }}-${{ hashFiles('resources/sass/*') }}.${{ secrets.CACHE_VERSION }}
+          key: ${{ runner.os }}-vue-${{ hashFiles('resources/js/*') }}-${{ hashFiles('resources/sass/*') }}
 
       - name: install enlightn
         run: |
