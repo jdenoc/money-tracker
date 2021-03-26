@@ -9,9 +9,9 @@ use App\Traits\EntryFilterKeys;
 use App\Traits\EntryResponseKeys;
 use App\Traits\EntryTransferKeys;
 use App\Traits\MaxEntryResponseValue;
-use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use OutOfRangeException;
@@ -28,9 +28,9 @@ class EntryController extends Controller {
     /**
      * GET /api/entry/{entry_id}
      * @param int $entry_id
-     * @return ResponseFactory
+     * @return Response
      */
-    public function get_entry(int $entry_id):ResponseFactory{
+    public function get_entry(int $entry_id):Response{
         $entry = Entry::get_entry_with_tags_and_attachments($entry_id);
         if(is_null($entry) || empty($entry) || $entry->disabled == 1){
             return response([], HttpStatus::HTTP_NOT_FOUND);
@@ -47,9 +47,9 @@ class EntryController extends Controller {
     /**
      * GET /api/entries/{page}
      * @param int $page_number
-     * @return ResponseFactory
+     * @return Response
      */
-    public function get_paged_entries(int $page_number = 0):ResponseFactory{
+    public function get_paged_entries(int $page_number = 0):Response{
         return $this->provide_paged_entries_response([], $page_number);
     }
 
@@ -57,9 +57,9 @@ class EntryController extends Controller {
      * POST /api/entries/{page}
      * @param int $page_number
      * @param Request $request
-     * @return ResponseFactory
+     * @return Response
      */
-    public function filter_paged_entries(Request $request, $page_number = 0):ResponseFactory{
+    public function filter_paged_entries(Request $request, $page_number = 0):Response{
         $post_body = $request->getContent();
         $filter_data = json_decode($post_body, true);
 
@@ -91,9 +91,9 @@ class EntryController extends Controller {
     /**
      * DELETE /api/entry/{entry_id}
      * @param int $entry_id
-     * @return ResponseFactory
+     * @return Response
      */
-    public function delete_entry(int $entry_id):ResponseFactory{
+    public function delete_entry(int $entry_id):Response{
         $entry = Entry::find($entry_id);
         if(empty($entry)){
             return response('', HttpStatus::HTTP_NOT_FOUND);
@@ -107,9 +107,9 @@ class EntryController extends Controller {
      * POST /api/entry
      *
      * @param Request $request
-     * @return ResponseFactory
+     * @return Response
      */
-    public function create_entry(Request $request):ResponseFactory{
+    public function create_entry(Request $request):Response{
         return $this->modify_entry($request);
     }
 
@@ -118,18 +118,18 @@ class EntryController extends Controller {
      *
      * @param int $entry_id
      * @param Request $request
-     * @return ResponseFactory
+     * @return Response
      */
-    public function update_entry(int $entry_id, Request $request):ResponseFactory{
+    public function update_entry(int $entry_id, Request $request):Response{
         return $this->modify_entry($request, $entry_id);
     }
 
     /**
      * @param Request $request
      * @param int|false $update_id
-     * @return ResponseFactory
+     * @return Response
      */
-    private function modify_entry(Request $request, $update_id=false):ResponseFactory{
+    private function modify_entry(Request $request, $update_id=false):Response{
         $request_body = $request->getContent();
         $entry_data = json_decode($request_body, true);
 
@@ -202,7 +202,9 @@ class EntryController extends Controller {
         );
     }
 
-    // POST /api/entry/transfer
+    /**
+     * POST /api/entry/transfer
+     */
     public function create_transfer_entries(Request $request){
         $request_body = $request->getContent();
         $transfer_data = json_decode($request_body, true);
@@ -336,7 +338,7 @@ class EntryController extends Controller {
      *
      * @throws OutOfRangeException
      */
-    private function initTransferEntry($transfer_data, $transfer_side, $required_transfer_fields, $transfer_specific_fields, $transfer_entry_tags){
+    private function initTransferEntry($transfer_data, string $transfer_side, $required_transfer_fields, $transfer_specific_fields, $transfer_entry_tags):Entry{
         // check validity of account_type_id value
         $account_type = AccountType::find($transfer_data[$transfer_side]);
         if(empty($account_type)){
@@ -372,7 +374,7 @@ class EntryController extends Controller {
      * @param Entry $entry
      * @param int[] $new_entry_tags
      */
-    private function update_entry_tags($entry, $new_entry_tags){
+    private function update_entry_tags(Entry $entry, $new_entry_tags){
         $currently_attached_tags = $entry->get_tag_ids();
         foreach($new_entry_tags as $new_tag){
             if(!in_array($new_tag, $currently_attached_tags)){
@@ -412,9 +414,9 @@ class EntryController extends Controller {
      * @param int $page_number
      * @param string $sort_by
      * @param string $sort_direction
-     * @return ResponseFactory
+     * @return Response
      */
-    private function provide_paged_entries_response(array $filters, int $page_number=0, string $sort_by=Entry::DEFAULT_SORT_PARAMETER, string $sort_direction=Entry::DEFAULT_SORT_DIRECTION):ResponseFactory{
+    private function provide_paged_entries_response(array $filters, int $page_number=0, string $sort_by=Entry::DEFAULT_SORT_PARAMETER, string $sort_direction=Entry::DEFAULT_SORT_DIRECTION):Response{
         $entries_collection = Entry::get_collection_of_non_disabled_entries(
             $filters,
             self::$MAX_ENTRIES_IN_RESPONSE,
