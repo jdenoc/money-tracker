@@ -49,7 +49,7 @@ jobs:
 
       - name: install enlightn
         run: |
-          .docker/cmd/composer.sh require enlightn --dev
+          .docker/cmd/composer.sh require enlightn/enlightn --dev
           .docker/cmd/artisan.sh vendor:publish --tag=enlightn
 
       - name: run enlightn
