@@ -4,16 +4,16 @@ namespace App\Http\Controllers\Api;
 
 use App\Institution;
 use App\Http\Controllers\Controller;
-use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Http\Response;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 
 class InstitutionController extends Controller {
 
     /**
      * GET /api/institutions
-     * @return ResponseFactory
+     * @return Response
      */
-    public function get_institutions():ResponseFactory{
+    public function get_institutions():Response{
         $institutions = Institution::all();
         if(is_null($institutions) || $institutions->isEmpty()){
             return response([], HttpStatus::HTTP_NOT_FOUND);
@@ -25,7 +25,11 @@ class InstitutionController extends Controller {
         }
     }
 
-    public function get_institution($institution_id){
+    /**
+     * @param int $institution_id
+     * @return Response
+     */
+    public function get_institution(int $institution_id):Response{
         $institution = Institution::find_institution_with_accounts($institution_id);
         if(is_null($institution)){
             return response([], HttpStatus::HTTP_NOT_FOUND);
