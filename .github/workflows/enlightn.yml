@@ -45,7 +45,7 @@ jobs:
           path: |
             public/vue
             public/mix-manifest.json
-          key: ${{ runner.os }}-vue-${{ hashFiles('resources/js/*') }}-${{ hashFiles('resources/sass/*') }}
+          key: cache-vue-${{ hashFiles('resources/*') }}
 
       - name: install enlightn
         run: |
