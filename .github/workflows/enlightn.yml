@@ -49,11 +49,12 @@ jobs:
 
       - name: install enlightn
         run: |
+          .docker/cmd/composer.sh .docker/cmd/composer.sh config platform.php 7.3
           .docker/cmd/composer.sh require enlightn/enlightn --dev
           .docker/cmd/artisan.sh vendor:publish --tag=enlightn
 
       - name: run enlightn
-        run: php artisan enlightn  -details
+        run: php artisan enlightn --details
 
   notification:
     runs-on: ubuntu-latest
