@@ -47,6 +47,9 @@ jobs:
             public/mix-manifest.json
           key: cache-vue-${{ hashFiles('resources/*') }}
 
+      - name: application setup
+        uses: ./.github/actions/app-init
+
       - name: install enlightn
         run: |
           .docker/cmd/composer.sh config platform.php 7.3
