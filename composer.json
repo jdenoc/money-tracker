@@ -12,7 +12,7 @@
         "beyondcode/laravel-favicon": "^1.2",
         "doctrine/dbal": "^2.5",
         "eklundkristoffer/laravel-discord-webhook": "dev-master",
-        "fakerphp/faker": "^1.13",
+        "fakerphp/faker": "1.14.1",
         "fideloper/proxy": "^4.0",
         "jdenoc/laravel-app-version": "^1.0",
         "jdenoc/laravel-make-trait": "^v1.0",
