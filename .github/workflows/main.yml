@@ -467,7 +467,7 @@ jobs:
             !${{ env.DUSK_SCREENSHOT_DIR }}.gitignore
           retention-days: 30
 
-  tests-e2e-stats:
+  tests-e2e-stats-summary:
     needs:
       - build
     runs-on: ubuntu-latest
@@ -514,15 +514,186 @@ jobs:
       - uses: ./.github/actions/app-init
       - run: .docker/cmd/artisan.sh dusk --group stats-summary --stop-on-failure
 
+      - name: Failure upload
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: ${{ github.sha }}-e2e
+          path: |
+            storage/logs/*.log
+            tests/Browser/console/*.log
+            ${{ env.DUSK_DB_DUMP_DIR }}*.sql
+            ${{ env.DUSK_SCREENSHOT_DIR }}
+            !${{ env.DUSK_SCREENSHOT_DIR }}.gitignore
+          retention-days: 30
+
+  tests-e2e-stats-trending:
+    needs:
+      - build
+    runs-on: ubuntu-latest
+    env:
+      DUSK_SCREENSHOT_DIR: 'tests/Browser/screenshots/'
+      DUSK_DB_DUMP_DIR: 'tests/Browser/db-dump/'
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      # retrieve cache
+      - name: Cache Docker images
+        id: docker-image-cache
+        uses: actions/cache@v2
+        with:
+          path: .docker/images
+          key: cache-docker-${{ hashFiles('.docker/*.dockerfile') }}-${{ hashFiles('.docker/docker-compose.yml') }}
+
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v2
+        with:
+          path: vendor
+          key: cache-composer-${{ hashFiles('composer.lock') }}
+
+      - name: Cache npm/Yarn packages
+        id: yarn-cache
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: cache-yarn-${{ hashFiles('yarn.lock') }}
+
+      - name: Cache vue
+        id: vue-cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            public/vue
+            public/mix-manifest.json
+          key: ${{ runner.os }}-vue-${{ hashFiles('resources/js/*') }}-${{ hashFiles('resources/sass/*') }}
+
+      # end-2-end tests
       - uses: ./.github/actions/app-init
       - run: .docker/cmd/artisan.sh dusk --group stats-trending --stop-on-failure
 
+      - name: Failure upload
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: ${{ github.sha }}-e2e
+          path: |
+            storage/logs/*.log
+            tests/Browser/console/*.log
+            ${{ env.DUSK_DB_DUMP_DIR }}*.sql
+            ${{ env.DUSK_SCREENSHOT_DIR }}
+            !${{ env.DUSK_SCREENSHOT_DIR }}.gitignore
+          retention-days: 30
+
+  tests-e2e-stats-distribution:
+    needs:
+      - build
+    runs-on: ubuntu-latest
+    env:
+      DUSK_SCREENSHOT_DIR: 'tests/Browser/screenshots/'
+      DUSK_DB_DUMP_DIR: 'tests/Browser/db-dump/'
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      # retrieve cache
+      - name: Cache Docker images
+        id: docker-image-cache
+        uses: actions/cache@v2
+        with:
+          path: .docker/images
+          key: cache-docker-${{ hashFiles('.docker/*.dockerfile') }}-${{ hashFiles('.docker/docker-compose.yml') }}
+
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v2
+        with:
+          path: vendor
+          key: cache-composer-${{ hashFiles('composer.lock') }}
+
+      - name: Cache npm/Yarn packages
+        id: yarn-cache
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: cache-yarn-${{ hashFiles('yarn.lock') }}
+
+      - name: Cache vue
+        id: vue-cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            public/vue
+            public/mix-manifest.json
+          key: ${{ runner.os }}-vue-${{ hashFiles('resources/js/*') }}-${{ hashFiles('resources/sass/*') }}
+
+      # end-2-end tests
       - uses: ./.github/actions/app-init
       - run: .docker/cmd/artisan.sh dusk --group stats-distribution-1 --stop-on-failure
 
       - uses: ./.github/actions/app-init
       - run: .docker/cmd/artisan.sh dusk --group stats-distribution-2 --stop-on-failure
 
+      - name: Failure upload
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: ${{ github.sha }}-e2e
+          path: |
+            storage/logs/*.log
+            tests/Browser/console/*.log
+            ${{ env.DUSK_DB_DUMP_DIR }}*.sql
+            ${{ env.DUSK_SCREENSHOT_DIR }}
+            !${{ env.DUSK_SCREENSHOT_DIR }}.gitignore
+          retention-days: 30
+
+  tests-e2e-stats-tags:
+    needs:
+      - build
+    runs-on: ubuntu-latest
+    env:
+      DUSK_SCREENSHOT_DIR: 'tests/Browser/screenshots/'
+      DUSK_DB_DUMP_DIR: 'tests/Browser/db-dump/'
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      # retrieve cache
+      - name: Cache Docker images
+        id: docker-image-cache
+        uses: actions/cache@v2
+        with:
+          path: .docker/images
+          key: cache-docker-${{ hashFiles('.docker/*.dockerfile') }}-${{ hashFiles('.docker/docker-compose.yml') }}
+
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v2
+        with:
+          path: vendor
+          key: cache-composer-${{ hashFiles('composer.lock') }}
+
+      - name: Cache npm/Yarn packages
+        id: yarn-cache
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: cache-yarn-${{ hashFiles('yarn.lock') }}
+
+      - name: Cache vue
+        id: vue-cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            public/vue
+            public/mix-manifest.json
+          key: ${{ runner.os }}-vue-${{ hashFiles('resources/js/*') }}-${{ hashFiles('resources/sass/*') }}
+
+      # end-2-end tests
       - uses: ./.github/actions/app-init
       - run: .docker/cmd/artisan.sh dusk --group stats-tags-1 --stop-on-failure
 
@@ -552,7 +723,10 @@ jobs:
       - tests-e2e-navigation
       - tests-e2e-entry-modal
       - tests-e2e-transfer-modal
-      - tests-e2e-stats
+      - tests-e2e-stats-summary
+      - tests-e2e-stats-trending
+      - tests-e2e-stats-distribution
+      - tests-e2e-stats-tags
     if: ${{ always() }} # You always want to be notified: success, failure, or cancelled
     timeout-minutes: 60
     steps:
