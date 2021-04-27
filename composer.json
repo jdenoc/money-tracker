@@ -29,7 +29,7 @@
         "laravel/dusk": "^5.0",
         "mockery/mockery": "^1.0",
         "nunomaduro/collision": "^3.0",
-        "phpunit/phpunit": "^8.0",
+        "phpunit/phpunit": "8.5.15",
         "spatie/db-dumper": "2.21.1"
     },
     "autoload": {
