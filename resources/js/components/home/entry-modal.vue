@@ -67,7 +67,7 @@
           <input id="entry-value" name="entry-value" type="text" placeholder="999.99" autocomplete="off" class="placeholder-gray-400 placeholder-opacity-80 rounded w-full pl-6"
                  v-model="entryData.entry_value"
                  v-bind:readonly="isLocked"
-                 v-on:change="decimaliseEntryValue"
+                 v-on:change="entryData.entry_value = decimaliseValue(entryData.entry_value)"
           />
           <span class="currency-symbol absolute left-3 inset-y-2 mt-px text-gray-400 font-medium" v-html="accountTypeMeta.currencyHtml"></span>
         </div>
@@ -225,6 +225,7 @@ import {Entry} from "../../entry";
 // mixins
 import {accountsObjectMixin} from "../../mixins/accounts-object-mixin";
 import {accountTypesObjectMixin} from "../../mixins/account-types-object-mixin";
+import {decimaliseInputMixin} from "../../mixins/decimalise-input-mixin";
 import {tagsObjectMixin} from "../../mixins/tags-object-mixin";
 import {tailwindColorsMixin} from "../../mixins/tailwind-colors-mixin";
 // components
@@ -235,7 +236,7 @@ import TagsInput from "./../tags-input";
 
 export default {
   name: "entry-modal",
-  mixins: [accountsObjectMixin, accountTypesObjectMixin, tagsObjectMixin, tailwindColorsMixin],
+  mixins: [accountsObjectMixin, accountTypesObjectMixin, decimaliseInputMixin, tagsObjectMixin, tailwindColorsMixin],
   components: {
     EntryModalAttachment,
     FileDragNDrop,
@@ -361,12 +362,6 @@ export default {
       this.resetEntryData();
       this.unlockModal();
       this.updateAccountTypeMeta();
-    },
-    decimaliseEntryValue: function(){
-      if(!_.isEmpty(this.entryData.entry_value)){
-        let cleanedEntryValue = this.entryData.entry_value.replace(/[^0-9.]/g, '');
-        this.entryData.entry_value = parseFloat(cleanedEntryValue).toFixed(2);
-      }
     },
     deleteEntry: function(){
       this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
