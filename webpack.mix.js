@@ -23,6 +23,7 @@ mix
     .extract(['vue', 'lodash', 'axios'])
     .js(directory.resource+'js/app-home.js', directory.js).vue()
     .js(directory.resource+'js/app-stats.js', directory.js).vue()
+    .js(directory.resource+'js/app-settings.js', directory.js).vue()
 
     // tailwind specific
     .postCss(directory.resource+'css/tailwind.css', directory.css+'app.css', [
