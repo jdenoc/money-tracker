@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,6 +20,7 @@ use Illuminate\Support\Facades\Route;
 // GET /api/version
 Route::get('version', 'Api\VersionController@get')
     ->name('version');
+
 // GET /api/institutions
 Route::get('institutions', 'Api\InstitutionController@get_institutions')
     ->name('institutions');
@@ -33,21 +33,31 @@ Route::get('institution/{institution_id}', 'Api\InstitutionController@get_instit
 // GET /api/institute/{institution_id}
 Route::get('institute/{institution_id}', 'Api\InstitutionController@get_institution')
     ->name('institute');
+
 // GET /api/tags
 Route::get('tags', 'Api\TagController@get_tags')
     ->name('tags');
+
 // GET /api/accounts
 Route::get('accounts', 'Api\AccountController@get_accounts')
     ->name('accounts');
 // GET /api/account/{account_id}
 Route::get('account/{account_id}', 'Api\AccountController@get_account')
-    ->name('account');
+    ->name('account.get');
+// POST /api/account
+Route::post('account', 'Api\AccountController@create_account')
+    ->name('account.post');
+// PUT /api/account/{account_id}
+Route::put('account/{account_id}', 'Api\AccountController@update_account')
+    ->name('account.put');
+
 // GET /api/account-types
 Route::get('account-types', 'Api\AccountTypeController@list_account_types')
     ->name('account_types.get');
 // DELETE /api/account-type/{account_type_id}
 Route::delete('account-type/{account_type_id}', 'Api\AccountTypeController@disable_account_type')
     ->name('account_type.delete');
+
 // GET /api/entries
 Route::get('entries', 'Api\EntryController@get_paged_entries')
     ->name('entries.get');
@@ -60,6 +70,7 @@ Route::post('entries', 'Api\EntryController@filter_paged_entries')
 // POST /api/entries/{page}
 Route::post('entries/{page}', 'Api\EntryController@filter_paged_entries')
     ->name('entries.post.paged');
+
 // POST /api/entry
 Route::post('entry', 'Api\EntryController@create_entry')
     ->name('entry.post');
@@ -75,6 +86,7 @@ Route::delete('entry/{entry_id}', 'Api\EntryController@delete_entry')
 // POST /api/entry/transfer
 Route::post('entry/transfer', 'Api\EntryController@create_transfer_entries')
     ->name('entry.transfer');
+
 // DELETE /api/attachment/{uuid}
 Route::delete('attachment/{uuid}', 'Api\AttachmentController@delete_attachment')
     ->name('attachment.delete');
