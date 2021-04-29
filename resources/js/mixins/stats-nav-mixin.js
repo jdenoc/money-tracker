@@ -17,7 +17,7 @@ export const statsNavMixin = {
         chartNameDistribution: function(){ return 'distribution' }
     },
 
-    methods:{
+    methods: {
         makeChartVisible: function(chartToMakeVisible){
             Object.keys(this.isVisibleChart).forEach(function(chartName){
                 this.isVisibleChart[chartName] = false;
@@ -25,7 +25,7 @@ export const statsNavMixin = {
             if(this.isVisibleChart.hasOwnProperty(chartToMakeVisible)){
                 this.isVisibleChart[chartToMakeVisible] = true;
             } else {
-                console.log("FEATURE IS NOT AVAILABLE");
+                console.warn("FEATURE IS NOT AVAILABLE");
             }
         },
     },

@@ -19,11 +19,13 @@ export default new Vuex.Store({
         institutions: [],
         accounts: [],
         accountTypes: [],
+        accountTypeTypes: [],
         entries: [],
         fetched: {
             institutions: false,
             accounts: false,
             accountTypes: false,
+            accountTypeTypes: false,
             tags: false,
             version: false
         }
@@ -66,6 +68,10 @@ export default new Vuex.Store({
          * @returns {string}
          */
         STORE_TYPE_ACCOUNT_TYPES: function(){ return 'accountTypes' },
+        /**
+         * @returns {string}
+         */
+        STORE_TYPE_ACCOUNT_TYPE_TYPES: function(){ return 'accountType.types'},
         /**
          * @returns {string}
          */
@@ -125,6 +131,7 @@ export default new Vuex.Store({
             return [
                 getters.STORE_TYPE_ACCOUNTS,
                 getters.STORE_TYPE_ACCOUNT_TYPES,
+                getters.STORE_TYPE_ACCOUNT_TYPE_TYPES,
                 getters.STORE_TYPE_ENTRIES,
                 getters.STORE_TYPE_INSTITUTIONS,
                 getters.STORE_TYPE_TAGS,

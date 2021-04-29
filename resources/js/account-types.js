@@ -2,13 +2,49 @@ import {Accounts} from "./accounts";
 import {ObjectBaseClass} from "./objectBaseClass";
 import {SnotifyStyle} from "vue-snotify";
 import Store from './store';
+import Axios from "axios";
 
 export class AccountTypes extends ObjectBaseClass {
 
     constructor(){
         super();
-        this.storeType = Store.getters.STORE_TYPE_ACCOUNT_TYPES;
-        this.uri = '/api/account-types';
+
+        this.apiUri = {
+            default: '/api/account-types',
+            types: '/api/account-types/types'
+        }
+        this.apiStoreTypes = {
+            default: Store.getters.STORE_TYPE_ACCOUNT_TYPES,
+            types: Store.getters.STORE_TYPE_ACCOUNT_TYPE_TYPES
+        }
+
+        this.storeType = this.apiStoreTypes.default;
+        this.uri = this.apiUri.default;
+    }
+
+    fetchTypes(){
+        this.storeType = this.apiStoreTypes.types;
+        if(!this.isFetched){
+            this.setFetchedState = true;
+            return Axios.get(this.apiUri.types)
+                .then(this.axiosSuccessTypes.bind(this))
+                .catch(this.axiosFailure.bind(this));
+        } else {
+            return Promise.resolve({});
+        }
+    }
+
+    get retrieveTypes(){
+        this.storeType = this.apiStoreTypes.types;
+        let types = this.retrieve;
+        this.storeType = this.apiStoreTypes.default;
+        return types;
+    }
+
+    axiosSuccessTypes(response){
+        this.storeType = this.apiStoreTypes.types;
+        this.assign = response.data;
+        this.storeType = this.apiStoreTypes.default;
     }
 
     axiosFailure(error){
