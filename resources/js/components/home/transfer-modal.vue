@@ -38,7 +38,7 @@
           <span class="absolute left-3 inset-y-2 mt-px" v-html="accountTypeMeta.currencyHtml"></span>
           <input id="transfer-value" name="transfer-value" type="text" placeholder="999.99" autocomplete="off" class="placeholder-gray-400 placeholder-opacity-80 rounded w-full"
                  v-model="transferData.value"
-                 v-on:change="decimaliseValue"
+                 v-on:change="transferData.value = decimaliseValue(transferData.value)"
           />
         </div>
 
@@ -173,6 +173,7 @@ import _ from 'lodash';
 import Store from '../../store';
 // mixins
 import {accountTypesObjectMixin} from "../../mixins/account-types-object-mixin";
+import {decimaliseInputMixin} from "../../mixins/decimalise-input-mixin";
 import {tagsObjectMixin} from "../../mixins/tags-object-mixin";
 // objects
 import {Entry} from "../../entry";
@@ -182,7 +183,7 @@ import FileDragNDrop from "../file-drag-n-drop";
 
 export default {
   name: "transfer-modal",
-  mixins: [accountTypesObjectMixin, tagsObjectMixin],
+  mixins: [accountTypesObjectMixin, decimaliseInputMixin, tagsObjectMixin],
   components: {
     FileDragNDrop,
     TagsInput,
@@ -287,12 +288,6 @@ export default {
     },
   },
   methods: {
-    decimaliseValue: function(){
-      if(!_.isEmpty(this.transferData.value)){
-        let cleanedEntryValue = this.transferData.value.replace(/[^0-9.]/g, '');
-        this.transferData.value = parseFloat(cleanedEntryValue).toFixed(2);
-      }
-    },
     canShowAccountTypeMeta: function(accountTypeId){
       accountTypeId = parseInt(accountTypeId);
       return this.hasValidAccountTypeBeenSelected(accountTypeId) && accountTypeId !== this.accountTypeMeta.externalAccountTypeId;
