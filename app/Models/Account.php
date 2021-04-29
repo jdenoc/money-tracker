@@ -26,6 +26,14 @@ class Account extends BaseModel {
         'disabled_stamp'
     ];
 
+    private static $required_fields = [
+        'name',
+        'institution_id',
+        'disabled',
+        'total',
+        'currency',
+    ];
+
     public function institution(){
         $this->belongsTo('App\Modals\Institution', 'institution_id');
     }
@@ -42,6 +50,18 @@ class Account extends BaseModel {
     public static function find_account_with_types($account_id){
         $account = Account::with('account_types')->where('id', $account_id);
         return $account->first();
+    }
+
+    public static function getRequiredFieldsForUpdate(){
+        return self::$required_fields;
+    }
+
+    public static function getRequiredFieldsForCreation(){
+        $fields = self::$required_fields;
+        unset($fields[array_search('disabled', $fields)]);
+        // using array_values here to reset the array index
+        // after we unset the "disabled" element
+        return array_values($fields);
     }
 
 }
