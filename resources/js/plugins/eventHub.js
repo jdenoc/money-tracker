@@ -65,11 +65,15 @@ export default {
                 /**
                  * @return {string}
                  */
-                EVENT_STATS_DISTRIBUTION: function(){ return 'stats-display-distribution-char' },
+                EVENT_STATS_DISTRIBUTION: function(){ return 'stats-display-distribution-chart' },
                 /**
                  * @returns {string}
                  */
-                EVENT_FILE_DROP_UPDATE: function(){ return 'dropzone:update'; }
+                EVENT_FILE_DROP_UPDATE: function(){ return 'dropzone:update'; },
+                /**
+                 * @return {string}
+                 */
+                EVENT_SETTINGS_NAV_CHANGE: function(){ return 'settings-display-update-from-nav-click'},
             },
             methods: {
                 broadcast(event, data = null){

@@ -54,14 +54,7 @@ export class Entries extends ObjectBaseClass {
 
     processSuccessfulResponseData(responseData){
         this.count = parseInt(responseData.count);
-        delete responseData.count;
-
-        // convert responseData object into an array
-        let entriesInResponse = Object.values(responseData).map(function(entry){
-            // add a fetchStamp property to each entry
-            entry.fetchStamp = null;
-            return entry;
-        });
+        let entriesInResponse = super.processSuccessfulResponseData(responseData);
         if(this.count !== entriesInResponse.length) {
             // FIXME: add error checking for request count values
             // notice.display(notice.typeWarning, "Not all "+storeType+" were downloaded");
