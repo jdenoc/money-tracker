@@ -20,6 +20,10 @@ class AccountTypeController extends Controller {
         }
     }
 
+    public function list_account_type_types(){
+        return response(AccountType::getEnumValues(), HttpStatus::HTTP_OK);
+    }
+
     public function disable_account_type($account_type_id){
         $account_type = AccountType::find($account_type_id);
         if(empty($account_type)){
