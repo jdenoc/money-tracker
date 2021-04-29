@@ -10,7 +10,7 @@ class AccountTypeFactory extends Factory {
 
     public function definition():array{
         $bank_account_number = $this->faker->bankAccountNumber();
-        $account_types = AccountType::get_enum_values('type');
+        $account_types = AccountType::getEnumValues();
         $account_type = $account_types[array_rand($account_types)];
 
         return [

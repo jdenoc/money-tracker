@@ -33,4 +33,8 @@ class AccountType extends BaseModel {
         return $this->hasMany('App\Models\Entry', 'account_type_id');
     }
 
+    public static function getEnumValues(){
+        return parent::get_enum_values('type');
+    }
+
 }
