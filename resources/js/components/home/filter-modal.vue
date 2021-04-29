@@ -201,6 +201,7 @@ import {tagsObjectMixin} from "../../mixins/tags-object-mixin";
 import {tailwindColorsMixin} from "../../mixins/tailwind-colors-mixin";
 // objects
 import {Currency} from "../../currency";
+// conponents
 import AccountAccountTypeTogglingSelector from "../account-account-type-toggling-selector";
 import TagsInput from '../tags-input';
 import ToggleButton from '../toggle-button';

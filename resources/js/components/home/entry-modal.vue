@@ -218,6 +218,7 @@
 <script lang="js">
 // utilities
 import _ from 'lodash';
+import Store from '../../store';
 // objects
 import {Currency} from '../../currency';
 import {Entry} from "../../entry";
@@ -231,7 +232,6 @@ import FileDragNDrop from "./../file-drag-n-drop";
 import EntryModalAttachment from "./entry-modal-attachment";
 import ToggleButton from './../toggle-button';
 import TagsInput from "./../tags-input";
-import Store from '../../store';
 
 export default {
   name: "entry-modal",
