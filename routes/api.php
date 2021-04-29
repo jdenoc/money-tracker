@@ -53,7 +53,10 @@ Route::put('account/{account_id}', 'Api\AccountController@update_account')
 
 // GET /api/account-types
 Route::get('account-types', 'Api\AccountTypeController@list_account_types')
-    ->name('account_types.get');
+    ->name('account_type.get');
+// GET /api/account-types/types
+Route::get('account-types/types', 'Api\AccountTypeController@list_account_type_types')
+    ->name('account-type.types.get');
 // DELETE /api/account-type/{account_type_id}
 Route::delete('account-type/{account_type_id}', 'Api\AccountTypeController@disable_account_type')
     ->name('account_type.delete');

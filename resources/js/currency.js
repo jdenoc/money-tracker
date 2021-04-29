@@ -13,6 +13,10 @@ export class Currency {
         };
     }
 
+    list(){
+        return this.currencyData;
+    }
+
     getClassFromCode(currencyCode){
         let currencyNode = this.currencyData.filter(function(currencyDatum){
             return currencyCode === currencyDatum.code;

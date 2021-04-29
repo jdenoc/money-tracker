@@ -4,6 +4,8 @@ import Store from './store';
 export class ObjectBaseClass {
 
     constructor(){
+        this.fiveMinutesInMilliseconds = 5*60*1000;
+
         this.storeType = '';
         this.uri = '';
     }
@@ -57,7 +59,13 @@ export class ObjectBaseClass {
         let responseCount = parseInt(responseData.count);
         delete responseData.count;
 
-        let objectsInResponse = Object.values(responseData);    // convert responseData object into an array
+        // convert responseData object into an array
+        let objectsInResponse = Object.values(responseData)
+            .map(function(data){
+                // add a fetchStamp property to each data node
+                data.fetchStamp = null;
+                return data;
+            });
         if(responseCount !== objectsInResponse.length) {
             // FIXME: add error checking for request count values
             // notice.display(notice.typeWarning, "Not all "+storeType+" were downloaded");
@@ -75,6 +83,15 @@ export class ObjectBaseClass {
             return foundObjects[0];
         } else {
             return {};  // could not find an object associated with the provided ID
+        }
+    }
+
+    isDataUpToDate(data){
+        if(data.hasOwnProperty('fetchStamp')){
+            let currentTimestamp = new Date().getTime();
+            return Math.abs(currentTimestamp - data.fetchStamp) < this.fiveMinutesInMilliseconds;
+        } else {
+            return false;
         }
     }
 }
