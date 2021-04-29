@@ -845,8 +845,19 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         $tags_from_api = collect($this->getApiTags());
 
         $this->browse(function(Browser $browser) use ($tags_from_api){
-            $entry_selector = $this->randomUnconfirmedEntrySelector(true);
-            $entry_id = $this->getEntryIdFromSelector($entry_selector);
+            $invalid_entry_ids = [];
+            do{
+                $entry_selector = $this->randomUnconfirmedEntrySelector(true);
+                $entry_id = $this->getEntryIdFromSelector($entry_selector);
+                if(in_array($entry_id, $invalid_entry_ids)){
+                    continue;
+                }
+                $entry = Entry::findOrFail($entry_id);
+                $invalid_entry_ids[] = $entry_id;
+                // make sure the entry selected doesn't already have all the tags assigned to it
+            }while($entry->tags->count() == $tags_from_api->count());
+            unset($invalid_entry_ids);
+
             $new_tag = '';
 
             $browser->visit(new HomePage());

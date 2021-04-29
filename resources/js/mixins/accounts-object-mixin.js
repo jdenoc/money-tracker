@@ -15,5 +15,11 @@ export const accountsObjectMixin = {
         areAccountsAvailable: function(){
             return !_.isEmpty(this.rawAccountsData);
         },
+    },
+
+    methods: {
+        fetchAccounts: function(){
+            return this.accountsObject.fetch();
+        }
     }
 };

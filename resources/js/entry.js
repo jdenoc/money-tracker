@@ -14,7 +14,6 @@ export class Entry extends ObjectBaseClass {
         super();
         this.storeType = Store.getters.STORE_TYPE_ENTRIES;
         this.uri = '/api/entry/';
-        this.fiveMinutesInMilliseconds = 5*60*1000;
         this.fetched = false;
     }
 
@@ -58,7 +57,6 @@ export class Entry extends ObjectBaseClass {
             }})
             .then(this.axiosSuccess)
             .catch(this.axiosFailure);
-            // complete: entry.completeEntryUpdate
     }
 
     set assign(newValue){
@@ -141,13 +139,12 @@ export class Entry extends ObjectBaseClass {
         return responseData;
     }
 
+    /**
+     * @depricated use isDataUpToDate() instead
+     */
     isEntryCurrent(entryData){
-        let currentTimestamp = new Date().getTime();
-        if(entryData.hasOwnProperty('fetchStamp')){
-            return Math.abs(currentTimestamp - entryData.fetchStamp) < this.fiveMinutesInMilliseconds;
-        } else {
-            return false;
-        }
+        console.warn("entry.isEntryCurrent() has been depricated in favour of entry.isDataUpToDate()");
+        return this.isDataUpToDate(entryData);
     }
 
     updateEntryFetchStamp(entryData){
