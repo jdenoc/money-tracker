@@ -34,7 +34,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: cache-docker-${{ hashFiles('.docker/*.dockerfile') }}-${{ hashFiles('.docker/docker-compose.yml') }}
+          key: cache-docker-${{ hashFiles('.docker/*') }}
 
       - name: Docker build
         uses: ./.github/actions/setup-docker
@@ -45,7 +45,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: vendor
-          key: cache-composer-${{ hashFiles('composer.lock') }}
+          key: cache-composer-${{ hashFiles('composer.*') }}
 
       - name: Composer setup
         uses: ./.github/actions/setup-composer
@@ -59,7 +59,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-yarn-${{ hashFiles('yarn.lock') }}
+          key: cache-yarn-${{ hashFiles('package.json') }}.${{ hashFiles('yarn.lock') }}
 
       - name: Yarn setup
         uses: ./.github/actions/setup-yarn
@@ -93,21 +93,21 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: cache-docker-${{ hashFiles('.docker/*.dockerfile') }}-${{ hashFiles('.docker/docker-compose.yml') }}
+          key: cache-docker-${{ hashFiles('.docker/*') }}
 
       - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
           path: vendor
-          key: cache-composer-${{ hashFiles('composer.lock') }}
+          key: cache-composer-${{ hashFiles('composer.*') }}
 
       - name: Cache npm/Yarn packages
         id: yarn-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-yarn-${{ hashFiles('yarn.lock') }}
+          key: cache-yarn-${{ hashFiles('package.json') }}.${{ hashFiles('yarn.lock') }}
 
       # NOTE: vue cache not needed for unit tests
 
@@ -170,21 +170,21 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: cache-docker-${{ hashFiles('.docker/*.dockerfile') }}-${{ hashFiles('.docker/docker-compose.yml') }}
+          key: cache-docker-${{ hashFiles('.docker/*') }}
 
       - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
           path: vendor
-          key: cache-composer-${{ hashFiles('composer.lock') }}
+          key: cache-composer-${{ hashFiles('composer.*') }}
 
       - name: Cache npm/Yarn packages
         id: yarn-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-yarn-${{ hashFiles('yarn.lock') }}
+          key: cache-yarn-${{ hashFiles('package.json') }}.${{ hashFiles('yarn.lock') }}
 
       - name: Cache vue
         id: vue-cache
@@ -230,21 +230,21 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: cache-docker-${{ hashFiles('.docker/*.dockerfile') }}-${{ hashFiles('.docker/docker-compose.yml') }}
+          key: cache-docker-${{ hashFiles('.docker/*') }}
 
       - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
           path: vendor
-          key: cache-composer-${{ hashFiles('composer.lock') }}
+          key: cache-composer-${{ hashFiles('composer.*') }}
 
       - name: Cache npm/Yarn packages
         id: yarn-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-yarn-${{ hashFiles('yarn.lock') }}
+          key: cache-yarn-${{ hashFiles('package.json') }}.${{ hashFiles('yarn.lock') }}
 
       - name: Cache vue
         id: vue-cache
@@ -290,21 +290,21 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: cache-docker-${{ hashFiles('.docker/*.dockerfile') }}-${{ hashFiles('.docker/docker-compose.yml') }}
+          key: cache-docker-${{ hashFiles('.docker/*') }}
 
       - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
           path: vendor
-          key: cache-composer-${{ hashFiles('composer.lock') }}
+          key: cache-composer-${{ hashFiles('composer.*') }}
 
       - name: Cache npm/Yarn packages
         id: yarn-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-yarn-${{ hashFiles('yarn.lock') }}
+          key: cache-yarn-${{ hashFiles('package.json') }}.${{ hashFiles('yarn.lock') }}
 
       - name: Cache vue
         id: vue-cache
@@ -359,21 +359,21 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: cache-docker-${{ hashFiles('.docker/*.dockerfile') }}-${{ hashFiles('.docker/docker-compose.yml') }}
+          key: cache-docker-${{ hashFiles('.docker/*') }}
 
       - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
           path: vendor
-          key: cache-composer-${{ hashFiles('composer.lock') }}
+          key: cache-composer-${{ hashFiles('composer.*') }}
 
       - name: Cache npm/Yarn packages
         id: yarn-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-yarn-${{ hashFiles('yarn.lock') }}
+          key: cache-yarn-${{ hashFiles('package.json') }}.${{ hashFiles('yarn.lock') }}
 
       - name: Cache vue
         id: vue-cache
@@ -422,21 +422,21 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: cache-docker-${{ hashFiles('.docker/*.dockerfile') }}-${{ hashFiles('.docker/docker-compose.yml') }}
+          key: cache-docker-${{ hashFiles('.docker/*') }}
 
       - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
           path: vendor
-          key: cache-composer-${{ hashFiles('composer.lock') }}
+          key: cache-composer-${{ hashFiles('composer.*') }}
 
       - name: Cache npm/Yarn packages
         id: yarn-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-yarn-${{ hashFiles('yarn.lock') }}
+          key: cache-yarn-${{ hashFiles('package.json') }}.${{ hashFiles('yarn.lock') }}
 
       - name: Cache vue
         id: vue-cache
@@ -485,21 +485,21 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: cache-docker-${{ hashFiles('.docker/*.dockerfile') }}-${{ hashFiles('.docker/docker-compose.yml') }}
+          key: cache-docker-${{ hashFiles('.docker/*') }}
 
       - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
           path: vendor
-          key: cache-composer-${{ hashFiles('composer.lock') }}
+          key: cache-composer-${{ hashFiles('composer.*') }}
 
       - name: Cache npm/Yarn packages
         id: yarn-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-yarn-${{ hashFiles('yarn.lock') }}
+          key: cache-yarn-${{ hashFiles('package.json') }}.${{ hashFiles('yarn.lock') }}
 
       - name: Cache vue
         id: vue-cache
@@ -545,21 +545,21 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: cache-docker-${{ hashFiles('.docker/*.dockerfile') }}-${{ hashFiles('.docker/docker-compose.yml') }}
+          key: cache-docker-${{ hashFiles('.docker/*') }}
 
       - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
           path: vendor
-          key: cache-composer-${{ hashFiles('composer.lock') }}
+          key: cache-composer-${{ hashFiles('composer.*') }}
 
       - name: Cache npm/Yarn packages
         id: yarn-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-yarn-${{ hashFiles('yarn.lock') }}
+          key: cache-yarn-${{ hashFiles('package.json') }}.${{ hashFiles('yarn.lock') }}
 
       - name: Cache vue
         id: vue-cache
@@ -605,21 +605,21 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: cache-docker-${{ hashFiles('.docker/*.dockerfile') }}-${{ hashFiles('.docker/docker-compose.yml') }}
+          key: cache-docker-${{ hashFiles('.docker/*') }}
 
       - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
           path: vendor
-          key: cache-composer-${{ hashFiles('composer.lock') }}
+          key: cache-composer-${{ hashFiles('composer.*') }}
 
       - name: Cache npm/Yarn packages
         id: yarn-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-yarn-${{ hashFiles('yarn.lock') }}
+          key: cache-yarn-${{ hashFiles('package.json') }}.${{ hashFiles('yarn.lock') }}
 
       - name: Cache vue
         id: vue-cache
@@ -668,21 +668,21 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: cache-docker-${{ hashFiles('.docker/*.dockerfile') }}-${{ hashFiles('.docker/docker-compose.yml') }}
+          key: cache-docker-${{ hashFiles('.docker/*') }}
 
       - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
           path: vendor
-          key: cache-composer-${{ hashFiles('composer.lock') }}
+          key: cache-composer-${{ hashFiles('composer.*') }}
 
       - name: Cache npm/Yarn packages
         id: yarn-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-yarn-${{ hashFiles('yarn.lock') }}
+          key: cache-yarn-${{ hashFiles('package.json') }}.${{ hashFiles('yarn.lock') }}
 
       - name: Cache vue
         id: vue-cache
