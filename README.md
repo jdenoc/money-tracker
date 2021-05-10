@@ -277,7 +277,7 @@ cp .env .env.bkup
 # *** OPTIONAL ***
 # New/Updates to composer packages
 # Note: check update release notes. 
-composer update --no-dev -a
+composer install --no-dev -a
 ```
 - <a name="prod-updates-2c">Step 2.c</a> <small>_(optional)_</small>
 ```

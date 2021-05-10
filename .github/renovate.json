@@ -1,0 +1,9 @@
+{
+  "extends": [
+    "config:base"
+  ],
+  "prHourlyLimit": 1,
+  "stabilityDays": 30,
+  "prCreation": "not-pending",
+  "dependencyDashboard": true
+}
