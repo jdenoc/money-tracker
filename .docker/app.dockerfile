@@ -48,16 +48,14 @@ RUN echo '#!/bin/bash\nphp /var/www/money-tracker/artisan "$@"' > /usr/local/bin
   && chmod +x /usr/local/bin/artisan
 
 # select a php.ini config file; we use php.ini-development as it has "display_errors = On"
-RUN cp $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini \
-  && echo "expose_php = Off" >> $PHP_INI_DIR/conf.d/expose_php.ini
+RUN cp $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini
 
+RUN echo "expose_php = Off" >> $PHP_INI_DIR/conf.d/expose_php.ini
+RUN echo 'allow_url_fopen = Off' >>  $PHP_INI_DIR/conf.d/allow_url_fopen.ini
 # set php error logging
 RUN echo 'error_log = /var/www/money-tracker/storage/logs/php_error.log' >> $PHP_INI_DIR/conf.d/error_log.ini
-
 # set php timezone
 RUN echo 'date.timezone = "UTC"' >> $PHP_INI_DIR/conf.d/date.timezone.ini
-
-RUN echo 'allow_url_fopen = Off' >>  $PHP_INI_DIR/conf.d/allow_url_fopen.ini
 
 # install xdebug
 ARG DISABLE_XDEBUG
