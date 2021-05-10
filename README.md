@@ -20,6 +20,7 @@ For a list of features currently available, what their expected outcome is and t
   - [Production](#production-environment)
     - [Application](#prod-application)
     - [Database](#prod-database)
+    - [Review Performance/Security](#prod-enlightn)
     - [Updates](#prod-updates)
   - [Environment Variables](#environment-variable-setup)
   - [Scheduled Tasks](#scheduled-tasks-setup)
@@ -198,7 +199,6 @@ mysql -e "CREATE USER 'jdenoc'@'localhost' IDENTIFIED BY 'password';"
 mysql -e "GRANT ALL PRIVILEGES ON money_tracker.* TO 'jdenoc'@'localhost';"
 mysql -e "GRANT ALL PRIVILEGES ON $(grep DB_DATABASE .env | sed 's/DB_DATABASE=//').* TO '$(grep DB_USERNAME .env | sed 's/DB_USERNAME=//')'@'localhost';"
 php artisan migrate:fresh
-
 ```
 _**Note:** If you changed the database, user or password in the above commands, be sure to assign those new values in the .env file._
 
@@ -228,10 +228,26 @@ yarn run build-prod
 
 # setup cache
 php artisan optimize
+php artisan view:cache
 ```
 
 #### <a name="prod-database">Database Setup</a>
 This is the exact same process as we do for our Local/dev setup. See instructions [here](#dev-database).
+
+#### <a name="prod-enlightn">Review Performance/Security</a>
+```bash
+# install enlightn
+.docker/cmd/composer.sh require enlightn/enlightn --dev
+.docker/cmd/artisan.sh vendor:publish --tag=enlightn
+
+# run enlightn
+.docker/cmd/artisan.sh enlightn --details
+# address any issues that can be addresses, then perform a basline test
+.docker/cmd/artisan.sh enlightn:baseline
+
+# remove enlightn
+.docker/cmd/composer.sh remove enlightn/enlightn --dev
+```
 
 ***
 
@@ -314,6 +330,18 @@ php artisan view:cache
 ```
 # take site out of maintenance mode
 php artisan up
+```
+- <a name="prod-updates-6">Step 6</a> <small>_(optional)_</small>
+```
+# install enlightn
+.docker/cmd/composer.sh require enlightn/enlightn --dev
+.docker/cmd/artisan.sh vendor:publish --tag=enlightn
+
+# run enlightn
+.docker/cmd/artisan.sh enlightn --details
+
+# remove enlightn
+.docker/cmd/composer.sh remove enlightn/enlightn --dev
 ```
 
 ***
