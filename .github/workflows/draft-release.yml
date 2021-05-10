@@ -46,10 +46,10 @@ jobs:
             See [here](https://github.com/jdenoc/money-tracker/blob/${{ env.RELEASE_NAME }}/README.md#prod-updates) for comprehensive instructions.
 
             Additional steps:
-            - [Step 2.a](https://github.com/jdenoc/money-tracker/blob/${{ env.RELEASE_NAME }}/README.md#prod-updates-2a)
-            - [Step 2.b](https://github.com/jdenoc/money-tracker/blob/${{ env.RELEASE_NAME }}/README.md#prod-updates-2b)
-            - [Step 2.c](https://github.com/jdenoc/money-tracker/blob/${{ env.RELEASE_NAME }}/README.md#prod-updates-2c)
-            - [Step 2.d](https://github.com/jdenoc/money-tracker/blob/${{ env.RELEASE_NAME }}/README.md#prod-updates-2d)
+            * [Step 2.a](https://github.com/jdenoc/money-tracker/blob/${{ env.RELEASE_NAME }}/README.md#prod-updates-2a) - _.env_
+            * [Step 2.b](https://github.com/jdenoc/money-tracker/blob/${{ env.RELEASE_NAME }}/README.md#prod-updates-2b) - _composer_
+            * [Step 2.c](https://github.com/jdenoc/money-tracker/blob/${{ env.RELEASE_NAME }}/README.md#prod-updates-2c) - _yarn_
+            * [Step 2.d](https://github.com/jdenoc/money-tracker/blob/${{ env.RELEASE_NAME }}/README.md#prod-updates-2d) - _migrate_
           draft: true
           prerelease: true
 
