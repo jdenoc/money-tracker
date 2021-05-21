@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/github/license/jdenoc/laravel-app-version?style=flat-square)](LICENSE)
 
 ## About
-Money Tracker is a web portal dedicated to help record and manage income & expenses, built on the [Laravel framework](https://laravel.com/docs/5.5)
+Money Tracker is a web portal dedicated to help record and manage income & expenses, built on the [Laravel framework](https://laravel.com/docs/6.x)
 
 ## Features
 For a list of features currently available, what their expected outcome is and test cases, see the [Features](features/FEATURES.md)
