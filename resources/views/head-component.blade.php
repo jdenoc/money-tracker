@@ -7,7 +7,6 @@
 <!-- CSRF Token -->
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
-{{--<title>{{config("app.debug") ? '[DEV] ' : '' }}Money Tracker | STATS</title>--}}
 <title>{{config("app.debug") ? '[DEV] ' : ''}}{{$slot}}</title>
 
 <!-- Fonts -->
@@ -15,3 +14,6 @@
 
 <link href="{{mix('vue/css/app.css')}}" rel="stylesheet" type="text/css">
 <link href="{{mix('vue/css/font-awesome.css')}}" rel="stylesheet" type="text/css">
+
+<script type="text/javascript" src="{{mix('vue/js/manifest.js')}}"></script>
+<script type="text/javascript" src="{{mix('vue/js/vendor.js')}}"></script>

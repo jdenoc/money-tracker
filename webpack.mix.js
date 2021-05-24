@@ -20,6 +20,7 @@ let resourceDirectory = 'resources';
 mix
     .js(resourceDirectory+'/js/app-home.js', jsDirectory)
     .js(resourceDirectory+'/js/app-stats.js', jsDirectory)
+    .extract(['vue', 'lodash', 'axios'])
     // font-awesome
     .copy(nodeDirectory+'/@fortawesome/fontawesome-free/css/all.min.css', cssDirectory+'/font-awesome.css')
     .copy(nodeDirectory+'/@fortawesome/fontawesome-free/webfonts/fa-solid-900.woff2', webFontDirectory+'/fa-solid-900.woff2')
