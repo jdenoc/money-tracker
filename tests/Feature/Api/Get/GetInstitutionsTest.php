@@ -37,7 +37,7 @@ class GetInstitutionsTest extends TestCase {
      * @dataProvider providerGetInstitutions
      * @param bool $all_active
      */
-    public function testGetInstitutions($all_active){
+    public function testGetInstitutions(bool $all_active){
         // GIVEN
         $institutions_count = $this->faker->randomDigitNotNull;
         $generated_institutions = [];
