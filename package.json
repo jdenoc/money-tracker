@@ -35,6 +35,6 @@
     "vuex": "3.0.1"
   },
   "resolutions": {
-    "bulma-calendar/date-and-time": "^0.14.2"
+    "bulma-calendar/date-and-time": "^1.0.0"
   }
 }
