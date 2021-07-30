@@ -713,7 +713,7 @@ jobs:
             !${{ env.DUSK_SCREENSHOT_DIR }}.gitignore
           retention-days: 30
 
-  notification:
+  notification-nebularg-actions-discord-webhook:
     runs-on: ubuntu-latest
     needs:  # make sure the notification is sent AFTER the jobs you want included have completed
       - build
@@ -730,7 +730,49 @@ jobs:
     if: ${{ always() }} # You always want to be notified: success, failure, or cancelled
     timeout-minutes: 60
     steps:
-      - name: discord
-        uses: nebularg/actions-discord-webhook@v1
+      - uses: nebularg/actions-discord-webhook@v1
         with:
           webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
+
+  notification-sarisia-actions-status-discord:
+    runs-on: ubuntu-latest
+    needs: # make sure the notification is sent AFTER the jobs you want included have completed
+      - build
+      - tests-unit
+      - tests-e2e-demo
+      - tests-e2e-notifications
+      - tests-e2e-navigation
+      - tests-e2e-entry-modal
+      - tests-e2e-transfer-modal
+      - tests-e2e-stats-summary
+      - tests-e2e-stats-trending
+      - tests-e2e-stats-distribution
+      - tests-e2e-stats-tags
+    if: ${{ always() }} # You always want to be notified: success, failure, or cancelled
+    timeout-minutes: 60
+    steps:
+      - uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+
+  notification-nobrayner-discord-webhook:
+    runs-on: ubuntu-latest
+    needs: # make sure the notification is sent AFTER the jobs you want included have completed
+      - build
+      - tests-unit
+      - tests-e2e-demo
+      - tests-e2e-notifications
+      - tests-e2e-navigation
+      - tests-e2e-entry-modal
+      - tests-e2e-transfer-modal
+      - tests-e2e-stats-summary
+      - tests-e2e-stats-trending
+      - tests-e2e-stats-distribution
+      - tests-e2e-stats-tags
+    if: ${{ always() }} # You always want to be notified: success, failure, or cancelled
+    timeout-minutes: 60
+    steps:
+      - uses: nobrayner/discord-webhook@v1
+        with:
+          github-token: ${{ secrets.github_token }}
+          discord-webhook: ${{ secrets.DISCORD_WEBHOOK }}
