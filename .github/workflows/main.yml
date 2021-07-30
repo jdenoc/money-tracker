@@ -731,7 +731,6 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: discord
-        uses: nobrayner/discord-webhook@v1
+        uses: nebularg/actions-discord-webhook@v1
         with:
-          github-token: ${{ github.token }}
-          discord-webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
