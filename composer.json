@@ -22,7 +22,7 @@
         "nesbot/carbon": "2.46.0"
     },
     "require-dev": {
-        "barryvdh/laravel-ide-helper": "^2.2",
+        "barryvdh/laravel-ide-helper": "2.10.0",
         "beyondcode/laravel-dump-server": "^1.0",
         "filp/whoops": "2.12.1",
         "laravel/dusk": "6.15.0",
