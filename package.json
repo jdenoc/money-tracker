@@ -8,7 +8,7 @@
     "build-prod": "mix --production && echo 'process completed @ ' `date`"
   },
   "devDependencies": {
-    "@fortawesome/fontawesome-free": "5.15.3",
+    "@fortawesome/fontawesome-free": "5.15.4",
     "@voerro/vue-tagsinput": "^2",
     "axios": "^0.21.0",
     "bulma": "0.9.3",
