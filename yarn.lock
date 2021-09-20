@@ -1627,13 +1627,12 @@ builtin-status-codes@^3.0.0:
   resolved "https://registry.yarnpkg.com/builtin-status-codes/-/builtin-status-codes-3.0.0.tgz#85982878e21b98e1c66425e03d0174788f569ee8"
   integrity sha1-hZgoeOIbmOHGZCXgPQF0eI9Wnug=
 
-bulma-calendar@6.1.2:
-  version "6.1.2"
-  resolved "https://registry.yarnpkg.com/bulma-calendar/-/bulma-calendar-6.1.2.tgz#244ee5b627a3dc2d10108d684bbe49a360701a8f"
-  integrity sha512-cV951iitHWGqfPR1LzIysMBZ+HjD/PWyvijtoGNbdv/qiZIpUNHWEIubvHsiatClUBaCG5w8Gb2Jh2aBAgcXHg==
+bulma-calendar@6.1.12:
+  version "6.1.12"
+  resolved "https://registry.yarnpkg.com/bulma-calendar/-/bulma-calendar-6.1.12.tgz#bce65ead674d4739fc48f30d9dc3fc9c863b1dfc"
+  integrity sha512-h4yxzKMp3zQrMd8Ithf8XGSKsJIHC2gMZNAhaK8Dk8WRIQsKkpp7oHRpOUSYWa5WzlwGNCjH7M1Dqgs9YVCFKg==
   dependencies:
-    date-and-time "^0.14.2"
-    date-fns "^1.29.0"
+    date-fns "^2.21.3"
 
 bulma-checkradio@2.1.0:
   version "2.1.0"
@@ -2175,15 +2174,10 @@ csso@^4.2.0:
   dependencies:
     css-tree "^1.1.2"
 
-date-and-time@^0.14.2:
-  version "0.14.2"
-  resolved "https://registry.yarnpkg.com/date-and-time/-/date-and-time-0.14.2.tgz#a4266c3dead460f6c231fe9674e585908dac354e"
-  integrity sha512-EFTCh9zRSEpGPmJaexg7HTuzZHh6cnJj1ui7IGCFNXzd2QdpsNh05Db5TF3xzJm30YN+A8/6xHSuRcQqoc3kFA==
-
-date-fns@^1.29.0:
-  version "1.30.1"
-  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-1.30.1.tgz#2e71bf0b119153dbb4cc4e88d9ea5acfb50dc05c"
-  integrity sha512-hBSVCvSmWC+QypYObzwGOd9wqdDpOt+0wl0KbU+R+uuZBS1jN8VsD1ss3irQDknRj5NvxiTF6oj/nDRnN/UQNw==
+date-fns@^2.21.3:
+  version "2.24.0"
+  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.24.0.tgz#7d86dc0d93c87b76b63d213b4413337cfd1c105d"
+  integrity sha512-6ujwvwgPID6zbI0o7UbURi2vlLDR9uP26+tW6Lg+Ji3w7dd0i3DOcjcClLjLPranT60SSEFBwdSyYwn/ZkPIuw==
 
 de-indent@^1.0.2:
   version "1.0.2"
