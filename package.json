@@ -4,8 +4,8 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "build-dev": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js && echo 'process completed @ ' `date`",
-    "build-prod": "cross-env NODE_ENV=production  node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js && echo 'process completed @ ' `date`"
+    "build-dev": "mix && echo 'process completed @ ' `date`",
+    "build-prod": "mix --production && echo 'process completed @ ' `date`"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "5.15.3",
@@ -16,7 +16,7 @@
     "bulma-checkradio": "2.1.0",
     "chart.js": "^2.9.3",
     "cross-env": "^7.0",
-    "laravel-mix": "6.0.31",
+    "laravel-mix": "^6.0.31",
     "lodash": "4.17.21",
     "randomcolor": "0.6.2",
     "resolve-url-loader": "4.0.0",
