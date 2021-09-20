@@ -18,12 +18,13 @@ let webFontDirectory  = 'public/vue/webfonts';
 let resourceDirectory = 'resources';
 
 mix
-    .js(resourceDirectory+'/js/app-home.js', jsDirectory)
-    .js(resourceDirectory+'/js/app-stats.js', jsDirectory)
+    .js(resourceDirectory+'/js/app-home.js', jsDirectory).vue()
+    .js(resourceDirectory+'/js/app-stats.js', jsDirectory).vue()
     .extract(['vue', 'lodash', 'axios'])
     // font-awesome
     .copy(nodeDirectory+'/@fortawesome/fontawesome-free/css/all.min.css', cssDirectory+'/font-awesome.css')
     .copy(nodeDirectory+'/@fortawesome/fontawesome-free/webfonts/fa-solid-900.woff2', webFontDirectory+'/fa-solid-900.woff2')
     .copy(nodeDirectory+'/@fortawesome/fontawesome-free/webfonts/fa-regular-400.woff2', webFontDirectory+'/fa-regular-400.woff2')
 
-    .sass(resourceDirectory+'/sass/app.scss', cssDirectory);
+    .sass(resourceDirectory+'/sass/app.scss', cssDirectory)
+    .version();
