@@ -76,16 +76,3 @@ php artisan view:cache
 # take site out of maintenance mode
 php artisan up
 ```
-
-#### Step 6 <small>_(optional)_</small>
-```
-# install enlightn
-.docker/cmd/composer.sh require enlightn/enlightn --dev
-.docker/cmd/artisan.sh vendor:publish --tag=enlightn
-
-# run enlightn
-.docker/cmd/artisan.sh enlightn --details
-
-# remove enlightn
-.docker/cmd/composer.sh remove enlightn/enlightn --dev
-```

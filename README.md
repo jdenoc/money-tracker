@@ -25,6 +25,7 @@ Money Tracker is a web portal dedicated to help record and manage income & expen
   - [Github Actions](docs/TESTING.md#github-actions)
   - [Docker](docs/TESTING.md#docker)
   - [Local/Dev](docs/TESTING.md#localdev)
+- [Benchmarking](docs/BENCHMARKING.md)
 - [Features/Test Cases](docs/FEATURES.md)
 - [Other Documentation](#other-documentation)
 
