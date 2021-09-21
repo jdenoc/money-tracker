@@ -2,8 +2,9 @@
   "extends": [
     "config:base"
   ],
-  "prHourlyLimit": 1,
-  "stabilityDays": 30,
+  "dependencyDashboard": true,
   "prCreation": "not-pending",
-  "dependencyDashboard": true
+  "prHourlyLimit": 1,
+  "rangeStrategy": "update-lockfile",
+  "stabilityDays": 30
 }
