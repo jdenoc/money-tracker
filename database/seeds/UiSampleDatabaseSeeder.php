@@ -88,16 +88,15 @@ class UiSampleDatabaseSeeder extends Seeder {
 
         // no point in selecting disabled entries. they're not going to be tested.
         $entries_not_disabled = $entries->where('disabled', 0);
-        $entries_confirmed = $entries_not_disabled->where('confirm', 1);
-        $entries_not_confirmed = $entries_not_disabled->where('confirm', 0);
 
         // just in case we missed an entry necessary for testing, we're going to assign tags to random confirmed & unconfirmed entries
-        $this->attachTagToEntry($tag_ids, $this->firstFromApiCall($entries_not_confirmed->where('expense', 1))->random());
-        $this->attachTagToEntry($tag_ids, $this->firstFromApiCall($entries_not_confirmed->where('expense', 0))->random());
-        $this->attachTagToEntry($tag_ids, $this->firstFromApiCall($entries_confirmed->where('expense', 1))->random());
-        $this->attachTagToEntry($tag_ids, $this->firstFromApiCall($entries_confirmed->where('expense', 0))->random());
+        $this->attachTagToEntry($tag_ids, $this->firstFromApiCall($entries_not_disabled->where('confirm', 0)->where('expense', 1))->random());  // unconfirmed expense
+        $this->attachTagToEntry($tag_ids, $this->firstFromApiCall($entries_not_disabled->where('confirm', 0)->where('expense', 0))->random());  // unconfirmed income
+        $this->attachTagToEntry($tag_ids, $this->firstFromApiCall($entries_not_disabled->where('confirm', 1)->where('expense', 1))->random());  // confirmed expense
+        $this->attachTagToEntry($tag_ids, $this->firstFromApiCall($entries_not_disabled->where('confirm', 1)->where('expense', 0))->random());  // confirmed income
         $this->command->line(self::CLI_OUTPUT_PREFIX."Randomly assigned tags to entries");
 
+        // ***** TRANSFERS *****
         // randomly select some entries and mark them as transfers
         $transfer_to_entries = collect();
         $transfer_from_entries = collect();
@@ -138,6 +137,7 @@ class UiSampleDatabaseSeeder extends Seeder {
         $external_transfer_entry->save();
         $this->command->line(self::CLI_OUTPUT_PREFIX."Randomly marked entries as transfers");
 
+        // ***** ATTACHMENTS *****
         // assign attachments to entries. if entry is a "transfer", then add an attachment of the same name to its counterpart
         for($attachment_i=0; $attachment_i<self::COUNT_ATTACHMENT; $attachment_i++){
             // income entries
@@ -151,25 +151,25 @@ class UiSampleDatabaseSeeder extends Seeder {
 
         // income confirmed
         $this->assignAttachmentToEntry(
-            $this->firstFromApiCall($entries_confirmed)->where('expense', 0)->pluck('id')->random(),
+            $this->firstFromApiCall($entries_not_disabled)->where('expense', 0)->where('confirm', 1)->pluck('id')->random(),
             $transfer_to_entries->pluck('id')->toArray(),
             $entries
         );
         // income unconfirmed
         $this->assignAttachmentToEntry(
-            $this->firstFromApiCall($entries_not_confirmed)->where('expense', 0)->pluck('id')->random(),
+            $this->firstFromApiCall($entries_not_disabled)->where('expense', 0)->where('confirm', 0)->pluck('id')->random(),
             $transfer_to_entries->pluck('id')->toArray(),
             $entries
         );
         // expense confirmed
         $this->assignAttachmentToEntry(
-            $this->firstFromApiCall($entries_confirmed)->where('expense', 1)->pluck('id')->random(),
+            $this->firstFromApiCall($entries_not_disabled)->where('expense', 1)->where('confirm', 1)->pluck('id')->random(),
             $transfer_from_entries->pluck('id')->toArray(),
             $entries
         );
         // expense unconfirmed
         $this->assignAttachmentToEntry(
-            $this->firstFromApiCall($entries_not_confirmed)->where('expense', 1)->pluck('id')->random(),
+            $this->firstFromApiCall($entries_not_disabled)->where('expense', 1)->where('confirm', 0)->pluck('id')->random(),
             $transfer_from_entries->pluck('id')->toArray(),
             $entries
         );

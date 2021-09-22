@@ -123,8 +123,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                                 ->assertInputValue($this->_selector_modal_entry_field_value, $entry_data['entry_value'])
                                 ->assertSelected($this->_selector_modal_entry_field_account_type, $entry_data['account_type_id'])
                                 ->assertInputValue($this->_selector_modal_entry_field_memo, $entry_data['memo'])
-                                ->assertSee($this->_label_account_type_meta_account_name)
-                                ->assertSee($this->_label_account_type_meta_last_digits);
+                                ->assertSeeIn($this->_selector_modal_entry_meta, $this->_label_account_type_meta_account_name)
+                                ->assertSeeIn($this->_selector_modal_entry_meta, $this->_label_account_type_meta_last_digits);
                             $this->assertToggleButtonState($modal_body, $this->_selector_modal_entry_field_expense, $data_expense_switch_label, $expense_switch_colour);
                         })
 
@@ -293,9 +293,9 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      */
     public function testClickingOnEntryTableEditButtonOfEntryWithAttachments(){
         $this->browse(function(Browser $browser){
-            $entry_selector = $this->randomEntrySelector(['has_attachments'=>true]).'.'.$this->_class_has_attachments;
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
+            $entry_selector = $this->randomEntrySelector(['has_attachments'=>true]).'.'.$this->_class_has_attachments;
             $browser
                 ->openExistingEntryModal($entry_selector)
                 ->with($this->_selector_modal_entry, function($entry_modal){
@@ -1088,6 +1088,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     }
 
     /**
+     * @throws \LengthException
+     *
      * @param array $entry_constraints
      * @return string
      */
@@ -1097,6 +1099,9 @@ class EntryModalExistingEntryTest extends DuskTestCase {
             foreach(array_keys($entry_constraints) as $constraint){
                 $entries_collection = $entries_collection->where($constraint, $entry_constraints[$constraint]);
             }
+        }
+        if($entries_collection->isEmpty()){
+            throw new \LengthException("Entry collection is empty given entry constraints:".print_r($entry_constraints, true));
         }
         $entry_id = $entries_collection->pluck('id')->random();
         return sprintf(self::$PLACEHOLDER_SELECTOR_EXISTING_ENTRY_ROW, $entry_id);
