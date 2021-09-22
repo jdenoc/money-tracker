@@ -1957,6 +1957,11 @@ core-js-compat@^3.14.0, core-js-compat@^3.16.0:
     browserslist "^4.17.0"
     semver "7.0.0"
 
+core-js@^2.6.5:
+  version "2.6.12"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.12.tgz#d9333dfa7b065e347cc5682219d6f690859cc2ec"
+  integrity sha512-Kb2wC0fvsWfQrgk8HU5lW6U/Lcs8+9aaYcy4ZFc6DDlo4nZ7n70dEgE5rtR0oG6ufKDUnrwfWL1mXR5ljDatrQ==
+
 core-util-is@~1.0.0:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/core-util-is/-/core-util-is-1.0.3.tgz#a6042d3634c2b27e9328f837b965fac83808db85"
@@ -5187,10 +5192,12 @@ uuid@^8.3.0:
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
   integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
 
-v-hotkey@0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/v-hotkey/-/v-hotkey-0.3.0.tgz#42fe7967d19d9d6a27ff0cefb0ac8246e7c94804"
-  integrity sha512-+abxsl1o2C0cn6zJ4aCsougSDtVEbhXL4N+jVCQo/GObmdkk3yMHQWXYFBNvzygj6cfXlOZ3wZKj2Hh9wNFmdg==
+v-hotkey@0.9.0:
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/v-hotkey/-/v-hotkey-0.9.0.tgz#3e6c17128a2faa5f2a80a2f06f6c062b83c5d3e1"
+  integrity sha512-PVbU9cw5oyoOr6y5q0nN9xmndzpCsLDhXRgVP80WRMvM1Eqkai3ViuJs/D+qFhRht6u5LyM10eBEZ5hq+3qLTg==
+  dependencies:
+    core-js "^2.6.5"
 
 v-tooltip@2.0.0-rc.33:
   version "2.0.0-rc.33"
