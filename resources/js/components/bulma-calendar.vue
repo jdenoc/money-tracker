@@ -53,7 +53,7 @@
                 color: 'info',
                 isRange: "true",
                 allowSameDayRange: true,
-                dateFormat: "YYYY-MM-DD",
+                dateFormat: "yyyy-MM-dd",
                 showTodayButton: false,
             })[0];
             if(this.dateRangeUpdateCallback !== undefined){
