@@ -1634,10 +1634,10 @@ bulma-calendar@6.1.12:
   dependencies:
     date-fns "^2.21.3"
 
-bulma-checkradio@2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/bulma-checkradio/-/bulma-checkradio-2.1.0.tgz#494ab05b0245a41a0083bbd08436fafbde4b3814"
-  integrity sha512-u/EBioHqmeMaUyVc+P9ellOldIVER4SSzkCYo7+KOBAIZuRm6zRWKste8DAFfsk8sq2xrX16gKXr7vCy7NC0zw==
+bulma-checkradio@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/bulma-checkradio/-/bulma-checkradio-1.1.1.tgz#d94c4bce810089957102670b19cafb194bcb97be"
+  integrity sha512-6Wn2faBiFkctSeiaQkeU2MbjkQeuXsN4AthBDEKrHGGPl5wmV2GEj4iZCqzvw7Te7baaHdU8PbUgrmlD5D6oGA==
 
 bulma@0.9.3:
   version "0.9.3"
