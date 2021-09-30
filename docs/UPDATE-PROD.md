@@ -38,9 +38,8 @@ composer install --no-dev -a
 #### Step 2.c <small>_(optional)_</small>
 ```
 # *** OPTIONAL ***
-# New/Updates to yarn packages
-rm -rf node_modules/
-yarn install
+# New/Updates to npm packages
+npm ci
 ```
 
 #### Step 2.d <small>_(optional)_</small>
@@ -53,7 +52,7 @@ php artisan migrate
 #### Step 3
 ```
 # Build website from *.vue files
-yarn run build-prod
+npm run-script build-prod
 ```
 
 #### Step 4

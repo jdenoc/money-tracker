@@ -1,0 +1,8 @@
+# .github/actions/setup-npm/action.yml
+name: NPM Setup
+description: Load npm dependancies
+runs:
+  using: composite
+  steps:
+    - run: .docker/cmd/npm.sh ci
+      shell: bash

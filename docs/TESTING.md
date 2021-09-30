@@ -5,7 +5,8 @@
 This project has been set up to use [Github-Actions](https://github.com/jdenoc/money-tracker/actions) for continuous integration (CI) testing.
 
 ### Docker
-Assuming we already have our docker environment already setup ([instructions here](SETUP-DOCKER.md)), performing the following commands should run the tests we want:
+Assuming we already have our docker environment already setup ([instructions here](SETUP-DOCKER.md)).  
+Once the docker environment is running, running the following commands should run the tests we want:
 ```bash
 # Run PhpUnit tests
 docker container exec -t app.money-tracker vendor/bin/phpunit --stop-on-failure

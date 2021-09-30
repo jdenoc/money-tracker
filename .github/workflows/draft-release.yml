@@ -48,7 +48,7 @@ jobs:
             Additional steps:
             * [Step 2.a](https://github.com/jdenoc/money-tracker/blob/${{ env.RELEASE_NAME }}/docs/UPDATE-PROD.md#step-2a-optional) - _.env_
             * [Step 2.b](https://github.com/jdenoc/money-tracker/blob/${{ env.RELEASE_NAME }}/docs/UPDATE-PROD.md#step-2b-optional) - _composer_
-            * [Step 2.c](https://github.com/jdenoc/money-tracker/blob/${{ env.RELEASE_NAME }}/docs/UPDATE-PROD.md#step-2c-optional) - _yarn_
+            * [Step 2.c](https://github.com/jdenoc/money-tracker/blob/${{ env.RELEASE_NAME }}/docs/UPDATE-PROD.md#step-2c-optional) - _npm_
             * [Step 2.d](https://github.com/jdenoc/money-tracker/blob/${{ env.RELEASE_NAME }}/docs/UPDATE-PROD.md#step-2d-optional) - _migrate_
           draft: true
           prerelease: true

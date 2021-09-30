@@ -54,16 +54,16 @@ jobs:
           github-token: ${{ github.token }}
           php-version: 7.3
 
-      - name: Cache npm/Yarn packages
-        id: yarn-cache
+      - name: Cache npm packages
+        id: npm-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-yarn-${{ hashFiles('package.json') }}.${{ hashFiles('yarn.lock') }}
+          key: cache-npm-${{ hashFiles('package*.json') }}
 
-      - name: Yarn setup
-        uses: ./.github/actions/setup-yarn
-        if: steps.yarn-cache.outputs.cache-hit != 'true'
+      - name: npm setup
+        uses: ./.github/actions/setup-npm
+        if: steps.npm-cache.outputs.cache-hit != 'true'
 
       - name: Cache vue
         id: vue-cache
@@ -102,12 +102,12 @@ jobs:
           path: vendor
           key: cache-composer-${{ hashFiles('composer.*') }}
 
-      - name: Cache npm/Yarn packages
-        id: yarn-cache
+      - name: Cache npm packages
+        id: npm-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-yarn-${{ hashFiles('package.json') }}.${{ hashFiles('yarn.lock') }}
+          key: cache-npm-${{ hashFiles('package*.json') }}
 
       # NOTE: vue cache not needed for unit tests
 
@@ -179,12 +179,12 @@ jobs:
           path: vendor
           key: cache-composer-${{ hashFiles('composer.*') }}
 
-      - name: Cache npm/Yarn packages
-        id: yarn-cache
+      - name: Cache npm packages
+        id: npm-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-yarn-${{ hashFiles('package.json') }}.${{ hashFiles('yarn.lock') }}
+          key: cache-npm-${{ hashFiles('package*.json') }}
 
       - name: Cache vue
         id: vue-cache
@@ -239,12 +239,12 @@ jobs:
           path: vendor
           key: cache-composer-${{ hashFiles('composer.*') }}
 
-      - name: Cache npm/Yarn packages
-        id: yarn-cache
+      - name: Cache npm packages
+        id: npm-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-yarn-${{ hashFiles('package.json') }}.${{ hashFiles('yarn.lock') }}
+          key: cache-npm-${{ hashFiles('package*.json') }}
 
       - name: Cache vue
         id: vue-cache
@@ -299,12 +299,12 @@ jobs:
           path: vendor
           key: cache-composer-${{ hashFiles('composer.*') }}
 
-      - name: Cache npm/Yarn packages
-        id: yarn-cache
+      - name: Cache npm packages
+        id: npm-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-yarn-${{ hashFiles('package.json') }}.${{ hashFiles('yarn.lock') }}
+          key: cache-npm-${{ hashFiles('package*.json') }}
 
       - name: Cache vue
         id: vue-cache
@@ -368,12 +368,12 @@ jobs:
           path: vendor
           key: cache-composer-${{ hashFiles('composer.*') }}
 
-      - name: Cache npm/Yarn packages
-        id: yarn-cache
+      - name: Cache npm packages
+        id: npm-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-yarn-${{ hashFiles('package.json') }}.${{ hashFiles('yarn.lock') }}
+          key: cache-npm-${{ hashFiles('package*.json') }}
 
       - name: Cache vue
         id: vue-cache
@@ -431,12 +431,12 @@ jobs:
           path: vendor
           key: cache-composer-${{ hashFiles('composer.*') }}
 
-      - name: Cache npm/Yarn packages
-        id: yarn-cache
+      - name: Cache npm packages
+        id: npm-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-yarn-${{ hashFiles('package.json') }}.${{ hashFiles('yarn.lock') }}
+          key: cache-npm-${{ hashFiles('package*.json') }}
 
       - name: Cache vue
         id: vue-cache
@@ -494,12 +494,12 @@ jobs:
           path: vendor
           key: cache-composer-${{ hashFiles('composer.*') }}
 
-      - name: Cache npm/Yarn packages
-        id: yarn-cache
+      - name: Cache npm packages
+        id: npm-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-yarn-${{ hashFiles('package.json') }}.${{ hashFiles('yarn.lock') }}
+          key: cache-npm-${{ hashFiles('package*.json') }}
 
       - name: Cache vue
         id: vue-cache
@@ -554,12 +554,12 @@ jobs:
           path: vendor
           key: cache-composer-${{ hashFiles('composer.*') }}
 
-      - name: Cache npm/Yarn packages
-        id: yarn-cache
+      - name: Cache npm packages
+        id: npm-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-yarn-${{ hashFiles('package.json') }}.${{ hashFiles('yarn.lock') }}
+          key: cache-npm-${{ hashFiles('package*.json') }}
 
       - name: Cache vue
         id: vue-cache
@@ -614,12 +614,12 @@ jobs:
           path: vendor
           key: cache-composer-${{ hashFiles('composer.*') }}
 
-      - name: Cache npm/Yarn packages
-        id: yarn-cache
+      - name: Cache npm packages
+        id: npm-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-yarn-${{ hashFiles('package.json') }}.${{ hashFiles('yarn.lock') }}
+          key: cache-npm-${{ hashFiles('package*.json') }}
 
       - name: Cache vue
         id: vue-cache
@@ -677,12 +677,12 @@ jobs:
           path: vendor
           key: cache-composer-${{ hashFiles('composer.*') }}
 
-      - name: Cache npm/Yarn packages
-        id: yarn-cache
+      - name: Cache npm packages
+        id: npm-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-yarn-${{ hashFiles('package.json') }}.${{ hashFiles('yarn.lock') }}
+          key: cache-npm-${{ hashFiles('package*.json') }}
 
       - name: Cache vue
         id: vue-cache

@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/github/license/jdenoc/laravel-app-version?style=flat-square)](LICENSE)
 
 ## About
-Money Tracker is a web portal dedicated to help record and manage income & expenses, built on the [Laravel framework](https://laravel.com/docs/6.x)
+Money Tracker is a web portal dedicated to help record and manage income & expenses, built on the [Laravel framework](https://laravel.com/docs/6.x).
 
 ## Topics
 - [Requirements](#requirements)
@@ -36,29 +36,36 @@ Money Tracker is a web portal dedicated to help record and manage income & expen
   ```bash
   # confirm installation and version of NodeJS
   node -v
-  ```
-- Yarn 1.9.1
-  ```bash
-  # confirm installation and version of Yarn
-  yarn --version
+  
+  # confirm installation and version of npm
+  npm --version
+  # should be 6
+  
+  # confirm installation and version of npx
+  npx --version
+  # should be 6
   ```
 - PHP 7.3
   ```bash
   # confirm installation and version of PHP
   php -v
+  
+  # confirm php extensions installed
+  php -m
   ```
+  Extensions should include:
   - OpenSSL PHP Extension
   - PDO PHP Extension
   - Mbstring PHP Extension
   - Tokenizer PHP Extension
   - XML PHP Extension
-- Composer 2.0
+- Composer 2.1
   ```bash
   # confirm installation and version of PHP
   composer --version
   ```
 
-***
+---
 
 ## Other Documentation
 - [Laravel](https://laravel.com/docs/6.x/)
@@ -67,8 +74,8 @@ Money Tracker is a web portal dedicated to help record and manage income & expen
 - [ChartJs](https://www.chartjs.org/)
 - [Docker](https://docs.docker.com/)
 - [Composer](https://getcomposer.org/doc/)
-- [Yarn](https://yarnpkg.com/en/docs)
+- [npm](https://docs.npmjs.com/cli/v6)
 - [PhpUnit](https://phpunit.readthedocs.io/en/8.5/)
 - [Laravel Dusk](https://laravel.com/docs/6.x/dusk)
-- [Github Actions](https://docs.github.com/en/free-pro-team@latest/actions)
+- [Github Actions](https://docs.github.com/en/actions)
 - [git](https://git-scm.com/doc)

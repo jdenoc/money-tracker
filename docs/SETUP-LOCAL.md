@@ -19,9 +19,9 @@ php artisan app:version `git describe --always`
 # It will generate Laravel Facades that PhpStorm can use.
 composer run-script ide-helper
 
-# setup Yarn packages
-yarn install
-yarn run build-dev
+# setup npm packages
+npm install
+npm run-script build-dev
 ```
 
 ***
