@@ -22,9 +22,8 @@ git checkout -q tags/$MOST_RECENT_TAG
 #### Step 2.a <small>_(optional)_</small>
 ```
 # *** OPTIONAL ***
-# Edit .env file
-# Note: check update release notes.
 cp .env .env.bkup
+# Edit .env file
 # Perform modifications described in release notes.
 ```
 
@@ -32,7 +31,7 @@ cp .env .env.bkup
 ```
 # *** OPTIONAL ***
 # New/Updates to composer packages
-# Note: check update release notes. 
+rm -rf vendor/
 composer install --no-dev -a
 ```
 
@@ -40,7 +39,7 @@ composer install --no-dev -a
 ```
 # *** OPTIONAL ***
 # New/Updates to yarn packages
-# Note: check update release notes. 
+rm -rf node_modules/
 yarn install
 ```
 
@@ -48,7 +47,6 @@ yarn install
 ```
 # *** OPTIONAL ***
 # Database updates
-# Note: check update release notes.
 php artisan migrate
 ```
 
