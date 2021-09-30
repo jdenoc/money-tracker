@@ -11,20 +11,24 @@ const mix = require('laravel-mix');
  |
  */
 
-let cssDirectory      = 'public/vue/css';
-let nodeDirectory     = 'node_modules';
-let jsDirectory       = 'public/vue/js';
-let webFontDirectory  = 'public/vue/webfonts';
-let resourceDirectory = 'resources';
+let directory = {
+    node: 'node_modules/',
+    resource: 'resources/',
+    destination: 'public/vue/',
+}
+directory.js = directory.destination+'js/';
+directory.css = directory.destination+'css/';
+directory.webfont = directory.destination+'webfonts/';
+directory.fontAwesome = directory.node+'@fortawesome/fontawesome-free/';
 
 mix
-    .js(resourceDirectory+'/js/app-home.js', jsDirectory).vue()
-    .js(resourceDirectory+'/js/app-stats.js', jsDirectory).vue()
+    .js(directory.resource+'js/app-home.js', directory.js).vue()
+    .js(directory.resource+'js/app-stats.js', directory.js).vue()
     .extract(['vue', 'lodash', 'axios'])
     // font-awesome
-    .copy(nodeDirectory+'/@fortawesome/fontawesome-free/css/all.min.css', cssDirectory+'/font-awesome.css')
-    .copy(nodeDirectory+'/@fortawesome/fontawesome-free/webfonts/fa-solid-900.woff2', webFontDirectory+'/fa-solid-900.woff2')
-    .copy(nodeDirectory+'/@fortawesome/fontawesome-free/webfonts/fa-regular-400.woff2', webFontDirectory+'/fa-regular-400.woff2')
+    .copy(directory.fontAwesome+'css/all.min.css', directory.css+'font-awesome.css')
+    .copy(directory.fontAwesome+'webfonts/fa-solid-900.woff2', directory.webfont+'fa-solid-900.woff2')
+    .copy(directory.fontAwesome+'webfonts/fa-regular-400.woff2', directory.webfont+'fa-regular-400.woff2')
 
-    .sass(resourceDirectory+'/sass/app.scss', cssDirectory)
+    .sass(directory.resource+'sass/app.scss', directory.css)
     .version();
