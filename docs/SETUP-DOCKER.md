@@ -31,10 +31,10 @@ If you're working with PhpStorm, be sure to run the following command:
 ```
 This will generate Laravel Facades that PhpStorm can use.
 
-### Run yarn install
+### Run npm install
 ```bash
-.docker/cmd/yarn.sh install
-.docker/cmd/yarn.sh run build-dev
+.docker/cmd/npm.sh install
+.docker/cmd/npm.sh run-script build-dev
 ```
 
 ### Bring "_UP_" application container(s)
@@ -85,4 +85,4 @@ _**Note:** You can tear down the docker containers as well as their associated v
 ```bash
 docker-compose -f .docker/docker-compose.yml -p "moneytracker" down -v
 ```
-_**Note:** You do not need to worry about "tearing down" the yarn and/or composer containers. They will "remove" themselves once they have completed their tasks._
+_**Note:** You do not need to worry about "tearing down" the npm and/or composer containers. They will "remove" themselves once they have completed their tasks._

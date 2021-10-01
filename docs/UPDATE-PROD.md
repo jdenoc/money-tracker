@@ -22,9 +22,8 @@ git checkout -q tags/$MOST_RECENT_TAG
 #### Step 2.a <small>_(optional)_</small>
 ```
 # *** OPTIONAL ***
-# Edit .env file
-# Note: check update release notes.
 cp .env .env.bkup
+# Edit .env file
 # Perform modifications described in release notes.
 ```
 
@@ -32,30 +31,28 @@ cp .env .env.bkup
 ```
 # *** OPTIONAL ***
 # New/Updates to composer packages
-# Note: check update release notes. 
+rm -rf vendor/
 composer install --no-dev -a
 ```
 
 #### Step 2.c <small>_(optional)_</small>
 ```
 # *** OPTIONAL ***
-# New/Updates to yarn packages
-# Note: check update release notes. 
-yarn install
+# New/Updates to npm packages
+npm ci
 ```
 
 #### Step 2.d <small>_(optional)_</small>
 ```
 # *** OPTIONAL ***
 # Database updates
-# Note: check update release notes.
 php artisan migrate
 ```
 
 #### Step 3
 ```
 # Build website from *.vue files
-yarn run build-prod
+npm run-script build-prod
 ```
 
 #### Step 4
