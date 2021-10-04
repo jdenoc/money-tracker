@@ -17,9 +17,9 @@ sed "s/APP_DEBUG=.*/APP_DEBUG=false/" .env > .env.tmp; mv .env.tmp .env
 composer install --no-dev -a
 php artisan app:version $MOST_RECENT_TAG
 
-# setup Yarn packages
-yarn install
-yarn run build-prod
+# setup npm packages
+npm install
+npm run-script build-prod
 
 # setup cache
 php artisan optimize

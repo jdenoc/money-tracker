@@ -1,15 +1,14 @@
+#development
 .idea
 .DS_Store
 
 # composer
-composer.lock
 vendor
 auth.json
 
-# yarn
+# npm
 node_modules
-yarn.lock
-yarn-error.log
+npm-debug.log
 
 # laravel-mix
 mix-manifest.json

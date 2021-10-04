@@ -5,5 +5,5 @@ runs:
   using: composite
   steps:
     - name: Build/Compile website
-      run: .docker/cmd/yarn.sh run build-prod
+      run: .docker/cmd/npm.sh run-script build-prod
       shell: bash
