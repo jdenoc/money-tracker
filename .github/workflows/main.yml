@@ -467,6 +467,69 @@ jobs:
             !${{ env.DUSK_SCREENSHOT_DIR }}.gitignore
           retention-days: 30
 
+  tests-e2e-filter-modal:
+    needs:
+      - build
+    runs-on: ubuntu-latest
+    env:
+      DUSK_SCREENSHOT_DIR: 'tests/Browser/screenshots/'
+      DUSK_DB_DUMP_DIR: 'tests/Browser/db-dump/'
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      # retrieve cache
+      - name: Cache Docker images
+        id: docker-image-cache
+        uses: actions/cache@v2
+        with:
+          path: .docker/images
+          key: cache-docker-${{ hashFiles('.docker/*') }}
+
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v2
+        with:
+          path: vendor
+          key: cache-composer-${{ hashFiles('composer.*') }}
+
+      - name: Cache npm packages
+        id: npm-cache
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: cache-npm-${{ hashFiles('package*.json') }}
+
+      - name: Cache vue
+        id: vue-cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            public/vue
+            public/mix-manifest.json
+          key: cache-vue-${{ hashFiles('resources/*') }}
+
+      # end-2-end tests
+      - uses: ./.github/actions/app-init
+      - run: .docker/cmd/artisan.sh dusk --group filter-modal-1 --stop-on-failure
+
+      - uses: ./.github/actions/app-init
+      - run: .docker/cmd/artisan.sh dusk --group filter-modal-2 --stop-on-failure
+
+      - name: Failure upload
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: ${{ github.sha }}-e2e
+          path: |
+            storage/logs/*.log
+            tests/Browser/console/*.log
+            ${{ env.DUSK_DB_DUMP_DIR }}*.sql
+            ${{ env.DUSK_SCREENSHOT_DIR }}
+            !${{ env.DUSK_SCREENSHOT_DIR }}.gitignore
+          retention-days: 30
+
   tests-e2e-stats-summary:
     needs:
       - build
@@ -723,6 +786,7 @@ jobs:
       - tests-e2e-navigation
       - tests-e2e-entry-modal
       - tests-e2e-transfer-modal
+      - tests-e2e-filter-modal
       - tests-e2e-stats-summary
       - tests-e2e-stats-trending
       - tests-e2e-stats-distribution
