@@ -153,7 +153,7 @@ trait HomePageSelectors {
     private $_color_filter_switch_default = "#B5B5B5";
     private $_color_filter_switch_active = "#209CEE";
     private $_color_filter_btn_tag_default = "#f5f5f5";
-    private $_color_filter_btn_tag_active = "#3298DC";
+    private $_color_filter_btn_tag_active = "#3082c5";
 
     private $_class_is_income = "is-income";
     private $_class_is_expense = "is-expense";
