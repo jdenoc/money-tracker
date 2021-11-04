@@ -72,7 +72,7 @@ jobs:
           path: |
             public/vue
             public/mix-manifest.json
-          key: cache-vue-${{ hashFiles('resources/*') }}
+          key: cache-vue-${{ hashFiles('package*.json') }}-${{ hashFiles('resources/*') }}
 
       - name: Build Vue
         uses: ./.github/actions/build-vue
@@ -193,7 +193,7 @@ jobs:
           path: |
             public/vue
             public/mix-manifest.json
-          key: cache-vue-${{ hashFiles('resources/*') }}
+          key: cache-vue-${{ hashFiles('package*.json') }}-${{ hashFiles('resources/*') }}
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -253,7 +253,7 @@ jobs:
           path: |
             public/vue
             public/mix-manifest.json
-          key: cache-vue-${{ hashFiles('resources/*') }}
+          key: cache-vue-${{ hashFiles('package*.json') }}-${{ hashFiles('resources/*') }}
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -313,7 +313,7 @@ jobs:
           path: |
             public/vue
             public/mix-manifest.json
-          key: cache-vue-${{ hashFiles('resources/*') }}
+          key: cache-vue-${{ hashFiles('package*.json') }}-${{ hashFiles('resources/*') }}
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -382,7 +382,7 @@ jobs:
           path: |
             public/vue
             public/mix-manifest.json
-          key: cache-vue-${{ hashFiles('resources/*') }}
+          key: cache-vue-${{ hashFiles('package*.json') }}-${{ hashFiles('resources/*') }}
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -445,7 +445,7 @@ jobs:
           path: |
             public/vue
             public/mix-manifest.json
-          key: cache-vue-${{ hashFiles('resources/*') }}
+          key: cache-vue-${{ hashFiles('package*.json') }}-${{ hashFiles('resources/*') }}
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -508,7 +508,7 @@ jobs:
           path: |
             public/vue
             public/mix-manifest.json
-          key: cache-vue-${{ hashFiles('resources/*') }}
+          key: cache-vue-${{ hashFiles('package*.json') }}-${{ hashFiles('resources/*') }}
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -571,7 +571,7 @@ jobs:
           path: |
             public/vue
             public/mix-manifest.json
-          key: cache-vue-${{ hashFiles('resources/*') }}
+          key: cache-vue-${{ hashFiles('package*.json') }}-${{ hashFiles('resources/*') }}
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -631,7 +631,7 @@ jobs:
           path: |
             public/vue
             public/mix-manifest.json
-          key: cache-vue-${{ hashFiles('resources/*') }}
+          key: cache-vue-${{ hashFiles('package*.json') }}-${{ hashFiles('resources/*') }}
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -691,7 +691,7 @@ jobs:
           path: |
             public/vue
             public/mix-manifest.json
-          key: cache-vue-${{ hashFiles('resources/*') }}
+          key: cache-vue-${{ hashFiles('package*.json') }}-${{ hashFiles('resources/*') }}
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -754,7 +754,7 @@ jobs:
           path: |
             public/vue
             public/mix-manifest.json
-          key: cache-vue-${{ hashFiles('resources/*') }}
+          key: cache-vue-${{ hashFiles('package*.json') }}-${{ hashFiles('resources/*') }}
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
