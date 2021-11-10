@@ -16,7 +16,7 @@
                 <input type="hidden" name="entry-id" id="entry-id" v-model="entryData.id" />
 
                 <div class="control">
-                    <input class="is-checkradio is-block is-success" id="entry-confirm" type="checkbox" name="entry-confirm"
+                    <input class="is-checkradio is-block is-success has-no-border" id="entry-confirm" type="checkbox" name="entry-confirm"
                         v-model="entryData.confirm"
                         v-bind:disabled="isLocked"
                     />

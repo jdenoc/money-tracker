@@ -1,6 +1,6 @@
 <template>
   <div class="field is-pulled-right"><div class="control">
-    <input class="is-checkradio is-info is-small is-block" type="checkbox"
+    <input class="is-checkradio is-info is-small is-block has-no-border" type="checkbox"
        v-bind:id="checkboxRadioId"
        v-model="propCheck"
     />

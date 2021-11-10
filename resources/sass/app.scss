@@ -1,7 +1,7 @@
 // Bulma
-@import "~bulma/bulma";
-@import "~bulma-calendar/dist/css/bulma-calendar.min.css";
+@import "~bulma-calendar/dist/css/bulma-calendar.css";
 @import "~bulma-checkradio/dist/css/bulma-checkradio";
+@import "~bulma/bulma"; // needs to be imported last or else expected classes get overwritten
 
 // Snotify
 @import "~vue-snotify/styles/material";

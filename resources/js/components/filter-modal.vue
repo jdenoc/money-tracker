@@ -42,7 +42,7 @@
                     <div class="field-body"><div class="tags" id="filter-tags" v-bind:class="{'is-loading': !areTagsSet}">
                         <!--TODO: make all values collapsible-->
                         <div class="field" v-for="tag in listTags">
-                            <input class="is-checkradio is-block is-info" type="checkbox" name="filter-tag[]"
+                            <input class="is-checkradio is-block is-info has-no-border" type="checkbox" name="filter-tag[]"
                                v-bind:id="'filter-tag-'+tag.id"
                                v-bind:value="tag.id"
                                v-bind:checked="filterData.tags[tag.id]"
