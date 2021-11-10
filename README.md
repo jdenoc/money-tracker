@@ -80,3 +80,4 @@ Money Tracker is a web portal dedicated to help record and manage income & expen
 - [Laravel Dusk](https://laravel.com/docs/6.x/dusk)
 - [Github Actions](https://docs.github.com/en/actions)
 - [git](https://git-scm.com/doc)
+- [F.A.Q.](docs/FAQ.md)

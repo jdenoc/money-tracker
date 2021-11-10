@@ -73,3 +73,8 @@ php artisan view:cache
 # take site out of maintenance mode
 php artisan up
 ```
+
+---
+
+#### Issues?
+Having issues? Take a look at the [F.A,Q,](FAQ.md#production-updates) for potential solutions.
