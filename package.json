@@ -11,9 +11,9 @@
     "@fortawesome/fontawesome-free": "5.15.4",
     "@kyvg/vue3-notification": "^2.3.4",
     "@sipec/vue3-tags-input": "^3.0.4",
-    "@vueform/toggle": "^2.0.1",
     "@vue/compat": "^3.1.0",
     "@vue/compiler-sfc": "^3.1.0",
+    "@vueform/toggle": "^2.0.1",
     "axios": "^0.21.0",
     "bulma": "0.9.3",
     "bulma-calendar": "6.1.12",
@@ -34,9 +34,9 @@
     "v-tooltip": "^4.0.0-alpha.1",
     "vue": "^3.1.0",
     "vue-chartjs": "^3.5.0",
+    "vue-element-loading": "^3.0.1",
     "vue-filepond": "^7.0.2",
     "vue-loader": "^16.0.0",
-    "vue-spinner-component": "1.0.5",
     "vue-uuid": "^2.0.2",
     "vuex": "^4.0.0"
   }
