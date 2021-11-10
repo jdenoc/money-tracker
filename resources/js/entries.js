@@ -1,13 +1,12 @@
 import { ObjectBaseClass } from './objectBaseClass';
-import { SnotifyStyle } from 'vue-snotify';
 import Axios from "axios";
-import Store from './store';
+import {store} from './store';
 
 export class Entries extends ObjectBaseClass {
 
     constructor(){
         super();
-        this.storeType = Store.getters.STORE_TYPE_ENTRIES;
+        this.storeType = store.getters.STORE_TYPE_ENTRIES;
         this.uri = '/api/entries/';
         this.sort = {parameter: 'entry_date', direction: 'desc'};
         this.count = 0;
@@ -43,11 +42,10 @@ export class Entries extends ObjectBaseClass {
             this.assign = [];
             switch(error.response.status){
                 case 404:
-                    return {type: SnotifyStyle.info, message: "No entries were found"};
+                    return {type: 'info', message: "No entries were found"};
                 case 500:
                 default:
-                    // return {type: SnotifyStyle.error, message: "An error occurred while attempting to retrieve "+(filterModal.active?"filtered":"")+" entries"};    // TODO: after filtering is in place
-                    return {type: SnotifyStyle.error, message: "An error occurred while attempting to retrieve entries"};
+                    return {type: 'error', message: "An error occurred while attempting to retrieve entries"};
             }
         }
     }
@@ -71,13 +69,3 @@ export class Entries extends ObjectBaseClass {
     }
 
 }
-
-// var entries = {
-//     ajaxCompleteProcessing: function(){
-//         $('.is-filtered').toggle(filterModal.active);
-//         entries.display();
-//         paginate.display.previous(paginate.current !== 0);
-//         paginate.display.next(paginate.current < Math.ceil(entries.total/50)-1);
-//         loading.end();
-//     },
-// };

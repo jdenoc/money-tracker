@@ -17,18 +17,7 @@
             <tbody>
                 <entries-table-entry-row
                     v-for="entry in listOfEntries"
-                    v-bind:key="entry.id"
-                    v-bind:id="entry.id"
-                    v-bind:date="entry.entry_date"
-                    v-bind:accountTypeId="entry.account_type_id"
-                    v-bind:value="entry.entry_value"
-                    v-bind:memo="entry.memo"
-                    v-bind:expense="entry.expense"
-                    v-bind:confirm="entry.confirm"
-                    v-bind:disabled="entry.disabled"
-                    v-bind:hasAttachments="entry.has_attachments"
-                    v-bind:isTransfer="entry.is_transfer"
-                    v-bind:tagIds="entry.tags"
+                    v-bind="generateEntryRowOptions(entry)"
                 ></entries-table-entry-row>
             </tbody>
         </table>
@@ -50,9 +39,10 @@
 </template>
 
 <script>
+    import _ from 'lodash';
     import {Entries} from '../entries';
     import EntriesTableEntryRow from "./entries-table-entry-row";
-    import Store from '../store';
+    import {store} from '../store';
 
     export default {
         name: "entries-table",
@@ -65,10 +55,10 @@
         },
         computed: {
             currentPage: function(){
-                return Store.getters.currentPage;
+                return store.getters.currentPage;
             },
             currentFilter: function(){
-                return Store.getters.currentFilter;
+                return store.getters.currentFilter;
             },
             listOfEntries: function(){
                 return this.entries.retrieve;
@@ -78,7 +68,7 @@
             },
             isPrevButtonVisible: function(){
                 return this.currentPage !== 0 && !_.isNull(this.currentPage);
-            }
+            },
         },
         methods: {
             updateEntriesTableEventHandler: function(payload){
@@ -88,7 +78,7 @@
                 if(!_.isObject(payload)){
                     this.setPageNumber(payload);
                 } else {
-                    Store.dispatch('currentFilter', payload.filterParameters);
+                    store.dispatch('currentFilter', payload.filterParameters);
                     this.setPageNumber(payload.pageNumber);
                 }
                 this.updateEntriesTable(this.currentPage, this.currentFilter);
@@ -96,10 +86,10 @@
             updateEntriesTable: function(pageNumber, filterParameters){
                 this.entries.fetch(pageNumber, filterParameters)
                     .then(function(notification){
-                        this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, notification);
+                        this.$eventBus.broadcast(this.$eventBus.EVENT_NOTIFICATION(), notification);
                     }.bind(this))
                     .finally(function(){
-                        this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
+                        this.$eventBus.broadcast(this.$eventBus.EVENT_LOADING_HIDE());
                     }.bind(this));
             },
             nextPage: function(){
@@ -111,12 +101,42 @@
                 this.updateEntriesTable(this.currentPage, this.currentFilter);
             },
             setPageNumber: function(newPageNumber){
-                this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
-                Store.dispatch('currentPage', newPageNumber);
+                this.$eventBus.broadcast(this.$eventBus.EVENT_LOADING_SHOW());
+                store.dispatch('currentPage', newPageNumber);
+            },
+          generateEntryRowOptions: function(entry) {
+            let hasAttachments;
+            if (typeof entry.has_attachments !== 'undefined') {
+              hasAttachments = entry.has_attachments;
+            } else {
+              hasAttachments = !_.isEmpty(entry.attachments);
             }
+
+            let isTransfer;
+            if(typeof entry.is_transfer !== 'undefined'){
+              isTransfer = entry.is_transfer;
+            } else {
+              isTransfer = !_.isNull(entry.transfer_entry_id);
+            }
+
+            return {
+              key: entry.id,
+              id: entry.id,
+              date: entry.entry_date,
+              accountTypeId: entry.account_type_id,
+              value: entry.entry_value,
+              memo: entry.memo,
+              expense: entry.expense,
+              confirm: entry.confirm,
+              disabled: entry.disabled,
+              hasAttachments: hasAttachments,
+              isTransfer: isTransfer,
+              tags: entry.tags
+            };
+          }
         },
         created: function(){
-            this.$eventHub.listen(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, this.updateEntriesTableEventHandler);
+            this.$eventBus.listen(this.$eventBus.EVENT_ENTRY_TABLE_UPDATE(), this.updateEntriesTableEventHandler);
         }
     }
 </script>

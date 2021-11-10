@@ -12,12 +12,12 @@
             <div class="field is-horizontal">
                 <div class="field-label is-normal"><label class="label">Tags:</label></div>
                 <div class="field-body"><div class="field"><div class="control" v-bind:class="{'is-loading': !areTagsSet}">
-                    <tagsinput
+                    <TagsInput
                         tagsInputName="stats-tags-chart-tag-input"
                         v-bind:existingTags="listTags"
                         v-bind:selected-tags="chartTagIds"
                         v-on:update-tags-input="chartTagIds = $event"
-                    ></tagsinput>
+                    ></TagsInput>
                 </div></div></div>
             </div>
 
@@ -57,7 +57,7 @@
     import BarChart from "./chart-defaults/bar-chart";
     import BulmaCalendar from '../bulma-calendar';
     import IncludeTransfersCheckbox from "../include-transfers-checkbox";
-    import tagsinput from "../tagsinput";
+    import TagsInput from "../tags-input";
 
     import {entriesObjectMixin} from "../../mixins/entries-object-mixin";
     import {statsChartMixin} from "../../mixins/stats-chart-mixin";
@@ -66,7 +66,7 @@
     export default {
         name: "tags-chart",
         mixins: [entriesObjectMixin, statsChartMixin, tagsObjectMixin],
-        components: {AccountAccountTypeTogglingSelector, BarChart, BulmaCalendar, IncludeTransfersCheckbox, tagsinput},
+        components: {AccountAccountTypeTogglingSelector, BarChart, BulmaCalendar, IncludeTransfersCheckbox, TagsInput},
         data: function(){
             return {
                 accountOrAccountTypeToggle: true,

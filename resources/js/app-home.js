@@ -1,18 +1,7 @@
-import Vue from 'vue';
-import Store from './store';
+// vue
+import { createApp } from 'vue';
 
-import Snotify from 'vue-snotify';
-Vue.use(Snotify, {toast: {timeout: 8000}});    // 8 seconds
-
-import VueHotkey from 'v-hotkey';
-Vue.use(VueHotkey);
-
-import VTooltip from 'v-tooltip';
-Vue.use(VTooltip);
-
-import eventHub from "./plugins/eventHub";
-Vue.use(eventHub);
-
+// components
 import EntryModal from './components/entry-modal';
 import EntriesTable from './components/entries-table';
 import EntriesTableEntryRow from './components/entries-table-entry-row';
@@ -23,14 +12,14 @@ import Navbar from './components/navbar';
 import Notification from './components/notification';
 import TransferModal from './components/transfer-modal';
 
-import { AccountTypes } from './account-types';
-import { Institutions } from './institutions';
-import { Tags } from './tags';
-import { Version } from './version';
+// objects
+import {AccountTypes} from './account-types';
+import {Institutions} from "./institutions";
+import {Tags} from './tags';
+import {Version} from "./version";
 
-new Vue({
-    el: "#app",
-    components: {
+const app = createApp({
+    components:{
         EntryModal,
         EntriesTable,
         EntriesTableEntryRow,
@@ -41,54 +30,78 @@ new Vue({
         Notification,
         TransferModal
     },
-    store: Store,
-    computed:{
-        keymap: function(){
-            return {
-                // FIXME: hotkey already used for something else on windows
-                'ctrl+esc': function(){ // close modal
-                    switch(Store.getters.currentModal){
-                        case Store.getters.STORE_MODAL_ENTRY:
-                            console.debug('entry:ctrl+esc');
-                            this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_MODAL_CLOSE);
-                            break;
-                        case Store.getters.STORE_MODAL_TRANSFER:
-                            console.debug('transfer:ctrl+esc');
-                            this.$eventHub.broadcast(this.$eventHub.EVENT_TRANSFER_MODAL_CLOSE);
-                            break;
-                        case Store.getters.STORE_MODAL_FILTER:
-                            console.debug('filter:ctrl+esc');
-                            this.$eventHub.broadcast(this.$eventHub.EVENT_FILTER_MODAL_CLOSE);
-                            break;
-                        default:
-                            console.debug("ctrl+esc");
-                    }
-                }.bind(this)
-            };
-        },
-    },
     methods: {
         displayNotification: function(notification){
-            this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, notification);
+            this.$eventBus.broadcast(this.$eventBus.EVENT_NOTIFICATION(), notification);
         },
     },
-    mounted: function(){
-        this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
+    mounted() {
+        this.$eventBus.broadcast(this.$eventBus.EVENT_LOADING_SHOW());
 
-        this.$eventHub.broadcast(this.$eventHub.EVENT_ACCOUNT_UPDATE);
+        let version = new Version();
+        version.fetch();
 
         let accountTypes = new AccountTypes();
         accountTypes.fetch().then(this.displayNotification.bind(this));
 
-        this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, 0);
-
         let institutions = new Institutions();
         institutions.fetch().then(this.displayNotification.bind(this));
 
+        this.$eventBus.broadcast(this.$eventBus.EVENT_ACCOUNT_UPDATE());
+
+        this.$eventBus.broadcast(this.$eventBus.EVENT_ENTRY_TABLE_UPDATE(), 0);
+
         let tags = new Tags();
         tags.fetch().then(this.displayNotification.bind(this));
-
-        let version = new Version();
-        version.fetch();
     }
 });
+
+// store
+import { store } from './store';
+app.use(store);
+
+// eventbus/emitter
+import eventBus from "./plugins/eventBus";
+app.use(eventBus);
+
+// notifications/toast
+import Notifications from '@kyvg/vue3-notification'
+app.use(Notifications);
+
+// tooltip
+import VTooltipPlugin from 'v-tooltip';
+app.use(VTooltipPlugin);
+
+app.mount('#app');
+
+
+// import VueHotkey from 'v-hotkey';
+// Vue.use(VueHotkey);
+
+// new Vue({
+//     computed:{
+//         keymap: function(){
+//             return {
+//                 // FIXME: hotkey already used for something else on windows
+//                 'ctrl+esc': function(){ // close modal
+//                     switch(Store.getters.currentModal){
+//                         case Store.getters.STORE_MODAL_ENTRY:
+//                             console.debug('entry:ctrl+esc');
+//                             this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_MODAL_CLOSE);
+//                             break;
+//                         case Store.getters.STORE_MODAL_TRANSFER:
+//                             console.debug('transfer:ctrl+esc');
+//                             this.$eventHub.broadcast(this.$eventHub.EVENT_TRANSFER_MODAL_CLOSE);
+//                             break;
+//                         case Store.getters.STORE_MODAL_FILTER:
+//                             console.debug('filter:ctrl+esc');
+//                             this.$eventHub.broadcast(this.$eventHub.EVENT_FILTER_MODAL_CLOSE);
+//                             break;
+//                         default:
+//                             console.debug("ctrl+esc");
+//                     }
+//                 }.bind(this)
+//             };
+//         },
+//     }
+// });

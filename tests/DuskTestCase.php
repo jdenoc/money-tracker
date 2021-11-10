@@ -6,7 +6,6 @@ use App\Entry;
 use App\Traits\EntryFilterKeys;
 use App\Traits\Tests\LogTestName;
 use App\Traits\Tests\StorageTestFiles;
-use Laravel\Dusk\Browser;
 use Laravel\Dusk\TestCase as BaseTestCase;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
@@ -18,8 +17,6 @@ abstract class DuskTestCase extends BaseTestCase {
     use StorageTestFiles;
     use LogTestName;
 
-    const RESIZE_WIDTH_PX = 1400;
-    const RESIZE_HEIGHT_PX = 2500;
 
     /**
      * Prepare for Dusk test execution.
@@ -58,17 +55,12 @@ abstract class DuskTestCase extends BaseTestCase {
         return $test_name;
     }
 
-    /**
-     * @return void
-     * @throws \Throwable
-     */
-    protected function setUp(): void{
-        parent::setUp();
-        $this->resizeBrowser();
-    }
-
     protected function setUpTraits(){
         $uses = array_flip(class_uses_recursive(static::class));
+
+        if (isset($uses[\App\Traits\Tests\Dusk\ResizeBrowser::class])){
+            $this->resizeBrowser();
+        }
 
         if (isset($uses[\App\Traits\Tests\LogTestName::class])){
             $this->runTestNameLogging($this->getName(true));
@@ -83,17 +75,6 @@ abstract class DuskTestCase extends BaseTestCase {
         }
 
         return parent::setUpTraits();
-    }
-
-    /**
-     * Sets the default browser width and height
-     *
-     * @throws \Throwable
-     */
-    protected function resizeBrowser(){
-        $this->browse(function (Browser $browser){
-            $browser->resize(self::RESIZE_WIDTH_PX, self::RESIZE_HEIGHT_PX);
-        });
     }
 
     /**

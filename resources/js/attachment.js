@@ -1,10 +1,5 @@
-/**
- * Created by denis.oconnor on 2018-08-20
- */
-
 import { Entry } from './entry';
 import { ObjectBaseClass } from './objectBaseClass';
-import { SnotifyStyle } from 'vue-snotify';
 import Axios from "axios";
 
 export class Attachment extends ObjectBaseClass {
@@ -37,7 +32,7 @@ export class Attachment extends ObjectBaseClass {
         this.entryObject.assign = entry;
 
         // inform user of attachment deletion
-        entry.notification = {type: SnotifyStyle.info, message: "Attachment has been deleted"};
+        entry.notification = {type: 'info', message: "Attachment has been deleted"};
         return entry;
     }
 
@@ -45,10 +40,10 @@ export class Attachment extends ObjectBaseClass {
         if(error.response){
             switch(error.response.status){
                 case 404:
-                    return {notification: {type: SnotifyStyle.warning, message: "Could not delete attachment"}};
+                    return {notification: {type: 'warn', message: "Could not delete attachment"}};
                 case 500:
                 default:
-                    return {notification: {type: SnotifyStyle.error, message: "An error occurred while attempting to delete entry attachment [%s]"}};
+                    return {notification: {type: 'error', message: "An error occurred while attempting to delete entry attachment [%s]"}};
             }
         }
     }

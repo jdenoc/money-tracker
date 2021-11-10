@@ -41,11 +41,11 @@
     </nav>
 </template>
 
-<script>
+<script lang="js">
     import {Institutions} from '../institutions';
     import InstitutionsPanelInstitution from "./institutions-panel-institution";
     import InstitutionsPanelInstitutionAccount from './institutions-panel-institution-account';
-    import Store from '../store';
+    import { store } from '../store';
     import {accountsObjectMixin} from "../mixins/accounts-object-mixin";
 
     export default {
@@ -96,7 +96,7 @@
                 return this.isClosedAccountsAccordionOpen ? '' : 'is-closed';
             },
             isOverviewFilterActive: function(){
-                let currentFilter = Store.getters.currentFilter;
+                let currentFilter = store.getters.currentFilter;
                 return Object.keys(currentFilter).length === 0;
             },
             inactiveAccountsExist: function(){
@@ -108,17 +108,17 @@
                 this.isClosedAccountsAccordionOpen = !this.isClosedAccountsAccordionOpen;
             },
             displayOverviewOfEntries: function(){
-                this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, {pageNumber: 0, filterParameters: {}});
+                this.$eventBus.broadcast(this.$eventBus.EVENT_ENTRY_TABLE_UPDATE(), {pageNumber: 0, filterParameters: {}});
             },
             updateAccountRecords: function(){
                 this.accountsObject.setFetchedState = false;
                 this.accountsObject.fetch().then(function(notification){
-                    this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, notification);
+                    this.$eventBus.broadcast(this.$eventBus.EVENT_NOTIFICATION(), notification);
                 }.bind(this));
             }
         },
         created: function(){
-            this.$eventHub.listen(this.$eventHub.EVENT_ACCOUNT_UPDATE, this.updateAccountRecords);
+            this.$eventBus.listen(this.$eventBus.EVENT_ACCOUNT_UPDATE(), this.updateAccountRecords);
         }
     }
 </script>

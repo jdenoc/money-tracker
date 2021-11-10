@@ -10,7 +10,7 @@
             'is-income': !expense,
             'has-attachments': hasAttachments,
             'is-transfer': isTransfer,
-            'has-tags': tagIds.length > 0
+            'has-tags': tags.length > 0
             }">
         <td><button class="button is-inverted is-info fas fa-edit edit-entry-button" v-on:click="openEditEntryModal(id)"></button></td>
         <td v-text="date" class="row-entry-date"></td>
@@ -27,38 +27,59 @@
         <td class="row-entry-attachment-checkbox"><i v-bind:class="{ 'far fa-square': !hasAttachments, 'fas fa-check-square': hasAttachments }"></i></td>
         <td class="row-entry-transfer-checkbox"><i v-bind:class="{ 'far fa-square': !isTransfer, 'fas fa-check-square': isTransfer }"></i></td>
         <td class="row-entry-tags"><div class="tags">
-            <span class="tag is-rounded is-dark" v-for="tagId in tagIds" v-text="getTagName(tagId)"></span>
+            <span class="tag is-rounded is-dark" v-for="tag in tags" v-text="getTagName(tag)"></span>
         </div></td>
     </tr>
 </template>
 
 <script>
+    import _ from 'lodash';
     import {AccountTypes} from "../account-types";
     import {Tags} from "../tags";
 
     export default {
         name: "entries-table-entry-row",
-        props: ['id', 'date', 'accountTypeId', 'value', 'memo', 'expense', 'confirm', 'disabled', 'hasAttachments', 'isTransfer', 'tagIds'],
+        props: {
+          id: {type: Number, required: true},
+          date: {type: String},
+          accountTypeId: {type: Number},
+          value: {type: String},
+          memo: {type: String},
+          expense: {type: Boolean},
+          confirm: {type: Boolean},
+          disabled: {type: Boolean, default: false},
+          hasAttachments: {type: Boolean, default: false},
+          isTransfer: {type: Boolean, default: false},
+          tags: {type: Array, default: []}
+        },
         data: function(){
             return {
                 millisecondsPerMinute: 60000
             }
         },
         computed: {
-            isFutureEntry: function(){
-                let timezoneOffset = new Date().getTimezoneOffset()*this.millisecondsPerMinute;
-                return Date.parse(this.date)+timezoneOffset > Date.now();
-            },
-            accountTypeName: function(){
-                return new AccountTypes().getNameById(this.accountTypeId);
-            },
+          isFutureEntry: function(){
+            let timezoneOffset = new Date().getTimezoneOffset()*this.millisecondsPerMinute;
+            return Date.parse(this.date)+timezoneOffset > Date.now();
+          },
+          accountTypeName: function(){
+            return new AccountTypes().getNameById(this.accountTypeId);
+          },
         },
         methods: {
-            getTagName: function(tagId){
-                return new Tags().getNameById(tagId);
+            getTagName: function(tag){
+              if(_.isNumber(tag)) {
+                return new Tags().getNameById(tag);
+              } else if(_.isObject(tag) && tag.name){
+                return tag.name;
+              } else {
+                // no idea what this is...
+                console.warn('invalid tag provided while displaying tags in entry-table:'+JSON.stringify(tag));
+                return '';
+              }
             },
             openEditEntryModal: function(entryId){
-                this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_MODAL_OPEN, entryId);
+              this.$eventBus.broadcast(this.$eventBus.EVENT_ENTRY_MODAL_OPEN(), entryId);
             },
             modalNotAvailable: function(entryId){
                 alert("Modal not currently available\nEntry "+entryId+" can't be modified at this time");

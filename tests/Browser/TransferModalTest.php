@@ -6,6 +6,7 @@ use App\Account;
 use App\AccountType;
 use App\Entry;
 use App\Traits\EntryTransferKeys;
+use App\Traits\Tests\Dusk\FileDragNDrop as DuskTraitFileDragNDrop;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
 use App\Traits\Tests\Dusk\Notification as DuskTraitNotification;
@@ -32,6 +33,7 @@ class TransferModalTest extends DuskTestCase {
 
     use HomePageSelectors;
     use EntryTransferKeys;
+    use DuskTraitFileDragNDrop;
     use DuskTraitLoading;
     use DuskTraitNavbar;
     use DuskTraitNotification;
@@ -215,6 +217,7 @@ class TransferModalTest extends DuskTestCase {
      * test 8/25
      */
     public function testCloseTransferModalWithHotkey(){
+        $this->markTestIncomplete('Need to re-work hotkey functionality');
         $this->browse(function(Browser $browser){
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
@@ -497,9 +500,9 @@ class TransferModalTest extends DuskTestCase {
                         ->assertInputValue($this->_selector_modal_transfer_field_memo, "")
                         ->assertInputValue(self::$SELECTOR_TAGS_INPUT_INPUT, "")
                         ->assertVisible($this->_selector_modal_transfer_field_upload)
-                        ->with($this->_selector_modal_transfer_field_upload, function($upload_field){
+                        ->with($this->_selector_modal_transfer_field_upload, function(Browser $upload_field){
                             $upload_field
-                                ->assertMissing($this->_selector_modal_dropzone_upload_thumbnail)
+                                ->assertMissing(self::$SELECTOR_FILE_DRAG_N_DROP_UPLOAD_NODE)
                                 ->assertSee($this->_label_file_upload);
                         });
                 });
@@ -558,7 +561,7 @@ class TransferModalTest extends DuskTestCase {
                 'from_account_type_id'=>($is_from_account_external ? self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID : $account_types[0]['id']),
                 'to_account_type_id'=>($is_to_account_external ? self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID : $account_types[1]['id']),
                 'tag'=>$tag,
-                'attachment_path'=>\Storage::path($this->getRandomTestFileStoragePath()),
+                'attachment_path'=>Storage::path($this->getRandomTestFileStoragePath()),
             ];
 
             $browser->visit(new HomePage());
@@ -627,6 +630,12 @@ class TransferModalTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws Throwable
+     *
+     * @group transfer-modal-2
+     * test 13/25
+     */
     public function testOpeningMoreThanOneTransferEntryPairPerSession(){
         // GIVEN:
         $account_type_id1 = AccountType::where('disabled', true)->get()->random();
@@ -698,13 +707,15 @@ class TransferModalTest extends DuskTestCase {
         });
     }
 
-    private function attachFile(Browser $browser, $attachment_file_path){
-        $this->assertFileExists($attachment_file_path);
+    /**
+     * @param Browser $browser
+     * @param string  $attachment_file_path
+     *
+     * @throws \Facebook\WebDriver\Exception\TimeOutException
+     */
+    private function attachFile(Browser $browser, string $attachment_file_path){
         $browser->with($this->_selector_modal_transfer, function($modal) use ($attachment_file_path){
-            $modal
-                ->assertVisible($this->_selector_modal_transfer_field_upload)
-                ->attach($this->_selector_modal_transfer_dropzone_hidden_file_input, $attachment_file_path)
-                ->waitFor($this->_selector_modal_transfer_field_upload.' '.$this->_selector_modal_dropzone_upload_thumbnail, self::$WAIT_SECONDS);
+            $this->uploadAttachmentUsingDragNDrop($modal, $this->_selector_modal_transfer_field_upload, $attachment_file_path, self::$UPLOAD_NODE_STATE_COMPLETE);
         });
         $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_INFO, sprintf($this->_label_notification_file_upload_success, basename($attachment_file_path)));
     }
@@ -769,4 +780,3 @@ class TransferModalTest extends DuskTestCase {
     }
 
 }
-

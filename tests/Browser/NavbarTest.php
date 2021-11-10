@@ -2,8 +2,9 @@
 
 namespace Tests\Browser;
 
-use App\Traits\Tests\Dusk\Loading;
-use App\Traits\Tests\Dusk\Navbar;
+use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
+use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
+use App\Traits\Tests\Dusk\ResizeBrowser as DuskTraitResizeBrowser;
 use Tests\Browser\Pages\HomePage;
 use Tests\Browser\Pages\StatsPage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
@@ -20,11 +21,9 @@ use Throwable;
  */
 class NavbarTest extends DuskTestCase {
 
-    use Navbar;
-    use Loading;
-
-    const MOBILE_RESIZE_WIDTH_PX = 1000;
-    const RESIZE_HEIGHT_PX = 750;
+    use DuskTraitNavbar;
+    use DuskTraitLoading;
+    use DuskTraitResizeBrowser;
 
     private $_label_add_entry = "Add Entry";
     private $_label_filter = "Filter";
@@ -34,6 +33,21 @@ class NavbarTest extends DuskTestCase {
     private $_label_stats = "Statistics";
     private $_label_settings = "Settings";
     private $_label_logout = "Logout";
+
+    public function setUp(): void {
+        switch($this->getName()){
+            case 'testBurgerMenuVisibleOnSmallerScreenWidthOnHomePage':
+            case 'testBurgerMenuVisibleOnSmallerScreenWidthOnStatsPage':
+                self::$RESIZE_BROWSER_WIDTH_PX = 1000;
+                self::$RESIZE_BROWSER_HEIGHT_PX = 750;
+                error_log("setting browser size for ".$this->getName().' to w:'.self::$RESIZE_BROWSER_WIDTH_PX.'; h:'.self::$RESIZE_BROWSER_HEIGHT_PX);
+                break;
+            default:
+                break;
+        }
+
+        parent::setUp();
+    }
 
     /**
      * @throws Throwable
@@ -137,11 +151,9 @@ class NavbarTest extends DuskTestCase {
      * @group navigation-2
      * test 6/25
      */
-    public function testBurgerMenuVisibleOnSmallerScreenWidth(){
+    public function testBurgerMenuVisibleOnSmallerScreenWidthOnHomePage(){
         $this->browse(function(Browser $browser){
-            $browser
-                ->resize(self::MOBILE_RESIZE_WIDTH_PX, self::RESIZE_HEIGHT_PX)
-                ->visit(new HomePage());
+            $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $browser->within(self::$SELECTOR_NAVBAR, function(Browser $navbar){
                     $navbar
@@ -264,7 +276,6 @@ class NavbarTest extends DuskTestCase {
     public function testBurgerMenuVisibleOnSmallerScreenWidthOnStatsPage(){
         $this->browse(function(Browser $browser){
             $browser
-                ->resize(self::MOBILE_RESIZE_WIDTH_PX, self::RESIZE_HEIGHT_PX)
                 ->visit(new StatsPage())
                 ->within(self::$SELECTOR_NAVBAR, function(Browser $navbar){
                     $navbar

@@ -3,11 +3,8 @@
 @import "~bulma-checkradio/dist/css/bulma-checkradio";
 @import "~bulma/bulma"; // needs to be imported last or else expected classes get overwritten
 
-// Snotify
-@import "~vue-snotify/styles/material";
-
-// v-tooltip
-@import "tooltip";
+// Toggle button
+@import '~@vueform/toggle/themes/default';
 
 // custom styling
 .columns.is-gapless{

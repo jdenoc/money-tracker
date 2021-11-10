@@ -50,8 +50,9 @@
     </nav>
 </template>
 
-<script>
+<script lang="js">
     import {Version} from '../version';
+    import _ from 'lodash';
 
     export default {
         name: "navbar",
@@ -60,13 +61,15 @@
         },
         data: function(){
             return {
-                defaultAppVersion: 'x.y.z',
                 navbarAvatarImageClicked: false,
                 navbarBurgerClicked: false,
                 version: new Version(),
             }
         },
         computed: {
+            defaultAppVersion: function(){
+              return 'x.y.z';
+            },
             isHomePage: function(){
                 return this.pageName === 'home';
             },
@@ -80,19 +83,19 @@
                 return this.navbarBurgerClicked;
             },
             appVersion: function(){
-                let appVersion = this.version.retrieve;//'x.y.z';
-                return appVersion === '' ? this.defaultAppVersion : appVersion;
+                let appVersion = this.version.retrieve;
+                return _.isEmpty(appVersion) ? this.defaultAppVersion : appVersion;
             }
         },
         methods: {
             openAddEntryModal: function(){
-                this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_MODAL_OPEN);
+              this.$eventBus.broadcast(this.$eventBus.EVENT_ENTRY_MODAL_OPEN());
             },
             openFilterModal: function(){
-                this.$eventHub.broadcast(this.$eventHub.EVENT_FILTER_MODAL_OPEN);
+              this.$eventBus.broadcast(this.$eventBus.EVENT_FILTER_MODAL_OPEN());
             },
             openTransferModal: function(){
-                this.$eventHub.broadcast(this.$eventHub.EVENT_TRANSFER_MODAL_OPEN);
+              this.$eventBus.broadcast(this.$eventBus.EVENT_TRANSFER_MODAL_OPEN());
             },
             clickNavbarAvatarImage: function(){
                 this.navbarAvatarImageClicked = !this.navbarAvatarImageClicked;

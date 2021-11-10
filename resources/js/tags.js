@@ -1,12 +1,11 @@
 import { ObjectBaseClass } from './objectBaseClass';
-import { SnotifyStyle } from 'vue-snotify';
-import Store from './store';
+import {store} from './store';
 
 export class Tags extends ObjectBaseClass {
     
     constructor(){
         super();
-        this.storeType = Store.getters.STORE_TYPE_TAGS;
+        this.storeType = store.getters.STORE_TYPE_TAGS;
         this.uri = '/api/tags';
     }
 
@@ -18,7 +17,7 @@ export class Tags extends ObjectBaseClass {
                     break;
                 case 500:
                 default:
-                    return {type: SnotifyStyle.error, message: "An error occurred while attempting to retrieve tags"};
+                    return {type: 'error', message: "An error occurred while attempting to retrieve tags"};
             }
         }
     }
@@ -35,20 +34,3 @@ export class Tags extends ObjectBaseClass {
     }
 
 }
-
-// var tags = {
-//     display: function () {
-//         entryModal.initTagsInput();
-//         filterModal.initTagsInput();
-//     },
-//     getIdByName: function(tagName){
-//         var tagObjects = $.grep(tags.value, function(element){
-//             return element.name === tagName;
-//         });
-//         if(tagObjects.length > 0){
-//             return tagObjects[0].id;
-//         } else {
-//             return -1;
-//         }
-//     }
-// };

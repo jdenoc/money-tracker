@@ -14,15 +14,6 @@ trait HomePageSelectors {
     private $_selector_modal_btn_close = "button.delete";
     private $_selector_modal_tag_autocomplete_options = ".typeahead span";
 
-    // generic - modal dropzone
-    private $_selector_modal_dropzone_upload_thumbnail = ".dz-complete:last-child";
-    private $_selector_modal_dropzone_progress = ".dz-progress";
-    private $_selector_modal_dropzone_error_mark = ".dz-error-mark";
-    private $_selector_modal_dropzone_success_mark = ".dz-success-mark";
-    private $_selector_modal_dropzone_error_message = ".dz-error-message";
-    private $_selector_modal_dropzone_label_filename = '.dz-filename';
-    private $_selector_modal_dropzone_btn_remove = ".dz-remove";
-
     // institutions panel
     private $_selector_panel_institutions = "#institutions-panel-column";
     private $_selector_panel_institutions_heading = ".panel-heading";
@@ -47,12 +38,11 @@ trait HomePageSelectors {
     private $_selector_modal_entry_field_account_type_is_loading = ".select.is-loading select#entry-account-type";
     private $_selector_modal_entry_meta = "#entry-account-type-meta";
     private $_selector_modal_entry_field_memo = "textarea#entry-memo";
-    private $_selector_modal_entry_field_expense = "#entry-expense";
+    private $_selector_modal_entry_field_expense = "#entry-expense+.toggle";
     private $_selector_tags = ".tags";
     private $_selector_tags_tag = ".tags .tag";
     private $_selector_modal_entry_field_upload = "#entry-modal-file-upload";
-    private $_selector_modal_entry_dropzone_hidden_file_input = "#entry-modal-hidden-file-input";
-    private $_selector_modal_entry_dropzone_upload_thumbnail = "#entry-modal-file-upload .dz-complete:last-child";
+    private $_selector_modal_entry_field_upload_file_input = "#entry-modal-file-upload input[type='file']";
     private $_selector_modal_entry_existing_attachments = "#existing-entry-attachments";
     private $_selector_modal_entry_existing_attachments_first_attachment = ".existing-attachment:first-child";
     private $_selector_modal_entry_existing_attachments_attachment_name = " .attachment-name";
@@ -90,12 +80,12 @@ trait HomePageSelectors {
     private $_selector_modal_filter_field_start_date = "#filter-start-date";
     private $_selector_modal_filter_field_end_date = "#filter-end-date";
     private $_selector_modal_filter_field_tags= "#filter-tags";
-    private $_selector_modal_filter_field_switch_income = "#filter-is-income";
-    private $_selector_modal_filter_field_switch_expense = "#filter-is-expense";
-    private $_selector_modal_filter_field_switch_has_attachment = "#filter-has-attachment";
-    private $_selector_modal_filter_field_switch_no_attachment = "#filter-no-attachment";
-    private $_selector_modal_filter_field_switch_transfer = "#filter-is-transfer";
-    private $_selector_modal_filter_field_switch_unconfirmed = "#filter-unconfirmed";
+    private $_selector_modal_filter_field_switch_income = "#filter-is-income+.toggle";
+    private $_selector_modal_filter_field_switch_expense = "#filter-is-expense+.toggle";
+    private $_selector_modal_filter_field_switch_has_attachment = "#filter-has-attachment+.toggle";
+    private $_selector_modal_filter_field_switch_no_attachment = "#filter-no-attachment+.toggle";
+    private $_selector_modal_filter_field_switch_transfer = "#filter-is-transfer+.toggle";
+    private $_selector_modal_filter_field_switch_unconfirmed = "#filter-unconfirmed+.toggle";
     private $_selector_modal_filter_field_min_value = "#filter-min-value";
     private $_selector_modal_filter_field_max_value = "#filter-max-value";
     private $_selector_modal_filter_field_min_value_icon = "#filter-min-value+span i";
@@ -136,29 +126,28 @@ trait HomePageSelectors {
     private $_label_checkbox_show_disabled = "Show Disabled";
     private $_label_switch_enabled = "Enabled";
     private $_label_switch_disabled = "Disabled";
-    private $_label_file_upload = "Drag & Drop";
+    private $_label_file_upload = "Drag & Drop your files or Browse";
     private $_label_btn_dropzone_remove_file = "REMOVE FILE";
     private $_label_btn_cancel = "Cancel";
     private $_label_btn_delete = "Delete";
     private $_label_btn_save = "Save changes";
     private $_label_btn_reset = "Reset";
     private $_label_btn_filter = "Filter";
-    private $_label_notification_file_upload_success = "uploaded: %s";
+    private $_label_notification_file_upload_success = "Uploaded: %s";
     private $_label_notification_transfer_saved = "Transfer entry created";
     private $_label_notification_new_entry_created = "New entry created";
 
     // ###*** COLOURS ***###
-    private $_color_expense_switch_expense = "#ffcc00";
+    private $_color_expense_switch_expense = "#ffe08a";
     private $_color_expense_switch_income = "#00d1b2";
     private $_color_filter_switch_default = "#B5B5B5";
-    private $_color_filter_switch_active = "#209CEE";
+    private $_color_filter_switch_active = "#3e8ed0";
     private $_color_filter_btn_tag_default = "#f5f5f5";
     private $_color_filter_btn_tag_active = "#3082c5";
 
     private $_class_is_income = "is-income";
     private $_class_is_expense = "is-expense";
     private $_class_is_active = "is-active";
-    private $_class_switch_core = ".v-switch-core";
     private $_class_icon_euro = "fa-euro-sign";
     private $_class_icon_dollar = "fa-dollar-sign";
     private $_class_icon_pound = "fa-pound-sign";

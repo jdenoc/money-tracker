@@ -9,11 +9,13 @@ trait TagsInput {
 
     use WaitTimes;
 
-    private static $SELECTOR_TAGS_INPUT_CONTAINER = ".tags-input";
-    private static $SELECTOR_TAGS_INPUT_LOADING = '.is-loading .tags-input';
-    private static $SELECTOR_TAGS_INPUT_INPUT = ".tags-input input";
-    private static $SELECTOR_TAGS_INPUT_TAG = "span.tags-input-badge-pill";
-    private static $SELECTOR_TAG_AUTOCOMPLETE_OPTIONS = '.typeahead-badges span.tags-input-badge';
+    private static $SELECTOR_TAGS_INPUT_CONTAINER = ".vue-tags-input";
+    private static $SELECTOR_TAGS_INPUT_LOADING = '.is-loading .vue-tags-input';
+    private static $SELECTOR_TAGS_INPUT_INPUT = ".vue-tags-input input";
+    private static $SELECTOR_TAGS_INPUT_TAG = ".ti-tag";
+    private static $SELECTOR_TAGS_INPUT_REMOVE = ".ti-icon-close";
+    private static $SELECTOR_TAGS_INPUT_TAG_MARKED_FOR_DELETION = '.ti-deletion-mark';
+    private static $SELECTOR_TAG_AUTOCOMPLETE_OPTIONS = '.ti-autocomplete .ti-item';
 
     public function assertDefaultStateOfTagsInput(Browser $browser){
         $browser
@@ -56,6 +58,21 @@ trait TagsInput {
     public function assertTagInInput(Browser $browser, string $tag){
         $this->assertTagsInputHasTagsInInput($browser);
         $browser->assertSeeIn(self::$SELECTOR_TAGS_INPUT_CONTAINER, $tag);
+    }
+
+    public function deleteTagFromInputWithClick(Browser $browser){
+        $browser->click(self::$SELECTOR_TAGS_INPUT_TAG.' '.self::$SELECTOR_TAGS_INPUT_REMOVE);
+    }
+
+    public function deleteTagFromInputWithBackspace(Browser $browser){
+        $element = $browser->element(self::$SELECTOR_TAGS_INPUT_CONTAINER.' '.self::$SELECTOR_TAGS_INPUT_TAG.':nth-last-of-type(2)');
+
+        $this->assertTrue($element->isDisplayed());
+        $browser
+            ->keys(self::$SELECTOR_TAGS_INPUT_INPUT, "{backspace}")
+            ->waitFor(self::$SELECTOR_TAGS_INPUT_CONTAINER.' '.self::$SELECTOR_TAGS_INPUT_TAG.self::$SELECTOR_TAGS_INPUT_TAG_MARKED_FOR_DELETION, self::$WAIT_HALF_SECOND_IN_MILLISECONDS)
+            ->keys(self::$SELECTOR_TAGS_INPUT_INPUT, "{backspace}");
+        $this->assertFalse($element->isDisplayed());
     }
 
 }

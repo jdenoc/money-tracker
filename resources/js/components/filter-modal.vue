@@ -30,10 +30,8 @@
 
                 <account-account-type-toggling-selector
                     id="filter-modal"
-                    v-bind:account-or-account-type-id.sync="filterData.accountOrAccountTypeId"
-                    v-on:update-select="filterData.accountOrAccountTypeId = $event"
-                    v-bind:account-or-account-type-toggled.sync="filterData.accountOrAccountTypeSelected"
-                    v-on:update-toggle="filterData.accountOrAccountTypeSelected = $event"
+                    v-model:account-or-account-type-id="filterData.accountOrAccountTypeId"
+                    v-model:account-or-account-type-toggled="filterData.accountOrAccountTypeSelected"
                 ></account-account-type-toggling-selector>
 
                 <div class="field is-horizontal">
@@ -57,17 +55,12 @@
                     <!--Income-->
                     <div class="field-label is-normal"><label class="label" for="filter-is-income">Income:</label></div>
                     <div class="field-body"><div class="field"><div class="control">
-                        <toggle-button
-                            id="filter-is-income"
-                            v-model="filterData.isIncome"
-                            v-bind:value="filterData.isIncome"
-                            v-bind:labels="toggleButtonProperties.labels"
-                            v-bind:color="toggleButtonProperties.colors"
-                            v-bind:height="toggleButtonProperties.height"
-                            v-bind:width="toggleButtonProperties.width"
-                            v-bind:sync="true"
-                            v-on:click.native="flipCompanionSwitch('isExpense')"
-                        />
+                      <ToggleButton
+                          button-name="filter-is-income"
+                          class="filter-toggle-switch"
+                          v-model:toggle-state="filterData.isIncome"
+                          v-on:click="flipCompanionSwitch('isExpense')"
+                      ></ToggleButton>
                     </div></div></div>
                 </div>
 
@@ -75,17 +68,12 @@
                     <!--Expense-->
                     <div class="field-label is-normal"><label class="label" for="filter-is-expense">Expense:</label></div>
                     <div class="field-body"><div class="field"><div class="control">
-                        <toggle-button
-                            id="filter-is-expense"
-                            v-model="filterData.isExpense"
-                            v-bind:value="filterData.isExpense"
-                            v-bind:labels="toggleButtonProperties.labels"
-                            v-bind:color="toggleButtonProperties.colors"
-                            v-bind:height="toggleButtonProperties.height"
-                            v-bind:width="toggleButtonProperties.width"
-                            v-bind:sync="true"
-                            v-on:click.native="flipCompanionSwitch('isIncome')"
-                        />
+                      <ToggleButton
+                          button-name="filter-is-expense"
+                          class="filter-toggle-switch"
+                          v-model:toggle-state="filterData.isExpense"
+                          v-on:click="flipCompanionSwitch('isIncome')"
+                      ></ToggleButton>
                     </div></div></div>
                 </div>
 
@@ -93,17 +81,12 @@
                     <!--Has Attachment(s)-->
                     <div class="field-label is-normal"><label class="label" for="filter-has-attachment">Has Attachment(s):</label></div>
                     <div class="field-body"><div class="field"><div class="control">
-                        <toggle-button
-                            id="filter-has-attachment"
-                            v-model="filterData.hasAttachment"
-                            v-bind:value="filterData.hasAttachment"
-                            v-bind:labels="toggleButtonProperties.labels"
-                            v-bind:color="toggleButtonProperties.colors"
-                            v-bind:height="toggleButtonProperties.height"
-                            v-bind:width="toggleButtonProperties.width"
-                            v-bind:sync="true"
-                            v-on:click.native="flipCompanionSwitch('noAttachment')"
-                        />
+                      <ToggleButton
+                          button-name="filter-has-attachment"
+                          class="filter-toggle-switch"
+                          v-model:toggle-state="filterData.hasAttachment"
+                          v-on:click="flipCompanionSwitch('noAttachment')"
+                      ></ToggleButton>
                     </div></div></div>
                 </div>
 
@@ -111,17 +94,12 @@
                     <!--No Attachment(s)-->
                     <div class="field-label is-normal"><label class="label" for="filter-no-attachment">No Attachment(s):</label></div>
                     <div class="field-body"><div class="field"><div class="control">
-                        <toggle-button
-                            id="filter-no-attachment"
-                            v-model="filterData.noAttachment"
-                            v-bind:value="filterData.noAttachment"
-                            v-bind:labels="toggleButtonProperties.labels"
-                            v-bind:color="toggleButtonProperties.colors"
-                            v-bind:height="toggleButtonProperties.height"
-                            v-bind:width="toggleButtonProperties.width"
-                            v-bind:sync="true"
-                            v-on:click.native="flipCompanionSwitch('hasAttachment')"
-                        />
+                      <ToggleButton
+                          button-name="filter-no-attachment"
+                          class="filter-toggle-switch"
+                          v-model:toggle-state="filterData.noAttachment"
+                          v-on:click="flipCompanionSwitch('hasAttachment')"
+                      ></ToggleButton>
                     </div></div></div>
                 </div>
 
@@ -129,16 +107,11 @@
                     <!--Transfer-->
                     <div class="field-label is-normal"><label class="label" for="filter-is-transfer">Transfer:</label></div>
                     <div class="field-body"><div class="field"><div class="control">
-                        <toggle-button
-                            id="filter-is-transfer"
-                            v-model="filterData.isTransfer"
-                            v-bind:value="filterData.isTransfer"
-                            v-bind:labels="toggleButtonProperties.labels"
-                            v-bind:color="toggleButtonProperties.colors"
-                            v-bind:height="toggleButtonProperties.height"
-                            v-bind:width="toggleButtonProperties.width"
-                            v-bind:sync="true"
-                        />
+                      <ToggleButton
+                          button-name="filter-is-transfer"
+                          class="filter-toggle-switch"
+                          v-model:toggle-state="filterData.isTransfer"
+                      ></ToggleButton>
                     </div></div></div>
                 </div>
 
@@ -146,16 +119,11 @@
                     <!--Unconfirmed-->
                     <div class="field-label is-normal"><label class="label" for="filter-unconfirmed">Not Confirmed:</label></div>
                     <div class="field-body"><div class="field"><div class="control">
-                        <toggle-button
-                            id="filter-unconfirmed"
-                            v-model="filterData.unconfirmed"
-                            v-bind:value="filterData.unconfirmed"
-                            v-bind:labels="toggleButtonProperties.labels"
-                            v-bind:color="toggleButtonProperties.colors"
-                            v-bind:height="toggleButtonProperties.height"
-                            v-bind:width="toggleButtonProperties.width"
-                            v-bind:sync="true"
-                        />
+                      <ToggleButton
+                          button-name="filter-unconfirmed"
+                          class="filter-toggle-switch"
+                          v-model:toggle-state="filterData.unconfirmed"
+                      ></ToggleButton>
                     </div></div></div>
                 </div>
 
@@ -176,8 +144,8 @@
                     <div class="field-label is-normal"><label class="label" for="filter-max-value">Max Range:</label></div>
                     <div class="field-body"><div class="field"><div class="control has-icons-left">
                         <input class="input has-text-grey-dark" id="filter-max-value" name="filter-max-value" type="text" placeholder="999.99" autocomplete="off"
-                               v-model="filterData.maxValue"
-                               v-on:change="decimaliseValue('maxValue')"
+                           v-model="filterData.maxValue"
+                           v-on:change="decimaliseValue('maxValue')"
                         />
                         <span class="icon is-left"><i class="fas" v-bind:class="accountCurrencyClass"></i></span>
                     </div></div></div>
@@ -205,22 +173,25 @@
 </template>
 
 <script>
-    import _ from 'lodash';
-    import {Currency} from "../currency";
-    import {accountsObjectMixin} from "../mixins/accounts-object-mixin";
-    import {accountTypesObjectMixin} from "../mixins/account-types-object-mixin";
-    import {bulmaColorsMixin} from "../mixins/bulma-colors-mixin";
-    import {tagsObjectMixin} from "../mixins/tags-object-mixin";
-    import {ToggleButton} from 'vue-js-toggle-button';
-    import AccountAccountTypeTogglingSelector from "./account-account-type-toggling-selector";
-    import Store from '../store';
+  // utilities
+  import _ from 'lodash';
+  import {store} from '../store';
+  // objects
+  import {Currency} from "../currency";
+  import {accountsObjectMixin} from "../mixins/accounts-object-mixin";
+  import {accountTypesObjectMixin} from "../mixins/account-types-object-mixin";
+  import {bulmaColorsMixin} from "../mixins/bulma-colors-mixin";
+  import {tagsObjectMixin} from "../mixins/tags-object-mixin";
+  // components
+  import AccountAccountTypeTogglingSelector from "./account-account-type-toggling-selector";
+  import ToggleButton from './toggle-button';
 
     export default {
         name: "filter-modal",
         mixins: [accountsObjectMixin, accountTypesObjectMixin, bulmaColorsMixin, tagsObjectMixin],
         components: {
-            AccountAccountTypeTogglingSelector,
-            ToggleButton,
+          AccountAccountTypeTogglingSelector,
+          ToggleButton,
         },
         data: function(){
             return {
@@ -240,7 +211,7 @@
                     startDate: "",
                     endDate: "",
                     accountOrAccountTypeSelected: null, // will be set by resetFields
-                    accountOrAccountTypeId: "",
+                    accountOrAccountTypeId: null,
                     tags: [],
                     isIncome: false,
                     isExpense: false,
@@ -268,25 +239,17 @@
                 let currencyCode = _.isNull(account) ? '' : account.currency;
                 return this.currencyObject.getClassFromCode(currencyCode);
             },
-            toggleButtonProperties: function(){
-                return {
-                    labels: {checked: 'Enabled', unchecked: 'Disabled'},
-                    colors: {checked: this.colorInfo, unchecked: this.colorGreyLight},
-                    height: 40,
-                    width: 200,
-                };
-            },
         },
         methods: {
             setModalState: function(modal){
-                Store.dispatch('currentModal', modal);
+                store.dispatch('currentModal', modal);
             },
             openModal: function(){
-                this.setModalState(Store.getters.STORE_MODAL_FILTER);
+                this.setModalState(store.getters.STORE_MODAL_FILTER);
                 this.isVisible = true;
             },
             closeModal: function(){
-                this.setModalState(Store.getters.STORE_MODAL_NONE);
+                this.setModalState(store.getters.STORE_MODAL_NONE);
                 this.isVisible = false;
             },
             resetFields: function(){
@@ -308,7 +271,7 @@
                 }
             },
             makeFilterRequest: function(){
-                this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
+                this.$eventBus.broadcast(this.$eventBus.EVENT_LOADING_SHOW());
                 this.closeModal();
 
                 let filterDataParameters = {};
@@ -365,7 +328,7 @@
                     filterDataParameters.max_value = this.filterData.maxValue;
                 }
 
-                this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, {pageNumber: 0, filterParameters: filterDataParameters});
+                this.$eventBus.broadcast(this.$eventBus.EVENT_ENTRY_TABLE_UPDATE(), {pageNumber: 0, filterParameters: filterDataParameters});
             },
             processListOfObjects: function(listOfObjects, canShowDisabled=true){
                 if(!canShowDisabled){
@@ -377,8 +340,8 @@
             }
         },
         created: function(){
-            this.$eventHub.listen(this.$eventHub.EVENT_FILTER_MODAL_OPEN, this.openModal);
-            this.$eventHub.listen(this.$eventHub.EVENT_FILTER_MODAL_CLOSE, this.closeModal);
+            this.$eventBus.listen(this.$eventBus.EVENT_FILTER_MODAL_OPEN(), this.openModal);
+            this.$eventBus.listen(this.$eventBus.EVENT_FILTER_MODAL_CLOSE(), this.closeModal);
         },
         mounted: function(){
             this.resetFields();
@@ -405,9 +368,6 @@ $quarter-margin: 0.25rem;
         width: 10rem;
     }
 }
-.vue-js-switch{
-    font-size: $font-size;
-}
 #filter-account-or-account-types-id{
     min-width: 16rem;
 }
@@ -432,5 +392,9 @@ $quarter-margin: 0.25rem;
     #filter-show-disabled-checkbox+label::after{
         top: 0.3125rem;
     }
+}
+
+.filter-toggle-switch{
+  --toggle-font-size: 1rem;
 }
 </style>

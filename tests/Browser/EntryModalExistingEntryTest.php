@@ -2,18 +2,25 @@
 
 namespace Tests\Browser;
 
+use App\AccountType;
+use App\Attachment;
 use App\Entry;
 use App\Tag;
 use App\Traits\EntryTransferKeys;
 use App\Traits\Tests\Dusk\BulmaColors as DuskTraitBulmaColors;
+use App\Traits\Tests\Dusk\FileDragNDrop as DuskTraitFileDragNDrop;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
 use App\Traits\Tests\Dusk\Notification as DuskTraitNotification;
 use App\Traits\Tests\Dusk\TagsInput as DuskTraitTagsInput;
 use App\Traits\Tests\Dusk\ToggleButton as DuskTraitToggleButton;
 use App\Traits\Tests\WaitTimes;
+use Carbon\Carbon;
 use Facebook\WebDriver\WebDriverBy;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Collection;
 use Laravel\Dusk\Browser;
+use LengthException;
 use Storage;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
@@ -35,11 +42,13 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     use WaitTimes;
     use HomePageSelectors;
     use DuskTraitBulmaColors;
+    use DuskTraitFileDragNDrop;
     use DuskTraitLoading;
     use DuskTraitNavbar;
     use DuskTraitNotification;
     use DuskTraitTagsInput;
     use DuskTraitToggleButton;
+    use WithFaker;
 
     const INI_POSTMAXSIZE = 'post_max_size';
     const INI_UPLOADMAXFILESIZE = 'upload_max_filesize';
@@ -63,6 +72,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     public function __construct($name = null, array $data = [], $dataName = ''){
         parent::__construct($name, $data, $dataName);
+        $this->initAliasColors();
         $this->_color_expense_switch_expense = self::$COLOR_WARNING_HEX;
         $this->_color_expense_switch_income = self::$COLOR_PRIMARY_HEX;
     }
@@ -169,7 +179,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $browser
                 ->openExistingEntryModal($data_entry_selector)
-                ->with($this->_selector_modal_entry, function($entry_modal) use ($data_expense_switch_label, $expense_switch_color){
+                ->within($this->_selector_modal_entry, function($entry_modal) use ($data_expense_switch_label, $expense_switch_color){
                     $entry_id = $entry_modal->value($this->_selector_modal_entry_field_entry_id);
                     $this->assertNotEmpty($entry_id);
                     $entry_data = $this->getApiEntry($entry_id);
@@ -498,7 +508,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                 ->with($this->_selector_modal_body, function($modal_body) use (&$old_value, &$new_value, $account_types){
                     $old_value = $modal_body->value($this->_selector_modal_entry_field_account_type);
                     do{
-                        $account_type = $account_types[array_rand($account_types, 1)];
+                        $account_type = $this->faker->randomElement($account_types);
                         $new_value = $account_type['id'];
                     }while($old_value == $new_value);
                     $modal_body->select($this->_selector_modal_entry_field_account_type, $new_value);
@@ -816,6 +826,15 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * test 21/25
      */
     public function testDeleteTagsFromExistingEntry(){
+        // catch/create potentially missed database entries
+        $account_type_id = AccountType::all()->random()->pluck('id')->first();
+        $tag_ids = Tag::all()->pluck('id')->toArray();
+        $entry = factory(Entry::class)->create(['entry_date'=>date('Y-m-d'),'expense'=>true, 'confirm'=>false, 'account_type_id'=>$account_type_id]);
+        $entry->tags()->syncWithoutDetaching($this->faker->randomElements($tag_ids, 2));
+        $entry = factory(Entry::class)->create(['entry_date'=>date('Y-m-d'),'expense'=>false, 'confirm'=>false, 'account_type_id'=>$account_type_id]);
+        $entry->tags()->syncWithoutDetaching($this->faker->randomElements($tag_ids, 2));
+        unset($entry, $tag_ids, $account_type_id);
+
         $this->browse(function(Browser $browser){
             $entry_selector = $this->randomUnconfirmedEntrySelector(false);
             $entry_id = null;
@@ -827,9 +846,15 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                 ->with($this->_selector_modal_entry, function(Browser $entry_modal) use ($entry_selector, &$entry_id){
                     $entry_id = $entry_modal->value($this->_selector_modal_entry_field_entry_id);
                     $entry = Entry::findOrFail($entry_id);
-                    foreach($entry->tags->pluck('name')->unique()->values() as $tag){
+                    $entry_tags = $entry->tags->pluck('name')->unique()->values();
+                    $final_tag = end($entry_tags);
+                    foreach($entry_tags as $tag){
                         $this->assertTagInInput($entry_modal, $tag);
-                        $entry_modal->click(self::$SELECTOR_TAGS_INPUT_TAG.' .tags-input-remove');
+                        if($final_tag == $tag){
+                            $this->deleteTagFromInputWithBackspace($entry_modal);
+                        } else {
+                            $this->deleteTagFromInputWithClick($entry_modal);
+                        }
                     }
                     $entry_modal->click($this->_selector_modal_entry_btn_save);
                 });
@@ -894,34 +919,22 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @group entry-modal-1
      * test 23/25
      */
-    public function testUploadAttachmentToExistingEntry(){
+    public function testUploadAttachmentToExistingEntryWithoutSaving(){
         $this->browse(function(Browser $browser){
+            $upload_file_path = Storage::path($this->getRandomTestFileStoragePath());
             $entry_selector = $this->randomEntrySelector(['confirm'=>false]);
 
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
-            $browser->openExistingEntryModal($entry_selector)
-                ->with($this->_selector_modal_body, function($entry_modal_body){
-                    $upload_file_path = Storage::path($this->getRandomTestFileStoragePath());
-                    $this->assertFileExists($upload_file_path);
-                    $entry_modal_body
-                        ->assertVisible($this->_selector_modal_entry_field_upload)
-                        ->attach($this->_selector_modal_entry_dropzone_hidden_file_input, $upload_file_path)
-                        ->waitFor($this->_selector_modal_entry_dropzone_upload_thumbnail, self::$WAIT_SECONDS)
-                        ->with($this->_selector_modal_entry_dropzone_upload_thumbnail, function(Browser $upload_thumbnail) use ($upload_file_path){
-                            $upload_thumbnail
-                                ->waitUntilMissing($this->_selector_modal_dropzone_progress, self::$WAIT_SECONDS)
-                                ->assertMissing($this->_selector_modal_dropzone_error_mark)
-                                ->mouseover("") // hover over current element
-                                ->waitUntilMissing($this->_selector_modal_dropzone_success_mark, self::$WAIT_SECONDS)
-                                ->assertSeeIn($this->_selector_modal_dropzone_label_filename, basename($upload_file_path))
-                                ->assertMissing($this->_selector_modal_dropzone_error_message)
-                                ->assertVisible($this->_selector_modal_dropzone_btn_remove)
-                                ->assertSeeIn($this->_selector_modal_dropzone_btn_remove, $this->_label_btn_dropzone_remove_file)
-                                ->click($this->_selector_modal_dropzone_btn_remove);
-                        })
-                        ->assertMissing($this->_selector_modal_entry_dropzone_upload_thumbnail);
+            $browser
+                ->openExistingEntryModal($entry_selector)
+                ->within($this->_selector_modal_body, function(Browser $entry_modal_body) use ($upload_file_path){
+                    $this->uploadAttachmentUsingDragNDrop($entry_modal_body, $this->_selector_modal_entry_field_upload, $upload_file_path, self::$UPLOAD_NODE_STATE_COMPLETE);
                 });
+            $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_INFO, 'Uploaded: '.basename($upload_file_path));
+            $browser->within($this->_selector_modal_body, function(Browser $entry_modal_body) {
+                $this->removeUploadedAttachmentFromDragNDrop($entry_modal_body);
+            });
         });
     }
 
@@ -936,7 +949,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
             $entry_selector = $this->randomEntrySelector();
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
-                // open existing entry in modal and confirm fields are filled
+            // open existing entry in modal and confirm fields are filled
             $browser->openExistingEntryModal($entry_selector)
                 ->with($this->_selector_modal_entry, function($entry_modal){
                     $entry_modal
@@ -967,7 +980,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                 })
                 ->waitUntilMissing($this->_selector_modal_entry, self::$WAIT_SECONDS);
 
-                // open entry-modal from navbar; fields should be empty
+            // open entry-modal from navbar; fields should be empty
             $this->openNewEntryModal($browser);
             $browser
                 ->with($this->_selector_modal_head, function($modal_head){
@@ -1005,15 +1018,15 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         $post_max_size=$this->convertPhpIniFileSizeToBytes(ini_get(self::INI_POSTMAXSIZE));
 
         return [
-            self::INI_UPLOADMAXFILESIZE.'+1'=>[  // test 25/25
+            self::INI_UPLOADMAXFILESIZE.'+1'=>[  // test 1/25
                 $upload_max_filesize+1,
                 'The file "%s" exceeds your upload_max_filesize ini directive'   // this text is lifted from vendor/symfony/http-foundation/File/UploadedFile.php#266
             ],
-            self::INI_POSTMAXSIZE=>[          // test 26/25
+            self::INI_POSTMAXSIZE=>[          // test 2/25
                 $post_max_size,
                 'The uploaded file exceeds your post_max_size ini directive.'   // this text is lifted from app/Exceptions/Handler.php#60
             ],
-            self::INI_POSTMAXSIZE.'+1'=>[        // test 27/25
+            self::INI_POSTMAXSIZE.'+1'=>[        // test 3/25
                 $post_max_size+1,
                 'The uploaded file exceeds your post_max_size ini directive.'   // this text is lifted from app/Exceptions/Handler.php#60
             ]
@@ -1026,7 +1039,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @param string $error_message
      *
      * @throws Throwable
-     * @group entry-modal-1
+     * @group entry-modal-3
      * test (see provider)/25
      */
     public function testAttemptToAddAnAttachmentTooLargeToAnExistingEntry(int $max_upload_filesize, string $error_message){
@@ -1047,10 +1060,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
             $browser
                 ->openExistingEntryModal($entry_selector)
                 ->with($this->_selector_modal_entry, function($entry_modal) use ($dummy_filename){
-                    $entry_modal
-                        ->assertVisible($this->_selector_modal_entry_field_upload)
-                        ->attach($this->_selector_modal_entry_dropzone_hidden_file_input, $dummy_filename)
-                        ->waitFor($this->_selector_modal_entry_dropzone_upload_thumbnail, self::$WAIT_SECONDS);
+                    $this->uploadAttachmentUsingDragNDrop($entry_modal, $this->_selector_modal_entry_field_upload, $dummy_filename, self::$UPLOAD_NODE_STATE_ERROR);
                 });
 
             $this->assertNotificationContents(
@@ -1059,6 +1069,86 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                 sprintf($error_message, basename($dummy_filename))
             );
         });
+    }
+
+    public function providerOpeningAnExistingEntryDoesNotResetEntryTableValues():array{
+        return [
+            'unconfirmed income'=>['is_expense'=>false, 'is_confirmed'=>false], // test 4/25
+            'unconfirmed expense'=>['is_expense'=>true, 'is_confirmed'=>false], // test 5/25
+            'confirmed income'=>['is_expense'=>false, 'is_confirmed'=>true],    // test 6/25
+            'confirmed expense'=>['is_expense'=>true, 'is_confirmed'=>true],    // test 7/25
+        ];
+    }
+
+    /**
+     * @dataProvider providerOpeningAnExistingEntryDoesNotResetEntryTableValues
+     * @param bool $is_expense
+     * @param bool $is_confirmed
+     * @throws Throwable
+     *
+     * @group entry-modal-3
+     * test (see provider)/25
+     */
+    public function testOpeningAnExistingEntryDoesNotResetEntryTableValues(bool $is_expense, bool $is_confirmed){
+        // GIVEN
+        $account_type_id = AccountType::all()->pluck('id')->random();
+
+        $entry = factory(Entry::class)->create([
+            'entry_date'=>Carbon::tomorrow()->format('Y-m-d'),
+            'account_type_id'=>$account_type_id,
+            'disabled'=>false,
+            'transfer_entry_id'=>0,
+            'expense'=>$is_expense,
+            'confirm'=>$is_confirmed
+        ]);
+        // assign tags to entry
+        $tag_count = 2;
+        $tags = Tag::all()->random($tag_count);
+        $tag_ids = $tags->pluck('id')->toArray();
+        $entry->tags()->syncWithoutDetaching($tag_ids);
+        // attach attachments to this entry
+        $attachment = factory(Attachment::class)->create(['entry_id'=>$entry->id]);
+        $test_file_path = $this->getTestFileStoragePathFromFilename($attachment->name);
+        if(Storage::exists($test_file_path)){
+            Storage::copy($test_file_path, $attachment->get_storage_file_path());
+        }
+        // generate the selector
+        $selector_entry_id = sprintf(self::$PLACEHOLDER_SELECTOR_EXISTING_ENTRY_ROW, $entry->id);
+
+        // WHEN
+        $this->browse(function(Browser $browser) use ($selector_entry_id, $tags, $is_confirmed, $is_expense){
+            $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
+            $browser
+                ->openExistingEntryModal($selector_entry_id)
+                ->with($this->_selector_modal_foot, function($modal_foot){
+                    $modal_foot->click($this->_selector_modal_entry_btn_cancel);
+                });
+
+        // THEN
+            $class_selectors  = '';
+            $class_selectors .= $is_expense ? '.is-expense' : '.is-income';
+            $class_selectors .= $is_confirmed ? '.is-confirmed' : '';
+            $class_selectors .= '.is-transfer';
+            $class_selectors .= '.has-attachments';
+            $class_selectors .= '.has-tags';
+            $browser
+                ->scrollToElement($selector_entry_id)
+                ->assertVisible($selector_entry_id.$class_selectors)
+                ->within($selector_entry_id.$class_selectors, function(Browser $entry_table_record) use ($tags){
+                    $entry_table_record
+                        ->assertVisible('.row-entry-transfer-checkbox .fas.fa-check-square')
+                        ->assertVisible('.row-entry-attachment-checkbox .fas.fa-check-square')
+                        ->assertVisible('.row-entry-tags .tags');
+
+                    $this->assertCount($tags->count(), $entry_table_record->elements('.row-entry-tags .tags .tag'));
+
+                    foreach ($tags as $tag){
+                        $entry_table_record->assertSeeIn('.row-entry-tags .tags', $tag->name);
+                    }
+                });
+        });
+
     }
 
     /**
@@ -1078,7 +1168,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @param bool $get_id
      * @return string
      */
-    private function randomUnconfirmedEntrySelector($get_id=false): string{
+    private function randomUnconfirmedEntrySelector(bool $get_id=false): string{
         if($get_id){
             return $this->randomEntrySelector(['confirm'=>false]);
         } else {
@@ -1088,12 +1178,12 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     }
 
     /**
-     * @throws \LengthException
+     * @throws LengthException
      *
      * @param array $entry_constraints
      * @return string
      */
-    private function randomEntrySelector($entry_constraints = []): string{
+    private function randomEntrySelector(array $entry_constraints = []): string{
         $entries_collection = $this->getCachedEntriesAsCollection();
         if(!empty($entry_constraints)){
             foreach(array_keys($entry_constraints) as $constraint){
@@ -1101,7 +1191,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
             }
         }
         if($entries_collection->isEmpty()){
-            throw new \LengthException("Entry collection is empty given entry constraints:".print_r($entry_constraints, true));
+            throw new LengthException("Entry collection is empty given entry constraints:".print_r($entry_constraints, true));
         }
         $entry_id = $entries_collection->pluck('id')->random();
         return sprintf(self::$PLACEHOLDER_SELECTOR_EXISTING_ENTRY_ROW, $entry_id);
@@ -1122,7 +1212,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     /**
      * Helps to reduce the amount of HTTP requests made while testing
      *
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
     private function getCachedEntriesAsCollection(){
         if(empty($this->_cached_entries_collection)){
@@ -1148,24 +1238,6 @@ class EntryModalExistingEntryTest extends DuskTestCase {
             default:
                 return $val;
         }
-    }
-
-    /**
-     * @param string $file_name
-     * @param int $file_size    size of file to be created in bytes
-     */
-    private function generateDummyFile(string $file_name, int $file_size){
-        $fp = fopen($file_name, 'w');
-        fseek($fp, $file_size-1, SEEK_CUR);
-        fwrite($fp, 'z');
-        fclose($fp);
-    }
-
-    /**
-     * @return string
-     */
-    private function getTestDummyFilename(): string{
-        return Storage::path(self::$storage_path.$this->getName(false).'.txt');
     }
 
     private function addRulesToHtaccessToDisableDisplayErrors(){

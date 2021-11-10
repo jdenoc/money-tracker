@@ -4,7 +4,6 @@ namespace App\Traits\Tests\Dusk;
 
 use App\Traits\Tests\WaitTimes;
 use Laravel\Dusk\Browser;
-use PHPUnit\Framework\Assert;
 
 trait Notification {
 
@@ -16,11 +15,12 @@ trait Notification {
     protected static $NOTIFICATION_TYPE_WARNING = 'warning';
 
     private static $SELECTOR_NAVBAR = '.navbar';
-    private static $SELECTOR_NOTIFICATION = '.snotifyToast';
-    private static $NOTIFICATION_CLASS_INFO = "snotify-info";
-    private static $NOTIFICATION_CLASS_ERROR = "snotify-error";
-    private static $NOTIFICATION_CLASS_SUCCESS = "snotify-success";
-    private static $NOTIFICATION_CLASS_WARNING = "snotify-warning";
+    private static $SELECTOR_NOTIFICATION_GROUP = '.vue-notification-group';
+    private static $SELECTOR_NOTIFICATION = '.vue-notification';
+    private static $NOTIFICATION_CLASS_INFO = ".info";
+    private static $NOTIFICATION_CLASS_ERROR = ".error";
+    private static $NOTIFICATION_CLASS_SUCCESS = ".success";
+    private static $NOTIFICATION_CLASS_WARNING = ".warn";
 
     /**
      * @param Browser $browser
@@ -28,7 +28,7 @@ trait Notification {
      * @param string $notification_message
      * @throws \Facebook\WebDriver\Exception\TimeOutException
      */
-    public function assertNotificationContents(Browser $browser, $notification_type, $notification_message){
+    public function assertNotificationContents(Browser $browser, string $notification_type, string $notification_message){
         switch($notification_type){
             case self::$NOTIFICATION_TYPE_ERROR:
                 $notification_class = self::$NOTIFICATION_CLASS_ERROR;
@@ -46,19 +46,11 @@ trait Notification {
         }
 
         $browser
-            ->waitFor(self::$SELECTOR_NOTIFICATION, 1.5*self::$WAIT_SECONDS)
-            ->with(self::$SELECTOR_NOTIFICATION, function(Browser $notification) use ($notification_class, $notification_message){
-                Assert::assertStringContainsString(
-                    $notification_class,
-                    $notification->attribute('', 'class')
-                );
-
-                $notification->assertSeeIn('', $notification_message);
-            })
+            ->waitFor(self::$SELECTOR_NOTIFICATION.$notification_class, 1.5*self::$WAIT_SECONDS)
+            ->assertSeeIn(self::$SELECTOR_NOTIFICATION_GROUP, $notification_message)
             // Selenium has issues on some tests.
             // We need to mouse over the navbar to make sure that notification continues its progress of dismissal.
             ->mouseover(self::$SELECTOR_NAVBAR)
-            ->waitUntilMissing($notification_class, 1.5*self::$WAIT_SECONDS)
             ->pause(self::$WAIT_QUARTER_SECONDS_IN_MILLISECONDS);
     }
 

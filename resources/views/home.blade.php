@@ -15,7 +15,8 @@
             <div class="column">
                 <entries-table></entries-table>
             </div>
-            <div v-hotkey="keymap">
+{{--            <div v-hotkey="keymap">--}}
+            <div>
                 <!-- modal components -->
                 <entry-modal></entry-modal>
                 <transfer-modal></transfer-modal>

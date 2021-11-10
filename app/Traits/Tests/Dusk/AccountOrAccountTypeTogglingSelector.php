@@ -4,12 +4,14 @@ namespace App\Traits\Tests\Dusk;
 
 use App\Traits\Tests\WaitTimes;
 use App\Traits\Tests\Dusk\ToggleButton as DuskTraitToggleButton;
+use App\Traits\Tests\Dusk\BulmaColors as DuskTraitBulmaColors;
 use Laravel\Dusk\Browser;
 use PHPUnit\Framework\Assert;
 
 trait AccountOrAccountTypeTogglingSelector {
 
     use WaitTimes;
+    use DuskTraitBulmaColors;
     use DuskTraitToggleButton;
 
     private static $SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT = ".select-account-or-account-types-id";
@@ -27,7 +29,7 @@ trait AccountOrAccountTypeTogglingSelector {
      * @param string $id_label
      * @return string
      */
-    protected function getAccountOrAccountTypeTogglingSelectorComponentId($id_label){
+    protected function getAccountOrAccountTypeTogglingSelectorComponentId(string $id_label):string{
         $selector_pattern_component_account_or_account_type_toggling_selector = "#account-or-account-type-toggling-selector-for-%s";
         return sprintf($selector_pattern_component_account_or_account_type_toggling_selector, $id_label);
     }
@@ -36,8 +38,8 @@ trait AccountOrAccountTypeTogglingSelector {
      * @param string $id_label
      * @return string
      */
-    protected function getSwitchAccountAndAccountTypeId($id_label){
-        $selector_pattern_field_toggle_switch_account_and_account_type = "#toggle-account-and-account-types-for-%s";
+    protected function getSwitchAccountAndAccountTypeId(string $id_label):string{
+        $selector_pattern_field_toggle_switch_account_and_account_type = "#toggle-account-and-account-types-for-%s+.toggle";
         return sprintf($selector_pattern_field_toggle_switch_account_and_account_type, $id_label);
     }
 
@@ -45,7 +47,7 @@ trait AccountOrAccountTypeTogglingSelector {
      * @param string $id_label
      * @return string
      */
-    protected function getCheckboxShowDisabledAccountOrAccountType($id_label){
+    protected function getCheckboxShowDisabledAccountOrAccountType(string $id_label):string{
         $selector_pattern_field_checkbox_show_disabled = "#show-disabled-accounts-or-account-types-%s-checkbox+label";
         return sprintf($selector_pattern_field_checkbox_show_disabled, $id_label);
     }
@@ -55,12 +57,12 @@ trait AccountOrAccountTypeTogglingSelector {
      * @param array $accounts
      * @return void
      */
-    public function assertDefaultStateOfAccountOrAccountTypeTogglingSelectorComponent(Browser $browser, $accounts){
+    public function assertDefaultStateOfAccountOrAccountTypeTogglingSelectorComponent(Browser $browser, array $accounts){
         $browser
             // component
             ->assertVisible($this->getAccountOrAccountTypeTogglingSelectorComponentId($this->_account_or_account_type_toggling_selector_label_id))
             ->with($this->getAccountOrAccountTypeTogglingSelectorComponentId($this->_account_or_account_type_toggling_selector_label_id), function(Browser $component) use ($accounts){
-                $color_switch_default = "#B5B5B5";
+                $color_switch_default = self::$COLOR_GREY_LIGHT_HEX;
 
                 // account/account-type - switch
                 $this->assertToggleButtonState(
@@ -150,7 +152,7 @@ trait AccountOrAccountTypeTogglingSelector {
      * @param Browser $browser
      * @param array $accounts_or_account_types
      */
-    public function assertSelectOptionValuesOfAccountOrAccountType(Browser $browser, $accounts_or_account_types){
+    public function assertSelectOptionValuesOfAccountOrAccountType(Browser $browser, array $accounts_or_account_types){
         $browser->with($this->getAccountOrAccountTypeTogglingSelectorComponentId($this->_account_or_account_type_toggling_selector_label_id), function(Browser $component) use ($accounts_or_account_types){
             $option_class = $component->attribute(self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT.' option', 'class');
             if(!$this->_disable_checkbox_checked){

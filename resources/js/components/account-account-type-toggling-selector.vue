@@ -1,19 +1,16 @@
 <template>
     <div class="field is-horizontal" v-bind:id="getIdForComponent">
-        <!--Account/Account-type-->
         <div class="field-label is-normal no-padding-top">
             <div class="label">
-                <toggle-button
-                    v-bind:id="getIdForToggleSwitch"
-                    v-model="propToggle"
-                    v-bind:value="propToggle"
-                    v-bind:labels="toggleButtonProperties.label"
-                    v-bind:color="toggleButtonProperties.colors"
-                    v-bind:height="toggleButtonProperties.height"
-                    v-bind:width="toggleButtonProperties.width"
-                    v-bind:sync="true"
-                />
+              <!--Account/Account-type toggle button-->
+              <ToggleButton
+                  v-bind="toggleButtonProperties"
+                  v-model:toggle-state="toggleButtonState"
+                  class="account-or-account-type-toggle-button"
+                  v-on:click="resetAccountOrAccountTypeSelectValue"
+              ></ToggleButton>
             </div>
+            <!--Account/Account-type display disabled checkbox -->
             <div class="show-disabled-accounts-or-account-types" v-show="areDisabledAccountsOrAccountTypesPresent">
                 <input class="is-checkradio is-circle is-small" type="checkbox"
                    v-bind:id="getIdForShowDisabledCheckbox"
@@ -24,10 +21,10 @@
         </div>
         <div class="field-body"><div class="field">
             <div class="control">
+                <!--Account/Account-type selector -->
                 <div class="select" v-bind:class="{'is-loading': !areAccountsAndAccountTypesSet}">
                     <select name="select-account-or-account-types-id" class="has-text-grey-dark select-account-or-account-types-id"
-                        v-model="propSelect"
-                        v-on:change="selectorValueChange"
+                        v-model="selectorValue"
                     >
                         <option value="" selected>[ ALL ]</option>
                         <option
@@ -45,12 +42,15 @@
     </div>
 </template>
 
-<script>
+<script lang="js">
     import _ from "lodash";
     import {accountsObjectMixin} from "../mixins/accounts-object-mixin";
     import {accountTypesObjectMixin} from "../mixins/account-types-object-mixin";
     import {bulmaColorsMixin} from "../mixins/bulma-colors-mixin";
-    import {ToggleButton} from 'vue-js-toggle-button'
+    import ToggleButton from './toggle-button';
+
+    const EMIT_ACCOUNT_OR_ACCOUNT_TYPE_ID = 'update:accountOrAccountTypeId';
+    const EMIT_ACCOUNT_OR_ACCOUNT_TYPE_TOGGLE = 'update:accountOrAccountTypeToggled';
 
     export default {
         name: "account-account-type-toggling-selector",
@@ -58,10 +58,18 @@
             ToggleButton
         },
         mixins: [accountsObjectMixin, accountTypesObjectMixin, bulmaColorsMixin],
+        emits:{
+          [EMIT_ACCOUNT_OR_ACCOUNT_TYPE_ID]: function(payload){
+            return typeof payload === 'number' || payload === null;
+          },
+          [EMIT_ACCOUNT_OR_ACCOUNT_TYPE_TOGGLE]: function(payload){
+            return typeof payload === 'boolean';
+          }
+        },
         props: {
             id: {type: String, required: true},
             accountOrAccountTypeToggled: {type: Boolean, default: true},
-            accountOrAccountTypeId: {type: String|Number, required: true, default: ''}
+            accountOrAccountTypeId: {type: Number, default: null}
         },
         data: function(){
             return {
@@ -69,33 +77,35 @@
                     account: true,
                     accountType: false
                 },
-
-                propToggle: this.accountOrAccountTypeToggled,
-                propSelect: this.accountOrAccountTypeId,
-
                 canShowDisabledAccountAndAccountTypes: false,
             }
         },
-        watch: {
-            accountOrAccountTypeToggled: function(newValue, oldValue){
-                this.propToggle = newValue;
-            },
-            accountOrAccountTypeId: function(newValue, oldValue){
-                this.propSelect = newValue;
-            },
-            propToggle: function(newValue, oldValue){
-                this.resetAccountOrAccountTypeSelectValue();
-                this.$emit('update-toggle', newValue);
-            },
-        },
         computed: {
+          toggleButtonState: {
+            get: function(){
+              return this.accountOrAccountTypeToggled;
+            },
+            set: function(value){
+              this.$emit(EMIT_ACCOUNT_OR_ACCOUNT_TYPE_TOGGLE, value);
+            }
+          },
+          selectorValue: {
+            get: function(){
+              return _.isNull(this.accountOrAccountTypeId) ? '' : this.accountOrAccountTypeId;
+            },
+            set: function(value){
+              value = value === '' ? null : value;
+              this.$emit(EMIT_ACCOUNT_OR_ACCOUNT_TYPE_ID, value);
+            }
+          },
+
             listProcessedAccountOrAccountTypes: function(){
                 return this.processListOfObjects(this.listAccountOrAccountTypes, this.canShowDisabledAccountAndAccountTypes);
             },
             listAccountOrAccountTypes: function(){
-                if(this.propToggle === this.selectedToggleSwitch.account){
+                if(this.toggleButtonState === this.selectedToggleSwitch.account){
                     return this.rawAccountsData;
-                } else if(this.propToggle === this.selectedToggleSwitch.accountType){
+                } else if(this.toggleButtonState === this.selectedToggleSwitch.accountType){
                     return this.rawAccountTypesData;
                 }
             },
@@ -123,40 +133,32 @@
 
             toggleButtonProperties: function(){
                 return {
-                    label: {checked: "Account", unchecked: "Account Type"},
-                    colors: {checked: this.colorGreyLight, unchecked: this.colorGreyLight},
-                    height: 36,
-                    width: 140,
+                  buttonName: this.getIdForToggleSwitch,
+                  labelChecked: "Account",
+                  labelUnchecked: "Account Type"
                 };
             },
         },
         methods: {
-            processListOfObjects: function(listOfObjects, canShowDisabled=true){
-                if(!canShowDisabled){
-                    listOfObjects = listOfObjects.filter(function(object){
-                        return !object.disabled;
-                    });
-                }
-                return _.orderBy(listOfObjects, 'name');
-            },
-            resetAccountOrAccountTypeSelectValue: function(){
-                this.propSelect = '';
-                this.selectorValueChange();
-            },
-            selectorValueChange: function(){
-                this.$emit('update-select', this.propSelect);
-            }
+          processListOfObjects: function(listOfObjects, canShowDisabled=true){
+              if(!canShowDisabled){
+                  listOfObjects = listOfObjects.filter(function(object){
+                      return !object.disabled;
+                  });
+              }
+              return _.orderBy(listOfObjects, 'name');
+          },
+          resetAccountOrAccountTypeSelectValue: function(){
+            this.selectorValue = null;
+          }
         }
     }
 </script>
 
 <style lang="scss" scoped>
-    $font-size: 0.85rem;
-    $quarter-margin: 0.25rem;
-
     .field-label{
         &.is-normal{
-            font-size: $font-size;
+            font-size: 0.85rem;
             margin-right: 0.75rem;
             padding-top: 0.5rem;
 
@@ -170,9 +172,6 @@
         }
     }
 
-    .vue-js-switch{
-        font-size: $font-size;
-    }
     .select-account-or-account-types-id{
         min-width: 15rem;
         max-width: 19rem;
@@ -186,5 +185,23 @@
         +label::after{
             top: 0.3125rem;
         }
+    }
+
+    // accounts/account-types toggle button
+    @import '~bulma/sass/helpers/color';
+    $toggle-button-bg-color: $grey-light;
+    $toggle-button-text-color: $white;
+    .account-or-account-type-toggle-button{
+      --toggle-width: 8.5rem;
+      --toggle-font-size: 0.8;
+
+      // accounts
+      --toggle-bg-on: #{$toggle-button-bg-color};
+      --toggle-border-on: #{$toggle-button-bg-color};
+      --toggle-text-on: #{$toggle-button-text-color};
+      // account-types
+      --toggle-bg-off: #{$toggle-button-bg-color};
+      --toggle-border-off: #{$toggle-button-bg-color};
+      --toggle-text-off: #{$toggle-button-text-color};
     }
 </style>

@@ -1,13 +1,12 @@
 import {Accounts} from "./accounts";
 import {ObjectBaseClass} from "./objectBaseClass";
-import {SnotifyStyle} from "vue-snotify";
-import Store from './store';
+import {store} from './store';
 
 export class AccountTypes extends ObjectBaseClass {
 
     constructor(){
         super();
-        this.storeType = Store.getters.STORE_TYPE_ACCOUNT_TYPES;
+        this.storeType = store.getters.STORE_TYPE_ACCOUNT_TYPES;
         this.uri = '/api/account-types';
     }
 
@@ -16,10 +15,10 @@ export class AccountTypes extends ObjectBaseClass {
             switch(error.response.status){
                 case 404:
                     this.assign = [];
-                    return {type: SnotifyStyle.info, message: "No account types currently available"};
+                    return {type: 'info', message: "No account types currently available"};
                 case 500:
                 default:
-                    return {type: SnotifyStyle.error, message: "An error occurred while attempting to retrieve account types"};
+                    return {type: 'error', message: "An error occurred while attempting to retrieve account types"};
             }
         }
     }

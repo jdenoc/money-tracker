@@ -1,5 +1,5 @@
 import Axios from 'axios';
-import Store from './store';
+import {store} from './store';
 
 export class ObjectBaseClass {
 
@@ -38,19 +38,19 @@ export class ObjectBaseClass {
     }
 
     get retrieve(){
-        return Store.getters.getStateOf(this.storeType);
+        return store.getters.getStateOf(this.storeType);
     }
 
     get isFetched(){
-        return Store.getters.getFetchedState(this.storeType);
+        return store.getters.getFetchedState(this.storeType);
     }
 
     set assign(newValue){
-        Store.dispatch('setStateOf', {type:this.storeType, value:newValue});
+        store.dispatch('setStateOf', {type:this.storeType, value:newValue});
     }
 
     set setFetchedState(newValue){
-        Store.dispatch('setFetchedState', {type:this.storeType, value:newValue});
+        store.dispatch('setFetchedState', {type:this.storeType, value:newValue});
     }
 
     processSuccessfulResponseData(responseData){

@@ -1,45 +1,36 @@
 <template>
-    <vue-snotify></vue-snotify>
+  <notifications position="bottom center" width="300"></notifications>
 </template>
 
 <script>
     import _ from 'lodash';
-    import { SnotifyStyle } from 'vue-snotify';
+    import {uuid} from 'vue-uuid';
 
     export default {
-        name: "notification",
-        methods: {
-            displayNotification: function(notification){
-                if(!_.isEmpty(notification)){
-                    switch(notification.type){
-                        case SnotifyStyle.error:
-                            this.$snotify.error(notification.message);
-                            break;
-                        case SnotifyStyle.info:
-                        default:
-                            this.$snotify.info(notification.message);
-                            break;
-                        case SnotifyStyle.success:
-                            this.$snotify.success(notification.message);
-                            break;
-                        case SnotifyStyle.warning:
-                            this.$snotify.warning(notification.message);
-                            break;
-                    }
-                }
-            }
-        },
-        created: function(){
-            this.$eventHub.listen(this.$eventHub.EVENT_NOTIFICATION, this.displayNotification);
-        },
+      name: "notification",
+      computed: {
+        uuid: function(){
+          return uuid.v4();
+        }
+      },
+      methods: {
+        displayNotification: function(notification) {
+          if (!_.isEmpty(notification)) {
+            this.$notify({
+              id: this.uuid,
+              type: notification.type,
+              title: notification.message,
+              duration: 5500, // 5.5 seconds
+            });
+          }
+        }
+      },
+      created: function(){
+        this.$eventBus.listen(this.$eventBus.EVENT_NOTIFICATION(), this.displayNotification);
+      },
     }
 </script>
 
 <style scoped>
-    .snotifyToast__body{
-        font-size: 1.1em;
-    }
-    .snotify-success .snotifyToast__body{
-        color: #e1f1e1;
-    }
+
 </style>

@@ -22,4 +22,4 @@ export class Currency {
         }
     }
 
-};
+}

@@ -6,12 +6,14 @@ use App\Account;
 use App\AccountType;
 use App\Helpers\CurrencyHelper;
 use App\Traits\Tests\Dusk\BulmaColors as DuskTraitBulmaColors;
+use App\Traits\Tests\Dusk\FileDragNDrop as DuskTraitFileDragNDrop;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
 use App\Traits\Tests\Dusk\Notification as DuskTraitNotification;
 use App\Traits\Tests\Dusk\TagsInput as DuskTraitTagsInput;
 use App\Traits\Tests\Dusk\ToggleButton as DuskTraitToggleButton;
 use App\Traits\Tests\WaitTimes;
+use Storage;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Laravel\Dusk\Browser;
@@ -31,6 +33,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
 
     use HomePageSelectors;
     use DuskTraitBulmaColors;
+    use DuskTraitFileDragNDrop;
     use DuskTraitLoading;
     use DuskTraitNotification;
     use DuskTraitNavbar;
@@ -44,6 +47,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
 
     public function __construct($name = null, array $data = [], $dataName = ''){
         parent::__construct($name, $data, $dataName);
+        $this->initAliasColors();
         $this->_color_expense_switch_expense = self::$COLOR_WARNING_HEX;
         $this->_color_expense_switch_income = self::$COLOR_PRIMARY_HEX;
     }
@@ -263,6 +267,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
      * test 9/25
      */
     public function testCloseEntryModalWithHotkey(){
+        $this->markTestIncomplete('Need to re-work hotkey functionality');
         $this->browse(function(Browser $browser){
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
@@ -338,7 +343,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
         });
     }
 
-    public function providerSelectingDisabledAccountTypeMetaDataIsGrey(){
+    public function providerSelectingDisabledAccountTypeMetaDataIsGrey():array{
         // [$account_type_method]
         return [
             [$this->method_account],        // test 12/25
@@ -355,7 +360,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
      * @group entry-modal-2
      * test (see provider)/25
      */
-    public function testSelectingDisabledAccountTypeMetaDataIsGrey($account_type_method){
+    public function testSelectingDisabledAccountTypeMetaDataIsGrey(string $account_type_method){
         $account_types = AccountType::all();
         $disabled_account_type = [];
         if($account_type_method == $this->method_account){
@@ -526,25 +531,9 @@ class EntryModalNewEntryTest extends DuskTestCase {
             $this->openNewEntryModal($browser);
             $browser
                 ->with($this->_selector_modal_body, function($entry_modal_body){
-                    $upload_file_path = \Storage::path($this->getRandomTestFileStoragePath());
-                    $this->assertFileExists($upload_file_path);
-                    $entry_modal_body
-                        ->assertVisible($this->_selector_modal_entry_field_upload)
-                        ->attach($this->_selector_modal_entry_dropzone_hidden_file_input, $upload_file_path)
-                        ->waitFor($this->_selector_modal_entry_dropzone_upload_thumbnail, self::$WAIT_SECONDS)
-                        ->with($this->_selector_modal_entry_dropzone_upload_thumbnail, function(Browser $upload_thumbnail) use ($upload_file_path){
-                            $upload_thumbnail
-                                ->waitUntilMissing($this->_selector_modal_dropzone_progress, self::$WAIT_SECONDS)
-                                ->assertMissing($this->_selector_modal_dropzone_error_mark)
-                                ->mouseover("") // hover over current element
-                                ->waitUntilMissing($this->_selector_modal_dropzone_success_mark, self::$WAIT_SECONDS)
-                                ->assertSeeIn($this->_selector_modal_dropzone_label_filename, basename($upload_file_path))
-                                ->assertMissing($this->_selector_modal_dropzone_error_message)
-                                ->assertVisible($this->_selector_modal_dropzone_btn_remove)
-                                ->assertSeeIn($this->_selector_modal_dropzone_btn_remove, $this->_label_btn_dropzone_remove_file)
-                                ->click($this->_selector_modal_dropzone_btn_remove);
-                        })
-                        ->assertMissing($this->_selector_modal_entry_dropzone_upload_thumbnail);
+                    $upload_file_path = Storage::path($this->getRandomTestFileStoragePath());
+                    $this->uploadAttachmentUsingDragNDrop($entry_modal_body, $this->_selector_modal_entry_field_upload, $upload_file_path, self::$UPLOAD_NODE_STATE_COMPLETE);
+                    $this->removeUploadedAttachmentFromDragNDrop($entry_modal_body);
                 });
         });
     }
@@ -561,22 +550,18 @@ class EntryModalNewEntryTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openNewEntryModal($browser);
             $browser
-                ->with($this->_selector_modal_body, function($modal_body){
-                    $upload_file_path = \Storage::path($this->getRandomTestFileStoragePath());
-                    $this->assertFileExists($upload_file_path);
-                    $modal_body
-                        ->assertVisible($this->_selector_modal_entry_field_upload)
-                        ->attach($this->_selector_modal_entry_dropzone_hidden_file_input, $upload_file_path)
-                        ->waitFor($this->_selector_modal_entry_dropzone_upload_thumbnail, self::$WAIT_SECONDS);
+                ->within($this->_selector_modal_body, function($modal_body){
+                    $upload_file_path = Storage::path($this->getRandomTestFileStoragePath());
+                    $this->uploadAttachmentUsingDragNDrop($modal_body, $this->_selector_modal_entry_field_upload, $upload_file_path, self::$UPLOAD_NODE_STATE_COMPLETE);
                 })
-                ->with($this->_selector_modal_foot, function($modal_foot){
+                ->within($this->_selector_modal_foot, function($modal_foot){
                     $modal_foot->click($this->_selector_modal_entry_btn_cancel);
                 })
                 ->waitUntilMissing($this->_selector_modal_entry);
             $this->openNewEntryModal($browser);
             $browser
-                ->with($this->_selector_modal_body, function($modal_body){
-                    $modal_body->assertMissing($this->_selector_modal_entry_dropzone_upload_thumbnail);
+                ->within($this->_selector_modal_body.' '.$this->_selector_modal_entry_field_upload, function($drag_n_drop){
+                    $drag_n_drop->assertMissing(self::$SELECTOR_FILE_DRAG_N_DROP_UPLOAD_NODE);
                 });
         });
     }
@@ -716,7 +701,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
         });
     }
 
-    public function providerCreateGenericEntry(){
+    public function providerCreateGenericEntry():array{
         return [
             // [$has_tags, $has_attachments]
             [false, false], // test 23/25
@@ -736,7 +721,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
      * @group entry-modal-2
      * test (see provider)/25
      */
-    public function testCreateGenericEntry($has_tags, $has_attachments){
+    public function testCreateGenericEntry(bool $has_tags, bool $has_attachments){
         $account_types = $this->getApiAccountTypes();
         $account_type = $account_types[array_rand($account_types, 1)];
 
@@ -766,13 +751,10 @@ class EntryModalNewEntryTest extends DuskTestCase {
             }
 
             if($has_attachments){
-                $upload_file_path = \Storage::path($this->getRandomTestFileStoragePath());
+                $upload_file_path = Storage::path($this->getRandomTestFileStoragePath());
                 $this->assertFileExists($upload_file_path);
                 $browser->with($this->_selector_modal_body, function($modal_body) use ($upload_file_path){
-                    $modal_body
-                        ->assertVisible($this->_selector_modal_entry_field_upload)
-                        ->attach($this->_selector_modal_entry_dropzone_hidden_file_input, $upload_file_path)
-                        ->waitFor($this->_selector_modal_entry_dropzone_upload_thumbnail, self::$WAIT_SECONDS);
+                    $this->uploadAttachmentUsingDragNDrop($modal_body, $this->_selector_modal_entry_field_upload, $upload_file_path, self::$UPLOAD_NODE_STATE_COMPLETE);
                 });
                 $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_INFO, sprintf($this->_label_notification_file_upload_success, basename($upload_file_path)));
             }

@@ -29,21 +29,21 @@
             },
             deleteEntryAttachment: function(){
                 if(confirm('Are you sure you want to delete attachment: '+this.name)){
-                    this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
+                    this.$eventBus.broadcast(this.$eventBus.EVENT_LOADING_SHOW());
 
                     this.attachmentObject
                         .delete(this.uuid, this.entryId)
                         .then(function(newEntryData){
                             // inform user of attachment deletion
-                            this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, {type: newEntryData.notification.type, message: newEntryData.notification.message.replace("%s", this.entryId)});
+                            this.$eventBus.broadcast(this.$eventBus.EVENT_NOTIFICATION(), {type: newEntryData.notification.type, message: newEntryData.notification.message.replace("%s", this.entryId)});
                             delete newEntryData.notification;
                             if(!_.isEmpty(newEntryData)){
                                 // update entryData in entry-modal component
-                                this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_MODAL_UPDATE_DATA, newEntryData);
+                                this.$eventBus.broadcast(this.$eventBus.EVENT_ENTRY_MODAL_UPDATE_DATA(), newEntryData);
                             }
                         }.bind(this))
                         .finally(function(){
-                            this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
+                            this.$eventBus.broadcast(this.$eventBus.EVENT_LOADING_HIDE());
                         }.bind(this));
                 }
             },

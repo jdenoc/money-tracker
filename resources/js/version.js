@@ -1,11 +1,11 @@
 import { ObjectBaseClass } from './objectBaseClass';
-import Store from './store';
+import {store} from './store';
 
 export class Version extends ObjectBaseClass {
 
     constructor(){
         super();
-        this.storeType = Store.getters.STORE_TYPE_VERSION;
+        this.storeType = store.getters.STORE_TYPE_VERSION;
         this.uri = '/api/version';
     }
 

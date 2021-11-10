@@ -236,7 +236,7 @@ class InstitutionsPanelTest extends DuskTestCase {
      * @param Browser $account_node
      * @param string $account_name
      */
-    private function assertAccountNodeName(Browser $account_node, $account_name){
+    private function assertAccountNodeName(Browser $account_node, string $account_name){
         // confirm account name is within collection
         $account_node_name = $account_node->text($this->_selector_panel_institutions_accounts_account_name.' span:first-child');
         $this->assertStringContainsString($account_name, $account_node_name, "account name NOT found within institution-account node");
@@ -247,17 +247,25 @@ class InstitutionsPanelTest extends DuskTestCase {
      * @param Collection $account_types_collection
      * @param boolean $has_tooltip
      */
-    private function assertInstitutionPanelAccountNode($account_node, $account_types_collection, $has_tooltip=true){
+    private function assertInstitutionPanelAccountNode(Browser $account_node, $account_types_collection, bool $has_tooltip=true){
         // hover over account element
-        $account_node->mouseover('');
+        $account_node
+            ->mouseover('')
+            ->pause(self::$WAIT_HALF_SECOND_IN_MILLISECONDS);
 
         if($has_tooltip){
-            // account-types tooltip appears to right
-            $account_node_tooltip_id = $account_node->attribute('', 'aria-describedby');    // get the tooltip element id
-            $account_node
-                ->pause(self::$WAIT_HALF_SECOND_IN_MILLISECONDS)
-                ->assertVisible('#'.$account_node_tooltip_id);
-            $account_types_tooltip_text = $account_node->text('#'.$account_node_tooltip_id);
+            // get the tooltip element id
+            $account_node_tooltip_id = $account_node->attribute('', 'aria-describedby');
+            $account_node_tooltip_selector = 'body #'.$account_node_tooltip_id;
+
+            // confirm tooltip element is visible then get text
+            $account_css_prefix = $account_node->resolver->prefix;
+            $account_node->resolver->prefix = '';
+            $account_node->assertVisible($account_node_tooltip_selector);
+            $account_types_tooltip_text = $account_node->text($account_node_tooltip_selector);
+            $account_node->resolver->prefix = $account_css_prefix;
+
+            // account-type text is located in the tooltip
             foreach($account_types_collection as $account_account_type){
                 $account_type_record_tooltip_text = $account_account_type['name']." (".$account_account_type['last_digits'].")";
                 if($account_account_type['disabled']){
@@ -269,7 +277,7 @@ class InstitutionsPanelTest extends DuskTestCase {
         } else {
             $account_css_prefix = $account_node->resolver->prefix;
             $account_node->resolver->prefix = '';
-            $account_node->assertMissing('body .tooltip');
+            $account_node->assertMissing('body .v-popper__popper');
             $account_node->resolver->prefix = $account_css_prefix;
         }
 
@@ -282,7 +290,7 @@ class InstitutionsPanelTest extends DuskTestCase {
      * @param Browser $account_node
      * @param Collection $account_types_collection
      */
-    private function assertInstitutionPanelAccountNodeClickInteraction($account_node, $account_types_collection){
+    private function assertInstitutionPanelAccountNodeClickInteraction(Browser $account_node, $account_types_collection){
         $account_node->click('');
         // wait for loading to finish
         $account_css_prefix = $account_node->resolver->prefix;
@@ -315,7 +323,7 @@ class InstitutionsPanelTest extends DuskTestCase {
      * @param bool $include_inactive_institutions
      * @return Collection
      */
-    private function getInstitutionsCollection($include_inactive_institutions = true){
+    private function getInstitutionsCollection(bool $include_inactive_institutions = true){
         // make sure we have at least 1 "inactive" institution
         $institutions = $this->getApiInstitutions();
         $institutions_collection = collect($institutions);
@@ -335,7 +343,7 @@ class InstitutionsPanelTest extends DuskTestCase {
      * @param bool $include_disabled_accounts
      * @return Collection
      */
-    private function getAccountsCollection($institutions_collection, $include_disabled_accounts = true){
+    private function getAccountsCollection($institutions_collection, bool $include_disabled_accounts = true){
         // make sure we have at least 1 "disabled" account
         $accounts = $this->getApiAccounts();
         $accounts_collection = collect($accounts);

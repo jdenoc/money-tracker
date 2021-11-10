@@ -104,30 +104,23 @@
                 <div class="field is-horizontal">
                     <div class="field-label is-normal"><label class="label">Tags:</label></div>
                     <div class="field-body"><div class="field"><div class="control" v-bind:class="{'is-loading': !areTagsSet}">
-                        <tagsinput
-                           tagsInputName="transfer-tags"
-                           v-bind:existingTags="listTags"
-                           v-bind:selected-tags="transferData.tags"
-                           v-on:update-tags-input="transferData.tags = $event"
-                        ></tagsinput>
+                      <TagsInput
+                        v-model:tags-input="transferData.tags"
+                        v-bind:existing-tags="listTags"
+                        v-bind:selected-tags="transferData.tags"
+                      ></TagsInput>
                     </div></div></div>
                 </div>
 
                 <div class="field"><div class="control">
-                    <vue-dropzone ref="transferModalFileUpload" id="transfer-modal-file-upload"
-                        v-bind:options="dropzoneOptions"
-                        v-on:vdropzone-success="dropzoneSuccessfulUpload"
-                        v-on:vdropzone-error="dropzoneUploadError"
-                        v-on:vdropzone-removed-file="dropzoneRemoveUpload"
-                    ></vue-dropzone>
+                  <file-drag-n-drop id="transfer-modal" v-model:attachments="transferData.attachments"></file-drag-n-drop>
                 </div></div>
             </section>
 
             <footer class="modal-card-foot">
                 <div class="container">
                     <div class="field is-grouped">
-                        <div class="control is-expanded">
-                        </div>
+                        <div class="control is-expanded"></div>
                         <div class="control">
                             <button type="button" id="transfer-cancel-btn" class="button" v-on:click="closeModal">Cancel</button>
                             <button type="button" id="transfer-save-btn" class="button is-success"
@@ -145,21 +138,23 @@
 </template>
 
 <script>
-    import _ from 'lodash';
-    import {accountTypesObjectMixin} from "../mixins/account-types-object-mixin";
-    import {Entry} from "../entry";
-    import {SnotifyStyle} from 'vue-snotify';
-    import {tagsObjectMixin} from "../mixins/tags-object-mixin";
-    import Store from '../store';
-    import tagsinput from "./tagsinput";
-    import vue2Dropzone from 'vue2-dropzone';
+  // utilities
+  import _ from 'lodash';
+  import {store} from '../store';
+  // objects
+  import {accountTypesObjectMixin} from "../mixins/account-types-object-mixin";
+  import {Entry} from "../entry";
+  import {tagsObjectMixin} from "../mixins/tags-object-mixin";
+  // components
+  import TagsInput from "./tags-input";
+  import FileDragNDrop from "./file-drag-n-drop";
 
     export default {
         name: "transfer-modal",
         mixins: [accountTypesObjectMixin, tagsObjectMixin],
         components: {
-            tagsinput,
-            VueDropzone: vue2Dropzone,
+          FileDragNDrop,
+          TagsInput
         },
         data: function(){
             return {
@@ -216,7 +211,7 @@
                 return this.accountTypeMeta.from.isEnabled;
             },
             currentPage: function(){
-                return Store.getters.currentPage;
+                return store.getters.currentPage;
             },
             currentDate: function(){
                 let today = new Date();
@@ -230,28 +225,8 @@
             hasValidToAccountTypeBeenSelected: function(){
                 return this.hasValidAccountTypeBeenSelected(this.transferData.to_account_type_id);
             },
-            getAttachmentUploadUrl: function(){
-                return this.dropzoneOptions.url;
-            },
             listAccountTypes: function(){
                 return _.orderBy(this.rawAccountTypesData, 'name');
-            },
-            dropzoneRef: function(){
-                return this.$refs.transferModalFileUpload;
-            },
-            dropzoneOptions: function(){
-                return {
-                    url: '/attachment/upload',
-                    method: 'post',
-                    addRemoveLinks: true,
-                    paramName: 'attachment',
-                    params: {_token: this.uploadToken},
-                    dictDefaultMessage: '<span class="icon"><i class="fas fa-cloud-upload-alt"></i></span><br/>Drag & Drop',
-                    hiddenInputContainer: "#transfer-modal",
-                    init: function(){
-                        document.querySelector('#transfer-modal .dz-hidden-input').setAttribute('id', 'transfer-modal-hidden-file-input');
-                    }
-                }
             },
             canSave: function(){
                 if(isNaN(Date.parse(this.transferData.date))){
@@ -288,17 +263,17 @@
                 }
             },
             setModalState: function(modal){
-                Store.dispatch('currentModal', modal);
+                store.dispatch('currentModal', modal);
             },
             openModal: function(){
-                this.setModalState(Store.getters.STORE_MODAL_TRANSFER);
+                this.setModalState(store.getters.STORE_MODAL_TRANSFER);
                 this.isVisible = true;
                 this.resetData();
                 this.updateAccountTypeMeta('from');
                 this.updateAccountTypeMeta('to');
             },
             closeModal: function(){
-                this.setModalState(Store.getters.STORE_MODAL_NONE);
+                this.setModalState(store.getters.STORE_MODAL_NONE);
                 this.isVisible = false;
                 this.resetData();
                 this.updateAccountTypeMeta('from');
@@ -313,7 +288,7 @@
                 return this.hasValidAccountTypeBeenSelected(accountTypeId) && accountTypeId !== this.accountTypeMeta.externalAccountTypeId;
             },
             saveTransfer: function(){
-                this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
+                this.$eventBus.broadcast(this.$eventBus.EVENT_LOADING_SHOW());
 
                 let transferData = {};
                 if(!isNaN(Date.parse(this.transferData.date))){
@@ -358,13 +333,13 @@
 
                 this.entryObject.saveTransfer(transferData).then(function(notification){
                     if(!_.isEmpty(notification)){
-                        this.$eventHub.broadcast(
-                            this.$eventHub.EVENT_NOTIFICATION,
+                        this.$eventBus.broadcast(
+                            this.$eventBus.EVENT_NOTIFICATION(),
                             {type: notification.type, message: notification.message}
                         );
                     }
-                    this.$eventHub.broadcast(this.$eventHub.EVENT_ACCOUNT_UPDATE);
-                    this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, this.currentPage);
+                    this.$eventBus.broadcast(this.$eventBus.EVENT_ACCOUNT_UPDATE());
+                    this.$eventBus.broadcast(this.$eventBus.EVENT_ENTRY_TABLE_UPDATE(), this.currentPage);
                     this.closeModal();
                 }.bind(this));
             },
@@ -376,32 +351,18 @@
                 this.accountTypeMeta[accountTypeSelect].isEnabled = !account.disabled && !accountType.disabled;
             },
             resetData: function(){
-                this.dropzoneRef.removeAllFiles();
-                this.defaultData.date = this.currentDate;
-                this.defaultData.attachments = [];  // for whatever reason clonedObject.push() also pushes to the original. This is a work around.
-                this.transferData = _.clone(this.defaultData);
-                this.accountTypeMeta.from = _.clone(this.accountTypeMeta.default);
-                this.accountTypeMeta.to = _.clone(this.accountTypeMeta.default);
-            },
-            dropzoneSuccessfulUpload(file, response){
-                // response: {'uuid', 'name', 'tmp_filename'}
-                this.transferData.attachments.push(response);
-                this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, {type: SnotifyStyle.info, message: "uploaded: "+response.name});
-            },
-            dropzoneUploadError(file, message, xhr){
-                // response: {'error'}
-                this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, {type: SnotifyStyle.warning, message: "file upload failure: "+message.error});
-            },
-            dropzoneRemoveUpload(file){
-                let removedAttachmentObject = JSON.parse(file.xhr.response);
-                this.transferData.attachments = this.transferData.attachments.filter(function(attachment){
-                    return attachment.uuid !== removedAttachmentObject.uuid;
-                });
+              this.$eventBus.broadcast(this.$eventBus.EVENT_FILE_DROP_UPDATE(), {modal: 'transfer-modal', task: 'enable'});
+              this.$eventBus.broadcast(this.$eventBus.EVENT_FILE_DROP_UPDATE(), {modal: 'transfer-modal', task: 'clear'});
+              this.defaultData.date = this.currentDate;
+              this.defaultData.attachments = [];  // for whatever reason clonedObject.push() also pushes to the original. This is a work around.
+              this.transferData = _.clone(this.defaultData);
+              this.accountTypeMeta.from = _.clone(this.accountTypeMeta.default);
+              this.accountTypeMeta.to = _.clone(this.accountTypeMeta.default);
             }
         },
         created: function(){
-            this.$eventHub.listen(this.$eventHub.EVENT_TRANSFER_MODAL_OPEN, this.openModal);
-            this.$eventHub.listen(this.$eventHub.EVENT_TRANSFER_MODAL_CLOSE, this.closeModal);
+            this.$eventBus.listen(this.$eventBus.EVENT_TRANSFER_MODAL_OPEN(), this.openModal);
+            this.$eventBus.listen(this.$eventBus.EVENT_TRANSFER_MODAL_CLOSE(), this.closeModal);
         },
         mounted: function(){
             this.resetData();
@@ -410,9 +371,6 @@
 </script>
 
 <style lang="scss" scoped>
-    @import '~dropzone/dist/min/dropzone.min.css';
-    @import "~vue2-dropzone/dist/vue2Dropzone.min.css";
-
     .field-label.is-normal{
         font-size: 0.875rem;
     }
