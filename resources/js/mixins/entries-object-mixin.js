@@ -26,7 +26,7 @@ export const entriesObjectMixin = {
             this.entriesObject
                 .fetch(0, filterParameters)
                 .then(function(notification){
-                    this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, notification);
+                    this.$eventBus.broadcast(this.$eventBus.EVENT_NOTIFICATION(), notification);
                 }.bind(this))
                 .finally(this.dataHasBeenFetched);
         },
@@ -40,14 +40,14 @@ export const entriesObjectMixin = {
         },
         dataHasBeenFetched: function(){
             this.dataLoaded = true;
-            this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
+            this.$eventBus.broadcast(this.$eventBus.EVENT_LOADING_HIDE());
         },
         chainBatchRequest: function(fetchCount, filterParameters, totalPageCount=null){
             this.entriesObject
                 .fetch(fetchCount, filterParameters)
                 .then(function(notification){
                     // fire off a notification if needed
-                    this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, notification);
+                    this.$eventBus.broadcast(this.$eventBus.EVENT_NOTIFICATION(), notification);
 
                     this.largeBatchEntryData = this.largeBatchEntryData.concat(this.rawEntriesData);
 
@@ -60,7 +60,7 @@ export const entriesObjectMixin = {
                         this.chainBatchRequest(fetchCount, filterParameters, totalPageCount)
                     } else {
                         this.dataLoaded = true;
-                        this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
+                        this.$eventBus.broadcast(this.$eventBus.EVENT_LOADING_HIDE());
                     }
                 }.bind(this))
         }

@@ -1,13 +1,11 @@
 <template>
     <div id="stats-summary">
         <section id="stats-form-summary" class="section">
-            <account-account-type-toggling-selector
-                id="summary-chart"
-                v-bind:account-or-account-type-id="accountOrAccountTypeId"
-                v-bind:account-or-account-type-toggled="accountOrAccountTypeToggle"
-                v-on:update-select="accountOrAccountTypeId = $event"
-                v-on:update-toggle="accountOrAccountTypeToggle = $event"
-            ></account-account-type-toggling-selector>
+          <account-account-type-toggling-selector
+              id="summary-chart"
+              v-model:account-or-account-type-id="accountOrAccountTypeId"
+              v-model:account-or-account-type-toggled="accountOrAccountTypeToggle"
+          ></account-account-type-toggling-selector>
 
             <div class="field">
                 <bulma-calendar
@@ -24,8 +22,7 @@
         <section class="section stats-results-summary" v-if="areEntriesAvailable && dataLoaded">
             <include-transfers-checkbox
                 chart-name="summary"
-                v-bind:include-transfers="includeTransfers"
-                v-on:update-checkradio="includeTransfers = $event"
+                v-model:include-transfers="includeTransfers"
             ></include-transfers-checkbox>
 
             <table class="table">
@@ -81,19 +78,21 @@
 </template>
 
 <script>
+    // components
     import bulmaCalendar from '../bulma-calendar';
     import AccountAccountTypeTogglingSelector from "../account-account-type-toggling-selector";
     import IncludeTransfersCheckbox from "../include-transfers-checkbox";
+    // utilities
     import {Currency} from "../../currency";
-
+    // mixins
     import {accountsObjectMixin} from "../../mixins/accounts-object-mixin";
     import {accountTypesObjectMixin} from "../../mixins/account-types-object-mixin";
     import {entriesObjectMixin} from "../../mixins/entries-object-mixin";
-    import {statsChartMixin} from "../../mixins/stats-chart-mixin";
+    import {statsChartFormMixin} from "../../mixins/stats-chart-form-mixin";
 
     export default {
         name: "summary-chart",
-        mixins: [statsChartMixin, entriesObjectMixin, accountsObjectMixin, accountTypesObjectMixin],
+        mixins: [statsChartFormMixin, entriesObjectMixin, accountsObjectMixin, accountTypesObjectMixin],
         components: {IncludeTransfersCheckbox, AccountAccountTypeTogglingSelector, bulmaCalendar},
         data: function(){
           return {
@@ -101,7 +100,7 @@
               currencyObject: new Currency(),
 
               accountOrAccountTypeToggle: true,
-              accountOrAccountTypeId: '',
+              accountOrAccountTypeId: null,
           }
         },
         computed: {
@@ -175,12 +174,11 @@
         },
         methods: {
             tooltipContent: function(text){
-                return {
-                    content: text,
-                    html: true,
-                    placement: 'right',
-                    classes: 'is-size-7',
-                }
+              return {
+                content: '<span class="is-size-7 has-text-weight-semibold">'+text+'</span>',
+                html: true,
+                placement: 'right',
+              }
             },
             filteredEntries: function(isExpense){
                 return this.largeBatchEntryData
@@ -199,7 +197,7 @@
             },
 
             displayData: function(){
-                this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
+                this.$eventBus.broadcast(this.$eventBus.EVENT_LOADING_SHOW());
 
                 let chartDataFilterParameters = {
                     start_date: this.getBulmaCalendar.calendarStartDate(),
@@ -230,16 +228,19 @@
 </script>
 
 <style lang="scss" scoped>
-    @import '~bulma/sass/utilities/initial-variables';
-    @import '../../../sass/stats-chart';
-    .left-border{
-        border-left: 1px solid $grey-lighter;
-    }
-    table:nth-child(3) th:first-child{
-        width: 2%;
-    }
-    table:nth-child(3) th:nth-child(2),
-    table:nth-child(3) th:nth-child(3){
-        width: 48%;
-    }
+  // tooltip
+  @import "~v-tooltip/dist/v-tooltip.css";
+
+  @import '../../../sass/stats-chart';
+  @import '~bulma/sass/utilities/initial-variables';
+  .left-border{
+      border-left: 1px solid $grey-lighter;
+  }
+  table:nth-child(3) th:first-child{
+      width: 2%;
+  }
+  table:nth-child(3) th:nth-child(2),
+  table:nth-child(3) th:nth-child(3){
+      width: 48%;
+  }
 </style>

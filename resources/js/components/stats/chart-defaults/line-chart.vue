@@ -1,19 +1,26 @@
-<script>
-    import { Line, mixins } from 'vue-chartjs'
+<template>
+  <BaseLineChart v-bind="lineChartProps"></BaseLineChart>
+</template>
 
-    export default {
-        name: "line-chart",
-        extends: Line,
-        mixins: [mixins.reactiveProp],
-        props: {
-            options: {
-                type: Object,
-                default: null
-            }
-        },
-        mounted () {
-            // Overwriting base render method with actual data.
-            this.renderChart(this.chartData, this.options);
-        }
+<script>
+import BaseChart from './base-chart';
+import {LineChart} from 'vue-chart-3';
+
+export default {
+  name: 'line-chart',
+  extends: BaseChart,
+  components: {
+    BaseLineChart: LineChart
+  },
+  computed: {
+    lineChartProps(){
+      this.chartProps.cssClasses = 'line-chart';
+      return this.chartProps;
     }
+  }
+}
 </script>
+
+<style scoped>
+
+</style>

@@ -1,43 +1,33 @@
-import Vue from 'vue';
-import Store from './store';
+// vue
+import { createApp } from 'vue';
 
-import Snotify from 'vue-snotify';
-Vue.use(Snotify, {toast: {timeout: 8000}});    // 8 seconds
-
-import VTooltip from 'v-tooltip';
-Vue.use(VTooltip);
-
-import eventHub from "./plugins/eventHub";
-Vue.use(eventHub);
-
+// components
 import LoadingModal from './components/loading-modal';
 import Navbar from './components/navbar';
 import Notification from './components/notification';
 import Stats from "./components/stats/stats";
 import StatsNav from "./components/stats/stats-nav";
 
+// objects
 import {Accounts} from "./accounts";
 import {AccountTypes} from "./account-types";
 import {Tags} from "./tags";
 import {Version} from './version';
 
-new Vue({
-    el: "#app",
-    components: {
+const appStats = createApp({
+    components:{
         LoadingModal,
         Navbar,
         Notification,
         Stats,
         StatsNav
     },
-    store: Store,
-    computed:{ },
     methods: {
         displayNotification: function(notification){
-            this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, notification);
+            this.$eventBus.broadcast(this.$eventBus.EVENT_NOTIFICATION(), notification);
         },
     },
-    mounted: function(){
+    mounted() {
         let accounts = new Accounts();
         accounts.fetch().then(this.displayNotification.bind(this));
 
@@ -51,3 +41,21 @@ new Vue({
         version.fetch();
     }
 });
+
+// store
+import { store } from './store';
+appStats.use(store);
+
+// eventbus/emitter
+import eventBus from "./plugins/eventBus";
+appStats.use(eventBus);
+
+// notifications/toast
+import Notifications from '@kyvg/vue3-notification'
+appStats.use(Notifications);
+
+// tooltip
+import VTooltipPlugin from 'v-tooltip';
+appStats.use(VTooltipPlugin);
+
+appStats.mount('#app-stats');

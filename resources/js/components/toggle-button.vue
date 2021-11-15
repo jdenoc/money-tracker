@@ -54,18 +54,18 @@ export default {
   --toggle-width: 12rem;
   --toggle-font-size: 1.25rem;
 
-  // active (enbled)
+  // enbled
   --toggle-bg-on: #{$info};
   --toggle-border-on: #{$info};
   --toggle-text-on: #{$white};
-  // income (enabled)
+  // disabled
   --toggle-bg-off: #{$grey-light};
   --toggle-border-off: #{$grey-light};
   --toggle-text-off: #{$white};
 
   :deep(.toggle-handle){  // pass style to child component
-    height: 2rem;
-    width: 2rem;
+    height: var(--toggle-height);
+    width: var(--toggle-height);
   }
 
   :deep(.toggle-label){   // pass style to child component

@@ -8,10 +8,12 @@
 </template>
 
 <script>
+    // components
     import DistributionChart from "./distribution-chart";
     import SummaryChart from "./summary-chart";
     import TrendingChart from "./trending-chart";
     import TagsChart from "./tags-chart";
+    // mixins
     import {statsNavMixin} from "../../mixins/stats-nav-mixin";
 
     export default {
@@ -19,16 +21,16 @@
         mixins: [statsNavMixin],
         components: {DistributionChart, SummaryChart, TagsChart, TrendingChart},
         created: function(){
-            this.$eventHub.listen(this.$eventHub.EVENT_STATS_SUMMARY, function(){
+            this.$eventBus.listen(this.$eventBus.EVENT_STATS_SUMMARY(), function(){
                 this.makeChartVisible(this.chartNameSummary);
             }.bind(this));
-            this.$eventHub.listen(this.$eventHub.EVENT_STATS_TRENDING, function(){
+            this.$eventBus.listen(this.$eventBus.EVENT_STATS_TRENDING(), function(){
                 this.makeChartVisible(this.chartNameTrending);
             }.bind(this));
-            this.$eventHub.listen(this.$eventHub.EVENT_STATS_TAGS, function(){
+            this.$eventBus.listen(this.$eventBus.EVENT_STATS_TAGS(), function(){
                 this.makeChartVisible(this.chartNameTags);
             }.bind(this));
-            this.$eventHub.listen(this.$eventHub.EVENT_STATS_DISTRIBUTION, function(){
+            this.$eventBus.listen(this.$eventBus.EVENT_STATS_DISTRIBUTION(), function(){
                 this.makeChartVisible(this.chartNameDistribution);
             }.bind(this));
         }

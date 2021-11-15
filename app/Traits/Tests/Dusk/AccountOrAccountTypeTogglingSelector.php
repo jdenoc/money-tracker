@@ -141,8 +141,8 @@ trait AccountOrAccountTypeTogglingSelector {
                 // choose the account/account-type value
                 ->select(self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT, $selector_value);
 
-            $option_class = $component->attribute(self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT.' option', 'class');
             if(!$this->_disable_checkbox_checked){
+                $option_class = $component->attribute(self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT.' option', 'class');
                 Assert::assertStringNotContainsString('disabled-option', $option_class);
             }
         });

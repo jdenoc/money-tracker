@@ -29,7 +29,7 @@ class StatsTrendingTest extends StatsBase {
     use DuskTraitStatsSidePanel;
 
     private static $SELECTOR_STATS_TRENDING = "#stats-trending";
-    private static $SELECTOR_CHART_TRENDING = 'canvas#line-chart';
+    private static $SELECTOR_CHART_TRENDING = '.line-chart canvas';
 
     private static $VUE_KEY_EXPENSEDATA = "expenseData";
     private static $VUE_KEY_INCOMEDATA = "incomeData";
@@ -164,7 +164,7 @@ class StatsTrendingTest extends StatsBase {
      * @group stats-trending-1
      * test (see provider)/25
      */
-    public function testGenerateTrendingChart($datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $include_transfers){
+    public function testGenerateTrendingChart($datepicker_start, $datepicker_end, bool $is_switch_toggled, bool $is_random_selector_value, bool $are_disabled_select_options_available, bool $include_transfers){
         $accounts = collect($this->getApiAccounts());
         $account_types = collect($this->getApiAccountTypes());
 
@@ -223,11 +223,11 @@ class StatsTrendingTest extends StatsBase {
 
                     //  line-chart graph canvas should be visible
                     $stats_results->assertVisible(self::$SELECTOR_CHART_TRENDING);
-                })
-                ->assertVue(self::$VUE_KEY_INCOMEDATA, $income_data, self::$SELECTOR_STATS_TRENDING)
-                ->assertVue(self::$VUE_KEY_EXPENSEDATA, $expense_data, self::$SELECTOR_STATS_TRENDING)
-                ->assertVue(self::$VUE_KEY_COMPARISONDATA, $comparison_data, self::$SELECTOR_STATS_TRENDING)
-                ->assertVue(self::$VUE_KEY_PERIODTOTALSDATA, $period_totals_data, self::$SELECTOR_STATS_TRENDING);
+                });
+            $this->assertVueAttribute($browser, self::$SELECTOR_STATS_TRENDING, self::$VUE_KEY_INCOMEDATA, $income_data);
+            $this->assertVueAttribute($browser, self::$SELECTOR_STATS_TRENDING, self::$VUE_KEY_EXPENSEDATA, $expense_data);
+            $this->assertVueAttribute($browser, self::$SELECTOR_STATS_TRENDING, self::$VUE_KEY_COMPARISONDATA, $comparison_data);
+            $this->assertVueAttribute($browser, self::$SELECTOR_STATS_TRENDING, self::$VUE_KEY_PERIODTOTALSDATA, $period_totals_data);
         });
     }
 

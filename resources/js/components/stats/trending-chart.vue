@@ -3,10 +3,8 @@
         <section id="stats-form-trending" class="section">
             <account-account-type-toggling-selector
                 id="trending-chart"
-                v-bind:account-or-account-type-id="accountOrAccountTypeId"
-                v-bind:account-or-account-type-toggled="accountOrAccountTypeToggle"
-                v-on:update-select="accountOrAccountTypeId = $event"
-                v-on:update-toggle="accountOrAccountTypeToggle = $event"
+                v-model:account-or-account-type-id="accountOrAccountTypeId"
+                v-model:account-or-account-type-toggled="accountOrAccountTypeToggle"
             ></account-account-type-toggling-selector>
 
             <div class="field">
@@ -25,13 +23,12 @@
         <section v-if="areEntriesAvailable && dataLoaded" class="section stats-results-trending">
             <include-transfers-checkbox
                 chart-name="trending"
-                v-bind:include-transfers="includeTransfers"
-                v-on:update-checkradio="includeTransfers = $event"
+                v-model:include-transfers="includeTransfers"
             ></include-transfers-checkbox>
             <line-chart
                 v-if="dataLoaded"
                 v-bind:chart-data="chartData"
-                v-bind:options="chartOptions"
+                v-bind:chart-options="chartOptions"
             >Your browser does not support the canvas element.</line-chart>
         </section>
         <section v-else class="section has-text-centered has-text-weight-semibold is-size-6 stats-results-trending">
@@ -41,25 +38,31 @@
 </template>
 
 <script>
+    // utilities
+    import _ from 'lodash';
+    import 'chartjs-adapter-moment';  // required for options.scales.time & options.scales.ticks
+    // components
     import AccountAccountTypeTogglingSelector from "../account-account-type-toggling-selector";
     import BulmaCalendar from "../bulma-calendar";
     import IncludeTransfersCheckbox from "../include-transfers-checkbox";
     import LineChart from "./chart-defaults/line-chart";
+    // mixins
+    import {bulmaColorsMixin} from "../../mixins/bulma-colors-mixin";
     import {entriesObjectMixin} from "../../mixins/entries-object-mixin";
-    import {statsChartMixin} from "../../mixins/stats-chart-mixin";
+    import {statsChartFormMixin} from "../../mixins/stats-chart-form-mixin";
 
     export default {
         name: "trending-chart",
-        mixins: [entriesObjectMixin, statsChartMixin],
+        mixins: [entriesObjectMixin, statsChartFormMixin, bulmaColorsMixin],
         components: {IncludeTransfersCheckbox, BulmaCalendar, LineChart, AccountAccountTypeTogglingSelector},
         data: function(){
           return {
             chartConfig: {
               colors: {
-                blue: 'rgba(0, 178, 255, 1)',
-                green: 'rgba(4, 212, 4, 1)',
-                purple: 'rgba(128,0,128,1)',
-                red: 'rgba(255, 64, 53, 1)',
+                blue: '',
+                green: '',
+                purple: '',
+                red: '',
               },
               datasetDefault: {
                 fill: false
@@ -68,7 +71,7 @@
             },
 
             accountOrAccountTypeToggle: true,
-            accountOrAccountTypeId: '',
+            accountOrAccountTypeId: null,
           }
         },
         computed: {
@@ -172,18 +175,18 @@
             return {
               responsive: true,
               maintainAspectRatio: false,
-              title: {
-                display: true,
-                text: this.chartConfig.titleText
+              plugins: {
+                title: {
+                  display: true,
+                  text: this.chartConfig.titleText
+                },
               },
               scales: {
-                xAxes: [{
-                  display: true,
-                  scaleLabel: {
-                    display: true,
+                x: {
+                  type: 'time',
+                  title: {
                     labelString: 'entry date'
                   },
-                  type: 'time',
                   time: {
                     unit: this.chartConfig.timeUnit,
                   },
@@ -192,7 +195,7 @@
                     maxRotation: 90,
                     minRotation: 90
                   }
-                }],
+                }
               }
             };
           },
@@ -244,7 +247,7 @@
             },
 
             displayData: function(){
-                this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
+                this.$eventBus.broadcast(this.$eventBus.EVENT_LOADING_SHOW());
 
                 let chartDataFilterParameters = {
                     start_date: this.getBulmaCalendar.calendarStartDate(),
@@ -263,6 +266,10 @@
             },
         },
         mounted: function(){
+          this.chartConfig.colors.blue = this.colorBlue;
+          this.chartConfig.colors.green = this.colorGreen;
+          this.chartConfig.colors.purple = this.colorPurple;
+          this.chartConfig.colors.red = this.colorRed;
           this.getBulmaCalendar.setBulmaCalendarDateRange(this.currentMonthStartDate, this.currentMonthEndDate);
         }
     }

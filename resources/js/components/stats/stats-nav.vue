@@ -45,19 +45,19 @@
         methods:{
             showSummaryChart: function(){
                 this.makeChartVisible(this.chartNameSummary);
-                this.$eventHub.broadcast(this.$eventHub.EVENT_STATS_SUMMARY);
+                this.$eventBus.broadcast(this.$eventBus.EVENT_STATS_SUMMARY());
             },
             showTrendingChart: function(){
                 this.makeChartVisible(this.chartNameTrending);
-                this.$eventHub.broadcast(this.$eventHub.EVENT_STATS_TRENDING);
+                this.$eventBus.broadcast(this.$eventBus.EVENT_STATS_TRENDING());
             },
             showTagsChart: function(){
                 this.makeChartVisible(this.chartNameTags);
-                this.$eventHub.broadcast(this.$eventHub.EVENT_STATS_TAGS);
+                this.$eventBus.broadcast(this.$eventBus.EVENT_STATS_TAGS());
             },
             showDistributionChart: function(){
                 this.makeChartVisible(this.chartNameDistribution);
-                this.$eventHub.broadcast(this.$eventHub.EVENT_STATS_DISTRIBUTION);
+                this.$eventBus.broadcast(this.$eventBus.EVENT_STATS_DISTRIBUTION());
             }
         },
         mounted: function(){

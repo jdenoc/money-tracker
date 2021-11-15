@@ -3,21 +3,19 @@
         <section id="stats-form-tags"  class="section">
             <account-account-type-toggling-selector
                 id="tags-chart"
-                v-bind:account-or-account-type-id="accountOrAccountTypeId"
-                v-bind:account-or-account-type-toggled="accountOrAccountTypeToggle"
-                v-on:update-toggle="accountOrAccountTypeToggle = $event"
-                v-on:update-select="accountOrAccountTypeId = $event"
+                v-model:account-or-account-type-id="accountOrAccountTypeId"
+                v-model:account-or-account-type-toggled="accountOrAccountTypeToggle"
             ></account-account-type-toggling-selector>
 
             <div class="field is-horizontal">
                 <div class="field-label is-normal"><label class="label">Tags:</label></div>
                 <div class="field-body"><div class="field"><div class="control" v-bind:class="{'is-loading': !areTagsSet}">
-                    <TagsInput
-                        tagsInputName="stats-tags-chart-tag-input"
-                        v-bind:existingTags="listTags"
-                        v-bind:selected-tags="chartTagIds"
-                        v-on:update-tags-input="chartTagIds = $event"
-                    ></TagsInput>
+                  <TagsInput
+                    tagsInputName="stats-tags-chart-tag-input"
+                    v-model:tags-input="chartTagIds"
+                    v-bind:existing-tags="listTags"
+                    v-bind:selected-tags="chartTagIds"
+                  ></TagsInput>
                 </div></div></div>
             </div>
 
@@ -37,13 +35,12 @@
         <section v-if="areEntriesAvailable && dataLoaded" class="section stats-results-tags">
             <include-transfers-checkbox
                 chart-name="tags"
-                v-bind:include-transfers="includeTransfers"
-                v-on:update-checkradio="includeTransfers = $event"
+                v-model:include-transfers="includeTransfers"
             ></include-transfers-checkbox>
             <bar-chart
                 v-if="dataLoaded"
                 v-bind:chart-data="chartData"
-                v-bind:options="chartOptions"
+                v-bind:chart-options="chartOptions"
             >Your browser does not support the canvas element.</bar-chart>
         </section>
         <section v-else class="section has-text-centered has-text-weight-semibold is-size-6 stats-results-tags">
@@ -53,60 +50,63 @@
 </template>
 
 <script>
+    // utilities
+    import _ from 'lodash';
+    // components
     import AccountAccountTypeTogglingSelector from "../account-account-type-toggling-selector";
     import BarChart from "./chart-defaults/bar-chart";
     import BulmaCalendar from '../bulma-calendar';
     import IncludeTransfersCheckbox from "../include-transfers-checkbox";
     import TagsInput from "../tags-input";
-
+    // mixins
     import {entriesObjectMixin} from "../../mixins/entries-object-mixin";
-    import {statsChartMixin} from "../../mixins/stats-chart-mixin";
+    import {statsChartFormMixin} from "../../mixins/stats-chart-form-mixin";
     import {tagsObjectMixin} from "../../mixins/tags-object-mixin";
 
     export default {
         name: "tags-chart",
-        mixins: [entriesObjectMixin, statsChartMixin, tagsObjectMixin],
+        mixins: [entriesObjectMixin, statsChartFormMixin, tagsObjectMixin],
         components: {AccountAccountTypeTogglingSelector, BarChart, BulmaCalendar, IncludeTransfersCheckbox, TagsInput},
         data: function(){
             return {
                 accountOrAccountTypeToggle: true,
-                accountOrAccountTypeId: '',
+                accountOrAccountTypeId: null,
                 chartTagIds: []
             }
         },
         computed: {
             chartData: function(){
-                let chartData = this.standardiseData;
-                let chartBgColors = [];
-                for(let i=0; i<chartData.length; i++){
-                    chartBgColors.push(this.randomColor());
-                }
-                return {
-                    labels: chartData.map(function(d){ return d.x }),
-                    datasets: [{
-                        data: chartData,
-                        backgroundColor: chartBgColors
-                    }]
-                };
+              let chartData = this.standardiseData;
+              let chartBgColors = [];
+              for(let i=0; i<chartData.length; i++){
+                  chartBgColors.push(this.randomColor());
+              }
+
+              return {
+                labels: chartData.map(function(d){ return d.x }),
+                datasets: [{
+                  data: chartData,
+                  backgroundColor: chartBgColors
+                }]
+              };
             },
             chartOptions: function(){
-                return {
-                    maintainAspectRatio: false,
-                    title: {
-                        display: true,
-                        text: this.chartConfig.titleText
-                    },
-                    legend: {
-                        display: false
-                    },
-                    scales: {
-                        yAxes: [{
-                            ticks: {
-                                beginAtZero: true
-                            }
-                        }]
-                    }
-                };
+              return {
+                plugins: {
+                  title: {
+                    display: true,
+                    text: this.chartConfig.titleText
+                  },
+                  legend: {
+                    display: false
+                  }
+                },
+                scales: {
+                  y: {
+                    beginAtZero: true
+                  }
+                }
+              }
             },
 
             getBulmaCalendar: function(){
@@ -149,7 +149,7 @@
             },
 
             makeRequest: function(){
-                this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
+                this.$eventBus.broadcast(this.$eventBus.EVENT_LOADING_SHOW());
 
                 let chartDataFilterParameters = {
                     start_date: this.getBulmaCalendar.calendarStartDate(),

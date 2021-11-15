@@ -32,7 +32,7 @@ class StatsTagsTest extends StatsBase {
     use DuskTraitStatsSidePanel;
 
     private static $SELECTOR_STATS_TAGS = "#stats-tags";
-    private static $SELECTOR_CHART_TAGS = 'canvas#bar-chart';
+    private static $SELECTOR_CHART_TAGS = '.bar-chart canvas';
 
     private static $VUE_KEY_STANDARDISEDATA = "standardiseData";
 
@@ -257,8 +257,8 @@ class StatsTagsTest extends StatsBase {
                     }
 
                     $stats_results_area->assertVisible(self::$SELECTOR_CHART_TAGS);
-                })
-                ->assertVue(self::$VUE_KEY_STANDARDISEDATA, $this->standardiseData($entries, $tags), self::$SELECTOR_STATS_TAGS);
+                });
+            $this->assertVueAttribute($browser, self::$SELECTOR_STATS_TAGS, self::$VUE_KEY_STANDARDISEDATA, $this->standardiseData($entries, $tags));
         });
     }
 

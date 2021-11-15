@@ -1,18 +1,26 @@
-<script>
-    import { Pie, mixins } from 'vue-chartjs';
+<template>
+  <BasePieChart v-bind="pieChartProps"></BasePieChart>
+</template>
 
-    export default {
-        name: "pie-chart",
-        extends: Pie,
-        mixins: [mixins.reactiveProp],
-        props: {
-            options: {
-                type: Object,
-                default: null
-            }
-        },
-        mounted () {
-            this.renderChart(this.chartData, this.options)
-        }
+<script>
+import BaseChart from './base-chart';
+import {PieChart} from 'vue-chart-3';
+
+export default {
+  name: 'pie-chart',
+  extends: BaseChart,
+  components: {
+    BasePieChart: PieChart
+  },
+  computed: {
+    pieChartProps(){
+      this.chartProps.cssClasses = 'pie-chart';
+      return this.chartProps;
     }
+  }
+}
 </script>
+
+<style scoped>
+
+</style>

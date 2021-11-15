@@ -24,7 +24,7 @@ directory.fontAwesome = directory.node+'@fortawesome/fontawesome-free/';
 mix
     .extract(['vue', 'lodash', 'axios', 'mitt'])
     .js(directory.resource+'js/app-home.js', directory.js).vue()
-    // .js(directory.resource+'js/app-stats.js', directory.js).vue()
+    .js(directory.resource+'js/app-stats.js', directory.js).vue()
     // font-awesome
     .copy(directory.fontAwesome+'css/all.min.css', directory.css+'font-awesome.css')
     .copy(directory.fontAwesome+'webfonts/fa-solid-900.woff2', directory.webfont+'fa-solid-900.woff2')

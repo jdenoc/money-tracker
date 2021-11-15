@@ -1,6 +1,4 @@
-import {SnotifyStyle} from "vue-snotify";
-
-export const statsChartMixin = {
+export const statsChartFormMixin = {
     data: function(){
         return {
             dataLoaded: false,
@@ -27,13 +25,14 @@ export const statsChartMixin = {
     methods: {
         tbdFeatureNotification: function(){
             console.debug("Feature not yet enabled");
-            this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, {type: SnotifyStyle.info, message: "Feature not yet enabled"});
+            this.$eventBus.broadcast(this.$eventBus.EVENT_NOTIFICATION(), {type: 'info', message: "Feature not yet enabled"});
         },
         isoDateFormat: function(d){
             // YYYY-mm-dd
             return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2);
         },
         randomColor: function(){
+            // TODO: consider swapping to use the bulma colors
             let max=255, min=0;
             let r=Math.floor(Math.random() * (max - min + 1) + min);
             let g=Math.floor(Math.random() * (max - min + 1) + min);

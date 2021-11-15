@@ -6,7 +6,7 @@
     @endcomponent
 </head>
 <body>
-<div id="app">
+<div id="app-stats">
     <navbar page-name="stats"></navbar>
     <div class="columns is-gapless">
         <div class="column is-one-fifth">

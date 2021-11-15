@@ -1,18 +1,26 @@
-<script>
-    import { Bar, mixins } from 'vue-chartjs';
+<template>
+  <BaseBarChart v-bind="barChartProps"></BaseBarChart>
+</template>
 
-    export default {
-        name: "bar-chart",
-        extends: Bar,
-        mixins: [mixins.reactiveProp],
-        props: {
-            options: {
-                type: Object,
-                default: null
-            }
-        },
-        mounted () {
-            this.renderChart(this.chartData, this.options)
-        }
+<script>
+import BaseChart from './base-chart';
+import {BarChart} from 'vue-chart-3';
+
+export default {
+  name: 'bar-chart',
+  extends: BaseChart,
+  components: {
+    BaseBarChart: BarChart
+  },
+  computed:{
+    barChartProps(){
+      this.chartProps.cssClasses = 'bar-chart';
+      return this.chartProps;
     }
+  }
+}
 </script>
+
+<style scoped>
+
+</style>

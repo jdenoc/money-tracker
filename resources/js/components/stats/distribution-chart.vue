@@ -3,23 +3,17 @@
         <section id="stats-form-distribution" class="section">
             <account-account-type-toggling-selector
                 id="distribution-chart"
-                v-bind:account-or-account-type-id="accountOrAccountTypeId"
-                v-bind:account-or-account-type-toggled="accountOrAccountTypeToggle"
-                v-on:update-select="accountOrAccountTypeId = $event"
-                v-on:update-toggle="accountOrAccountTypeToggle = $event"
+                v-model:account-or-account-type-id="accountOrAccountTypeId"
+                v-model:account-or-account-type-toggled="accountOrAccountTypeToggle"
             ></account-account-type-toggling-selector>
 
             <div class="field"><div class="control">
-                <toggle-button
-                    id="distribution-expense-or-income"
-                    v-model="expenseOrIncomeToggle"
-                    v-bind:value="expenseOrIncomeToggle"
-                    v-bind:labels="toggleButtonProperties.labels"
-                    v-bind:color="toggleButtonProperties.colors"
-                    v-bind:height="toggleButtonProperties.height"
-                    v-bind:width="toggleButtonProperties.width"
-                    v-bind:sync="true"
-                />
+              <ToggleButton
+                  button-name="distribution-expense-or-income"
+                  v-model:toggle-state="expenseOrIncomeToggle"
+                  label-checked="Expense"
+                  label-unchecked="Income"
+              ></ToggleButton>
             </div></div>
 
             <div class="field">
@@ -36,13 +30,12 @@
         <section v-if="areEntriesAvailable && dataLoaded" class="section stats-results-distribution">
             <include-transfers-checkbox
                 chart-name="distribution"
-                v-bind:include-transfers="includeTransfers"
-                v-on:update-checkradio="includeTransfers = $event"
+                v-model:include-transfers="includeTransfers"
             ></include-transfers-checkbox>
             <pie-chart
                 v-if="dataLoaded"
                 v-bind:chart-data="chartData"
-                v-bind:options="chartOptions"
+                v-bind:chart-options="chartOptions"
             >Your browser does not support the canvas element.</pie-chart>
         </section>
         <section v-else class="section has-text-centered has-text-weight-semibold is-size-6 stats-results-distribution">
@@ -52,26 +45,27 @@
 </template>
 
 <script>
+    // components
     import AccountAccountTypeTogglingSelector from "../account-account-type-toggling-selector";
     import bulmaCalendar from "../bulma-calendar";
     import IncludeTransfersCheckbox from "../include-transfers-checkbox";
     import PieChart from './chart-defaults/pie-chart';
-    import {ToggleButton} from 'vue-js-toggle-button';
-
+    import ToggleButton from '../toggle-button';
+    // mixins
     import {bulmaColorsMixin} from "../../mixins/bulma-colors-mixin";
     import {entriesObjectMixin} from "../../mixins/entries-object-mixin";
-    import {statsChartMixin} from "../../mixins/stats-chart-mixin";
+    import {statsChartFormMixin} from "../../mixins/stats-chart-form-mixin";
     import {tagsObjectMixin} from "../../mixins/tags-object-mixin";
 
     export default {
         name: "distribution-chart",
-        mixins: [bulmaColorsMixin, entriesObjectMixin, statsChartMixin, tagsObjectMixin],
+        mixins: [bulmaColorsMixin, entriesObjectMixin, statsChartFormMixin, tagsObjectMixin],
         components: {IncludeTransfersCheckbox, AccountAccountTypeTogglingSelector, bulmaCalendar, PieChart, ToggleButton},
         data: function(){
             return {
                 expenseOrIncomeToggle: true,
                 accountOrAccountTypeToggle: true,
-                accountOrAccountTypeId: '',
+                accountOrAccountTypeId: null,
             }
         },
         computed: {
@@ -94,14 +88,16 @@
                 };
             },
             chartOptions: function(){
-                return {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    title: {
-                        display: true,
-                        text: this.chartConfig.titleText
-                    },
+              return {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  title: {
+                    display: true,
+                    text: this.chartConfig.titleText
+                  },
                 }
+              }
             },
             standardiseData: function(){
                 let standardisedChartData = [];
@@ -125,14 +121,6 @@
 
                 return _.sortBy(Object.values(standardisedChartData), function(o){ return o.x;});
             },
-            toggleButtonProperties: function(){
-                return {
-                    colors: {checked: this.colorGreyLight, unchecked: this.colorGreyLight},
-                    labels: {checked: 'Expense', unchecked: 'Income'},
-                    height: 40,
-                    width: 475,
-                };
-            },
         },
         methods: {
             setChartTitle: function(isExpense, startDate, endDate){
@@ -141,7 +129,7 @@
             },
 
             makeRequest: function(){
-                this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
+                this.$eventBus.broadcast(this.$eventBus.EVENT_LOADING_SHOW());
 
                 let chartDataFilterParameters = {
                     start_date: this.getBulmaCalendar.calendarStartDate(),
@@ -167,9 +155,24 @@
 </script>
 
 <style lang="scss" scoped>
-    @import '../../../sass/stats-chart';
+@import '~bulma/sass/helpers/color';
+$toggle-button-bg-color: $grey-light;
+$toggle-button-text-color: $white;
 
-    .vue-js-switch#distribution-expense-or-income{
-        font-size: 1rem;
-    }
+@import '../../../sass/stats-chart';
+
+:deep(#distribution-expense-or-income+.toggle){  // pass style to child component
+  --toggle-height: 2.5rem;
+  --toggle-width: 30rem;
+  --toggle-font-size: 1rem;
+
+  // Expense
+  --toggle-bg-on: #{$toggle-button-bg-color};
+  --toggle-border-on: #{$toggle-button-bg-color};
+  --toggle-text-on: #{$toggle-button-text-color};
+  // Income
+  --toggle-bg-off: #{$toggle-button-bg-color};
+  --toggle-border-off: #{$toggle-button-bg-color};
+  --toggle-text-off: #{$toggle-button-text-color};
+}
 </style>

@@ -7,7 +7,7 @@ use App\Traits\Tests\Dusk\BatchFilterEntries as DuskTraitBatchFilterEntries;
 use App\Traits\Tests\Dusk\BulmaDatePicker as DuskTraitBulmaDatePicker;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\StatsSidePanel as DuskTraitStatsSidePanel;
-use Facebook\WebDriver\Remote\RemoteWebElement;
+use App\Traits\Tests\Dusk\Tooltip as DuskTraitTooltip;
 use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Support\Collection;
 use Tests\Browser\Pages\StatsPage;
@@ -29,6 +29,7 @@ class StatsSummaryTest extends StatsBase {
     use DuskTraitBulmaDatePicker;
     use DuskTraitLoading;
     use DuskTraitStatsSidePanel;
+    use DuskTraitTooltip;
 
     private static $LABEL_GENERATE_TABLE_BUTTON = "Generate Tables";
     private static $LABEL_TABLE_NAME_TOTAL = 'Total Income/Expenses';
@@ -150,7 +151,7 @@ class StatsSummaryTest extends StatsBase {
      * @group stats-summary-1
      * test (see provider)/25
      */
-    public function testGenerateStatsTables($datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $include_transfers){
+    public function testGenerateStatsTables($datepicker_start, $datepicker_end, bool $is_switch_toggled, bool $is_random_selector_value, bool $are_disabled_select_options_available, bool $include_transfers){
         $accounts = collect($this->getApiAccounts());
         $account_types = collect($this->getApiAccountTypes());
 
@@ -340,34 +341,8 @@ class StatsSummaryTest extends StatsBase {
     }
 
     /**
-     * This method takes a lot of code from predefined Browser methods
-     * This allows us to do some work around testing without having to worry about css selector chaining
-     *
-     * @param Browser $browser
-     * @param RemoteWebElement $element
-     * @param string $tooltip_text
-     */
-    private function assertTooltip($browser, $element, $tooltip_text){
-        $browser->driver->getMouse()->mouseMove($element->getCoordinates());    // move mouse over element
-        $tooltip_id = $element->getAttribute('aria-describedby');    // get the tooltip element id
-        $this->assertNotEmpty($tooltip_id);
-        $browser->pause(self::$WAIT_ONE_SECOND_IN_MILLISECONDS);
-
-        $selector_tooltip = "#".$tooltip_id;
-        $this->assertTrue(
-            $browser->resolver->findOrFail($selector_tooltip)->isDisplayed(),
-            "Element [$selector_tooltip] is not visible."
-        );
-
-        $tooltip_text_from_element = $browser->text('#'.$tooltip_id);
-        $this->assertStringContainsString($tooltip_text, $tooltip_text_from_element);
-    }
-
-    /**
      * @link https://laracasts.com/discuss/channels/laravel/collections-passing-a-class-method-name-not-a-closure-to-the-map-method?page=1#reply=456138
      * @link https://stackoverflow.com/a/25451441/4152012
-     *
-     * @return string
      */
     private function sortCallable(){
         return static function($entry){

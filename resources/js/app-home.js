@@ -18,7 +18,7 @@ import {Institutions} from "./institutions";
 import {Tags} from './tags';
 import {Version} from "./version";
 
-const app = createApp({
+const appHome = createApp({
     components:{
         EntryModal,
         EntriesTable,
@@ -58,21 +58,21 @@ const app = createApp({
 
 // store
 import { store } from './store';
-app.use(store);
+appHome.use(store);
 
 // eventbus/emitter
 import eventBus from "./plugins/eventBus";
-app.use(eventBus);
+appHome.use(eventBus);
 
 // notifications/toast
 import Notifications from '@kyvg/vue3-notification'
-app.use(Notifications);
+appHome.use(Notifications);
 
 // tooltip
 import VTooltipPlugin from 'v-tooltip';
-app.use(VTooltipPlugin);
+appHome.use(VTooltipPlugin);
 
-app.mount('#app');
+appHome.mount('#app-home');
 
 
 // import VueHotkey from 'v-hotkey';

@@ -92,6 +92,7 @@ export default {
   // selected tag in input
   :deep(.ti-tag){
     font-weight: 500;
+    padding-left: 0.6rem;
   }
   // highlighted auto-complete value
   :deep(.ti-autocomplete .ti-selected-item){

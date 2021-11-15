@@ -31,8 +31,8 @@ class StatsDistributionTest extends StatsBase {
     use DuskTraitStatsSidePanel;
 
     private static $SELECTOR_STATS_DISTRIBUTION = '#stats-distribution';
-    private static $SELECTOR_STATS_FORM_TOGGLE_EXPENSEINCOME = '#distribution-expense-or-income';
-    private static $SELECTOR_CHART_DISTRIBUTION = "canvas#pie-chart";
+    private static $SELECTOR_STATS_FORM_TOGGLE_EXPENSEINCOME = '#distribution-expense-or-income+.toggle';
+    private static $SELECTOR_CHART_DISTRIBUTION = ".pie-chart canvas";
 
     private static $LABEL_FORM_TOGGLE_EXPENSEINCOME_DEFAULT = "Expense";
     private static $LABEL_FORM_TOGGLE_EXPENSEINCOME_INCOME = "Income";
@@ -255,8 +255,8 @@ class StatsDistributionTest extends StatsBase {
                         $this->assertIncludesTransfersCheckboxButtonStateActive($stats_results_area);
                     }
                     $stats_results_area->assertVisible(self::$SELECTOR_CHART_DISTRIBUTION);
-                })
-                ->assertVue(self::$VUE_KEY_STANDARDISEDATA, $this->standardiseData($entries, $tags), self::$SELECTOR_STATS_DISTRIBUTION);
+                });
+            $this->assertVueAttribute($browser, self::$SELECTOR_STATS_DISTRIBUTION, self::$VUE_KEY_STANDARDISEDATA, $this->standardiseData($entries, $tags));
         });
     }
 
