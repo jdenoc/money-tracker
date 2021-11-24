@@ -10,7 +10,7 @@
   "devDependencies": {
     "@fortawesome/fontawesome-free": "5.15.4",
     "@voerro/vue-tagsinput": "^2",
-    "axios": "^0.21.0",
+    "axios": "^0.24.0",
     "bulma": "0.9.3",
     "bulma-calendar": "6.1.12",
     "bulma-checkradio": "^2.0.0",
