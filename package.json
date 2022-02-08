@@ -16,7 +16,7 @@
     "bulma-checkradio": "^2.0.0",
     "chart.js": "2.9.4",
     "cross-env": "^7.0",
-    "laravel-mix": "^6.0.31",
+    "laravel-mix": "^6.0.41",
     "lodash": "4.17.21",
     "randomcolor": "0.6.2",
     "resolve-url-loader": "4.0.0",
