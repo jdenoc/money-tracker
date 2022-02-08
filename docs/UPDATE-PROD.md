@@ -19,7 +19,11 @@ MOST_RECENT_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
 git checkout -q tags/$MOST_RECENT_TAG
 ```
 
-#### Step 2.a <small>_(optional)_</small>
+#### Step 3
+The following steps are optional. Refer to release notes to see if any of these steps are needed.  
+Otherwise, skip to [Step 4](#step-4)
+
+#### Step 3.a <small>_(optional)_</small>
 ```
 # *** OPTIONAL ***
 cp .env .env.bkup
@@ -27,7 +31,7 @@ cp .env .env.bkup
 # Perform modifications described in release notes.
 ```
 
-#### Step 2.b <small>_(optional)_</small>
+#### Step 3.b <small>_(optional)_</small>
 ```
 # *** OPTIONAL ***
 # New/Updates to composer packages
@@ -35,27 +39,27 @@ rm -rf vendor/
 composer install --no-dev -a
 ```
 
-#### Step 2.c <small>_(optional)_</small>
+#### Step 3.c <small>_(optional)_</small>
 ```
 # *** OPTIONAL ***
 # New/Updates to npm packages
 npm ci
 ```
 
-#### Step 2.d <small>_(optional)_</small>
+#### Step 3.d <small>_(optional)_</small>
 ```
 # *** OPTIONAL ***
 # Database updates
 php artisan migrate
 ```
 
-#### Step 3
+#### Step 4
 ```
 # Build website from *.vue files
 npm run-script build-prod
 ```
 
-#### Step 4
+#### Step 5
 ```
 # clear existing cache
 php artisan optimize:clear
@@ -68,7 +72,7 @@ php artisan optimize
 php artisan view:cache
 ```
 
-#### Step 5
+#### Step 6
 ```
 # take site out of maintenance mode
 php artisan up

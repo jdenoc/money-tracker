@@ -9,7 +9,7 @@ Money Tracker is a web portal dedicated to help record and manage income & expen
 ## Topics
 - [Requirements](#requirements)
 - [Docker Setup](docs/SETUP-DOCKER.md)
-  - [Start Containers](docs/SETUP-DOCKER.md#bring-_up_-application-containers)
+  - [Start Containers](docs/SETUP-DOCKER.md#bring-up-application-containers)
   - [Tear-down](docs/SETUP-DOCKER.md#tear-down)
 - [Local/Dev Setup](docs/SETUP-LOCAL.md)
   - [Application](docs/SETUP-LOCAL.md#application-setup)
@@ -54,9 +54,14 @@ Money Tracker is a web portal dedicated to help record and manage income & expen
   php -m
   ```
   Extensions should include:
+  - BCMath PHP Extension
+  - Ctype PHP Extension
+  - Fileinfo PHP Extension
+  - JSON PHP Extension
+  - Mbstring PHP Extension
   - OpenSSL PHP Extension
   - PDO PHP Extension
-  - Mbstring PHP Extension
+  - PDO Mysql PHP Extension
   - Tokenizer PHP Extension
   - XML PHP Extension
 - Composer 2.1

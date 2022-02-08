@@ -37,7 +37,7 @@ This is the exact same process as we do for our Local/dev setup. See instruction
 
 # run enlightn
 .docker/cmd/artisan.sh enlightn --details
-# address any issues that can be addresses, then perform a basline test
+# address any issues that can be addresses, then perform a baseline test
 .docker/cmd/artisan.sh enlightn:baseline
 
 # remove enlightn
