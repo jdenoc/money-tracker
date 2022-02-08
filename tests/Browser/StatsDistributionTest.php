@@ -264,7 +264,7 @@ class StatsDistributionTest extends StatsBase {
      * @throws Throwable
      *
      * @group stats-distribution-1
-     * test 27/25
+     * test 4/25
      */
     public function testGeneratingADistributionChartWontCauseSummaryTablesToBecomeVisible(){
         $this->generatingADifferentChartWontCauseSummaryTablesToBecomeVisible(

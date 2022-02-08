@@ -573,7 +573,8 @@ class FilterModalTest extends DuskTestCase {
                         $this->assertElementColour($modal, $selector_tag_label, $this->_color_filter_btn_tag_default);
                         $modal
                             ->click($selector_tag_label)
-                            ->assertChecked($selector_tag_checkbox);
+                            ->assertChecked($selector_tag_checkbox)
+                            ->mouseover($selector_tag_label);   // make sure the mouse hovers over the button
                         $this->assertElementColour($modal, $selector_tag_label, $this->_color_filter_btn_tag_active);
                     }
                 });
