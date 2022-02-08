@@ -31,6 +31,9 @@ jobs:
           echo "$message" >> $GITHUB_ENV
           echo 'GIT' >> $GITHUB_ENV
 
+      - id: set-previous-release-name
+        run: echo "PREVIOUS_RELEASE_NAME=$(git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1))" >> $GITHUB_ENV
+
       - name: Create Draft Release
         id: create-draft-release
         uses: actions/create-release@v1
@@ -41,15 +44,17 @@ jobs:
           release_name: ${{ github.ref }}
           body: |
             ${{ env.RELEASE_MESSAGE }}
+            
+            **Full Changelog**: https://github.com/jdenoc/money-tracker/compare/${{ env.PREVIOUS_RELEASE_NAME }}...${{ env.RELEASE_NAME }}
 
             ---
             See [here](https://github.com/jdenoc/money-tracker/blob/${{ env.RELEASE_NAME }}/docs/UPDATE-PROD.md) for comprehensive instructions.
 
             Additional steps:
-            * [Step 2.a](https://github.com/jdenoc/money-tracker/blob/${{ env.RELEASE_NAME }}/docs/UPDATE-PROD.md#step-2a-optional) - _.env_
-            * [Step 2.b](https://github.com/jdenoc/money-tracker/blob/${{ env.RELEASE_NAME }}/docs/UPDATE-PROD.md#step-2b-optional) - _composer_
-            * [Step 2.c](https://github.com/jdenoc/money-tracker/blob/${{ env.RELEASE_NAME }}/docs/UPDATE-PROD.md#step-2c-optional) - _npm_
-            * [Step 2.d](https://github.com/jdenoc/money-tracker/blob/${{ env.RELEASE_NAME }}/docs/UPDATE-PROD.md#step-2d-optional) - _migrate_
+            * [Step 3.a](https://github.com/jdenoc/money-tracker/blob/${{ env.RELEASE_NAME }}/docs/UPDATE-PROD.md#step-2a-optional) - _.env_
+            * [Step 3.b](https://github.com/jdenoc/money-tracker/blob/${{ env.RELEASE_NAME }}/docs/UPDATE-PROD.md#step-2b-optional) - _composer_
+            * [Step 3.c](https://github.com/jdenoc/money-tracker/blob/${{ env.RELEASE_NAME }}/docs/UPDATE-PROD.md#step-2c-optional) - _npm_
+            * [Step 3.d](https://github.com/jdenoc/money-tracker/blob/${{ env.RELEASE_NAME }}/docs/UPDATE-PROD.md#step-2d-optional) - _migrate_
           draft: true
           prerelease: true
 

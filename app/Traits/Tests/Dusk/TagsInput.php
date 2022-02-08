@@ -45,7 +45,7 @@ trait TagsInput {
      * @param Browser $browser
      */
     public function assertTagsInputHasTagsInInput(Browser $browser){
-        // the very existance of a tag in the input field indicates that they are present
+        // the very existence of a tag in the input field indicates that they are present
         $browser->assertVisible(self::$SELECTOR_TAGS_INPUT_CONTAINER.' '.self::$SELECTOR_TAGS_INPUT_TAG);
     }
 
