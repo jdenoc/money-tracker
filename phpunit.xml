@@ -4,7 +4,10 @@
         xsi:noNamespaceSchemaLocation="./vendor/phpunit/phpunit/phpunit.xsd"
         bootstrap="vendor/autoload.php"
         colors="true"
-        stopOnFailure="true">
+        stopOnFailure="true"
+        enforceTimeLimit="true"
+        defaultTimeLimit="300"
+>
     <testsuites>
         <testsuite name="api-get">
             <directory suffix="Test.php">./tests/Feature/Api/Get</directory>
