@@ -15,7 +15,7 @@ Set `DOCKER_HOST_IP` environment variable
 
 ### Clone repo
 ```bash
-git clone git@github.com:jdenoc/money-tracker.git --branch=develop
+git clone git@github.com:jdenoc/money-tracker.git --branch=master
 cd money-tracker/
 ```
 

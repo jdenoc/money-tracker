@@ -6,7 +6,7 @@ Sometimes, you just don't want to use Docker. That's fine. We support your decis
 ### Application setup
 ```bash
 # Clone repo
-git clone git@github.com:jdenoc/money-tracker.git --branch=develop
+git clone git@github.com:jdenoc/money-tracker.git --branch=master
 cd money-tracker/
 
 # setup composer packages & environment variables
@@ -24,7 +24,7 @@ npm install
 npm run-script build-dev
 ```
 
-***
+---
 
 ### Database setup
 ```bash
