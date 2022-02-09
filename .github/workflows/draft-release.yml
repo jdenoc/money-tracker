@@ -19,7 +19,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.ref }}
+          fetch-depth: 0
 
       - id: set-release-name
         run: echo "RELEASE_NAME=$(git describe --tags)" >> $GITHUB_ENV
