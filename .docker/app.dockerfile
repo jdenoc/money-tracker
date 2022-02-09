@@ -1,4 +1,4 @@
-FROM php:7.3-apache
+FROM php:8.1-apache
 
 # set default ServerName
 RUN touch /etc/apache2/conf-available/servername.conf \
@@ -9,6 +9,8 @@ RUN touch /etc/apache2/conf-available/servername.conf \
 RUN apt update --fix-missing \
   && apt upgrade -y
 RUN apt install -y apt-utils curl zlib1g-dev libicu-dev g++ --no-install-recommends
+
+# install php intl extension
 RUN docker-php-ext-configure intl
 RUN docker-php-ext-install intl
 
@@ -25,8 +27,26 @@ RUN docker-php-ext-install zip
 
 # install php gd extension
 RUN apt install -y libpng-dev libjpeg-dev libfreetype6-dev --no-install-recommends
-RUN docker-php-ext-configure gd --with-gd --with-png-dir=/usr/include/ --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
+RUN docker-php-ext-configure gd --enable-gd --with-jpeg --with-freetype
 RUN docker-php-ext-install gd
+
+# install xdebug
+ARG DISABLE_XDEBUG
+RUN if [ "$DISABLE_XDEBUG" = false ]; \
+  then \
+    pecl install xdebug-3.1.3; \
+    docker-php-ext-enable xdebug; \
+    XDEBUG_INI=`php --ini | grep xdebug | tr -d ,` \
+      && echo "" >> $XDEBUG_INI \
+      && echo "[xdebug]" >> $XDEBUG_INI \
+      && echo "xdebug.mode=develop,coverage,trace" >> $XDEBUG_INI \
+      && echo "xdebug.start_with_request=yes" >> $XDEBUG_INI \
+      && echo "xdebug.client_host=host.docker.internal" >> $XDEBUG_INI \
+      && echo "xdebug.log=/dev/stdout" >> $XDEBUG_INI; \
+  fi;
+
+# allow external access to port 9003 for xdebug
+EXPOSE 9003
 
 # clean up after installs
 RUN apt autoremove -y
@@ -53,28 +73,9 @@ RUN echo '#!/bin/bash\nphp /var/www/money-tracker/artisan "$@"' > /usr/local/bin
 # select a php.ini config file; we use php.ini-development as it has "display_errors = On"
 RUN cp $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini
 
-RUN echo "expose_php = Off" >> $PHP_INI_DIR/conf.d/expose_php.ini
-RUN echo 'allow_url_fopen = Off' >>  $PHP_INI_DIR/conf.d/allow_url_fopen.ini
+RUN echo "expose_php = Off" >> $PHP_INI_DIR/conf.d/php-expose_php.ini
+RUN echo 'allow_url_fopen = Off' >>  $PHP_INI_DIR/conf.d/php-allow_url_fopen.ini
 # set php error logging
-RUN echo 'error_log = /var/www/money-tracker/storage/logs/php_error.log' >> $PHP_INI_DIR/conf.d/error_log.ini
+RUN echo 'error_log = /var/www/money-tracker/storage/logs/php_error.log' >> $PHP_INI_DIR/conf.d/php-error_log.ini
 # set php timezone
-RUN echo 'date.timezone = "UTC"' >> $PHP_INI_DIR/conf.d/date.timezone.ini
-
-# install xdebug
-ARG DISABLE_XDEBUG
-RUN if [ "$DISABLE_XDEBUG" = false ]; \
-  then \
-    pecl install xdebug-2.7.2; \
-    docker-php-ext-enable xdebug; \
-    XDEBUG_INI=`php --ini | grep xdebug | tr -d ,` \
-      && echo "" >> $XDEBUG_INI \
-      && echo "xdebug.coverage_enable=1" >> $XDEBUG_INI \
-      && echo "xdebug.idekey=PHPSTORMDOCKER" >> $XDEBUG_INI \
-      && echo "xdebug.remote_autostart=1" >> $XDEBUG_INI \
-      && echo "xdebug.remote_enable=1" >> $XDEBUG_INI \
-      && echo "xdebug.remote_host=host.docker.internal" >> $XDEBUG_INI \
-      && echo "xdebug.remote_port=9000" >> $XDEBUG_INI; \
-  fi;
-
-# allow external access to port 9000 for xdebug
-EXPOSE 9000
+RUN echo 'date.timezone = "UTC"' >> $PHP_INI_DIR/conf.d/php-date.timezone.ini
