@@ -51,10 +51,10 @@ jobs:
             See [here](https://github.com/jdenoc/money-tracker/blob/${{ env.RELEASE_NAME }}/docs/UPDATE-PROD.md) for comprehensive instructions.
 
             Additional steps:
-            * [Step 3.a](https://github.com/jdenoc/money-tracker/blob/${{ env.RELEASE_NAME }}/docs/UPDATE-PROD.md#step-2a-optional) - _.env_
-            * [Step 3.b](https://github.com/jdenoc/money-tracker/blob/${{ env.RELEASE_NAME }}/docs/UPDATE-PROD.md#step-2b-optional) - _composer_
-            * [Step 3.c](https://github.com/jdenoc/money-tracker/blob/${{ env.RELEASE_NAME }}/docs/UPDATE-PROD.md#step-2c-optional) - _npm_
-            * [Step 3.d](https://github.com/jdenoc/money-tracker/blob/${{ env.RELEASE_NAME }}/docs/UPDATE-PROD.md#step-2d-optional) - _migrate_
+            * [Step 3.a](https://github.com/jdenoc/money-tracker/blob/${{ env.RELEASE_NAME }}/docs/UPDATE-PROD.md#step-3a-optional) - _.env_
+            * [Step 3.b](https://github.com/jdenoc/money-tracker/blob/${{ env.RELEASE_NAME }}/docs/UPDATE-PROD.md#step-3b-optional) - _composer_
+            * [Step 3.c](https://github.com/jdenoc/money-tracker/blob/${{ env.RELEASE_NAME }}/docs/UPDATE-PROD.md#step-3c-optional) - _npm_
+            * [Step 3.d](https://github.com/jdenoc/money-tracker/blob/${{ env.RELEASE_NAME }}/docs/UPDATE-PROD.md#step-3d-optional) - _migrate_
           draft: true
           prerelease: true
 
