@@ -3,7 +3,7 @@ version: '3'
 services:
   application:
     build:
-      context: .. # interpreted as relative to the location of the Compose file
+      context: .. # interpreted as relative to the location of the docker-compose file
       dockerfile: .docker/app.dockerfile
       args:
         - DISABLE_XDEBUG=${DISABLE_XDEBUG:-false}
@@ -14,7 +14,6 @@ services:
     volumes:
       - ..:/var/www/money-tracker  # .. is interpreted as relative to the location of the docker-compose file
     environment:
-      - PHP_IDE_CONFIG=serverName=money-tracker.docker
       - APP_ENV=docker
     dns_search:
       - money-tracker.docker
@@ -23,7 +22,7 @@ services:
 
   database:
     build:
-      context: .. # interpreted as relative to the location of the Compose file
+      context: .. # interpreted as relative to the location of the docker-compose file
       dockerfile: .docker/mysql.dockerfile
     container_name: "mysql.money-tracker"
     hostname: mysql.money-tracker
