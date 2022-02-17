@@ -6,14 +6,17 @@ use Illuminate\Database\Migrations\Migration;
 
 class AddAttachmentsColumnUid extends Migration {
 
+    private static $TABLE = 'attachments';
+    private static $COLUMN_NEW = 'uid';
+
     /**
      * Add column attachments.uid
      *
      * @return void
      */
     public function up(){
-        Schema::table('attachments', function (Blueprint $table) {
-            $table->string('uid', 50)->after('attachment')->nullable()->unique();
+        Schema::table(self::$TABLE, function (Blueprint $table) {
+            $table->string(self::$COLUMN_NEW, 50)->after('attachment')->nullable()->unique();
         });
     }
 
@@ -23,8 +26,8 @@ class AddAttachmentsColumnUid extends Migration {
      * @return void
      */
     public function down(){
-        Schema::table('attachments', function (Blueprint $table) {
-            $table->dropColumn('uid');
+        Schema::table(self::$TABLE, function (Blueprint $table) {
+            $table->dropColumn(self::$COLUMN_NEW);
         });
     }
 
