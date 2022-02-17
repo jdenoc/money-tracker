@@ -6,13 +6,15 @@ use Illuminate\Database\Migrations\Migration;
 
 class CreateUsersTable extends Migration {
 
+    private static $TABLE = 'users';
+
     /**
      * Create `users` table
      *
      * @return void
      */
     public function up(){
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create(self::$TABLE, function (Blueprint $table) {
             $table->increments('id');
             $table->string('email', 100);
         });
@@ -24,7 +26,7 @@ class CreateUsersTable extends Migration {
      * @return void
      */
     public function down(){
-        Schema::dropIfExists('users');
+        Schema::dropIfExists(self::$TABLE);
     }
 
 }
