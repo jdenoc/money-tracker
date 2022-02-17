@@ -6,14 +6,18 @@ use Illuminate\Database\Migrations\Migration;
 
 class RenameEntriesColumnValue extends Migration {
 
+    private static $TABLE = 'entries';
+    private static $COLUMN_NEW = 'entry_value';
+    private static $COLUMN_OLD = 'value';
+
     /**
      * Rename column entries.value to entries.entry_value
      *
      * @return void
      */
     public function up(){
-        Schema::table('entries', function (Blueprint $table) {
-            $table->renameColumn('value', 'entry_value');
+        Schema::table(self::$TABLE, function (Blueprint $table) {
+            $table->renameColumn(self::$COLUMN_OLD, self::$COLUMN_NEW);
         });
     }
 
@@ -23,8 +27,8 @@ class RenameEntriesColumnValue extends Migration {
      * @return void
      */
     public function down(){
-        Schema::table('entries', function (Blueprint $table) {
-            $table->renameColumn('entry_value', 'value');
+        Schema::table(self::$TABLE, function (Blueprint $table) {
+            $table->renameColumn(self::$COLUMN_NEW, self::$COLUMN_OLD);
         });
     }
 
