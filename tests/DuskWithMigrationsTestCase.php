@@ -43,6 +43,8 @@ abstract class DuskWithMigrationsTestCase extends DuskTestCase {
      */
     public function runDatabaseMigrations(){
         $this->beforeApplicationDestroyed(function () {
+            // Truncate all tables, except migrations
+            // This is supposed to occur before the migrate:rollback command
             $this->truncateDatabaseTables(['migrations']);
         });
         $this->defaultRunDatabaseMigrations();
