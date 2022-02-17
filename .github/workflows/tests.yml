@@ -16,6 +16,8 @@ on:
 
 env:
   PROJECT_NAME: "moneytracker"
+  DUSK_SCREENSHOT_DIR: 'tests/Browser/screenshots/'
+  DUSK_DB_DUMP_DIR: 'tests/Browser/db-dump/'
 
 jobs:
 
@@ -153,6 +155,7 @@ jobs:
           .docker/cmd/artisan.sh config:clear
           docker container exec -t --user www-data app.money-tracker cp .env.docker .env.testing
           docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite console
+          docker container exec -t --user www-data app.money-tracker rm -rf .env.testing
 
       - uses: ./.github/actions/app-init
       - name: unit tests - web
@@ -174,9 +177,6 @@ jobs:
     needs:
       - build
     runs-on: ubuntu-latest
-    env:
-      DUSK_SCREENSHOT_DIR: 'tests/Browser/screenshots/'
-      DUSK_DB_DUMP_DIR: 'tests/Browser/db-dump/'
     timeout-minutes: 60
     steps:
       - name: Checkout
@@ -234,9 +234,6 @@ jobs:
     needs:
       - build
     runs-on: ubuntu-latest
-    env:
-      DUSK_SCREENSHOT_DIR: 'tests/Browser/screenshots/'
-      DUSK_DB_DUMP_DIR: 'tests/Browser/db-dump/'
     timeout-minutes: 60
     steps:
       - name: Checkout
@@ -294,9 +291,6 @@ jobs:
     needs:
       - build
     runs-on: ubuntu-latest
-    env:
-      DUSK_SCREENSHOT_DIR: 'tests/Browser/screenshots/'
-      DUSK_DB_DUMP_DIR: 'tests/Browser/db-dump/'
     timeout-minutes: 60
     steps:
       - name: Checkout
@@ -363,9 +357,6 @@ jobs:
     needs:
       - build
     runs-on: ubuntu-latest
-    env:
-      DUSK_SCREENSHOT_DIR: 'tests/Browser/screenshots/'
-      DUSK_DB_DUMP_DIR: 'tests/Browser/db-dump/'
     timeout-minutes: 60
     steps:
       - name: Checkout
@@ -429,9 +420,6 @@ jobs:
     needs:
       - build
     runs-on: ubuntu-latest
-    env:
-      DUSK_SCREENSHOT_DIR: 'tests/Browser/screenshots/'
-      DUSK_DB_DUMP_DIR: 'tests/Browser/db-dump/'
     timeout-minutes: 60
     steps:
       - name: Checkout
@@ -492,9 +480,6 @@ jobs:
     needs:
       - build
     runs-on: ubuntu-latest
-    env:
-      DUSK_SCREENSHOT_DIR: 'tests/Browser/screenshots/'
-      DUSK_DB_DUMP_DIR: 'tests/Browser/db-dump/'
     timeout-minutes: 60
     steps:
       - name: Checkout
@@ -555,9 +540,6 @@ jobs:
     needs:
       - build
     runs-on: ubuntu-latest
-    env:
-      DUSK_SCREENSHOT_DIR: 'tests/Browser/screenshots/'
-      DUSK_DB_DUMP_DIR: 'tests/Browser/db-dump/'
     timeout-minutes: 60
     steps:
       - name: Checkout
@@ -615,9 +597,6 @@ jobs:
     needs:
       - build
     runs-on: ubuntu-latest
-    env:
-      DUSK_SCREENSHOT_DIR: 'tests/Browser/screenshots/'
-      DUSK_DB_DUMP_DIR: 'tests/Browser/db-dump/'
     timeout-minutes: 60
     steps:
       - name: Checkout
@@ -675,9 +654,6 @@ jobs:
     needs:
       - build
     runs-on: ubuntu-latest
-    env:
-      DUSK_SCREENSHOT_DIR: 'tests/Browser/screenshots/'
-      DUSK_DB_DUMP_DIR: 'tests/Browser/db-dump/'
     timeout-minutes: 60
     steps:
       - name: Checkout
@@ -738,9 +714,6 @@ jobs:
     needs:
       - build
     runs-on: ubuntu-latest
-    env:
-      DUSK_SCREENSHOT_DIR: 'tests/Browser/screenshots/'
-      DUSK_DB_DUMP_DIR: 'tests/Browser/db-dump/'
     timeout-minutes: 60
     steps:
       - name: Checkout
