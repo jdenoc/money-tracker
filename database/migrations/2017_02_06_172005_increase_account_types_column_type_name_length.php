@@ -6,14 +6,18 @@ use Illuminate\Database\Migrations\Migration;
 
 class IncreaseAccountTypesColumnTypeNameLength extends Migration {
 
+    private static $TABLE_NAME = 'account_types';
+    private static $COLUMN_NAME = 'type_name';
+
     /**
      * Increase account_types.type_name length to 100 characters
      *
      * @return void
      */
     public function up(){
-        // Because there is a column of type ENUM in the account_types, we can't modify any columns using ORM
-        DB::statement("ALTER TABLE account_types CHANGE type_name type_name VARCHAR(100)");
+        Schema::table(self::$TABLE_NAME, function(Blueprint $table){
+            $table->string(self::$COLUMN_NAME, 100)->change();
+        });
     }
 
     /**
@@ -22,10 +26,11 @@ class IncreaseAccountTypesColumnTypeNameLength extends Migration {
      * @return void
      */
     public function down(){
-        // Because there is a column of type ENUM in the account_types, we can't modify any columns using ORM
         // Data won't be trimmed automatically, so we'll have to do it before shrinking type_name length
-        DB::update("UPDATE account_types SET type_name=SUBSTRING(type_name, 0, 21)");
-        DB::statement("ALTER TABLE account_types CHANGE type_name type_name VARCHAR(21)");
+        DB::update("UPDATE ".self::$TABLE_NAME." SET ".self::$COLUMN_NAME."=SUBSTRING(".self::$COLUMN_NAME.", 0, 21)");
+        Schema::table(self::$TABLE_NAME, function(Blueprint $table){
+            $table->string(self::$COLUMN_NAME, 21)->change();
+        });
     }
 
 }

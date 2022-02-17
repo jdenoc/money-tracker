@@ -6,6 +6,9 @@ use Illuminate\Database\Migrations\Migration;
 
 class AddEntriesColumnDisabledStamp extends Migration {
 
+    private static $TABLE = 'entries';
+    private static $COLUMN_NEW = 'disabled_stamp';
+
     /**
      * Add column entries.disabled_stamp
      * Assign a value to entries.disabled_stamp if entries.disabled == 1
@@ -13,10 +16,10 @@ class AddEntriesColumnDisabledStamp extends Migration {
      * @return void
      */
     public function up(){
-        Schema::table('entries', function (Blueprint $table) {
-            $table->timestamp('disabled_stamp')->nullable();
+        Schema::table(self::$TABLE, function (Blueprint $table) {
+            $table->timestamp(self::$COLUMN_NEW)->nullable();
         });
-        DB::statement("UPDATE entries SET disabled_stamp=modified_stamp WHERE disabled=1");
+        DB::table(self::$TABLE)->where('disabled', 1)->update([self::$COLUMN_NEW=>DB::raw('modified_stamp')]);
     }
 
     /**
@@ -25,8 +28,8 @@ class AddEntriesColumnDisabledStamp extends Migration {
      * @return void
      */
     public function down(){
-        Schema::table('entries', function (Blueprint $table) {
-            $table->dropColumn('disabled_stamp');
+        Schema::table(self::$TABLE, function (Blueprint $table) {
+            $table->dropColumn(self::$COLUMN_NEW);
         });
     }
 
