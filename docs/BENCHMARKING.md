@@ -10,6 +10,8 @@ Enlightn scans your Laravel app code to provide you actionable recommendations o
 
 # run enlightn
 .docker/cmd/artisan.sh enlightn --details
+# address any issues that can be addresses, then perform a baseline test
+.docker/cmd/artisan.sh enlightn:baseline
 
 # remove enlightn
 .docker/cmd/composer.sh remove enlightn/enlightn --dev
