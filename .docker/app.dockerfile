@@ -12,6 +12,9 @@ RUN apt install -y apt-utils curl zlib1g-dev libicu-dev g++ --no-install-recomme
 RUN docker-php-ext-configure intl
 RUN docker-php-ext-install intl
 
+# install php pcntl extension
+RUN docker-php-ext-install pcntl
+
 # install php mysql extension
 RUN apt install -y default-mysql-client --no-install-recommends
 RUN docker-php-ext-install pdo_mysql
