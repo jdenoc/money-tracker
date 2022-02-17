@@ -1,4 +1,4 @@
-FROM php:8.1-apache
+FROM php:8.0-apache
 
 # set default ServerName
 RUN touch /etc/apache2/conf-available/servername.conf \
@@ -11,7 +11,6 @@ RUN apt update --fix-missing \
 RUN apt install -y apt-utils curl zlib1g-dev libicu-dev g++ --no-install-recommends
 
 # install php intl extension
-RUN docker-php-ext-configure intl
 RUN docker-php-ext-install intl
 
 # install php pcntl extension
