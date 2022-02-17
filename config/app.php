@@ -124,6 +124,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Selenium Server URL
+    |--------------------------------------------------------------------------
+    |
+    | URL used to by the artisan dusk command to connect to selenium and
+    | complete end-2-end tests.
+    |
+    */
+
+    'selenium_server_url' => env('SELENIUM_SERVER_URL', 'http://selenium:4444/wd/hub'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Autoloaded Service Providers
     |--------------------------------------------------------------------------
     |
