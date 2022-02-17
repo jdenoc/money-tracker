@@ -6,14 +6,18 @@ use Illuminate\Database\Migrations\Migration;
 
 class RenameAccountsColumnAccount extends Migration {
 
+    private static $TABLE = 'accounts';
+    private static $COLUMN_OLD_NAME = 'account';
+    private static $COLUMN_NEW_NAME = 'name';
+
     /**
      * Rename column accounts.account to accounts.name
      *
      * @return void
      */
     public function up(){
-        Schema::table('accounts', function (Blueprint $table) {
-            $table->renameColumn('account', 'name');
+        Schema::table(self::$TABLE, function (Blueprint $table) {
+            $table->renameColumn(self::$COLUMN_OLD_NAME, self::$COLUMN_NEW_NAME);
         });
     }
 
@@ -23,8 +27,8 @@ class RenameAccountsColumnAccount extends Migration {
      * @return void
      */
     public function down(){
-        Schema::table('accounts', function (Blueprint $table) {
-            $table->renameColumn('name', 'account');
+        Schema::table(self::$TABLE, function (Blueprint $table) {
+            $table->renameColumn(self::$COLUMN_NEW_NAME, self::$COLUMN_OLD_NAME);
         });
     }
 

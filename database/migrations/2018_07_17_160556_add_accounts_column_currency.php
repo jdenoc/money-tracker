@@ -6,8 +6,8 @@ use Illuminate\Database\Migrations\Migration;
 
 class AddAccountsColumnCurrency extends Migration {
 
-    private $_table = "accounts";
-    private $_new_column = "currency";
+    private static $TABLE = "accounts";
+    private static $NEW_COLUMN = "currency";
 
     /**
      * Add accounts.currency
@@ -15,8 +15,8 @@ class AddAccountsColumnCurrency extends Migration {
      * @return void
      */
     public function up(){
-        Schema::table($this->_table, function (Blueprint $table) {
-            $table->char($this->_new_column, 3)->after("total")->default("USD")
+        Schema::table(self::$TABLE, function (Blueprint $table) {
+            $table->char(self::$NEW_COLUMN, 3)->after("total")->default("USD")
                 ->comment("values conform to the ISO4217 standard");
         });
     }
@@ -27,8 +27,8 @@ class AddAccountsColumnCurrency extends Migration {
      * @return void
      */
     public function down(){
-        Schema::table($this->_table, function (Blueprint $table) {
-            $table->dropColumn($this->_new_column);
+        Schema::table(self::$TABLE, function (Blueprint $table) {
+            $table->dropColumn(self::$NEW_COLUMN);
         });
     }
 }
