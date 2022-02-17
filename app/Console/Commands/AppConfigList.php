@@ -16,8 +16,8 @@ class AppConfigList extends Command {
      * @var string
      */
     protected $signature = 'app:config-list
-                            {--only-env : only output environment variables and values}
-                            {--only-config : only output config variables and values}';
+                            {--'.self::OPTION_ONLY_ENV.' : only output environment variables and values}
+                            {--'.self::OPTION_ONLY_CONFIG.' : only output config variables and values}';
 
     /**
      * The console command description.
@@ -95,7 +95,7 @@ class AppConfigList extends Command {
                 $dot_env_contents = File::get($dot_env_file_path);
                 $dot_env_content_lines = explode("\n", $dot_env_contents);
                 foreach ($dot_env_content_lines as $dot_env_content_line) {
-                    if (!empty($dot_env_content_line) && strpos($dot_env_content_line, '#') !== 0) {
+                    if (!empty($dot_env_content_line) && !str_starts_with($dot_env_content_line, '#')) {
                         $dot_env_variable_names[] = substr($dot_env_content_line, 0, strpos($dot_env_content_line, '='));
                     }
                 }
