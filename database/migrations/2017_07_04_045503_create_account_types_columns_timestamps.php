@@ -1,8 +1,16 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateAccountTypesColumnsTimestamps extends Migration {
+
+    private static $TABLE = 'account_types';
+    private static $COLUMN_CREATED = 'create_stamp';
+    private static $COLUMN_MODIFIED = 'modified_stamp';
+    private static $COLUMN_DISABLED = 'disabled_stamp';
+    private static $COLUMN_LAST_UPDATE = 'last_updated';
 
     /**
      * Add column account_types.create_stamp
@@ -12,10 +20,11 @@ class CreateAccountTypesColumnsTimestamps extends Migration {
      * @return void
      */
     public function up(){
-        // Because there is a column of type ENUM in the account_types table, we can't modify any columns using ORM
-        DB::statement("ALTER TABLE `account_types` ADD `create_stamp` TIMESTAMP NULL DEFAULT NULL AFTER `disabled`");
-        DB::statement("ALTER TABLE `account_types` CHANGE `last_updated` `modified_stamp` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP");
-        DB::statement("ALTER TABLE `account_types` ADD `disabled_stamp` TIMESTAMP NULL DEFAULT NULL AFTER `modified_stamp`");
+        Schema::table(self::$TABLE, function(Blueprint $table){
+            $table->timestamp(self::$COLUMN_CREATED)->nullable()->after('disabled');
+            $table->timestamp(self::$COLUMN_DISABLED)->nullable()->after(self::$COLUMN_LAST_UPDATE);
+            $table->renameColumn(self::$COLUMN_LAST_UPDATE, self::$COLUMN_MODIFIED);
+        });
     }
 
     /**
@@ -24,10 +33,11 @@ class CreateAccountTypesColumnsTimestamps extends Migration {
      * @return void
      */
     public function down(){
-        // Because there is a column of type ENUM in the account_types table, we can't modify any columns using ORM
-        DB::statement("ALTER TABLE `account_types` DROP `create_stamp`");
-        DB::statement("ALTER TABLE `account_types` DROP `disabled_stamp`");
-        DB::statement("ALTER TABLE `account_types` CHANGE `modified_stamp` `last_updated` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP");
+        Schema::table(self::$TABLE, function(Blueprint $table){
+            $table->dropColumn(self::$COLUMN_CREATED);
+            $table->dropColumn(self::$COLUMN_DISABLED);
+            $table->renameColumn(self::$COLUMN_MODIFIED, self::$COLUMN_LAST_UPDATE);
+        });
     }
 
 }

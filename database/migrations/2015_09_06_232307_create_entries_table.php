@@ -6,13 +6,15 @@ use Illuminate\Database\Migrations\Migration;
 
 class CreateEntriesTable extends Migration {
 
+    private static $TABLE = 'entries';
+
     /**
      * Create `entries` table
      *
      * @return void
      */
     public function up(){
-        Schema::create('entries', function (Blueprint $table) {
+        Schema::create(self::$TABLE, function (Blueprint $table) {
             $table->increments('id');
             $table->date('date')->index();
             $table->unsignedInteger('account_type');
@@ -31,7 +33,7 @@ class CreateEntriesTable extends Migration {
      * @return void
      */
     public function down(){
-        Schema::dropIfExists('entries');
+        Schema::dropIfExists(self::$TABLE);
     }
 
 }

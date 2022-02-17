@@ -4,6 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 
 class CreateTriggerAccountsCreationTimestamp extends Migration {
 
+    private static $TRIGGER = 'trigger_accounts_creation_timestamp';
+
     /**
      * Create a MySQL trigger on the accounts table to add the current time to the accounts.create_stamp when inserting a new record
      *
@@ -11,7 +13,7 @@ class CreateTriggerAccountsCreationTimestamp extends Migration {
      */
     public function up(){
         DB::unprepared(
-            "CREATE TRIGGER trigger_accounts_creation_timestamp
+            "CREATE TRIGGER ".self::$TRIGGER."
             BEFORE INSERT ON accounts
             FOR EACH ROW
             SET NEW.create_stamp = NOW()"
@@ -24,7 +26,7 @@ class CreateTriggerAccountsCreationTimestamp extends Migration {
      * @return void
      */
     public function down(){
-        DB::unprepared("DROP TRIGGER IF EXISTS trigger_accounts_creation_timestamp");
+        DB::unprepared("DROP TRIGGER IF EXISTS ".self::$TRIGGER);
     }
 
 }

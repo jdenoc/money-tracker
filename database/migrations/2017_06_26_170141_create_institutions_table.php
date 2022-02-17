@@ -6,7 +6,7 @@ use Illuminate\Database\Migrations\Migration;
 
 class CreateInstitutionsTable extends Migration {
 
-
+    private static $TABLE = 'institutions';
 
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class CreateInstitutionsTable extends Migration {
      * @return void
      */
     public function up(){
-        Schema::create('institutions', function (Blueprint $table) {
+        Schema::create(self::$TABLE, function (Blueprint $table) {
             $table->increments('id');
             $table->string('name', 100);
             $table->tinyInteger('active')->default(1);
@@ -29,7 +29,7 @@ class CreateInstitutionsTable extends Migration {
      * @return void
      */
     public function down(){
-        Schema::dropIfExists('institutions');
+        Schema::dropIfExists(self::$TABLE);
     }
 
 }

@@ -6,14 +6,17 @@ use Illuminate\Database\Migrations\Migration;
 
 class ReplaceAttachmentsColumnIdWithUuid extends Migration {
 
+    private static $TABLE = 'attachments';
+    private static $TABLE_REPLACEMENT = 'replace_attachments';
+
     /**
      * Re-create attachments table
      *
      * @return void
      */
     public function up(){
-        // Create new_attachments table
-        Schema::create('new_attachments', function (Blueprint $table) {
+        // Create replacement_attachments table
+        Schema::create(self::$TABLE_REPLACEMENT, function (Blueprint $table) {
             $table->char('uuid', 36);
             $table->unsignedInteger('entry_id')->index();
             $table->string('attachment');
@@ -21,14 +24,14 @@ class ReplaceAttachmentsColumnIdWithUuid extends Migration {
             $table->primary('uuid');
         });
 
-        // migrate data from attachments to new_attachments
-        DB::statement("INSERT INTO new_attachments (SELECT uid, entry_id, attachment, stamp FROM attachments)");
+        // migrate data from attachments to replacement_attachments
+        DB::statement("INSERT INTO ".self::$TABLE_REPLACEMENT." (SELECT uid, entry_id, attachment, stamp FROM ".self::$TABLE.")");
 
         // drop attachments table
-        Schema::drop('attachments');
+        Schema::drop(self::$TABLE);
 
-        // rename new_attachments to attachments
-        Schema::rename('new_attachments', 'attachments');
+        // rename replacement_attachments to attachments
+        Schema::rename(self::$TABLE_REPLACEMENT, self::$TABLE);
     }
 
     /**
@@ -37,8 +40,8 @@ class ReplaceAttachmentsColumnIdWithUuid extends Migration {
      * @return void
      */
     public function down(){
-        // create original_attachments table
-        Schema::create('original_attachments', function (Blueprint $table) {
+        // create replacement_attachments table
+        Schema::create(self::$TABLE_REPLACEMENT, function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('entry_id')->index();
             $table->string('attachment');
@@ -46,14 +49,14 @@ class ReplaceAttachmentsColumnIdWithUuid extends Migration {
             $table->timestamp('stamp')->default(DB::raw('CURRENT_TIMESTAMP'));
         });
 
-        // migrate data from attachments to original_attachments
-        DB::statement("INSERT INTO original_attachments (SELECT null, entry_id, attachment, uuid, stamp FROM attachments)");
+        // migrate data from attachments to replacement_attachments
+        DB::statement("INSERT INTO ".self::$TABLE_REPLACEMENT." (SELECT null, entry_id, attachment, uuid, stamp FROM ".self::$TABLE.")");
 
         // drop attachments table
-        Schema::drop('attachments');
+        Schema::drop(self::$TABLE);
 
-        // rename original_attachments to attachments
-        Schema::rename('original_attachments', 'attachments');
+        // rename replacement_attachments to attachments
+        Schema::rename(self::$TABLE_REPLACEMENT, self::$TABLE);
     }
 
 }
