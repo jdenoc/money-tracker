@@ -1,53 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="./vendor/phpunit/phpunit/phpunit.xsd"
-        bootstrap="vendor/autoload.php"
-        colors="true"
-        stopOnFailure="true"
-        enforceTimeLimit="true"
-        defaultTimeLimit="300"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+    bootstrap="vendor/autoload.php"
+    colors="true"
+    stopOnFailure="true"
+    enforceTimeLimit="true"
+    defaultTimeLimit="600"
 >
-    <testsuites>
-        <testsuite name="api-get">
-            <directory suffix="Test.php">./tests/Feature/Api/Get</directory>
-        </testsuite>
+  <coverage processUncoveredFiles="true">
+    <include>
+      <directory suffix=".php">./app</directory>
+    </include>
+  </coverage>
 
-        <testsuite name="api-post">
-            <directory suffix="Test.php">./tests/Feature/Api/Post</directory>
-        </testsuite>
+  <testsuites>
+    <testsuite name="api-get">
+      <directory suffix="Test.php">./tests/Feature/Api/Get</directory>
+    </testsuite>
 
-        <testsuite name="api-put">
-            <directory suffix="Test.php">./tests/Feature/Api/Put</directory>
-        </testsuite>
+    <testsuite name="api-post">
+      <directory suffix="Test.php">./tests/Feature/Api/Post</directory>
+    </testsuite>
 
-        <testsuite name="api-delete">
-            <directory suffix="Test.php">./tests/Feature/Api/Delete</directory>
-        </testsuite>
+    <testsuite name="api-put">
+      <directory suffix="Test.php">./tests/Feature/Api/Put</directory>
+    </testsuite>
 
-        <testsuite name="console">
-            <directory suffix="Test.php">./tests/Feature/Console</directory>
-        </testsuite>
+    <testsuite name="api-delete">
+      <directory suffix="Test.php">./tests/Feature/Api/Delete</directory>
+    </testsuite>
 
-        <testsuite name="web">
-            <directory suffix="Test.php">./tests/Feature/Web</directory>
-        </testsuite>
+    <testsuite name="console">
+      <directory suffix="Test.php">./tests/Feature/Console</directory>
+    </testsuite>
 
-        <testsuite name="unit">
-            <directory suffix="Test.php">./tests/Unit</directory>
-        </testsuite>
-    </testsuites>
-    <filter>
-        <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">./app</directory>
-        </whitelist>
-    </filter>
-    <php>
-        <server name="APP_ENV" value="testing"/>
-        <server name="BCRYPT_ROUNDS" value="4"/>
-        <server name="CACHE_DRIVER" value="array"/>
-        <server name="MAIL_DRIVER" value="array"/>
-        <server name="QUEUE_CONNECTION" value="sync"/>
-        <server name="SESSION_DRIVER" value="array"/>
-    </php>
+    <testsuite name="web">
+      <directory suffix="Test.php">./tests/Feature/Web</directory>
+    </testsuite>
+
+    <testsuite name="unit">
+      <directory suffix="Test.php">./tests/Unit</directory>
+    </testsuite>
+  </testsuites>
+  <php>
+    <server name="APP_ENV" value="testing"/>
+    <server name="BCRYPT_ROUNDS" value="4"/>
+    <server name="CACHE_DRIVER" value="array"/>
+    <server name="MAIL_MAILER" value="array"/>
+    <server name="QUEUE_CONNECTION" value="sync"/>
+    <server name="SESSION_DRIVER" value="array"/>
+    <server name="TELESCOPE_ENABLED" value="false"/>
+  </php>
 </phpunit>

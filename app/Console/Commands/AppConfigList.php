@@ -29,7 +29,7 @@ class AppConfigList extends Command {
     /**
      * Execute the console command.
      */
-    public function handle(){
+    public function handle():int{
         $has_options = $this->hasOption(self::OPTION_ONLY_CONFIG) || $this->hasOption(self::OPTION_ONLY_ENV);
 
         if(($has_options && $this->hasOption(self::OPTION_ONLY_CONFIG)) || !$has_options) {
@@ -50,6 +50,8 @@ class AppConfigList extends Command {
             $this->table(['variable', 'value'], $env_values);
             $this->line('');    // new line after output in case we have other output
         }
+
+        return 0;
     }
 
     /**

@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/github/license/jdenoc/laravel-app-version?style=flat-square)](LICENSE)
 
 ## About
-Money Tracker is a web portal dedicated to help record and manage income & expenses, built on the [Laravel framework](https://laravel.com/docs/6.x).
+Money Tracker is a web portal dedicated to help record and manage income & expenses, built on the [Laravel framework](https://laravel.com/docs/7.x).
 
 ## Topics
 - [Requirements](#requirements)
@@ -45,7 +45,7 @@ Money Tracker is a web portal dedicated to help record and manage income & expen
   npx --version
   # should be 6
   ```
-- PHP 7.3
+- PHP 8.0
   ```bash
   # confirm installation and version of PHP
   php -v
@@ -56,10 +56,13 @@ Money Tracker is a web portal dedicated to help record and manage income & expen
   Extensions should include:
   - BCMath PHP Extension
   - Ctype PHP Extension
+  - DOM PHP Extension
   - Fileinfo PHP Extension
   - JSON PHP Extension
   - Mbstring PHP Extension
   - OpenSSL PHP Extension
+  - PCNTL PHP Extension
+  - PCRE PHP Extension
   - PDO PHP Extension
   - PDO Mysql PHP Extension
   - Tokenizer PHP Extension
@@ -73,7 +76,7 @@ Money Tracker is a web portal dedicated to help record and manage income & expen
 ---
 
 ## Other Documentation
-- [Laravel](https://laravel.com/docs/6.x/)
+- [Laravel](https://laravel.com/docs/7.x/)
 - [VueJS](https://vuejs.org/v2/guide/)
 - [Bulma](https://bulma.io/documentation/)
 - [ChartJs](https://www.chartjs.org/)
