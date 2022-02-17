@@ -3,6 +3,8 @@
 
 From time to time, there will be new updates released. Such updates will contain new features, bug fixes, general improvements, ect. In order to allow such improvements to be usable on production deployments, you should follow these steps:
 
+---
+
 #### Step 1
 ```bash
 # Navigate to the application directory, i.e.: cd money-tracker/
@@ -10,6 +12,8 @@ From time to time, there will be new updates released. Such updates will contain
 # put site into maintenance mode
 php artisan down
 ```
+
+---
 
 #### Step 2
 ```
@@ -19,9 +23,11 @@ MOST_RECENT_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
 git checkout -q tags/$MOST_RECENT_TAG
 ```
 
+---
+
 #### Step 3
 The following steps are optional. Refer to release notes to see if any of these steps are needed.  
-Otherwise, skip to [Step 4](#step-4)
+Otherwise, skip to [Step 4](#step-4).
 
 #### Step 3.a <small>_(optional)_</small>
 ```
@@ -53,11 +59,15 @@ npm ci
 php artisan migrate
 ```
 
+---
+
 #### Step 4
 ```
 # Build website from *.vue files
 npm run-script build-prod
 ```
+
+---
 
 #### Step 5
 ```
@@ -71,6 +81,8 @@ php artisan app:version $MOST_RECENT_TAG
 php artisan optimize
 php artisan view:cache
 ```
+
+---
 
 #### Step 6
 ```
