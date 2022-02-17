@@ -31,20 +31,10 @@ php artisan view:cache
 ### Database Setup
 This is the exact same process as we do for our Local/dev setup. See instructions [here](SETUP-LOCAL.md#database-setup).
 
-### Review Performance/Security
-```bash
-# install enlightn
-.docker/cmd/composer.sh require enlightn/enlightn --dev
-.docker/cmd/artisan.sh vendor:publish --tag=enlightn
+---
 
-# run enlightn
-.docker/cmd/artisan.sh enlightn --details
-# address any issues that can be addresses, then perform a baseline test
-.docker/cmd/artisan.sh enlightn:baseline
-
-# remove enlightn
-.docker/cmd/composer.sh remove enlightn/enlightn --dev
-```
+### Benchmarking
+Need to know the performance of your application, check [here](BENCHMARKING.md).
 
 ---
 
