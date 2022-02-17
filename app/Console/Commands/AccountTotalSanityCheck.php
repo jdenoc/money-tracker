@@ -43,10 +43,8 @@ class AccountTotalSanityCheck extends Command {
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
-    public function handle(){
+    public function handle():int{
         if($this->option(self::OPTION_FORCE_FAILURE)){
             $this->notifyInternally("Forcing Failure", self::LOG_LEVEL_DEBUG);
 
@@ -85,6 +83,8 @@ class AccountTotalSanityCheck extends Command {
                 }
             }
         }
+
+        return 0;
     }
 
     /**
