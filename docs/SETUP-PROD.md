@@ -26,6 +26,8 @@ php artisan optimize
 php artisan view:cache
 ```
 
+---
+
 ### Database Setup
 This is the exact same process as we do for our Local/dev setup. See instructions [here](SETUP-LOCAL.md#database-setup).
 
@@ -47,4 +49,4 @@ This is the exact same process as we do for our Local/dev setup. See instruction
 ---
 
 ### Updates
-For instructions on how to update production can be found [here](UPDATE-PROD.md)
+For instructions on how to update production can be found [here](UPDATE-PROD.md).

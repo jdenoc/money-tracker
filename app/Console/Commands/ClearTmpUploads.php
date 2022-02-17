@@ -24,10 +24,8 @@ class ClearTmpUploads extends Command {
 
     /**
      * Execute the console command.
-     *
-     * @return void
      */
-    public function handle(){
+    public function handle():int{
         $tmp_upload_file_count = 0;
         $tmp_upload_files = Storage::files(Attachment::STORAGE_TMP_UPLOAD);
         foreach($tmp_upload_files as $tmp_upload_file){
@@ -41,6 +39,8 @@ class ClearTmpUploads extends Command {
         }
 
         $this->info($tmp_upload_file_count." files deleted from ".Attachment::STORAGE_TMP_UPLOAD);
+
+        return 0;
     }
 
 }
