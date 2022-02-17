@@ -6,16 +6,22 @@ use Illuminate\Database\Migrations\Migration;
 
 class RenameEntriesColumnDate extends Migration {
 
+    private static $TABLE = 'entries';
+    private static $COLUMN_OLD = 'date';
+    private static $COLUMN_NEW = 'entry_date';
+    private static $INDEX_OLD = 'date';
+    private static $INDEX_NEW = 'entry_date';
+
     /**
      * Rename column entries.date to entries.entry_date
      *
      * @return void
      */
     public function up(){
-        Schema::table('entries', function (Blueprint $table) {
-            $table->dropIndex(array('date'));
-            $table->renameColumn('date', 'entry_date');
-            $table->index('entry_date');
+        Schema::table(self::$TABLE, function (Blueprint $table) {
+            $table->dropIndex(array(self::$INDEX_OLD));
+            $table->renameColumn(self::$COLUMN_OLD, self::$COLUMN_NEW);
+            $table->index(self::$INDEX_NEW);
         });
     }
 
@@ -25,10 +31,10 @@ class RenameEntriesColumnDate extends Migration {
      * @return void
      */
     public function down(){
-        Schema::table('entries', function (Blueprint $table) {
-            $table->dropIndex(array('entry_date'));
-            $table->renameColumn('entry_date', 'date');
-            $table->index('date');
+        Schema::table(self::$TABLE, function (Blueprint $table) {
+            $table->dropIndex(array(self::$INDEX_NEW));
+            $table->renameColumn(self::$COLUMN_NEW, self::$COLUMN_OLD);
+            $table->index(self::$INDEX_OLD);
         });
     }
 

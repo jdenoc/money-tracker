@@ -6,13 +6,15 @@ use Illuminate\Database\Migrations\Migration;
 
 class CreateAccountTypesTable extends Migration {
 
+    private static $TABLE = 'account_types';
+
     /**
      * Create `account_types` table
      *
      * @return void
      */
     public function up(){
-        Schema::create('account_types', function (Blueprint $table) {
+        Schema::create(self::$TABLE, function (Blueprint $table) {
             $table->increments('id');
             $table->enum('type', array(
                 'checking','savings','credit card','debit card'
@@ -31,7 +33,7 @@ class CreateAccountTypesTable extends Migration {
      * @return void
      */
     public function down(){
-        Schema::dropIfExists('account_types');
+        Schema::dropIfExists(self::$TABLE);
     }
 
 }
