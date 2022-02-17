@@ -29,10 +29,10 @@ class AccountTotalSanityCheck extends Command {
      * @var string
      */
     protected $signature = 'sanity-check:account-total
-                            {accountId? : Account ID to perform sanity check}
-                            {--force-failure : Force sanity check to fail before even performing it}
-                            {--dont-notify-discord : Stop script from sending notification to provided Discord webhook}
-                            {--notify-screen : Output to screen}';
+                            {'.self::ARG_ACCOUNT_ID.'? : Account ID to perform sanity check}
+                            {--'.self::OPTION_FORCE_FAILURE.' : Force sanity check to fail before even performing it}
+                            {--'.self::OPTION_DONT_NOTIFY_DISCORD.' : Stop script from sending notification to provided Discord webhook}
+                            {--'.self::OPTION_NOTIFY_SCREEN.' : Output to screen}';
 
     /**
      * The console command description.
