@@ -2,13 +2,11 @@
 
 namespace App\Traits\Tests;
 
-use Spatie\DbDumper\Databases\MySql;
 use Symfony\Component\Finder\Finder;
 
 trait DatabaseFileDump {
 
-    private static $DUMP_DIR = __DIR__.'/../../../tests/Browser/db-dump/';
-    private static $DATABASE_CONNECTION_CONFIG_PREFIX = 'database.connections.mysql.';
+    private static $DUMP_DIR = __DIR__.'/../../../tests/db-dump/';
 
     public function prepareApplicationForDatabaseDumpFile($test_name){
         $this->purgeDatabaseFileDumps();
@@ -28,12 +26,7 @@ trait DatabaseFileDump {
             $test_name = microtime(true);
         }
 
-        MySql::create()
-            ->setDbName(config(self::$DATABASE_CONNECTION_CONFIG_PREFIX.'database'))
-            ->setHost(config(self::$DATABASE_CONNECTION_CONFIG_PREFIX.'host'))
-            ->setUserName(config(self::$DATABASE_CONNECTION_CONFIG_PREFIX.'username'))
-            ->setPassword(config(self::$DATABASE_CONNECTION_CONFIG_PREFIX.'password'))
-            ->dumpToFile(self::$DUMP_DIR.$test_name.'.sql');
+        $this->artisan('migrate:fresh-from-file', ['file'=>self::$DUMP_DIR.$test_name.'.sql']);
     }
 
     /**
