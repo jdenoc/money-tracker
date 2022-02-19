@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8a2f9f232bcb315bb7c4dfdbe3192596",
+    "content-hash": "48feb8dada54efa5f81187fb96250a29",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -3615,16 +3615,16 @@
         },
         {
             "name": "spatie/db-dumper",
-            "version": "3.2.0",
+            "version": "3.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/db-dumper.git",
-                "reference": "17152c3fd799fb55b34f35885f8f129678faed73"
+                "reference": "e90bdffb902b43c7d76dd45dd350a54f4330fee5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/db-dumper/zipball/17152c3fd799fb55b34f35885f8f129678faed73",
-                "reference": "17152c3fd799fb55b34f35885f8f129678faed73",
+                "url": "https://api.github.com/repos/spatie/db-dumper/zipball/e90bdffb902b43c7d76dd45dd350a54f4330fee5",
+                "reference": "e90bdffb902b43c7d76dd45dd350a54f4330fee5",
                 "shasum": ""
             },
             "require": {
@@ -3662,8 +3662,7 @@
                 "spatie"
             ],
             "support": {
-                "issues": "https://github.com/spatie/db-dumper/issues",
-                "source": "https://github.com/spatie/db-dumper/tree/3.2.0"
+                "source": "https://github.com/spatie/db-dumper/tree/3.2.1"
             },
             "funding": [
                 {
@@ -3675,7 +3674,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-03-10T16:01:42+00:00"
+            "time": "2022-06-15T13:27:17+00:00"
         },
         {
             "name": "spatie/laravel-db-snapshots",
@@ -6491,6 +6490,81 @@
                 "source": "https://github.com/barryvdh/ReflectionDocBlock/tree/v2.0.6"
             },
             "time": "2018-12-13T10:34:14+00:00"
+        },
+        {
+            "name": "beyondcode/laravel-masked-db-dump",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/marispro/laravel-masked-db-dump.git",
+                "reference": "e89651171b5aa5605040cfb90e9b1b8728dcb820"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/marispro/laravel-masked-db-dump/zipball/e89651171b5aa5605040cfb90e9b1b8728dcb820",
+                "reference": "e89651171b5aa5605040cfb90e9b1b8728dcb820",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/dbal": "^2.0|^3.0",
+                "fakerphp/faker": "^1.13",
+                "illuminate/console": "^7.0|^8.0|^9.0",
+                "illuminate/support": "^7.0|^8.0|^9.0",
+                "php": "^7.3 || ^8.0"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^6.12",
+                "phpunit/phpunit": "^8.0",
+                "spatie/phpunit-snapshot-assertions": "^4.2"
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "BeyondCode\\LaravelMaskedDumper\\LaravelMaskedDumpServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "BeyondCode\\LaravelMaskedDumper\\": "src"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "BeyondCode\\LaravelMaskedDumper\\Tests\\": "tests"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "vendor/bin/phpunit"
+                ],
+                "test-coverage": [
+                    "vendor/bin/phpunit --coverage-html coverage"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Marcel Pociot",
+                    "email": "marcel@beyondco.de",
+                    "homepage": "https://beyondcode.de",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Dump masked information from your database",
+            "homepage": "https://github.com/beyondcode/laravel-masked-db-dump",
+            "keywords": [
+                "beyondcode",
+                "laravel-masked-db-dump"
+            ],
+            "support": {
+                "source": "https://github.com/marispro/laravel-masked-db-dump/tree/main"
+            },
+            "time": "2022-04-06T10:38:24+00:00"
         },
         {
             "name": "composer/ca-bundle",
@@ -10051,7 +10125,8 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "beyondcode/laravel-favicon": 20,
-        "eklundkristoffer/laravel-discord-webhook": 20
+        "eklundkristoffer/laravel-discord-webhook": 20,
+        "beyondcode/laravel-masked-db-dump": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
