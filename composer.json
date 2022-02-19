@@ -25,6 +25,7 @@
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.2",
+        "beyondcode/laravel-masked-db-dump": "dev-main",
         "facade/ignition": "^2.0",
         "fakerphp/faker": "1.15.0",
         "filp/whoops": "2.12.1",
@@ -33,8 +34,7 @@
         "mockery/mockery": "^1.3.1",
         "nunomaduro/collision": "^4.3",
         "phpunit/php-invoker": "^3.1",
-        "phpunit/phpunit": "^8.5.8|^9.3.3",
-        "spatie/db-dumper": "2.21.1"
+        "phpunit/phpunit": "^8.5.8|^9.3.3"
     },
     "autoload": {
         "psr-4": {
@@ -83,6 +83,10 @@
         {
             "type": "vcs",
             "url": "https://github.com/eminos/laravel-favicon"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/marispro/laravel-masked-db-dump"
         }
     ],
     "extra": {
