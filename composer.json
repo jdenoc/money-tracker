@@ -27,6 +27,7 @@
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.2",
+        "beyondcode/laravel-masked-db-dump": "dev-main",
         "facade/ignition": "^2.0",
         "fakerphp/faker": "1.15.0",
         "filp/whoops": "2.12.1",
@@ -84,6 +85,10 @@
         {
             "type": "vcs",
             "url": "https://github.com/eminos/laravel-favicon"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/marispro/laravel-masked-db-dump"
         }
     ],
     "extra": {
