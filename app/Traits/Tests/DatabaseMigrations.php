@@ -2,8 +2,6 @@
 
 namespace App\Traits\Tests;
 
-use Spatie\DbDumper\Databases\MySql;
-
 trait DatabaseMigrations {
 
     protected static $DB_DUMP_FILE = '';
@@ -15,14 +13,10 @@ trait DatabaseMigrations {
             $this->artisan('migrate:fresh', ['--seeder'=>'UiSampleDatabaseSeeder']);
 
             // dump database contents to file
-            $database_connection_config_prefix = 'database.connections.mysql.';
-            self::$DB_DUMP_FILE = __DIR__.'/Browser/db-dump/'.__CLASS__.'.sql';
-            MySql::create()
-                ->setDbName(config($database_connection_config_prefix.'database'))
-                ->setHost(config($database_connection_config_prefix.'host'))
-                ->setUserName(config($database_connection_config_prefix.'username'))
-                ->setPassword(config($database_connection_config_prefix.'password'))
-                ->dumpToFile(self::$DB_DUMP_FILE);
+            self::$DB_DUMP_FILE = __DIR__.'/../../../tests/db-dump/'.class_basename(get_called_class()).'.sql';
+            $this->artisan('db:masked-dump', ['output'=>self::$DB_DUMP_FILE]);
+
+            self::$FRESH_RUN = false;
         } else {
             // init database from file
             $this->artisan('migrate:fresh-from-file', ['file'=>self::$DB_DUMP_FILE]);
