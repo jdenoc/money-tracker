@@ -2,6 +2,7 @@
 
 namespace App\Traits\Tests;
 
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Event;
 use Spatie\DbSnapshots\Events\CreatedSnapshot;
 
