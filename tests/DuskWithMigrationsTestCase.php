@@ -2,7 +2,6 @@
 
 namespace Tests;
 
-use App\Traits\Tests\DatabaseFileDump;
 use App\Traits\Tests\DatabaseMigrations;
 
 /**
@@ -16,13 +15,6 @@ use App\Traits\Tests\DatabaseMigrations;
  * and on subsequent tests loan that file.
  */
 abstract class DuskWithMigrationsTestCase extends DuskTestCase {
-
-    /**
-     * Often when a test involving a database fails, the failure is very database content dependent.
-     * The best way to re-create said failure is to perform a database dump.
-     * Doing this will allow us to re-produce the failing issue and in doing so, allow us to fix the issue.
-     */
-    use DatabaseFileDump;
 
     use DatabaseMigrations;
 

@@ -87,10 +87,6 @@ abstract class DuskTestCase extends BaseTestCase {
             $this->runTestNameLogging($this->getName(true));
         }
 
-        if(isset($uses[\App\Traits\Tests\DatabaseFileDump::class])){
-            $this->prepareApplicationForDatabaseDumpFile($this->getName(true));
-        }
-
         if(isset($uses[\App\Traits\Tests\InjectDatabaseStateIntoException::class])){
             $this->prepareFailureExceptionForDatabaseInjection();
         }
