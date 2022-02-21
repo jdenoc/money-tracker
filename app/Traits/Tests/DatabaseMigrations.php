@@ -2,33 +2,52 @@
 
 namespace App\Traits\Tests;
 
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Event;
+use Spatie\DbSnapshots\Events\CreatedSnapshot;
+
 trait DatabaseMigrations {
 
-    protected static $DB_DUMP_FILE = '';
-    protected static $FRESH_RUN = true;
+    protected static bool $DUMP_READY = false;
+    protected static bool $FRESH_RUN = true;
+    protected static string $SNAPSHOT_NAME = '';
 
     public function migrate(){
         if(self::$FRESH_RUN){
+            // init a listener to clean up file
+            Event::listen(CreatedSnapshot::class, function(CreatedSnapshot $event){
+                $snapshot_file_path =  $event->snapshot->disk->getDriver()->getAdapter()->getPathPrefix().'/'.$event->snapshot->fileName;
+                $file_contents = file_get_contents($snapshot_file_path);
+                $file_contents = str_replace(';;', ';', $file_contents);
+                $file_contents = str_replace('DELIMITER ;', "\n", $file_contents);
+                $file_contents = str_replace("/*!50017 DEFINER=`jdenoc`@`%`*/", "", $file_contents);
+                file_put_contents($snapshot_file_path, $file_contents);
+                self::$DUMP_READY = true;
+            });
+
             // load database migrations and seed with data
             $this->artisan('migrate:fresh', ['--seeder'=>'UiSampleDatabaseSeeder']);
 
             // dump database contents to file
-            self::$DB_DUMP_FILE = __DIR__.'/../../../tests/db-dump/'.class_basename(get_called_class()).'.sql';
-            $this->artisan('db:masked-dump', ['output'=>self::$DB_DUMP_FILE]);
+            self::$SNAPSHOT_NAME = class_basename(get_called_class());
+            $this->artisan('snapshot:create', ['name'=>self::$SNAPSHOT_NAME]);
 
             self::$FRESH_RUN = false;
         } else {
+            while(!self::$DUMP_READY){
+                // check every second until snapshot is ready
+                sleep(1);
+            }
             // init database from file
-            $this->artisan('migrate:fresh-from-file', ['file'=>self::$DB_DUMP_FILE]);
+            $this->artisan('snapshot:load', ['name'=>self::$SNAPSHOT_NAME]);
         }
     }
 
     public static function cleanup(){
-        if(file_exists(self::$DB_DUMP_FILE)){
-            unlink(self::$DB_DUMP_FILE);
-        }
-        self::$DB_DUMP_FILE = '';
+//        Artisan::call('snapshot:delete', ['name'=>self::$SNAPSHOT_NAME]);     // TODO: figure out how to make this work
+        self::$SNAPSHOT_NAME = '';
         self::$FRESH_RUN = true;
+        self::$DUMP_READY = false;
     }
 
 }
