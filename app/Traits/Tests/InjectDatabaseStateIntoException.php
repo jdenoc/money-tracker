@@ -11,7 +11,7 @@ use App\Tag;
 use App\User;
 
 /**
- * @deprecated - deprecating in favor of DatabaseFileDump
+ * @deprecated - use artisan snapshot:create
  */
 trait InjectDatabaseStateIntoException {
 
