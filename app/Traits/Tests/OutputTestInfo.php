@@ -4,7 +4,7 @@ namespace App\Traits\Tests;
 
 trait OutputTestInfo {
 
-    private static $TEST_COUNT;
+    private static int $TEST_COUNT;
 
     protected static function initOutputTestInfo(){
         self::$TEST_COUNT = 1;
