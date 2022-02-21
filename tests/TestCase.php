@@ -2,8 +2,8 @@
 
 namespace Tests;
 
-use App\Traits\Tests\OutputTestInfo;
 use App\Traits\Tests\DatabaseMigrations;
+use App\Traits\Tests\OutputTestInfo;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Http\Response;
 use Illuminate\Testing\TestResponse;
@@ -11,17 +11,22 @@ use Illuminate\Testing\TestResponse;
 abstract class TestCase extends BaseTestCase {
 
     use CreatesApplication;
-    use OutputTestInfo;
     use DatabaseMigrations;
+    use OutputTestInfo;
 
     public static function setUpBeforeClass(): void{
         self::initOutputTestInfo();
     }
 
-    protected function setUp(): void{
+    public function setUp(): void{
         $this->outputTestName();
         parent::setUp();
         $this->migrate();
+    }
+
+    public function tearDown(): void{
+        parent::tearDown();
+        $this->incrementTestCount();
     }
 
     public static function tearDownAfterClass(): void{
