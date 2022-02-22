@@ -15,7 +15,7 @@ class VersionControllerTest extends TestCase {
 
     public function testGetVersion(){
         // GIVEN
-        $test_version = $this->faker->randomDigitNotNull.'.'.$this->faker->randomDigitNotNull.'.'.$this->faker->randomDigitNotNull.'-test-'.$this->faker->word;
+        $test_version = $this->faker->randomDigit().'.'.$this->faker->randomDigit().'.'.$this->faker->randomDigit().'-test-'.substr($this->faker->sha1(), 0, 7);
         config([VersionController::CONFIG_VERSION=>$test_version]);
 
         // WHEN

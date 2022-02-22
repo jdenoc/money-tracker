@@ -20,7 +20,7 @@ class GetInstitutionTest extends TestCase {
 
     public function testGetInstitutionWhenNoInstitutionExists(){
         // GIVEN - no institution
-        $institution_id = $this->faker->randomDigitNotNull;
+        $institution_id = $this->faker->randomDigitNotZero();
 
         // WHEN
         $response = $this->get($this->_base_uri.$institution_id);
@@ -52,7 +52,7 @@ class GetInstitutionTest extends TestCase {
 
     public function testGetInstitution(){
         // GIVEN
-        $generated_account_count = $this->faker->randomDigitNotNull;
+        $generated_account_count = $this->faker->randomDigitNotZero();
         $generated_institution = factory(Institution::class)->create();
         $generated_accounts = factory(Account::class, $generated_account_count)->create(['institution_id'=>$generated_institution->id]);
         // These nodes are not in the response output. Lets hide them from the object collection.
