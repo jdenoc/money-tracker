@@ -16,8 +16,6 @@ on:
 
 env:
   PROJECT_NAME: "moneytracker"
-  DUSK_SCREENSHOT_DIR: 'tests/Browser/screenshots/'
-  DUSK_DB_DUMP_DIR: 'tests/Browser/db-dump/'
 
 jobs:
 
