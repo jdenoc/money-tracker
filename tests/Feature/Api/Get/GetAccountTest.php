@@ -21,7 +21,7 @@ class GetAccountTest extends TestCase {
 
     public function testGetAccountData(){
         // GIVEN
-        $account_type_count = $this->faker->randomDigitNotNull;
+        $account_type_count = $this->faker->randomDigitNotZero();
         $generated_account = factory(Account::class)->create();
         $generated_account_types = factory(AccountType::class, $account_type_count)->create(['account_id'=>$generated_account->id]);
         // These nodes are not in the response output. Lets hide them from the object collection
@@ -39,7 +39,7 @@ class GetAccountTest extends TestCase {
 
     public function testGetAccountDataWhenAnAccountTypesRecordIsDisabled(){
         // GIVEN
-        $account_type_count = $this->faker->randomDigitNotNull;
+        $account_type_count = $this->faker->randomDigitNotZero();
         $generated_account = factory(Account::class)->create();
         $generated_account_types = factory(AccountType::class, $account_type_count)->create(['account_id'=>$generated_account->id]);
         $generated_disabled_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id, 'disabled'=>true]);
@@ -72,7 +72,7 @@ class GetAccountTest extends TestCase {
 
     public function testGetAccountDataWhenOnlyDisabledAccountTypeRecordsExist(){
         // GIVEN
-        $account_type_count = $this->faker->randomDigitNotNull;
+        $account_type_count = $this->faker->randomDigitNotZero();
         $generated_account = factory(Account::class)->create();
         factory(AccountType::class, $account_type_count)->create(['account_id'=>$generated_account->id, 'disabled'=>true]);
 
@@ -88,7 +88,7 @@ class GetAccountTest extends TestCase {
         // GIVEN - no database records are created
 
         // WHEN
-        $response = $this->get($this->_base_uri.$this->faker->randomDigitNotNull);
+        $response = $this->get($this->_base_uri.$this->faker->randomDigitNotZero());
 
         // THEN
         $response->assertStatus(Response::HTTP_NOT_FOUND);
