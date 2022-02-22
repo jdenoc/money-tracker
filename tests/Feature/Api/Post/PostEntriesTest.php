@@ -14,11 +14,11 @@ class PostEntriesTest extends \Tests\Feature\Api\ListEntriesBase {
     use EntryFilterKeys;
     use MaxEntryResponseValue;
 
-    public function providerPostEntriesFilter(){
+    public function providerPostEntriesFilter():array{
         // need to call setUp() before running through a data provider method
         // environment needs setting up and isn't until setUp() is called
         //$this->setUp();
-        // We can no longer call setUp() as a work around
+        // We can no longer call setUp() as a workaround
         // it caused the database to populate and in doing so we caused some tests to fail.
         // Said tests failed because they were testing the absence of database values.
         $this->initialiseApplication();
@@ -104,7 +104,7 @@ class PostEntriesTest extends \Tests\Feature\Api\ListEntriesBase {
      * @param array $filter_details
      * @throws \Exception
      */
-    public function testPostEntries($filter_details){
+    public function testPostEntries(array $filter_details){
         // GIVEN
         $generate_entry_count = $this->faker->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE);
         /** @var AccountType $generated_account_type */
@@ -143,7 +143,7 @@ class PostEntriesTest extends \Tests\Feature\Api\ListEntriesBase {
      * @param array $filter_details
      * @throws \Exception
      */
-    public function testPostEntriesByPage($filter_details){
+    public function testPostEntriesByPage(array $filter_details){
         $page_limit = 3;
         // GIVEN
         $generate_entry_count = $this->faker->numberBetween(($page_limit-1)*self::$MAX_ENTRIES_IN_RESPONSE+1, $page_limit*self::$MAX_ENTRIES_IN_RESPONSE);
@@ -315,7 +315,7 @@ class PostEntriesTest extends \Tests\Feature\Api\ListEntriesBase {
     /**
      * @param array $filter_details
      */
-    private function assertPostEntriesNotFound($filter_details){
+    private function assertPostEntriesNotFound(array $filter_details){
         // WHEN
         $response = $this->json("POST", $this->_uri, $filter_details);
 
@@ -333,7 +333,7 @@ class PostEntriesTest extends \Tests\Feature\Api\ListEntriesBase {
      * @param array $filter_details
      * @return array
      */
-    private function set_test_specific_filters($filter_details){
+    private function set_test_specific_filters(array $filter_details):array{
         if(key_exists(self::$FILTER_KEY_TAGS, $filter_details)){
             $tag_ids = $this->_generated_tags->pluck('id')->toArray();
             $filter_details[self::$FILTER_KEY_TAGS] = $this->faker->randomElements($tag_ids, $this->faker->numberBetween(1, count($tag_ids)));
@@ -352,7 +352,7 @@ class PostEntriesTest extends \Tests\Feature\Api\ListEntriesBase {
      * @param array $filters
      * @return array
      */
-    private function convert_filters_to_entry_components($filters){
+    private function convert_filters_to_entry_components(array $filters):array{
         $entry_components = [];
         foreach($filters as $filter_name => $constraint){
             switch($filter_name){
@@ -386,9 +386,9 @@ class PostEntriesTest extends \Tests\Feature\Api\ListEntriesBase {
                     $entry_components[$filter_name] = is_array($constraint) ? $constraint : [$constraint];
                     break;
                 case self::$FILTER_KEY_IS_TRANSFER:
-                    if($constraint == true){
+                    if($constraint === true){
                         $entry_components['transfer_entry_id'] = $this->faker->randomDigitNotZero();
-                    } elseif($constraint == false) {
+                    } elseif($constraint === false) {
                         $entry_components['transfer_entry_id'] = null;
                     }
                     break;

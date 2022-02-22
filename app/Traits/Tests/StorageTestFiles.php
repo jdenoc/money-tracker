@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Storage;
 
 trait StorageTestFiles {
 
-    protected static $storage_path = "test/";   // storage/app/test/
+    protected static string $storage_path = "test/";   // storage/app/test/
 
     /**
      * @return array
@@ -14,7 +14,7 @@ trait StorageTestFiles {
     public static function getTestFilePaths(): array{
         $file_paths =  Storage::files(self::$storage_path);
         $file_paths = array_filter($file_paths, function(string $filename){
-            if(strpos($filename, 'git') === false){
+            if(!str_contains($filename, 'git')  && !str_contains($filename, 'DS_Store')){
                 return $filename;
             }
         });

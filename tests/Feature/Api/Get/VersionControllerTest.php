@@ -11,7 +11,7 @@ class VersionControllerTest extends TestCase {
 
     use WithFaker;
 
-    private $_base_uri = '/api/version';
+    private string $_base_uri = '/api/version';
 
     public function testGetVersion(){
         // GIVEN

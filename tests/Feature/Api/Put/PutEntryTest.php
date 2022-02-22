@@ -505,9 +505,8 @@ class PutEntryTest extends TestCase {
     /**
      * @param array $response_as_array
      */
-    private function assertPutResponseHasCorrectKeys($response_as_array){
+    private function assertPutResponseHasCorrectKeys(array $response_as_array){
         $failure_message = "PUT Response is ".json_encode($response_as_array);
-        $this->assertTrue(is_array($response_as_array), $failure_message);
         $this->assertArrayHasKey(self::$RESPONSE_SAVE_KEY_ID, $response_as_array, $failure_message);
         $this->assertArrayHasKey(self::$RESPONSE_SAVE_KEY_ERROR, $response_as_array, $failure_message);
     }
@@ -516,7 +515,7 @@ class PutEntryTest extends TestCase {
      * @param array $response_as_array
      * @param string $response_error_msg
      */
-    private function assertFailedPutResponse($response_as_array, $response_error_msg){
+    private function assertFailedPutResponse(array $response_as_array, string $response_error_msg){
         $failure_message = "PUT response is ".json_encode($response_as_array);
         $this->assertEquals(self::$ERROR_ENTRY_ID, $response_as_array[self::$RESPONSE_SAVE_KEY_ID], $failure_message);
         $this->assertNotEmpty($response_as_array[self::$RESPONSE_SAVE_KEY_ERROR], $failure_message);
@@ -526,7 +525,7 @@ class PutEntryTest extends TestCase {
     /**
      * @param array $response_as_array
      */
-    private function assertSuccessPutResponse($response_as_array){
+    private function assertSuccessPutResponse(array $response_as_array){
         $failure_message = "PUT response is ".json_encode($response_as_array);
         $this->assertEmpty($response_as_array[self::$RESPONSE_SAVE_KEY_ERROR], $failure_message);
         $this->assertGreaterThan(self::$ERROR_ENTRY_ID, $response_as_array[self::$RESPONSE_SAVE_KEY_ID], $failure_message);

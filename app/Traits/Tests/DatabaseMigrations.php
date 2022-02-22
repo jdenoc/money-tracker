@@ -12,7 +12,7 @@ trait DatabaseMigrations {
     protected static bool $FRESH_RUN = true;
     protected static string $SNAPSHOT_NAME = '';
 
-    public function migrate(){
+    public function migrate($with_seeder=true){
         if(self::$FRESH_RUN){
             // init a listener to clean up file
             Event::listen(CreatedSnapshot::class, function(CreatedSnapshot $event){
@@ -26,7 +26,8 @@ trait DatabaseMigrations {
             });
 
             // load database migrations and seed with data
-            $this->artisan('migrate:fresh', ['--seeder'=>'UiSampleDatabaseSeeder']);
+            $options = ($with_seeder) ? ['--seeder'=>'UiSampleDatabaseSeeder'] : [];
+            $this->artisan('migrate:fresh', $options);
 
             // dump database contents to file
             self::$SNAPSHOT_NAME = class_basename(get_called_class());
