@@ -41,10 +41,10 @@ class TransferModalTest extends DuskTestCase {
 
     use WithFaker;
 
-    private $method_to = 'to';
-    private $method_from = 'from';
-    private $method_account = 'account';
-    private $method_account_type = 'account-type';
+    private static string $METHOD_TO = 'to';
+    private static string $METHOD_FROM = 'from';
+    private static string $METHOD_ACCOUNT = 'account';
+    private static string $METHOD_ACCOUNT_TYPE = 'account-type';
 
     /**
      * @throws Throwable
@@ -358,10 +358,10 @@ class TransferModalTest extends DuskTestCase {
     public function providerSelectingDisabledTransferAccountTypeMetaDataIsGrey(): array{
         // [$transfer_field, $account_type_method]
         return [
-            [$this->method_to, $this->method_account],          // test 11/25
-            [$this->method_to, $this->method_account_type],     // test 12/25
-            [$this->method_from, $this->method_account],        // test 13/25
-            [$this->method_from, $this->method_account_type],   // test 14/25
+            [self::$METHOD_TO, self::$METHOD_ACCOUNT],          // test 11/25
+            [self::$METHOD_TO, self::$METHOD_ACCOUNT_TYPE],     // test 12/25
+            [self::$METHOD_FROM, self::$METHOD_ACCOUNT],        // test 13/25
+            [self::$METHOD_FROM, self::$METHOD_ACCOUNT_TYPE],   // test 14/25
         ];
     }
 
@@ -378,10 +378,10 @@ class TransferModalTest extends DuskTestCase {
     public function testSelectingDisabledTransferAccountTypeMetaDataIsGrey(string $transfer_field, string $account_type_method){
         $account_types = AccountType::all();
         $disabled_account_type = [];
-        if($account_type_method == $this->method_account){
+        if($account_type_method == self::$METHOD_ACCOUNT){
             $disabled_account = Account::where('disabled', true)->get()->random();
             $disabled_account_type = $account_types->where('account_id', $disabled_account['id'])->random();
-        } else if($account_type_method == $this->method_account_type) {
+        } else if($account_type_method == self::$METHOD_ACCOUNT_TYPE) {
             $disabled_account_type = $account_types->where('disabled', true)->random();
         } else {
             $this->fail("Unknown account-type method provided");
@@ -396,10 +396,10 @@ class TransferModalTest extends DuskTestCase {
                 ->with($this->_selector_modal_body, function(Browser $entry_modal_body) use ($disabled_account_type, $transfer_field){
                     $selector_field = '';
                     $selector_meta = '';
-                    if($transfer_field == $this->method_to){
+                    if($transfer_field == self::$METHOD_TO){
                         $selector_field = $this->_selector_modal_transfer_field_to;
                         $selector_meta = $this->_selector_modal_transfer_meta_to;
-                    } else if($transfer_field == $this->method_from){
+                    } else if($transfer_field == self::$METHOD_FROM){
                         $selector_field = $this->_selector_modal_transfer_field_from;
                         $selector_meta = $this->_selector_modal_transfer_meta_from;
                     } else {
@@ -608,9 +608,9 @@ class TransferModalTest extends DuskTestCase {
                     $modal->click($this->_selector_modal_transfer_btn_save);
                 });
 
-            $this->waitForLoadingToStop($browser);
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_SUCCESS, $this->_label_notification_transfer_saved);
             $this->dismissNotification($browser);
+            $this->waitForLoadingToStop($browser);
             $browser->assertMissing($this->_selector_modal_transfer);
 
             $entry_modal_date_input_value = date("Y-m-d", strtotime($browser_locale_date));

@@ -13,10 +13,7 @@ class GetInstitutionTest extends TestCase {
 
     use WithFaker;
 
-    /**
-     * @var string
-     */
-    protected $_base_uri = '/api/institution/';
+    protected string $_base_uri = '/api/institution/';
 
     public function testGetInstitutionWhenNoInstitutionExists(){
         // GIVEN - no institution

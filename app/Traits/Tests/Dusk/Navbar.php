@@ -9,19 +9,19 @@ trait Navbar {
 
     use WaitTimes;
 
-    private static $SELECTOR_NAVBAR = '.navbar';
-    private static $SELECTOR_NAVBAR_BRAND_IMAGE = '.navbar-brand';
-    private static $SELECTOR_NAVBAR_NEW_ENTRY_BTN = '#nav-entry-modal';
-    private static $SELECTOR_NAVBAR_ADD_TRANSFER_BTN = '#nav-transfer-modal';
-    private static $SELECTOR_NAVBAR_OPEN_FILTER_BTN = '#nav-filter-modal';
-    private static $SELECTOR_NAVBAR_PROFILE_LINK = '#profile-nav-link';
-    private static $SELECTOR_NAVBAR_DROPDOWN = '.navbar-dropdown';
-    private static $SELECTOR_NAVBAR_DROPDOWN_BURGER_MENU = '.navbar-burger';
-    private static $SELECTOR_NAVBAR_DROPDOWN_VERSION = '#app-version';
-    private static $SELECTOR_NAVBAR_DROPDOWN_MENU = '.navbar-menu';
-    private static $SELECTOR_MODAL_ENTRY = '#entry-modal';
-    private static $SELECTOR_MODAL_TRANSFER = '#transfer-modal';
-    private static $SELECTOR_MODAL_FILTER = '#filter-modal';
+    private static string $SELECTOR_NAVBAR = '.navbar';
+    private static string $SELECTOR_NAVBAR_BRAND_IMAGE = '.navbar-brand';
+    private static string $SELECTOR_NAVBAR_NEW_ENTRY_BTN = '#nav-entry-modal';
+    private static string $SELECTOR_NAVBAR_ADD_TRANSFER_BTN = '#nav-transfer-modal';
+    private static string $SELECTOR_NAVBAR_OPEN_FILTER_BTN = '#nav-filter-modal';
+    private static string $SELECTOR_NAVBAR_PROFILE_LINK = '#profile-nav-link';
+    private static string $SELECTOR_NAVBAR_DROPDOWN = '.navbar-dropdown';
+    private static string $SELECTOR_NAVBAR_DROPDOWN_BURGER_MENU = '.navbar-burger';
+    private static string $SELECTOR_NAVBAR_DROPDOWN_VERSION = '#app-version';
+    private static string $SELECTOR_NAVBAR_DROPDOWN_MENU = '.navbar-menu';
+    private static string $SELECTOR_MODAL_ENTRY = '#entry-modal';
+    private static string $SELECTOR_MODAL_TRANSFER = '#transfer-modal';
+    private static string $SELECTOR_MODAL_FILTER = '#filter-modal';
 
     /**
      * @param Browser $navbar
