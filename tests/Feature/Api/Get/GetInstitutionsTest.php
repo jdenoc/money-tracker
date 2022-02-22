@@ -39,7 +39,7 @@ class GetInstitutionsTest extends TestCase {
      */
     public function testGetInstitutions(bool $all_active){
         // GIVEN
-        $institutions_count = $this->faker->randomDigitNotNull;
+        $institutions_count = $this->faker->randomDigitNotZero();
         $generated_institutions = [];
         for($i=0; $i<$institutions_count; $i++){
             $active_flag = $this->faker->boolean(($all_active? 100:50));

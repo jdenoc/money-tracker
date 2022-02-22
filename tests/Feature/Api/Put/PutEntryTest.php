@@ -51,7 +51,7 @@ class PutEntryTest extends TestCase {
         $entry_data = $entry_data->toArray();
         // make sure account_type_id value that does not exist
         while($entry_data['account_type_id'] == $this->_generated_account_type->id){
-            $entry_data['account_type_id'] = $this->faker->randomDigitNotNull;
+            $entry_data['account_type_id'] = $this->faker->randomDigitNotZero();
         }
 
         // WHEN
@@ -317,7 +317,7 @@ class PutEntryTest extends TestCase {
 
     public function testUpdateEntryToHaveTransferEntryCounterpart(){
         // GIVEN - see setup()
-        $entry_data = ['transfer_entry_id'=>$this->faker->randomDigitNotNull];
+        $entry_data = ['transfer_entry_id'=>$this->faker->randomDigitNotZero()];
 
         // WHEN
         $get_response = $this->get($this->_base_uri.$this->_generated_entry->id);
@@ -347,7 +347,7 @@ class PutEntryTest extends TestCase {
         factory(Tag::class, $generate_tag_count)->create();
         $put_entry_data = ['tags'=>Tag::all()->pluck('id')->toArray()];
         do{
-            $non_existent_tag_id = $this->faker->randomDigitNotNull;
+            $non_existent_tag_id = $this->faker->unique()->randomNumber(3);
         }while(in_array($non_existent_tag_id, $put_entry_data['tags']));
         $put_entry_data['tags'][] = $non_existent_tag_id;
 

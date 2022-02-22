@@ -22,14 +22,15 @@ class PostEntriesTest extends \Tests\Feature\Api\ListEntriesBase {
         // it caused the database to populate and in doing so we caused some tests to fail.
         // Said tests failed because they were testing the absence of database values.
         $this->initialiseApplication();
+        $this->setUpFaker();
 
         $filter = [];
         $filter['no filter'] = [[]];
 
-        $end_date = $this->_faker->date();
-        $start_date = $this->_faker->date("Y-m-d", $end_date);
-        $max_value = $this->_faker->randomFloat(2, 0, 50);
-        $min_value = $this->_faker->randomFloat(2, 0, $max_value);
+        $end_date = $this->faker->date();
+        $start_date = $this->faker->date("Y-m-d", $end_date);
+        $max_value = $this->faker->randomFloat(2, 0, 50);
+        $min_value = $this->faker->randomFloat(2, 0, $max_value);
 
         $filter_details = [
             self::$FILTER_KEY_START_DATE=>$start_date,
@@ -37,12 +38,12 @@ class PostEntriesTest extends \Tests\Feature\Api\ListEntriesBase {
             self::$FILTER_KEY_ACCOUNT=>0,       // will be set later
             self::$FILTER_KEY_ACCOUNT_TYPE=>0,  // will be set later
             self::$FILTER_KEY_TAGS=>[],         // will be set later
-            self::$FILTER_KEY_EXPENSE=>$this->_faker->boolean,
-            self::$FILTER_KEY_ATTACHMENTS=>$this->_faker->boolean,
+            self::$FILTER_KEY_EXPENSE=>$this->faker->boolean(),
+            self::$FILTER_KEY_ATTACHMENTS=>$this->faker->boolean(),
             self::$FILTER_KEY_MIN_VALUE=>$min_value,
             self::$FILTER_KEY_MAX_VALUE=>$max_value,
-            self::$FILTER_KEY_UNCONFIRMED=>$this->_faker->boolean,
-            self::$FILTER_KEY_IS_TRANSFER=>$this->_faker->boolean,
+            self::$FILTER_KEY_UNCONFIRMED=>$this->faker->boolean(),
+            self::$FILTER_KEY_IS_TRANSFER=>$this->faker->boolean(),
         ];
 
         // confirm all filters in EntryFilterKeys trait are listed here
@@ -105,7 +106,7 @@ class PostEntriesTest extends \Tests\Feature\Api\ListEntriesBase {
      */
     public function testPostEntries($filter_details){
         // GIVEN
-        $generate_entry_count = $this->_faker->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE);
+        $generate_entry_count = $this->faker->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE);
         /** @var AccountType $generated_account_type */
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
         $filter_details = $this->set_test_specific_filters($filter_details);
@@ -145,7 +146,7 @@ class PostEntriesTest extends \Tests\Feature\Api\ListEntriesBase {
     public function testPostEntriesByPage($filter_details){
         $page_limit = 3;
         // GIVEN
-        $generate_entry_count = $this->_faker->numberBetween(($page_limit-1)*self::$MAX_ENTRIES_IN_RESPONSE+1, $page_limit*self::$MAX_ENTRIES_IN_RESPONSE);
+        $generate_entry_count = $this->faker->numberBetween(($page_limit-1)*self::$MAX_ENTRIES_IN_RESPONSE+1, $page_limit*self::$MAX_ENTRIES_IN_RESPONSE);
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
         $filter_details = $this->set_test_specific_filters($filter_details);
         $generated_entries = $this->batch_generate_entries($generate_entry_count, $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
@@ -180,10 +181,10 @@ class PostEntriesTest extends \Tests\Feature\Api\ListEntriesBase {
         // GIVEN
         $min_number_of_tags = 2;
         while($this->_generated_tags->count() < $min_number_of_tags){
-            $this->_generated_tags = factory(Tag::class, $this->_faker->randomDigitNotNull)->create();
+            $this->_generated_tags = factory(Tag::class, $this->faker->randomDigitNotZero())->create();
         }
         $tag_ids = $this->_generated_tags->pluck('id')->toArray();
-        $filter_details[self::$FILTER_KEY_TAGS] = $this->_faker->randomElements($tag_ids, $this->_faker->numberBetween($min_number_of_tags, count($tag_ids)));
+        $filter_details[self::$FILTER_KEY_TAGS] = $this->faker->randomElements($tag_ids, $this->faker->numberBetween($min_number_of_tags, count($tag_ids)));
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
         $generated_entries = $this->batch_generate_entries(1, $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
 
@@ -200,9 +201,9 @@ class PostEntriesTest extends \Tests\Feature\Api\ListEntriesBase {
 
     public function testPostEntriesFilterWithStartDateGreaterThanEndDate(){
         // GIVEN
-        $start_date = $this->_faker->date();
+        $start_date = $this->faker->date();
         do{
-            $end_date = $this->_faker->date("Y-m-d", $start_date);  // second parameter guarantees $start_date is >= $end_date
+            $end_date = $this->faker->date("Y-m-d", $start_date);  // second parameter guarantees $start_date is >= $end_date
         }while($start_date < $end_date);
         $filter_details = [
             self::$FILTER_KEY_START_DATE=>$start_date,
@@ -210,15 +211,15 @@ class PostEntriesTest extends \Tests\Feature\Api\ListEntriesBase {
         ];
 
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
-        $this->batch_generate_entries($this->_faker->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE), $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
+        $this->batch_generate_entries($this->faker->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE), $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
         $this->assertPostEntriesNotFound($filter_details);
     }
 
     public function testPostEntriesFilterWithEndDateGreaterThanStartDate(){
         // GIVEN
-        $end_date = $this->_faker->date();
+        $end_date = $this->faker->date();
         do{
-            $start_date = $this->_faker->date("Y-m-d", $end_date); // second parameter guarantees $start_date is <= $end_date
+            $start_date = $this->faker->date("Y-m-d", $end_date); // second parameter guarantees $start_date is <= $end_date
         }while($start_date > $end_date);
         $filter_details = [
             self::$FILTER_KEY_START_DATE=>$start_date,
@@ -226,7 +227,7 @@ class PostEntriesTest extends \Tests\Feature\Api\ListEntriesBase {
         ];
 
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
-        $generated_entries_count = $this->_faker->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE);
+        $generated_entries_count = $this->faker->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE);
         $generated_entries = $this->batch_generate_entries($generated_entries_count, $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
 
         // WHEN
@@ -242,9 +243,9 @@ class PostEntriesTest extends \Tests\Feature\Api\ListEntriesBase {
 
     public function testPostEntriesFilterWithMinValueGreaterThanMaxValue(){
         // GIVEN
-        $min_value = $this->_faker->randomFloat(2, 0, 50);
+        $min_value = $this->faker->randomFloat(2, 0, 50);
         do{
-            $max_value = $this->_faker->randomFloat(2, 0, $min_value);
+            $max_value = $this->faker->randomFloat(2, 0, $min_value);
         }while($min_value < $max_value);
         $filter_details = [
             self::$FILTER_KEY_MIN_VALUE=>$min_value,
@@ -252,15 +253,15 @@ class PostEntriesTest extends \Tests\Feature\Api\ListEntriesBase {
         ];
 
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
-        $this->batch_generate_entries($this->_faker->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE), $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
+        $this->batch_generate_entries($this->faker->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE), $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
         $this->assertPostEntriesNotFound($filter_details);
     }
 
     public function testPostEntriesFilterWithMaxValueGreaterThanMinValue(){
         // GIVEN
-        $max_value = $this->_faker->randomFloat(2, 0, 50);
+        $max_value = $this->faker->randomFloat(2, 0, 50);
         do{
-            $min_value = $this->_faker->randomFloat(2, 0, $max_value);
+            $min_value = $this->faker->randomFloat(2, 0, $max_value);
         }while($min_value > $max_value);
         $filter_details = [
             self::$FILTER_KEY_MIN_VALUE=>$min_value,
@@ -268,7 +269,7 @@ class PostEntriesTest extends \Tests\Feature\Api\ListEntriesBase {
         ];
 
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
-        $generated_entries_count = $this->_faker->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE);
+        $generated_entries_count = $this->faker->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE);
         $generated_entries = $this->batch_generate_entries($generated_entries_count, $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
 
         // WHEN
@@ -284,14 +285,14 @@ class PostEntriesTest extends \Tests\Feature\Api\ListEntriesBase {
 
     public function testPostEntriesFilterSort(){
         // GIVEN
-        $generate_entry_count = $this->_faker->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE);
+        $generate_entry_count = $this->faker->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE);
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
         $generated_entries = $this->batch_generate_entries($generate_entry_count, $generated_account_type->id, [], false);
         // how we intend to sort
         $sort_options = Entry::get_fields_required_for_creation();
         unset($sort_options['memo']);   // can't and don't intend to sort by entry memo
-        $filter_details[self::$FILTER_KEY_SORT][self::$FILTER_KEY_SORT_PARAMETER] = $this->_faker->randomElement($sort_options);
-        $filter_details[self::$FILTER_KEY_SORT][self::$FILTER_KEY_SORT_DIRECTION] = $this->_faker->randomElement([Entry::SORT_DIRECTION_ASC, Entry::SORT_DIRECTION_DESC]);
+        $filter_details[self::$FILTER_KEY_SORT][self::$FILTER_KEY_SORT_PARAMETER] = $this->faker->randomElement($sort_options);
+        $filter_details[self::$FILTER_KEY_SORT][self::$FILTER_KEY_SORT_DIRECTION] = $this->faker->randomElement([Entry::SORT_DIRECTION_ASC, Entry::SORT_DIRECTION_DESC]);
 
         // WHEN
         $response = $this->json("POST", $this->_uri, $filter_details);
@@ -335,11 +336,11 @@ class PostEntriesTest extends \Tests\Feature\Api\ListEntriesBase {
     private function set_test_specific_filters($filter_details){
         if(key_exists(self::$FILTER_KEY_TAGS, $filter_details)){
             $tag_ids = $this->_generated_tags->pluck('id')->toArray();
-            $filter_details[self::$FILTER_KEY_TAGS] = $this->_faker->randomElements($tag_ids, $this->_faker->numberBetween(1, count($tag_ids)));
+            $filter_details[self::$FILTER_KEY_TAGS] = $this->faker->randomElements($tag_ids, $this->faker->numberBetween(1, count($tag_ids)));
         }
         if(key_exists(self::$FILTER_KEY_ACCOUNT_TYPE, $filter_details)){
             $account_types = $this->_generated_account->account_types()->pluck('id')->toArray();
-            $filter_details[self::$FILTER_KEY_ACCOUNT_TYPE] = $this->_faker->randomElement($account_types);
+            $filter_details[self::$FILTER_KEY_ACCOUNT_TYPE] = $this->faker->randomElement($account_types);
         }
         if(key_exists(self::$FILTER_KEY_ACCOUNT, $filter_details)){
             $filter_details[self::$FILTER_KEY_ACCOUNT] = $this->_generated_account->id;
@@ -386,7 +387,7 @@ class PostEntriesTest extends \Tests\Feature\Api\ListEntriesBase {
                     break;
                 case self::$FILTER_KEY_IS_TRANSFER:
                     if($constraint == true){
-                        $entry_components['transfer_entry_id'] = $this->_faker->randomDigitNotNull;
+                        $entry_components['transfer_entry_id'] = $this->faker->randomDigitNotZero();
                     } elseif($constraint == false) {
                         $entry_components['transfer_entry_id'] = null;
                     }
