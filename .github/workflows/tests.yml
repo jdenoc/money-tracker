@@ -16,8 +16,6 @@ on:
 
 env:
   PROJECT_NAME: "moneytracker"
-  DUSK_SCREENSHOT_DIR: 'tests/Browser/screenshots/'
-  DUSK_DB_DUMP_DIR: 'tests/Browser/db-dump/'
 
 jobs:
 
@@ -70,8 +68,8 @@ jobs:
           echo "value<<EOF" >> $GITHUB_OUTPUT
           echo "storage/app/test/downloads/*.csv" >> $GITHUB_OUTPUT
           echo "storage/logs/*.log" >> $GITHUB_OUTPUT
+          echo "database/snapshots/*.sql" >> $GITHUB_OUTPUT
           echo "tests/Browser/console/*.log" >> $GITHUB_OUTPUT
-          echo "tests/Browser/db-dump/*.sql" >> $GITHUB_OUTPUT
           echo "tests/Browser/screenshots/" >> $GITHUB_OUTPUT
           echo "!tests/Browser/screenshots/.gitignore" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
@@ -231,7 +229,9 @@ jobs:
         if: failure()
         with:
           name: ${{ github.sha }}-unit
-          path: storage/logs/*.log
+          path: |
+            storage/logs/*.log
+            database/snapshots/*.sql
           retention-days: 10
 
   tests-e2e-demo:
@@ -287,7 +287,7 @@ jobs:
         uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-demo
           path: ${{ needs.pre-build.outputs.failure-upload-paths }}
           retention-days: 10
 
@@ -344,7 +344,7 @@ jobs:
         uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-notifications
           path: ${{ needs.pre-build.outputs.failure-upload-paths }}
           retention-days: 10
 
@@ -416,7 +416,7 @@ jobs:
         uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-nav
           path: ${{ needs.pre-build.outputs.failure-upload-paths }}
           retention-days: 10
 
@@ -483,7 +483,7 @@ jobs:
         uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-entry-modal
           path: ${{ needs.pre-build.outputs.failure-upload-paths }}
           retention-days: 10
 
@@ -545,7 +545,7 @@ jobs:
         uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-transfer-modal
           path: ${{ needs.pre-build.outputs.failure-upload-paths }}
           retention-days: 10
 
@@ -617,7 +617,7 @@ jobs:
         uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-filter-modal
           path: ${{ needs.pre-build.outputs.failure-upload-paths }}
           retention-days: 10
 
@@ -674,7 +674,7 @@ jobs:
         uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-stats-summary
           path: ${{ needs.pre-build.outputs.failure-upload-paths }}
           retention-days: 10
 
@@ -731,7 +731,7 @@ jobs:
         uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-stats-trending
           path: ${{ needs.pre-build.outputs.failure-upload-paths }}
           retention-days: 10
 
@@ -793,7 +793,7 @@ jobs:
         uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-stats-distribution
           path: ${{ needs.pre-build.outputs.failure-upload-paths }}
           retention-days: 10
 
@@ -855,7 +855,7 @@ jobs:
         uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-stats-tags
           path: ${{ needs.pre-build.outputs.failure-upload-paths }}
           retention-days: 10
 
@@ -874,7 +874,7 @@ jobs:
       - tests-e2e-stats-distribution
       - tests-e2e-stats-tags
     if: ${{ always() }} # You always want to be notified: success, failure, or cancelled
-    timeout-minutes: 60
+    timeout-minutes: 15
     steps:
       - name: discord
         uses: nobrayner/discord-webhook@v1
