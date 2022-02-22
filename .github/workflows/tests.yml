@@ -16,8 +16,6 @@ on:
 
 env:
   PROJECT_NAME: "moneytracker"
-  DUSK_SCREENSHOT_DIR: 'tests/Browser/screenshots/'
-  DUSK_DB_DUMP_DIR: 'tests/Browser/db-dump/'
 
 jobs:
 
@@ -75,8 +73,8 @@ jobs:
           FAILURE_UPLOAD_PATHS=$(cat <<EOF
           storage/app/test/downloads/*.csv
           storage/logs/*.log
+          database/snapshots/*.sql
           tests/Browser/console/*.log
-          tests/Browser/db-dump/*.sql
           tests/Browser/screenshots/
           !tests/Browser/screenshots/.gitignore
           EOF
@@ -241,7 +239,9 @@ jobs:
         if: failure()
         with:
           name: ${{ github.sha }}-unit
-          path: storage/logs/*.log
+          path: |
+            storage/logs/*.log
+            database/snapshots/*.sql
           retention-days: 10
 
   tests-e2e-demo:
@@ -297,7 +297,7 @@ jobs:
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-demo
           path: ${{ needs.pre-build.outputs.failure-upload-paths }}
           retention-days: 10
 
@@ -354,7 +354,7 @@ jobs:
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-notifications
           path: ${{ needs.pre-build.outputs.failure-upload-paths }}
           retention-days: 10
 
@@ -426,7 +426,7 @@ jobs:
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-nav
           path: ${{ needs.pre-build.outputs.failure-upload-paths }}
           retention-days: 10
 
@@ -493,7 +493,7 @@ jobs:
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-entry-modal
           path: ${{ needs.pre-build.outputs.failure-upload-paths }}
           retention-days: 10
 
@@ -555,7 +555,7 @@ jobs:
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-transfer-modal
           path: ${{ needs.pre-build.outputs.failure-upload-paths }}
           retention-days: 10
 
@@ -627,7 +627,7 @@ jobs:
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-filter-modal
           path: ${{ needs.pre-build.outputs.failure-upload-paths }}
           retention-days: 10
 
@@ -684,7 +684,7 @@ jobs:
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-stats-summary
           path: ${{ needs.pre-build.outputs.failure-upload-paths }}
           retention-days: 10
 
@@ -741,7 +741,7 @@ jobs:
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-stats-trending
           path: ${{ needs.pre-build.outputs.failure-upload-paths }}
           retention-days: 10
 
@@ -803,7 +803,7 @@ jobs:
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-stats-distribution
           path: ${{ needs.pre-build.outputs.failure-upload-paths }}
           retention-days: 10
 
@@ -865,7 +865,7 @@ jobs:
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-stats-tags
           path: ${{ needs.pre-build.outputs.failure-upload-paths }}
           retention-days: 10
 
@@ -884,7 +884,7 @@ jobs:
       - tests-e2e-stats-distribution
       - tests-e2e-stats-tags
     if: ${{ always() }} # You always want to be notified: success, failure, or cancelled
-    timeout-minutes: 60
+    timeout-minutes: 15
     steps:
       - name: discord
         uses: nobrayner/discord-webhook@v1
