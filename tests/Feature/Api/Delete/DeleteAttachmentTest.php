@@ -14,8 +14,8 @@ class DeleteAttachmentTest extends TestCase {
 
     use WithFaker;
 
-    private $_attachment_base_uri = '/api/attachment/';
-    private $_entry_base_uri = '/api/entry/';
+    private string $_attachment_base_uri = '/api/attachment/';
+    private string $_entry_base_uri = '/api/entry/';
 
     public function testDeleteAttachmentWhenNoRecordsExist(){
         // GIVEN - no attachment records

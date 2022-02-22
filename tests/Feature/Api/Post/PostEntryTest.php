@@ -17,7 +17,7 @@ class PostEntryTest extends TestCase {
     use EntryResponseKeys;
     use WithFaker;
 
-    private $_base_uri = '/api/entry';
+    private string $_base_uri = '/api/entry';
 
     public function testCreateEntryWithoutData(){
         // GIVEN
@@ -37,7 +37,7 @@ class PostEntryTest extends TestCase {
         // PHPUnit data providers are called before setUp() and setUpBeforeClass() are called.
         // With that piece of information, we need to call setUp() earlier than we normally would so that we can use model factories
         //$this->setUp();
-        // We can no longer call setUp() as a work around
+        // We can no longer call setUp() as a workaround
         // it caused the database to populate and in doing so we caused some tests to fail.
         // Said tests failed because they were testing the absence of database values.
         $this->initialiseApplication();
@@ -77,7 +77,7 @@ class PostEntryTest extends TestCase {
      * @param array $entry_data
      * @param string $expected_response_error_msg
      */
-    public function testCreateEntryWithMissingData($entry_data, $expected_response_error_msg){
+    public function testCreateEntryWithMissingData($entry_data, string $expected_response_error_msg){
         // GIVEN - $entry_data by providerCreateEntryWithMissingData
 
         // WHEN
@@ -296,7 +296,7 @@ class PostEntryTest extends TestCase {
         $this->assertEquals($generated_entry_data['transfer_entry_id'], $get_response_as_array['transfer_entry_id'], $failure_message);
     }
 
-    private function generateEntryData(){
+    private function generateEntryData():array{
         $entry_data = factory(Entry::class)->make();
         return [
             'account_type_id'=>$entry_data->account_type_id,
@@ -311,9 +311,8 @@ class PostEntryTest extends TestCase {
     /**
      * @param array $response_as_array
      */
-    private function assertPostResponseHasCorrectKeys($response_as_array){
+    private function assertPostResponseHasCorrectKeys(array $response_as_array){
         $failure_message = "POST Response is ".json_encode($response_as_array);
-        $this->assertTrue(is_array($response_as_array), $failure_message);
         $this->assertArrayHasKey(self::$RESPONSE_SAVE_KEY_ID, $response_as_array, $failure_message);
         $this->assertArrayHasKey(self::$RESPONSE_SAVE_KEY_ERROR, $response_as_array, $failure_message);
     }
@@ -322,7 +321,7 @@ class PostEntryTest extends TestCase {
      * @param array $response_as_array
      * @param string $response_error_msg
      */
-    private function assertFailedPostResponse($response_as_array, $response_error_msg){
+    private function assertFailedPostResponse(array $response_as_array, string $response_error_msg){
         $failure_message = "POST Response is ".json_encode($response_as_array);
         $this->assertEquals(self::$ERROR_ENTRY_ID, $response_as_array[self::$RESPONSE_SAVE_KEY_ID], $failure_message);
         $this->assertNotEmpty($response_as_array[self::$RESPONSE_SAVE_KEY_ERROR], $failure_message);

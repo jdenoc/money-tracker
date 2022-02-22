@@ -5,6 +5,8 @@ namespace Tests\Feature\Console;
 use App\Account;
 use App\AccountType;
 use App\Entry;
+use App\Traits\Tests\TruncateDatabaseTables;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -12,18 +14,30 @@ use Illuminate\Support\Facades\Artisan;
 
 class AccountTotalSanityCheckTest extends TestCase {
 
+    use DatabaseMigrations;
+    use TruncateDatabaseTables;
     use WithFaker;
 
-    private $_command = 'sanity-check:account-total';
-    private $_screen_only_notification_options = ['--notify-screen'=>true, '--dont-notify-discord'=>true];
+    private string $_command = 'sanity-check:account-total';
+    private array $_screen_only_notification_options = ['--notify-screen'=>true, '--dont-notify-discord'=>true];
 
-    private static $TEMPLATE_CHECKING_ACCOUNT_OK = "Checking account ID:%d\n\tOK";
-    private static $TEMPLATE_ACCOUNT_NOT_FOUND = "Account %d not found";
+    private static string $TEMPLATE_CHECKING_ACCOUNT_OK = "Checking account ID:%d\n\tOK";
+    private static string $TEMPLATE_ACCOUNT_NOT_FOUND = "Account %d not found";
 
     public function setUp(): void{
         parent::setUp();
         $this->withoutMockingConsoleOutput();
     }
+
+    public function tearDown(): void{
+        $this->truncateDatabaseTables(['migrations']);
+        parent::tearDown();
+    }
+
+    /**
+     * override the RefreshDatabase trait method to prevent the use of said trait in THIS test suite
+     */
+    public function refreshTestDatabase():void{ }
 
     public function testForceFailureOutputtingToScreenAndWithoutNotifyingDiscord(){
         Artisan::call($this->_command, array_merge(['--force-failure'=>true], $this->_screen_only_notification_options));
