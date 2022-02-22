@@ -3,15 +3,16 @@
 namespace App\Traits\Tests;
 
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 trait StorageTestFiles {
 
-    protected static $storage_path = "test/";   // storage/app/test/
+    protected static string $storage_path = "test/";   // storage/app/test/
 
     public static function getTestFilePaths(): array{
         $file_paths =  Storage::files(self::$storage_path);
         $file_paths = array_filter($file_paths, function(string $filename){
-            return !\Str::contains($filename, ['git', 'DS_Store']);
+            return !Str::contains($filename, ['git', 'DS_Store']);
         });
         return array_values($file_paths);
     }

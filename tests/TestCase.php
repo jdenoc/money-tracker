@@ -2,8 +2,8 @@
 
 namespace Tests;
 
-use App\Traits\Tests\DatabaseMigrations;
 use App\Traits\Tests\OutputTestInfo;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Http\Response;
 use Illuminate\Testing\TestResponse;
@@ -11,8 +11,8 @@ use Illuminate\Testing\TestResponse;
 abstract class TestCase extends BaseTestCase {
 
     use CreatesApplication;
-    use DatabaseMigrations;
     use OutputTestInfo;
+    use RefreshDatabase;
 
     public static function setUpBeforeClass(): void{
         self::initOutputTestInfo();
@@ -21,17 +21,11 @@ abstract class TestCase extends BaseTestCase {
     public function setUp(): void{
         $this->outputTestName();
         parent::setUp();
-        $this->migrate();
     }
 
     public function tearDown(): void{
         parent::tearDown();
         $this->incrementTestCount();
-    }
-
-    public static function tearDownAfterClass(): void{
-        self::cleanup();
-        parent::tearDownAfterClass();
     }
 
     /**
@@ -49,7 +43,7 @@ abstract class TestCase extends BaseTestCase {
      * @param string $format
      * @param string $assert_failure_message
      */
-    protected function assertDateFormat($date_string, $format, $assert_failure_message=''){
+    protected function assertDateFormat(string $date_string, string $format, string $assert_failure_message=''){
         $date = \DateTime::createFromFormat($format, $date_string);
         $this->assertTrue($date->format($format) === $date_string, $assert_failure_message);
     }
@@ -59,7 +53,7 @@ abstract class TestCase extends BaseTestCase {
      * @param string $actual_datetime
      * @param string $assert_failure_message
      */
-    protected function assertDatetimeWithinOneSecond($expected_datetime, $actual_datetime, $assert_failure_message=''){
+    protected function assertDatetimeWithinOneSecond(string $expected_datetime, string $actual_datetime, string $assert_failure_message=''){
         $expected_timestamp = strtotime($expected_datetime);
         $actual_timestamp = strtotime($actual_datetime);
         $this->assertTrue(abs($expected_timestamp - $actual_timestamp) <= 1, $assert_failure_message);
@@ -70,7 +64,7 @@ abstract class TestCase extends BaseTestCase {
      * @param int $expected_status
      * @param string $error_message
      */
-    protected function assertResponseStatus($response, $expected_status, $error_message=''){
+    protected function assertResponseStatus($response, int $expected_status, string $error_message=''){
         $actual_status = $response->getStatusCode();
         $failure_message = "Expected status code ".$expected_status." but received ".$actual_status.".\nResponse content: ".$response->getContent();
         $failure_message .= (empty($error_message)) ? '': "\n".$error_message;

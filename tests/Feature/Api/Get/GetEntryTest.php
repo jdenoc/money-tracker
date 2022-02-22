@@ -17,9 +17,9 @@ class GetEntryTest extends TestCase {
 
     use WithFaker;
 
-    private $_generate_tag_count;
-    private $_generate_attachment_count;
-    private $_base_uri = '/api/entry/';
+    private int $_generate_tag_count;
+    private int $_generate_attachment_count;
+    private string $_base_uri = '/api/entry/';
 
     public function setUp(): void{
         parent::setUp();
@@ -167,7 +167,7 @@ class GetEntryTest extends TestCase {
      * @param int $generated_entry_id
      * @return array
      */
-    private function generateAttachmentsAndOutputAsArray($generated_entry_id){
+    private function generateAttachmentsAndOutputAsArray(int $generated_entry_id){
         $generated_attachments = factory(Attachment::class, $this->_generate_attachment_count)->create(['entry_id'=>$generated_entry_id]);
         $generated_attachments_as_array = [];
         $generated_attachment_i = 0;

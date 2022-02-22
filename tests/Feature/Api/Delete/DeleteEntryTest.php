@@ -14,7 +14,7 @@ class DeleteEntryTest extends TestCase {
 
     use WithFaker;
 
-    private $_base_uri = '/api/entry/';
+    private string $_base_uri = '/api/entry/';
 
     public function testMarkingEntryDeleted(){
         // GIVEN

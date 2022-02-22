@@ -11,7 +11,7 @@ class GetInstitutionsTest extends TestCase {
 
     use WithFaker;
 
-    protected $_base_uri = '/api/institutions';
+    protected string $_base_uri = '/api/institutions';
 
     public function testGetInstitutionsWhenNoneAreAvailable(){
         // GIVEN - no institutions exist in database
@@ -26,7 +26,7 @@ class GetInstitutionsTest extends TestCase {
         $this->assertEmpty($response_body_as_array);
     }
 
-    public function providerGetInstitutions(){
+    public function providerGetInstitutions():array{
         return [
             'all active:true'=>[true],      // all institutes are active
             'all active:false'=>[false]     // some institutes are active
