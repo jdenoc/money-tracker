@@ -560,7 +560,7 @@ class TransferModalTest extends DuskTestCase {
 
             // generate some test values
             $transfer_entry_data = [
-                'memo'=>"Test transfer - save".($has_tags?" w/ tags":'').($has_attachments?" w/ attachments":'').' - '.$this->faker->uuid,
+                'memo'=>"Test transfer - save".($has_tags?" w/ tags":'').($has_attachments?" w/ attachments":'').' - '.$this->faker->uuid(),
                 'value'=>$this->faker->randomFloat(2, 0, 100),
                 'from_account_type_id'=>($is_from_account_external ? self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID : $account_types[0]['id']),
                 'to_account_type_id'=>($is_to_account_external ? self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID : $account_types[1]['id']),

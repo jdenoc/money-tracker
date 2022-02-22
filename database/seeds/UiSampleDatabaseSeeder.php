@@ -81,7 +81,7 @@ class UiSampleDatabaseSeeder extends Seeder {
         $this->command->line(self::CLI_OUTPUT_PREFIX."Entries seeded [".$entries->count()."]");
 
         foreach($entries as $entry){
-            if($this->faker->boolean){    // randomly assign tags to entries
+            if($this->faker->boolean()){    // randomly assign tags to entries
                 $this->attachTagToEntry($tag_ids, $entry);
             }
         }
@@ -113,7 +113,7 @@ class UiSampleDatabaseSeeder extends Seeder {
             }while($transfer_from_entry['account_type_id'] == $transfer_to_entry['account_type_id']);
 
             // make transfer entries match each other
-            if($this->faker->boolean){
+            if($this->faker->boolean()){
                 $transfer_from_entry->entry_date = $transfer_to_entry->entry_date;
                 $transfer_from_entry->entry_value = $transfer_to_entry->entry_value;
                 $transfer_from_entry->memo = $transfer_to_entry->memo;
