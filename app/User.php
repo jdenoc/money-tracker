@@ -11,6 +11,13 @@ class User extends Authenticatable implements MustVerifyEmail {
     use Notifiable;
 
     /**
+     * Indicates if the model should be timestamped.
+     *
+     * @var bool
+     */
+    public $timestamps = false;
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array
