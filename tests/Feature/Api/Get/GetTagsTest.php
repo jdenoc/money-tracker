@@ -9,7 +9,7 @@ Use App\Tag;
 
 class GetTagsTest extends TestCase {
 
-    private $_uri = '/api/tags';
+    private string $_uri = '/api/tags';
 
     public function testObtainingListOfTagsWhenTagsArePresentInDatabase(){
         // GIVEN

@@ -53,10 +53,10 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     const INI_POSTMAXSIZE = 'post_max_size';
     const INI_UPLOADMAXFILESIZE = 'upload_max_filesize';
 
-    private static $HTACCESS_FILEPATH = 'public/.htaccess';
-    private static $BKUP_EXT = '.bkup';
+    private static string $HTACCESS_FILEPATH = 'public/.htaccess';
+    private static string $BKUP_EXT = '.bkup';
 
-    private static $TEST_NAME_OVERRIDE_HTACCESS = 'testAttemptToAddAnAttachmentTooLargeToAnExistingEntry';
+    private static string $TEST_NAME_OVERRIDE_HTACCESS = 'testAttemptToAddAnAttachmentTooLargeToAnExistingEntry';
 
     private $_class_lock = "fa-lock";
     private $_class_unlock = "fa-unlock-alt";
@@ -80,7 +80,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         }
     }
 
-    protected function tearDown(): void{
+    public function tearDown(): void{
         if($this->getName(false) === self::$TEST_NAME_OVERRIDE_HTACCESS){
             $this->revertHtaccessToOriginalState();
             // remove any files that any tests may have created
@@ -89,7 +89,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                 str_replace(Storage::path(''), '',$this->getTestDummyFilename())
             );
         }
-        $this->assertFileNotExists($this->getTestDummyFilename());
+        $this->assertFileDoesNotExist($this->getTestDummyFilename());
         parent::tearDown();
     }
 

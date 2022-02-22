@@ -15,8 +15,8 @@ use Laravel\Dusk\Browser;
  */
 class ATest extends DuskTestCase {
 
-    private static $LARAVEL_FAVICON_PATH_PREFIX = '/laravel-favicon/';
-    private static $FAVICON_PATH_PREFIX = 'imgs/favicon/';
+    private static string $LARAVEL_FAVICON_PATH_PREFIX = '/laravel-favicon/';
+    private static string $FAVICON_PATH_PREFIX = 'imgs/favicon/';
 
     /**
      * A basic browser test to make sure selenium integration works
@@ -30,7 +30,7 @@ class ATest extends DuskTestCase {
         });
     }
 
-    public function providerTitleIsCorrect(){
+    public function providerTitleIsCorrect():array{
         return [
             // [$url, $title]
             'home'=>['/', "Money Tracker | HOME"],
@@ -44,7 +44,7 @@ class ATest extends DuskTestCase {
      * @param string $title
      * @throws \Throwable
      */
-    public function testTitleAndFaviconAreCorrectAndPresent($url, $title){
+    public function testTitleAndFaviconAreCorrectAndPresent(string $url, string $title){
         $favicon_file_paths = [
             self::$FAVICON_PATH_PREFIX.'favicon-16x16.png',
             self::$FAVICON_PATH_PREFIX.'favicon-32x32.png',

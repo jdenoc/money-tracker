@@ -97,7 +97,7 @@ class AttachmentsDisplayTest extends TestCase {
         $this->assertResponseStatus($response, HttpStatus::HTTP_OK);
     }
 
-    private function generateValidUuid(){
+    private function generateValidUuid():string{
         do{
             $valid_uuid = $this->faker->uuid();
         }while(!Uuid::isValid($valid_uuid));
