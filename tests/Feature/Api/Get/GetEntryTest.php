@@ -24,8 +24,8 @@ class GetEntryTest extends TestCase {
     public function setUp(): void{
         parent::setUp();
 
-        $this->_generate_attachment_count = $this->faker->randomDigitNotNull;
-        $this->_generate_tag_count = $this->faker->randomDigitNotNull;
+        $this->_generate_attachment_count = $this->faker->randomDigitNotZero();
+        $this->_generate_tag_count = $this->faker->randomDigitNotZero();
     }
 
     public function testGetEntryWithNoData(){

@@ -19,7 +19,7 @@ class DeleteAttachmentTest extends TestCase {
 
     public function testDeleteAttachmentWhenNoRecordsExist(){
         // GIVEN - no attachment records
-        $uuid = $this->faker->uuid;
+        $uuid = $this->faker->uuid();
 
         // WHEN
         $response = $this->delete($this->_attachment_base_uri.$uuid);

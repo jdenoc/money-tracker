@@ -10,8 +10,8 @@ $factory->define(App\Entry::class, static function(Faker $faker){
         'account_type_id'=>$faker->randomNumber(FactoryConstants::MAX_RAND_ID_LENGTH, true),
         'entry_value'=>$faker->randomFloat(FactoryConstants::CURRENCY_MAX_DECIMAL, 0, 100),  // 0.00 < entry_value < 100.00
         'memo'=>$faker->words(3, true),
-        'expense'=>$faker->boolean,
-        'confirm'=>$faker->boolean,
+        'expense'=>$faker->boolean(),
+        'confirm'=>$faker->boolean(),
         'disabled'=>false,
         'transfer_entry_id'=>null
     ];
