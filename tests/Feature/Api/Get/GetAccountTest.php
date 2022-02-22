@@ -14,17 +14,14 @@ class GetAccountTest extends TestCase {
 
     use WithFaker;
 
-    /**
-     * @var string
-     */
-    private $_base_uri = '/api/account/';
+    private string $_base_uri = '/api/account/';
 
     public function testGetAccountData(){
         // GIVEN
         $account_type_count = $this->faker->randomDigitNotZero();
         $generated_account = factory(Account::class)->create();
         $generated_account_types = factory(AccountType::class, $account_type_count)->create(['account_id'=>$generated_account->id]);
-        // These nodes are not in the response output. Lets hide them from the object collection
+        // These nodes are not in the response output. Let's hide them from the object collection
         $generated_account_types->makeHidden(['account_id', 'last_updated']);
 
         // WHEN
@@ -45,7 +42,7 @@ class GetAccountTest extends TestCase {
         $generated_disabled_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id, 'disabled'=>true]);
         $account_type_count++;
         $generated_account_types->push($generated_disabled_account_type);
-        // These nodes are not in the response output. Lets hide them from the object collection
+        // These nodes are not in the response output. Let's hide them from the object collection
         $generated_account_types->makeHidden(['account_id', 'last_updated']);
 
         // WHEN
@@ -102,9 +99,7 @@ class GetAccountTest extends TestCase {
      * @param Account $generated_account
      * @param int $account_type_count
      */
-    private function assertAccountDetailsOK($response_as_array, $generated_account, $account_type_count){
-        $this->assertTrue(is_array($response_as_array));
-
+    private function assertAccountDetailsOK(array $response_as_array, $generated_account, int $account_type_count){
         $element = 'id';
         $this->assertArrayHasKey($element, $response_as_array);
         $this->assertEquals($response_as_array[$element], $generated_account->id);

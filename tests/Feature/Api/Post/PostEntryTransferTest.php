@@ -27,7 +27,7 @@ class PostEntryTransferTest extends TestCase {
     const FLAG_OVERRIDE_TO = "override_to_account_type_id";
     const FLAG_OVERRIDE_FROM = "override_from_account_type_id";
 
-    private $_base_uri = '/api/entry/transfer';
+    private string $_base_uri = '/api/entry/transfer';
 
     public function testCreateEntryTransferWithoutData(){
         // GIVEN
@@ -82,7 +82,7 @@ class PostEntryTransferTest extends TestCase {
      * @param array $transfer_data
      * @param string $expected_response_error_msg
      */
-    public function testCreateEntryTransferWithMissingData($transfer_data, $expected_response_error_msg){
+    public function testCreateEntryTransferWithMissingData($transfer_data, string $expected_response_error_msg){
         // GIVEN - $transfer_data by providerCreateEntryTransferWithMissingData
         $account = factory(Account::class)->create();
         if(isset($transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE])){
@@ -232,12 +232,12 @@ class PostEntryTransferTest extends TestCase {
         }
     }
 
-    public function providerCreateEntryTransferWithTagsAndAttachments(){
+    public function providerCreateEntryTransferWithTagsAndAttachments():array{
         return [
-            [self::FLAG_HAS_TAGS=>false, self::FLAG_HAS_ATTACHMENTS=>false],    // this is already tested, but for competitions sake, lets include it
-            [self::FLAG_HAS_TAGS=>false, self::FLAG_HAS_ATTACHMENTS=>true],
-            [self::FLAG_HAS_TAGS=>true, self::FLAG_HAS_ATTACHMENTS=>false],
-            [self::FLAG_HAS_TAGS=>true, self::FLAG_HAS_ATTACHMENTS=>true],
+            [[self::FLAG_HAS_TAGS=>false, self::FLAG_HAS_ATTACHMENTS=>false]],    // this is already tested, but for compelitions sake, lets include it
+            [[self::FLAG_HAS_TAGS=>false, self::FLAG_HAS_ATTACHMENTS=>true]],
+            [[self::FLAG_HAS_TAGS=>true, self::FLAG_HAS_ATTACHMENTS=>false]],
+            [[self::FLAG_HAS_TAGS=>true, self::FLAG_HAS_ATTACHMENTS=>true]],
         ];
     }
 
@@ -245,7 +245,7 @@ class PostEntryTransferTest extends TestCase {
      * @dataProvider providerCreateEntryTransferWithTagsAndAttachments
      * @param array $flags
      */
-    public function testCreateEntryTransferWithTagsAndAttachments($flags){
+    public function testCreateEntryTransferWithTagsAndAttachments(array $flags){
         // GIVEN
         $generated_account = factory(Account::class)->create();
         $generated_account_type1 = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
@@ -268,7 +268,7 @@ class PostEntryTransferTest extends TestCase {
 
             $transfer_data['attachments'] = [];
             foreach($generated_attachments as $generated_attachment){
-                $generated_attachment->storage_store(file_get_contents(storage_path($this->getTestFileStoragePathFromFilename($generated_attachment->name))), true);
+                $generated_attachment->storage_store(file_get_contents(storage_path('app/'.$this->getTestFileStoragePathFromFilename($generated_attachment->name))), true);
                 $transfer_data['attachments'][] = [
                     'uuid'=>$generated_attachment->uuid,
                     'name'=>$generated_attachment->name
@@ -332,13 +332,13 @@ class PostEntryTransferTest extends TestCase {
                 foreach($get_entry_response_as_array['attachments'] as $attachment){
                     // We json_encode() the $transfer_data['attachments'] array because assertContains() can't traverse multidimensional arrays
                     // We don't check if the UUID value matches because it changes during processing
-                    $this->assertContains($attachment['name'], json_encode($transfer_data['attachments']), $failure_message.'Generated attachments:'.json_encode($transfer_data['attachments']));
+                    $this->assertStringContainsString($attachment['name'], json_encode($transfer_data['attachments']), $failure_message.'Generated attachments:'.json_encode($transfer_data['attachments']));
                 }
             }
         }
     }
 
-    private function generateTransferData(){
+    private function generateTransferData():array{
         $entry_data = factory(Entry::class)->make();
         return [
             'entry_date'=>$entry_data->entry_date,
@@ -349,7 +349,7 @@ class PostEntryTransferTest extends TestCase {
         ];
     }
 
-    private function getRequiredTransferFields(){
+    private function getRequiredTransferFields():array{
         $required_transfer_fields = Entry::get_fields_required_for_creation();
         unset(
             $required_transfer_fields[array_search('account_type_id', $required_transfer_fields)],
@@ -362,9 +362,8 @@ class PostEntryTransferTest extends TestCase {
     /**
      * @param array $response_as_array
      */
-    private function assertPostResponseHasCorrectKeys($response_as_array){
+    private function assertPostResponseHasCorrectKeys(array $response_as_array){
         $failure_message = "Response is ".json_encode($response_as_array);
-        $this->assertTrue(is_array($response_as_array), $failure_message);
         $this->assertArrayHasKey(self::$RESPONSE_SAVE_KEY_ID, $response_as_array, $failure_message);
         $this->assertArrayHasKey(self::$RESPONSE_SAVE_KEY_ERROR, $response_as_array, $failure_message);
     }
@@ -373,7 +372,7 @@ class PostEntryTransferTest extends TestCase {
      * @param array $response_as_array
      * @param string $response_error_msg
      */
-    private function assertFailedPostResponse($response_as_array, $response_error_msg){
+    private function assertFailedPostResponse(array $response_as_array, string $response_error_msg){
         $failure_message = "Response is ".json_encode($response_as_array);
         $this->assertTrue(is_array($response_as_array[self::$RESPONSE_SAVE_KEY_ID]), $failure_message);
         $this->assertEmpty($response_as_array[self::$RESPONSE_SAVE_KEY_ID], $failure_message);
@@ -381,7 +380,7 @@ class PostEntryTransferTest extends TestCase {
         $this->assertStringContainsString($response_error_msg, $response_as_array[self::$RESPONSE_SAVE_KEY_ERROR], $failure_message);
     }
 
-    private function getAccountIdOverrideOptions(){
+    private function getAccountIdOverrideOptions():array{
         return [
             [self::FLAG_OVERRIDE_TO=>false, self::FLAG_OVERRIDE_FROM=>false],
             [self::FLAG_OVERRIDE_TO=>true, self::FLAG_OVERRIDE_FROM=>false],
