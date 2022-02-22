@@ -31,10 +31,7 @@ class ListEntriesBase extends TestCase {
      */
     protected $_generated_tags;
 
-    /**
-     * @var string
-     */
-    protected $_uri = '/api/entries';
+    protected string $_uri = '/api/entries';
 
     public function setUp(): void{
         parent::setUp();
@@ -48,7 +45,7 @@ class ListEntriesBase extends TestCase {
      * @param array $override_entry_components
      * @return Entry
      */
-    protected function generate_entry_record($account_type_id, $entry_disabled, $override_entry_components=[]){
+    protected function generate_entry_record(int $account_type_id, bool $entry_disabled, array $override_entry_components=[]):Entry{
         $default_entry_data = ['account_type_id'=>$account_type_id, 'disabled'=>$entry_disabled];
         $new_entry_data = array_merge($default_entry_data, $override_entry_components);
         unset($new_entry_data['tags']);
@@ -92,7 +89,7 @@ class ListEntriesBase extends TestCase {
      *
      * @return Collection
      */
-    protected function batch_generate_entries(int $totalEntriesToCreate, int $account_type_id, $filter_details=[], $randomly_mark_entries_disabled=false, $mark_entries_disabled=false){
+    protected function batch_generate_entries(int $totalEntriesToCreate, int $account_type_id, array $filter_details=[], bool $randomly_mark_entries_disabled=false, bool $mark_entries_disabled=false){
         $generated_entries = collect();
         for($i= 0; $i < $totalEntriesToCreate; $i++){
             $generated_entry = $this->generate_entry_record(
@@ -157,7 +154,7 @@ class ListEntriesBase extends TestCase {
     /**
      * @param array $entry_nodes
      */
-    protected function assertEntryNodesExist($entry_nodes){
+    protected function assertEntryNodesExist(array $entry_nodes){
         $this->assertArrayHasKey('id', $entry_nodes);
         $this->assertArrayHasKey('entry_date', $entry_nodes);
         $this->assertArrayHasKey('entry_value', $entry_nodes);
@@ -178,7 +175,7 @@ class ListEntriesBase extends TestCase {
      * @param array $entry_nodes
      * @param Entry $generated_entry
      */
-    protected function assertEntryNodesMatchGeneratedEntry($entry_nodes, $generated_entry){
+    protected function assertEntryNodesMatchGeneratedEntry(array $entry_nodes, $generated_entry){
         $failure_msg = "generated entry:".json_encode($generated_entry)."\nresponse entry:".json_encode($entry_nodes);
         $this->assertEquals($generated_entry->entry_date, $entry_nodes['entry_date'], $failure_msg);
         $this->assertEquals($generated_entry->entry_value, $entry_nodes['entry_value'], $failure_msg);
@@ -195,7 +192,7 @@ class ListEntriesBase extends TestCase {
         $this->assertTrue(is_bool($entry_nodes['has_attachments']), $failure_msg);
         $this->assertEquals($generated_entry->has_attachments(), $entry_nodes['has_attachments'], $failure_msg);
         $this->assertTrue(is_array($entry_nodes['tags']), $failure_msg);
-        $this->assertEquals($generated_entry->get_tag_ids(), $entry_nodes['tags'], $failure_msg);
+        $this->assertEqualsCanonicalizing($generated_entry->get_tag_ids(), $entry_nodes['tags'], $failure_msg);
         $this->assertTrue(is_bool($entry_nodes['is_transfer']), $failure_msg);
         $this->assertEquals(!is_null($generated_entry['transfer_entry_id']), $entry_nodes['is_transfer'], $failure_msg);
     }
@@ -204,11 +201,11 @@ class ListEntriesBase extends TestCase {
      * @param int $generate_entry_count
      * @param array $entries_in_response
      * @param Collection $generated_entries
-     * @param array $generated_disabled_entries
+     * @param $generated_disabled_entries
      * @param string $sort_parameter
      * @param string $sort_direction
      */
-    protected function runEntryListAssertions($generate_entry_count, $entries_in_response, $generated_entries, $generated_disabled_entries=[], $sort_parameter=Entry::DEFAULT_SORT_PARAMETER, $sort_direction=Entry::DEFAULT_SORT_DIRECTION){
+    protected function runEntryListAssertions(int $generate_entry_count, array $entries_in_response, $generated_entries, $generated_disabled_entries=[], string $sort_parameter=Entry::DEFAULT_SORT_PARAMETER, string $sort_direction=Entry::DEFAULT_SORT_DIRECTION){
         $this->assertcount($generate_entry_count, $entries_in_response);
 
         $previous_entry_in_response = null;

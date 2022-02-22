@@ -12,8 +12,8 @@ class DeleteAccountTypeTest extends TestCase {
 
     use WithFaker;
 
-    private $_disable_account_type_uri = '/api/account-type/';
-    private $_get_account_uri = '/api/account/';
+    private string $_disable_account_type_uri = '/api/account-type/';
+    private string $_get_account_uri = '/api/account/';
 
     public function testDisableAccountTypeThatDoesNotExist(){
         // GIVEN - account_type does not exist
