@@ -210,7 +210,7 @@ class PostEntryTest extends TestCase {
 
     public function testCreateEntryWithAttachments(){
         // GIVEN
-        $generated_attachments = factory(Attachment::class, $this->faker->randomDigitNotNull)->make();
+        $generated_attachments = factory(Attachment::class, $this->faker->randomDigitNotZero())->make();
         $generated_account = factory(Account::class)->create();
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
         $generated_entry_data = $this->generateEntryData();

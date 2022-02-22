@@ -36,10 +36,10 @@ class ListEntriesBase extends TestCase {
      */
     protected $_uri = '/api/entries';
 
-    protected function setUp(): void{
+    public function setUp(): void{
         parent::setUp();
         $this->_generated_account = factory(Account::class)->create();
-        $this->_generated_tags = factory(Tag::class, $this->faker->randomDigitNotNull)->create();
+        $this->_generated_tags = factory(Tag::class, $this->faker->randomDigitNotZero())->create();
     }
 
     /**
@@ -65,7 +65,7 @@ class ListEntriesBase extends TestCase {
             } elseif(isset($override_entry_components['has_attachments']) && $override_entry_components['has_attachments'] === false) {
                 $generate_attachment_count = 0;
             } else {
-                $generate_attachment_count = $this->faker->randomDigit();
+                $generate_attachment_count = $this->faker->randomDigitNotZero();
             }
             factory(Attachment::class, $generate_attachment_count)->create(['entry_id' => $generated_entry->id]);
 
@@ -97,7 +97,7 @@ class ListEntriesBase extends TestCase {
         for($i= 0; $i < $totalEntriesToCreate; $i++){
             $generated_entry = $this->generate_entry_record(
                 $account_type_id,
-                ($randomly_mark_entries_disabled ? $this->faker->boolean : $mark_entries_disabled),
+                ($randomly_mark_entries_disabled ? $this->faker->boolean() : $mark_entries_disabled),
                 $filter_details
             );
             $generated_entries->push($generated_entry);
