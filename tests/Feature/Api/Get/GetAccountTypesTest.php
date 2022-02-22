@@ -27,10 +27,10 @@ class GetAccountTypesTest extends TestCase {
 
     public function testGetAccountTypes(){
         // GIVEN
-        $account_type_count = $this->faker->randomDigitNotNull;
+        $account_type_count = $this->faker->randomDigitNotZero();
         $generated_account_types = [];
         for($i=0; $i<$account_type_count; $i++){
-            $generated_account_type = factory(AccountType::class)->create(['disabled'=>$this->faker->boolean]);
+            $generated_account_type = factory(AccountType::class)->create(['disabled'=>$this->faker->boolean()]);
             $generated_account_types[$generated_account_type->id] = $generated_account_type;
             unset($generated_account_type);
         }

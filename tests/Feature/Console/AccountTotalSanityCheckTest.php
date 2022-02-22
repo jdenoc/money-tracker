@@ -72,7 +72,7 @@ class AccountTotalSanityCheckTest extends TestCase {
     public function testSanityCheckIndividualAccountIdNotFoundOutputtingToScreenAndWithoutNotifyingDiscord(){
         $this->seedDatabaseAndMaybeTruncateTable('accounts');
 
-        $account_id = $this->faker->randomDigitNotNull;
+        $account_id = $this->faker->randomDigitNotZero();
         Artisan::call($this->_command, array_merge(['accountId'=>$account_id], $this->_screen_only_notification_options));
         $result_as_text = trim(Artisan::output());
         $this->assertStringContainsString(sprintf(self::$TEMPLATE_ACCOUNT_NOT_FOUND, $account_id), $result_as_text);

@@ -7,18 +7,15 @@ use App\Attachment;
 use App\Entry;
 use App\Tag;
 use Carbon\Carbon;
-use Faker\Factory as FakerFactory;
+use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Collection;
 use Tests\TestCase;
 
 class ListEntriesBase extends TestCase {
 
-    const MIN_TEST_ENTRIES = 4;
+    use WithFaker;
 
-    /**
-     * @var \Faker\Generator
-     */
-    protected $_faker;
+    const MIN_TEST_ENTRIES = 4;
 
     /**
      * @var Account
@@ -35,15 +32,10 @@ class ListEntriesBase extends TestCase {
      */
     protected $_uri = '/api/entries';
 
-    public function __construct($name = null, array $data = [], $dataName = ''){
-        parent::__construct($name, $data, $dataName);
-        $this->_faker = FakerFactory::create();
-    }
-
-    protected function setUp(): void{
+    public function setUp(): void{
         parent::setUp();
         $this->_generated_account = factory(Account::class)->create();
-        $this->_generated_tags = factory(Tag::class, $this->_faker->randomDigitNotNull)->create();
+        $this->_generated_tags = factory(Tag::class, $this->faker->randomDigitNotZero())->create();
     }
 
     /**
@@ -69,14 +61,14 @@ class ListEntriesBase extends TestCase {
             } elseif(isset($override_entry_components['has_attachments']) && $override_entry_components['has_attachments'] == false) {
                 $generate_attachment_count = 0;
             } else {
-                $generate_attachment_count = $this->_faker->randomDigit;
+                $generate_attachment_count = $this->faker->randomDigitNotZero();
             }
             factory(Attachment::class, $generate_attachment_count)->create(['entry_id' => $generated_entry->id]);
 
             if(isset($override_entry_components['tags'])){
                 $generated_entry->tags()->sync($override_entry_components['tags']);
             } else {
-                $assign_tag_to_entry_count = $this->_faker->numberBetween(0, $this->_generated_tags->count());
+                $assign_tag_to_entry_count = $this->faker->numberBetween(0, $this->_generated_tags->count());
                 for($j = 0; $j < $assign_tag_to_entry_count; $j++){
                     $randomly_selected_tag = $this->_generated_tags->random();
                     $generated_entry->tags()->syncWithoutDetaching([$randomly_selected_tag->id]);
@@ -100,7 +92,7 @@ class ListEntriesBase extends TestCase {
         for($i=0; $i<$generate_entry_count; $i++){
             $generated_entry = $this->generate_entry_record(
                 $generated_account_type_id,
-                ($randomly_mark_entries_disabled ? $this->_faker->boolean : $mark_entries_disabled),
+                ($randomly_mark_entries_disabled ? $this->faker->boolean() : $mark_entries_disabled),
                 $filter_details
             );
             $generated_entries->push($generated_entry);

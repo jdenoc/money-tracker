@@ -713,7 +713,7 @@ class FilterModalTest extends DuskTestCase {
                             break;
 
                         case self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT:
-                            $is_account = $this->faker->boolean;
+                            $is_account = $this->faker->boolean();
                             if($is_account){
                                 // account
                                 $filter_values = $this->getApiAccounts();
