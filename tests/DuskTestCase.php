@@ -101,7 +101,7 @@ abstract class DuskTestCase extends BaseTestCase {
     /**
      * @return array
      */
-    public function getApiTags(){
+    public function getApiTags():array{
         $tags_response = $this->get("/api/tags");
         return $this->removeCountFromApiResponse($tags_response->json());
     }
@@ -109,7 +109,7 @@ abstract class DuskTestCase extends BaseTestCase {
     /**
      * @return array
      */
-    public function getApiInstitutions(){
+    public function getApiInstitutions():array{
         $institutions_response = $this->get('/api/institutions');
         return $this->removeCountFromApiResponse($institutions_response->json());
     }
@@ -117,7 +117,7 @@ abstract class DuskTestCase extends BaseTestCase {
     /**
      * @return array
      */
-    public function getApiAccounts(){
+    public function getApiAccounts():array{
         $accounts_response = $this->get("/api/accounts");
         return $this->removeCountFromApiResponse($accounts_response->json());
     }
@@ -125,7 +125,7 @@ abstract class DuskTestCase extends BaseTestCase {
     /**
      * @return array
      */
-    public function getApiAccountTypes(){
+    public function getApiAccountTypes():array{
         $account_types_response = $this->get("/api/account-types");
         return $this->removeCountFromApiResponse($account_types_response->json());
     }
@@ -134,7 +134,7 @@ abstract class DuskTestCase extends BaseTestCase {
      * @param int $entry_id
      * @return array
      */
-    public function getApiEntry($entry_id){
+    public function getApiEntry(int $entry_id):array{
         $entry_response = $this->get("/api/entry/".$entry_id);
         return $this->removeCountFromApiResponse($entry_response->json());
     }
@@ -143,7 +143,7 @@ abstract class DuskTestCase extends BaseTestCase {
      * @param array $api_call_response
      * @return array
      */
-    public function removeCountFromApiResponse($api_call_response){
+    public function removeCountFromApiResponse($api_call_response):array{
         unset($api_call_response['count']);
         return $api_call_response;
     }
@@ -153,7 +153,7 @@ abstract class DuskTestCase extends BaseTestCase {
      * @param array $filter_data
      * @return array
      */
-    public function getApiEntries(int $page_number=0, $filter_data=[]){
+    public function getApiEntries(int $page_number=0, array $filter_data=[]):array{
         // See resources/js/entries.js:16-38
         // See app/Traits/EntryFilterKeys.php:7-20
         $sort = [self::$FILTER_KEY_SORT=>[

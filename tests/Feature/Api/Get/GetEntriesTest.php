@@ -93,7 +93,7 @@ class GetEntriesTest extends \Tests\Feature\Api\ListEntriesBase {
         $this->runEntryListAssertions($generate_entry_count, $entries_in_response, $generated_entries);
     }
 
-    public function providerLargeDataSets(){
+    public function providerLargeDataSets():array{
         return [
             '200 entry records'=>[200],
             '500 entry records'=>[500],
@@ -111,7 +111,7 @@ class GetEntriesTest extends \Tests\Feature\Api\ListEntriesBase {
      * @dataProvider providerLargeDataSets
      * @param int $entry_count
      */
-    public function testLargeDataSets($entry_count){
+    public function testLargeDataSets(int $entry_count){
         // GIVEN
         $table = with(new Entry)->getTable();
         /** @var AccountType $generated_account_type */

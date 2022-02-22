@@ -12,13 +12,13 @@ class GetAccountsTest extends TestCase {
 
     use WithFaker;
 
-    private $_uri = '/api/accounts';
+    private string $_uri = '/api/accounts';
 
     public function testGetListOfAccountsWhenTheyAreAvailable(){
         // GIVEN
         $account_count = $this->faker->randomDigitNotZero();
         $generated_accounts = factory(Account::class, $account_count)->create();
-        // These nodes are not in the response output. Lets hide them from the object collection.
+        // These nodes are not in the response output. Let's hide them from the object collection.
         $generated_accounts->makeHidden(['disabled_stamp']);
 
         // WHEN

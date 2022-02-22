@@ -383,7 +383,7 @@ class NotificationsTest extends DuskTestCase {
      * @group notifications-1
      * test (see provider)/25
      */
-    public function testNotificationSaveExistingEntry4XX($http_status, $error_response_message){
+    public function testNotificationSaveExistingEntry4XX($http_status, string $error_response_message){
         // TODO: write me...
         $this->markTestIncomplete();
         $this->browse(function (Browser $browser) {
