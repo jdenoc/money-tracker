@@ -16,8 +16,8 @@ on:
 
 env:
   PROJECT_NAME: "moneytracker"
+  DB_SNAPSHOT_DIR: 'database/snapshots/'
   DUSK_SCREENSHOT_DIR: 'tests/Browser/screenshots/'
-  DUSK_DB_DUMP_DIR: 'tests/Browser/db-dump/'
 
 jobs:
 
@@ -170,8 +170,10 @@ jobs:
         if: failure()
         with:
           name: ${{ github.sha }}-unit
-          path: storage/logs/*.log
-          retention-days: 30
+          path: |
+            storage/logs/*.log
+            ${{ env.DB_SNAPSHOT_DIR }}*.sql
+          retention-days: 10
 
   tests-e2e-demo:
     needs:
@@ -221,14 +223,14 @@ jobs:
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-demo
           path: |
             storage/logs/*.log
             tests/Browser/console/*.log
-            ${{ env.DUSK_DB_DUMP_DIR }}*.sql
+            ${{ env.DB_SNAPSHOT_DIR }}*.sql
             ${{ env.DUSK_SCREENSHOT_DIR }}
             !${{ env.DUSK_SCREENSHOT_DIR }}.gitignore
-          retention-days: 30
+          retention-days: 10
 
   tests-e2e-notifications:
     needs:
@@ -278,14 +280,14 @@ jobs:
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-notifications
           path: |
             storage/logs/*.log
             tests/Browser/console/*.log
-            ${{ env.DUSK_DB_DUMP_DIR }}*.sql
+            ${{ env.DB_SNAPSHOT_DIR }}*.sql
             ${{ env.DUSK_SCREENSHOT_DIR }}
             !${{ env.DUSK_SCREENSHOT_DIR }}.gitignore
-          retention-days: 30
+          retention-days: 10
 
   tests-e2e-navigation:
     needs:
@@ -344,14 +346,14 @@ jobs:
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-nav
           path: |
             storage/logs/*.log
             tests/Browser/console/*.log
-            ${{ env.DUSK_DB_DUMP_DIR }}*.sql
+            ${{ env.DB_SNAPSHOT_DIR }}*.sql
             ${{ env.DUSK_SCREENSHOT_DIR }}
             !${{ env.DUSK_SCREENSHOT_DIR }}.gitignore
-          retention-days: 30
+          retention-days: 10
 
   tests-e2e-entry-modal:
     needs:
@@ -407,14 +409,14 @@ jobs:
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-entry-modal
           path: |
             storage/logs/*.log
             tests/Browser/console/*.log
-            ${{ env.DUSK_DB_DUMP_DIR }}*.sql
+            ${{ env.DB_SNAPSHOT_DIR }}*.sql
             ${{ env.DUSK_SCREENSHOT_DIR }}
             !${{ env.DUSK_SCREENSHOT_DIR }}.gitignore
-          retention-days: 30
+          retention-days: 10
 
   tests-e2e-transfer-modal:
     needs:
@@ -467,14 +469,14 @@ jobs:
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-transfer-modal
           path: |
             storage/logs/*.log
             tests/Browser/console/*.log
-            ${{ env.DUSK_DB_DUMP_DIR }}*.sql
+            ${{ env.DB_SNAPSHOT_DIR }}*.sql
             ${{ env.DUSK_SCREENSHOT_DIR }}
             !${{ env.DUSK_SCREENSHOT_DIR }}.gitignore
-          retention-days: 30
+          retention-days: 10
 
   tests-e2e-filter-modal:
     needs:
@@ -527,14 +529,14 @@ jobs:
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-filter-modal
           path: |
             storage/logs/*.log
             tests/Browser/console/*.log
-            ${{ env.DUSK_DB_DUMP_DIR }}*.sql
+            ${{ env.DB_SNAPSHOT_DIR }}*.sql
             ${{ env.DUSK_SCREENSHOT_DIR }}
             !${{ env.DUSK_SCREENSHOT_DIR }}.gitignore
-          retention-days: 30
+          retention-days: 10
 
   tests-e2e-stats-summary:
     needs:
@@ -584,14 +586,14 @@ jobs:
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-stats-summary
           path: |
             storage/logs/*.log
             tests/Browser/console/*.log
-            ${{ env.DUSK_DB_DUMP_DIR }}*.sql
+            ${{ env.DB_SNAPSHOT_DIR }}*.sql
             ${{ env.DUSK_SCREENSHOT_DIR }}
             !${{ env.DUSK_SCREENSHOT_DIR }}.gitignore
-          retention-days: 30
+          retention-days: 10
 
   tests-e2e-stats-trending:
     needs:
@@ -641,14 +643,14 @@ jobs:
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-stats-trending
           path: |
             storage/logs/*.log
             tests/Browser/console/*.log
-            ${{ env.DUSK_DB_DUMP_DIR }}*.sql
+            ${{ env.DB_SNAPSHOT_DIR }}*.sql
             ${{ env.DUSK_SCREENSHOT_DIR }}
             !${{ env.DUSK_SCREENSHOT_DIR }}.gitignore
-          retention-days: 30
+          retention-days: 10
 
   tests-e2e-stats-distribution:
     needs:
@@ -701,14 +703,14 @@ jobs:
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-stats-distribution
           path: |
             storage/logs/*.log
             tests/Browser/console/*.log
-            ${{ env.DUSK_DB_DUMP_DIR }}*.sql
+            ${{ env.DB_SNAPSHOT_DIR }}*.sql
             ${{ env.DUSK_SCREENSHOT_DIR }}
             !${{ env.DUSK_SCREENSHOT_DIR }}.gitignore
-          retention-days: 30
+          retention-days: 10
 
   tests-e2e-stats-tags:
     needs:
@@ -761,14 +763,14 @@ jobs:
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-stats-tags
           path: |
             storage/logs/*.log
             tests/Browser/console/*.log
-            ${{ env.DUSK_DB_DUMP_DIR }}*.sql
+            ${{ env.DB_SNAPSHOT_DIR }}*.sql
             ${{ env.DUSK_SCREENSHOT_DIR }}
             !${{ env.DUSK_SCREENSHOT_DIR }}.gitignore
-          retention-days: 30
+          retention-days: 10
 
   notification:
     runs-on: ubuntu-latest
@@ -785,7 +787,7 @@ jobs:
       - tests-e2e-stats-distribution
       - tests-e2e-stats-tags
     if: ${{ always() }} # You always want to be notified: success, failure, or cancelled
-    timeout-minutes: 60
+    timeout-minutes: 15
     steps:
       - name: discord
         uses: nobrayner/discord-webhook@v1
