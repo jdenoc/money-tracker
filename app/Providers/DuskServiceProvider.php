@@ -13,7 +13,7 @@ class DuskServiceProvider extends DuskServiceProviderBase {
      * @return void
      */
     public function boot(){
-        parent::boot(); // needed to allow original DuskServiceProvider to do it's thing
+        parent::boot(); // needed to allow original DuskServiceProvider to do its thing
 
         Browser::macro('scrollToElement', function ($element = null) {
             $this->script([
@@ -41,9 +41,9 @@ class DuskServiceProvider extends DuskServiceProviderBase {
 
         Browser::macro('processLocaleDateForTyping', function($locale_date){
             $locale_date_components = [];
-            if(strpos($locale_date, '/') !== false){
+            if(str_contains($locale_date, '/')){
                 $locale_date_components = explode('/', $locale_date);
-            }elseif(strpos($locale_date, '-') !== false){
+            }elseif(str_contains($locale_date, '-')){
                 $locale_date_components = explode('-', $locale_date);
             }
 
@@ -70,7 +70,7 @@ class DuskServiceProvider extends DuskServiceProviderBase {
      * @throws \Exception
      */
     public function register(){
-        parent::register();  // needed to allow original DuskServiceProvider to do it's thing
+        parent::register();  // needed to allow original DuskServiceProvider to do its thing
     }
 
 }
