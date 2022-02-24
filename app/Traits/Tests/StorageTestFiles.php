@@ -48,8 +48,8 @@ trait StorageTestFiles {
      * @return string
      */
     public function getRandomTestFileStoragePath(): string{
-        $filenames = self::getTestFilenames();
-        return self::$storage_path.$filenames[array_rand($filenames, 1)];
+        $file_paths = self::getTestFilePaths();
+        return $file_paths[array_rand($file_paths, 1)];
     }
 
 }
