@@ -52,7 +52,7 @@ jobs:
 
       - name: Docker build
         uses: ./.github/actions/setup-docker
-        if: steps.docker-cache.outputs.cache-hit != 'true'
+        if: steps.docker-image-cache.outputs.cache-hit != 'true'
 
       - name: Cache Composer packages
         id: composer-cache
