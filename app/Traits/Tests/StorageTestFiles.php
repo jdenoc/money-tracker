@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Storage;
 
 trait StorageTestFiles {
 
-    protected static $storage_path = "test/";
+    protected static $storage_path = "test/";   // storage/app/test/
 
     /**
      * @return array

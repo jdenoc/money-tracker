@@ -164,7 +164,7 @@ class StatsTrendingTest extends StatsBase {
      * @group stats-trending-1
      * test (see provider)/25
      */
-    public function testGenerateTrendingChart($datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $include_transfers){
+    public function testGenerateTrendingChart($datepicker_start, $datepicker_end, bool $is_switch_toggled, bool $is_random_selector_value, bool $are_disabled_select_options_available, bool $include_transfers){
         $accounts = collect($this->getApiAccounts());
         $account_types = collect($this->getApiAccountTypes());
 

@@ -6,12 +6,12 @@ use App\Account;
 use App\AccountType;
 use App\Helpers\CurrencyHelper;
 use App\Traits\Tests\Dusk\AccountOrAccountTypeTogglingSelector as DuskTraitAccountOrAccountTypeTogglingSelector;
-use App\Traits\Tests\Dusk\BulmaColors as DuskTraitBulmaColors;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
 use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Laravel\Dusk\Browser;
@@ -29,11 +29,10 @@ use Throwable;
  */
 class FilterModalTest extends DuskTestCase {
 
-    use HomePageSelectors;
     use DuskTraitAccountOrAccountTypeTogglingSelector;
-    use DuskTraitBulmaColors;
     use DuskTraitLoading;
     use DuskTraitNavbar;
+    use HomePageSelectors;
 
     use WithFaker;
 
@@ -41,9 +40,8 @@ class FilterModalTest extends DuskTestCase {
 
     public function __construct($name = null, array $data = [], $dataName = ''){
         parent::__construct($name, $data, $dataName);
+        $this->initColors();
         $this->_account_or_account_type_toggling_selector_label_id = "filter-modal";
-        $this->_color_filter_switch_default = self::$COLOR_GREY_LIGHT_HEX;
-        $this->_color_filter_switch_active = self::$COLOR_INFO_HEX;
     }
 
     /**
@@ -312,7 +310,7 @@ class FilterModalTest extends DuskTestCase {
         });
     }
 
-    public function providerFlipAccountAndAccountTypeSwitch(){
+    public function providerFlipAccountAndAccountTypeSwitch():array{
         return [
             // [account.disabled, account-type.disabled]
             ['account'=>false, 'account-type'=>true],   // test 8/25
@@ -332,7 +330,7 @@ class FilterModalTest extends DuskTestCase {
      * @group filter-modal-1
      * test (see provider)/25
      */
-    public function testFlipAccountAndAccountTypeSwitch($has_disabled_account, $has_disabled_account_type){
+    public function testFlipAccountAndAccountTypeSwitch(bool $has_disabled_account, bool $has_disabled_account_type){
         DB::statement("TRUNCATE accounts");
         DB::statement("TRUNCATE account_types");
 
@@ -438,7 +436,7 @@ class FilterModalTest extends DuskTestCase {
         });
     }
 
-    private function getCurrencyClassFromCurrency($currency){
+    private function getCurrencyClassFromCurrency($currency):string{
         $currency_class = CurrencyHelper::fetchCurrencies()->where('code', $currency)->first()->class;
         if(is_null($currency_class)){
             return $this->_class_icon_dollar;
@@ -447,7 +445,7 @@ class FilterModalTest extends DuskTestCase {
         }
     }
 
-    public function providerFlipSwitch(){
+    public function providerFlipSwitch():array{
         return [
             "flip income"=>[$this->_selector_modal_filter_field_switch_income],                 // test 12/25
             "flip expense"=>[$this->_selector_modal_filter_field_switch_expense],               // test 13/25
@@ -467,7 +465,7 @@ class FilterModalTest extends DuskTestCase {
      * @group filter-modal-1
      * test (see provider)/25
      */
-    public function testFlipSwitch($switch_selector){
+    public function testFlipSwitch(string $switch_selector){
         $this->browse(function(Browser $browser) use ($switch_selector){
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
@@ -481,7 +479,7 @@ class FilterModalTest extends DuskTestCase {
         });
     }
 
-    public function providerFlippingCompanionSwitches(){
+    public function providerFlippingCompanionSwitches():array{
         return [
             "flip income with expense"=>[$this->_selector_modal_filter_field_switch_income, $this->_selector_modal_filter_field_switch_expense],                              // test 18/25
             "flip expense with income"=>[$this->_selector_modal_filter_field_switch_expense, $this->_selector_modal_filter_field_switch_income],                              // test 19/25
@@ -500,7 +498,7 @@ class FilterModalTest extends DuskTestCase {
      * @group filter-modal-1
      * test (see provider)/25
      */
-    public function testFlippingCompanionSwitches($init_switch_selector, $companion_switch_selector){
+    public function testFlippingCompanionSwitches(string $init_switch_selector, string $companion_switch_selector){
         $this->browse(function(Browser $browser) use ($init_switch_selector, $companion_switch_selector){
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
@@ -521,7 +519,7 @@ class FilterModalTest extends DuskTestCase {
         });
     }
 
-    public function providerRangeValueConvertsIntoDecimalOfTwoPlaces(){
+    public function providerRangeValueConvertsIntoDecimalOfTwoPlaces():array{
         return [
             'Min Range'=>[$this->_selector_modal_filter_field_min_value], // test 22/25
             'Max Range'=>[$this->_selector_modal_filter_field_max_value], // test 23/25
@@ -663,7 +661,7 @@ class FilterModalTest extends DuskTestCase {
         });
     }
 
-    public function providerClickFilterButtonToFilterResults(){
+    public function providerClickFilterButtonToFilterResults():array{
         return [
             "Start Date"=>[$this->_selector_modal_filter_field_start_date],                         // test 1/25
             "End Date"=>[$this->_selector_modal_filter_field_end_date],                             // test 2/25
@@ -753,7 +751,7 @@ class FilterModalTest extends DuskTestCase {
                             break;
 
                         default:
-                            throw new \InvalidArgumentException("Unknown filter parameter provided:".$filter_param);
+                            throw new InvalidArgumentException("Unknown filter parameter provided:".$filter_param);
                     }
                 })
 
@@ -854,7 +852,7 @@ class FilterModalTest extends DuskTestCase {
                                 break;
 
                             default:
-                                throw new \InvalidArgumentException("Unknown filter parameter provided:".$filter_param);
+                                throw new InvalidArgumentException("Unknown filter parameter provided:".$filter_param);
                         }
                     }
             });

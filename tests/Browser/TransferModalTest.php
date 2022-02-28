@@ -6,6 +6,7 @@ use App\Account;
 use App\AccountType;
 use App\Entry;
 use App\Traits\EntryTransferKeys;
+use App\Traits\Tests\Dusk\FileDragNDrop as DuskTraitFileDragNDrop;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
 use App\Traits\Tests\Dusk\Notification as DuskTraitNotification;
@@ -31,11 +32,12 @@ use Throwable;
 class TransferModalTest extends DuskTestCase {
 
     use HomePageSelectors;
-    use EntryTransferKeys;
+    use DuskTraitFileDragNDrop;
     use DuskTraitLoading;
     use DuskTraitNavbar;
     use DuskTraitNotification;
     use DuskTraitTagsInput;
+    use EntryTransferKeys;
 
     use WithFaker;
 
@@ -142,7 +144,7 @@ class TransferModalTest extends DuskTestCase {
                     $modal
                         ->assertVisible($this->_selector_modal_transfer_field_upload) // drag-n-drop file upload field
                         ->with($this->_selector_modal_transfer_field_upload, function($file_upload){
-                            $file_upload->assertSee($this->_label_file_upload);
+                            $file_upload->assertSee(self::$LABEL_FILE_DRAG_N_DROP);
                         });
                 });
         });
@@ -445,11 +447,12 @@ class TransferModalTest extends DuskTestCase {
         $account_types = $this->faker->randomElements($all_account_types, 2);
 
         $this->browse(function(Browser $browser) use ($account_types, $has_tags, $has_attachments){
+            $upload_file_path = $has_attachments ? Storage::path($this->getRandomTestFileStoragePath()) : '';
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $this->openTransferModal($browser);
             $browser
-                ->with($this->_selector_modal_transfer, function(Browser $modal) use ($account_types){
+                ->with($this->_selector_modal_transfer, function(Browser $modal) use ($account_types, $has_tags, $has_attachments, $upload_file_path){
                     $modal
                         // make sure (almost) all the fields are empty first
                         ->assertInputValue($this->_selector_modal_transfer_field_date, date('Y-m-d'))
@@ -465,29 +468,33 @@ class TransferModalTest extends DuskTestCase {
                         ->select($this->_selector_modal_transfer_field_from, $account_types[0]['id'])
                         ->select($this->_selector_modal_transfer_field_to, $account_types[1]['id'])
                         ->type($this->_selector_modal_transfer_field_memo, "Test transfer - reset");
+
+                    if($has_tags){
+                        // select tag at random and input the first character into the tags-input field
+                        $tags = $this->getApiTags();
+                        $tag = $this->faker->randomElement($tags);
+                        $this->fillTagsInputUsingAutocomplete($modal, $tag['name']);
+                    }
+
+                    if($has_attachments){
+                        $this->uploadAttachmentUsingDragNDropAndSuccess($modal, $this->_selector_modal_transfer_field_upload, $this->_selector_modal_transfer_dropzone_hidden_file_input, $upload_file_path);
+                    }
                 });
 
-                if($has_tags){
-                    // select tag at random and input the first character into the tags-input field
-                    $tags = $this->getApiTags();
-                    $tag = $this->faker->randomElement($tags);
-                    $browser->with($this->_selector_modal_transfer, function(Browser $modal) use ($tag){
-                        $this->fillTagsInputUsingAutocomplete($modal, $tag['name']);
-                    });
-                }
+            if($has_attachments){
+                $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_INFO, sprintf(self::$LABEL_FILE_UPLOAD_SUCCESS, basename($upload_file_path)));
+                $this->dismissNotification($browser);
+            }
 
-                if($has_attachments){
-                    $upload_file_path = Storage::path($this->getRandomTestFileStoragePath());
-                    $this->attachFile($browser, $upload_file_path);
-                }
-
-                $browser->with($this->_selector_modal_transfer, function($modal){
+            $browser
+                ->within($this->_selector_modal_transfer, function(Browser $modal){
                     $modal->click($this->_selector_modal_transfer_btn_cancel);
                 })
                 ->assertMissing($this->_selector_modal_transfer);
+
             $this->openTransferModal($browser);
             $browser
-                ->with($this->_selector_modal_transfer, function($modal) use ($account_types){
+                ->within($this->_selector_modal_transfer, function(Browser $modal) use ($account_types){
                     // make sure (almost) all the fields are empty after re-opening the transfer-modal
                     $modal
                         ->assertInputValue($this->_selector_modal_transfer_field_date, date("Y-m-d"))
@@ -497,10 +504,10 @@ class TransferModalTest extends DuskTestCase {
                         ->assertInputValue($this->_selector_modal_transfer_field_memo, "")
                         ->assertInputValue(self::$SELECTOR_TAGS_INPUT_INPUT, "")
                         ->assertVisible($this->_selector_modal_transfer_field_upload)
-                        ->with($this->_selector_modal_transfer_field_upload, function($upload_field){
+                        ->within($this->_selector_modal_transfer_field_upload, function(Browser $upload_field){
                             $upload_field
-                                ->assertMissing($this->_selector_modal_dropzone_upload_thumbnail)
-                                ->assertSee($this->_label_file_upload);
+                                ->assertMissing(self::$SELECTOR_FILE_DRAG_N_DROP_UPLOAD_THUMBNAIL)
+                                ->assertSee(self::$LABEL_FILE_DRAG_N_DROP);
                         });
                 });
         });
@@ -558,16 +565,16 @@ class TransferModalTest extends DuskTestCase {
                 'from_account_type_id'=>($is_from_account_external ? self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID : $account_types[0]['id']),
                 'to_account_type_id'=>($is_to_account_external ? self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID : $account_types[1]['id']),
                 'tag'=>$tag,
-                'attachment_path'=>\Storage::path($this->getRandomTestFileStoragePath()),
+                'attachment_path'=>Storage::path($this->getRandomTestFileStoragePath()),
             ];
 
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $this->openTransferModal($browser);
             $browser
-                ->with($this->_selector_modal_transfer, function($modal) use ($transfer_entry_data, $browser_locale_date_for_typing, $has_tags){
+                ->with($this->_selector_modal_transfer, function($modal) use ($transfer_entry_data, $browser_locale_date_for_typing, $has_tags, $has_attachments){
                     // laravel dusk has an issue typing into input[type="date"] fields
-                    // work-around for this is to use individual key-strokes
+                    // work-around for this is to use individual keystrokes
                     $backspace_count = strlen($modal->value($this->_selector_modal_transfer_field_date));
                     for($i=0; $i<$backspace_count; $i++){
                         $modal->keys($this->_selector_modal_transfer_field_date, "{backspace}");
@@ -585,11 +592,11 @@ class TransferModalTest extends DuskTestCase {
                     if($has_tags){
                         $this->fillTagsInputUsingAutocomplete($modal, $transfer_entry_data['tag']);
                     }
-                });
 
-            if($has_attachments){
-                $this->attachFile($browser, $transfer_entry_data['attachment_path']);
-            }
+                    if($has_attachments){
+                        $this->uploadAttachmentUsingDragNDropAndSuccess($modal, $this->_selector_modal_transfer_field_upload, $this->_selector_modal_transfer_dropzone_hidden_file_input, $transfer_entry_data['attachment_path']);
+                    }
+                });
 
             $browser
                 ->with($this->_selector_modal_transfer, function($modal){
@@ -627,6 +634,12 @@ class TransferModalTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws Throwable
+     *
+     * @group transfer-modal-2
+     * test 13/25
+     */
     public function testOpeningMoreThanOneTransferEntryPairPerSession(){
         // GIVEN:
         $account_type_id1 = AccountType::where('disabled', true)->get()->random();
@@ -698,17 +711,6 @@ class TransferModalTest extends DuskTestCase {
         });
     }
 
-    private function attachFile(Browser $browser, $attachment_file_path){
-        $this->assertFileExists($attachment_file_path);
-        $browser->with($this->_selector_modal_transfer, function($modal) use ($attachment_file_path){
-            $modal
-                ->assertVisible($this->_selector_modal_transfer_field_upload)
-                ->attach($this->_selector_modal_transfer_dropzone_hidden_file_input, $attachment_file_path)
-                ->waitFor($this->_selector_modal_transfer_field_upload.' '.$this->_selector_modal_dropzone_upload_thumbnail, self::$WAIT_SECONDS);
-        });
-        $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_INFO, sprintf($this->_label_notification_file_upload_success, basename($attachment_file_path)));
-    }
-
     /**
      * @param Browser $browser
      * @param string $table_row_selector
@@ -769,4 +771,3 @@ class TransferModalTest extends DuskTestCase {
     }
 
 }
-

@@ -70,7 +70,7 @@ class UpdateAccountTotalTest extends DuskTestCase {
      * @group navigation-4
      * test (see provider)/25
      */
-    public function testUpdateAccountTotalWithNewEntry($is_entry_expense){
+    public function testUpdateAccountTotalWithNewEntry(bool $is_entry_expense){
         $this->browse(function (Browser $browser) use($is_entry_expense){
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
@@ -340,7 +340,7 @@ class UpdateAccountTotalTest extends DuskTestCase {
      * @param float $account_total
      * @param bool $init
      */
-    private function assertAccountTotal(Browser $browser, $institution_id, $account_id, $account_total, $init=false){
+    private function assertAccountTotal(Browser $browser, int $institution_id, int $account_id, $account_total, bool $init=false){
         $browser->with($this->_selector_panel_institutions.' #institution-'.$institution_id, function(Browser $institution_node) use ($init, $account_id, $account_total){
             // ONLY click on the institution node if this is at start up
             // OTHERWISE the accounts should already be visible

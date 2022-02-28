@@ -2,8 +2,8 @@
 
 namespace Tests\Browser;
 
-use App\Traits\Tests\Dusk\Loading;
-use App\Traits\Tests\Dusk\Navbar;
+use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
+use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
 use Tests\Browser\Pages\HomePage;
 use Tests\Browser\Pages\StatsPage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
@@ -20,8 +20,8 @@ use Throwable;
  */
 class NavbarTest extends DuskTestCase {
 
-    use Navbar;
-    use Loading;
+    use DuskTraitNavbar;
+    use DuskTraitLoading;
 
     const MOBILE_RESIZE_WIDTH_PX = 1000;
     const RESIZE_HEIGHT_PX = 750;
@@ -137,7 +137,7 @@ class NavbarTest extends DuskTestCase {
      * @group navigation-2
      * test 6/25
      */
-    public function testBurgerMenuVisibleOnSmallerScreenWidth(){
+    public function testBurgerMenuVisibleOnSmallerScreenWidthOnHomePage(){
         $this->browse(function(Browser $browser){
             $browser
                 ->resize(self::MOBILE_RESIZE_WIDTH_PX, self::RESIZE_HEIGHT_PX)
