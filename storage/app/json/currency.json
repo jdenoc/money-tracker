@@ -2,21 +2,25 @@
   {
     "label": "euro",
     "code": "EUR",
-    "class": "fas fa-euro-sign"
+    "class": "fas fa-euro-sign",
+    "html": "&#128;"
   },
   {
     "label": "dollarUs",
     "code": "USD",
-    "class": "fas fa-dollar-sign"
+    "class": "fas fa-dollar-sign",
+    "html": "&#36;"
   },
   {
     "label": "dollarCa",
     "code": "CAD",
-    "class": "fas fa-dollar-sign"
+    "class": "fas fa-dollar-sign",
+    "html": "&#36;"
   },
   {
     "label": "pound",
     "code": "GBP",
-    "class": "fas fa-pound-sign"
+    "class": "fas fa-pound-sign",
+    "html": "&#163;"
   }
 ]
