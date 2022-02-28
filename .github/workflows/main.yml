@@ -48,7 +48,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: steps.cache-key-docker.outputs.value
+          key: ${{ steps.cache-key-docker.outputs.value }}
 
       - name: Docker build
         uses: ./.github/actions/setup-docker
@@ -59,7 +59,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: vendor
-          key: jobs.build.outputs.cache-key-composer
+          key: ${{ steps.cache-key-composer.outputs.value }}
 
       - name: Composer setup
         uses: ./.github/actions/setup-composer
@@ -73,7 +73,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: steps.cache-key-npm.outputs.value
+          key: ${{ steps.cache-key-npm.outputs.value }}
 
       - name: npm setup
         uses: ./.github/actions/setup-npm
@@ -86,7 +86,7 @@ jobs:
           path: |
             public/vue
             public/mix-manifest.json
-          key: steps.cache-key-vue.outputs.value
+          key: ${{ steps.cache-key-vue.outputs.value }}
 
       - name: Build Vue
         uses: ./.github/actions/build-vue
