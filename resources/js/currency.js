@@ -1,4 +1,5 @@
-import json from '../../storage/app/json/currency.json'
+import json from '../../storage/app/json/currency.json';
+import _ from 'lodash';
 
 export class Currency {
 
@@ -7,7 +8,8 @@ export class Currency {
         this.default = {
             "label": "dollarUs",
             "code": "USD",
-            "class": "fas fa-dollar-sign"
+            "class": "fas fa-dollar-sign",
+            "html": "&#36;"
         };
     }
 
@@ -22,4 +24,15 @@ export class Currency {
         }
     }
 
-};
+    getHtmlFromCode(currencyCode){
+        let currencyNode = this.currencyData.filter(function(currencyDatum){
+            return currencyCode === currencyDatum.code;
+        }).shift();
+        if(_.isEmpty(currencyNode)){
+            return this.default.html;
+        } else {
+            return currencyNode.html;
+        }
+    }
+
+}
