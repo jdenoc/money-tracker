@@ -31,7 +31,7 @@
                     v-bind:class="{'is-active': hasNavbarAvatarImageBeenClicked}"
                     v-on:click="clickNavbarAvatarImage"
                     >
-                    <a id="profile-nav-link" class="navbar-link is-hidden-touch"><img src="imgs/profile-placeholder.jpeg" alt="AVATAR"/></a>
+                    <a id="profile-nav-link" class="navbar-link is-hidden-touch"><img src="imgs/profile-placeholder.png" alt="AVATAR"/></a>
 
                     <div class="navbar-dropdown is-boxed is-right">
                         <div class="navbar-item is-hidden-touch">TODO: NAME</div>
