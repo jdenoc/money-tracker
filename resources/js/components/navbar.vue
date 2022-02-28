@@ -60,13 +60,15 @@
         },
         data: function(){
             return {
-                defaultAppVersion: 'x.y.z',
                 navbarAvatarImageClicked: false,
                 navbarBurgerClicked: false,
                 version: new Version(),
             }
         },
         computed: {
+            defaultAppVersion: function(){
+                return 'x.y.z';
+            },
             isHomePage: function(){
                 return this.pageName === 'home';
             },
@@ -81,7 +83,7 @@
             },
             appVersion: function(){
                 let appVersion = this.version.retrieve;//'x.y.z';
-                return appVersion === '' ? this.defaultAppVersion : appVersion;
+                return _.isEmpty(appVersion) ? this.defaultAppVersion : appVersion;
             }
         },
         methods: {
