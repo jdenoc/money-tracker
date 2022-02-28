@@ -34,6 +34,7 @@ export const statsChartMixin = {
             return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2);
         },
         randomColor: function(){
+            // TODO: consider swapping to use the bulma colors
             let max=255, min=0;
             let r=Math.floor(Math.random() * (max - min + 1) + min);
             let g=Math.floor(Math.random() * (max - min + 1) + min);
