@@ -14,7 +14,7 @@ trait AssertElementColor {
      * @param string $element_selector
      * @param string $expected_colour
      */
-    public function assertElementColor(Browser $browser, $element_selector, $expected_colour){
+    public function assertElementColor(Browser $browser, string $element_selector, string $expected_colour){
         $this->assertElementColour($browser, $element_selector, $expected_colour);
     }
 
@@ -23,7 +23,7 @@ trait AssertElementColor {
      * @param string $element_selector
      * @param string $expected_colour
      */
-    public function assertElementColour(Browser $browser, $element_selector, $expected_colour){
+    public function assertElementColour(Browser $browser, string $element_selector, string $expected_colour){
         $element_hex_colour_script_output = $browser->script([
             'css_color = window.getComputedStyle(document.querySelector("'.$element_selector.'"), null).getPropertyValue("background-color");',
             'rgb = css_color.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);',

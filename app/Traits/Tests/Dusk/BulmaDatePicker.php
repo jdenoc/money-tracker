@@ -55,7 +55,7 @@ trait BulmaDatePicker {
      * @param Browser $datepicker
      * @param string $new_date
      */
-    private function clickYear(Browser $datepicker, $new_date){
+    private function clickYear(Browser $datepicker, string $new_date){
         $selector_datepicker_nav_year = '.datepicker-nav .datepicker-nav-year';
         $selector_datepicker_body_years = '.datepicker-body .datepicker-years.is-active';
         $pattern_datepicker_body_years_year = ".datepicker-body .datepicker-years.is-active .datepicker-year[data-year='%s']";
@@ -71,7 +71,7 @@ trait BulmaDatePicker {
      * @param Browser $datepicker
      * @param string $new_date
      */
-    private function clickMonth(Browser $datepicker, $new_date){
+    private function clickMonth(Browser $datepicker, string $new_date){
         $selector_datepicker_nav_month = '.datepicker-nav .datepicker-nav-month';
         $selector_datepicker_body_months = '.datepicker-body .datepicker-months.is-active';
         $pattern_datepicker_body_months_month = ".datepicker-body .datepicker-months.is-active .datepicker-month[data-month='%s']";
@@ -87,7 +87,7 @@ trait BulmaDatePicker {
      * @param Browser $datepicker
      * @param string $new_date
      */
-    private function clickDate(Browser $datepicker, $new_date){
+    private function clickDate(Browser $datepicker, string $new_date){
         $selector_datepicker_body_dates = '.datepicker-body .datepicker-dates.is-active';
         $pattern_datepicker_body_dates_date = ".datepicker-body .datepicker-dates.is-active .datepicker-days .datepicker-date[data-date^='%s']";
 

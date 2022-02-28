@@ -90,13 +90,13 @@ class StatsBase extends DuskTestCase {
     }
 
     /**
-     * Sometimes we select an collection of filter parameters that result in no entries being available.
+     * Sometimes we select a collection of filter parameters that result in no entries being available.
      * In those situations, we need to make sure that at least one entry does exist.
      *
      * @param array $filter_data
      * @param string $memo
      */
-    protected function generateEntryFromFilterData($filter_data, $memo = ''){
+    protected function generateEntryFromFilterData(array $filter_data, string $memo = ''){
         $new_entry_data = ['disabled'=>false];
         if(!empty($memo)){
             $new_entry_data['memo'] = $memo;
@@ -131,7 +131,7 @@ class StatsBase extends DuskTestCase {
      * @param bool $is_transfer
      * @return Collection
      */
-    protected function filterTransferEntries($entries, $is_transfer){
+    protected function filterTransferEntries($entries, bool $is_transfer){
         // TODO: take into account external transfers (e.g.: transfer_entry_id=0)
         if(!$is_transfer){
             return $entries->where('is_transfer', false);

@@ -286,8 +286,8 @@ class NotificationsTest extends DuskTestCase {
                 $modal_foot->click($this->_selector_modal_entry_btn_save);
             });
 
+            $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_ERROR, "An error occurred while attempting to create an entry");
             $this->waitForLoadingToStop($browser);
-            $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_ERROR, "An error occurred while attempting to retrieve entries");
         });
 
         DB::statement($recreate_table_query);
@@ -574,10 +574,10 @@ class NotificationsTest extends DuskTestCase {
     }
 
     /**
-     * @param $table_name
+     * @param string $table_name
      * @return string
      */
-    private function getTableRecreationQuery($table_name){
+    private function getTableRecreationQuery(string $table_name):string{
         $create_query = DB::select("SHOW CREATE TABLE ".$table_name);
         return $create_query[0]->{"Create Table"};
     }
@@ -585,7 +585,7 @@ class NotificationsTest extends DuskTestCase {
     /**
      * @param string $table_name
      */
-    private function dropTable($table_name){
+    private function dropTable(string $table_name){
         DB::statement(sprintf("DROP TABLE %s", $table_name));
     }
 

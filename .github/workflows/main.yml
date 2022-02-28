@@ -409,6 +409,9 @@ jobs:
       - uses: ./.github/actions/app-init
       - run: .docker/cmd/artisan.sh dusk --group entry-modal-2 --stop-on-failure
 
+      - uses: ./.github/actions/app-init
+      - run: .docker/cmd/artisan.sh dusk --group entry-modal-3 --stop-on-failure
+
       - name: Failure upload
         uses: actions/upload-artifact@v2
         if: failure()

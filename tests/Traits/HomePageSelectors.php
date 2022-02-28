@@ -2,10 +2,13 @@
 
 namespace Tests\Traits;
 
+use App\Traits\Tests\Dusk\BulmaColors;
+
 trait HomePageSelectors {
 
-    // ###*** SELECTORS ***###
+    use BulmaColors;
 
+    // ###*** SELECTORS ***###
     // generic - modal
     private $_selector_modal_head = ".modal-card-head";
     private $_selector_modal_title = ".modal-card-title";
@@ -13,15 +16,6 @@ trait HomePageSelectors {
     private $_selector_modal_foot = ".modal-card-foot";
     private $_selector_modal_btn_close = "button.delete";
     private $_selector_modal_tag_autocomplete_options = ".typeahead span";
-
-    // generic - modal dropzone
-    private $_selector_modal_dropzone_upload_thumbnail = ".dz-complete:last-child";
-    private $_selector_modal_dropzone_progress = ".dz-progress";
-    private $_selector_modal_dropzone_error_mark = ".dz-error-mark";
-    private $_selector_modal_dropzone_success_mark = ".dz-success-mark";
-    private $_selector_modal_dropzone_error_message = ".dz-error-message";
-    private $_selector_modal_dropzone_label_filename = '.dz-filename';
-    private $_selector_modal_dropzone_btn_remove = ".dz-remove";
 
     // institutions panel
     private $_selector_panel_institutions = "#institutions-panel-column";
@@ -52,7 +46,6 @@ trait HomePageSelectors {
     private $_selector_tags_tag = ".tags .tag";
     private $_selector_modal_entry_field_upload = "#entry-modal-file-upload";
     private $_selector_modal_entry_dropzone_hidden_file_input = "#entry-modal-hidden-file-input";
-    private $_selector_modal_entry_dropzone_upload_thumbnail = "#entry-modal-file-upload .dz-complete:last-child";
     private $_selector_modal_entry_existing_attachments = "#existing-entry-attachments";
     private $_selector_modal_entry_existing_attachments_first_attachment = ".existing-attachment:first-child";
     private $_selector_modal_entry_existing_attachments_attachment_name = " .attachment-name";
@@ -136,25 +129,15 @@ trait HomePageSelectors {
     private $_label_checkbox_show_disabled = "Show Disabled";
     private $_label_switch_enabled = "Enabled";
     private $_label_switch_disabled = "Disabled";
-    private $_label_file_upload = "Drag & Drop";
-    private $_label_btn_dropzone_remove_file = "REMOVE FILE";
     private $_label_btn_cancel = "Cancel";
     private $_label_btn_delete = "Delete";
     private $_label_btn_save = "Save changes";
     private $_label_btn_reset = "Reset";
     private $_label_btn_filter = "Filter";
-    private $_label_notification_file_upload_success = "uploaded: %s";
     private $_label_notification_transfer_saved = "Transfer entry created";
     private $_label_notification_new_entry_created = "New entry created";
 
-    // ###*** COLOURS ***###
-    private $_color_expense_switch_expense = "#ffcc00";
-    private $_color_expense_switch_income = "#00d1b2";
-    private $_color_filter_switch_default = "#B5B5B5";
-    private $_color_filter_switch_active = "#209CEE";
-    private $_color_filter_btn_tag_default = "#f5f5f5";
-    private $_color_filter_btn_tag_active = "#3082c5";
-
+    // ###*** classes ***###
     private $_class_is_income = "is-income";
     private $_class_is_expense = "is-expense";
     private $_class_is_active = "is-active";
@@ -163,4 +146,20 @@ trait HomePageSelectors {
     private $_class_icon_dollar = "fa-dollar-sign";
     private $_class_icon_pound = "fa-pound-sign";
 
+    // ###*** COLOURS ***###
+    private $_color_expense_switch_expense = "";
+    private $_color_expense_switch_income = "";
+    private $_color_filter_switch_default = "";
+    private $_color_filter_switch_active = "";
+    private $_color_filter_btn_tag_default = "";
+    private $_color_filter_btn_tag_active = "#3082c5";
+
+    private function initColors(){
+        $this->initAliasBulmaColors();
+        $this->_color_expense_switch_expense = static::$COLOR_WARNING_HEX;
+        $this->_color_expense_switch_income = static::$COLOR_PRIMARY_HEX;
+        $this->_color_filter_switch_default = static::$COLOR_GREY_LIGHT_HEX;
+        $this->_color_filter_switch_active = static::$COLOR_INFO_HEX;
+        $this->_color_filter_btn_tag_default = static::$COLOR_LIGHT_HEX;
+    }
 }

@@ -17,7 +17,7 @@ trait BatchFilterEntries {
      * @param string $end_date
      * @return array
      */
-    private function generateFilterArrayElementDatepicker($filter_data, $start_date, $end_date){
+    private function generateFilterArrayElementDatepicker(array $filter_data, $start_date, $end_date):array{
         $filter_data[self::$FILTER_KEY_START_DATE] = $start_date;
         $filter_data[self::$FILTER_KEY_END_DATE] = $end_date;
         return $filter_data;
@@ -29,7 +29,7 @@ trait BatchFilterEntries {
      * @param int|null $account_or_account_type_id
      * @return mixed
      */
-    private function generateFilterArrayElementAccountOrAccountypeId($filter_data, $is_account_switch_toggled, $account_or_account_type_id){
+    private function generateFilterArrayElementAccountOrAccountypeId(array $filter_data, bool $is_account_switch_toggled, $account_or_account_type_id):array{
         if(!empty($account_or_account_type_id)){
             if($is_account_switch_toggled){
                 $filter_data[self::$FILTER_KEY_ACCOUNT_TYPE] = $account_or_account_type_id;
@@ -45,7 +45,7 @@ trait BatchFilterEntries {
      * @param bool $is_expense
      * @return array
      */
-    private function generateFilterArrayElementExpense($filter_data, $is_expense){
+    private function generateFilterArrayElementExpense(array $filter_data, $is_expense):array{
         $filter_data[self::$FILTER_KEY_EXPENSE] = $is_expense;
         return $filter_data;
     }
@@ -53,9 +53,9 @@ trait BatchFilterEntries {
     /**
      * @param array $filter_data
      * @param Collection|null $tags
-     * @return mixed
+     * @return array
      */
-    private function generateFilterArrayElementTags($filter_data, $tags){
+    private function generateFilterArrayElementTags(array $filter_data, $tags):array{
         if(!is_null($tags)){
             $filter_data[self::$FILTER_KEY_TAGS] = $tags->pluck('id')->toArray();
         }
@@ -66,7 +66,7 @@ trait BatchFilterEntries {
      * @param array $filter_data
      * @return Collection
      */
-    private function getBatchedFilteredEntries($filter_data){
+    private function getBatchedFilteredEntries(array $filter_data){
         $entries = $this->getApiEntries(0, $filter_data);
         if(empty($entries)){
             throw new \UnexpectedValueException("Entries not available with filter ".json_encode($filter_data));

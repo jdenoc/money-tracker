@@ -43,6 +43,7 @@ class StatsDistributionTest extends StatsBase {
 
     public function __construct($name = null, array $data = [], $dataName = ''){
         parent::__construct($name, $data, $dataName);
+        $this->initAliasBulmaColors();
         $this->_account_or_account_type_toggling_selector_label_id = 'distribution-chart';
         $this->_color_switch_default = self::$COLOR_GREY_LIGHT_HEX;
     }

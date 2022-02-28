@@ -28,7 +28,7 @@ trait Notification {
      * @param string $notification_message
      * @throws \Facebook\WebDriver\Exception\TimeOutException
      */
-    public function assertNotificationContents(Browser $browser, $notification_type, $notification_message){
+    public function assertNotificationContents(Browser $browser, string $notification_type, string $notification_message){
         switch($notification_type){
             case self::$NOTIFICATION_TYPE_ERROR:
                 $notification_class = self::$NOTIFICATION_CLASS_ERROR;
@@ -60,6 +60,17 @@ trait Notification {
             ->mouseover(self::$SELECTOR_NAVBAR)
             ->waitUntilMissing($notification_class, 1.5*self::$WAIT_SECONDS)
             ->pause(self::$WAIT_QUARTER_SECONDS_IN_MILLISECONDS);
+    }
+
+    /**
+     * @param Browser $browser
+     *
+     * @throws \Facebook\WebDriver\Exception\TimeOutException
+     */
+    public function dismissNotification(Browser $browser){
+        $browser
+            ->click(self::$SELECTOR_NOTIFICATION)
+            ->waitUntilMissing(self::$SELECTOR_NOTIFICATION, self::$WAIT_SECONDS);
     }
 
 }
