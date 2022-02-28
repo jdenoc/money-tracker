@@ -107,26 +107,26 @@ jobs:
         uses: actions/checkout@v2
 
       # retrieve cache
-      - name: Cache Docker images
+      - name: Get Cached Docker images
         id: docker-image-cache
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: jobs.build.outputs.cache-key-docker
+          key: ${{ jobs.build.outputs.cache-key-docker }}
 
-      - name: Cache Composer packages
+      - name: Get Cached Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
           path: vendor
-          key: jobs.build.outputs.cache-key-composer
+          key: ${{ jobs.build.outputs.cache-key-composer }}
 
-      - name: Cache npm packages
+      - name: Get Cached npm packages
         id: npm-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: jobs.build.outputs.cache-key-npm
+          key: ${{ jobs.build.outputs.cache-key-npm }}
 
       # NOTE: vue cache not needed for unit tests
 
@@ -184,35 +184,35 @@ jobs:
         uses: actions/checkout@v2
 
       # retrieve cache
-      - name: Cache Docker images
+      - name: Get Cached Docker images
         id: docker-image-cache
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: jobs.build.outputs.cache-key-docker
+          key: ${{ jobs.build.outputs.cache-key-docker }}
 
-      - name: Cache Composer packages
+      - name: Get Cached Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
           path: vendor
-          key: jobs.build.outputs.cache-key-composer
+          key: ${{ jobs.build.outputs.cache-key-composer }}
 
-      - name: Cache npm packages
+      - name: Get Cached npm packages
         id: npm-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: jobs.build.outputs.cache-key-npm
+          key: ${{ jobs.build.outputs.cache-key-npm }}
 
-      - name: Cache vue
+      - name: Get Cached vue
         id: vue-cache
         uses: actions/cache@v2
         with:
           path: |
             public/vue
             public/mix-manifest.json
-          key: jobs.build.outputs.cache-key-vue
+          key: ${{ jobs.build.outputs.cache-key-vue }}
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -244,35 +244,35 @@ jobs:
         uses: actions/checkout@v2
 
       # retrieve cache
-      - name: Cache Docker images
+      - name: Get Cached Docker images
         id: docker-image-cache
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: jobs.build.outputs.cache-key-docker
+          key: ${{ jobs.build.outputs.cache-key-docker }}
 
-      - name: Cache Composer packages
+      - name: Get Cached Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
           path: vendor
-          key: jobs.build.outputs.cache-key-composer
+          key: ${{ jobs.build.outputs.cache-key-composer }}
 
-      - name: Cache npm packages
+      - name: Get Cached npm packages
         id: npm-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: jobs.build.outputs.cache-key-npm
+          key: ${{ jobs.build.outputs.cache-key-npm }}
 
-      - name: Cache vue
+      - name: Get Cached vue
         id: vue-cache
         uses: actions/cache@v2
         with:
           path: |
             public/vue
             public/mix-manifest.json
-          key: jobs.build.outputs.cache-key-vue
+          key: ${{ jobs.build.outputs.cache-key-vue }}
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -304,35 +304,35 @@ jobs:
         uses: actions/checkout@v2
 
       # retrieve cache
-      - name: Cache Docker images
+      - name: Get Cached Docker images
         id: docker-image-cache
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: jobs.build.outputs.cache-key-docker
+          key: ${{ jobs.build.outputs.cache-key-docker }}
 
-      - name: Cache Composer packages
+      - name: Get Cached Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
           path: vendor
-          key: jobs.build.outputs.cache-key-composer
+          key: ${{ jobs.build.outputs.cache-key-composer }}
 
-      - name: Cache npm packages
+      - name: Get Cached npm packages
         id: npm-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: jobs.build.outputs.cache-key-npm
+          key: ${{ jobs.build.outputs.cache-key-npm }}
 
-      - name: Cache vue
+      - name: Get Cached vue
         id: vue-cache
         uses: actions/cache@v2
         with:
           path: |
             public/vue
             public/mix-manifest.json
-          key: jobs.build.outputs.cache-key-vue
+          key: ${{ jobs.build.outputs.cache-key-vue }}
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -373,35 +373,35 @@ jobs:
         uses: actions/checkout@v2
 
       # retrieve cache
-      - name: Cache Docker images
+      - name: Get Cached Docker images
         id: docker-image-cache
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: jobs.build.outputs.cache-key-docker
+          key: ${{ jobs.build.outputs.cache-key-docker }}
 
-      - name: Cache Composer packages
+      - name: Get Cached Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
           path: vendor
-          key: jobs.build.outputs.cache-key-composer
+          key: ${{ jobs.build.outputs.cache-key-composer }}
 
-      - name: Cache npm packages
+      - name: Get Cached npm packages
         id: npm-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: jobs.build.outputs.cache-key-npm
+          key: ${{ jobs.build.outputs.cache-key-npm }}
 
-      - name: Cache vue
+      - name: Get Cached vue
         id: vue-cache
         uses: actions/cache@v2
         with:
           path: |
             public/vue
             public/mix-manifest.json
-          key: jobs.build.outputs.cache-key-vue
+          key: ${{ jobs.build.outputs.cache-key-vue }}
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -436,35 +436,35 @@ jobs:
         uses: actions/checkout@v2
 
       # retrieve cache
-      - name: Cache Docker images
+      - name: Get Cached Docker images
         id: docker-image-cache
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: jobs.build.outputs.cache-key-docker
+          key: ${{ jobs.build.outputs.cache-key-docker }}
 
-      - name: Cache Composer packages
+      - name: Get Cached Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
           path: vendor
-          key: jobs.build.outputs.cache-key-composer
+          key: ${{ jobs.build.outputs.cache-key-composer }}
 
-      - name: Cache npm packages
+      - name: Get Cached npm packages
         id: npm-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: jobs.build.outputs.cache-key-npm
+          key: ${{ jobs.build.outputs.cache-key-npm }}
 
-      - name: Cache vue
+      - name: Get Cached vue
         id: vue-cache
         uses: actions/cache@v2
         with:
           path: |
             public/vue
             public/mix-manifest.json
-          key: jobs.build.outputs.cache-key-vue
+          key: ${{ jobs.build.outputs.cache-key-vue }}
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -499,35 +499,35 @@ jobs:
         uses: actions/checkout@v2
 
       # retrieve cache
-      - name: Cache Docker images
+      - name: Get Cached Docker images
         id: docker-image-cache
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: jobs.build.outputs.cache-key-docker
+          key: ${{ jobs.build.outputs.cache-key-docker }}
 
-      - name: Cache Composer packages
+      - name: Get Cached Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
           path: vendor
-          key: jobs.build.outputs.cache-key-composer
+          key: ${{ jobs.build.outputs.cache-key-composer }}
 
-      - name: Cache npm packages
+      - name: Get Cached npm packages
         id: npm-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: jobs.build.outputs.cache-key-npm
+          key: ${{ jobs.build.outputs.cache-key-npm }}
 
-      - name: Cache vue
+      - name: Get Cached vue
         id: vue-cache
         uses: actions/cache@v2
         with:
           path: |
             public/vue
             public/mix-manifest.json
-          key: jobs.build.outputs.cache-key-vue
+          key: ${{ jobs.build.outputs.cache-key-vue }}
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -562,35 +562,35 @@ jobs:
         uses: actions/checkout@v2
 
       # retrieve cache
-      - name: Cache Docker images
+      - name: Get Cached Docker images
         id: docker-image-cache
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: jobs.build.outputs.cache-key-docker
+          key: ${{ jobs.build.outputs.cache-key-docker }}
 
-      - name: Cache Composer packages
+      - name: Get Cached Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
           path: vendor
-          key: jobs.build.outputs.cache-key-composer
+          key: ${{ jobs.build.outputs.cache-key-composer }}
 
-      - name: Cache npm packages
+      - name: Get Cached npm packages
         id: npm-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: jobs.build.outputs.cache-key-npm
+          key: ${{ jobs.build.outputs.cache-key-npm }}
 
-      - name: Cache vue
+      - name: Get Cached vue
         id: vue-cache
         uses: actions/cache@v2
         with:
           path: |
             public/vue
             public/mix-manifest.json
-          key: jobs.build.outputs.cache-key-vue
+          key: ${{ jobs.build.outputs.cache-key-vue }}
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -622,35 +622,35 @@ jobs:
         uses: actions/checkout@v2
 
       # retrieve cache
-      - name: Cache Docker images
+      - name: Get Cached Docker images
         id: docker-image-cache
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: jobs.build.outputs.cache-key-docker
+          key: ${{ jobs.build.outputs.cache-key-docker }}
 
-      - name: Cache Composer packages
+      - name: Get Cached Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
           path: vendor
-          key: jobs.build.outputs.cache-key-composer
+          key: ${{ jobs.build.outputs.cache-key-composer }}
 
-      - name: Cache npm packages
+      - name: Get Cached npm packages
         id: npm-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: jobs.build.outputs.cache-key-npm
+          key: ${{ jobs.build.outputs.cache-key-npm }}
 
-      - name: Cache vue
+      - name: Get Cached vue
         id: vue-cache
         uses: actions/cache@v2
         with:
           path: |
             public/vue
             public/mix-manifest.json
-          key: jobs.build.outputs.cache-key-vue
+          key: ${{ jobs.build.outputs.cache-key-vue }}
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -682,35 +682,35 @@ jobs:
         uses: actions/checkout@v2
 
       # retrieve cache
-      - name: Cache Docker images
+      - name: Get Cached Docker images
         id: docker-image-cache
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: jobs.build.outputs.cache-key-docker
+          key: ${{ jobs.build.outputs.cache-key-docker }}
 
-      - name: Cache Composer packages
+      - name: Get Cached Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
           path: vendor
-          key: jobs.build.outputs.cache-key-composer
+          key: ${{ jobs.build.outputs.cache-key-composer }}
 
-      - name: Cache npm packages
+      - name: Get Cached npm packages
         id: npm-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: jobs.build.outputs.cache-key-npm
+          key: ${{ jobs.build.outputs.cache-key-npm }}
 
-      - name: Cache vue
+      - name: Get Cached vue
         id: vue-cache
         uses: actions/cache@v2
         with:
           path: |
             public/vue
             public/mix-manifest.json
-          key: jobs.build.outputs.cache-key-vue
+          key: ${{ jobs.build.outputs.cache-key-vue }}
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -745,35 +745,35 @@ jobs:
         uses: actions/checkout@v2
 
       # retrieve cache
-      - name: Cache Docker images
+      - name: Get Cached Docker images
         id: docker-image-cache
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: jobs.build.outputs.cache-key-docker
+          key: ${{ jobs.build.outputs.cache-key-docker }}
 
-      - name: Cache Composer packages
+      - name: Get Cached Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
           path: vendor
-          key: jobs.build.outputs.cache-key-composer
+          key: ${{ jobs.build.outputs.cache-key-composer }}
 
-      - name: Cache npm packages
+      - name: Get Cached npm packages
         id: npm-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: jobs.build.outputs.cache-key-npm
+          key: ${{ jobs.build.outputs.cache-key-npm }}
 
-      - name: Cache vue
+      - name: Get Cached vue
         id: vue-cache
         uses: actions/cache@v2
         with:
           path: |
             public/vue
             public/mix-manifest.json
-          key: jobs.build.outputs.cache-key-vue
+          key: ${{ jobs.build.outputs.cache-key-vue }}
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
