@@ -12,12 +12,10 @@ services:
     ports:
       - 80:80
     volumes:
-      - ..:/var/www/money-tracker  # .. is interpreted as relative to the location of the Compose file
+      - ..:/var/www/money-tracker  # .. is interpreted as relative to the location of the docker-compose file
     environment:
       - PHP_IDE_CONFIG=serverName=money-tracker.docker
       - APP_ENV=docker
-    extra_hosts:
-      - dockerhost:$DOCKER_HOST_IP
     dns_search:
       - money-tracker.docker
     networks:

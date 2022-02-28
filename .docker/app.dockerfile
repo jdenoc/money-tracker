@@ -72,7 +72,7 @@ RUN if [ "$DISABLE_XDEBUG" = false ]; \
       && echo "xdebug.idekey=PHPSTORMDOCKER" >> $XDEBUG_INI \
       && echo "xdebug.remote_autostart=1" >> $XDEBUG_INI \
       && echo "xdebug.remote_enable=1" >> $XDEBUG_INI \
-      && echo "xdebug.remote_host=dockerhost" >> $XDEBUG_INI \
+      && echo "xdebug.remote_host=host.docker.internal" >> $XDEBUG_INI \
       && echo "xdebug.remote_port=9000" >> $XDEBUG_INI; \
   fi;
 
