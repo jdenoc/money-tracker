@@ -27,12 +27,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Generate cache keys [docker]
+        id: cache-key-docker
+        run: echo "::set-output name=value::cache-docker-${{ hashFiles('.docker/*') }}"
+
+      - name: Generate cache keys [composer]
+        id: cache-key-composer
+        run: echo "::set-output name=value::cache-composer-${{ hashFiles('composer.*') }}"
+
+      - name: Generate cache keys [npm]
+        id: cache-key-npm
+        run: echo "::set-output name=value::cache-npm-${{ hashFiles('package*.json') }}"
+
+      - name: Generate cache keys [vue]
+        id: cache-key-vue
+        run: echo "::set-output name=value::cache-vue-${{ hashFiles('package*.json') }}-${{ hashFiles('resources/*') }}"
+
       - name: Cache Docker images
         id: docker-image-cache
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: cache-docker-${{ hashFiles('.docker/*') }}
+          key: steps.cache-key-docker.outputs.value
 
       - name: Docker build
         uses: ./.github/actions/setup-docker
@@ -43,7 +59,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: vendor
-          key: cache-composer-${{ hashFiles('composer.*') }}
+          key: jobs.build.outputs.cache-key-composer
 
       - name: Composer setup
         uses: ./.github/actions/setup-composer
@@ -57,7 +73,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-npm-${{ hashFiles('package*.json') }}
+          key: steps.cache-key-npm.outputs.value
 
       - name: npm setup
         uses: ./.github/actions/setup-npm
@@ -70,11 +86,16 @@ jobs:
           path: |
             public/vue
             public/mix-manifest.json
-          key: cache-vue-${{ hashFiles('package*.json') }}-${{ hashFiles('resources/*') }}
+          key: steps.cache-key-vue.outputs.value
 
       - name: Build Vue
         uses: ./.github/actions/build-vue
         if: steps.vue-cache.outputs.cache-hit != 'true'
+    outputs:
+      cache-key-docker: ${{ steps.cache-key-docker.outputs.value }}
+      cache-key-composer: ${{ steps.cache-key-composer.outputs.value }}
+      cache-key-npm: ${{ steps.cache-key-npm.outputs.value }}
+      cache-key-vue: ${{ steps.cache-key-vue.outputs.value }}
 
   tests-unit:
     needs:
@@ -91,21 +112,21 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: cache-docker-${{ hashFiles('.docker/*') }}
+          key: jobs.build.outputs.cache-key-docker
 
       - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
           path: vendor
-          key: cache-composer-${{ hashFiles('composer.*') }}
+          key: jobs.build.outputs.cache-key-composer
 
       - name: Cache npm packages
         id: npm-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-npm-${{ hashFiles('package*.json') }}
+          key: jobs.build.outputs.cache-key-npm
 
       # NOTE: vue cache not needed for unit tests
 
@@ -168,21 +189,21 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: cache-docker-${{ hashFiles('.docker/*') }}
+          key: jobs.build.outputs.cache-key-docker
 
       - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
           path: vendor
-          key: cache-composer-${{ hashFiles('composer.*') }}
+          key: jobs.build.outputs.cache-key-composer
 
       - name: Cache npm packages
         id: npm-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-npm-${{ hashFiles('package*.json') }}
+          key: jobs.build.outputs.cache-key-npm
 
       - name: Cache vue
         id: vue-cache
@@ -191,7 +212,7 @@ jobs:
           path: |
             public/vue
             public/mix-manifest.json
-          key: cache-vue-${{ hashFiles('package*.json') }}-${{ hashFiles('resources/*') }}
+          key: jobs.build.outputs.cache-key-vue
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -228,21 +249,21 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: cache-docker-${{ hashFiles('.docker/*') }}
+          key: jobs.build.outputs.cache-key-docker
 
       - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
           path: vendor
-          key: cache-composer-${{ hashFiles('composer.*') }}
+          key: jobs.build.outputs.cache-key-composer
 
       - name: Cache npm packages
         id: npm-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-npm-${{ hashFiles('package*.json') }}
+          key: jobs.build.outputs.cache-key-npm
 
       - name: Cache vue
         id: vue-cache
@@ -251,7 +272,7 @@ jobs:
           path: |
             public/vue
             public/mix-manifest.json
-          key: cache-vue-${{ hashFiles('package*.json') }}-${{ hashFiles('resources/*') }}
+          key: jobs.build.outputs.cache-key-vue
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -288,21 +309,21 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: cache-docker-${{ hashFiles('.docker/*') }}
+          key: jobs.build.outputs.cache-key-docker
 
       - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
           path: vendor
-          key: cache-composer-${{ hashFiles('composer.*') }}
+          key: jobs.build.outputs.cache-key-composer
 
       - name: Cache npm packages
         id: npm-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-npm-${{ hashFiles('package*.json') }}
+          key: jobs.build.outputs.cache-key-npm
 
       - name: Cache vue
         id: vue-cache
@@ -311,7 +332,7 @@ jobs:
           path: |
             public/vue
             public/mix-manifest.json
-          key: cache-vue-${{ hashFiles('package*.json') }}-${{ hashFiles('resources/*') }}
+          key: jobs.build.outputs.cache-key-vue
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -357,21 +378,21 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: cache-docker-${{ hashFiles('.docker/*') }}
+          key: jobs.build.outputs.cache-key-docker
 
       - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
           path: vendor
-          key: cache-composer-${{ hashFiles('composer.*') }}
+          key: jobs.build.outputs.cache-key-composer
 
       - name: Cache npm packages
         id: npm-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-npm-${{ hashFiles('package*.json') }}
+          key: jobs.build.outputs.cache-key-npm
 
       - name: Cache vue
         id: vue-cache
@@ -380,7 +401,7 @@ jobs:
           path: |
             public/vue
             public/mix-manifest.json
-          key: cache-vue-${{ hashFiles('package*.json') }}-${{ hashFiles('resources/*') }}
+          key: jobs.build.outputs.cache-key-vue
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -420,21 +441,21 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: cache-docker-${{ hashFiles('.docker/*') }}
+          key: jobs.build.outputs.cache-key-docker
 
       - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
           path: vendor
-          key: cache-composer-${{ hashFiles('composer.*') }}
+          key: jobs.build.outputs.cache-key-composer
 
       - name: Cache npm packages
         id: npm-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-npm-${{ hashFiles('package*.json') }}
+          key: jobs.build.outputs.cache-key-npm
 
       - name: Cache vue
         id: vue-cache
@@ -443,7 +464,7 @@ jobs:
           path: |
             public/vue
             public/mix-manifest.json
-          key: cache-vue-${{ hashFiles('package*.json') }}-${{ hashFiles('resources/*') }}
+          key: jobs.build.outputs.cache-key-vue
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -483,21 +504,21 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: cache-docker-${{ hashFiles('.docker/*') }}
+          key: jobs.build.outputs.cache-key-docker
 
       - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
           path: vendor
-          key: cache-composer-${{ hashFiles('composer.*') }}
+          key: jobs.build.outputs.cache-key-composer
 
       - name: Cache npm packages
         id: npm-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-npm-${{ hashFiles('package*.json') }}
+          key: jobs.build.outputs.cache-key-npm
 
       - name: Cache vue
         id: vue-cache
@@ -506,7 +527,7 @@ jobs:
           path: |
             public/vue
             public/mix-manifest.json
-          key: cache-vue-${{ hashFiles('package*.json') }}-${{ hashFiles('resources/*') }}
+          key: jobs.build.outputs.cache-key-vue
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -546,21 +567,21 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: cache-docker-${{ hashFiles('.docker/*') }}
+          key: jobs.build.outputs.cache-key-docker
 
       - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
           path: vendor
-          key: cache-composer-${{ hashFiles('composer.*') }}
+          key: jobs.build.outputs.cache-key-composer
 
       - name: Cache npm packages
         id: npm-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-npm-${{ hashFiles('package*.json') }}
+          key: jobs.build.outputs.cache-key-npm
 
       - name: Cache vue
         id: vue-cache
@@ -569,7 +590,7 @@ jobs:
           path: |
             public/vue
             public/mix-manifest.json
-          key: cache-vue-${{ hashFiles('package*.json') }}-${{ hashFiles('resources/*') }}
+          key: jobs.build.outputs.cache-key-vue
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -606,21 +627,21 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: cache-docker-${{ hashFiles('.docker/*') }}
+          key: jobs.build.outputs.cache-key-docker
 
       - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
           path: vendor
-          key: cache-composer-${{ hashFiles('composer.*') }}
+          key: jobs.build.outputs.cache-key-composer
 
       - name: Cache npm packages
         id: npm-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-npm-${{ hashFiles('package*.json') }}
+          key: jobs.build.outputs.cache-key-npm
 
       - name: Cache vue
         id: vue-cache
@@ -629,7 +650,7 @@ jobs:
           path: |
             public/vue
             public/mix-manifest.json
-          key: cache-vue-${{ hashFiles('package*.json') }}-${{ hashFiles('resources/*') }}
+          key: jobs.build.outputs.cache-key-vue
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -666,21 +687,21 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: cache-docker-${{ hashFiles('.docker/*') }}
+          key: jobs.build.outputs.cache-key-docker
 
       - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
           path: vendor
-          key: cache-composer-${{ hashFiles('composer.*') }}
+          key: jobs.build.outputs.cache-key-composer
 
       - name: Cache npm packages
         id: npm-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-npm-${{ hashFiles('package*.json') }}
+          key: jobs.build.outputs.cache-key-npm
 
       - name: Cache vue
         id: vue-cache
@@ -689,7 +710,7 @@ jobs:
           path: |
             public/vue
             public/mix-manifest.json
-          key: cache-vue-${{ hashFiles('package*.json') }}-${{ hashFiles('resources/*') }}
+          key: jobs.build.outputs.cache-key-vue
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -729,21 +750,21 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .docker/images
-          key: cache-docker-${{ hashFiles('.docker/*') }}
+          key: jobs.build.outputs.cache-key-docker
 
       - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
           path: vendor
-          key: cache-composer-${{ hashFiles('composer.*') }}
+          key: jobs.build.outputs.cache-key-composer
 
       - name: Cache npm packages
         id: npm-cache
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-npm-${{ hashFiles('package*.json') }}
+          key: jobs.build.outputs.cache-key-npm
 
       - name: Cache vue
         id: vue-cache
@@ -752,7 +773,7 @@ jobs:
           path: |
             public/vue
             public/mix-manifest.json
-          key: cache-vue-${{ hashFiles('package*.json') }}-${{ hashFiles('resources/*') }}
+          key: jobs.build.outputs.cache-key-vue
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -777,7 +798,6 @@ jobs:
   notification:
     runs-on: ubuntu-latest
     needs:  # make sure the notification is sent AFTER the jobs you want included have completed
-      - build
       - tests-unit
       - tests-e2e-demo
       - tests-e2e-notifications
