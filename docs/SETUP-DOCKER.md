@@ -5,14 +5,6 @@
 Add `127.0.0.1  money-tracker.docker` to the host machines host file.
 Host file locations can be found [here](https://en.wikipedia.org/wiki/Hosts_(file)#Location_in_the_file_system).
 
-Obtain Host machine IP address
-- Linux/Mac: `ifconfig`
-- windows: `ipconfig /all`
-
-Set `DOCKER_HOST_IP` environment variable
-- Linux/Mac: `export DOCKER_HOST_IP="192.168.x.y"`
-- Windows: `setx DOCKER_HOST_IP="192.168.x.y"`
-
 ### Clone repo
 ```bash
 git clone git@github.com:jdenoc/money-tracker.git --branch=master
