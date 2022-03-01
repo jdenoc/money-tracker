@@ -21,6 +21,7 @@
 </template>
 
 <script>
+    import _ from 'lodash';
     import {Accounts} from '../accounts';
     import InstitutionsPanelInstitutionAccount from "./institutions-panel-institution-account";
 

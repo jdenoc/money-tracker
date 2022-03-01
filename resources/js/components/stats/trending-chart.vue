@@ -41,25 +41,30 @@
 </template>
 
 <script>
+    // utilities
+    import _ from 'lodash';
+    // components
     import AccountAccountTypeTogglingSelector from "../account-account-type-toggling-selector";
     import BulmaCalendar from "../bulma-calendar";
     import IncludeTransfersCheckbox from "../include-transfers-checkbox";
     import LineChart from "./chart-defaults/line-chart";
+    // mixins
+    import {bulmaColorsMixin} from "../../mixins/bulma-colors-mixin";
     import {entriesObjectMixin} from "../../mixins/entries-object-mixin";
     import {statsChartMixin} from "../../mixins/stats-chart-mixin";
 
     export default {
         name: "trending-chart",
-        mixins: [entriesObjectMixin, statsChartMixin],
+        mixins: [entriesObjectMixin, statsChartMixin, bulmaColorsMixin],
         components: {IncludeTransfersCheckbox, BulmaCalendar, LineChart, AccountAccountTypeTogglingSelector},
         data: function(){
           return {
             chartConfig: {
               colors: {
-                blue: 'rgba(0, 178, 255, 1)',
-                green: 'rgba(4, 212, 4, 1)',
-                purple: 'rgba(128,0,128,1)',
-                red: 'rgba(255, 64, 53, 1)',
+                blue: '',
+                green: '',
+                purple: '',
+                red: '',
               },
               datasetDefault: {
                 fill: false
@@ -263,6 +268,11 @@
             },
         },
         mounted: function(){
+          this.chartConfig.colors.blue = this.colorBlue;
+          this.chartConfig.colors.green = this.colorGreen;
+          this.chartConfig.colors.purple = this.colorPurple;
+          this.chartConfig.colors.red = this.colorRed;
+
           this.getBulmaCalendar.setBulmaCalendarDateRange(this.currentMonthStartDate, this.currentMonthEndDate);
         }
     }

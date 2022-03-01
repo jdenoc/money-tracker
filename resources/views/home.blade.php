@@ -6,7 +6,7 @@
     @endcomponent
 </head>
 <body>
-    <div id="app">
+    <div id="app-home">
         <navbar page-name="home"></navbar>
         <div class="columns is-gapless">
             <div id="institutions-panel-column" class="column is-one-quarter">

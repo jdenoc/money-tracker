@@ -35,20 +35,3 @@ export class Tags extends ObjectBaseClass {
     }
 
 }
-
-// var tags = {
-//     display: function () {
-//         entryModal.initTagsInput();
-//         filterModal.initTagsInput();
-//     },
-//     getIdByName: function(tagName){
-//         var tagObjects = $.grep(tags.value, function(element){
-//             return element.name === tagName;
-//         });
-//         if(tagObjects.length > 0){
-//             return tagObjects[0].id;
-//         } else {
-//             return -1;
-//         }
-//     }
-// };

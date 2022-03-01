@@ -13,6 +13,7 @@ Vue.use(VTooltip);
 import eventHub from "./plugins/eventHub";
 Vue.use(eventHub);
 
+// components
 import EntryModal from './components/entry-modal';
 import EntriesTable from './components/entries-table';
 import EntriesTableEntryRow from './components/entries-table-entry-row';
@@ -22,14 +23,14 @@ import LoadingModal from './components/loading-modal';
 import Navbar from './components/navbar';
 import Notification from './components/notification';
 import TransferModal from './components/transfer-modal';
-
+// objects
 import { AccountTypes } from './account-types';
 import { Institutions } from './institutions';
 import { Tags } from './tags';
 import { Version } from './version';
 
 new Vue({
-    el: "#app",
+    el: "#app-home",
     components: {
         EntryModal,
         EntriesTable,
@@ -77,6 +78,9 @@ new Vue({
 
         this.$eventHub.broadcast(this.$eventHub.EVENT_ACCOUNT_UPDATE);
 
+        let version = new Version();
+        version.fetch();
+
         let accountTypes = new AccountTypes();
         accountTypes.fetch().then(this.displayNotification.bind(this));
 
@@ -87,8 +91,5 @@ new Vue({
 
         let tags = new Tags();
         tags.fetch().then(this.displayNotification.bind(this));
-
-        let version = new Version();
-        version.fetch();
     }
 });

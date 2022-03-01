@@ -81,11 +81,13 @@
 </template>
 
 <script>
+    // components
     import bulmaCalendar from '../bulma-calendar';
     import AccountAccountTypeTogglingSelector from "../account-account-type-toggling-selector";
     import IncludeTransfersCheckbox from "../include-transfers-checkbox";
+    // utilities
     import {Currency} from "../../currency";
-
+    // mixins
     import {accountsObjectMixin} from "../../mixins/accounts-object-mixin";
     import {accountTypesObjectMixin} from "../../mixins/account-types-object-mixin";
     import {entriesObjectMixin} from "../../mixins/entries-object-mixin";

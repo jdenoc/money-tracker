@@ -14,6 +14,7 @@
                     v-bind:sync="true"
                 />
             </div>
+            <!--Account/Account-type display disabled checkbox -->
             <div class="show-disabled-accounts-or-account-types" v-show="areDisabledAccountsOrAccountTypesPresent">
                 <input class="is-checkradio is-circle is-small" type="checkbox"
                    v-bind:id="getIdForShowDisabledCheckbox"
@@ -24,6 +25,7 @@
         </div>
         <div class="field-body"><div class="field">
             <div class="control">
+                <!--Account/Account-type selector -->
                 <div class="select" v-bind:class="{'is-loading': !areAccountsAndAccountTypesSet}">
                     <select name="select-account-or-account-types-id" class="has-text-grey-dark select-account-or-account-types-id"
                         v-model="propSelect"
@@ -186,5 +188,23 @@
         +label::after{
             top: 0.3125rem;
         }
+    }
+
+
+    // accounts/account-types toggle button
+    @import '~bulma/sass/helpers/color';
+    $toggle-button-bg-color: $grey-light;
+    $toggle-button-text-color: $white;
+    .account-or-account-type-toggle-button {
+        --toggle-width: 8.5rem;
+        --toggle-font-size: 0.8;
+        // accounts
+        --toggle-bg-on: #{$toggle-button-bg-color};
+        --toggle-border-on: #{$toggle-button-bg-color};
+        --toggle-text-on: #{$toggle-button-text-color};
+        // account-types
+        --toggle-bg-off: #{$toggle-button-bg-color};
+        --toggle-border-off: #{$toggle-button-bg-color};
+        --toggle-text-off: #{$toggle-button-text-color};
     }
 </style>

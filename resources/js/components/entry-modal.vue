@@ -140,7 +140,7 @@
                 <div id="existing-entry-attachments" class="field">
                     <entry-modal-attachment
                         v-for="entryAttachment in orderedAttachments"
-                        v-if="!entryAttachment.tmp_filename"
+                        v-show="!entryAttachment.tmp_filename"
                         v-bind:key="entryAttachment.uuid"
                         v-bind:uuid="entryAttachment.uuid"
                         v-bind:name="entryAttachment.name"
@@ -188,9 +188,11 @@
     import {Currency} from '../currency';
     import {Entry} from "../entry";
     import {SnotifyStyle} from 'vue-snotify';
+    // mixins
     import {accountsObjectMixin} from "../mixins/accounts-object-mixin";
     import {accountTypesObjectMixin} from "../mixins/account-types-object-mixin";
     import {tagsObjectMixin} from "../mixins/tags-object-mixin";
+    // components
     import EntryModalAttachment from "./entry-modal-attachment";
     import Store from '../store';
     import { ToggleButton } from 'vue-js-toggle-button';
@@ -224,24 +226,25 @@
                 isVisible: false,
 
                 entryData: {}, // this gets filled with values from defaultData
-
-                defaultData: {
-                    id: null,
-                    entry_date: "",
-                    account_type_id: "",
-                    entry_value: "",
-                    memo: "",
-                    expense: true,
-                    confirm: false,
-                    transfer_entry_id: null,
-                    tags: [],
-                    attachments: []
-                },
             }
         },
         computed: {
             currentPage: function(){
                 return Store.getters.currentPage;
+            },
+            defaultData: function(){
+                return {
+                  id: null,
+                  entry_date: "",
+                  account_type_id: "",
+                  entry_value: "",
+                  memo: "",
+                  expense: true,
+                  confirm: false,
+                  transfer_entry_id: null,
+                  tags: [],
+                  attachments: []
+                }
             },
             isConfirmed: function(){
                 return this.entryData.confirm && this.entryData.id;
@@ -569,5 +572,24 @@
     }
     .field:not(:last-child) {
         margin-bottom: 0.5rem;
+    }
+
+    // expense/income toggle button
+    @import '~bulma/sass/helpers/color';
+    .expense-income-toggle{
+      // expense (enabled)
+      --toggle-bg-on: #{$yellow};
+      --toggle-border-on: #{$yellow};
+      // expense (disabled)
+      --toggle-bg-on-disabled: #{$warning};
+      --toggle-border-on-disabled: #{$warning};
+      --toggle-text-on-disabled: #{$white};
+      // income (enabled)
+      --toggle-bg-off: #{$primary};
+      --toggle-border-off: #{$primary};
+      // income (disabled)
+      --toggle-bg-off-disabled: #{$primary};
+      --toggle-border-off-disabled: #{$primary};
+      --toggle-text-off-disabled: #{$white};
     }
 </style>

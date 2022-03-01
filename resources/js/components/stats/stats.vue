@@ -8,10 +8,12 @@
 </template>
 
 <script>
+    // components
     import DistributionChart from "./distribution-chart";
     import SummaryChart from "./summary-chart";
     import TrendingChart from "./trending-chart";
     import TagsChart from "./tags-chart";
+    // mixins
     import {statsNavMixin} from "../../mixins/stats-nav-mixin";
 
     export default {

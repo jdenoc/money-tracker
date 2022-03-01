@@ -53,12 +53,15 @@
 </template>
 
 <script>
+    // utilities
+    import _ from 'lodash';
+    // components
     import AccountAccountTypeTogglingSelector from "../account-account-type-toggling-selector";
     import BarChart from "./chart-defaults/bar-chart";
     import BulmaCalendar from '../bulma-calendar';
     import IncludeTransfersCheckbox from "../include-transfers-checkbox";
     import tagsinput from "../tagsinput";
-
+    // mixins
     import {entriesObjectMixin} from "../../mixins/entries-object-mixin";
     import {statsChartMixin} from "../../mixins/stats-chart-mixin";
     import {tagsObjectMixin} from "../../mixins/tags-object-mixin";

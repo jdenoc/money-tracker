@@ -28,5 +28,6 @@
   }
   .section:last-child{
     padding-top: 0;
+    overflow: auto; // so charts don't cover other elements
   }
 }
