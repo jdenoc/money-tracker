@@ -145,23 +145,24 @@ class NotificationsTest extends DuskTestCase {
      * test 6/25
      */
     public function testNotificationDeleteAttachment404(){
-        // TODO: write me...
-        $this->markTestIncomplete();
-
         $this->browse(function (Browser $browser) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
 
             $browser
                 ->openExistingEntryModal($this->getEntryTableRowSelector().'.has-attachments')
-                ->with($this->_selector_modal_body, function(Browser $entry_modal){
+                ->within($this->_selector_modal_body, function(Browser $entry_modal){
                     // FORCE 404 from `DELETE /api/attachment/{uuid}`
                     DB::table('attachments')->truncate();
-                    $entry_modal->with($this->_selector_modal_entry_existing_attachments, function(Browser $existing_attachment){
+                    $entry_modal->within($this->_selector_modal_entry_existing_attachments, function(Browser $existing_attachment){
+                        // grab the filename of the attachment
+                        $filename = trim($existing_attachment->text($this->_selector_modal_entry_existing_attachments_attachment_name));
+
                         $existing_attachment
                             ->assertVisible($this->_selector_modal_entry_existing_attachments_attachment_btn_delete)
                             ->click($this->_selector_modal_entry_existing_attachments_attachment_btn_delete)
-                            ->assertDialogOpened("Are you sure you want to delete attachment: ")
+                            ->waitForDialog()
+                            ->assertDialogOpened(sprintf("Are you sure you want to delete attachment: %s", $filename))
                             ->acceptDialog();
                     });
                 });
@@ -176,19 +177,40 @@ class NotificationsTest extends DuskTestCase {
      * test 7/25
      */
     public function testNotificationDeleteAttachment500(){
-        // TODO: write me...
-        $this->markTestIncomplete();
-        $this->browse(function (Browser $browser) {
+        $table = 'attachments';
+        $recreate_table_query = $this->getTableRecreationQuery($table);
+
+        $this->browse(function (Browser $browser) use ($table){
+            $entry_id = 0;
+
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $browser
                 ->openExistingEntryModal($this->getEntryTableRowSelector().'.has-attachments')
-                ->with($this->_selector_modal_body, static function(Browser $modal){
-                    // TODO: FORCE 500 from `DELETE /api/attachment/{uuid}`
-                    // TODO: click the "delete" attachment button
+                ->within($this->_selector_modal_head, function(Browser $modal_head) use (&$entry_id){
+                    $entry_id = trim($modal_head->inputValue($this->_selector_modal_entry_field_entry_id));
+                })
+                ->within($this->_selector_modal_body, function(Browser $modal_body) use ($table){
+                    // FORCE 500 from `DELETE /api/attachment/{uuid}`
+                    $this->dropTable($table);
+
+                    $modal_body->within($this->_selector_modal_entry_existing_attachments, function(Browser $existing_attachment){
+                        // grab the filename of the attachment
+                        $filename = trim($existing_attachment->text($this->_selector_modal_entry_existing_attachments_attachment_name));
+
+                        $existing_attachment
+                            ->assertVisible($this->_selector_modal_entry_existing_attachments_attachment_btn_delete)
+                            ->click($this->_selector_modal_entry_existing_attachments_attachment_btn_delete)
+                            ->waitForDialog()
+                            ->assertDialogOpened(sprintf("Are you sure you want to delete attachment: %s", $filename))
+                            ->acceptDialog();
+                    });
                 });
-            $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_ERROR, "An error occurred while attempting to delete entry attachment [%s]");
+
+            $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_ERROR, sprintf("An error occurred while attempting to delete entry attachment [%s]", $entry_id));
         });
+
+        DB::statement($recreate_table_query);
     }
 
     /**
@@ -243,10 +265,14 @@ class NotificationsTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openNewEntryModal($browser);
             // TODO: fill in minimum required fields
+//                    'account_type_id',
+//                    'entry_date',
+//                    'entry_value',
+//                    'expense',
+//                    'memo'
             // TODO: click the save button in the modal footer
             // TODO: FORCE 400 from `POST /api/entry`
             // TODO: FORCE this response: {error: "Forced failure"}
-            $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_WARNING, "Forced failure");
         });
     }
 
@@ -287,7 +313,9 @@ class NotificationsTest extends DuskTestCase {
             });
 
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_ERROR, "An error occurred while attempting to create an entry");
+            $this->dismissNotification($browser);
             $this->waitForLoadingToStop($browser);
+            $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_ERROR, "An error occurred while attempting to retrieve entries");
         });
 
         DB::statement($recreate_table_query);
@@ -337,37 +365,10 @@ class NotificationsTest extends DuskTestCase {
         DB::statement($recreate_table_query);
     }
 
-    /**
-     * @throws Throwable
-     *
-     * @group notifications-1
-     * test 14/25
-     */
-    public function testNotificationSaveExistingEntry200(){
-        // TODO: finish writing me...
-        $this->markTestIncomplete();
-        $entries = collect($this->removeCountFromApiResponse($this->getApiEntries()));
-        $entry_id = $entries->pluck('id')->random();
-
-        $this->browse(function (Browser $browser) use ($entry_id) {
-            $browser->visit(new HomePage());
-            $this->waitForLoadingToStop($browser);
-            $browser
-                ->openExistingEntryModal(sprintf(self::$PLACEHOLDER_SELECTOR_EXISTING_ENTRY_ROW, $entry_id))
-                ->with($this->_selector_modal_body, static function(Browser $modal){
-                    // TODO: change the value of one of the _required_ fields
-                })
-                ->with($this->_selector_modal_foot, function($modal_foot){
-                    $modal_foot->click($this->_selector_modal_entry_btn_save);
-                });
-            $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_SUCCESS, "Entry updated");
-        });
-    }
-
     public function providerNotificationSaveExistingEntry4XX(){
         return [
-            400=>[400, 'bad input | force failure'],       // test 15/25
-            404=>[404, 'entry not found | force failure']  // test 16/25
+            400=>[400, 'bad input | force failure'],       // test 14/25
+            404=>[404, 'entry not found | force failure']  // test 15/25
         ];
     }
 
@@ -406,35 +407,44 @@ class NotificationsTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group notifications-1
-     * test 17/25
+     * test 16/25
      */
     public function testNotificationSaveExistingEntry500(){
-        // TODO: write me...
-        $this->markTestIncomplete();
+        $table = 'entries';
+        $recreate_table_query = $this->getTableRecreationQuery($table);
+
         $entries = collect($this->removeCountFromApiResponse($this->getApiEntries()));
         $entry_id = $entries->pluck('id')->random();
 
-        $this->browse(function (Browser $browser) use ($entry_id){
+        $this->browse(function (Browser $browser) use ($entry_id, $table){
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $browser
                 ->openExistingEntryModal(sprintf(self::$PLACEHOLDER_SELECTOR_EXISTING_ENTRY_ROW, $entry_id))
-                ->with($this->_selector_modal_body, static function(Browser $modal){
-                    // TODO: change the value of one of the _required_ fields
+                ->with($this->_selector_modal_body, function(Browser $modal){
+                    // We have tests for other fields so lets just update the easiest to update
+                    $old_value = floatval($modal->inputValue($this->_selector_modal_entry_field_value));
+                    $modal->type($this->_selector_modal_entry_field_value, $old_value+10);
+                    $old_memo = $modal->inputValue($this->_selector_modal_entry_field_memo);
+                    $modal->type($this->_selector_modal_entry_field_memo, $old_memo.' [UPDATE]');
                 })
-                ->with($this->_selector_modal_foot, function($modal_foot){
-                    // TODO: FORCE 500 from `GET /api/entry{entry_id}`
+                ->within($this->_selector_modal_foot, function(Browser $modal_foot) use ($table){
+                    // FORCE 500 from `GET /api/entry{entry_id}`
+                    $this->dropTable($table);
+
                     $modal_foot->click($this->_selector_modal_entry_btn_save);
                 });
-            $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_ERROR, "An error occurred while attempting to update entry [%s]");
+            $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_ERROR, sprintf("An error occurred while attempting to update entry [%s]", $entry_id));
         });
+
+        DB::statement($recreate_table_query);
     }
 
     /**
      * @throws Throwable
      *
      * @group notifications-1
-     * test 18/25
+     * test 17/25
      */
     public function testNotificationDeleteEntry200(){
         $this->browse(function (Browser $browser) {
@@ -444,8 +454,8 @@ class NotificationsTest extends DuskTestCase {
             $browser
                 ->openExistingEntryModal($entry_table_row_selector)
                 ->click($this->_selector_modal_foot_delete_btn);
-            $this->waitForLoadingToStop($browser);
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_SUCCESS, "Entry was deleted");
+            $this->waitForLoadingToStop($browser);
         });
     }
 
@@ -453,22 +463,27 @@ class NotificationsTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group notifications-1
-     * test 19/25
+     * test 18/25
      */
     public function testNotificationDeleteEntry404(){
-        // TODO: write me...
-        $this->markTestIncomplete();
         $this->browse(function (Browser $browser) {
+            $entry_table_row_selector = $this->getEntryTableRowSelector();
+            $entry_id = '';
+
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
-            // TODO: select and existing entry from the entries-table
-            // TODO: open said entry in an entry-modal
-            // TODO: click the "delete" entry button in the modal footer
-            // TODO: FORCE 404 from `GET /api/entry/{entry_id}`
-            // TODO: wait for notification to pop up
-            // TODO: notification is type:success
-            // TODO: notification text:"Entry [%s] does not exist and cannot be deleted"
-            // TODO: wait 5 seconds for notification to disappear
+            $browser
+                ->openExistingEntryModal($entry_table_row_selector)
+                ->within($this->_selector_modal, function(Browser $modal) use (&$entry_id){
+                    $entry_id = $modal->inputValue($this->_selector_modal_entry_field_entry_id);
+
+                    // FORCE 404 from `GET /api/entry/{entry_id}`
+                    DB::table('entries')->truncate();
+
+                    $modal->click($this->_selector_modal_foot_delete_btn);
+                });
+            $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_WARNING, sprintf("Entry [%s] does not exist and cannot be deleted", $entry_id));
+            $this->waitForLoadingToStop($browser);
         });
     }
 
@@ -501,7 +516,7 @@ class NotificationsTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group notifications-1
-     * test 21/25
+     * test 20/25
      */
     public function testNotificationFetchInstitutions404(){
         // FORCE 404 from `GET /api/institutions`
@@ -518,7 +533,7 @@ class NotificationsTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group notifications-1
-     * test 22/25
+     * test 21/25
      */
     public function testNotificationFetchInstitutions500(){
         $table = 'institutions';
@@ -539,7 +554,7 @@ class NotificationsTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group notifications-1
-     * test 23/25
+     * test 22/25
      */
     public function testNotificationFetchTags404(){
         // FORCE 404 from `GET /api/tags`
@@ -556,7 +571,7 @@ class NotificationsTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group notifications-1
-     * test 24/25
+     * test 23/25
      */
     public function testNotificationFetchTags500(){
         $table = 'tags';
