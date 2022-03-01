@@ -436,7 +436,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                         $existing_attachment
                             ->assertVisible($this->_selector_modal_entry_existing_attachments_attachment_btn_delete)
                             ->click($this->_selector_modal_entry_existing_attachments_attachment_btn_delete)
-                            ->assertDialogOpened("Are you sure you want to delete attachment: ".$attachment_name)
+                            ->assertDialogOpened(sprintf("Are you sure you want to delete attachment: %s", $attachment_name))
                             ->acceptDialog();
                     });
                 });
@@ -487,6 +487,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                 ->with($this->_selector_modal_foot, function(Browser $modal_foot){
                     $modal_foot->click($this->_selector_modal_entry_btn_save);
                 });
+            $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_SUCCESS, "Entry updated");
             $this->waitForLoadingToStop($browser);
             $browser
                 ->scrollToElement($entry_selector)
@@ -527,6 +528,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                 ->within($this->_selector_modal_foot, function(Browser $modal_foot){
                     $modal_foot->click($this->_selector_modal_entry_btn_save);
                 });
+            $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_SUCCESS, "Entry updated");
             $this->waitForLoadingToStop($browser);
             $browser
                 ->openExistingEntryModal($entry_selector)
@@ -571,6 +573,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                 ->within($this->_selector_modal_foot, function(Browser $modal_foot){
                     $modal_foot->click($this->_selector_modal_entry_btn_save);
                 });
+            $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_SUCCESS, "Entry updated");
             $this->waitForLoadingToStop($browser);
             $browser
                 ->openExistingEntryModal($entry_selector)
@@ -637,6 +640,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                 ->within($this->_selector_modal_foot, function(Browser $modal_foot){
                     $modal_foot->click($this->_selector_modal_entry_btn_save);
                 });
+            $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_SUCCESS, "Entry updated");
             $this->waitForLoadingToStop($browser);
             $browser
                 ->openExistingEntryModal($entry_selector.'.'.($selector_bool?'has-background-warning':'is-confirmed'))
@@ -687,6 +691,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                 ->within($this->_selector_modal_foot, function(Browser $modal_foot){
                     $modal_foot->click($this->_selector_modal_entry_btn_save);
                 });
+            $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_SUCCESS, "Entry updated");
             $this->waitForLoadingToStop($browser);
             $browser
                 ->openExistingEntryModal($entry_selector.'.'.($selector_bool?$this->_class_is_income:$this->_class_is_expense))
@@ -864,6 +869,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                     }
                     $entry_modal->click($this->_selector_modal_entry_btn_save);
                 });
+            $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_SUCCESS, "Entry updated");
             $this->waitForLoadingToStop($browser);
 
             $browser
@@ -908,6 +914,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                     $this->assertTagInInput($entry_modal, $new_tag);
                     $entry_modal->click($this->_selector_modal_entry_btn_save);
                 });
+            $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_SUCCESS, "Entry updated");
             $this->waitForLoadingToStop($browser);
 
             $browser
