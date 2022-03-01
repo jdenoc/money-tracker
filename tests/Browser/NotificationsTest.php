@@ -74,8 +74,8 @@ class NotificationsTest extends DuskTestCase {
 
         $this->browse(function (Browser $browser) {
             $browser->visit(new HomePage());
-            $this->waitForLoadingToStop($browser);
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_INFO, sprintf($this->_message_not_found, "accounts"));
+            $this->waitForLoadingToStop($browser);
         });
     }
 
@@ -93,8 +93,8 @@ class NotificationsTest extends DuskTestCase {
 
         $this->browse(function (Browser $browser){
             $browser->visit(new HomePage());
-            $this->waitForLoadingToStop($browser);
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_ERROR, sprintf($this->_message_error_occurred, "accounts"));
+            $this->waitForLoadingToStop($browser);
         });
 
         DB::statement($recreate_table_query);
@@ -112,8 +112,8 @@ class NotificationsTest extends DuskTestCase {
 
         $this->browse(function (Browser $browser) {
             $browser->visit(new HomePage());
-            $this->waitForLoadingToStop($browser);
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_INFO, sprintf($this->_message_not_found, "account types"));
+            $this->waitForLoadingToStop($browser);
         });
     }
 
@@ -131,8 +131,8 @@ class NotificationsTest extends DuskTestCase {
 
         $this->browse(function (Browser $browser){
             $browser->visit(new HomePage());
-            $this->waitForLoadingToStop($browser);
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_ERROR, sprintf($this->_message_error_occurred, "account types"));
+            $this->waitForLoadingToStop($browser);
         });
 
         DB::statement($recreate_table_query);
@@ -315,7 +315,7 @@ class NotificationsTest extends DuskTestCase {
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_ERROR, "An error occurred while attempting to create an entry");
             $this->dismissNotification($browser);
             $this->waitForLoadingToStop($browser);
-            $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_ERROR, "An error occurred while attempting to retrieve entries");
+            $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_ERROR, sprintf($this->_message_error_occurred, "entries"));
         });
 
         DB::statement($recreate_table_query);
@@ -365,7 +365,7 @@ class NotificationsTest extends DuskTestCase {
         DB::statement($recreate_table_query);
     }
 
-    public function providerNotificationSaveExistingEntry4XX(){
+    public function providerNotificationSaveExistingEntry4XX():array{
         return [
             400=>[400, 'bad input | force failure'],       // test 14/25
             404=>[404, 'entry not found | force failure']  // test 15/25
@@ -414,7 +414,7 @@ class NotificationsTest extends DuskTestCase {
         $recreate_table_query = $this->getTableRecreationQuery($table);
 
         $entries = collect($this->removeCountFromApiResponse($this->getApiEntries()));
-        $entry_id = $entries->pluck('id')->random();
+        $entry_id = $entries->where('confirm', 0)->pluck('id')->random();
 
         $this->browse(function (Browser $browser) use ($entry_id, $table){
             $browser->visit(new HomePage());
@@ -424,9 +424,13 @@ class NotificationsTest extends DuskTestCase {
                 ->with($this->_selector_modal_body, function(Browser $modal){
                     // We have tests for other fields so lets just update the easiest to update
                     $old_value = floatval($modal->inputValue($this->_selector_modal_entry_field_value));
-                    $modal->type($this->_selector_modal_entry_field_value, $old_value+10);
+                    $modal
+                        ->clear($this->_selector_modal_entry_field_value)
+                        ->type($this->_selector_modal_entry_field_value, $old_value+10);
                     $old_memo = $modal->inputValue($this->_selector_modal_entry_field_memo);
-                    $modal->type($this->_selector_modal_entry_field_memo, $old_memo.' [UPDATE]');
+                    $modal
+                        ->clear($this->_selector_modal_entry_field_memo)
+                        ->type($this->_selector_modal_entry_field_memo, $old_memo.' [UPDATE]');
                 })
                 ->within($this->_selector_modal_foot, function(Browser $modal_foot) use ($table){
                     // FORCE 500 from `GET /api/entry{entry_id}`
@@ -499,15 +503,19 @@ class NotificationsTest extends DuskTestCase {
 
         $this->browse(function (Browser $browser) use ($table){
             $entry_table_row_selector = $this->getEntryTableRowSelector();
+            $entry_id = '';
+
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $browser
-                ->openExistingEntryModal($entry_table_row_selector);
+                ->openExistingEntryModal($entry_table_row_selector)
+                ->within($this->_selector_modal_entry, function(Browser $modal) use (&$entry_id, $table){
+                    $entry_id = $modal->inputValue($this->_selector_modal_entry_field_entry_id);
+                    $this->dropTable($table);
+                    $modal->click($this->_selector_modal_foot_delete_btn);
+            });
 
-            $this->dropTable($table);
-
-            $browser->click($this->_selector_modal_foot_delete_btn);
-            $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_ERROR, "An error occurred while attempting to delete entry [");
+            $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_ERROR, sprintf("An error occurred while attempting to delete entry [%s]", $entry_id));
         });
         DB::statement($recreate_table_query);
     }
@@ -524,8 +532,8 @@ class NotificationsTest extends DuskTestCase {
 
         $this->browse(function (Browser $browser) {
             $browser->visit(new HomePage());
-            $this->waitForLoadingToStop($browser);
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_INFO, sprintf($this->_message_not_found, "institutions"));
+            $this->waitForLoadingToStop($browser);
         });
     }
 
@@ -544,8 +552,8 @@ class NotificationsTest extends DuskTestCase {
             $this->dropTable($table);
 
             $browser->visit(new HomePage());
-            $this->waitForLoadingToStop($browser);
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_ERROR, sprintf($this->_message_error_occurred, "institutions"));
+            $this->waitForLoadingToStop($browser);
         });
         DB::statement($recreate_table_query);
     }
@@ -582,8 +590,8 @@ class NotificationsTest extends DuskTestCase {
             $this->dropTable($table);
 
             $browser->visit(new HomePage());
-            $this->waitForLoadingToStop($browser);
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_ERROR, sprintf($this->_message_error_occurred, "tags"));
+            $this->waitForLoadingToStop($browser);
         });
         DB::statement($recreate_table_query);
     }
@@ -604,7 +612,7 @@ class NotificationsTest extends DuskTestCase {
         DB::statement(sprintf("DROP TABLE %s", $table_name));
     }
 
-    private function getEntryTableRowSelector(){
+    private function getEntryTableRowSelector():string{
         $unconfirmed_entry_selectors = [$this->_selector_unconfirmed_expense, $this->_selector_unconfirmed_income];
         return $unconfirmed_entry_selectors[array_rand($unconfirmed_entry_selectors, 1)];
     }
