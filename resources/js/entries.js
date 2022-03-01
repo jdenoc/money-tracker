@@ -71,13 +71,3 @@ export class Entries extends ObjectBaseClass {
     }
 
 }
-
-// var entries = {
-//     ajaxCompleteProcessing: function(){
-//         $('.is-filtered').toggle(filterModal.active);
-//         entries.display();
-//         paginate.display.previous(paginate.current !== 0);
-//         paginate.display.next(paginate.current < Math.ceil(entries.total/50)-1);
-//         loading.end();
-//     },
-// };

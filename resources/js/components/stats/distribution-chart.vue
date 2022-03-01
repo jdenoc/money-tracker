@@ -52,12 +52,13 @@
 </template>
 
 <script>
+    // components
     import AccountAccountTypeTogglingSelector from "../account-account-type-toggling-selector";
     import bulmaCalendar from "../bulma-calendar";
     import IncludeTransfersCheckbox from "../include-transfers-checkbox";
     import PieChart from './chart-defaults/pie-chart';
     import {ToggleButton} from 'vue-js-toggle-button';
-
+    // mixins
     import {bulmaColorsMixin} from "../../mixins/bulma-colors-mixin";
     import {entriesObjectMixin} from "../../mixins/entries-object-mixin";
     import {statsChartMixin} from "../../mixins/stats-chart-mixin";

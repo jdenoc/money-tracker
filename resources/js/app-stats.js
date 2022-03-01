@@ -22,7 +22,7 @@ import {Tags} from "./tags";
 import {Version} from './version';
 
 new Vue({
-    el: "#app",
+    el: "#app-stats",
     components: {
         LoadingModal,
         Navbar,

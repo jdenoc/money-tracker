@@ -205,15 +205,18 @@
 </template>
 
 <script>
+    // utilities
     import _ from 'lodash';
     import {Currency} from "../currency";
+    import Store from '../store';
+    // mixins
     import {accountsObjectMixin} from "../mixins/accounts-object-mixin";
     import {accountTypesObjectMixin} from "../mixins/account-types-object-mixin";
     import {bulmaColorsMixin} from "../mixins/bulma-colors-mixin";
     import {tagsObjectMixin} from "../mixins/tags-object-mixin";
+    // objects
     import {ToggleButton} from 'vue-js-toggle-button';
     import AccountAccountTypeTogglingSelector from "./account-account-type-toggling-selector";
-    import Store from '../store';
 
     export default {
         name: "filter-modal",

@@ -50,6 +50,7 @@
 </template>
 
 <script>
+    import _ from 'lodash';
     import {Entries} from '../entries';
     import EntriesTableEntryRow from "./entries-table-entry-row";
     import Store from '../store';
@@ -113,7 +114,35 @@
             setPageNumber: function(newPageNumber){
                 this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
                 Store.dispatch('currentPage', newPageNumber);
+            },
+          generateEntryRowOptions: function(entry) {
+            let hasAttachments;
+            if (typeof entry.has_attachments !== 'undefined') {
+              hasAttachments = entry.has_attachments;
+            } else {
+              hasAttachments = !_.isEmpty(entry.attachments);
             }
+            let isTransfer;
+            if(typeof entry.is_transfer !== 'undefined'){
+              isTransfer = entry.is_transfer;
+            } else {
+              isTransfer = !_.isNull(entry.transfer_entry_id);
+            }
+            return {
+              key: entry.id,
+              id: entry.id,
+              date: entry.entry_date,
+              accountTypeId: entry.account_type_id,
+              value: entry.entry_value,
+              memo: entry.memo,
+              expense: entry.expense,
+              confirm: entry.confirm,
+              disabled: entry.disabled,
+              hasAttachments: hasAttachments,
+              isTransfer: isTransfer,
+              tags: entry.tags
+            };
+          }
         },
         created: function(){
             this.$eventHub.listen(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, this.updateEntriesTableEventHandler);

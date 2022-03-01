@@ -145,14 +145,18 @@
 </template>
 
 <script>
+    // utilities
     import _ from 'lodash';
-    import {accountTypesObjectMixin} from "../mixins/account-types-object-mixin";
-    import {Entry} from "../entry";
-    import {SnotifyStyle} from 'vue-snotify';
-    import {tagsObjectMixin} from "../mixins/tags-object-mixin";
     import Store from '../store';
+    // mixins
+    import {accountTypesObjectMixin} from "../mixins/account-types-object-mixin";
+    // objects
+    import {Entry} from "../entry";
+    import {tagsObjectMixin} from "../mixins/tags-object-mixin";
+    // components
     import tagsinput from "./tagsinput";
     import vue2Dropzone from 'vue2-dropzone';
+    import {SnotifyStyle} from 'vue-snotify';
 
     export default {
         name: "transfer-modal",

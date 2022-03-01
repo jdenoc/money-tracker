@@ -23,10 +23,3 @@ export class Institutions extends ObjectBaseClass {
         }
     }
 }
-
-// var institutions = {
-//     display: function(){
-//         institutionsPane.clear();
-//         institutionsPane.displayInstitutions();
-//     }
-// };
