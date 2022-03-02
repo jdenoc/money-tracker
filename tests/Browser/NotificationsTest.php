@@ -292,7 +292,13 @@ class NotificationsTest extends DuskTestCase {
         $this->browse(function(Browser $browser) use ($account_type, $table){
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
+
+            $browser->disableFitOnFailure();    // TODO: debugging only; remove
+            $browser->screenshot(microtime(true).'.'.$this->getName(false).'.01page-visited');   // TODO: debugging only; remove
+
             $this->openNewEntryModal($browser);
+
+            $browser->screenshot(microtime(true).'.'.$this->getName(false).'.02open-modal');   // TODO: debugging only; remove
 
             // fill in minimum required fields
             $memo_field = "Test entry - 500 ERROR saving requirements";
@@ -305,17 +311,26 @@ class NotificationsTest extends DuskTestCase {
                         ->type($this->_selector_modal_entry_field_memo, $memo_field);
                 });
 
+            $browser->screenshot(microtime(true).'.'.$this->getName(false).'.03fill-in-modal');   // TODO: debugging only; remove
+
             // FORCE 500 from `POST /api/entry`
             $this->dropTable($table);
+
+            $browser->screenshot(microtime(true).'.'.$this->getName(false).'.04drop-table');   // TODO: debugging only; remove
 
             $browser->with($this->_selector_modal_foot, function($modal_foot){
                 $modal_foot->click($this->_selector_modal_entry_btn_save);
             });
 
+            $browser->screenshot(microtime(true).'.'.$this->getName(false).'.05save-clicked');   // TODO: debugging only; remove
+
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_ERROR, "An error occurred while attempting to create an entry");
+            $browser->screenshot(microtime(true).'.'.$this->getName(false).'.06notification-1');   // TODO: debugging only; remove
             $this->dismissNotification($browser);
+            $browser->screenshot(microtime(true).'.'.$this->getName(false).'.07notification-1-dismiss');   // TODO: debugging only; remove
             $this->waitForLoadingToStop($browser);
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_ERROR, sprintf($this->_message_error_occurred, "entries"));
+            $browser->screenshot(microtime(true).'.'.$this->getName(false).'.08notification-2');   // TODO: debugging only; remove
         });
 
         DB::statement($recreate_table_query);
