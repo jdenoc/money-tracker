@@ -20,12 +20,12 @@ abstract class TestCase extends BaseTestCase {
         self::initOutputTestInfo();
     }
 
-    public function setUp(): void{
+    protected function setUp(): void{
         $this->outputTestName();
         parent::setUp();
     }
 
-    public function tearDown(): void{
+    protected function tearDown(): void{
         $this->truncateDatabaseTables(['migrations']);
         parent::tearDown();
         $this->incrementTestCount();
