@@ -16,7 +16,7 @@ trait Notification {
     protected static $NOTIFICATION_TYPE_WARNING = 'warning';
 
     private static $SELECTOR_NAVBAR = '.navbar';
-    private static $SELECTOR_NOTIFICATION = '.snotifyToast';
+    private static $SELECTOR_NOTIFICATION = '.snotifyToast:last-child';
     private static $NOTIFICATION_CLASS_INFO = "snotify-info";
     private static $NOTIFICATION_CLASS_ERROR = "snotify-error";
     private static $NOTIFICATION_CLASS_SUCCESS = "snotify-success";

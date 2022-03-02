@@ -482,7 +482,7 @@ class TransferModalTest extends DuskTestCase {
                 });
 
             if($has_attachments){
-                $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_INFO, sprintf(self::$LABEL_FILE_UPLOAD_SUCCESS, basename($upload_file_path)));
+                $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_INFO, sprintf(self::$LABEL_FILE_UPLOAD_SUCCESS_NOTIFICATION, basename($upload_file_path)));
                 $this->dismissNotification($browser);
             }
 
@@ -597,6 +597,11 @@ class TransferModalTest extends DuskTestCase {
                         $this->uploadAttachmentUsingDragNDropAndSuccess($modal, $this->_selector_modal_transfer_field_upload, $this->_selector_modal_transfer_dropzone_hidden_file_input, $transfer_entry_data['attachment_path']);
                     }
                 });
+
+            if($has_attachments){
+                $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_INFO, sprintf(self::$LABEL_FILE_UPLOAD_SUCCESS_NOTIFICATION, basename($transfer_entry_data['attachment_path'])));
+                $this->dismissNotification($browser);
+            }
 
             $browser
                 ->with($this->_selector_modal_transfer, function($modal){

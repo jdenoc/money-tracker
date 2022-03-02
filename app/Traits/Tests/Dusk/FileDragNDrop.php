@@ -22,12 +22,12 @@ trait FileDragNDrop {
 
     private static $LABEL_FILE_DRAG_N_DROP = "Drag & Drop";
     private static $LABEL_FILE_DRAG_N_DROP__DROPZONE_REMOVE_FILE = "REMOVE FILE";
-    private static $LABEL_FILE_UPLOAD_SUCCESS = 'uploaded: %s';
+    private static $LABEL_FILE_UPLOAD_SUCCESS_NOTIFICATION = 'uploaded: %s';
 
     protected function uploadAttachmentUsingDragNDropAndSuccess(Browser $modal, string $drag_n_drop_selector, string $hidden_input_selector, string $upload_file_path){
         $this->uploadAttachmentUsingDragNDrop($modal, $drag_n_drop_selector, $hidden_input_selector, $upload_file_path);
         $modal->within($drag_n_drop_selector.' '.self::$SELECTOR_FILE_DRAG_N_DROP_UPLOAD_THUMBNAIL, function(Browser $thumbnail) use ($upload_file_path){
-                $this->assertUploadSuccess($thumbnail, basename($upload_file_path));
+            $this->assertUploadSuccess($thumbnail, basename($upload_file_path));
         });
     }
 
