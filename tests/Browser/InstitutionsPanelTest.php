@@ -120,7 +120,7 @@ class InstitutionsPanelTest extends DuskTestCase {
     public function testDisabledAccountsElementNotVisibleIfNoDisabledAccountsExist(){
         $institutions_collection = $this->getInstitutionsCollection(false);
         $institution_id = $institutions_collection->pluck('id')->random(1)->first();
-        DB::statement("TRUNCATE accounts");
+        DB::table('accounts')->truncate();
         factory(Account::class, 3)->create(['disabled'=>0, 'institution_id'=>$institution_id]);
 
         $this->browse(function(Browser $browser){
@@ -202,10 +202,10 @@ class InstitutionsPanelTest extends DuskTestCase {
      * test (see provider)/25
      */
     public function testAccountTotalValueIsTwoDecimalPlaces($test_total){
-        DB::statement("TRUNCATE institutions");
+        DB::table('institutions')->truncate();
         $new_institution = factory(Institution::class)->create(['active'=>true]);
         $institution_id = $new_institution->id;
-        DB::statement("TRUNCATE accounts");
+        DB::table('accounts')->truncate();
         $new_account = factory(Account::class)->create(['institution_id'=>$institution_id, 'total'=>$test_total, 'disabled'=>false]);
         DB::statement("UPDATE account_types SET account_id=:id", ['id'=>$new_account->id]);
 

@@ -3,17 +3,18 @@
 namespace Tests;
 
 use App\Traits\Tests\OutputTestInfo;
+use App\Traits\Tests\TruncateDatabaseTables;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Foundation\Testing\TestResponse;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\DB;
 
 abstract class TestCase extends BaseTestCase {
 
     use CreatesApplication;
     use RefreshDatabase;
     use OutputTestInfo;
+    use TruncateDatabaseTables;
 
     public static function setUpBeforeClass(): void{
         self::initOutputTestInfo();
@@ -25,7 +26,7 @@ abstract class TestCase extends BaseTestCase {
     }
 
     public function tearDown(): void{
-        $this->truncateDatabaseTables();
+        $this->truncateDatabaseTables(['migrations']);
         parent::tearDown();
         $this->incrementTestCount();
     }
@@ -71,21 +72,6 @@ abstract class TestCase extends BaseTestCase {
         $failure_message = "Expected status code ".$expected_status." but received ".$actual_status.".\nResponse content: ".$response->getContent();
         $failure_message .= (empty($error_message)) ? '': "\n".$error_message;
         $this->assertTrue($actual_status === $expected_status, $failure_message);
-    }
-
-    /**
-     * Truncates all database tables related to this connection, with the exception of the "migrations" table
-     * @link http://stackoverflow.com/a/18910102/4152012
-     */
-    protected function truncateDatabaseTables(){
-        $tables = DB::connection()->getDoctrineSchemaManager()->listTableNames();
-        foreach($tables as $table){
-            // don't want to truncate the "migrations" table
-            if ($table == 'migrations') {
-                continue;
-            }
-            DB::table($table)->truncate();
-        }
     }
 
 }

@@ -331,8 +331,8 @@ class FilterModalTest extends DuskTestCase {
      * test (see provider)/25
      */
     public function testFlipAccountAndAccountTypeSwitch(bool $has_disabled_account, bool $has_disabled_account_type){
-        DB::statement("TRUNCATE accounts");
-        DB::statement("TRUNCATE account_types");
+        DB::table('accounts')->truncate();
+        DB::table('account_types')->truncate();
 
         $institutions = $this->getApiInstitutions();
         $institution_id = collect($institutions)->pluck('id')->random(1)->first();

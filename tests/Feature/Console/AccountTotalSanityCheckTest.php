@@ -101,7 +101,7 @@ class AccountTotalSanityCheckTest extends TestCase {
     private function seedDatabaseAndMaybeTruncateTable($table_to_truncate = null){
         Artisan::call("db:seed", ['--class'=>'UiSampleDatabaseSeeder']);
         if(!is_null($table_to_truncate)){
-            DB::statement(sprintf("TRUNCATE %s", $table_to_truncate));
+            DB::table($table_to_truncate)->truncate();
         }
     }
 
