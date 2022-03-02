@@ -2,5 +2,5 @@
 !.gitignore
 !public
 !attachments
-!tmp_uploads
+!tmp-uploads
 !test

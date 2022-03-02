@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Storage;
 
 class Attachment extends BaseModel {
 
-    const STORAGE_TMP_UPLOAD = 'tmp_uploads';
+    const STORAGE_TMP_UPLOAD = 'tmp-uploads';
     const STORAGE_ATTACHMENTS = 'attachments';
 
     protected $table = 'attachments';
