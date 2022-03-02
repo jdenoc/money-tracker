@@ -6,6 +6,7 @@ use App\Entry;
 use App\Traits\EntryFilterKeys;
 use App\Traits\Tests\Dusk\ResizeBrowser as DuskTraitResizeBrowser;
 use App\Traits\Tests\LogTestName;
+use App\Traits\Tests\OutputTestInfo;
 use App\Traits\Tests\StorageTestFiles;
 use Laravel\Dusk\TestCase as BaseTestCase;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
@@ -16,8 +17,9 @@ abstract class DuskTestCase extends BaseTestCase {
     use CreatesApplication;
     use DuskTraitResizeBrowser;
     use EntryFilterKeys;
-    use StorageTestFiles;
     use LogTestName;
+    use OutputTestInfo;
+    use StorageTestFiles;
 
     /**
      * Prepare for Dusk test execution.
@@ -56,12 +58,22 @@ abstract class DuskTestCase extends BaseTestCase {
         return $test_name;
     }
 
+    public static function setUpBeforeClass(): void{
+        self::initOutputTestInfo();
+    }
+
     /**
      * @return void
      * @throws \Throwable
      */
     protected function setUp(): void{
+        $this->outputTestName();
         parent::setUp();
+    }
+
+    protected function tearDown(): void{
+        parent::tearDown();
+        $this->incrementTestCount();
     }
 
     protected function setUpTraits(){
