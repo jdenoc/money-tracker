@@ -748,7 +748,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
                     }
                 });
             if($has_attachments){
-                $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_INFO, sprintf(self::$LABEL_FILE_UPLOAD_SUCCESS, basename($upload_file_path)));
+                $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_INFO, sprintf(self::$LABEL_FILE_UPLOAD_SUCCESS_NOTIFICATION, basename($upload_file_path)));
                 $this->dismissNotification($browser);
             }
 
