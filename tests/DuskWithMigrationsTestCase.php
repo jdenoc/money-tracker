@@ -3,6 +3,7 @@
 namespace Tests;
 
 use App\Traits\Tests\DatabaseFileDump;
+use App\Traits\Tests\TruncateDatabaseTables;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 /**
@@ -14,6 +15,8 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
  * This way Dusk test classes don't need to include the DatabaseMigrations trait
  */
 abstract class DuskWithMigrationsTestCase extends DuskTestCase {
+
+    use TruncateDatabaseTables;
 
     /**
      * This trait is not used in the DuskTestCase class for those instances
@@ -39,19 +42,8 @@ abstract class DuskWithMigrationsTestCase extends DuskTestCase {
      * Overriding the method from the DatabaseMigrations trait
      */
     public function runDatabaseMigrations(){
-        $this->beforeApplicationDestroyed(static function () {
-            // Truncate all tables, except migrations
-            // This will speed up tests
-            // This is supposed to occur before the migrate:rollback command
-            $tables = \DB::select('SHOW TABLES');
-
-            $db_name = config('database.connections.mysql.database');
-            $prop = "Tables_in_%s";
-            foreach ($tables as $table) {
-                $table_name = $table->{sprintf($prop, $db_name)};
-                if ($table_name !== 'migrations')
-                    \DB::table($table_name)->truncate();
-            }
+        $this->beforeApplicationDestroyed(function () {
+            $this->truncateDatabaseTables(['migrations']);
         });
         $this->defaultRunDatabaseMigrations();
     }
