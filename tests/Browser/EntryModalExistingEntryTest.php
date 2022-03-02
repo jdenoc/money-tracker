@@ -945,7 +945,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                     $this->uploadAttachmentUsingDragNDropAndSuccess($entry_modal_body, $this->_selector_modal_entry_field_upload, $this->_selector_modal_entry_dropzone_hidden_file_input, $upload_file_path);
                 });
 
-            $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_INFO, sprintf(self::$LABEL_FILE_UPLOAD_SUCCESS, basename($upload_file_path)));
+            $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_INFO, sprintf(self::$LABEL_FILE_UPLOAD_SUCCESS_NOTIFICATION, basename($upload_file_path)));
             $this->dismissNotification($browser);
             // remove upload
             $browser->within($this->_selector_modal_body, function(Browser $entry_modal_body) {
