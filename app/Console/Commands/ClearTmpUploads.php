@@ -20,7 +20,7 @@ class ClearTmpUploads extends Command {
      *
      * @var string
      */
-    protected $description = 'Clears the files from the storage/app/tmp_uploads directory';
+    protected $description = 'Clears the files from the storage/app/tmp-uploads directory';
 
     /**
      * Execute the console command.
