@@ -19,20 +19,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          fetch-depth: 0
+          ref: ${{ github.ref }}
 
       - id: set-release-name
         run: echo "RELEASE_NAME=$(git describe --tags)" >> $GITHUB_ENV
 
       - id: set-release-message
         run: |
-          message=$(git cat-file -p $(git rev-parse $(git describe --tags)) | tail -n +6)
+          message=$(git tag -l --format='%(contents)' ${{ env.RELEASE_NAME }})
           echo 'RELEASE_MESSAGE<<GIT' >> $GITHUB_ENV
           echo "$message" >> $GITHUB_ENV
           echo 'GIT' >> $GITHUB_ENV
 
       - id: set-previous-release-name
-        run: echo "PREVIOUS_RELEASE_NAME=$(git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1))" >> $GITHUB_ENV
+        run: |
+          git fetch --tags
+          echo "PREVIOUS_RELEASE_NAME=$(git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1))" >> $GITHUB_ENV
 
       - name: Create Draft Release
         id: create-draft-release
@@ -44,6 +46,8 @@ jobs:
           release_name: ${{ github.ref }}
           body: |
             ${{ env.RELEASE_MESSAGE }}
+            
+            ---
             
             **Full Changelog**: https://github.com/jdenoc/money-tracker/compare/${{ env.PREVIOUS_RELEASE_NAME }}...${{ env.RELEASE_NAME }}
 
