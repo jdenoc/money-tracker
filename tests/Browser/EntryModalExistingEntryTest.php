@@ -440,8 +440,9 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                             ->acceptDialog();
                     });
                 });
-            $this->waitForLoadingToStop($browser);
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_INFO, "Attachment has been deleted");
+            $this->dismissNotification($browser);
+            $this->waitForLoadingToStop($browser);
             $browser
                 ->within($this->_selector_modal_entry, function(Browser $entry_modal) use (&$attachment_count){
                     $attachments = $entry_modal->driver->findElements(WebDriverBy::className($this->_class_existing_attachment));

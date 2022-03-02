@@ -502,7 +502,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
 
                 ->with($this->_selector_modal_body, function($entry_modal_body){
                     // laravel dusk has an issue typing into input[type="date"] fields
-                    // work-around for this is to use individual key-strokes
+                    // work-around for this is to use individual keystrokes
                     $backspace_count = strlen($entry_modal_body->value($this->_selector_modal_entry_field_date));
                     for($i=0; $i<$backspace_count; $i++){
                         $entry_modal_body->keys($this->_selector_modal_entry_field_date, "{backspace}");
@@ -611,6 +611,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
                     $modal_foot->click($this->_selector_modal_entry_btn_save);
                 });
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_SUCCESS, $this->_label_notification_new_entry_created);
+            $this->dismissNotification($browser);
             $this->waitForLoadingToStop($browser);
             $browser
                 ->assertMissing($this->_selector_modal_entry)
@@ -648,6 +649,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
                     $modal_foot->click($this->_selector_modal_entry_btn_save);
                 });
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_SUCCESS, $this->_label_notification_new_entry_created);
+            $this->dismissNotification($browser);
             $this->waitForLoadingToStop($browser);
             $browser
                 ->assertMissing($this->_selector_modal_entry)
@@ -687,6 +689,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
                     $modal_foot->click($this->_selector_modal_entry_btn_save);
                 });
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_SUCCESS, $this->_label_notification_new_entry_created);
+            $this->dismissNotification($browser);
             $this->waitForLoadingToStop($browser);
             $browser
                 ->assertMissing($this->_selector_modal_entry)
@@ -756,6 +759,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
                 $modal_foot->click($this->_selector_modal_entry_btn_save);
             });
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_SUCCESS, $this->_label_notification_new_entry_created);
+            $this->dismissNotification($browser);
             $this->waitForLoadingToStop($browser);
             $browser
                 ->assertMissing($this->_selector_modal_entry)

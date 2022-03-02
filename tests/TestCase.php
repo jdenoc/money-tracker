@@ -31,7 +31,7 @@ abstract class TestCase extends BaseTestCase {
     }
 
     /**
-     * @deprecated - in favour of Response->json()
+     * @deprecated - use Response->json() instead
      * @param Response|TestResponse $response
      * @return array|null
      */
