@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use App\Traits\Tests\OutputTestInfo;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Foundation\Testing\TestResponse;
@@ -12,10 +13,21 @@ abstract class TestCase extends BaseTestCase {
 
     use CreatesApplication;
     use RefreshDatabase;
+    use OutputTestInfo;
+
+    public static function setUpBeforeClass(): void{
+        self::initOutputTestInfo();
+    }
+
+    public function setUp(): void{
+        $this->outputTestName();
+        parent::setUp();
+    }
 
     public function tearDown(): void{
         $this->truncateDatabaseTables();
         parent::tearDown();
+        $this->incrementTestCount();
     }
 
     /**
