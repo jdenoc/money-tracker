@@ -255,12 +255,12 @@ class PutEntryTest extends TestCase {
         // PHPUnit data providers are called before setUp() and setUpBeforeClass() are called.
         // With that piece of information, we need to call setUp() earlier than we normally would so that we can use model factories
         //$this->setUp();
-        // We can no longer call setUp() as a work around
+        // We can no longer call setUp() as a workaround
         // it caused the database to populate and in doing so we caused some tests to fail.
         // Said tests failed because they were testing the absence of database values.
         $this->initialiseApplication();
         // faker doesn't get setup until setUp() is called.
-        // Providers are called before setUp() is called so we need to init faker here.
+        // Providers are called before setUp() is called, so we need to init faker here.
         $this->setUpFaker();
 
         $required_entry_fields = Entry::get_fields_required_for_update();

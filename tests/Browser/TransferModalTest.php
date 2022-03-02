@@ -572,10 +572,10 @@ class TransferModalTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openTransferModal($browser);
             $browser
-                ->with($this->_selector_modal_transfer, function($modal) use ($transfer_entry_data, $browser_locale_date_for_typing, $has_tags, $has_attachments){
+                ->within($this->_selector_modal_transfer, function(Browser $modal) use ($transfer_entry_data, $browser_locale_date_for_typing, $has_tags, $has_attachments){
                     // laravel dusk has an issue typing into input[type="date"] fields
                     // work-around for this is to use individual keystrokes
-                    $backspace_count = strlen($modal->value($this->_selector_modal_transfer_field_date));
+                    $backspace_count = strlen($modal->inputValue($this->_selector_modal_transfer_field_date));
                     for($i=0; $i<$backspace_count; $i++){
                         $modal->keys($this->_selector_modal_transfer_field_date, "{backspace}");
                     }
@@ -604,11 +604,13 @@ class TransferModalTest extends DuskTestCase {
             }
 
             $browser
-                ->with($this->_selector_modal_transfer, function($modal){
+                ->within($this->_selector_modal_transfer, function(Browser $modal){
                     $modal->click($this->_selector_modal_transfer_btn_save);
                 });
+
             $this->waitForLoadingToStop($browser);
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_SUCCESS, $this->_label_notification_transfer_saved);
+            $this->dismissNotification($browser);
             $browser->assertMissing($this->_selector_modal_transfer);
 
             $entry_modal_date_input_value = date("Y-m-d", strtotime($browser_locale_date));
