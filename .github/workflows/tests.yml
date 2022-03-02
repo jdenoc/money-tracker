@@ -1,4 +1,4 @@
-# .github/workflows/main.yml
+# .github/workflows/tests.yml
 name: Money-tracker CI
 
 # Controls when the action will run.
