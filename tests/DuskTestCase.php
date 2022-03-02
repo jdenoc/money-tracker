@@ -4,9 +4,9 @@ namespace Tests;
 
 use App\Entry;
 use App\Traits\EntryFilterKeys;
+use App\Traits\Tests\Dusk\ResizeBrowser as DuskTraitResizeBrowser;
 use App\Traits\Tests\LogTestName;
 use App\Traits\Tests\StorageTestFiles;
-use Laravel\Dusk\Browser;
 use Laravel\Dusk\TestCase as BaseTestCase;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
@@ -14,12 +14,10 @@ use Facebook\WebDriver\Remote\DesiredCapabilities;
 abstract class DuskTestCase extends BaseTestCase {
 
     use CreatesApplication;
+    use DuskTraitResizeBrowser;
     use EntryFilterKeys;
     use StorageTestFiles;
     use LogTestName;
-
-    const RESIZE_WIDTH_PX = 1400;
-    const RESIZE_HEIGHT_PX = 2500;
 
     /**
      * Prepare for Dusk test execution.
@@ -45,7 +43,7 @@ abstract class DuskTestCase extends BaseTestCase {
 
     /**
      * Replaces default phpunit test name.
-     * The default phpunit test name was applied to console logs and screen shots.
+     * The default phpunit test name was applied to console logs and screenshots.
      * These files were then processed by other scripts.
      * There were spaces and quotation marks causes these other scripts to fail.
      *
@@ -64,11 +62,14 @@ abstract class DuskTestCase extends BaseTestCase {
      */
     protected function setUp(): void{
         parent::setUp();
-        $this->resizeBrowser();
     }
 
     protected function setUpTraits(){
         $uses = array_flip(class_uses_recursive(static::class));
+
+        if (isset($uses[\App\Traits\Tests\Dusk\ResizeBrowser::class])){
+            $this->resizeBrowser();
+        }
 
         if (isset($uses[\App\Traits\Tests\LogTestName::class])){
             $this->runTestNameLogging($this->getName(true));
@@ -83,17 +84,6 @@ abstract class DuskTestCase extends BaseTestCase {
         }
 
         return parent::setUpTraits();
-    }
-
-    /**
-     * Sets the default browser width and height
-     *
-     * @throws \Throwable
-     */
-    protected function resizeBrowser(){
-        $this->browse(function (Browser $browser){
-            $browser->resize(self::RESIZE_WIDTH_PX, self::RESIZE_HEIGHT_PX);
-        });
     }
 
     /**
@@ -151,7 +141,7 @@ abstract class DuskTestCase extends BaseTestCase {
      * @param array $filter_data
      * @return array
      */
-    public function getApiEntries($page_number=0, $filter_data=[]){
+    public function getApiEntries(int $page_number=0, $filter_data=[]){
         // See resources/js/entries.js:16-38
         // See app/Traits/EntryFilterKeys.php:7-20
         $sort = [self::$FILTER_KEY_SORT=>[
