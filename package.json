@@ -7,9 +7,11 @@
     "build-dev": "mix && echo 'process completed @ ' `date`",
     "build-prod": "mix --production && echo 'process completed @ ' `date`"
   },
-  "devDependencies": {
+  "dependencies": {
     "@fortawesome/fontawesome-free": "5.15.4",
+    "@tailwindcss/forms": "^0.5.0",
     "@voerro/vue-tagsinput": "^2",
+    "autoprefixer": "^10.4.2",
     "axios": "^0.24.0",
     "bulma": "0.9.3",
     "bulma-calendar": "6.1.12",
@@ -18,11 +20,12 @@
     "cross-env": "^7.0",
     "laravel-mix": "^6.0.41",
     "lodash": "4.17.21",
-    "postcss": "^8.1.14",
+    "postcss": "^8.4.7",
     "randomcolor": "0.6.2",
     "resolve-url-loader": "4.0.0",
     "sass": "^1.15.2",
-    "sass-loader": "12.1.0",
+    "sass-loader": "^12.1.0",
+    "tailwindcss": "^3.0.23",
     "toastr": "2.1.4",
     "v-hotkey": "0.3.0",
     "v-tooltip": "2.0.0-rc.33",

@@ -4,6 +4,8 @@
     @component('head-component')
         Money Tracker | STATS
     @endcomponent
+    <link href="{{mix('dist/css/app.css')}}" rel="stylesheet" type="text/css">
+    <link href="{{mix('dist/css/font-awesome.css')}}" rel="stylesheet" type="text/css">
 </head>
 <body>
 <div id="app-stats">
@@ -26,6 +28,6 @@
         <notification></notification>
     </div>
 </div>
-<script type="text/javascript" src="{{mix('vue/js/app-stats.js')}}"></script>
+<script type="text/javascript" src="{{mix('dist/js/app-stats.js')}}"></script>
 </body>
 </html>

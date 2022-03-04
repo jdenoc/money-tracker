@@ -10,12 +10,13 @@ Vue.use(VTooltip);
 import eventHub from "./plugins/eventHub";
 Vue.use(eventHub);
 
+// components
 import LoadingModal from './components/loading-modal';
 import Navbar from './components/navbar';
 import Notification from './components/notification';
 import Stats from "./components/stats/stats";
 import StatsNav from "./components/stats/stats-nav";
-
+// objects
 import {Accounts} from "./accounts";
 import {AccountTypes} from "./account-types";
 import {Tags} from "./tags";
