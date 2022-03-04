@@ -14,15 +14,15 @@ import eventHub from "./plugins/eventHub";
 Vue.use(eventHub);
 
 // components
-import EntryModal from './components/entry-modal';
-import EntriesTable from './components/entries-table';
-import EntriesTableEntryRow from './components/entries-table-entry-row';
-import FilterModal from "./components/filter-modal";
-import InstitutionsPanel from './components/institutions-panel';
+import EntryModal from './components/home/entry-modal';
+import EntriesTable from './components/home/entries-table';
+import EntriesTableEntryRow from './components/home/entries-table-entry-row';
+import FilterModal from "./components/home/filter-modal";
+import InstitutionsPanel from './components/home/institutions-panel';
 import LoadingModal from './components/loading-modal';
 import Navbar from './components/navbar';
 import Notification from './components/notification';
-import TransferModal from './components/transfer-modal';
+import TransferModal from './components/home/transfer-modal';
 // objects
 import { AccountTypes } from './account-types';
 import { Institutions } from './institutions';
