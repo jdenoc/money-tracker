@@ -14,16 +14,17 @@ trait HomePageSelectors {
     private $_selector_modal_tag_autocomplete_options = ".typeahead span";
 
     // institutions panel
-    private $_selector_panel_institutions = "#institutions-panel-column";
-    private $_selector_panel_institutions_heading = ".panel-heading";
+    private $_selector_panel_institutions = "#institutions-panel";
+    private $_selector_panel_institutions_heading = "#institutions-panel-header";
     private $_selector_panel_institutions_overview = "#overview";
     private $_selector_panel_institutions_institution = ".institution-panel-institution";
-    private $_selector_panel_institutions_institution_open_close = ".institution-panel-institution-name span.panel-icon i";
-    private $_selector_panel_institutions_institution_name = ".institution-panel-institution-name span.name-label";
+    private $_selector_panel_institutions_institution_name = ".institution-panel-institution-name";
     private $_selector_panel_institutions_accounts = ".institution-panel-institution-accounts";
     private $_selector_panel_institutions_accounts_account = ".institutions-panel-account";
     private $_selector_panel_institutions_accounts_account_name = ".institutions-panel-account-name";
-    private $_selector_panel_institutions_accounts_account_total = ".institutions-panel-account-name .account-currency span";
+    private $_selector_panel_institutions_accounts_account_currency = ".account-currency";
+    private $_selector_panel_institutions_accounts_account_total = ".account-total";
+    private $_selector_panel_institutions_closed_accounts = "#closed-accounts";
 
     // entry-modal
     private $_selector_modal_entry = "@entry-modal";  // see Browser\Pages\HomePage.php

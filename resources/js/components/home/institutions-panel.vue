@@ -1,11 +1,11 @@
 <template>
   <!-- institutions - sidebar -->
-  <nav class="w-80 top-16 left-0 inset-y-0 fixed border-r">
-    <div class="block py-4 px-3 font-semibold text-xl bg-gray-100">Institutions</div>
+  <nav id="institutions-panel" class="w-80 top-16 left-0 inset-y-0 fixed border-r">
+    <div id="institutions-panel-header" class="block py-4 px-3 font-semibold text-xl bg-gray-100">Institutions</div>
 
     <ul>
       <li id="overview" class="block py-2 px-3 font-medium cursor-pointer"
-          v-bind:class="{'text-white bg-blue-600': isOverviewFilterActive, 'text-blue-400 bg-white hover:bg-gray-50 hover:text-blue-500': !isOverviewFilterActive}"
+          v-bind:class="{'text-white bg-blue-600 is-active': isOverviewFilterActive, 'text-blue-400 bg-white hover:bg-gray-50 hover:text-blue-500': !isOverviewFilterActive}"
           v-on:click="displayOverviewOfEntries"
       >
         <span>Overview</span>
@@ -19,9 +19,9 @@
           v-bind:name="institution.name"
       ></institutions-panel-institution>
 
-      <li id="closed-accounts" class="block py-1 absolute bottom-0 inset-x-0 max-h-80">
+      <li id="closed-accounts" class="block py-1 absolute bottom-0 inset-x-0 max-h-80" v-show="inactiveAccountsExist">
         <transition name="closed-institution-accounts-slide-up">
-          <ul class="list-inside ml-5 border-l border-gray-300"
+          <ul class="institution-panel-institution-accounts list-inside ml-5 border-l border-gray-300"
               v-show="isClosedAccountsAccordionOpen"
           >
             <institutions-panel-institution-account
@@ -91,6 +91,9 @@ export default {
           return 1;
         return 0;
       });
+    },
+    inactiveAccountsExist: function(){
+      return Object.keys(this.inactiveAccounts).length !== 0;
     },
     isOverviewFilterActive: function(){
       let currentFilter = Store.getters.currentFilter;
