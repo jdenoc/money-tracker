@@ -18,7 +18,7 @@ npm-debug.log
 
 # laravel-mix
 mix-manifest.json
-public/vue
+public/dist
 
 # misc
 .env
