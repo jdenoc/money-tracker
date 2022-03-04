@@ -35,7 +35,7 @@
         />
 
         <!--account/account-type selector-->
-        <div class="col-span-4">
+        <div class="col-span-4 -mb-1.5">
           <account-account-type-toggling-selector
               id="filter-modal"
               class="filter-modal-element"
@@ -62,7 +62,7 @@
         </div>
 
         <!--Income-->
-        <label class="text-sm font-medium justify-self-end py-1 my-0.5">Income:</label>
+        <label for="filter-is-income" class="text-sm font-medium justify-self-end py-1 my-0.5">Income:</label>
         <div class="col-span-3">
           <toggle-button
               toggle-id="filter-is-income"
@@ -74,7 +74,7 @@
         </div>
 
         <!--Expense-->
-        <label class="text-sm font-medium justify-self-end py-1 my-0.5">Expense:</label>
+        <label for="filter-is-expense" class="text-sm font-medium justify-self-end py-1 my-0.5">Expense:</label>
         <div class="col-span-3">
           <toggle-button
               toggle-id="filter-is-expense"
@@ -86,7 +86,7 @@
         </div>
 
         <!--Has Attachment(s)-->
-        <label class="text-sm font-medium justify-self-end py-1 my-0.5">Has Attachment(s):</label>
+        <label for="filter-has-attachment" class="text-sm font-medium justify-self-end py-1 my-0.5">Has Attachment(s):</label>
         <div class="col-span-3">
           <toggle-button
               toggle-id="filter-has-attachment"
@@ -98,7 +98,7 @@
         </div>
 
         <!--No Attachment(s)-->
-        <label class="text-sm font-medium justify-self-end py-1 my-0.5">No Attachment(s):</label>
+        <label for="filter-no-attachment" class="text-sm font-medium justify-self-end py-1 my-0.5">No Attachment(s):</label>
         <div class="col-span-3">
           <toggle-button
               toggle-id="filter-no-attachment"
@@ -110,7 +110,7 @@
         </div>
 
         <!--Transfer-->
-        <label class="text-sm font-medium justify-self-end py-1 my-0.5">Transfer:</label>
+        <label for="filter-is-transfer" class="text-sm font-medium justify-self-end py-1 my-0.5">Transfer:</label>
         <div class="col-span-3">
           <toggle-button
               toggle-id="filter-is-transfer"
@@ -121,7 +121,7 @@
         </div>
 
         <!--Unconfirmed-->
-        <label class="text-sm font-medium justify-self-end py-1 my-0.5">Not Confirmed:</label>
+        <label for="filter-unconfirmed" class="text-sm font-medium justify-self-end py-1 my-0.5">Not Confirmed:</label>
         <div class="col-span-3">
           <toggle-button
               toggle-id="filter-unconfirmed"
