@@ -1,15 +1,15 @@
 <template>
   <li class="institutions-panel-account py-1 px-3 cursor-pointer"
     v-bind:id="'account-'+id"
-    v-bind:class="{'bg-blue-600 text-white': isAccountFilterActive, 'bg-white hover:bg-gray-50 text-blue-400 hover:text-blue-500': !isAccountFilterActive}"
+    v-bind:class="{'bg-blue-600 text-white is-active': isAccountFilterActive, 'bg-white hover:bg-gray-50 text-blue-400 hover:text-blue-500': !isAccountFilterActive}"
     v-tooltip="tooltipContent"
   >
-    <div class="institutions-panel-account-name" v-on:click="displayAccountEntries">
-      <span v-text="name"></span>
+    <div v-on:click="displayAccountEntries">
+      <span class="institutions-panel-account-name" v-text="name"></span>
       <br/>
       <span v-show="isAccountTotalVisible" class="text-xs font-extrabold">
         <span class="account-currency mr-px" v-html="accountCurrencyHtml"></span>
-        <span v-text="accountTotal"></span>
+        <span class="account-total" v-text="accountTotal"></span>
       </span>
     </div>
   </li>
@@ -68,12 +68,11 @@ export default {
       return !isNaN(this.total);
     },
     tooltipContent: function(){
-      return {
+      return this.canShowTooltip && {
         content: this.accountTypeTooltipList,
         html: true,
         placement: 'right',
         classes: 'text-xs font-semibold bg-black py-1.5 px-1 rounded rounded-lg text-white tooltip',
-        disabled: !this.canShowTooltip,
       }
     }
   },
