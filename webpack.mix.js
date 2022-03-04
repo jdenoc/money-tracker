@@ -14,7 +14,7 @@ const mix = require('laravel-mix');
 let directory = {
     node: 'node_modules/',
     resource: 'resources/',
-    destination: 'public/vue/',
+    destination: 'public/dist/'
 }
 directory.js = directory.destination+'js/';
 directory.css = directory.destination+'css/';
@@ -32,13 +32,9 @@ mix
 
     .sass(directory.resource+'sass/app.scss', directory.css)
 
-    /**
-     * Note: Laravel wants to use postCss instead of SASS
-     * That is why this is here and commented out.
-     * We currently don't use postCss
-     */
-    // .postCss('resources/css/app.css', 'public/css', [
-    //     //
-    // ])
+    // tailwind specific
+    .postCss(directory.resource+'css/tailwind.css', directory.css, [
+        require("tailwindcss"),
+    ])
 
     .version();
