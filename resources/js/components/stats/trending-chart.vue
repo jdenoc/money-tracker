@@ -3,10 +3,8 @@
         <section id="stats-form-trending" class="section">
             <account-account-type-toggling-selector
                 id="trending-chart"
-                v-bind:account-or-account-type-id="accountOrAccountTypeId"
-                v-bind:account-or-account-type-toggled="accountOrAccountTypeToggle"
-                v-on:update-select="accountOrAccountTypeId = $event"
-                v-on:update-toggle="accountOrAccountTypeToggle = $event"
+                v-bind:account-or-account-type-id.sync="accountOrAccountTypeId"
+                v-bind:account-or-account-type-toggled.sync="accountOrAccountTypeToggle"
             ></account-account-type-toggling-selector>
 
             <div class="field">

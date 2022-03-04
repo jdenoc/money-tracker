@@ -1,7 +1,3 @@
-/**
- * Created by denis.oconnor on 2018-08-20
- */
-
 import { Entry } from './entry';
 import { ObjectBaseClass } from './objectBaseClass';
 import { SnotifyStyle } from 'vue-snotify';
