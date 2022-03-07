@@ -42,7 +42,7 @@ jobs:
 
       - name: Generate cache keys [vue]
         id: cache-key-vue
-        run: echo "::set-output name=value::cache-vue-${{ hashFiles('package*.json') }}-${{ hashFiles('resources/*') }}"
+        run: echo "::set-output name=value::cache-vue-${{ hashFiles('package*.json') }}-${{ hashFiles('resources/*') }}-${{ hashFiles('tailwind.config.js') }}-${{ hashFiles('webpack.mix.js') }}"
 
       - name: Generate cache paths [docker]
         id: cache-path-docker
@@ -60,7 +60,7 @@ jobs:
         id: cache-path-vue
         run: |
           VUE_CACHE_PATH=$(cat << EOF
-          public/vue
+          public/dist
           public/mix-manifest.json
           EOF
           )
