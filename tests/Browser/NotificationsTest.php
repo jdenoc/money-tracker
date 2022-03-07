@@ -57,7 +57,7 @@ class NotificationsTest extends DuskTestCase {
         $this->browse(function (Browser $browser) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
-            $this->assertBrandImageVisible($browser);   // make sure that other elements are also visible
+            $this->assertLogoxVisible($browser);   // make sure that other elements are also visible
             $browser->assertMissing(self::$SELECTOR_NOTIFICATION);
         });
     }
