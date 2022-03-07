@@ -37,7 +37,7 @@
         <div class="col-span-3 relative text-gray-700">
           <span class="absolute left-3 inset-y-2 mt-px" v-html="accountTypeMeta.currencyHtml"></span>
           <input id="transfer-value" name="transfer-value" type="text" placeholder="999.99" autocomplete="off" class="placeholder-gray-400 placeholder-opacity-80 rounded w-full"
-                 v-model="transferData.entry_value"
+                 v-model="transferData.value"
                  v-on:change="decimaliseValue"
           />
         </div>
@@ -162,7 +162,7 @@
         <button type="button" id="transfer-save-btn" class="inline-flex justify-center rounded-md border border-gray-300 px-3 py-2 ml-1 text-white bg-green-500"
                 v-on:click="saveTransfer"
                 v-bind:disabled="!canSave"
-                v-bind:class="{'opacity-70 cursor-not-allowed': !canSave, 'opacity-90 hover:opacity-100': canSave}"
+                v-bind:class="{'opacity-65 cursor-not-allowed': !canSave, 'opacity-90 hover:opacity-100': canSave}"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mt-px mr-1" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
