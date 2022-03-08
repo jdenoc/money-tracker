@@ -54,7 +54,7 @@ class UpdateAccountTotalTest extends DuskTestCase {
         $this->_account = $this->getAccount($account['id']);
     }
 
-    public function providerUpdateAccountTotalWithNewEntry(){
+    public function providerUpdateAccountTotalWithNewEntry():array{
        return [
            'expense'=>[true],   // test 1/25
            'income'=>[false]    // test 2/25
@@ -84,9 +84,9 @@ class UpdateAccountTotalTest extends DuskTestCase {
             $browser
                 ->with($this->_selector_modal_body, function(Browser $entry_modal_body) use ($is_entry_expense, $entry_total){
                     // The date field should already be filled in. No need to fill it in again.
+                    $entry_modal_body->type($this->_selector_modal_entry_field_value, $entry_total);
+                    $this->waitUntilSelectLoadingMissing($entry_modal_body);
                     $entry_modal_body
-                        ->type($this->_selector_modal_entry_field_value, $entry_total)
-                        ->waitUntilMissing($this->_selector_modal_entry_field_account_type_is_loading, self::$WAIT_SECONDS)
                         ->select($this->_selector_modal_entry_field_account_type, $this->_account_type_id)
                         ->type($this->_selector_modal_entry_field_memo, "Test new entry account total update");
 
@@ -97,7 +97,7 @@ class UpdateAccountTotalTest extends DuskTestCase {
                     $entry_modal_body->click($this->_selector_modal_entry_field_date);
 
                 })
-                ->with($this->_selector_modal_foot, function(Browser $modal_foot){
+                ->within($this->_selector_modal_foot, function(Browser $modal_foot){
                     $modal_foot->click($this->_selector_modal_entry_btn_save);
                 });
             $this->waitForLoadingToStop($browser);
@@ -129,13 +129,13 @@ class UpdateAccountTotalTest extends DuskTestCase {
             $switch_text = '';
             $browser
                 ->openExistingEntryModal($entry_selector)
-                ->with($this->_selector_modal_body, function(Browser $entry_modal_body) use ($entry_selector, &$switch_text){
+                ->within($this->_selector_modal_body, function(Browser $entry_modal_body) use ($entry_selector, &$switch_text){
                     $entry_modal_body
                         ->click($this->_selector_modal_entry_field_expense)
                         ->pause(self::$WAIT_HALF_SECOND_IN_MILLISECONDS); // need to wait for the transition to complete after click;
                     $switch_text = $entry_modal_body->text($this->_selector_modal_entry_field_expense);
                 })
-                ->with($this->_selector_modal_foot, function(Browser $modal_foot){
+                ->within($this->_selector_modal_foot, function(Browser $modal_foot){
                     $modal_foot->click($this->_selector_modal_entry_btn_save);
                 });
             $this->waitForLoadingToStop($browser);
@@ -169,11 +169,11 @@ class UpdateAccountTotalTest extends DuskTestCase {
             $new_value = 10.00;
             $browser
                 ->openExistingEntryModal($entry_selector)
-                ->with($this->_selector_modal_body, function(Browser $entry_modal_body) use ($entry_selector, $new_value){
+                ->within($this->_selector_modal_body, function(Browser $entry_modal_body) use ($entry_selector, $new_value){
                     $entry_modal_body->clear($this->_selector_modal_entry_field_value);
                     $entry_modal_body->type($this->_selector_modal_entry_field_value, $new_value);
                 })
-                ->with($this->_selector_modal_foot, function(Browser $modal_foot){
+                ->within($this->_selector_modal_foot, function(Browser $modal_foot){
                     $modal_foot->click($this->_selector_modal_entry_btn_save);
                 });
             $this->waitForLoadingToStop($browser);
@@ -206,7 +206,7 @@ class UpdateAccountTotalTest extends DuskTestCase {
 
             $browser
                 ->openExistingEntryModal($entry_selector)
-                ->with($this->_selector_modal_entry, function($entry_modal){
+                ->within($this->_selector_modal_entry, function(Browser $entry_modal){
                     $entry_modal
                         ->assertVisible($this->_selector_modal_entry_btn_delete)
                         ->click($this->_selector_modal_entry_btn_delete);
@@ -220,7 +220,7 @@ class UpdateAccountTotalTest extends DuskTestCase {
         });
     }
 
-    public function providerUpdateAccountTotalsWithNewTransferEntries(){
+    public function providerUpdateAccountTotalsWithNewTransferEntries():array{
         return [
             // [$is_from_account_external, $is_to_account_external]
             'neither account is external'=>[false, false],  // test 6/25
@@ -240,7 +240,7 @@ class UpdateAccountTotalTest extends DuskTestCase {
      * @group navigation-4
      * test (see provider)/25
      */
-    public function testUpdateAccountTotalsWithNewTransferEntries($is_from_account_external, $is_to_account_external){
+    public function testUpdateAccountTotalsWithNewTransferEntries(bool $is_from_account_external, bool $is_to_account_external){
         $account = [];
         if(!$is_from_account_external && !$is_to_account_external){
             $account['from'] = $this->_account;
@@ -304,7 +304,7 @@ class UpdateAccountTotalTest extends DuskTestCase {
 
             $this->openTransferModal($browser);
             $browser
-                ->with($this->_selector_modal_transfer, function(Browser $modal) use ($transfer_entry_data, $browser_locale_date_for_typing){
+                ->within($this->_selector_modal_transfer, function(Browser $modal) use ($transfer_entry_data, $browser_locale_date_for_typing){
                     $modal
                         ->type($this->_selector_modal_transfer_field_date, $browser_locale_date_for_typing)
                         ->type($this->_selector_modal_transfer_field_value, $transfer_entry_data['value'])
@@ -314,7 +314,7 @@ class UpdateAccountTotalTest extends DuskTestCase {
                         ->select($this->_selector_modal_transfer_field_to, $transfer_entry_data['to_account_type_id'])
                         ->type($this->_selector_modal_transfer_field_memo, $transfer_entry_data['memo']);
                 })
-                ->with($this->_selector_modal_transfer, function(Browser $modal){
+                ->within($this->_selector_modal_transfer, function(Browser $modal){
                     $modal->click($this->_selector_modal_transfer_btn_save);
                 });
             $this->waitForLoadingToStop($browser);
@@ -341,19 +341,19 @@ class UpdateAccountTotalTest extends DuskTestCase {
      * @param bool $init
      */
     private function assertAccountTotal(Browser $browser, int $institution_id, int $account_id, $account_total, bool $init=false){
-        $browser->with($this->_selector_panel_institutions.' #institution-'.$institution_id, function(Browser $institution_node) use ($init, $account_id, $account_total){
+        $browser->within($this->_selector_panel_institutions.' #institution-'.$institution_id, function(Browser $institution_node) use ($init, $account_id, $account_total){
             // ONLY click on the institution node if this is at start up
             // OTHERWISE the accounts should already be visible
             if($init){
                 $institution_node
                     // click institution node;
-                    ->click('')
+                    ->click('div')
                     ->pause(self::$WAIT_TWO_FIFTHS_OF_A_SECOND_IN_MILLISECONDS)
                     ->assertVisible($this->_selector_panel_institutions_accounts);
             }
 
-            $institution_node->with($this->_selector_panel_institutions_accounts.' #account-'.$account_id, function(Browser $account_node) use ($account_total){
-                $account_node_total = $account_node->text($this->_selector_panel_institutions_accounts_account_name.' span.account-currency span');
+            $institution_node->within($this->_selector_panel_institutions_accounts.' #account-'.$account_id, function(Browser $account_node) use ($account_total){
+                $account_node_total = $account_node->text($this->_selector_panel_institutions_accounts_account_total);
                 $this->assertEquals($account_total, $account_node_total);
             });
         });
@@ -364,7 +364,7 @@ class UpdateAccountTotalTest extends DuskTestCase {
      * @param bool $is_institution_id
      * @return array
      */
-    private function getAccount($id, $is_institution_id=false){
+    private function getAccount(int $id, bool $is_institution_id=false){
         $accounts = $this->getApiAccounts();
         $accounts_collection = collect($accounts);
         if($is_institution_id){
@@ -378,11 +378,24 @@ class UpdateAccountTotalTest extends DuskTestCase {
      * @param int $account_type_id
      * @return array
      */
-    private function getEntry($account_type_id){
+    private function getEntry(int $account_type_id){
         $entries = $this->getApiEntries();
         unset($entries['count']);
         $entries_collection = collect($entries);
         return $entries_collection->where('account_type_id', $account_type_id)->where('confirm', 0)->random();
+    }
+
+    /**
+     * @param Browser $modal
+     *
+     * @throws \Facebook\WebDriver\Exception\TimeOutException
+     */
+    private function waitUntilSelectLoadingMissing(Browser $modal){
+        $class_loading = '.loading';
+        $parent_visible_script = <<<SCRIPT
+return document.querySelector('{$modal->resolver->prefix}').parentNode.querySelector('$class_loading').offsetParent === null;
+SCRIPT;
+        $modal->waitUntil($parent_visible_script);
     }
 
 }
