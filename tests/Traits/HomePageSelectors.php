@@ -6,10 +6,10 @@ trait HomePageSelectors {
 
     // ###*** SELECTORS ***###
     // generic - modal
-    private $_selector_modal_head = ".modal-card-head";
+    private $_selector_modal_head = ".modal-header";
     private $_selector_modal_title = ".modal-card-title";
-    private $_selector_modal_body = ".modal-card-body";
-    private $_selector_modal_foot = ".modal-card-foot";
+    private $_selector_modal_body = ".modal-body";
+    private $_selector_modal_foot = ".modal-footer";
     private $_selector_modal_btn_close = "button.delete";
     private $_selector_modal_tag_autocomplete_options = ".typeahead span";
 
@@ -35,7 +35,6 @@ trait HomePageSelectors {
     private $_selector_modal_entry_field_date="input#entry-date";
     private $_selector_modal_entry_field_value = "input#entry-value";
     private $_selector_modal_entry_field_account_type = "select#entry-account-type";
-    private $_selector_modal_entry_field_account_type_is_loading = ".select.is-loading select#entry-account-type";
     private $_selector_modal_entry_meta = "#entry-account-type-meta";
     private $_selector_modal_entry_field_memo = "textarea#entry-memo";
     private $_selector_modal_entry_field_expense = "#entry-expense";
