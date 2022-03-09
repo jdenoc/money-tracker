@@ -1,27 +1,19 @@
 <template>
-<!--  <file-pond-->
-<!--      v-show="isVisible"-->
-<!--      v-bind="filePondOptions"-->
-<!--      v-model:files="dragNDropFiles"-->
-<!--      v-bind:disabled="isFilePondDisabled"-->
-<!--      v-on:updatefiles="handleFilePondFileUpdate"-->
-<!--  />-->
-
-  <!-- FIXME: not working -->
   <vue-dropzone
+      v-bind:id="getId+'-file-upload'"
       v-bind:options="dropzoneOptions"
-      v-on:vdropzone-success="handleDropzoneUploadSuccess"
-      v-on:vdropzone-error="handleDropzoneUploadError"
-      v-on:vdropzone-removed-file="handleDropzoneUploadRemoval"
-      v-show="isVisible"
+      v-on:vdropzone-success="handleUploadSuccess"
+      v-on:vdropzone-error="handleUploadError"
+      v-on:vdropzone-removed-file="handleUploadRemoval"
   ></vue-dropzone>
 </template>
 
 <script lang="js">
-// import _ from "lodash";
-// // const EMIT_UPDATE_ATTACHMENTS = 'update:attachments';
+import _ from "lodash";
 import vue2Dropzone from "vue2-dropzone";
 import {SnotifyStyle} from "vue-snotify";
+
+const EMIT_UPDATE_ATTACHMENTS = 'update:attachments';
 
 export default {
   name: "file-drag-n-drop",
@@ -29,20 +21,17 @@ export default {
     VueDropzone: vue2Dropzone,
   },
   props: {
-    attachments: {type: Array, default: []},
+    attachments: {type: Array, default: function(){ return [] }},
     id: {type: String, required: true},
-    isVisible: {type: Boolean, default: true},
   },
   data: function(){
     return {
-      dragNDropFiles: [],
-      uploadFiles: [],
+      dragNDropFiles: this.attachments,
     }
   },
   computed: {
     dropzoneOptions: function(){
       return {
-        id: this.id+'-file-upload',
         ref: this.getDropzoneRef,
         url: '/attachment/upload',
         method: 'post',
@@ -50,31 +39,26 @@ export default {
         paramName: 'attachment',
         params: {_token: this.uploadToken},
         dictDefaultMessage: this.defaultMessage,
-        hiddenInputContainer: '#'+this.id,
+        hiddenInputContainer: '#'+this.getId,
         init: function(){
-          document.querySelector('#'+this.id+' .dz-hidden-input').setAttribute('id', this.id+'-hidden-file-input');
+          document.querySelector('#'+this.getId+' .dz-hidden-input').setAttribute('id', this.getId+'-hidden-file-input');
         }.bind(this)
       }
     },
     defaultMessage: function(){
-      return '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">' +
+      return '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">' +
         '<path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />' +
         '</svg>Drag & Drop';
     },
     getDropzoneRef: function(){
-      return this.id+'.dropzone';
+      return _.camelCase(this.id)+'.dropzone';
+    },
+    getId: function(){
+      return _.kebabCase(this.id);
     },
     uploadToken: function(){
       return document.querySelector("meta[name='csrf-token']").getAttribute('content');
     },
-//     uploadFiles: {
-//       get: function (){
-//         return this.attachments;
-//       },
-//       set: function (value){
-//         this.$emit(EMIT_UPDATE_ATTACHMENTS, value);
-//       }
-//     },
   },
   methods: {
     clearFiles: function(){
@@ -86,70 +70,39 @@ export default {
     enable: function(){
       this.$refs[this.getDropzoneRef].enable();
     },
-    handleDropzoneUploadError(file, message, xhr){
+    handleUploadError(file, message, xhr){
       // response: {'error'}
       this.sendNotification(SnotifyStyle.warning, "File upload failure: "+message.error);
     },
-    handleDropzoneUploadRemoval(file){
+    handleUploadRemoval(file){
       let removedAttachmentObject = JSON.parse(file.xhr.response);
-      this.uploadFiles = this.uploadFiles.filter(function(attachment){
+      this.dragNDropFiles = this.dragNDropFiles.filter(function(attachment){
         return attachment.uuid !== removedAttachmentObject.uuid;
       });
     },
-    handleDropzoneUploadSuccess(file, response){
+    handleUploadSuccess(file, response){
       // response: {'uuid', 'name', 'tmp_filename'}
-      this.uploadFiles.push(response);
+      this.dragNDropFiles.push(response);
       this.sendNotification(SnotifyStyle.info, "Uploaded: "+response.name);
     },
 
-//     handleFilePondFormData: function(formData){
-//       formData.append('_token',this.uploadToken);
-//       return formData;
-//     },
-
-//     handleFilePondFileUpdate: function(files){
-//       // keeps files
-//       let currentFiles = this.uploadFiles
-//       let remainingFiles = [];
-//       _.forEach(files, function(f){
-//         let filteredFiles = currentFiles.filter(function (uploadedFile) {
-//               return uploadedFile.uuid === f.serverId;
-//             }
-//         );
-//         if(!_.isEmpty(filteredFiles)){
-//           remainingFiles.push(filteredFiles[0])
-//         }
-//       });
-//       this.uploadFiles = remainingFiles;
-//     },
     sendNotification: function(notificationType, notificationMessage){
       this.$eventHub.broadcast(
-          this.$eventHub.EVENT_NOTIFICATION(),
+          this.$eventHub.EVENT_NOTIFICATION,
           {type: notificationType, message: notificationMessage}
       );
     },
-//     handleBroadcastEvent: function(broadcastPayload){
-//       if(broadcastPayload.modal === this.id){
-//         switch(broadcastPayload.task){
-//           case 'disable':
-//             this.disable();
-//             break;
-//           case 'enable':
-//             this.enable();
-//             break;
-//           case 'clear':
-//             this.clearFiles();
-//             break;
-//           default:
-//             console.warn('Unknown task ['+broadcastPayload.task+'] sent by ['+broadcastPayload.modal+'] to ['+this.$eventBus.EVENT_FILE_DROP_UPDATE+']');
-//             break;
-//         }
-//       }
-//     }
   },
-//   created() {
-//     this.$eventBus.listen(this.$eventBus.EVENT_FILE_DROP_UPDATE(), this.handleBroadcastEvent);
-//   }
+  watch:{
+    attachments: function(newValue, oldValue){
+      // changes passed to the prop.attachments after initial setup
+      this.dragNDropFiles = newValue;
+    },
+    dragNDropFiles: function(newValue, oldValue){
+      // changes made to the data.dragNDropFiles
+      this.$emit(EMIT_UPDATE_ATTACHMENTS, newValue);
+    }
+  },
 }
 </script>
 
