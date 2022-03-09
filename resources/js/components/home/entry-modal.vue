@@ -151,10 +151,8 @@
         </div>
 
         <!-- attachment upload -->
-        <div class="col-span-4">
-          <!-- TODO: fix and re-enable -->
-<!--          <file-drag-n-drop id="entry-modal"></file-drag-n-drop>-->
-<!--          <file-drag-n-drop id="entry-modal" v-bind:is-visible="!isLocked" v-model:attachments="entryData.attachments"></file-drag-n-drop>-->
+        <div class="col-span-4" v-show="!isLocked">
+          <file-drag-n-drop id="entry-modal" v-bind:attachments.sync="entryData.attachments"></file-drag-n-drop>
         </div>
 
         <!-- existing attachments -->

@@ -144,14 +144,7 @@
 
         <!-- attachment upload -->
         <div class="col-span-4">
-          <!-- TODO: fix & re-enable -->
-<!--          <file-drag-n-drop v-bind:id="transfer-modal" v-model:attachments="transferData.attachments"></file-drag-n-drop>-->
-<!--          <vue-dropzone ref="transferModalFileUpload" id="transfer-modal-file-upload"-->
-<!--                        v-bind:options="dropzoneOptions"-->
-<!--                        v-on:vdropzone-success="dropzoneSuccessfulUpload"-->
-<!--                        v-on:vdropzone-error="dropzoneUploadError"-->
-<!--                        v-on:vdropzone-removed-file="dropzoneRemoveUpload"-->
-<!--          ></vue-dropzone>-->
+          <file-drag-n-drop id="transfer-modal" v-bind:attachments.sync="transferData.attachments"></file-drag-n-drop>
         </div>
       </section>
 
