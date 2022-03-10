@@ -40,7 +40,7 @@ class HomePage extends Page {
         return [
             // entry-modal
             '@entry-modal'=>'#entry-modal',
-            '@entry-modal-save-btn'=>"#entry-modal button#entry-save-btn",
+            '@entry-modal-save-btn'=>"button#entry-save-btn",
             '@edit-existing-entry-modal-btn'=>"button.edit-entry-button",
             // transfer-modal
             '@transfer-modal'=>'#transfer-modal',

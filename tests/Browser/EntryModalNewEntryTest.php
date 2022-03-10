@@ -5,6 +5,7 @@ namespace Tests\Browser;
 use App\Helpers\CurrencyHelper;
 use App\Models\Account;
 use App\Models\AccountType;
+use App\Traits\Tests\Dusk\EntryModal as DuskTraitEntryModal;
 use App\Traits\Tests\Dusk\FileDragNDrop as DuskTraitFileDragNDrop;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
@@ -13,7 +14,7 @@ use App\Traits\Tests\Dusk\TagsInput as DuskTraitTagsInput;
 use App\Traits\Tests\Dusk\TailwindColors as DuskTraitTailwindColors;
 use App\Traits\Tests\Dusk\ToggleButton as DuskTraitToggleButton;
 use App\Traits\Tests\WaitTimes;
-use Storage;
+use Illuminate\Support\Facades\Storage;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Laravel\Dusk\Browser;
@@ -31,7 +32,7 @@ use Throwable;
  */
 class EntryModalNewEntryTest extends DuskTestCase {
 
-    use HomePageSelectors;
+    use DuskTraitEntryModal;
     use DuskTraitFileDragNDrop;
     use DuskTraitLoading;
     use DuskTraitNotification;
@@ -39,15 +40,15 @@ class EntryModalNewEntryTest extends DuskTestCase {
     use DuskTraitTagsInput;
     use DuskTraitTailwindColors;
     use DuskTraitToggleButton;
+    use HomePageSelectors;
     use WaitTimes;
 
     private $method_account = 'account';
     private $method_account_type = 'account-type';
 
-    public function setUp(): void{
-        parent::setUp();
-        $this->_color_expense_switch_expense = self::amber(300);
-        $this->_color_expense_switch_income = self::teal(500);
+    public function __construct($name = null, array $data = [], $dataName = ''){
+        parent::__construct($name, $data, $dataName);
+        $this->initEntryModalColours();
     }
 
     /**
@@ -92,15 +93,11 @@ class EntryModalNewEntryTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openNewEntryModal($browser);
             $browser
-                ->with($this->_selector_modal_entry.' '.$this->_selector_modal_head, function($entry_modal_head){
+                ->within($this->_selector_modal_entry.' '.$this->_selector_modal_head, function(Browser $entry_modal_head){
                     $entry_modal_head
                         ->assertSee($this->_label_entry_new)
-                        ->assertNotChecked($this->_selector_modal_entry_btn_confirmed)
-                        ->assertSee($this->_label_btn_confirmed)
                         ->assertVisible($this->_selector_modal_btn_close);
-
-                    $entry_confirm_class = $entry_modal_head->attribute($this->_selector_modal_entry_btn_confirmed_label, 'class');
-                    $this->assertStringContainsString('has-text-grey-light', $entry_confirm_class);
+                    $this->assertConfirmedButtonInactive($entry_modal_head);
                 });
         });
     }
@@ -117,7 +114,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openNewEntryModal($browser);
             $browser
-                ->with($this->_selector_modal_head, function($entry_modal_head){
+                ->within($this->_selector_modal_entry.' '.$this->_selector_modal_head, function(Browser $entry_modal_head){
                     $entry_modal_head->click($this->_selector_modal_btn_close);
                 })
                 ->assertMissing($this->_selector_modal_entry);
@@ -136,15 +133,10 @@ class EntryModalNewEntryTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openNewEntryModal($browser);
             $browser
-                ->with($this->_selector_modal_head, function($entry_modal_head){
-                    $entry_modal_head
-                        ->assertSee($this->_label_btn_confirmed)
-                        ->click($this->_selector_modal_entry_btn_confirmed_label)
-                        ->assertChecked($this->_selector_modal_entry_btn_confirmed);
-
-                    $classes = $entry_modal_head->attribute($this->_selector_modal_entry_btn_confirmed_label, "class");
-                    $this->assertStringContainsString("has-text-white", $classes);
-                    $this->assertStringNotContainsString("has-text-grey-light", $classes);
+                ->within($this->_selector_modal_entry.' '.$this->_selector_modal_head, function(Browser $entry_modal_head){
+                    $this->assertConfirmedButtonInactive($entry_modal_head);
+                    $this->interactWithConfirmButton($entry_modal_head);
+                    $this->assertConfirmedButtonActive($entry_modal_head);
                 });
         });
     }
@@ -161,7 +153,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openNewEntryModal($browser);
             $browser
-                ->with($this->_selector_modal_body, function($entry_modal_body){
+                ->within($this->_selector_modal_entry.' '.$this->_selector_modal_body, function(Browser $entry_modal_body){
                     $entry_modal_body
                         ->assertSee('Date:')
                         ->assertVisible($this->_selector_modal_entry_field_date)
@@ -195,15 +187,10 @@ class EntryModalNewEntryTest extends DuskTestCase {
 
                     $this->assertToggleButtonState($entry_modal_body, $this->_selector_modal_entry_field_expense, $this->_label_expense_switch_expense, $this->_color_expense_switch_expense);
 
-                    $entry_modal_body
-                        ->assertSee('Tags:');
+                    $entry_modal_body->assertSee('Tags:');
                     $this->assertDefaultStateOfTagsInput($entry_modal_body);
 
-                    $entry_modal_body
-                        ->assertVisible($this->_selector_modal_entry_field_upload) // drag-n-drop file upload field
-                        ->with($this->_selector_modal_entry_field_upload, function($file_upload){
-                            $file_upload->assertSee(self::$LABEL_FILE_DRAG_N_DROP);
-                        });
+                    $this->assertDragNDropDefaultState($entry_modal_body, $this->_selector_modal_entry_field_upload);
                 });
         });
     }
@@ -220,7 +207,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openNewEntryModal($browser);
             $browser
-                ->with($this->_selector_modal_foot, function($entry_modal_foot){
+                ->within($this->_selector_modal_entry.' '.$this->_selector_modal_foot, function(Browser $entry_modal_foot){
                     $entry_modal_foot
                         ->assertMissing($this->_selector_modal_entry_btn_delete)   // delete button
                         ->assertMissing($this->_selector_modal_entry_btn_lock)     // lock/unlock button
@@ -229,11 +216,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
                         ->assertVisible($this->_selector_modal_entry_btn_save)     // save button
                         ->assertSee($this->_label_btn_save);
 
-                    $this->assertStringContainsString(
-                        'is-success',
-                        $entry_modal_foot->attribute($this->_selector_modal_entry_btn_save, 'class'),
-                        "Save button should have 'is-success' class"
-                    );
+                    $this->assertElementBackgroundColor($entry_modal_foot, $this->_selector_modal_entry_btn_save, self::green(500));
                 })
                 ->assertEntryModalSaveButtonIsDisabled();
         });
@@ -251,7 +234,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openNewEntryModal($browser);
             $browser
-                ->with($this->_selector_modal_foot, function($entry_modal_foot){
+                ->within($this->_selector_modal_entry.' '.$this->_selector_modal_foot, function(Browser $entry_modal_foot){
                     $entry_modal_foot->click($this->_selector_modal_entry_btn_cancel);
                 })
                 ->assertMissing($this->_selector_modal_entry);
@@ -265,6 +248,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
      * test 9/25
      */
     public function testCloseEntryModalWithHotkey(){
+        $this->markTestIncomplete("hotkey functionality incomplete");
         $this->browse(function(Browser $browser){
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
@@ -287,10 +271,10 @@ class EntryModalNewEntryTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openNewEntryModal($browser);
             $browser
-                ->with($this->_selector_modal_body, function($entry_modal_body){
+                ->within($this->_selector_modal_entry.' '.$this->_selector_modal_body, function(Browser $entry_modal_body){
                     $entry_modal_body
                         ->type($this->_selector_modal_entry_field_value, "F15sae.92fwfw")
-                        ->click($this->_selector_modal_entry_field_date)
+                        ->click($this->_selector_modal_entry_field_date)    // processing doesn't occur until another element has been interacted with
                         ->assertInputValue($this->_selector_modal_entry_field_value, "15.92");
                 });
         });
@@ -312,17 +296,14 @@ class EntryModalNewEntryTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openNewEntryModal($browser);
             $browser
-                ->with($this->_selector_modal_body, function(Browser $entry_modal_body){
+                ->within($this->_selector_modal_entry.' '.$this->_selector_modal_body, function(Browser $entry_modal_body) use ($account_type){
                     // currency icon in input#entry-value is "$"
-                    $entry_value_currency = $entry_modal_body->attribute($this->_selector_modal_entry_field_value." + .icon.is-left i", 'class');
-                    $this->assertStringContainsString($this->_class_icon_dollar, $entry_value_currency);
+                    $this->assertEntryValueCurrency($entry_modal_body, $this->_label_dollar);
                     // don't see account meta
                     $entry_modal_body
                         ->assertDontSee($this->_label_account_type_meta_account_name)
                         ->assertDontSee($this->_label_account_type_meta_last_digits);
-                })
-                ->waitUntilMissing($this->_selector_modal_entry_field_account_type_is_loading, self::$WAIT_SECONDS)
-                ->with($this->_selector_modal_body, function($entry_modal_body) use ($account_type){
+                    $this->waitUntilSelectLoadingIsMissing($entry_modal_body, $this->_selector_modal_entry_field_account_type);
                     $entry_modal_body
                         ->assertVisible($this->_selector_modal_entry_field_account_type)
                         ->select($this->_selector_modal_entry_field_account_type, $account_type['id'])
@@ -374,16 +355,14 @@ class EntryModalNewEntryTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openNewEntryModal($browser);
             $browser
-                ->waitUntilMissing($this->_selector_modal_entry_field_account_type_is_loading, self::$WAIT_SECONDS)
-                ->with($this->_selector_modal_body, function(Browser $entry_modal_body) use ($disabled_account_type){
+                ->within($this->_selector_modal_entry.' '.$this->_selector_modal_body, function(Browser $entry_modal_body) use ($disabled_account_type){
+                    $this->waitUntilSelectLoadingIsMissing($entry_modal_body, $this->_selector_modal_entry_field_account_type);
                     $entry_modal_body
                         ->assertVisible($this->_selector_modal_entry_field_account_type)
                         ->select($this->_selector_modal_entry_field_account_type, $disabled_account_type['id'])
                         ->assertVisible($this->_selector_modal_entry_meta);
 
-                    $meta_text_color = $entry_modal_body->attribute($this->_selector_modal_entry_meta, 'class');
-                    $this->assertStringNotContainsString('has-text-info', $meta_text_color);
-                    $this->assertStringContainsString('has-text-grey-light', $meta_text_color);
+                    $this->assertElementTextColor($entry_modal_body, $this->_selector_modal_entry_meta, self::gray(400));
 
                     $entry_modal_body
                         ->select($this->_selector_modal_entry_field_account_type, '')
@@ -405,38 +384,32 @@ class EntryModalNewEntryTest extends DuskTestCase {
         $currencies = CurrencyHelper::fetchCurrencies();
         foreach($accounts as $account){
             // See storage/app/json/currency.json for list of supported currencies
-            $currency_class = $currencies->where('code', $account['currency'])->first()->class;
-            if(is_null($currency_class)){
-                $currency_class = $this->_class_icon_dollar;
-            }
+            $currency_html = $currencies->where('code', $account['currency'])->first()->html;
+            $currency_character = is_null($currency_html) ? $this->_label_dollar : html_entity_decode($currency_html, ENT_HTML5);
 
-            $account_type = AccountType::where('account_id', $account['id'])->get()->random();
+            $account_type_id = AccountType::where('account_id', $account['id'])->pluck('id')->random();
 
-            $this->browse(function(Browser $browser) use ($account_type, $currency_class){
+            $this->browse(function(Browser $browser) use ($account_type_id, $currency_character){
                 $browser->visit(new HomePage());
                 $this->waitForLoadingToStop($browser);
                 $this->openNewEntryModal($browser);
                 $browser
-                    ->waitUntilMissing($this->_selector_modal_entry_field_account_type_is_loading, self::$WAIT_SECONDS)
-                    ->with($this->_selector_modal_body, function(Browser $entry_modal_body) use ($account_type, $currency_class){
+                    ->within($this->_selector_modal_entry.' '.$this->_selector_modal_body, function(Browser $entry_modal_body) use ($account_type_id, $currency_character){
                         // currency icon in input#entry-value is "$" by default
-                        $entry_value_currency = $entry_modal_body->attribute($this->_selector_modal_entry_field_value." + .icon.is-left i", 'class');
-                        $this->assertStringContainsString($this->_class_icon_dollar, $entry_value_currency);
+                        $this->assertEntryValueCurrency($entry_modal_body, $this->_label_dollar);
 
+                        $this->waitUntilSelectLoadingIsMissing($entry_modal_body, $this->_selector_modal_entry_field_account_type);
                         $entry_modal_body
                             ->assertVisible($this->_selector_modal_entry_field_account_type)
-                            ->select($this->_selector_modal_entry_field_account_type, $account_type['id']);
+                            ->select($this->_selector_modal_entry_field_account_type, $account_type_id);
 
-                        $entry_value_currency = $entry_modal_body->attribute($this->_selector_modal_entry_field_value." + .icon.is-left i", 'class');
-                        $this->assertStringContainsString($currency_class, $entry_value_currency);
+                        $this->assertEntryValueCurrency($entry_modal_body, $currency_character);
 
                         // revert account-type select field to default state
                         $entry_modal_body->select($this->_selector_modal_entry_field_account_type, '');
-                        $entry_value_currency = $entry_modal_body->attribute($this->_selector_modal_entry_field_value." + .icon.is-left i", 'class');
-                        $this->assertStringContainsString($this->_class_icon_dollar, $entry_value_currency);
+                        $this->assertEntryValueCurrency($entry_modal_body, $this->_label_dollar);
                     });
             });
-
         }
     }
 
@@ -452,7 +425,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openNewEntryModal($browser);
             $browser
-                ->with($this->_selector_modal_body, function($entry_modal_body){
+                ->within($this->_selector_modal_entry.' '.$this->_selector_modal_body, function(Browser $entry_modal_body){
                     $this->assertToggleButtonState($entry_modal_body, $this->_selector_modal_entry_field_expense, $this->_label_expense_switch_expense, $this->_color_expense_switch_expense);
                     $this->toggleToggleButton($entry_modal_body, $this->_selector_modal_entry_field_expense);
                     $this->assertToggleButtonState($entry_modal_body, $this->_selector_modal_entry_field_expense, $this->_label_expense_switch_income, $this->_color_expense_switch_income);
@@ -476,19 +449,19 @@ class EntryModalNewEntryTest extends DuskTestCase {
             $this->openNewEntryModal($browser);
 
             $browser
-                ->with($this->_selector_modal_body, function($entry_modal_body){
+                ->within($this->_selector_modal_entry.' '.$this->_selector_modal_body, function(Browser $entry_modal_body){
                     // The date field should already be filled in. No need to fill it in again.
                     $entry_modal_body->assertInputValue($this->_selector_modal_entry_field_date, date("Y-m-d"));
                 })
                 ->assertEntryModalSaveButtonIsDisabled()
 
-                ->with($this->_selector_modal_body, function($entry_modal_body){
+                ->within($this->_selector_modal_body, function(Browser $entry_modal_body){
                     $entry_modal_body->type($this->_selector_modal_entry_field_value, "9.99");
                 })
                 ->assertEntryModalSaveButtonIsDisabled()
 
-                ->waitUntilMissing($this->_selector_modal_entry_field_account_type_is_loading, self::$WAIT_SECONDS)
-                ->with($this->_selector_modal_body, function($entry_modal_body) use ($account_type){
+                ->within($this->_selector_modal_entry.' '.$this->_selector_modal_body, function(Browser $entry_modal_body) use ($account_type){
+                    $this->waitUntilSelectLoadingIsMissing($entry_modal_body, $this->_selector_modal_entry_field_account_type);
                     $entry_modal_body
                         ->select($this->_selector_modal_entry_field_account_type, $account_type['id'])
                         ->assertSee($this->_label_account_type_meta_account_name)
@@ -496,17 +469,17 @@ class EntryModalNewEntryTest extends DuskTestCase {
                 })
                 ->assertEntryModalSaveButtonIsDisabled()
 
-                ->with($this->_selector_modal_body, function($entry_modal_body){
+                ->within($this->_selector_modal_entry.' '.$this->_selector_modal_body, function(Browser $entry_modal_body){
                     $entry_modal_body
                         ->type($this->_selector_modal_entry_field_memo, "Test entry")
                         ->click($this->_selector_modal_entry_field_date);
                 })
                 ->assertEntryModalSaveButtonIsNotDisabled()
 
-                ->with($this->_selector_modal_body, function($entry_modal_body){
+                ->within($this->_selector_modal_entry.' '.$this->_selector_modal_body, function(Browser $entry_modal_body){
                     // laravel dusk has an issue typing into input[type="date"] fields
                     // work-around for this is to use individual keystrokes
-                    $backspace_count = strlen($entry_modal_body->value($this->_selector_modal_entry_field_date));
+                    $backspace_count = strlen($entry_modal_body->inputValue($this->_selector_modal_entry_field_date));
                     for($i=0; $i<$backspace_count; $i++){
                         $entry_modal_body->keys($this->_selector_modal_entry_field_date, "{backspace}");
                     }
@@ -527,7 +500,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openNewEntryModal($browser);
             $browser
-                ->within($this->_selector_modal_body, function(Browser $entry_modal_body){
+                ->within($this->_selector_modal_entry.' '.$this->_selector_modal_body, function(Browser $entry_modal_body){
                     $upload_file_path = Storage::path($this->getRandomTestFileStoragePath());
                     $this->uploadAttachmentUsingDragNDropAndSuccess($entry_modal_body, $this->_selector_modal_entry_field_upload, $this->_selector_modal_entry_dropzone_hidden_file_input, $upload_file_path);
                     $this->removeUploadedAttachmentFromDragNDrop($entry_modal_body, $this->_selector_modal_entry_field_upload);
@@ -547,19 +520,18 @@ class EntryModalNewEntryTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openNewEntryModal($browser);
             $browser
-                ->within($this->_selector_modal_body, function(Browser $modal_body){
+                ->within($this->_selector_modal_entry.' '.$this->_selector_modal_body, function(Browser $modal_body){
                     $upload_file_path = Storage::path($this->getRandomTestFileStoragePath());
-                    $this->assertFileExists($upload_file_path);
                     $this->uploadAttachmentUsingDragNDropAndSuccess($modal_body, $this->_selector_modal_entry_field_upload, $this->_selector_modal_entry_dropzone_hidden_file_input, $upload_file_path);
                 })
-                ->within($this->_selector_modal_foot, function(Browser $modal_foot){
+                ->within($this->_selector_modal_entry.' '.$this->_selector_modal_foot, function(Browser $modal_foot){
                     $modal_foot->click($this->_selector_modal_entry_btn_cancel);
                 })
                 ->waitUntilMissing($this->_selector_modal_entry);
             $this->openNewEntryModal($browser);
             $browser
-                ->within($this->_selector_modal_body, function(Browser $modal_body){
-                    $modal_body->assertMissing(self::$SELECTOR_FILE_DRAG_N_DROP_UPLOAD_THUMBNAIL);
+                ->within($this->_selector_modal_entry.' '.$this->_selector_modal_body, function(Browser $modal_body){
+                    $this->assertDragNDropDefaultState($modal_body, $this->_selector_modal_entry_field_upload);
                 });
         });
     }
@@ -580,83 +552,60 @@ class EntryModalNewEntryTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openNewEntryModal($browser);
             $browser
-                ->with($this->_selector_modal_body, function ($entry_modal_body) use ($tag){
+                ->within($this->_selector_modal_entry.' '.$this->_selector_modal_body, function (Browser $entry_modal_body) use ($tag){
                     $this->fillTagsInputUsingAutocomplete($entry_modal_body, $tag);
                     $this->assertTagInInput($entry_modal_body, $tag);
                 });
         });
     }
 
-    /**
-     * @throws Throwable
-     *
-     * @group entry-modal-2
-     * test 20/25
-     */
-    public function testCreateEntryWithMinimumRequirementsExpense(){
-        $account_types = $this->getApiAccountTypes();
-        $account_type = $account_types[array_rand($account_types, 1)];
-
-        $this->browse(function(Browser $browser) use ($account_type){
-            $memo_field = "Test entry - save requirements - expense";
-            $browser->visit(new HomePage());
-            $this->waitForLoadingToStop($browser);
-            $this->openNewEntryModal($browser);
-            $browser
-                ->within($this->_selector_modal_body, function(Browser $modal_body) use ($account_type, $memo_field){
-                    $modal_body
-                        ->type($this->_selector_modal_entry_field_value, "9.99")
-                        ->waitUntilMissing($this->_selector_modal_entry_field_account_type_is_loading, self::$WAIT_SECONDS)
-                        ->select($this->_selector_modal_entry_field_account_type, $account_type['id'])
-                        ->type($this->_selector_modal_entry_field_memo, $memo_field);
-                })
-                ->within($this->_selector_modal_foot, function(Browser $modal_foot){
-                    $modal_foot->click($this->_selector_modal_entry_btn_save);
-                });
-            $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_SUCCESS, $this->_label_notification_new_entry_created);
-            $this->dismissNotification($browser);
-            $this->waitForLoadingToStop($browser);
-            $browser
-                ->assertMissing($this->_selector_modal_entry)
-                ->with($this->_selector_table.' .has-background-warning.is-expense', function($table_row) use ($memo_field){
-                    $table_row->assertSee($memo_field);
-                });
-        });
+    public function providerCreateEntryWithMinimumRequirements():array{
+        return [
+            'expense'=>[true],  // 20/25
+            'income'=>[false]   // 21/25
+        ];
     }
 
     /**
+     * @dataProvider providerCreateEntryWithMinimumRequirements
+     * @param bool $is_expense
      * @throws Throwable
      *
      * @group entry-modal-2
-     * test 21/25
+     * test (see provider)/25
      */
-    public function testCreateEntryWithMinimumRequirementsIncome(){
+    public function testCreateEntryWithMinimumRequirements(bool $is_expense){
         $account_types = $this->getApiAccountTypes();
         $account_type = $account_types[array_rand($account_types, 1)];
 
-        $this->browse(function(Browser $browser) use ($account_type){
-            $memo_field = "Test entry - save requirements - income";
+        $this->browse(function(Browser $browser) use ($account_type, $is_expense){
+            $memo_field = "Test entry - save requirements - ".($is_expense ? 'expense' : 'income');
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $this->openNewEntryModal($browser);
             $browser
-                ->within($this->_selector_modal_body, function(Browser $modal_body) use ($account_type, $memo_field){
+                ->within($this->_selector_modal_entry.' '.$this->_selector_modal_body, function(Browser $modal_body) use ($account_type, $memo_field, $is_expense){
+                    $this->waitUntilSelectLoadingIsMissing($modal_body, $this->_selector_modal_entry_field_account_type);
                     $modal_body
                         ->type($this->_selector_modal_entry_field_value, "9.99")
-                        ->waitUntilMissing($this->_selector_modal_entry_field_account_type_is_loading, self::$WAIT_SECONDS)
                         ->select($this->_selector_modal_entry_field_account_type, $account_type['id'])
                         ->type($this->_selector_modal_entry_field_memo, $memo_field);
-                    $this->toggleToggleButton($modal_body, $this->_selector_modal_entry_field_expense);
+
+                    if(!$is_expense){
+                        $this->toggleToggleButton($modal_body, $this->_selector_modal_entry_field_expense);
+                    }
                 })
-                ->within($this->_selector_modal_foot, function(Browser $modal_foot){
+                ->within($this->_selector_modal_entry.' '.$this->_selector_modal_foot, function(Browser $modal_foot){
                     $modal_foot->click($this->_selector_modal_entry_btn_save);
                 });
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_SUCCESS, $this->_label_notification_new_entry_created);
             $this->dismissNotification($browser);
             $this->waitForLoadingToStop($browser);
+
+            $table_row_selector = $this->_selector_table.' '.($is_expense ? $this->_selector_table_unconfirmed_expense : $this->_selector_table_unconfirmed_income);
             $browser
                 ->assertMissing($this->_selector_modal_entry)
-                ->with($this->_selector_table.' .has-background-warning.is-income', function($table_row) use ($memo_field){
+                ->within($table_row_selector, function(Browser $table_row) use ($memo_field){
                     $table_row->assertSee($memo_field);
                 });
         });
@@ -678,17 +627,17 @@ class EntryModalNewEntryTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openNewEntryModal($browser);
             $browser
-                ->with($this->_selector_modal_head, function($modal_head){
-                    $modal_head->click($this->_selector_modal_entry_btn_confirmed_label);
+                ->within($this->_selector_modal_entry.' '.$this->_selector_modal_head, function(Browser $modal_head){
+                    $this->interactWithConfirmButton($modal_head);
                 })
-                ->with($this->_selector_modal_body, function($modal_body) use ($account_type, $memo_field){
+                ->within($this->_selector_modal_entry.' '.$this->_selector_modal_body, function($modal_body) use ($account_type, $memo_field){
+                    $this->waitUntilSelectLoadingIsMissing($modal_body, $this->_selector_modal_entry_field_account_type);
                     $modal_body
                         ->type($this->_selector_modal_entry_field_value, "9.99")
-                        ->waitUntilMissing($this->_selector_modal_entry_field_account_type_is_loading, self::$WAIT_SECONDS)
                         ->select($this->_selector_modal_entry_field_account_type, $account_type['id'])
                         ->type($this->_selector_modal_entry_field_memo, $memo_field);
                 })
-                ->with($this->_selector_modal_foot, function($modal_foot){
+                ->within($this->_selector_modal_entry.' '.$this->_selector_modal_foot, function($modal_foot){
                     $modal_foot->click($this->_selector_modal_entry_btn_save);
                 });
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_SUCCESS, $this->_label_notification_new_entry_created);
@@ -696,7 +645,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $browser
                 ->assertMissing($this->_selector_modal_entry)
-                ->with($this->_selector_table.' .is-confirmed', function($table_row) use ($memo_field){
+                ->with($this->_selector_table.' '.$this->_selector_table_confirmed_expense, function($table_row) use ($memo_field){
                     $table_row->assertSee($memo_field);
                 });
         });
@@ -734,10 +683,10 @@ class EntryModalNewEntryTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openNewEntryModal($browser);
             $browser
-                ->within($this->_selector_modal_body, function(Browser $modal_body) use ($account_type, $memo_field, $has_tags, $has_attachments, $upload_file_path){
+                ->within($this->_selector_modal_entry.' '.$this->_selector_modal_body, function(Browser $modal_body) use ($account_type, $memo_field, $has_tags, $has_attachments, $upload_file_path){
+                    $this->waitUntilSelectLoadingIsMissing($modal_body, $this->_selector_modal_entry_field_account_type);
                     $modal_body
                         ->type($this->_selector_modal_entry_field_value, "9.99")
-                        ->waitUntilMissing($this->_selector_modal_entry_field_account_type_is_loading, self::$WAIT_SECONDS)
                         ->select($this->_selector_modal_entry_field_account_type, $account_type['id'])
                         ->type($this->_selector_modal_entry_field_memo, $memo_field);
 
@@ -758,7 +707,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
                 $this->dismissNotification($browser);
             }
 
-            $browser->with($this->_selector_modal_foot, function($modal_foot){
+            $browser->within($this->_selector_modal_entry.' '.$this->_selector_modal_foot, function(Browser $modal_foot){
                 $modal_foot->click($this->_selector_modal_entry_btn_save);
             });
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_SUCCESS, $this->_label_notification_new_entry_created);
@@ -767,7 +716,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
             $browser
                 ->assertMissing($this->_selector_modal_entry)
 
-                ->with($this->_selector_table.' .has-background-warning'.($has_attachments?".has-attachments":"").($has_tags?".has-tags":""), function($table_row) use ($memo_field){
+                ->within($this->_selector_table.' .unconfirmed'.($has_attachments?".has-attachments":"").($has_tags?".has-tags":""), function(Browser $table_row) use ($memo_field){
                     $table_row->assertSee($memo_field);
                 });
         });

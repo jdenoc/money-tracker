@@ -35,6 +35,7 @@ class ATest extends DuskTestCase {
             // [$url, $title]
             'home'=>['/', "Money Tracker | HOME"],
             'stats'=>['/stats', "Money Tracker | STATS"],
+//            'settings'=>['/settings', "Money Tracker | Settings"],    // TODO: when we have a settings page
         ];
     }
 

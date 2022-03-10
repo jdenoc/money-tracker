@@ -2,18 +2,21 @@
 
 namespace App\Traits\Tests\Dusk;
 
-use App\Traits\Tests\WaitTimes;
+use App\Traits\Tests\Dusk\AccountOrAccountTypeSelector as DuskTraitAccountOrAccountTypeSelector;
 use App\Traits\Tests\Dusk\ToggleButton as DuskTraitToggleButton;
+use App\Traits\Tests\WaitTimes;
+use App\Traits\Tests\WithBulmaColors;
 use Laravel\Dusk\Browser;
 use PHPUnit\Framework\Assert;
 
 trait AccountOrAccountTypeTogglingSelector {
 
+    use DuskTraitAccountOrAccountTypeSelector;
     use DuskTraitToggleButton;
     use WaitTimes;
+    use WithBulmaColors;
 
     private static $SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT = ".select-account-or-account-types-id";
-    private static $SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT_LOADING = ".is-loading .select-account-or-account-types-id";
 
     private static $LABEL_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_TOGGLE_ACCOUNT = "Account";
     private static $LABEL_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_TOGGLE_ACCOUNTTYPE = "Account Type";
@@ -59,7 +62,7 @@ trait AccountOrAccountTypeTogglingSelector {
         $browser
             // component
             ->assertVisible($this->getAccountOrAccountTypeTogglingSelectorComponentId($this->_account_or_account_type_toggling_selector_label_id))
-            ->with($this->getAccountOrAccountTypeTogglingSelectorComponentId($this->_account_or_account_type_toggling_selector_label_id), function(Browser $component) use ($accounts){
+            ->within($this->getAccountOrAccountTypeTogglingSelectorComponentId($this->_account_or_account_type_toggling_selector_label_id), function(Browser $component) use ($accounts){
                 $color_switch_default = $this->bulmaColors->getColor('COLOR_GREY_LIGHT');
 
                 // account/account-type - switch
@@ -74,8 +77,10 @@ trait AccountOrAccountTypeTogglingSelector {
                 $component
                     ->assertVisible(self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT)
                     ->assertSelected(self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT, "")
-                    ->assertSeeIn(self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT, self::$LABEL_ACCOUNT_AND_ACCOUNT_TYPE_SELECT_OPTION_DEFAULT)
-                    ->waitUntilMissing(self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT_LOADING, self::$WAIT_SECONDS)
+                    ->assertSeeIn(self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT, self::$LABEL_ACCOUNT_AND_ACCOUNT_TYPE_SELECT_OPTION_DEFAULT);
+
+                $this->waitUntilSelectLoadingIsMissing($component, self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT);
+                $component
                     ->assertSelectHasOption(self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT, "")
                     ->assertSelectHasOptions(
                         self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT,
@@ -118,11 +123,10 @@ trait AccountOrAccountTypeTogglingSelector {
      */
     public function toggleShowDisabledAccountOrAccountTypeCheckbox(Browser $browser){
         $browser->with($this->getAccountOrAccountTypeTogglingSelectorComponentId($this->_account_or_account_type_toggling_selector_label_id), function(Browser $component){
-            $component
-                // make sure accounts have finished loading
-                ->waitUntilMissing(self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT_LOADING, self::$WAIT_SECONDS)
-                // show disabled checkbox
-                ->click($this->getCheckboxShowDisabledAccountOrAccountType($this->_account_or_account_type_toggling_selector_label_id));
+            // make sure accounts have finished loading
+            $this->waitUntilSelectLoadingIsMissing($component, self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT);
+            // show disabled checkbox
+            $component->click($this->getCheckboxShowDisabledAccountOrAccountType($this->_account_or_account_type_toggling_selector_label_id));
             $this->_disable_checkbox_checked = !$this->_disable_checkbox_checked;
         });
     }
@@ -133,11 +137,10 @@ trait AccountOrAccountTypeTogglingSelector {
      */
     public function selectAccountOrAccountTypeValue(Browser $browser, $selector_value){
         $browser->with($this->getAccountOrAccountTypeTogglingSelectorComponentId($this->_account_or_account_type_toggling_selector_label_id), function(Browser $component) use ($selector_value){
-            $component
-                // make sure accounts have finished loading
-                ->waitUntilMissing(self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT_LOADING, self::$WAIT_SECONDS)
-                // choose the account/account-type value
-                ->select(self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT, $selector_value);
+            // make sure accounts have finished loading
+            $this->waitUntilSelectLoadingIsMissing($component, self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT);
+            // choose the account/account-type value
+            $component->select(self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT, $selector_value);
 
             if(!$this->_disable_checkbox_checked){
                 $this->assertSelectOptionsClassOfAccountOrAccountTypeAreNotDisabled($component);
