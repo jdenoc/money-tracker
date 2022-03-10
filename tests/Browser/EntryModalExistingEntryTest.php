@@ -12,9 +12,9 @@ use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
 use App\Traits\Tests\Dusk\Notification as DuskTraitNotification;
 use App\Traits\Tests\Dusk\TagsInput as DuskTraitTagsInput;
+use App\Traits\Tests\Dusk\TailwindColors as DuskTraitTailwindColors;
 use App\Traits\Tests\Dusk\ToggleButton as DuskTraitToggleButton;
 use App\Traits\Tests\WaitTimes;
-use App\Traits\Tests\WithBulmaColors;
 use Carbon\Carbon;
 use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -43,11 +43,11 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     use DuskTraitNavbar;
     use DuskTraitNotification;
     use DuskTraitTagsInput;
+    use DuskTraitTailwindColors;
     use DuskTraitToggleButton;
     use EntryTransferKeys;
     use HomePageSelectors;
     use WaitTimes;
-    use WithBulmaColors;
     use WithFaker;
 
     const INI_POSTMAXSIZE = 'post_max_size';
@@ -73,8 +73,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     public function setUp(): void{
         parent::setUp();
         $this->_cached_entries_collection = [];
-        $this->_color_expense_switch_expense = $this->bulmaColors->getColor('COLOR_WARNING');
-        $this->_color_expense_switch_income = $this->bulmaColors->getColor('COLOR_PRIMARY');
+        $this->_color_expense_switch_expense = self::amber(300);
+        $this->_color_expense_switch_income = self::teal(500);
         if($this->getName(false) === self::$TEST_NAME_OVERRIDE_HTACCESS){
             $this->addRulesToHtaccessToDisableDisplayErrors();
         }
