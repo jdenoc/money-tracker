@@ -2,13 +2,14 @@
 
 namespace Tests\Browser;
 
+use App\Traits\Tests\Dusk\AccountOrAccountTypeSelector as DuskTraitAccountOrAccountTypeSelector;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
 use App\Traits\Tests\Dusk\Notification as DuskTraitNotification;
 use Illuminate\Support\Facades\DB;
+use Laravel\Dusk\Browser;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
-use Laravel\Dusk\Browser;
 use Tests\Traits\HomePageSelectors;
 use Throwable;
 
@@ -21,6 +22,7 @@ use Throwable;
  */
 class NotificationsTest extends DuskTestCase {
 
+    use DuskTraitAccountOrAccountTypeSelector;
     use DuskTraitLoading;
     use DuskTraitNavbar;
     use DuskTraitNotification;
@@ -297,10 +299,10 @@ class NotificationsTest extends DuskTestCase {
             // fill in minimum required fields
             $memo_field = "Test entry - 500 ERROR saving requirements";
             $browser
-                ->with($this->_selector_modal_body, function($modal_body) use ($account_type, $memo_field){
+                ->within($this->_selector_modal_body, function(Browser $modal_body) use ($account_type, $memo_field){
+                    $this->waitUntilSelectLoadingIsMissing($modal_body, $this->_selector_modal_entry_field_account_type);
                     $modal_body
                         ->type($this->_selector_modal_entry_field_value, "9.99")
-                        ->waitUntilMissing($this->_selector_modal_entry_field_account_type_is_loading, self::$WAIT_SECONDS)
                         ->select($this->_selector_modal_entry_field_account_type, $account_type['id'])
                         ->type($this->_selector_modal_entry_field_memo, $memo_field);
                 });
