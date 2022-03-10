@@ -4,10 +4,10 @@ namespace Tests\Browser;
 
 use App\Models\AccountType;
 use App\Traits\ExportsHelper;
-use App\Traits\Tests\Dusk\FilterModal;
-use App\Traits\Tests\Dusk\Loading;
-use App\Traits\Tests\Dusk\Navbar;
-use App\Traits\Tests\Dusk\Notification;
+use App\Traits\Tests\Dusk\FilterModal as DuskTraitFilterModal;
+use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
+use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
+use App\Traits\Tests\Dusk\Notification as DuskTraitNotification;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\File;
 use Laravel\Dusk\Browser;
@@ -24,13 +24,13 @@ use Throwable;
  */
 class ExportsTest extends DuskTestCase {
 
-    use FilterModal;
+    use DuskTraitFilterModal;
+    use DuskTraitLoading;
+    use DuskTraitNavbar;
+    use DuskTraitNotification;
     use ExportsHelper;
     use HomePageSelectors;
-    use Loading;
-    use Navbar;
     use WithFaker;
-    use Notification;
 
     private static $SELECTOR_EXPORT_BTN = '#filter-export-btn';
 
