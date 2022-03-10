@@ -2,7 +2,7 @@
 
 namespace Tests\Browser;
 
-use App\Traits\Tests\Dusk\AccountOrAccountTypeSelector as DuskTraitAccountOrAccountTypeSelector;
+use App\Traits\Tests\Dusk\EntryModal as DuskTraitEntryModal;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
 use App\Traits\Tests\Dusk\Notification as DuskTraitNotification;
@@ -22,22 +22,11 @@ use Throwable;
  */
 class NotificationsTest extends DuskTestCase {
 
-    use DuskTraitAccountOrAccountTypeSelector;
+    use DuskTraitEntryModal;
     use DuskTraitLoading;
     use DuskTraitNavbar;
     use DuskTraitNotification;
     use HomePageSelectors;
-
-    private $_selector_unconfirmed_expense = "tr.has-background-warning.is-expense";
-    private $_selector_unconfirmed_income = 'tr.has-background-warning.is-income';
-
-    private $_selector_modal = "@entry-modal";
-    private $_selector_modal_body_value = "input#entry-value";
-    private $_selector_modal_body_account_type = "select#entry-account-type";
-    private $_selector_modal_body_account_type_is_loading = ".select.is-loading select#entry-account-type";
-    private $_selector_modal_body_memo = "textarea#entry-memo";
-    private $_selector_modal_foot_save_btn = "button#entry-save-btn";
-    private $_selector_modal_foot_delete_btn = "button#entry-delete-btn";
 
     private $_message_error_occurred = "An error occurred while attempting to retrieve %s";
     private $_message_not_found = "No %s currently available";
@@ -459,7 +448,7 @@ class NotificationsTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $browser
                 ->openExistingEntryModal($entry_table_row_selector)
-                ->click($this->_selector_modal_foot_delete_btn);
+                ->click($this->_selector_modal_entry_btn_delete);
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_SUCCESS, "Entry was deleted");
             $this->waitForLoadingToStop($browser);
         });
@@ -480,13 +469,13 @@ class NotificationsTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $browser
                 ->openExistingEntryModal($entry_table_row_selector)
-                ->within($this->_selector_modal, function(Browser $modal) use (&$entry_id){
+                ->within($this->_selector_modal_entry, function(Browser $modal) use (&$entry_id){
                     $entry_id = $modal->inputValue($this->_selector_modal_entry_field_entry_id);
 
                     // FORCE 404 from `GET /api/entry/{entry_id}`
                     DB::table('entries')->truncate();
 
-                    $modal->click($this->_selector_modal_foot_delete_btn);
+                    $modal->click($this->_selector_modal_entry_btn_delete);
                 });
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_WARNING, sprintf("Entry [%s] does not exist and cannot be deleted", $entry_id));
             $this->waitForLoadingToStop($browser);
@@ -514,7 +503,7 @@ class NotificationsTest extends DuskTestCase {
                 ->within($this->_selector_modal_entry, function(Browser $modal) use (&$entry_id, $table){
                     $entry_id = $modal->inputValue($this->_selector_modal_entry_field_entry_id);
                     $this->dropTable($table);
-                    $modal->click($this->_selector_modal_foot_delete_btn);
+                    $modal->click($this->_selector_modal_entry_btn_delete);
             });
 
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_ERROR, sprintf("An error occurred while attempting to delete entry [%s]", $entry_id));
@@ -615,7 +604,7 @@ class NotificationsTest extends DuskTestCase {
     }
 
     private function getEntryTableRowSelector():string{
-        $unconfirmed_entry_selectors = [$this->_selector_unconfirmed_expense, $this->_selector_unconfirmed_income];
+        $unconfirmed_entry_selectors = [$this->_selector_table_unconfirmed_expense, $this->_selector_table_unconfirmed_income];
         return $unconfirmed_entry_selectors[array_rand($unconfirmed_entry_selectors, 1)];
     }
 

@@ -4,9 +4,10 @@ namespace Tests\Browser;
 
 use App\Models\Entry;
 use App\Traits\MaxEntryResponseValue;
-use App\Traits\Tests\Dusk\FilterModal;
-use App\Traits\Tests\Dusk\Loading;
-use App\Traits\Tests\Dusk\Navbar;
+use App\Traits\Tests\Dusk\EntryModal as DuskTraitEntryModal;
+use App\Traits\Tests\Dusk\FilterModal as DuskTraitFilterModal;
+use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
+use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
 use Illuminate\Support\Facades\DB;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
@@ -24,10 +25,11 @@ use Throwable;
  */
 class PaginationTest extends DuskTestCase {
 
-    use FilterModal;
+    use DuskTraitEntryModal;
+    use DuskTraitFilterModal;
+    use DuskTraitLoading;
+    use DuskTraitNavbar;
     use HomePageSelectors;
-    use Loading;
-    use Navbar;
     use MaxEntryResponseValue;
 
     const PAGE_NUMBER_ZERO = 0;

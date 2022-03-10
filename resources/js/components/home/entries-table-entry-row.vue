@@ -2,12 +2,12 @@
   <tr class="border bg-white hover:bg-gray-50"
       v-bind:id="'entry-'+id"
       v-bind:class="{
-        'bg-yellow-50 hover:bg-yellow-75': !confirm,
-        'bg-green-50 hover:bg-green-75': confirm && !expense,
         'text-gray-500': isFutureEntry,
+        'unconfirmed bg-yellow-50 hover:bg-yellow-75': !confirm,
         'is-confirmed': confirm,
         'is-expense': expense,
         'is-income': !expense,
+        'bg-green-50 hover:bg-green-75': confirm && !expense,
         'has-attachments': hasAttachments,
         'is-transfer': isTransfer,
         'has-tags': tagIds.length > 0

@@ -22,7 +22,15 @@ trait FileDragNDrop {
 
     private static $LABEL_FILE_DRAG_N_DROP = "Drag & Drop";
     private static $LABEL_FILE_DRAG_N_DROP__DROPZONE_REMOVE_FILE = "REMOVE FILE";
-    private static $LABEL_FILE_UPLOAD_SUCCESS_NOTIFICATION = 'uploaded: %s';
+    private static $LABEL_FILE_UPLOAD_SUCCESS_NOTIFICATION = 'Uploaded: %s';
+    private static $LABEL_FILE_UPLOAD_FAILURE_NOTIFICATION = '"File upload failure: %s';
+
+    protected function assertDragNDropDefaultState(Browser $modal, string $drag_n_drop_selector){
+        $modal
+            ->assertVisible($drag_n_drop_selector)
+            ->assertSeeIn($drag_n_drop_selector, self::$LABEL_FILE_DRAG_N_DROP)
+            ->assertMissing(self::$SELECTOR_FILE_DRAG_N_DROP_UPLOAD_THUMBNAIL);
+    }
 
     protected function uploadAttachmentUsingDragNDropAndSuccess(Browser $modal, string $drag_n_drop_selector, string $hidden_input_selector, string $upload_file_path){
         $this->uploadAttachmentUsingDragNDrop($modal, $drag_n_drop_selector, $hidden_input_selector, $upload_file_path);
@@ -37,7 +45,6 @@ trait FileDragNDrop {
             $this->assertUploadFailure($thumbnail, basename($upload_file_path), $error_message);
         });
     }
-
 
     /**
      * @param Browser $modal
@@ -108,24 +115,6 @@ trait FileDragNDrop {
             })
             ->pause(self::$WAIT_HALF_SECOND_IN_MILLISECONDS)   // give the element some time to disappear
             ->assertMissing(self::$SELECTOR_FILE_DRAG_N_DROP_UPLOAD_THUMBNAIL);
-    }
-
-    /**
-     * @param string $file_name
-     * @param int $file_size    size of file to be created in bytes
-     */
-    private function generateDummyFile(string $file_name, int $file_size){
-        $fp = fopen($file_name, 'w');
-        fseek($fp, $file_size-1, SEEK_CUR);
-        fwrite($fp, 'z');
-        fclose($fp);
-    }
-
-    /**
-     * @return string
-     */
-    private function getTestDummyFilename(): string{
-        return Storage::path(self::$storage_path.$this->getName(false).'.txt');
     }
 
 }
