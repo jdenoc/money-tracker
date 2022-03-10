@@ -10,9 +10,9 @@ use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
 use App\Traits\Tests\Dusk\Notification as DuskTraitNotification;
 use App\Traits\Tests\Dusk\TagsInput as DuskTraitTagsInput;
+use App\Traits\Tests\Dusk\TailwindColors as DuskTraitTailwindColors;
 use App\Traits\Tests\Dusk\ToggleButton as DuskTraitToggleButton;
 use App\Traits\Tests\WaitTimes;
-use App\Traits\Tests\WithBulmaColors;
 use Storage;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
@@ -37,17 +37,17 @@ class EntryModalNewEntryTest extends DuskTestCase {
     use DuskTraitNotification;
     use DuskTraitNavbar;
     use DuskTraitTagsInput;
+    use DuskTraitTailwindColors;
     use DuskTraitToggleButton;
     use WaitTimes;
-    use WithBulmaColors;
 
     private $method_account = 'account';
     private $method_account_type = 'account-type';
 
     public function setUp(): void{
         parent::setUp();
-        $this->_color_expense_switch_expense = $this->bulmaColors->getColor('COLOR_WARNING');
-        $this->_color_expense_switch_income = $this->bulmaColors->getColor('COLOR_PRIMARY');
+        $this->_color_expense_switch_expense = self::amber(300);
+        $this->_color_expense_switch_income = self::teal(500);
     }
 
     /**

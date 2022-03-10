@@ -10,6 +10,7 @@ use Laravel\Dusk\Browser;
 trait FilterModal {
 
     use AccountOrAccountTypeTogglingSelector;
+    use TailwindColors;
     use WithBulmaColors;
 
     // selectors
@@ -40,9 +41,10 @@ trait FilterModal {
     private string $_color_filter_btn_tag_active = "#3082c5";
 
     protected function initFilterModalColors(){
-        $this->_color_filter_btn_export = $this->bulmaColors->getColor('COLOR_INFO');
-        $this->_color_filter_switch_default = $this->bulmaColors->getColor('COLOR_GREY_LIGHT');
-        $this->_color_filter_switch_active = $this->bulmaColors->getColor('COLOR_INFO');
+        $this->_color_filter_btn_export = self::blue(600);
+        $this->_color_filter_switch_active = self::blue(600);
+        $this->_color_filter_switch_inactive = self::gray(400);
+        $this->_color_filter_switch_default = $this->_color_filter_switch_inactive;
         $this->_color_filter_btn_tag_default = $this->bulmaColors->getColor('COLOR_LIGHT');
     }
 
