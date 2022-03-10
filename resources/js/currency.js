@@ -9,7 +9,7 @@ export class Currency {
             "label": "dollarUs",
             "code": "USD",
             "class": "fas fa-dollar-sign",
-            "html": "&#36;"
+            "html": "&dollar;"
         };
     }
 
