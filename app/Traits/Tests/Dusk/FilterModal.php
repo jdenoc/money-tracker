@@ -37,6 +37,7 @@ trait FilterModal {
     private string $_color_filter_btn_export = '';
     private string $_color_filter_switch_default = "";
     private string $_color_filter_switch_active = "";
+    private string $_color_filter_switch_inactive = "";
     private string $_color_filter_btn_tag_default = "";
     private string $_color_filter_btn_tag_active = "#3082c5";
 

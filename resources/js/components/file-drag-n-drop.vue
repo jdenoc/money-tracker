@@ -1,6 +1,7 @@
 <template>
   <vue-dropzone
       v-bind:id="getId+'-file-upload'"
+      v-bind:ref="getDropzoneRef"
       v-bind:options="dropzoneOptions"
       v-on:vdropzone-success="handleUploadSuccess"
       v-on:vdropzone-error="handleUploadError"
@@ -32,7 +33,6 @@ export default {
   computed: {
     dropzoneOptions: function(){
       return {
-        ref: this.getDropzoneRef,
         url: '/attachment/upload',
         method: 'post',
         addRemoveLinks: true,
@@ -92,6 +92,24 @@ export default {
           {type: notificationType, message: notificationMessage}
       );
     },
+    handleBroadcastEvent: function(broadcastPayload){
+      if (broadcastPayload.modal === this.getId){
+        switch(broadcastPayload.task){
+          case 'disable':
+            this.disable();
+            break;
+          case 'enable':
+            this.enable();
+            break;
+          case 'clear':
+            this.clearFiles();
+            break;
+          default:
+            console.warn('Unknown task [' + broadcastPayload.task + '] sent by [' + broadcastPayload.modal + '] to [' + this.$eventHub.EVENT_FILE_DROP_UPDATE + ']');
+            break;
+        }
+      }
+    }
   },
   watch:{
     attachments: function(newValue, oldValue){
@@ -103,6 +121,9 @@ export default {
       this.$emit(EMIT_UPDATE_ATTACHMENTS, newValue);
     }
   },
+  created: function(){
+    this.$eventHub.listen(this.$eventHub.EVENT_FILE_DROP_UPDATE, this.handleBroadcastEvent);
+  }
 }
 </script>
 

@@ -25,7 +25,7 @@ trait ToggleButton {
             ->assertSeeIn($selector, $label);
         if(!is_null($color)){
             $element_selector = $browser->resolver->format($selector);
-            $this->assertElementColour($browser, $element_selector.' '.self::$SELECTOR_TOGGLE_BUTTON_SWITCH_CORE, $color);
+            $this->assertElementBackgroundColour($browser, $element_selector.' '.self::$SELECTOR_TOGGLE_BUTTON_SWITCH_CORE, $color);
         }
     }
 

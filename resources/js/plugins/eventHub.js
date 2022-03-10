@@ -66,6 +66,10 @@ export default {
                  * @return {string}
                  */
                 EVENT_STATS_DISTRIBUTION: function(){ return 'stats-display-distribution-char' },
+                /**
+                 * @returns {string}
+                 */
+                EVENT_FILE_DROP_UPDATE: function(){ return 'dropzone:update'; }
             },
             methods: {
                 broadcast(event, data = null){
