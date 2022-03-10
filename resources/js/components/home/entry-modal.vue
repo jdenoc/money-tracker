@@ -7,10 +7,10 @@
     <div class="modal relative top-20 mx-auto p-2 border w-160 shadow-lg rounded-md bg-white">
       <header class="modal-header border-b border-gray-200 px-2 py-3 flex justify-between bg-gray-50">
         <div class="flex">
-          <h3 class="text-xl font-medium flex">
-            Entry:&nbsp;<span v-if="entryData.id" v-text="entryData.id"></span><span v-else>new</span>
+          <p class="text-xl font-medium flex">
+            <span>Entry: <span v-if="entryData.id" v-text="entryData.id"></span><span v-else>new</span></span>
             <input type="hidden" name="entry-id" id="entry-id" v-model="entryData.id" />
-          </h3>
+          </p>
 
           <button type="button" id="entry-transfer-btn" class="justify-center rounded-md border border-gray-300 px-2 py-1.5 bg-white text-gray-700 hover:bg-gray-50 ml-5"
               v-if="isTransfer"
@@ -64,12 +64,12 @@
         <!-- value -->
         <label for="entry-value" class="font-medium justify-self-end py-1">Value:</label>
         <div class="col-span-3 relative text-gray-700">
-          <span class="absolute left-3 inset-y-2 mt-px text-gray-400 font-medium" v-html="accountTypeMeta.currencyHtml"></span>
           <input id="entry-value" name="entry-value" type="text" placeholder="999.99" autocomplete="off" class="placeholder-gray-400 placeholder-opacity-80 rounded w-full pl-6"
                  v-model="entryData.entry_value"
                  v-bind:readonly="isLocked"
                  v-on:change="decimaliseEntryValue"
           />
+          <span class="currency-symbol absolute left-3 inset-y-2 mt-px text-gray-400 font-medium" v-html="accountTypeMeta.currencyHtml"></span>
         </div>
 
         <!-- account-type -->
@@ -187,12 +187,12 @@
                   v-show="isConfirmed"
                   v-on:click="toggleLockState"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" v-show="isLocked">
+            <svg xmlns="http://www.w3.org/2000/svg" class="lock-icon h-5 w-5" viewBox="0 0 20 20" fill="currentColor" v-show="isLocked">
               <!-- LOCKED -->
               <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
             </svg>
 
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" v-show="!isLocked">
+            <svg xmlns="http://www.w3.org/2000/svg" class="unlock-icon h-5 w-5" viewBox="0 0 20 20" fill="currentColor" v-show="!isLocked">
               <!-- UNLOCKED -->
               <path d="M10 2a5 5 0 00-5 5v2a2 2 0 00-2 2v5a2 2 0 002 2h10a2 2 0 002-2v-5a2 2 0 00-2-2H7V7a3 3 0 015.905-.75 1 1 0 001.937-.5A5.002 5.002 0 0010 2z" />
             </svg>
@@ -292,12 +292,6 @@ export default {
     currentPage: function(){
       return Store.getters.currentPage;
     },
-
-    dragNDropRef: function(){
-      // TODO: is this going to work?
-      return null; // this.$refs.entryModalFileUpload;
-    },
-
     defaultData: function(){
       return {
         id: null,
@@ -395,8 +389,7 @@ export default {
     },
     lockModal: function(){
       this.isLocked = true;
-      // this.dropzoneRef.disable(); // FIXME
-      // this.$eventBus.broadcast(this.$eventBus.EVENT_FILE_DROP_UPDATE(), {modal: 'entry-modal', task: 'disable'});
+      this.$eventHub.broadcast(this.$eventHub.EVENT_FILE_DROP_UPDATE, {modal: 'entry-modal', task: 'disable'});
     },
     openModal: function(entryData = {}){
       this.setModalState(Store.getters.STORE_MODAL_ENTRY);
@@ -449,10 +442,9 @@ export default {
       }
     },
     resetEntryData: function(){
-      // this.dropzoneRef.removeAllFiles();   // FIXME
-      // this.$eventHub.broadcast(this.$eventHub.EVENT_FILE_DROP_UPDATE, {modal: 'entry-modal', task: 'enable'});
-      // this.$eventHub.broadcast(this.$eventHub.EVENT_FILE_DROP_UPDATE, {modal: 'entry-modal', task: 'clear'});
-      this.entryData = _.clone(this.defaultData);
+      this.$eventHub.broadcast(this.$eventHub.EVENT_FILE_DROP_UPDATE, {modal: 'entry-modal', task: 'clear'});
+      this.entryData = _.cloneDeep(this.defaultData);
+      this.unlockModal();
     },
     saveEntry: function(){
       this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
@@ -495,7 +487,7 @@ export default {
         });
       }
       // attachments
-      if(_.isArray(this.entryData.attachments)){  // TODO: make sure this still works
+      if(_.isArray(this.entryData.attachments)){
         newEntryData.attachments = [];
         this.entryData.attachments.forEach(function(attachment){
           if(
@@ -511,17 +503,17 @@ export default {
         });
       }
       this.entryObject.save(newEntryData)
-          .then(function(notification){
-            // show a notification if needed
-            if(!_.isEmpty(notification)){
-              this.$eventHub.broadcast(
-                  this.$eventHub.EVENT_NOTIFICATION,
-                  {type: notification.type, message: notification.message.replace('%s', this.entryData.id)}
-              );
-            }
-            this.broadcastUpdateRequestForAccountsColumnAndEntriesTable();
-          }.bind(this))
-          .finally(this.closeModal.bind(this));
+        .then(function(notification){
+          // show a notification if needed
+          if(!_.isEmpty(notification)){
+            this.$eventHub.broadcast(
+                this.$eventHub.EVENT_NOTIFICATION,
+                {type: notification.type, message: notification.message.replace('%s', this.entryData.id)}
+            );
+          }
+          this.broadcastUpdateRequestForAccountsColumnAndEntriesTable();
+        }.bind(this))
+        .finally(this.closeModal.bind(this));
     },
     setModalState: function(modal){
       Store.dispatch('currentModal', modal);
@@ -535,8 +527,7 @@ export default {
     },
     unlockModal: function(){
       this.isLocked = false;
-      // this.dropzoneRef.enable();  // FIXME
-      // this.$eventBus.broadcast(this.$eventBus.EVENT_FILE_DROP_UPDATE(), {modal: 'entry-modal', task: 'enable'});
+      this.$eventHub.broadcast(this.$eventHub.EVENT_FILE_DROP_UPDATE, {modal: 'entry-modal', task: 'enable'});
       this.updateAccountTypeMeta();
     },
     updateAccountTypeMeta: function(){
