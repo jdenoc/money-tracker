@@ -4,8 +4,9 @@ namespace Tests\Browser;
 
 use App\Models\Entry;
 use App\Traits\EntryTransferKeys;
-use App\Traits\Tests\Dusk\Loading;
-use App\Traits\Tests\Dusk\Navbar;
+use App\Traits\Tests\Dusk\EntryModal as DustTraitEntryModal;
+use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
+use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
 use App\Traits\Tests\WaitTimes;
 use Faker\Factory as FakerFactory;
 use Tests\Browser\Pages\HomePage;
@@ -25,11 +26,12 @@ use Throwable;
  */
 class UpdateAccountTotalTest extends DuskTestCase {
 
+    use DustTraitEntryModal;
+    use DuskTraitLoading;
+    use DuskTraitNavbar;
     use EntryTransferKeys;
     use HomePageSelectors;
     use WaitTimes;
-    use Loading;
-    use Navbar;
 
     private $_institution_id;
     private $_account;
@@ -82,10 +84,10 @@ class UpdateAccountTotalTest extends DuskTestCase {
             $entry_total = 10.00;
             $this->openNewEntryModal($browser);
             $browser
-                ->with($this->_selector_modal_body, function(Browser $entry_modal_body) use ($is_entry_expense, $entry_total){
+                ->within($this->_selector_modal_body, function(Browser $entry_modal_body) use ($is_entry_expense, $entry_total){
                     // The date field should already be filled in. No need to fill it in again.
                     $entry_modal_body->type($this->_selector_modal_entry_field_value, $entry_total);
-                    $this->waitUntilSelectLoadingMissing($entry_modal_body);
+                    $this->waitUntilSelectLoadingIsMissing($entry_modal_body, $this->_selector_modal_entry_field_account_type);
                     $entry_modal_body
                         ->select($this->_selector_modal_entry_field_account_type, $this->_account_type_id)
                         ->type($this->_selector_modal_entry_field_memo, "Test new entry account total update");
@@ -383,19 +385,6 @@ class UpdateAccountTotalTest extends DuskTestCase {
         unset($entries['count']);
         $entries_collection = collect($entries);
         return $entries_collection->where('account_type_id', $account_type_id)->where('confirm', 0)->random();
-    }
-
-    /**
-     * @param Browser $modal
-     *
-     * @throws \Facebook\WebDriver\Exception\TimeOutException
-     */
-    private function waitUntilSelectLoadingMissing(Browser $modal){
-        $class_loading = '.loading';
-        $parent_visible_script = <<<SCRIPT
-return document.querySelector('{$modal->resolver->prefix}').parentNode.querySelector('$class_loading').offsetParent === null;
-SCRIPT;
-        $modal->waitUntil($parent_visible_script);
     }
 
 }
