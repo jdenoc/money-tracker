@@ -53,7 +53,39 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 @import '~@voerro/vue-tagsinput/dist/style.css';
-@import "../../sass/tags-input.scss";
+
+/* additional styling for voerro-tags-input component */
+::v-deep .tags-input {
+  /* taken from the tailwindcss [type='text'] selector */
+  border-color: #6b7280;
+
+  input {
+    font-size: 0.8rem;
+    padding: 1px 2px;
+    line-height: normal;
+
+    &:focus{
+      box-shadow: none;
+    }
+  }
+
+  &.active{
+    /* taken from the tailwindcss [type='text']:focus selector */
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    --tw-ring-offset-width: 0px;
+    --tw-ring-offset-color: #fff;
+    --tw-ring-color: #2563eb;
+    --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+    --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+    box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+    border-color: #2563eb;
+  }
+}
+
+::v-deep .typeahead-badges{
+  margin-top: 0.25rem;
+}
 </style>
