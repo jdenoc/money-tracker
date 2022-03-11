@@ -7,7 +7,6 @@
 
 <script lang="js">
 import { ToggleButton } from 'vue-js-toggle-button';
-// import {tailwindColorsMixin} from "../mixins/tailwind-colors-mixin";
 
 const EMIT_UPDATE_TOGGLE = 'update:toggleState';
 
@@ -16,10 +15,6 @@ export default {
   components: {
     BaseToggleButton: ToggleButton
   },
-  mixins: [
-      // TODO: still using this?
-      // tailwindColorsMixin
-  ],
   props: {
     colorChecked: {required: false, default: ''},
     colorUnchecked: {required: false, default: ''},
