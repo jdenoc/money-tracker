@@ -20,6 +20,7 @@ class CurrencyHelper {
 
     /**
      * @return Collection
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public static function fetchCurrencies(){
         $currency_json = Storage::get(self::$CURRENCY_FILE_PATH);
@@ -45,6 +46,32 @@ class CurrencyHelper {
             $currencies = self::$_currencies;
         }
         return $currencies->pluck('code')->all();
+    }
+
+    public static function getCurrencyHtmlFromCode(string $code):string{
+        if(is_null(self::$_currencies)){
+            $currencies = self::fetchCurrencies();
+        } else {
+            $currencies = self::$_currencies;
+        }
+        return $currencies->where('code', $code)->first()->html;
+    }
+
+    /**
+     * This returns a Currency object containing default values outlined in resources/js/currency.js
+     * @return Currency
+     */
+    public static function getCurrencyDefaults(){
+        return new Currency([
+            "label"=>"dollarUs",
+            "code"=>"USD",
+            "class"=>"fas fa-dollar-sign",
+            "html"=>"&dollar;"
+        ]);
+    }
+
+    public static function convertCurrencyHtmlToCharacter($html):string{
+        return html_entity_decode($html, ENT_HTML5);
     }
 
 }

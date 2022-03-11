@@ -25,10 +25,6 @@ trait TagsInput {
             ->assertDontSee(self::$SELECTOR_TAG_AUTOCOMPLETE_OPTIONS);
     }
 
-    /**
-     * @param Browser $browser
-     * @param string $tag
-     */
     private function fillTagsInputUsingAutocomplete(Browser $browser, string $tag){
         $browser->waitUntilMissing(self::$SELECTOR_TAGS_INPUT_LOADING, self::$WAIT_SECONDS);
         // using colorName as our tag, we can be guaranteed that a tag can be between 3 and 20 characters
@@ -43,18 +39,11 @@ trait TagsInput {
             ->click(self::$SELECTOR_TAG_AUTOCOMPLETE_OPTIONS);
     }
 
-    /**
-     * @param Browser $browser
-     */
     public function assertTagsInputHasTagsInInput(Browser $browser){
         // the very existence of a tag in the input field indicates that they are present
         $browser->assertVisible(self::$SELECTOR_TAGS_INPUT_CONTAINER.' '.self::$SELECTOR_TAGS_INPUT_TAG);
     }
 
-    /**
-     * @param Browser $browser
-     * @param string $tag
-     */
     public function assertTagInInput(Browser $browser, string $tag){
         $this->assertTagsInputHasTagsInInput($browser);
         $browser->assertSeeIn(self::$SELECTOR_TAGS_INPUT_CONTAINER, $tag);
