@@ -73,7 +73,7 @@ class StatsSummaryTest extends StatsBase {
                     // account/account-type selector
                     $this->assertDefaultStateOfAccountOrAccountTypeTogglingSelectorComponent($form, $accounts);
 
-//                    // date range
+                    // date range
                     $this->assertDefaultStateDateRange($form);
 
                     // button
