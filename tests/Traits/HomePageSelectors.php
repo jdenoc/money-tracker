@@ -31,12 +31,10 @@ trait HomePageSelectors {
     private $_selector_modal_transfer_field_date = "input#transfer-date";
     private $_selector_modal_transfer_field_value = "input#transfer-value";
     private $_selector_modal_transfer_field_from = "select#from-account-type";
-    private $_selector_modal_transfer_field_from_is_loading = ".select.is-loading select#from-account-type";
     private $_selector_modal_transfer_meta_from = "#transfer-from-account-type-meta";
     private $_selector_modal_transfer_meta_account_name_from = "#from-account-type-meta-account-name";
     private $_selector_modal_transfer_meta_last_digits_from = "#from-account-type-meta-last-digits";
     private $_selector_modal_transfer_field_to = "select#to-account-type";
-    private $_selector_modal_transfer_field_to_is_loading = ".select.is-loading select#to-account-type";
     private $_selector_modal_transfer_meta_to = "#transfer-to-account-type-meta";
     private $_selector_modal_transfer_meta_account_name_to = "#to-account-type-meta-account-name";
     private $_selector_modal_transfer_meta_last_digits_to = "#to-account-type-meta-last-digits";
