@@ -2,7 +2,8 @@
 
 namespace Tests\Browser;
 
-use App\Traits\Tests\Dusk\EntryModal as DuskTraitEntryModal;
+use App\Traits\Tests\Dusk\AccountOrAccountTypeSelector as DuskTraitAccountOrAccountTypeSelector;
+use App\Traits\Tests\Dusk\EntryModalSelectors as DuskTraitEntryModalSelectors;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
 use App\Traits\Tests\Dusk\Notification as DuskTraitNotification;
@@ -22,7 +23,8 @@ use Throwable;
  */
 class NotificationsTest extends DuskTestCase {
 
-    use DuskTraitEntryModal;
+    use DuskTraitAccountOrAccountTypeSelector;
+    use DuskTraitEntryModalSelectors;
     use DuskTraitLoading;
     use DuskTraitNavbar;
     use DuskTraitNotification;
