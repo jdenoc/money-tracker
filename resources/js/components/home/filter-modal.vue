@@ -7,11 +7,7 @@
     <div class="modal relative top-20 mx-auto p-2 border w-160 shadow-lg rounded-md bg-white">
       <!-- HEADER -->
       <header class="modal-header border-b border-gray-200 px-2 py-3 flex justify-between bg-gray-50">
-        <div class="flex">
-          <h3 class="text-xl font-medium flex">
-            Filter Entries
-          </h3>
-        </div>
+        <div class="flex text-xl font-medium flex">Filter Entries</div>
 
         <div class="flex">
           <button type="button" class="text-gray-400 hover:text-gray-600 ml-1" aria-label="close"
@@ -28,20 +24,21 @@
       <section class="modal-body p-3 grid grid-cols-4 gap-y-2 gap-x-4">
         <!--Start Date-->
         <label for="filter-start-date" class="text-sm font-medium justify-self-end py-1 my-0.5">Start Date:</label>
-        <input id="filter-start-date" name="filter-start-date" type="date" class="text-gray-700 col-span-3 rounded"
+        <input id="filter-start-date" name="filter-start-date" type="date" class="text-gray-700 col-span-3 rounded filter-modal-element"
             v-model="filterData.startDate"
         />
 
         <!--End Date-->
         <label for="filter-end-date" class="text-sm font-medium justify-self-end py-1 my-0.5">End Date:</label>
-        <input id="filter-end-date" name="filter-end-date" type="date" class="text-gray-700 col-span-3 rounded"
+        <input id="filter-end-date" name="filter-end-date" type="date" class="text-gray-700 col-span-3 rounded filter-modal-element"
                v-model="filterData.endDate"
         />
 
         <!--account/account-type selector-->
-        <div class="col-span-4 -mb-1.5">
+        <div class="col-span-4">
           <account-account-type-toggling-selector
               id="filter-modal"
+              class="filter-modal-element"
               v-bind:account-or-account-type-id.sync="filterData.accountOrAccountTypeId"
               v-bind:account-or-account-type-toggled.sync="filterData.accountOrAccountTypeSelected"
           ></account-account-type-toggling-selector>
@@ -50,13 +47,14 @@
         <!--Tags-->
         <label class="text-sm font-medium justify-self-end py-1 my-0.5">Tags:</label>
         <div class="col-span-3 relative">
-          <span class="absolute inset-y-2 right-0 z-10" v-show="!areTagsSet">
+          <span class="loading absolute inset-y-2 right-0 z-10" v-show="!areTagsSet">
             <svg class="animate-spin mr-3 h-5 w-5 text-blue-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
           </span>
           <tags-input
+              class="filter-modal-element"
               tagsInputName="filter-tags"
               v-bind:existing-tags="listTags"
               v-bind:selected-tags.sync="filterData.tags"
@@ -64,11 +62,11 @@
         </div>
 
         <!--Income-->
-        <label for="filter-is-income" class="text-sm font-medium justify-self-end py-1 my-0.5">Income:</label>
+        <label class="text-sm font-medium justify-self-end py-1 my-0.5">Income:</label>
         <div class="col-span-3">
           <toggle-button
               toggle-id="filter-is-income"
-              class="filter-toggle-switch"
+              class="filter-toggle-switch filter-modal-element"
               v-bind="toggleButtonProperties"
               v-bind:toggle-state.sync="filterData.isIncome"
               v-on:click.native="flipCompanionSwitch('isExpense')"
@@ -76,11 +74,11 @@
         </div>
 
         <!--Expense-->
-        <label for="filter-is-expense" class="text-sm font-medium justify-self-end py-1 my-0.5">Expense:</label>
+        <label class="text-sm font-medium justify-self-end py-1 my-0.5">Expense:</label>
         <div class="col-span-3">
           <toggle-button
               toggle-id="filter-is-expense"
-              class="filter-toggle-switch"
+              class="filter-toggle-switch filter-modal-element"
               v-bind="toggleButtonProperties"
               v-bind:toggle-state.sync="filterData.isExpense"
               v-on:click.native="flipCompanionSwitch('isIncome')"
@@ -88,11 +86,11 @@
         </div>
 
         <!--Has Attachment(s)-->
-        <label for="filter-has-attachment" class="text-sm font-medium justify-self-end py-1 my-0.5">Has Attachment(s):</label>
+        <label class="text-sm font-medium justify-self-end py-1 my-0.5">Has Attachment(s):</label>
         <div class="col-span-3">
           <toggle-button
               toggle-id="filter-has-attachment"
-              class="filter-toggle-switch"
+              class="filter-toggle-switch filter-modal-element"
               v-bind="toggleButtonProperties"
               v-bind:toggle-state.sync="filterData.hasAttachment"
               v-on:click.native="flipCompanionSwitch('noAttachment')"
@@ -100,11 +98,11 @@
         </div>
 
         <!--No Attachment(s)-->
-        <label for="filter-no-attachment" class="text-sm font-medium justify-self-end py-1 my-0.5">No Attachment(s):</label>
+        <label class="text-sm font-medium justify-self-end py-1 my-0.5">No Attachment(s):</label>
         <div class="col-span-3">
           <toggle-button
               toggle-id="filter-no-attachment"
-              class="filter-toggle-switch"
+              class="filter-toggle-switch filter-modal-element"
               v-bind="toggleButtonProperties"
               v-bind:toggle-state.sync="filterData.noAttachment"
               v-on:click.native="flipCompanionSwitch('hasAttachment')"
@@ -112,22 +110,22 @@
         </div>
 
         <!--Transfer-->
-        <label for="filter-is-transfer" class="text-sm font-medium justify-self-end py-1 my-0.5">Transfer:</label>
+        <label class="text-sm font-medium justify-self-end py-1 my-0.5">Transfer:</label>
         <div class="col-span-3">
           <toggle-button
               toggle-id="filter-is-transfer"
-              class="filter-toggle-switch"
+              class="filter-toggle-switch filter-modal-element"
               v-bind="toggleButtonProperties"
               v-bind:toggle-state.sync="filterData.isTransfer"
           ></toggle-button>
         </div>
 
         <!--Unconfirmed-->
-        <label for="filter-unconfirmed" class="text-sm font-medium justify-self-end py-1 my-0.5">Not Confirmed:</label>
+        <label class="text-sm font-medium justify-self-end py-1 my-0.5">Not Confirmed:</label>
         <div class="col-span-3">
           <toggle-button
               toggle-id="filter-unconfirmed"
-              class="filter-toggle-switch"
+              class="filter-toggle-switch filter-modal-element"
               v-bind="toggleButtonProperties"
               v-bind:toggle-state.sync="filterData.unconfirmed"
           ></toggle-button>
@@ -136,21 +134,21 @@
         <!--Min Range-->
         <label for="filter-min-value" class="text-sm font-medium justify-self-end py-1 my-0.5">Min Range:</label>
         <div class="col-span-3 relative text-gray-700">
-          <span class="absolute left-3 inset-y-2 mt-px text-gray-400 font-medium" v-html="accountCurrencyHtml" ></span>
-          <input id="filter-min-value" name="filter-min-value" type="text" placeholder="999.99" autocomplete="off" class="placeholder-gray-400 placeholder-opacity-80 rounded w-full pl-6"
+          <input id="filter-min-value" name="filter-min-value" type="text" placeholder="999.99" autocomplete="off" class="placeholder-gray-400 placeholder-opacity-80 rounded w-full pl-6 filter-modal-element"
               v-model="filterData.minValue"
               v-on:change="decimaliseValue('minValue')"
           />
+          <span class="currency-symbol absolute left-3 inset-y-2 mt-px text-gray-400 font-medium" v-html="accountCurrencyHtml" ></span>
         </div>
 
         <!--Max Range-->
         <label for="filter-max-value" class="text-sm font-medium justify-self-end py-1 my-0.5">Max Range:</label>
         <div class="col-span-3 relative text-gray-700">
-          <span class="absolute left-3 inset-y-2 mt-px text-gray-400 font-medium" v-html="accountCurrencyHtml" ></span>
-          <input id="filter-max-value" name="filter-max-value" type="text" placeholder="999.99" autocomplete="off" class="placeholder-gray-400 placeholder-opacity-80 rounded w-full pl-6"
+          <input id="filter-max-value" name="filter-max-value" type="text" placeholder="999.99" autocomplete="off" class="placeholder-gray-400 placeholder-opacity-80 rounded w-full pl-6 filter-modal-element"
               v-model="filterData.maxValue"
               v-on:change="decimaliseValue('maxValue')"
           />
+          <span class="currency-symbol absolute left-3 inset-y-2 mt-px text-gray-400 font-medium" v-html="accountCurrencyHtml" ></span>
         </div>
       </section>
 
@@ -246,7 +244,7 @@ export default {
     defaultData: function(){
       return {
         accountOrAccountTypeSelected: this.accountAccountTypeToggleValues.account,
-        accountOrAccountTypeId: null,
+        accountOrAccountTypeId: "",
         endDate: "",
         hasAttachment: false,
         isExpense: false,
@@ -404,7 +402,7 @@ export default {
       return _.orderBy(listOfObjects, 'name');
     },
     resetFields: function(){
-      this.filterData = _.clone(this.defaultData);
+      this.filterData = _.cloneDeep(this.defaultData);
     },
     setModalState: function(modal){
       Store.dispatch('currentModal', modal);
