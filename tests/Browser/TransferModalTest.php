@@ -6,6 +6,9 @@ use App\Models\Account;
 use App\Models\AccountType;
 use App\Models\Entry;
 use App\Traits\EntryTransferKeys;
+use App\Traits\Tests\AssertElementColor;
+use App\Traits\Tests\Dusk\AccountOrAccountTypeSelector as DuskTraitAccountOrAccountTypeSelector;
+use App\Traits\Tests\Dusk\EntryModalSelectors as DuskTraitEntryModalSelectors;
 use App\Traits\Tests\Dusk\FileDragNDrop as DuskTraitFileDragNDrop;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
@@ -31,13 +34,16 @@ use Throwable;
  */
 class TransferModalTest extends DuskTestCase {
 
-    use HomePageSelectors;
+    use AssertElementColor;
+    use DuskTraitAccountOrAccountTypeSelector;
+    use DuskTraitEntryModalSelectors;
     use DuskTraitFileDragNDrop;
     use DuskTraitLoading;
     use DuskTraitNavbar;
     use DuskTraitNotification;
     use DuskTraitTagsInput;
     use EntryTransferKeys;
+    use HomePageSelectors;
 
     use WithFaker;
 
