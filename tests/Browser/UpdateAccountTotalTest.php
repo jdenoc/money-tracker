@@ -307,12 +307,12 @@ class UpdateAccountTotalTest extends DuskTestCase {
             $this->openTransferModal($browser);
             $browser
                 ->within($this->_selector_modal_transfer, function(Browser $modal) use ($transfer_entry_data, $browser_locale_date_for_typing){
+                    $this->waitUntilSelectLoadingIsMissing($modal, $this->_selector_modal_transfer_field_from);
+                    $this->waitUntilSelectLoadingIsMissing($modal, $this->_selector_modal_transfer_field_to);
                     $modal
                         ->type($this->_selector_modal_transfer_field_date, $browser_locale_date_for_typing)
                         ->type($this->_selector_modal_transfer_field_value, $transfer_entry_data['value'])
-                        ->waitUntilMissing($this->_selector_modal_transfer_field_from_is_loading)
                         ->select($this->_selector_modal_transfer_field_from, $transfer_entry_data['from_account_type_id'])
-                        ->waitUntilMissing($this->_selector_modal_transfer_field_to_is_loading)
                         ->select($this->_selector_modal_transfer_field_to, $transfer_entry_data['to_account_type_id'])
                         ->type($this->_selector_modal_transfer_field_memo, $transfer_entry_data['memo']);
                 })

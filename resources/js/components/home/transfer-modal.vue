@@ -29,7 +29,7 @@
         <!-- date -->
         <label for="transfer-date" class="font-medium justify-self-end py-1">Date:</label>
         <input id="transfer-date" name="transfer-date" type="date" class="text-gray-700 col-span-3 rounded"
-               v-model="transferData.entry_date"
+               v-model="transferData.date"
         />
 
         <!-- value -->
@@ -129,7 +129,7 @@
         <!-- tags -->
         <label class="font-medium justify-self-end py-1">Tags:</label>
         <div class="col-span-3 relative">
-          <span class="absolute inset-y-2 right-0 z-10" v-show="!areTagsSet">
+          <span class="loading absolute inset-y-2 right-0 z-10" v-show="!areTagsSet">
             <svg class="animate-spin mr-3 h-5 w-5 text-blue-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -152,7 +152,7 @@
       <footer class="modal-footer py-3 px-0.5 flex justify-end border-t border-gray-200 bg-gray-50">
         <button type="button" id="transfer-cancel-btn" class="inline-flex justify-center rounded-md border border-gray-300 px-3 py-2 mx-1 hover:bg-white" v-on:click="closeModal">Cancel</button>
 
-        <button type="button" id="transfer-save-btn" class="inline-flex justify-center rounded-md border border-gray-300 px-3 py-2 ml-1 text-white bg-green-500"
+        <button type="button" id="transfer-save-btn" class="inline-flex justify-center rounded-md border border-gray-300 px-3 py-2 ml-1 text-white bg-green-500 disabled:opacity-50"
                 v-on:click="saveTransfer"
                 v-bind:disabled="!canSave"
                 v-bind:class="{'opacity-65 cursor-not-allowed': !canSave, 'opacity-90 hover:opacity-100': canSave}"
@@ -173,9 +173,9 @@ import _ from 'lodash';
 import Store from '../../store';
 // mixins
 import {accountTypesObjectMixin} from "../../mixins/account-types-object-mixin";
+import {tagsObjectMixin} from "../../mixins/tags-object-mixin";
 // objects
 import {Entry} from "../../entry";
-import {tagsObjectMixin} from "../../mixins/tags-object-mixin";
 // components
 import TagsInput from "../tags-input";
 import FileDragNDrop from "../file-drag-n-drop";
@@ -269,10 +269,6 @@ export default {
         to_account_type_id: "",
         value: "",
       }
-    },
-    dropzoneRef: function(){
-      // TODO: do we need this?
-      return this.$refs.transferModalFileUpload;
     },
     hasValidFromAccountTypeBeenSelected: function(){
       return this.hasValidAccountTypeBeenSelected(this.transferData.from_account_type_id);
@@ -379,12 +375,11 @@ export default {
       Store.dispatch('currentModal', modal);
     },
     resetData: function(){
-      // this.dropzoneRef.removeAllFiles();  // FIXME
-      // this.$eventBus.broadcast(this.$eventBus.EVENT_FILE_DROP_UPDATE(), {modal: 'transfer-modal', task: 'enable'});
-      // this.$eventBus.broadcast(this.$eventBus.EVENT_FILE_DROP_UPDATE(), {modal: 'transfer-modal', task: 'clear'});
-      this.transferData = _.clone(this.defaultData);
-      this.accountTypeMeta.from = _.clone(this.accountTypeMetaDefaults);
-      this.accountTypeMeta.to = _.clone(this.accountTypeMetaDefaults);
+      this.$eventHub.broadcast(this.$eventHub.EVENT_FILE_DROP_UPDATE, {modal: 'transfer-modal', task: 'enable'});
+      this.$eventHub.broadcast(this.$eventHub.EVENT_FILE_DROP_UPDATE, {modal: 'transfer-modal', task: 'clear'});
+      this.transferData = _.cloneDeep(this.defaultData);
+      this.accountTypeMeta.from = _.cloneDeep(this.accountTypeMetaDefaults);
+      this.accountTypeMeta.to = _.cloneDeep(this.accountTypeMetaDefaults);
     },
     updateAccountTypeMeta: function(accountTypeSelect){
       let account = this.accountTypesObject.getAccount(this.transferData[accountTypeSelect+'_account_type_id']);
