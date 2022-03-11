@@ -36,14 +36,10 @@ class StatsDistributionTest extends StatsBase {
 
     private $_color_switch_default;
 
-    public function __construct($name = null, array $data = [], $dataName = ''){
-        parent::__construct($name, $data, $dataName);
-        $this->_account_or_account_type_toggling_selector_label_id = 'distribution-chart';
-    }
-
     public function setUp():void{
         parent::setUp();
         $this->_color_switch_default = $this->bulmaColors->getColor('COLOR_GREY_LIGHT');
+        $this->_account_or_account_type_toggling_selector_id_label = 'distribution-chart';
     }
 
     /**
