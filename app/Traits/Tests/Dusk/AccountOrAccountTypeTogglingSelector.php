@@ -3,18 +3,19 @@
 namespace App\Traits\Tests\Dusk;
 
 use App\Traits\Tests\Dusk\AccountOrAccountTypeSelector as DuskTraitAccountOrAccountTypeSelector;
+use App\Traits\Tests\Dusk\TailwindColors as DuskTraitTailwindColors;
 use App\Traits\Tests\Dusk\ToggleButton as DuskTraitToggleButton;
 use App\Traits\Tests\WaitTimes;
-use App\Traits\Tests\WithBulmaColors;
+use Exception;
 use Laravel\Dusk\Browser;
 use PHPUnit\Framework\Assert;
 
 trait AccountOrAccountTypeTogglingSelector {
 
     use DuskTraitAccountOrAccountTypeSelector;
+    use DuskTraitTailwindColors;
     use DuskTraitToggleButton;
     use WaitTimes;
-    use WithBulmaColors;
 
     private static $SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT = ".select-account-or-account-types-id";
 
@@ -23,8 +24,14 @@ trait AccountOrAccountTypeTogglingSelector {
     private static $LABEL_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_TOGGLE_DEFAULT = "Account";
     private static $LABEL_ACCOUNT_AND_ACCOUNT_TYPE_SELECT_OPTION_DEFAULT = "[ ALL ]";
 
-    private $_account_or_account_type_toggling_selector_label_id;
+    private $_account_or_account_type_toggling_selector_id_label;
     private $_disable_checkbox_checked = false;
+
+    private function assertAccountOrAccountTypeTogglingSelectorIdLabelBeenSet(){
+        if(!$this->_account_or_account_type_toggling_selector_id_label){
+            throw new Exception("variable _account_or_account_type_toggling_selector_id_label has not been set");
+        }
+    }
 
     /**
      * @param string $id_label
@@ -49,26 +56,34 @@ trait AccountOrAccountTypeTogglingSelector {
      * @return string
      */
     protected function getCheckboxShowDisabledAccountOrAccountType(string $id_label):string{
-        $selector_pattern_field_checkbox_show_disabled = "#show-disabled-accounts-or-account-types-%s-checkbox+label";
+        $selector_pattern_field_checkbox_show_disabled = "#show-disabled-accounts-or-account-types-%s-checkbox";
         return sprintf($selector_pattern_field_checkbox_show_disabled, $id_label);
+    }
+
+    protected function getLabelSelectorLabelShowDisabledAccountsOrAccountTypes():string{
+        $this->assertAccountOrAccountTypeTogglingSelectorIdLabelBeenSet();
+        $selector_pattern_field_checkbox_show_disabled = $this->getCheckboxShowDisabledAccountOrAccountType($this->_account_or_account_type_toggling_selector_id_label);
+        return 'label[for="'.ltrim($selector_pattern_field_checkbox_show_disabled, "#").'"].show-disabled-accounts-or-account-types';
     }
 
     /**
      * @param Browser $browser
-     * @param array $accounts
+     * @param array   $accounts
      * @return void
+     * @throws Exception
      */
     public function assertDefaultStateOfAccountOrAccountTypeTogglingSelectorComponent(Browser $browser, array $accounts){
+        $this->assertAccountOrAccountTypeTogglingSelectorIdLabelBeenSet();
         $browser
             // component
-            ->assertVisible($this->getAccountOrAccountTypeTogglingSelectorComponentId($this->_account_or_account_type_toggling_selector_label_id))
-            ->within($this->getAccountOrAccountTypeTogglingSelectorComponentId($this->_account_or_account_type_toggling_selector_label_id), function(Browser $component) use ($accounts){
-                $color_switch_default = $this->bulmaColors->getColor('COLOR_GREY_LIGHT');
+            ->assertVisible($this->getAccountOrAccountTypeTogglingSelectorComponentId($this->_account_or_account_type_toggling_selector_id_label))
+            ->within($this->getAccountOrAccountTypeTogglingSelectorComponentId($this->_account_or_account_type_toggling_selector_id_label), function(Browser $component) use ($accounts){
+                $color_switch_default = self::gray(400);
 
                 // account/account-type - switch
                 $this->assertToggleButtonState(
                     $component,
-                    $this->getSwitchAccountAndAccountTypeId($this->_account_or_account_type_toggling_selector_label_id),
+                    $this->getSwitchAccountAndAccountTypeId($this->_account_or_account_type_toggling_selector_id_label),
                     self::$LABEL_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_TOGGLE_DEFAULT,
                     $color_switch_default
                 );
@@ -88,45 +103,44 @@ trait AccountOrAccountTypeTogglingSelector {
                     );
 
                 // disable checkbox
+                $component->assertMissing($this->getCheckboxShowDisabledAccountOrAccountType($this->_account_or_account_type_toggling_selector_id_label));
                 if(collect($accounts)->where('disabled', true)->count() > 0){
-                    $component->assertVisible($this->getCheckboxShowDisabledAccountOrAccountType($this->_account_or_account_type_toggling_selector_label_id));
+                    $component->assertVisible($this->getLabelSelectorLabelShowDisabledAccountsOrAccountTypes());
                 } else {
-                    $component->assertMissing($this->getCheckboxShowDisabledAccountOrAccountType($this->_account_or_account_type_toggling_selector_label_id));
+                    $component->assertMissing($this->getLabelSelectorLabelShowDisabledAccountsOrAccountTypes());
                 }
             });
     }
 
     public function assertShowDisabledAccountOrAccountTypeCheckboxIsVisible(Browser $browser){
-        $browser->with($this->getAccountOrAccountTypeTogglingSelectorComponentId($this->_account_or_account_type_toggling_selector_label_id), function(Browser $component){
-            $component->assertVisible($this->getCheckboxShowDisabledAccountOrAccountType($this->_account_or_account_type_toggling_selector_label_id));
+        $this->assertAccountOrAccountTypeTogglingSelectorIdLabelBeenSet();
+        $browser->within($this->getAccountOrAccountTypeTogglingSelectorComponentId($this->_account_or_account_type_toggling_selector_id_label), function(Browser $component){
+            $component->assertVisible($this->getLabelSelectorLabelShowDisabledAccountsOrAccountTypes());
         });
     }
 
     public function assertShowDisabledAccountOrAccountTypeCheckboxIsNotVisible(Browser $browser){
-        $browser->with($this->getAccountOrAccountTypeTogglingSelectorComponentId($this->_account_or_account_type_toggling_selector_label_id), function(Browser $component){
-            $component->assertMissing($this->getCheckboxShowDisabledAccountOrAccountType($this->_account_or_account_type_toggling_selector_label_id));
+        $this->assertAccountOrAccountTypeTogglingSelectorIdLabelBeenSet();
+        $browser->within($this->getAccountOrAccountTypeTogglingSelectorComponentId($this->_account_or_account_type_toggling_selector_id_label), function(Browser $component){
+            $component->assertMissing($this->getLabelSelectorLabelShowDisabledAccountsOrAccountTypes());
         });
     }
 
-    /**
-     * @param Browser $browser
-     */
     public function toggleAccountOrAccountTypeSwitch(Browser $browser){
-        $browser->with($this->getAccountOrAccountTypeTogglingSelectorComponentId($this->_account_or_account_type_toggling_selector_label_id), function(Browser $component){
+        $this->assertAccountOrAccountTypeTogglingSelectorIdLabelBeenSet();
+        $browser->within($this->getAccountOrAccountTypeTogglingSelectorComponentId($this->_account_or_account_type_toggling_selector_id_label), function(Browser $component){
             // account/account-type - switch
-            $this->toggleToggleButton($component, $this->getSwitchAccountAndAccountTypeId($this->_account_or_account_type_toggling_selector_label_id));
+            $this->toggleToggleButton($component, $this->getSwitchAccountAndAccountTypeId($this->_account_or_account_type_toggling_selector_id_label));
         });
     }
 
-    /**
-     * @param Browser $browser
-     */
     public function toggleShowDisabledAccountOrAccountTypeCheckbox(Browser $browser){
-        $browser->with($this->getAccountOrAccountTypeTogglingSelectorComponentId($this->_account_or_account_type_toggling_selector_label_id), function(Browser $component){
+        $this->assertAccountOrAccountTypeTogglingSelectorIdLabelBeenSet();
+        $browser->within($this->getAccountOrAccountTypeTogglingSelectorComponentId($this->_account_or_account_type_toggling_selector_id_label), function(Browser $component){
             // make sure accounts have finished loading
             $this->waitUntilSelectLoadingIsMissing($component, self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT);
             // show disabled checkbox
-            $component->click($this->getCheckboxShowDisabledAccountOrAccountType($this->_account_or_account_type_toggling_selector_label_id));
+            $component->click($this->getLabelSelectorLabelShowDisabledAccountsOrAccountTypes());
             $this->_disable_checkbox_checked = !$this->_disable_checkbox_checked;
         });
     }
@@ -134,9 +148,11 @@ trait AccountOrAccountTypeTogglingSelector {
     /**
      * @param Browser $browser
      * @param string|int $selector_value
+     * @throws Exception
      */
     public function selectAccountOrAccountTypeValue(Browser $browser, $selector_value){
-        $browser->with($this->getAccountOrAccountTypeTogglingSelectorComponentId($this->_account_or_account_type_toggling_selector_label_id), function(Browser $component) use ($selector_value){
+        $this->assertAccountOrAccountTypeTogglingSelectorIdLabelBeenSet();
+        $browser->within($this->getAccountOrAccountTypeTogglingSelectorComponentId($this->_account_or_account_type_toggling_selector_id_label), function(Browser $component) use ($selector_value){
             // make sure accounts have finished loading
             $this->waitUntilSelectLoadingIsMissing($component, self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT);
             // choose the account/account-type value
@@ -148,12 +164,9 @@ trait AccountOrAccountTypeTogglingSelector {
         });
     }
 
-    /**
-     * @param Browser $browser
-     * @param array $accounts_or_account_types
-     */
     public function assertSelectOptionValuesOfAccountOrAccountType(Browser $browser, array $accounts_or_account_types){
-        $browser->with($this->getAccountOrAccountTypeTogglingSelectorComponentId($this->_account_or_account_type_toggling_selector_label_id), function(Browser $component) use ($accounts_or_account_types){
+        $this->assertAccountOrAccountTypeTogglingSelectorIdLabelBeenSet();
+        $browser->within($this->getAccountOrAccountTypeTogglingSelectorComponentId($this->_account_or_account_type_toggling_selector_id_label), function(Browser $component) use ($accounts_or_account_types){
             if(!$this->_disable_checkbox_checked){
                 $this->assertSelectOptionsClassOfAccountOrAccountTypeAreNotDisabled($component);
                 $option_values = collect($accounts_or_account_types)->where('disabled', false)->pluck('id')->toArray();

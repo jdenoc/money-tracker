@@ -32,8 +32,8 @@ export default {
   computed:{
     inputProperties: function(){
       return {
-        elementId: this.tagsInputName,
         existingTags: this.existingTags,
+        inputId: this.tagsInputName,
         onlyExistingTags: true,
         typeahead: true,
         typeaheadMaxResults: 5,

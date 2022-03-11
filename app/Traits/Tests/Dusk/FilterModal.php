@@ -100,9 +100,10 @@ trait FilterModal {
 
             case $this->_partial_selector_filter_tag:
                 $tags = $this->getApiTags();
-                $filter_value = collect($tags)->random(2)->toArray();
+                $filter_value = collect($tags)->random(3)->toArray();
                 foreach($filter_value as $tag){
-                    $modal->click($filter_input_selector.$tag['id'].'+label');
+                    $this->fillTagsInputUsingAutocomplete($modal, $tag['name']);
+                    $this->assertTagInInput($modal, $tag['name']);
                 }
                 break;
 
