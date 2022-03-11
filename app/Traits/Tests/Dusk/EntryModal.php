@@ -43,7 +43,6 @@ trait EntryModal {
     private $_label_btn_confirmed = "Confirmed";
     private $_label_expense_switch_expense = "Expense";
     private $_label_expense_switch_income = "Income";
-    private $_label_dollar = "$";
 
     // colours
     private $_color_expense_switch_expense = "";
@@ -82,10 +81,10 @@ JS;
         $modal->script($script);
     }
 
-    protected function assertEntryValueCurrency(Browser $modal, string $currency_symbol){
+    protected function assertEntryValueCurrency(Browser $modal, string $currency_character){
         // check currency icon in input#entry-value
         $entry_value_currency = $modal->text($this->_selector_modal_entry_field_value." + span.currency-symbol");
-        $this->assertStringContainsString($currency_symbol, $entry_value_currency);
+        $this->assertStringContainsString($currency_character, $entry_value_currency);
     }
 
     // TODO: open empty/new entry

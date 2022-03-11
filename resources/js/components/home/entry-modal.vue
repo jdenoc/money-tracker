@@ -198,7 +198,7 @@
             </svg>
           </button>
           <button type="button" id="entry-cancel-btn" class="inline-flex justify-center rounded-md border border-gray-300 px-3 py-2 mx-1 hover:bg-white" v-on:click="closeModal">Cancel</button>
-          <button type="button" id="entry-save-btn" class="inline-flex justify-center rounded-md border border-gray-300 px-3 py-2 ml-1 text-white bg-green-500"
+          <button type="button" id="entry-save-btn" class="inline-flex justify-center rounded-md border border-gray-300 px-3 py-2 ml-1 text-white bg-green-500 disabled:opacity-50"
                   v-show="!isLocked"
                   v-on:click="saveEntry"
                   v-bind:disabled="!canSave"

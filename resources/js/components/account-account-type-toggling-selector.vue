@@ -52,8 +52,8 @@
               v-show="!accountOrAccountType.disabled || canShowDisabledAccountAndAccountTypes"
               v-bind:key="accountOrAccountType.id"
               v-bind:value="accountOrAccountType.id"
-              v-text="accountOrAccountType.name"
               v-bind:class="{'disabled-option has-text-grey-light' : accountOrAccountType.disabled}"
+              v-text="accountOrAccountType.name"
           ></option>
         </select>
       </div>
@@ -65,7 +65,7 @@
 import _ from "lodash";
 import {accountsObjectMixin} from "../mixins/accounts-object-mixin";
 import {accountTypesObjectMixin} from "../mixins/account-types-object-mixin";
-import {bulmaColorsMixin} from "../mixins/bulma-colors-mixin";
+import {tailwindColorsMixin} from "../mixins/tailwind-colors-mixin";
 import ToggleButton from "./toggle-button";
 
 const EMIT_UPDATE_TOGGLE = 'update:accountOrAccountTypeToggled';
@@ -76,7 +76,7 @@ export default {
   components: {
     ToggleButton
   },
-  mixins: [accountsObjectMixin, accountTypesObjectMixin, bulmaColorsMixin],
+  mixins: [accountsObjectMixin, accountTypesObjectMixin, tailwindColorsMixin],
   props: {
     id: {type: String, required: true},
     accountOrAccountTypeToggled: {type: Boolean, default: true},
@@ -139,8 +139,8 @@ export default {
 
     toggleButtonProperties: function(){
       return {
-        colorChecked: this.colorGreyLight,
-        colorUnchecked: this.colorGreyLight,
+        colorChecked: this.tailwindColors.gray[400],
+        colorUnchecked: this.tailwindColors.gray[400],
         fontSize: 12, // px
         height: 36,
         labelChecked: "Account",
