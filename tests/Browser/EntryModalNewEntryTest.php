@@ -45,10 +45,14 @@ class EntryModalNewEntryTest extends DuskTestCase {
 
     private $method_account = 'account';
     private $method_account_type = 'account-type';
+    private $default_currency_character;
 
     public function __construct($name = null, array $data = [], $dataName = ''){
         parent::__construct($name, $data, $dataName);
         $this->initEntryModalColours();
+
+        $default_currency = CurrencyHelper::getCurrencyDefaults();
+        $this->default_currency_character = CurrencyHelper::convertCurrencyHtmlToCharacter($default_currency->html);
     }
 
     /**
@@ -298,7 +302,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
             $browser
                 ->within($this->_selector_modal_entry.' '.$this->_selector_modal_body, function(Browser $entry_modal_body) use ($account_type){
                     // currency icon in input#entry-value is "$"
-                    $this->assertEntryValueCurrency($entry_modal_body, $this->_label_dollar);
+                    $this->assertEntryValueCurrency($entry_modal_body, $this->default_currency_character);
                     // don't see account meta
                     $entry_modal_body
                         ->assertDontSee($this->_label_account_type_meta_account_name)
@@ -381,11 +385,10 @@ class EntryModalNewEntryTest extends DuskTestCase {
         // this test relies on a consistent database to test with
         // we can't use a dataProvider as the data is wiped by the time the test(s) are run
         $accounts = Account::all()->unique('currency');
-        $currencies = CurrencyHelper::fetchCurrencies();
         foreach($accounts as $account){
             // See storage/app/json/currency.json for list of supported currencies
-            $currency_html = $currencies->where('code', $account['currency'])->first()->html;
-            $currency_character = is_null($currency_html) ? $this->_label_dollar : html_entity_decode($currency_html, ENT_HTML5);
+            $currency_html = CurrencyHelper::getCurrencyHtmlFromCode($account['currency']);
+            $currency_character = html_entity_decode($currency_html, ENT_HTML5);
 
             $account_type_id = AccountType::where('account_id', $account['id'])->pluck('id')->random();
 
@@ -396,7 +399,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
                 $browser
                     ->within($this->_selector_modal_entry.' '.$this->_selector_modal_body, function(Browser $entry_modal_body) use ($account_type_id, $currency_character){
                         // currency icon in input#entry-value is "$" by default
-                        $this->assertEntryValueCurrency($entry_modal_body, $this->_label_dollar);
+                        $this->assertEntryValueCurrency($entry_modal_body, $this->default_currency_character);
 
                         $this->waitUntilSelectLoadingIsMissing($entry_modal_body, $this->_selector_modal_entry_field_account_type);
                         $entry_modal_body
@@ -407,7 +410,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
 
                         // revert account-type select field to default state
                         $entry_modal_body->select($this->_selector_modal_entry_field_account_type, '');
-                        $this->assertEntryValueCurrency($entry_modal_body, $this->_label_dollar);
+                        $this->assertEntryValueCurrency($entry_modal_body, $this->default_currency_character);
                     });
             });
         }
