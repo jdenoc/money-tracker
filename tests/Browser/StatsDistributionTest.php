@@ -7,7 +7,6 @@ use App\Traits\Tests\Dusk\AccountOrAccountTypeTogglingSelector as DuskTraitAccou
 use App\Traits\Tests\Dusk\BatchFilterEntries as DuskTraitBatchFilterEntries;
 use App\Traits\Tests\Dusk\StatsDateRange as DuskTraitStatsDateRange;
 use App\Traits\Tests\Dusk\StatsSidePanel as DuskTraitStatsSidePanel;
-use App\Traits\Tests\Dusk\TailwindColors as DuskTraitTailwindColors;
 use Illuminate\Support\Collection;
 use Laravel\Dusk\Browser;
 use Tests\Browser\Pages\StatsPage;
@@ -27,7 +26,6 @@ class StatsDistributionTest extends StatsBase {
     use DuskTraitBatchFilterEntries;
     use DuskTraitStatsDateRange;
     use DuskTraitStatsSidePanel;
-    use DuskTraitTailwindColors;
 
     private static $SELECTOR_STATS_DISTRIBUTION = '#stats-distribution';
     private static $SELECTOR_STATS_FORM_TOGGLE_EXPENSEINCOME = '#distribution-expense-or-income';
@@ -46,7 +44,11 @@ class StatsDistributionTest extends StatsBase {
         $this->_account_or_account_type_toggling_selector_id_label = $chart_designation;
         $this->date_range_chart_name = $chart_designation;
         $this->include_transfers_chart_name = $chart_designation;
-        $this->_color_switch_default = self::gray(400);
+    }
+
+    public function setUp(): void{
+        parent::setUp();
+        $this->_color_switch_default = $this->tailwindColors->gray(400);
     }
 
     /**
@@ -94,8 +96,8 @@ class StatsDistributionTest extends StatsBase {
                     $form
                         ->assertVisible(self::$SELECTOR_BUTTON_GENERATE)
                         ->assertSeeIn(self::$SELECTOR_BUTTON_GENERATE, self::$LABEL_GENERATE_CHART_BUTTON);
-                    $this->assertElementBackgroundColor($form, self::$SELECTOR_BUTTON_GENERATE, self::blue(600));
-                    $this->assertElementTextColor($form, self::$SELECTOR_BUTTON_GENERATE, self::white());
+                    $this->assertElementBackgroundColor($form, self::$SELECTOR_BUTTON_GENERATE, $this->tailwindColors->blue(600));
+                    $this->assertElementTextColor($form, self::$SELECTOR_BUTTON_GENERATE, $this->tailwindColors->white());
                 });
         });
     }

@@ -6,7 +6,6 @@ use App\Traits\Tests\Dusk\AccountOrAccountTypeTogglingSelector as DuskTraitAccou
 use App\Traits\Tests\Dusk\BatchFilterEntries as DuskTraitBatchFilterEntries;
 use App\Traits\Tests\Dusk\StatsDateRange as DuskTraitStatsDateRange;
 use App\Traits\Tests\Dusk\StatsSidePanel as DuskTraitStatsSidePanel;
-use App\Traits\Tests\Dusk\TailwindColors as DuskTraitTailwindColors;
 use Facebook\WebDriver\Remote\RemoteWebElement;
 use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Support\Collection;
@@ -28,7 +27,6 @@ class StatsSummaryTest extends StatsBase {
     use DuskTraitBatchFilterEntries;
     use DuskTraitStatsDateRange;
     use DuskTraitStatsSidePanel;
-    use DuskTraitTailwindColors;
 
     private static $LABEL_GENERATE_TABLE_BUTTON = "Generate Tables";
     private static $LABEL_TABLE_NAME_TOTAL = 'Total Income/Expenses';
@@ -82,8 +80,8 @@ class StatsSummaryTest extends StatsBase {
                     $form
                         ->assertVisible(self::$SELECTOR_BUTTON_GENERATE)
                         ->assertSeeIn(self::$SELECTOR_BUTTON_GENERATE, self::$LABEL_GENERATE_TABLE_BUTTON);
-                    $this->assertElementBackgroundColor($form, self::$SELECTOR_BUTTON_GENERATE, self::blue(600));
-                    $this->assertElementTextColor($form, self::$SELECTOR_BUTTON_GENERATE, self::white());
+                    $this->assertElementBackgroundColor($form, self::$SELECTOR_BUTTON_GENERATE, $this->tailwindColors->blue(600));
+                    $this->assertElementTextColor($form, self::$SELECTOR_BUTTON_GENERATE, $this->tailwindColors->white());
                 });
         });
     }
