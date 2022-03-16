@@ -1,5 +1,5 @@
 <template>
-  <div id="loading-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" v-show="isLoading">
+  <div id="loading-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-10" v-show="isLoading">
     <div class="modal flex justify-center relative inset-y-1/4 mx-auto w-160">
       <spinner v-bind="loaderProperties"></spinner>
     </div>
@@ -7,14 +7,15 @@
 </template>
 
 <script>
-import randomColor from 'randomcolor/randomColor';
 import Spinner from 'vue-spinner-component/src/Spinner.vue';
+import {tailwindColorsMixin} from "../mixins/tailwind-colors-mixin";
 
 export default {
   name: "loading-modal",
   components: {
     Spinner
   },
+  mixins: [tailwindColorsMixin],
   data: function(){
     return {
       isLoading: false,
@@ -40,7 +41,7 @@ export default {
       this.isLoading = false;
     },
     generateRandomColor: function(){
-      this.loadingColor = randomColor();
+      this.loadingColor = this.randomColor();
     }
   },
   created: function(){

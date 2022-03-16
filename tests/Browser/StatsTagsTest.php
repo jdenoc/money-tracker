@@ -3,10 +3,13 @@
 namespace Tests\Browser;
 
 use App\Models\Entry;
+use App\Traits\Tests\AssertElementColor;
 use App\Traits\Tests\Dusk\AccountOrAccountTypeTogglingSelector as DuskTraitAccountOrAccountTypeTogglingSelector;
 use App\Traits\Tests\Dusk\BatchFilterEntries as DuskTraitBatchFilterEntries;
+use App\Traits\Tests\Dusk\StatsDateRange as DuskTraitStatsDateRange;
 use App\Traits\Tests\Dusk\StatsSidePanel as DuskTraitStatsSidePanel;
 use App\Traits\Tests\Dusk\TagsInput as DuskTraitTagsInput;
+use App\Traits\Tests\Dusk\TailwindColors as DuskTraitTailwindColors;
 use Laravel\Dusk\Browser;
 use Illuminate\Support\Collection;
 use Tests\Browser\Pages\StatsPage;
@@ -22,10 +25,13 @@ use Throwable;
  */
 class StatsTagsTest extends StatsBase {
 
+    use AssertElementColor;
     use DuskTraitAccountOrAccountTypeTogglingSelector;
     use DuskTraitBatchFilterEntries;
-    use DuskTraitTagsInput;
+    use DuskTraitStatsDateRange;
     use DuskTraitStatsSidePanel;
+    use DuskTraitTagsInput;
+    use DuskTraitTailwindColors;
 
     private static $SELECTOR_STATS_TAGS = "#stats-tags";
     private static $SELECTOR_CHART_TAGS = 'canvas#bar-chart';
@@ -34,7 +40,10 @@ class StatsTagsTest extends StatsBase {
 
     public function __construct($name = null, array $data = [], $dataName = ''){
         parent::__construct($name, $data, $dataName);
-        $this->_account_or_account_type_toggling_selector_id_label = 'tags-chart';
+        $chart_designation = 'tags-chart';
+        $this->_account_or_account_type_toggling_selector_id_label = $chart_designation;
+        $this->date_range_chart_name = $chart_designation;
+        $this->include_transfers_chart_name = $chart_designation;
     }
 
     /**
@@ -79,15 +88,15 @@ class StatsTagsTest extends StatsBase {
                             // tags-input
                             $this->assertDefaultStateOfTagsInput($form);
 
-                            // bulma date-picker
-                            $this->assertDefaultStateBulmaDatePicker($form);
+                            // date range
+                            $this->assertDefaultStateDateRange($form);
 
                             // button
                             $form
                                 ->assertVisible(self::$SELECTOR_BUTTON_GENERATE)
                                 ->assertSeeIn(self::$SELECTOR_BUTTON_GENERATE, self::$LABEL_GENERATE_CHART_BUTTON);
-                            $button_classes = $form->attribute(self::$SELECTOR_BUTTON_GENERATE, 'class');
-                            $this->assertStringContainsString('is-primary', $button_classes);
+                            $this->assertElementTextColor($form, self::$SELECTOR_BUTTON_GENERATE, self::white());
+                            $this->assertElementBackgroundColor($form, self::$SELECTOR_BUTTON_GENERATE, self::blue(600));
                         });
                 });
         });
@@ -188,7 +197,7 @@ class StatsTagsTest extends StatsBase {
      * @group stats-tags-2
      * test (see provider)/25
      */
-    public function testGenerateTagsChart($datepicker_start, $datepicker_end, bool $is_switch_toggled, bool $is_random_selector_value, bool $are_disabled_select_options_available, int $tag_count, bool $include_transfers){
+    public function testGenerateTagsChart(?string $datepicker_start, ?string $datepicker_end, bool $is_switch_toggled, bool $is_random_selector_value, bool $are_disabled_select_options_available, int $tag_count, bool $include_transfers){
         $accounts = collect($this->getApiAccounts());
         $account_types = collect($this->getApiAccountTypes());
         $tags = collect($this->getApiTags());
@@ -226,12 +235,17 @@ class StatsTagsTest extends StatsBase {
                     }
                     $filter_data = $this->generateFilterArrayElementTags($filter_data, $form_tags);
 
-                    if(!is_null($datepicker_start) && !is_null($datepicker_end)){
-                        $this->setDateRange($form, $datepicker_start, $datepicker_end);
+                    if(!is_null($datepicker_start)){
+                        $this->setDateRangeDate($form, 'start', $datepicker_start);
                     } else {
                         $datepicker_start = $this->month_start;
+                    }
+                    if(!is_null($datepicker_end)){
+                        $this->setDateRangeDate($form, 'end', $datepicker_end);
+                    } else {
                         $datepicker_end = $this->month_end;
                     }
+
                     $filter_data = $this->generateFilterArrayElementDatepicker($filter_data, $datepicker_start, $datepicker_end);
 
                     $this->generateEntryFromFilterData($filter_data, $this->getName(true));
@@ -246,7 +260,7 @@ class StatsTagsTest extends StatsBase {
             $browser
                 ->assertDontSeeIn(self::$SELECTOR_STATS_RESULTS_TAGS, self::$LABEL_NO_STATS_DATA)
                 ->with(self::$SELECTOR_STATS_RESULTS_TAGS, function(Browser $stats_results_area) use ($include_transfers){
-                    $this->assertIncludeTransfersCheckboxButtonDefaultState($stats_results_area);
+                    $this->assertIncludeTransfersButtonDefaultState($stats_results_area);
                     if($include_transfers){
                         $this->clickIncludeTransfersCheckboxButton($stats_results_area);
                         $this->assertIncludesTransfersCheckboxButtonStateActive($stats_results_area);
@@ -262,7 +276,7 @@ class StatsTagsTest extends StatsBase {
      * @throws Throwable
      *
      * @group stats-tags-1
-     * test 15/25
+     * test 4/25
      */
     public function testGeneratingATagsChartWontCauseSummaryTablesToBecomeVisible(){
         $this->generatingADifferentChartWontCauseSummaryTablesToBecomeVisible(

@@ -1,5 +1,5 @@
 <template>
-    <div id="stats-display">
+    <div id="stats-display" class="ml-2 w-4/5 px-12 pt-6">
         <summary-chart v-show="isVisibleChart.summary"></summary-chart>
         <trending-chart v-show="isVisibleChart.trending"></trending-chart>
         <distribution-chart v-show="isVisibleChart.distribution"></distribution-chart>
@@ -38,7 +38,4 @@
 </script>
 
 <style scoped>
-    #stats-display{
-        margin-left: 0.5rem;
-    }
 </style>

@@ -4,7 +4,9 @@ namespace Tests\Browser;
 
 use App\Traits\Tests\Dusk\AccountOrAccountTypeTogglingSelector as DuskTraitAccountOrAccountTypeTogglingSelector;
 use App\Traits\Tests\Dusk\BatchFilterEntries as DuskTraitBatchFilterEntries;
+use App\Traits\Tests\Dusk\StatsDateRange as DuskTraitStatsDateRange;
 use App\Traits\Tests\Dusk\StatsSidePanel as DuskTraitStatsSidePanel;
+use App\Traits\Tests\Dusk\TailwindColors as DuskTraitTailwindColors;
 use Facebook\WebDriver\Remote\RemoteWebElement;
 use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Support\Collection;
@@ -24,7 +26,9 @@ class StatsSummaryTest extends StatsBase {
 
     use DuskTraitAccountOrAccountTypeTogglingSelector;
     use DuskTraitBatchFilterEntries;
+    use DuskTraitStatsDateRange;
     use DuskTraitStatsSidePanel;
+    use DuskTraitTailwindColors;
 
     private static $LABEL_GENERATE_TABLE_BUTTON = "Generate Tables";
     private static $LABEL_TABLE_NAME_TOTAL = 'Total Income/Expenses';
@@ -32,7 +36,10 @@ class StatsSummaryTest extends StatsBase {
 
     public function __construct($name = null, array $data = [], $dataName = ''){
         parent::__construct($name, $data, $dataName);
-        $this->_account_or_account_type_toggling_selector_id_label = 'summary-chart';
+        $chart_designation = 'summary-chart';
+        $this->_account_or_account_type_toggling_selector_id_label = $chart_designation;
+        $this->date_range_chart_name = $chart_designation;
+        $this->include_transfers_chart_name = $chart_designation;
     }
 
     /**
@@ -64,19 +71,19 @@ class StatsSummaryTest extends StatsBase {
             $browser
                 ->visit(new StatsPage())
                 ->assertVisible(self::$SELECTOR_STATS_FORM_SUMMARY)
-                ->with(self::$SELECTOR_STATS_FORM_SUMMARY, function(Browser $form) use ($accounts){
+                ->within(self::$SELECTOR_STATS_FORM_SUMMARY, function(Browser $form) use ($accounts){
                     // account/account-type selector
                     $this->assertDefaultStateOfAccountOrAccountTypeTogglingSelectorComponent($form, $accounts);
 
-                    // bulma date-picker
-                    $this->assertDefaultStateBulmaDatePicker($form);
+//                    // date range
+                    $this->assertDefaultStateDateRange($form);
 
                     // button
                     $form
                         ->assertVisible(self::$SELECTOR_BUTTON_GENERATE)
                         ->assertSeeIn(self::$SELECTOR_BUTTON_GENERATE, self::$LABEL_GENERATE_TABLE_BUTTON);
-                    $button_classes = $form->attribute(self::$SELECTOR_BUTTON_GENERATE, 'class');
-                    $this->assertStringContainsString('is-primary', $button_classes);
+                    $this->assertElementBackgroundColor($form, self::$SELECTOR_BUTTON_GENERATE, self::blue(600));
+                    $this->assertElementTextColor($form, self::$SELECTOR_BUTTON_GENERATE, self::white());
                 });
         });
     }
@@ -97,7 +104,7 @@ class StatsSummaryTest extends StatsBase {
         });
     }
 
-    public function providerTestGenerateStatsTables(){
+    public function providerTestGenerateStatsTables():array{
         //[$datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available]
         return [
             // defaults account/account-type & date-picker values
@@ -134,8 +141,8 @@ class StatsSummaryTest extends StatsBase {
     /**
      * @dataProvider providerTestGenerateStatsTables
      *
-     * @param string $datepicker_start
-     * @param string $datepicker_end
+     * @param string|null $datepicker_start
+     * @param string|null $datepicker_end
      * @param bool $is_switch_toggled
      * @param bool $is_random_selector_value
      * @param bool $are_disabled_select_options_available
@@ -146,7 +153,7 @@ class StatsSummaryTest extends StatsBase {
      * @group stats-summary-1
      * test (see provider)/25
      */
-    public function testGenerateStatsTables($datepicker_start, $datepicker_end, bool $is_switch_toggled, bool $is_random_selector_value, bool $are_disabled_select_options_available, bool $include_transfers){
+    public function testGenerateStatsTables(?string $datepicker_start, ?string $datepicker_end, bool $is_switch_toggled, bool $is_random_selector_value, bool $are_disabled_select_options_available, bool $include_transfers){
         $accounts = collect($this->getApiAccounts());
         $account_types = collect($this->getApiAccountTypes());
 
@@ -156,7 +163,7 @@ class StatsSummaryTest extends StatsBase {
             $browser
                 ->visit(new StatsPage())
                 ->assertVisible(self::$SELECTOR_STATS_FORM_SUMMARY)
-                ->with(self::$SELECTOR_STATS_FORM_SUMMARY, function(Browser $form) use ($datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, &$filter_data, $accounts, $account_types){
+                ->within(self::$SELECTOR_STATS_FORM_SUMMARY, function(Browser $form) use ($datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, &$filter_data, $accounts, $account_types){
                     if($are_disabled_select_options_available){
                         $this->toggleShowDisabledAccountOrAccountTypeCheckbox($form);
                     }
@@ -171,13 +178,17 @@ class StatsSummaryTest extends StatsBase {
                     $this->selectAccountOrAccountTypeValue($form, $account_or_account_type_id);
                     $filter_data = $this->generateFilterArrayElementAccountOrAccountypeId($filter_data, $is_switch_toggled, $account_or_account_type_id);
 
-                    if(!is_null($datepicker_start) && !is_null($datepicker_end)){
-                        $this->setDateRange($form, $datepicker_start, $datepicker_end);
+                    if(!is_null($datepicker_start)){
+                        $this->setDateRangeDate($form, 'start', $datepicker_start);
                     } else {
-                        // default values
-                        $datepicker_start = $this->month_start;
-                        $datepicker_end = $this->month_end;
+                        $datepicker_start = $this->month_start; // default value
                     }
+                    if(!is_null($datepicker_end)){
+                        $this->setDateRangeDate($form, 'end', $datepicker_end);
+                    } else {
+                        $datepicker_end = $this->month_end; // default value
+                    }
+
                     $filter_data = $this->generateFilterArrayElementDatepicker($filter_data, $datepicker_start, $datepicker_end);
 
                     $this->generateEntryFromFilterData($filter_data, $this->getName());
@@ -188,7 +199,7 @@ class StatsSummaryTest extends StatsBase {
             $browser
                 ->assertDontSeeIn(self::$SELECTOR_STATS_RESULTS_SUMMARY, self::$LABEL_NO_STATS_DATA)
 
-                ->with(self::$SELECTOR_STATS_RESULTS_SUMMARY, function(Browser $stats_results) use ($filter_data, $include_transfers, $account_types, $accounts){
+                ->within(self::$SELECTOR_STATS_RESULTS_SUMMARY, function(Browser $stats_results) use ($filter_data, $include_transfers, $account_types, $accounts){
                     $selector_table_total_income_expense = 'table:nth-child(2)';
                     $selector_table_top_10_income_expense = 'table:nth-child(4)';
                     $selector_table_label = 'caption';
@@ -197,7 +208,7 @@ class StatsSummaryTest extends StatsBase {
                     $entries = $this->getBatchedFilteredEntries($filter_data);
                     $entries = $this->filterTransferEntries($entries, $include_transfers);
 
-                    $this->assertIncludeTransfersCheckboxButtonDefaultState($stats_results);
+                    $this->assertIncludeTransfersButtonDefaultState($stats_results);
                     if($include_transfers){
                         $this->clickIncludeTransfersCheckboxButton($stats_results);
                         $this->assertIncludesTransfersCheckboxButtonStateActive($stats_results);
@@ -205,7 +216,7 @@ class StatsSummaryTest extends StatsBase {
 
                     $stats_results
                         ->assertVisible($selector_table_total_income_expense)
-                        ->with($selector_table_total_income_expense, function(Browser $table) use ($selector_table_label, $selector_table_body_rows, $entries, $accounts, $account_types){
+                        ->within($selector_table_total_income_expense, function(Browser $table) use ($selector_table_label, $selector_table_body_rows, $entries, $accounts, $account_types){
                             $totals = $this->getTotalIncomeExpenses($entries, $accounts, $account_types);
 
                             $table->assertSeeIn($selector_table_label, self::$LABEL_TABLE_NAME_TOTAL);
@@ -214,8 +225,8 @@ class StatsSummaryTest extends StatsBase {
                             $this->assertGreaterThanOrEqual(1, count($totals));
                             $this->assertSameSize($totals, $table_rows, "'".self::$LABEL_TABLE_NAME_TOTAL."' table row count does not match expected totals: ".print_r($totals, true));
 
-                            $selector_cell_total_income = 'td:nth-child(1)';
-                            $selector_cell_total_expense = 'td:nth-child(2)';
+                            $selector_cell_total_income = 'td:nth-child(1) span:nth-child(2)';
+                            $selector_cell_total_expense = 'td:nth-child(2) span:nth-child(2)';
                             $selector_cell_total_currency = 'td:nth-child(3)';
                             foreach($table_rows as $table_row){
                                 //  income | expense | currency
@@ -227,7 +238,7 @@ class StatsSummaryTest extends StatsBase {
                             }
                         })
                         ->assertVisible($selector_table_top_10_income_expense)
-                        ->with($selector_table_top_10_income_expense, function(Browser $table) use ($selector_table_label, $selector_table_body_rows, $entries){
+                        ->within($selector_table_top_10_income_expense, function(Browser $table) use ($selector_table_label, $selector_table_body_rows, $entries){
                             $top_entries = $this->getTop10IncomeExpenses($entries);
 
                             $table->assertSeeIn($selector_table_label, self::$LABEL_TABLE_NAME_TOP);
@@ -281,7 +292,7 @@ class StatsSummaryTest extends StatsBase {
      * @param Collection $account_types
      * @return array
      */
-    private function getTotalIncomeExpenses($entries, $accounts, $account_types){
+    private function getTotalIncomeExpenses($entries, $accounts, $account_types):array{
         $totals = [];
         $currencies = $accounts->unique('currency')->pluck('currency')->all();
         foreach($currencies as $currency){
@@ -313,7 +324,7 @@ class StatsSummaryTest extends StatsBase {
      * @param Collection $entries
      * @return array
      */
-    private function getTop10IncomeExpenses($entries){
+    private function getTop10IncomeExpenses($entries):array{
         $top_income_entries = $entries->where('expense', 0)->sortByDesc($this->sortCallable())->values();
         $top_expense_entries = $entries->where('expense', 1)->sortByDesc($this->sortCallable())->values();
 
@@ -343,7 +354,7 @@ class StatsSummaryTest extends StatsBase {
      * @param RemoteWebElement $element
      * @param string $tooltip_text
      */
-    private function assertTooltip($browser, $element, $tooltip_text){
+    private function assertTooltip(Browser $browser, $element, string $tooltip_text){
         $browser->driver->getMouse()->mouseMove($element->getCoordinates());    // move mouse over element
         $tooltip_id = $element->getAttribute('aria-describedby');    // get the tooltip element id
         $this->assertNotEmpty($tooltip_id);

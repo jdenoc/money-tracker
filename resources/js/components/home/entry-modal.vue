@@ -26,11 +26,11 @@
         <div class="flex">
           <label for="entry-confirm" class="rounded-md py-0.5 px-2 inline-flex"
                  v-bind:class="{
-            'bg-white hover:bg-gray-100 text-gray-400': !entryData.confirm,
-            'bg-green-400 bg-opacity-90 text-white hover:bg-opacity-100': entryData.confirm,
-            'cursor-pointer': !isLocked,
-            'cursor-not-allowed': isLocked
-          }"
+                  'bg-white hover:bg-gray-100 text-gray-400': !entryData.confirm,
+                  'bg-green-400 bg-opacity-90 text-white hover:bg-opacity-100': entryData.confirm,
+                  'cursor-pointer': !isLocked,
+                  'cursor-not-allowed': isLocked
+                }"
           >
             <input type="checkbox" id="entry-confirm" name="entry-confirm" class="appearance-none hidden"
                    v-model="entryData.confirm"

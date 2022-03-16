@@ -4,19 +4,13 @@
     @component('head-component')
         Money Tracker | STATS
     @endcomponent
-    <link href="{{mix('dist/css/app.css')}}" rel="stylesheet" type="text/css">
-    <link href="{{mix('dist/css/font-awesome.css')}}" rel="stylesheet" type="text/css">
 </head>
 <body>
-<div id="app-stats">
+<div id="app-stats" class="py-16">
     <navbar page-name="stats"></navbar>
-    <div class="columns is-gapless">
-        <div class="column is-one-fifth">
-            <stats-nav></stats-nav>
-        </div>
-        <div class="column is-three-fifths">
-            <stats></stats>
-        </div>
+    <stats-nav></stats-nav>
+    <div class="ml-80">
+        <stats></stats>
 
         <!--
         loading-modal must ALWAYS be on the bottom.
