@@ -2,11 +2,7 @@
 
 namespace Tests\Traits;
 
-use App\Traits\Tests\Dusk\BulmaColors;
-
 trait HomePageSelectors {
-
-    use BulmaColors;
 
     // ###*** SELECTORS ***###
     // generic - modal
@@ -154,12 +150,4 @@ trait HomePageSelectors {
     private $_color_filter_btn_tag_default = "";
     private $_color_filter_btn_tag_active = "#3082c5";
 
-    private function initColors(){
-        $this->initAliasBulmaColors();
-        $this->_color_expense_switch_expense = static::$COLOR_WARNING_HEX;
-        $this->_color_expense_switch_income = static::$COLOR_PRIMARY_HEX;
-        $this->_color_filter_switch_default = static::$COLOR_GREY_LIGHT_HEX;
-        $this->_color_filter_switch_active = static::$COLOR_INFO_HEX;
-        $this->_color_filter_btn_tag_default = static::$COLOR_LIGHT_HEX;
-    }
 }

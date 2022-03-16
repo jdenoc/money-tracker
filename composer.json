@@ -14,6 +14,7 @@
         "eklundkristoffer/laravel-discord-webhook": "dev-master",
         "fakerphp/faker": "1.15.0",
         "fideloper/proxy": "^4.0",
+        "jdenoc/bulma-colors": "^0.0.1",
         "jdenoc/laravel-app-version": "^1.0",
         "jdenoc/laravel-make-trait": "^v1.0",
         "laravel/framework": "6.20.42",

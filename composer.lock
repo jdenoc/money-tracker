@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "efc832c651f8d20017e6e30513040976",
+    "content-hash": "b9b16230ec761b12a52ce173afbad910",
     "packages": [
         {
             "name": "beyondcode/laravel-favicon",
@@ -1222,6 +1222,37 @@
                 }
             ],
             "time": "2021-12-16T16:49:26+00:00"
+        },
+        {
+            "name": "jdenoc/bulma-colors",
+            "version": "0.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jdenoc/bulma-colors.git",
+                "reference": "3e64bf721325cc54e76977f7c2a6a97b619c482f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jdenoc/bulma-colors/zipball/3e64bf721325cc54e76977f7c2a6a97b619c482f",
+                "reference": "3e64bf721325cc54e76977f7c2a6a97b619c482f",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Jdenoc\\BulmaColors\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Provides a PHP class that contains hex colors values documented in the Bulma CSS framework",
+            "support": {
+                "issues": "https://github.com/jdenoc/bulma-colors/issues",
+                "source": "https://github.com/jdenoc/bulma-colors/tree/0.0.1"
+            },
+            "time": "2022-03-16T22:06:51+00:00"
         },
         {
             "name": "jdenoc/laravel-app-version",
@@ -8307,5 +8338,5 @@
     "platform-overrides": {
         "php": "7.3"
     },
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.1.0"
 }

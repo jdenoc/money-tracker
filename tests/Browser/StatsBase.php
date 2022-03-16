@@ -10,6 +10,7 @@ use App\Traits\Tests\Dusk\BulmaDatePicker as DuskTraitBulmaDatePicker;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\StatsSidePanel as DuskTraitStatsSidePanel;
 use App\Traits\Tests\Dusk\StatsIncludeTransfersCheckboxButton as DuskTraitStatsIncludeTransfersCheckboxButton;
+use App\Traits\Tests\WithBulmaColors;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Collection;
 use Laravel\Dusk\Browser;
@@ -24,6 +25,7 @@ class StatsBase extends DuskTestCase {
     use DuskTraitStatsIncludeTransfersCheckboxButton;
     use DuskTraitStatsSidePanel;
     use EntryFilterKeys;
+    use WithBulmaColors;
     use WithFaker;
 
     protected static $SELECTOR_STATS_FORM_SUMMARY = "#stats-form-summary";

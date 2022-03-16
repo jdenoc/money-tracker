@@ -14,6 +14,7 @@ use App\Traits\Tests\Dusk\Notification as DuskTraitNotification;
 use App\Traits\Tests\Dusk\TagsInput as DuskTraitTagsInput;
 use App\Traits\Tests\Dusk\ToggleButton as DuskTraitToggleButton;
 use App\Traits\Tests\WaitTimes;
+use App\Traits\Tests\WithBulmaColors;
 use Carbon\Carbon;
 use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -46,6 +47,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     use EntryTransferKeys;
     use HomePageSelectors;
     use WaitTimes;
+    use WithBulmaColors;
     use WithFaker;
 
     const INI_POSTMAXSIZE = 'post_max_size';
@@ -68,14 +70,11 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     private $_cached_entries_collection = [];
 
-    public function __construct($name = null, array $data = [], $dataName = ''){
-        parent::__construct($name, $data, $dataName);
-        $this->initColors();
-    }
-
     public function setUp(): void{
         parent::setUp();
         $this->_cached_entries_collection = [];
+        $this->_color_expense_switch_expense = $this->bulmaColors->getColor('COLOR_WARNING');
+        $this->_color_expense_switch_income = $this->bulmaColors->getColor('COLOR_PRIMARY');
         if($this->getName(false) === self::$TEST_NAME_OVERRIDE_HTACCESS){
             $this->addRulesToHtaccessToDisableDisplayErrors();
         }
@@ -96,31 +95,28 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     public function providerUnconfirmedEntry(): array{
         return [
-            // test 1/25
-            "Expense"=>[$this->_selector_table_unconfirmed_expense, $this->_label_expense_switch_expense, $this->_color_expense_switch_expense],
-            // test 2/25
-            "Income"=>[$this->_selector_table_unconfirmed_income, $this->_label_expense_switch_income, $this->_color_expense_switch_income],
+            'Expense'=>[true],  // test 1/25
+            'Income'=>[false],  // test 2/25
         ];
     }
 
     /**
      * @dataProvider providerUnconfirmedEntry
-     * @param string $data_entry_selector
-     * @param string $data_expense_switch_label
-     * @param string $expense_switch_colour
+     * @param bool $is_expense
      *
      * @throws Throwable
      *
      * @group entry-modal-1
      * test (see provider)/25
      */
-    public function testClickingOnEntryTableEditButtonOfUnconfirmedEntry(string $data_entry_selector, string $data_expense_switch_label, string $expense_switch_colour){
-        $this->browse(function(Browser $browser) use ($data_entry_selector, $data_expense_switch_label, $expense_switch_colour){
+    public function testClickingOnEntryTableEditButtonOfUnconfirmedEntry(bool $is_expense){
+        $this->browse(function(Browser $browser) use ($is_expense){
+            $data_entry_selector = $is_expense ? $this->_selector_table_unconfirmed_expense : $this->_selector_table_unconfirmed_income;
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $browser
                 ->openExistingEntryModal($data_entry_selector)
-                ->within($this->_selector_modal_entry, function(Browser $entry_modal) use ($data_expense_switch_label, $expense_switch_colour){
+                ->within($this->_selector_modal_entry, function(Browser $entry_modal) use ($is_expense){
                     $entry_id = $entry_modal->inputValue($this->_selector_modal_entry_field_entry_id);
                     $this->assertNotEmpty($entry_id);
                     $entry_data = $this->getApiEntry($entry_id);
@@ -135,7 +131,15 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                             $this->assertStringContainsString($this->_class_light_grey_text, $entry_confirm_class);
                         })
 
-                        ->within($this->_selector_modal_body, function(Browser $modal_body) use ($entry_data, $data_expense_switch_label, $expense_switch_colour){
+//                        ->within($this->_selector_modal_body, function(Browser $modal_body) use ($entry_data, $data_expense_switch_label, $expense_switch_colour){
+                        ->within($this->_selector_modal_body, function(Browser $modal_body) use ($entry_data, $is_expense){
+                            if($is_expense){
+                                $data_expense_switch_label = $this->_label_expense_switch_expense;
+                                $expense_switch_colour = $this->_color_expense_switch_expense;
+                            } else {
+                                $data_expense_switch_label = $this->_label_expense_switch_income;
+                                $expense_switch_colour = $this->_color_expense_switch_income;
+                            }
                             $modal_body
                                 ->assertInputValue($this->_selector_modal_entry_field_date, $entry_data['entry_date'])
                                 ->assertInputValue($this->_selector_modal_entry_field_value, $entry_data['entry_value'])
@@ -163,31 +167,28 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     public function providerConfirmedEntry(): array{
         return [
-            // test 3/25
-            "Expense"=>[$this->_selector_table_confirmed_expense, $this->_label_expense_switch_expense, $this->_color_expense_switch_expense],
-            // test 4/25
-            "Income"=>[$this->_selector_table_confirmed_income, $this->_label_expense_switch_income, $this->_color_expense_switch_income],
+            "Expense"=>[true],  // test 3/25
+            "Income"=>[false],  // test 4/25
         ];
     }
 
     /**
      * @dataProvider providerConfirmedEntry
-     * @param string $data_entry_selector
-     * @param string $data_expense_switch_label
-     * @param string $expense_switch_color
+     * @param bool $is_expense
      *
      * @throws Throwable
      *
      * @group entry-modal-1
      * test (see provider)/25
      */
-    public function testClickingOnEntryTableEditButtonOfConfirmedEntry(string $data_entry_selector, string $data_expense_switch_label, string $expense_switch_color){
-        $this->browse(function(Browser $browser) use ($data_entry_selector, $data_expense_switch_label, $expense_switch_color){
+    public function testClickingOnEntryTableEditButtonOfConfirmedEntry(bool $is_expense){
+        $this->browse(function(Browser $browser) use ($is_expense){
+            $data_entry_selector = $is_expense ? $this->_selector_table_confirmed_expense : $this->_selector_table_confirmed_income;
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $browser
                 ->openExistingEntryModal($data_entry_selector)
-                ->within($this->_selector_modal_entry, function(Browser $entry_modal) use ($data_expense_switch_label, $expense_switch_color){
+                ->within($this->_selector_modal_entry, function(Browser $entry_modal) use ($is_expense){
                     $entry_id = $entry_modal->inputValue($this->_selector_modal_entry_field_entry_id);
                     $this->assertNotEmpty($entry_id);
                     $entry_data = $this->getApiEntry($entry_id);
@@ -205,7 +206,10 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                             $this->assertEquals("true", $modal_head->attribute($this->_selector_modal_entry_btn_confirmed, "disabled"));
                         })
 
-                        ->within($this->_selector_modal_body, function(Browser $modal_body) use ($entry_data, $data_expense_switch_label, $expense_switch_color){
+//                        ->within($this->_selector_modal_body, function(Browser $modal_body) use ($entry_data, , $expense_switch_color){
+                        ->within($this->_selector_modal_body, function(Browser $modal_body) use ($entry_data, $is_expense){
+                            $data_expense_switch_label = $is_expense ? $this->_label_expense_switch_expense : $this->_label_expense_switch_income;
+                            $expense_switch_color = $is_expense ? $this->_color_expense_switch_expense : $this->_color_expense_switch_income;
                             $modal_body
                                 ->assertInputValue($this->_selector_modal_entry_field_date, $entry_data['entry_date'])
                                 ->assertInputValue($this->_selector_modal_entry_field_value, $entry_data['entry_value'])

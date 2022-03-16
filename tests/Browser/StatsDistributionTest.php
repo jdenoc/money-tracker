@@ -4,7 +4,6 @@ namespace Tests\Browser;
 
 use App\Traits\Tests\Dusk\AccountOrAccountTypeTogglingSelector as DuskTraitAccountOrAccountTypeTogglingSelector;
 use App\Traits\Tests\Dusk\BatchFilterEntries as DuskTraitBatchFilterEntries;
-use App\Traits\Tests\Dusk\BulmaColors as DuskTraitBulmaColors;
 use App\Traits\Tests\Dusk\BulmaDatePicker as DuskTraitBulmaDatePicker;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\StatsSidePanel as DuskTraitStatsSidePanel;
@@ -24,7 +23,6 @@ use Throwable;
 class StatsDistributionTest extends StatsBase {
 
     use DuskTraitAccountOrAccountTypeTogglingSelector;
-    use DuskTraitBulmaColors;
     use DuskTraitBulmaDatePicker;
     use DuskTraitBatchFilterEntries;
     use DuskTraitLoading;
@@ -43,9 +41,12 @@ class StatsDistributionTest extends StatsBase {
 
     public function __construct($name = null, array $data = [], $dataName = ''){
         parent::__construct($name, $data, $dataName);
-        $this->initAliasBulmaColors();
         $this->_account_or_account_type_toggling_selector_label_id = 'distribution-chart';
-        $this->_color_switch_default = self::$COLOR_GREY_LIGHT_HEX;
+    }
+
+    public function setUp():void{
+        parent::setUp();
+        $this->_color_switch_default = $this->bulmaColors->getColor('COLOR_GREY_LIGHT');
     }
 
     /**
