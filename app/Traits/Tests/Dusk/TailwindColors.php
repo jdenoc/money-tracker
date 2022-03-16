@@ -287,7 +287,7 @@ trait TailwindColors {
 ////        __DIR__.'/../../../../tailwind.config.js';
 //    }
 
-    private static function getColor(string $colorName, int $colorStrength):string{
+    public static function getColor(string $colorName, int $colorStrength):string{
         if(!static::$colorPalette[$colorName]){
             $permitted_colors = array_keys(static::$colorPalette);
             throw new InvalidArgumentException(sprintf(

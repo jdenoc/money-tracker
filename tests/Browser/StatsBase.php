@@ -6,11 +6,10 @@ use App\Models\Account;
 use App\Models\AccountType;
 use App\Models\Entry;
 use App\Traits\EntryFilterKeys;
-use App\Traits\Tests\Dusk\BulmaDatePicker as DuskTraitBulmaDatePicker;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
+use App\Traits\Tests\Dusk\StatsDateRange as DuskTraitStatsDateRange;
 use App\Traits\Tests\Dusk\StatsSidePanel as DuskTraitStatsSidePanel;
 use App\Traits\Tests\Dusk\StatsIncludeTransfersCheckboxButton as DuskTraitStatsIncludeTransfersCheckboxButton;
-use App\Traits\Tests\WithBulmaColors;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Collection;
 use Laravel\Dusk\Browser;
@@ -20,12 +19,11 @@ use Throwable;
 
 class StatsBase extends DuskTestCase {
 
-    use DuskTraitBulmaDatePicker;
     use DuskTraitLoading;
+    use DuskTraitStatsDateRange;
     use DuskTraitStatsIncludeTransfersCheckboxButton;
     use DuskTraitStatsSidePanel;
     use EntryFilterKeys;
-    use WithBulmaColors;
     use WithFaker;
 
     protected static $SELECTOR_STATS_FORM_SUMMARY = "#stats-form-summary";
@@ -63,7 +61,7 @@ class StatsBase extends DuskTestCase {
      *
      * @throws Throwable
      */
-    protected function generatingADifferentChartWontCauseSummaryTablesToBecomeVisible($side_panel_selector, $stats_form_selector, $stats_results_selector){
+    protected function generatingADifferentChartWontCauseSummaryTablesToBecomeVisible(string $side_panel_selector, string $stats_form_selector, string $stats_results_selector){
         // TODO: rewrite this to accept any stats component; not just redirect to the stats-summary component
         // TODO: wait until all other stats components have been adjusted
         $this->browse(function (Browser $browser) use ($side_panel_selector, $stats_form_selector, $stats_results_selector){
@@ -75,12 +73,13 @@ class StatsBase extends DuskTestCase {
             $browser
                 ->assertVisible($stats_form_selector)
                 ->with($stats_form_selector, function(Browser $form){
-                    $this->setDateRange($form, $this->previous_year_start, $this->today);
+                    $this->setDateRangeDate($form, 'start', $this->previous_year_start);
+                    $this->setDateRangeDate($form, 'end', $this->today);
                     $form->click(self::$SELECTOR_BUTTON_GENERATE);
                 });
             $this->waitForLoadingToStop($browser);
             $browser->assertDontSeeIn($stats_results_selector, self::$LABEL_NO_STATS_DATA);
-            $this->assertIncludeTransfersCheckboxButtonDefaultState($browser);
+            $this->assertIncludeTransfersButtonDefaultState($browser);
 
             $this->clickStatsSidePanelOptionSummary($browser);
             $this->assertStatsSidePanelOptionIsActive($browser, self::$LABEL_STATS_SIDE_PANEL_OPTION_SUMMARY);
