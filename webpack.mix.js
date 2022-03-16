@@ -18,22 +18,14 @@ let directory = {
 }
 directory.js = directory.destination+'js/';
 directory.css = directory.destination+'css/';
-directory.webfont = directory.destination+'webfonts/';
-directory.fontAwesome = directory.node+'@fortawesome/fontawesome-free/';
 
 mix
     .extract(['vue', 'lodash', 'axios'])
     .js(directory.resource+'js/app-home.js', directory.js).vue()
     .js(directory.resource+'js/app-stats.js', directory.js).vue()
-    // font-awesome
-    .copy(directory.fontAwesome+'css/all.min.css', directory.css+'font-awesome.css')
-    .copy(directory.fontAwesome+'webfonts/fa-solid-900.woff2', directory.webfont+'fa-solid-900.woff2')
-    .copy(directory.fontAwesome+'webfonts/fa-regular-400.woff2', directory.webfont+'fa-regular-400.woff2')
-
-    .sass(directory.resource+'sass/app.scss', directory.css)
 
     // tailwind specific
-    .postCss(directory.resource+'css/tailwind.css', directory.css, [
+    .postCss(directory.resource+'css/tailwind.css', directory.css+'app.css', [
         require("tailwindcss"),
     ])
 

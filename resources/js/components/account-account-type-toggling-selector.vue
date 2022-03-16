@@ -42,7 +42,7 @@
           </svg>
         </span>
 
-        <select id="entry-account-type" name="select-account-or-account-types-id" class="select-account-or-account-types-id rounded w-full"
+        <select name="select-account-or-account-types-id" class="select-account-or-account-types-id rounded min-w-60"
             v-model="accountOrAccountTypeIdFromProps"
             v-on:change="selectorValueChange"
         >
@@ -142,7 +142,7 @@ export default {
         colorChecked: this.tailwindColors.gray[400],
         colorUnchecked: this.tailwindColors.gray[400],
         fontSize: 12, // px
-        height: 36,
+        height: 36, // px
         labelChecked: "Account",
         labelUnchecked: "Account Type",
         toggleId: this.getIdForToggleSwitch,

@@ -2,55 +2,66 @@
 
 namespace App\Traits\Tests\Dusk;
 
+use App\Traits\Tests\AssertElementColor;
+use Exception;
 use Laravel\Dusk\Browser;
 
 trait StatsIncludeTransfersCheckboxButton {
 
-    protected static $SELECTOR_STATS_CHECKBOX_INCLUDE_TRANSFERS = '.is-checkradio.is-info.is-small.is-block+label';
-    protected static $SELECTOR_STATS_CHECKBOX_INCLUDE_TRANSFERS_CHECKED = '.is-checkradio.is-info.is-small.is-block:checked+label';
+    use AssertElementColor;
+    use TailwindColors;
 
-    protected static $LABEL_CHECKBOX_INCLUDES_TRANSFER = "Include Transfers";
+    private static $LABEL_STATS_INCLUDES_TRANSFER = "Include Transfers";
 
-    /**
-     * @param Browser $browser
-     */
-    protected function assertIncludeTransfersCheckboxButtonNotVisible(Browser $browser){
-        $browser->assertMissing(self::$SELECTOR_STATS_CHECKBOX_INCLUDE_TRANSFERS);
+    protected $include_transfers_chart_name = '';
+
+    private function hasIncludeTransfersChartNameBeenSet(){
+        if(!$this->include_transfers_chart_name){
+            throw new Exception("variable \$include_transfers_chart_name has not been set");
+        }
     }
 
-    /**
-     * @param Browser $browser
-     */
-    protected function assertIncludeTransfersCheckboxButtonDefaultState(Browser $browser){
+    protected function getIncludeTransfersId():string{
+        $this->hasIncludeTransfersChartNameBeenSet();
+        $element_selector_template = "#%s-include-transfers";
+        return sprintf($element_selector_template, $this->include_transfers_chart_name);
+    }
+
+    protected function getIncludeTransferLabelSelector():string{
+        $element_selector_template = "label[for='%s']";
+        return sprintf($element_selector_template, ltrim($this->getIncludeTransfersId(), '#'));
+    }
+
+    protected function assertIncludeTransfersCheckboxButtonNotVisible(Browser $browser){
+        $browser->assertMissing($this->getIncludeTransferLabelSelector());
+    }
+
+    protected function assertIncludeTransfersButtonDefaultState(Browser $browser){
         $browser
-            ->assertVisible(self::$SELECTOR_STATS_CHECKBOX_INCLUDE_TRANSFERS)
-            ->assertSeeIn(self::$SELECTOR_STATS_CHECKBOX_INCLUDE_TRANSFERS, self::$LABEL_CHECKBOX_INCLUDES_TRANSFER);
+            ->assertMissing($this->getIncludeTransfersId())
+            ->assertVisible($this->getIncludeTransferLabelSelector())
+            ->assertSeeIn($this->getIncludeTransferLabelSelector(), self::$LABEL_STATS_INCLUDES_TRANSFER);
         $this->assertIncludesTransfersCheckboxButtonStateInactive($browser);
     }
 
-    /**
-     * @param Browser $browser
-     */
     protected function clickIncludeTransfersCheckboxButton(Browser $browser){
-        $browser->click(self::$SELECTOR_STATS_CHECKBOX_INCLUDE_TRANSFERS);
+        $browser->click($this->getIncludeTransferLabelSelector());
     }
 
-    /**
-     * @param Browser $browser
-     */
     protected function assertIncludesTransfersCheckboxButtonStateActive(Browser $browser){
         $browser
-            ->assertVisible(self::$SELECTOR_STATS_CHECKBOX_INCLUDE_TRANSFERS)
-            ->assertVisible(self::$SELECTOR_STATS_CHECKBOX_INCLUDE_TRANSFERS_CHECKED);
+            ->assertVisible($this->getIncludeTransferLabelSelector())
+            ->assertChecked($this->getIncludeTransfersId());
+        $this->assertElementBackgroundColor($browser, $this->getIncludeTransferLabelSelector(), static::blue(500));
+        $this->assertElementTextColor($browser, $this->getIncludeTransferLabelSelector(), static::white());
     }
 
-    /**
-     * @param Browser $browser
-     */
     protected function assertIncludesTransfersCheckboxButtonStateInactive(Browser $browser){
         $browser
-            ->assertVisible(self::$SELECTOR_STATS_CHECKBOX_INCLUDE_TRANSFERS)
-            ->assertMissing(self::$SELECTOR_STATS_CHECKBOX_INCLUDE_TRANSFERS_CHECKED);
+            ->assertVisible($this->getIncludeTransferLabelSelector())
+            ->assertNotChecked($this->getIncludeTransfersId());
+        $this->assertElementBackgroundColor($browser, $this->getIncludeTransferLabelSelector(), static::gray(50));
+        $this->assertElementTextColor($browser, $this->getIncludeTransferLabelSelector(), static::black());
     }
 
 }
