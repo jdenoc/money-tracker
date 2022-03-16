@@ -3,7 +3,6 @@
 namespace App\Traits\Tests\Dusk;
 
 use App\Traits\Tests\Dusk\AccountOrAccountTypeSelector as DuskTraitAccountOrAccountTypeSelector;
-use App\Traits\Tests\Dusk\TailwindColors as DuskTraitTailwindColors;
 use App\Traits\Tests\Dusk\ToggleButton as DuskTraitToggleButton;
 use App\Traits\Tests\WaitTimes;
 use Exception;
@@ -13,7 +12,6 @@ use PHPUnit\Framework\Assert;
 trait AccountOrAccountTypeTogglingSelector {
 
     use DuskTraitAccountOrAccountTypeSelector;
-    use DuskTraitTailwindColors;
     use DuskTraitToggleButton;
     use WaitTimes;
 
@@ -70,6 +68,7 @@ trait AccountOrAccountTypeTogglingSelector {
      * @param Browser $browser
      * @param array   $accounts
      * @return void
+     *
      * @throws Exception
      */
     public function assertDefaultStateOfAccountOrAccountTypeTogglingSelectorComponent(Browser $browser, array $accounts){
@@ -78,7 +77,7 @@ trait AccountOrAccountTypeTogglingSelector {
             // component
             ->assertVisible($this->getAccountOrAccountTypeTogglingSelectorComponentId($this->_account_or_account_type_toggling_selector_id_label))
             ->within($this->getAccountOrAccountTypeTogglingSelectorComponentId($this->_account_or_account_type_toggling_selector_id_label), function(Browser $component) use ($accounts){
-                $color_switch_default = self::gray(400);
+                $color_switch_default = $this->tailwindColors->gray(400);
 
                 // account/account-type - switch
                 $this->assertToggleButtonState(

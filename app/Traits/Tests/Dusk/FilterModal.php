@@ -3,15 +3,14 @@
 namespace App\Traits\Tests\Dusk;
 
 use App\Models\Account;
-use App\Traits\Tests\WithBulmaColors;
+use App\Traits\Tests\WithTailwindColors;
 use InvalidArgumentException;
 use Laravel\Dusk\Browser;
 
 trait FilterModal {
 
     use AccountOrAccountTypeTogglingSelector;
-    use TailwindColors;
-    use WithBulmaColors;
+    use WithTailwindColors;
 
     // selectors
     private string $_selector_modal_filter = "@filter-modal";  // see Browser\Pages\HomePage.php
@@ -38,15 +37,13 @@ trait FilterModal {
     private string $_color_filter_switch_default = "";
     private string $_color_filter_switch_active = "";
     private string $_color_filter_switch_inactive = "";
-    private string $_color_filter_btn_tag_default = "";
     private string $_color_filter_btn_tag_active = "#3082c5";
 
     protected function initFilterModalColors(){
-        $this->_color_filter_btn_export = self::blue(600);
-        $this->_color_filter_switch_active = self::blue(600);
-        $this->_color_filter_switch_inactive = self::gray(400);
+        $this->_color_filter_btn_export = $this->tailwindColors->blue(600);
+        $this->_color_filter_switch_active = $this->tailwindColors->blue(600);
+        $this->_color_filter_switch_inactive = $this->tailwindColors->gray(400);
         $this->_color_filter_switch_default = $this->_color_filter_switch_inactive;
-        $this->_color_filter_btn_tag_default = $this->bulmaColors->getColor('COLOR_LIGHT');
     }
 
     protected function filterModalInputs():array{
