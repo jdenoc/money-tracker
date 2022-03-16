@@ -419,4 +419,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+/* This ID is obtained from the AccountAccountTypeTogglingSelector component */
+::v-deep #account-or-account-type-toggling-selector-for-filter-modal{
+
+  div.flex:last-child{
+    /* tailwind class ml-1.5 */
+    margin-left: 6px;
+
+    select {
+      /* tailwind class w-full */
+      width: 100%;
+    }
+  }
+}
 </style>

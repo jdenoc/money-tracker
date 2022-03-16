@@ -1,5 +1,5 @@
 <template>
-  <nav id="navbar" class="bg-black text-white fixed inset-x-0 top-0 max-h-16">
+  <nav id="navbar" class="bg-black text-white fixed inset-x-0 top-0 max-h-16 z-10">
     <div class="max-w-full mx-auto px-2">
 
       <div class="flex justify-between">
@@ -21,7 +21,7 @@
         <!-- ---------------------------- -->
 
         <div class="hidden md:flex items-center">
-          <span class="flex" v-show="isHomePage">  <!-- home page modal buttons -->
+          <span class="flex" v-if="isHomePage">  <!-- home page modal buttons -->
             <button id="navbar-entry-modal" type="button" class="flex items-center px-3 py-2 cursor-pointer hover:bg-gray-900 rounded-lg" v-on:click="openAddEntryModal">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
