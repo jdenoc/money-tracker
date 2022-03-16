@@ -3,16 +3,14 @@
 namespace App\Traits\Tests\Dusk;
 
 use App\Traits\Tests\WaitTimes;
-use App\Traits\Tests\Dusk\BulmaColors as DuskTraitBulmaColors;
 use App\Traits\Tests\Dusk\ToggleButton as DuskTraitToggleButton;
 use Laravel\Dusk\Browser;
 use PHPUnit\Framework\Assert;
 
 trait AccountOrAccountTypeTogglingSelector {
 
-    use WaitTimes;
-    use DuskTraitBulmaColors;
     use DuskTraitToggleButton;
+    use WaitTimes;
 
     private static $SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT = ".select-account-or-account-types-id";
     private static $SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT_LOADING = ".is-loading .select-account-or-account-types-id";
@@ -62,7 +60,7 @@ trait AccountOrAccountTypeTogglingSelector {
             // component
             ->assertVisible($this->getAccountOrAccountTypeTogglingSelectorComponentId($this->_account_or_account_type_toggling_selector_label_id))
             ->with($this->getAccountOrAccountTypeTogglingSelectorComponentId($this->_account_or_account_type_toggling_selector_label_id), function(Browser $component) use ($accounts){
-                $color_switch_default = self::$COLOR_GREY_LIGHT_HEX;
+                $color_switch_default = $this->bulmaColors->getColor('COLOR_GREY_LIGHT');
 
                 // account/account-type - switch
                 $this->assertToggleButtonState(

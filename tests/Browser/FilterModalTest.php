@@ -8,6 +8,7 @@ use App\Helpers\CurrencyHelper;
 use App\Traits\Tests\Dusk\AccountOrAccountTypeTogglingSelector as DuskTraitAccountOrAccountTypeTogglingSelector;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
+use App\Traits\Tests\WithBulmaColors;
 use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\DB;
@@ -33,15 +34,21 @@ class FilterModalTest extends DuskTestCase {
     use DuskTraitLoading;
     use DuskTraitNavbar;
     use HomePageSelectors;
-
     use WithFaker;
+    use WithBulmaColors;
 
     private $_partial_selector_filter_tag = "#filter-tag-";
 
     public function __construct($name = null, array $data = [], $dataName = ''){
         parent::__construct($name, $data, $dataName);
-        $this->initColors();
         $this->_account_or_account_type_toggling_selector_label_id = "filter-modal";
+    }
+
+    public function setUp(): void{
+        parent::setUp();
+        $this->_color_filter_switch_default = $this->bulmaColors->getColor('COLOR_GREY_LIGHT');
+        $this->_color_filter_switch_active = $this->bulmaColors->getColor('COLOR_INFO');
+        $this->_color_filter_btn_tag_default = $this->bulmaColors->getColor('COLOR_LIGHT');
     }
 
     /**

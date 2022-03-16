@@ -95,6 +95,10 @@ abstract class DuskTestCase extends BaseTestCase {
             $this->prepareFailureExceptionForDatabaseInjection();
         }
 
+        if(isset($uses[\App\Traits\Tests\WithBulmaColors::class])){
+            $this->setupBulmaColors();
+        }
+
         return parent::setUpTraits();
     }
 
