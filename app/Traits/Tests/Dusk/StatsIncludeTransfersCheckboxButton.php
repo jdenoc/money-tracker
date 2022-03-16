@@ -9,7 +9,6 @@ use Laravel\Dusk\Browser;
 trait StatsIncludeTransfersCheckboxButton {
 
     use AssertElementColor;
-    use TailwindColors;
 
     private static $LABEL_STATS_INCLUDES_TRANSFER = "Include Transfers";
 
@@ -52,16 +51,16 @@ trait StatsIncludeTransfersCheckboxButton {
         $browser
             ->assertVisible($this->getIncludeTransferLabelSelector())
             ->assertChecked($this->getIncludeTransfersId());
-        $this->assertElementBackgroundColor($browser, $this->getIncludeTransferLabelSelector(), static::blue(500));
-        $this->assertElementTextColor($browser, $this->getIncludeTransferLabelSelector(), static::white());
+        $this->assertElementBackgroundColor($browser, $this->getIncludeTransferLabelSelector(), $this->tailwindColors->blue(500));
+        $this->assertElementTextColor($browser, $this->getIncludeTransferLabelSelector(), $this->tailwindColors->white());
     }
 
     protected function assertIncludesTransfersCheckboxButtonStateInactive(Browser $browser){
         $browser
             ->assertVisible($this->getIncludeTransferLabelSelector())
             ->assertNotChecked($this->getIncludeTransfersId());
-        $this->assertElementBackgroundColor($browser, $this->getIncludeTransferLabelSelector(), static::gray(50));
-        $this->assertElementTextColor($browser, $this->getIncludeTransferLabelSelector(), static::black());
+        $this->assertElementBackgroundColor($browser, $this->getIncludeTransferLabelSelector(), $this->tailwindColors->gray(50));
+        $this->assertElementTextColor($browser, $this->getIncludeTransferLabelSelector(), $this->tailwindColors->black());
     }
 
 }

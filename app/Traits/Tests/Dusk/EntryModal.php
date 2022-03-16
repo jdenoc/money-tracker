@@ -12,7 +12,6 @@ trait EntryModal {
     use EntryModalSelectors;
     use FileDragNDrop;
     use TagsInput;
-    use TailwindColors;
     use ToggleButton;
 
     // colours
@@ -20,8 +19,8 @@ trait EntryModal {
     private $_color_expense_switch_income = "";
 
     private function initEntryModalColours(){
-        $this->_color_expense_switch_expense = self::amber(300);
-        $this->_color_expense_switch_income = self::teal(500);
+        $this->_color_expense_switch_expense = $this->tailwindColors->amber(300);
+        $this->_color_expense_switch_income = $this->tailwindColors->teal(500);
     }
 
     protected function assertConfirmedButtonActive(Browser $modal){
@@ -30,8 +29,8 @@ trait EntryModal {
             ->assertChecked($this->_selector_modal_entry_confirmed)
             ->assertSee($this->_label_btn_confirmed);
 
-        $this->assertParentElementBackgroundColor($modal, $this->_selector_modal_entry_confirmed, self::green(400));
-        $this->assertParentElementTextColor($modal, $this->_selector_modal_entry_confirmed, self::white());
+        $this->assertParentElementBackgroundColor($modal, $this->_selector_modal_entry_confirmed, $this->tailwindColors->green(400));
+        $this->assertParentElementTextColor($modal, $this->_selector_modal_entry_confirmed, $this->tailwindColors->white());
     }
 
     protected function assertConfirmedButtonInactive(Browser $modal){
@@ -40,8 +39,8 @@ trait EntryModal {
             ->assertNotChecked($this->_selector_modal_entry_confirmed)
             ->assertSee($this->_label_btn_confirmed);
 
-        $this->assertParentElementBackgroundColor($modal, $this->_selector_modal_entry_confirmed, self::white());
-        $this->assertParentElementTextColor($modal, $this->_selector_modal_entry_confirmed, self::gray(400));
+        $this->assertParentElementBackgroundColor($modal, $this->_selector_modal_entry_confirmed, $this->tailwindColors->white());
+        $this->assertParentElementTextColor($modal, $this->_selector_modal_entry_confirmed, $this->tailwindColors->gray(400));
     }
 
     protected function interactWithConfirmButton(Browser $modal){

@@ -11,9 +11,9 @@ use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
 use App\Traits\Tests\Dusk\Notification as DuskTraitNotification;
 use App\Traits\Tests\Dusk\TagsInput as DuskTraitTagsInput;
-use App\Traits\Tests\Dusk\TailwindColors as DuskTraitTailwindColors;
 use App\Traits\Tests\Dusk\ToggleButton as DuskTraitToggleButton;
 use App\Traits\Tests\WaitTimes;
+use App\Traits\Tests\WithTailwindColors;
 use Illuminate\Support\Facades\Storage;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
@@ -38,10 +38,10 @@ class EntryModalNewEntryTest extends DuskTestCase {
     use DuskTraitNotification;
     use DuskTraitNavbar;
     use DuskTraitTagsInput;
-    use DuskTraitTailwindColors;
     use DuskTraitToggleButton;
     use HomePageSelectors;
     use WaitTimes;
+    use WithTailwindColors;
 
     private $method_account = 'account';
     private $method_account_type = 'account-type';
@@ -49,10 +49,13 @@ class EntryModalNewEntryTest extends DuskTestCase {
 
     public function __construct($name = null, array $data = [], $dataName = ''){
         parent::__construct($name, $data, $dataName);
-        $this->initEntryModalColours();
-
         $default_currency = CurrencyHelper::getCurrencyDefaults();
         $this->default_currency_character = CurrencyHelper::convertCurrencyHtmlToCharacter($default_currency->html);
+    }
+
+    public function setUp(): void{
+        parent::setUp();
+        $this->initEntryModalColours();
     }
 
     /**
@@ -220,7 +223,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
                         ->assertVisible($this->_selector_modal_entry_btn_save)     // save button
                         ->assertSee($this->_label_btn_save);
 
-                    $this->assertElementBackgroundColor($entry_modal_foot, $this->_selector_modal_entry_btn_save, self::green(500));
+                    $this->assertElementBackgroundColor($entry_modal_foot, $this->_selector_modal_entry_btn_save, $this->tailwindColors->green(500));
                 })
                 ->assertEntryModalSaveButtonIsDisabled();
         });
@@ -366,7 +369,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
                         ->select($this->_selector_modal_entry_field_account_type, $disabled_account_type['id'])
                         ->assertVisible($this->_selector_modal_entry_meta);
 
-                    $this->assertElementTextColor($entry_modal_body, $this->_selector_modal_entry_meta, self::gray(400));
+                    $this->assertElementTextColor($entry_modal_body, $this->_selector_modal_entry_meta, $this->tailwindColors->gray(400));
 
                     $entry_modal_body
                         ->select($this->_selector_modal_entry_field_account_type, '')
