@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0b91a050dfa09b2cf8f642b5a5c11141",
+    "content-hash": "fdb6c0c81d351fdbb1e556373d5ec8ac",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -7632,6 +7632,37 @@
                 "source": "https://github.com/jdenoc/bulma-colors/tree/0.0.2"
             },
             "time": "2022-03-18T14:39:28+00:00"
+        },
+        {
+            "name": "jdenoc/tailwind-colors",
+            "version": "0.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jdenoc/tailwind-colors.git",
+                "reference": "207929fedc071bc1a4ff60cd460a9866318b316e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jdenoc/tailwind-colors/zipball/207929fedc071bc1a4ff60cd460a9866318b316e",
+                "reference": "207929fedc071bc1a4ff60cd460a9866318b316e",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Jdenoc\\TailwindColors\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Provides a PHP class that contains colors documented in tailwindcss",
+            "support": {
+                "issues": "https://github.com/jdenoc/tailwind-colors/issues",
+                "source": "https://github.com/jdenoc/tailwind-colors/tree/0.0.1"
+            },
+            "time": "2022-03-16T01:00:27+00:00"
         },
         {
             "name": "laravel/dusk",
