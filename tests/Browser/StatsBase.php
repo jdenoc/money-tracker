@@ -10,6 +10,7 @@ use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\StatsDateRange as DuskTraitStatsDateRange;
 use App\Traits\Tests\Dusk\StatsSidePanel as DuskTraitStatsSidePanel;
 use App\Traits\Tests\Dusk\StatsIncludeTransfersCheckboxButton as DuskTraitStatsIncludeTransfersCheckboxButton;
+use App\Traits\Tests\WithTailwindColors;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Collection;
 use Laravel\Dusk\Browser;
@@ -25,6 +26,7 @@ class StatsBase extends DuskTestCase {
     use DuskTraitStatsSidePanel;
     use EntryFilterKeys;
     use WithFaker;
+    use WithTailwindColors;
 
     protected static $SELECTOR_STATS_FORM_SUMMARY = "#stats-form-summary";
     protected static $SELECTOR_STATS_FORM_TRENDING = '#stats-form-trending';

@@ -6,7 +6,6 @@ use App\Traits\Tests\Dusk\AccountOrAccountTypeTogglingSelector as DuskTraitAccou
 use App\Traits\Tests\Dusk\BatchFilterEntries as DuskTraitBatchFilterEntries;
 use App\Traits\Tests\Dusk\StatsDateRange as DuskTraitStatsDateRange;
 use App\Traits\Tests\Dusk\StatsSidePanel as DuskTraitStatsSidePanel;
-use App\Traits\Tests\Dusk\TailwindColors as DuskTraitTailwindColors;
 use Illuminate\Support\Collection;
 use Laravel\Dusk\Browser;
 use Tests\Browser\Pages\StatsPage;
@@ -26,7 +25,6 @@ class StatsTrendingTest extends StatsBase {
     use DuskTraitBatchFilterEntries;
     use DuskTraitStatsDateRange;
     use DuskTraitStatsSidePanel;
-    use DuskTraitTailwindColors;
 
     private static $SELECTOR_STATS_TRENDING = "#stats-trending";
     private static $SELECTOR_CHART_TRENDING = 'canvas#line-chart';
@@ -90,8 +88,8 @@ class StatsTrendingTest extends StatsBase {
                             $form
                                 ->assertVisible(self::$SELECTOR_BUTTON_GENERATE)
                                 ->assertSeeIn(self::$SELECTOR_BUTTON_GENERATE, self::$LABEL_GENERATE_CHART_BUTTON);
-                            $this->assertElementBackgroundColor($form, self::$SELECTOR_BUTTON_GENERATE, self::blue(600));
-                            $this->assertElementTextColor($form, self::$SELECTOR_BUTTON_GENERATE, self::white());
+                            $this->assertElementBackgroundColor($form, self::$SELECTOR_BUTTON_GENERATE, $this->tailwindColors->blue(600));
+                            $this->assertElementTextColor($form, self::$SELECTOR_BUTTON_GENERATE, $this->tailwindColors->white());
                         });
                 });
         });

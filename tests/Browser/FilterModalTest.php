@@ -9,6 +9,7 @@ use App\Traits\Tests\Dusk\FilterModal as DuskTraitFilterModal;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
 use App\Traits\Tests\Dusk\TagsInput as DuskTraitTagsInput;
+use App\Traits\Tests\WithTailwindColors;
 use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\DB;
@@ -36,6 +37,7 @@ class FilterModalTest extends DuskTestCase {
     use DuskTraitTagsInput;
     use HomePageSelectors;
     use WithFaker;
+    use WithTailwindColors;
 
     private $_default_currency_character;
 
@@ -439,7 +441,7 @@ class FilterModalTest extends DuskTestCase {
             $this->openFilterModal($browser);
             $browser
                 ->within($this->_selector_modal_filter, function(Browser $modal) use ($switch_selector){
-                    $this->assertToggleButtonState($modal, $switch_selector, $this->_label_switch_disabled, $this->_color_filter_switch_default);
+                    $this->assertToggleButtonState($modal, $switch_selector, $this->_label_switch_disabled, $this->_color_filter_switch_inactive);
                     $this->toggleToggleButton($modal, $switch_selector);
                     $this->assertToggleButtonState($modal, $switch_selector, $this->_label_switch_enabled, $this->_color_filter_switch_active);
                 });
@@ -472,16 +474,16 @@ class FilterModalTest extends DuskTestCase {
             $this->openFilterModal($browser);
             $browser
                 ->within($this->_selector_modal_filter, function(Browser $modal) use ($init_switch_selector, $companion_switch_selector){
-                    $this->assertToggleButtonState($modal, $init_switch_selector, $this->_label_switch_disabled, $this->_color_filter_switch_default);
-                    $this->assertToggleButtonState($modal, $companion_switch_selector, $this->_label_switch_disabled, $this->_color_filter_switch_default);
+                    $this->assertToggleButtonState($modal, $init_switch_selector, $this->_label_switch_disabled, $this->_color_filter_switch_inactive);
+                    $this->assertToggleButtonState($modal, $companion_switch_selector, $this->_label_switch_disabled, $this->_color_filter_switch_inactive);
 
                     $this->toggleToggleButton($modal, $init_switch_selector);
                     $this->assertToggleButtonState($modal, $init_switch_selector, $this->_label_switch_enabled, $this->_color_filter_switch_active);
-                    $this->assertToggleButtonState($modal, $companion_switch_selector, $this->_label_switch_disabled, $this->_color_filter_switch_default);
+                    $this->assertToggleButtonState($modal, $companion_switch_selector, $this->_label_switch_disabled, $this->_color_filter_switch_inactive);
 
                     $this->toggleToggleButton($modal, $companion_switch_selector);
                     $this->assertToggleButtonState($modal, $companion_switch_selector, $this->_label_switch_enabled, $this->_color_filter_switch_active);
-                    $this->assertToggleButtonState($modal, $init_switch_selector, $this->_label_switch_disabled, $this->_color_filter_switch_default);
+                    $this->assertToggleButtonState($modal, $init_switch_selector, $this->_label_switch_disabled, $this->_color_filter_switch_inactive);
                 });
         });
     }
@@ -511,7 +513,7 @@ class FilterModalTest extends DuskTestCase {
                 ->within($this->_selector_modal_filter.' '.$this->_selector_modal_body, function(Browser $modal) use ($field_selector){
                     $modal
                         ->type($field_selector, "rh48r7th72.9ewd3dadh1")
-                        ->click($this->_selector_modal_filter_field_end_date)
+                        ->click(sprintf('label[for="%s"]', ltrim($field_selector, '#')))
                         ->assertInputValue($field_selector, "48772.93");
                 });
         });

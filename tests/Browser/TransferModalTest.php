@@ -14,7 +14,7 @@ use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
 use App\Traits\Tests\Dusk\Notification as DuskTraitNotification;
 use App\Traits\Tests\Dusk\TagsInput as DuskTraitTagsInput;
-use App\Traits\Tests\Dusk\TailwindColors as DuskTraitTailwindColors;
+use App\Traits\Tests\WithTailwindColors;
 use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Storage;
@@ -43,10 +43,9 @@ class TransferModalTest extends DuskTestCase {
     use DuskTraitNavbar;
     use DuskTraitNotification;
     use DuskTraitTagsInput;
-    use DuskTraitTailwindColors;
     use EntryTransferKeys;
     use HomePageSelectors;
-
+    use WithTailwindColors;
     use WithFaker;
 
     private static $METHOD_TO = 'to';
@@ -416,7 +415,7 @@ class TransferModalTest extends DuskTestCase {
                         ->assertVisible($selector_field)
                         ->select($selector_field, $disabled_account_type['id'])
                         ->assertVisible($selector_meta);
-                    $this->assertElementTextColor($modal, $selector_meta, self::gray(400));
+                    $this->assertElementTextColor($modal, $selector_meta, $this->tailwindColors->gray(400));
 
                     $modal
                         ->select($selector_field, '')
