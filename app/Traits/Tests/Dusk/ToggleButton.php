@@ -19,7 +19,7 @@ trait ToggleButton {
      * @param string $label
      * @param string|null $color
      */
-    public function assertToggleButtonState(Browser $browser, string $selector, string $label, $color=null){
+    public function assertToggleButtonState(Browser $browser, string $selector, string $label, ?string $color=null){
         $browser
             ->assertVisible($selector)
             ->assertSeeIn($selector, $label);

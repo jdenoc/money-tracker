@@ -9,7 +9,6 @@ use App\Traits\Tests\Dusk\BatchFilterEntries as DuskTraitBatchFilterEntries;
 use App\Traits\Tests\Dusk\StatsDateRange as DuskTraitStatsDateRange;
 use App\Traits\Tests\Dusk\StatsSidePanel as DuskTraitStatsSidePanel;
 use App\Traits\Tests\Dusk\TagsInput as DuskTraitTagsInput;
-use App\Traits\Tests\Dusk\TailwindColors as DuskTraitTailwindColors;
 use Laravel\Dusk\Browser;
 use Illuminate\Support\Collection;
 use Tests\Browser\Pages\StatsPage;
@@ -31,7 +30,6 @@ class StatsTagsTest extends StatsBase {
     use DuskTraitStatsDateRange;
     use DuskTraitStatsSidePanel;
     use DuskTraitTagsInput;
-    use DuskTraitTailwindColors;
 
     private static $SELECTOR_STATS_TAGS = "#stats-tags";
     private static $SELECTOR_CHART_TAGS = 'canvas#bar-chart';
@@ -95,8 +93,8 @@ class StatsTagsTest extends StatsBase {
                             $form
                                 ->assertVisible(self::$SELECTOR_BUTTON_GENERATE)
                                 ->assertSeeIn(self::$SELECTOR_BUTTON_GENERATE, self::$LABEL_GENERATE_CHART_BUTTON);
-                            $this->assertElementTextColor($form, self::$SELECTOR_BUTTON_GENERATE, self::white());
-                            $this->assertElementBackgroundColor($form, self::$SELECTOR_BUTTON_GENERATE, self::blue(600));
+                            $this->assertElementTextColor($form, self::$SELECTOR_BUTTON_GENERATE, $this->tailwindColors->white());
+                            $this->assertElementBackgroundColor($form, self::$SELECTOR_BUTTON_GENERATE, $this->tailwindColors->blue(600));
                         });
                 });
         });
