@@ -1,26 +1,28 @@
 <template>
     <div id="stats-trending">
-        <section id="stats-form-trending" class="section">
-            <account-account-type-toggling-selector
+        <section id="stats-form-trending" class="pb-0 text-sm">
+          <account-account-type-toggling-selector
                 id="trending-chart"
+                class="max-w-lg mt-0 mx-4 mb-4"
                 v-bind:account-or-account-type-id.sync="accountOrAccountTypeId"
                 v-bind:account-or-account-type-toggled.sync="accountOrAccountTypeToggle"
-            ></account-account-type-toggling-selector>
+          ></account-account-type-toggling-selector>
 
-            <div class="field">
-                <bulma-calendar
-                    ref="trendingStatsChartBulmaCalendar"
-                ></bulma-calendar>
-            </div>
+          <date-range class="max-w-lg mt-0 mx-4 mb-4" chart-name="trending-chart" v-bind:start-date.sync="startDate" v-bind:end-date.sync="endDate"></date-range>
 
-            <div class="field"><div class="control">
-                <button class="button is-primary generate-stats" v-on:click="displayData"><i class="fas fa-chart-area"></i>Generate Chart</button>
-            </div></div>
+          <div class="max-w-lg mt-0 mx-4 mb-4">
+            <button class="generate-stats w-full py-2 text-white bg-blue-600 rounded opacity-90 hover:opacity-100" v-on:click="displayData">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-1.5 inline-block" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
+              </svg>
+              Generate Chart
+            </button>
+          </div>
         </section>
 
-        <hr />
+        <hr class="my-8" />
 
-        <section v-if="areEntriesAvailable && dataLoaded" class="section stats-results-trending">
+        <section v-if="areEntriesAvailable && dataLoaded" class="stats-results-trending pt-2">
             <include-transfers-checkbox
                 chart-name="trending"
                 v-bind:include-transfers="includeTransfers"
@@ -32,7 +34,7 @@
                 v-bind:options="chartOptions"
             >Your browser does not support the canvas element.</line-chart>
         </section>
-        <section v-else class="section has-text-centered has-text-weight-semibold is-size-6 stats-results-trending">
+        <section v-else class="text-center font-semibold text-base stats-results-trending pt-0 overflow-auto">
             No data available
         </section>
     </div>
@@ -43,20 +45,22 @@
     import _ from 'lodash';
     // components
     import AccountAccountTypeTogglingSelector from "../account-account-type-toggling-selector";
-    import BulmaCalendar from "../bulma-calendar";
-    import IncludeTransfersCheckbox from "../include-transfers-checkbox";
+    import DateRange from "./date-range";
+    import IncludeTransfersCheckbox from "./include-transfers-checkbox";
     import LineChart from "./chart-defaults/line-chart";
     // mixins
-    import {bulmaColorsMixin} from "../../mixins/bulma-colors-mixin";
     import {entriesObjectMixin} from "../../mixins/entries-object-mixin";
     import {statsChartMixin} from "../../mixins/stats-chart-mixin";
+    import {tailwindColorsMixin} from "../../mixins/tailwind-colors-mixin";
 
     export default {
         name: "trending-chart",
-        mixins: [entriesObjectMixin, statsChartMixin, bulmaColorsMixin],
-        components: {IncludeTransfersCheckbox, BulmaCalendar, LineChart, AccountAccountTypeTogglingSelector},
+        mixins: [entriesObjectMixin, statsChartMixin, tailwindColorsMixin],
+        components: {AccountAccountTypeTogglingSelector, DateRange, IncludeTransfersCheckbox, LineChart},
         data: function(){
           return {
+            accountOrAccountTypeId: '',
+            accountOrAccountTypeToggle: true,
             chartConfig: {
               colors: {
                 blue: '',
@@ -69,9 +73,8 @@
               },
               timeUnit: 'day'
             },
-
-            accountOrAccountTypeToggle: true,
-            accountOrAccountTypeId: '',
+            endDate: '',
+            startDate: '',
           }
         },
         computed: {
@@ -247,35 +250,37 @@
             },
 
             displayData: function(){
-                this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
+              this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
 
-                let chartDataFilterParameters = {
-                    start_date: this.getBulmaCalendar.calendarStartDate(),
-                    end_date: this.getBulmaCalendar.calendarEndDate(),
-                };
+              let chartDataFilterParameters = {
+                start_date: this.startDate,
+                end_date: this.endDate,
+              };
 
-                if(this.accountOrAccountTypeToggle === true){
-                    chartDataFilterParameters.account = this.accountOrAccountTypeId;
-                } else {
-                    chartDataFilterParameters.account_type = this.accountOrAccountTypeId;
-                }
+              if(this.accountOrAccountTypeToggle === true){
+                chartDataFilterParameters.account = this.accountOrAccountTypeId;
+              } else {
+                chartDataFilterParameters.account_type = this.accountOrAccountTypeId;
+              }
 
-                this.setChartTitle(chartDataFilterParameters.start_date, chartDataFilterParameters.end_date);
-                this.setChartTimeUnit(chartDataFilterParameters.start_date, chartDataFilterParameters.end_date);
-                this.multiPageDataFetch(chartDataFilterParameters);
+              this.setChartTitle(chartDataFilterParameters.start_date, chartDataFilterParameters.end_date);
+              this.setChartTimeUnit(chartDataFilterParameters.start_date, chartDataFilterParameters.end_date);
+              this.multiPageDataFetch(chartDataFilterParameters);
             },
         },
         mounted: function(){
-          this.chartConfig.colors.blue = this.colorBlue;
-          this.chartConfig.colors.green = this.colorGreen;
-          this.chartConfig.colors.purple = this.colorPurple;
-          this.chartConfig.colors.red = this.colorRed;
-
-          this.getBulmaCalendar.setBulmaCalendarDateRange(this.currentMonthStartDate, this.currentMonthEndDate);
+          this.chartConfig.colors.blue = this.tailwindColors.sky[600];
+          this.chartConfig.colors.green = this.tailwindColors.emerald[500];
+          this.chartConfig.colors.purple = this.tailwindColors.purple[700];
+          this.chartConfig.colors.red = this.tailwindColors.red[600];
         }
     }
 </script>
 
 <style lang="scss" scoped>
-    @import '../../../sass/stats-chart';
+    // #account-or-account-type-toggling-selector-for-trending-chart obtained from the account-account-type-toggling-selector component
+    ::v-deep #account-or-account-type-toggling-selector-for-trending-chart select{
+      // tailwind class .w-full
+      width: 100%;
+    }
 </style>

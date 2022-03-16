@@ -1,37 +1,36 @@
 <template>
     <div id="stats-distribution">
-        <section id="stats-form-distribution" class="section">
-            <account-account-type-toggling-selector
-                id="distribution-chart"
-                v-bind:account-or-account-type-id.sync="accountOrAccountTypeId"
-                v-bind:account-or-account-type-toggled.sync="accountOrAccountTypeToggle"
-            ></account-account-type-toggling-selector>
+        <section id="stats-form-distribution" class="pb-0 text-sm">
+          <account-account-type-toggling-selector
+              id="distribution-chart"
+              class="max-w-lg mt-0 mx-4 mb-4"
+              v-bind:account-or-account-type-id.sync="accountOrAccountTypeId"
+              v-bind:account-or-account-type-toggled.sync="accountOrAccountTypeToggle"
+          ></account-account-type-toggling-selector>
 
-            <div class="field"><div class="control">
-                <toggle-button
-                    id="distribution-expense-or-income"
-                    v-model="expenseOrIncomeToggle"
-                    v-bind:value="expenseOrIncomeToggle"
-                    v-bind:labels="toggleButtonProperties.labels"
-                    v-bind:color="toggleButtonProperties.colors"
-                    v-bind:height="toggleButtonProperties.height"
-                    v-bind:width="toggleButtonProperties.width"
-                    v-bind:sync="true"
-                />
-            </div></div>
+          <div class="max-w-lg mt-0 mx-4 mb-4">
+            <toggle-button toggle-id="distribution-expense-or-income"
+                           v-bind="toggleButtonProperties"
+                           v-bind:toggle-state.sync="expenseOrIncomeToggle"
+            ></toggle-button>
+          </div>
 
-            <div class="field">
-                <bulma-calendar
-                    ref="distributionStatsChartBulmaCalendar"
-                ></bulma-calendar>
-            </div>
+          <date-range class="max-w-lg mt-0 mx-4 mb-4" chart-name="distribution-chart" v-bind:start-date.sync="startDate" v-bind:end-date.sync="endDate"></date-range>
 
-            <div class="field"><div class="control">
-                <button class="button is-primary generate-stats" v-on:click="makeRequest"><i class="fas fa-chart-pie"></i>Generate Chart</button>
-            </div></div>
+          <div class="max-w-lg mt-0 mx-4 mb-4">
+            <button class="generate-stats w-full py-2 text-white bg-blue-600 rounded opacity-90 hover:opacity-100" v-on:click="makeRequest">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-1.5 inline-block" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z" />
+                <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z" />
+              </svg>
+              Generate Chart
+            </button>
+          </div>
         </section>
-        <hr/>
-        <section v-if="areEntriesAvailable && dataLoaded" class="section stats-results-distribution">
+
+        <hr class="my-8"/>
+
+        <section v-if="areEntriesAvailable && dataLoaded" class="stats-results-distribution pt-2">
             <include-transfers-checkbox
                 chart-name="distribution"
                 v-bind:include-transfers="includeTransfers"
@@ -43,54 +42,52 @@
                 v-bind:options="chartOptions"
             >Your browser does not support the canvas element.</pie-chart>
         </section>
-        <section v-else class="section has-text-centered has-text-weight-semibold is-size-6 stats-results-distribution">
+        <section v-else class="text-center font-semibold text-base pt-0 overflow-auto stats-results-distribution">
             No data available
         </section>
     </div>
 </template>
 
-<script>
-    // components
-    import AccountAccountTypeTogglingSelector from "../account-account-type-toggling-selector";
-    import bulmaCalendar from "../bulma-calendar";
-    import IncludeTransfersCheckbox from "../include-transfers-checkbox";
-    import PieChart from './chart-defaults/pie-chart';
-    import {ToggleButton} from 'vue-js-toggle-button';
-    // mixins
-    import {bulmaColorsMixin} from "../../mixins/bulma-colors-mixin";
-    import {entriesObjectMixin} from "../../mixins/entries-object-mixin";
-    import {statsChartMixin} from "../../mixins/stats-chart-mixin";
-    import {tagsObjectMixin} from "../../mixins/tags-object-mixin";
+<script lang="js">
+// utilities
+import _ from 'lodash';
+// components
+import AccountAccountTypeTogglingSelector from "../account-account-type-toggling-selector";
+import DateRange from "./date-range";
+import IncludeTransfersCheckbox from "./include-transfers-checkbox";
+import PieChart from './chart-defaults/pie-chart';
+import ToggleButton from "../toggle-button";
+// mixins
+import {entriesObjectMixin} from "../../mixins/entries-object-mixin";
+import {statsChartMixin} from "../../mixins/stats-chart-mixin";
+import {tagsObjectMixin} from "../../mixins/tags-object-mixin";
+import {tailwindColorsMixin} from "../../mixins/tailwind-colors-mixin";
 
     export default {
         name: "distribution-chart",
-        mixins: [bulmaColorsMixin, entriesObjectMixin, statsChartMixin, tagsObjectMixin],
-        components: {IncludeTransfersCheckbox, AccountAccountTypeTogglingSelector, bulmaCalendar, PieChart, ToggleButton},
+        mixins: [entriesObjectMixin, statsChartMixin, tagsObjectMixin, tailwindColorsMixin],
+        components: {IncludeTransfersCheckbox, AccountAccountTypeTogglingSelector, DateRange, PieChart, ToggleButton},
         data: function(){
-            return {
-                expenseOrIncomeToggle: true,
-                accountOrAccountTypeToggle: true,
-                accountOrAccountTypeId: '',
-            }
+          return {
+            accountOrAccountTypeId: '',
+            accountOrAccountTypeToggle: true,
+            endDate: '',
+            expenseOrIncomeToggle: true,
+            startDate: '',
+          }
         },
         computed: {
-            getBulmaCalendar: function(){
-                return this.$refs.distributionStatsChartBulmaCalendar;
-            },
             chartData: function(){
-                let chartData = this.standardiseData;
-                let chartBgColors = [];
-                for(let i=0; i<chartData.length; i++){
-                    chartBgColors.push(this.randomColor());
-                }
+              let chartData = this.standardiseData;
+              let chartBgColors = this.getRandomColors(chartData.length);
 
-                return {
-                    labels: chartData.map(function(d){ return d.x }),
-                    datasets: [{
-                        data: chartData.map(function(d){ return d.y }),
-                        backgroundColor: chartBgColors
-                    }]
-                };
+              return {
+                  labels: chartData.map(function(d){ return d.x }),
+                  datasets: [{
+                      data: chartData.map(function(d){ return d.y }),
+                      backgroundColor: chartBgColors
+                  }]
+              };
             },
             chartOptions: function(){
                 return {
@@ -125,50 +122,49 @@
                 return _.sortBy(Object.values(standardisedChartData), function(o){ return o.x;});
             },
             toggleButtonProperties: function(){
-                return {
-                    colors: {checked: this.colorGreyLight, unchecked: this.colorGreyLight},
-                    labels: {checked: 'Expense', unchecked: 'Income'},
-                    height: 40,
-                    width: 475,
-                };
+              return {
+                colorChecked: this.tailwindColors.gray[400],
+                colorUnchecked: this.tailwindColors.gray[400],
+                fontSize: 16,  // px
+                labelChecked: "Expense",
+                labelUnchecked: "Income",
+                height: 40, // px
+                width: 512 // px  // tailwind class: .max-w-lg
+              };
             },
         },
         methods: {
-            setChartTitle: function(isExpense, startDate, endDate){
-                this.chartConfig.titleText = (isExpense ? "Expense" : "Income")
-                    +" Distribution ["+startDate+" - "+endDate+"]";
-            },
+          setChartTitle: function(isExpense, startDate, endDate){
+            this.chartConfig.titleText = (isExpense ? "Expense" : "Income")+" Distribution ["+startDate+" - "+endDate+"]";
+          },
 
-            makeRequest: function(){
-                this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
+          makeRequest: function(){
+            this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
 
-                let chartDataFilterParameters = {
-                    start_date: this.getBulmaCalendar.calendarStartDate(),
-                    end_date: this.getBulmaCalendar.calendarEndDate(),
-                };
+            let chartDataFilterParameters = {
+              start_date: this.startDate,
+              end_date: this.endDate,
+            };
 
-                chartDataFilterParameters.expense = this.expenseOrIncomeToggle;
+            chartDataFilterParameters.expense = this.expenseOrIncomeToggle;
 
-                if(this.accountOrAccountTypeToggle === true){
-                    chartDataFilterParameters.account = this.accountOrAccountTypeId;
-                } else {
-                    chartDataFilterParameters.account_type = this.accountOrAccountTypeId;
-                }
-
-                this.setChartTitle(chartDataFilterParameters.expense, chartDataFilterParameters.start_date, chartDataFilterParameters.end_date);
-                this.multiPageDataFetch(chartDataFilterParameters);
+            if(this.accountOrAccountTypeToggle === true){
+              chartDataFilterParameters.account = this.accountOrAccountTypeId;
+            } else {
+              chartDataFilterParameters.account_type = this.accountOrAccountTypeId;
             }
-        },
-        mounted: function(){
-            this.getBulmaCalendar.setBulmaCalendarDateRange(this.currentMonthStartDate, this.currentMonthEndDate);
+
+            this.setChartTitle(chartDataFilterParameters.expense, chartDataFilterParameters.start_date, chartDataFilterParameters.end_date);
+            this.multiPageDataFetch(chartDataFilterParameters);
+          }
         }
     }
 </script>
 
 <style lang="scss" scoped>
-    @import '../../../sass/stats-chart';
-
-    .vue-js-switch#distribution-expense-or-income{
-        font-size: 1rem;
+    // #account-or-account-type-toggling-selector-for-distribution-chart obtained from the account-account-type-toggling-selector component
+    ::v-deep #account-or-account-type-toggling-selector-for-distribution-chart select{
+      // tailwind class .w-full
+      width: 100%;
     }
 </style>

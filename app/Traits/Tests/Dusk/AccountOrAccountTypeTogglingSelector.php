@@ -29,7 +29,7 @@ trait AccountOrAccountTypeTogglingSelector {
 
     private function assertAccountOrAccountTypeTogglingSelectorIdLabelBeenSet(){
         if(!$this->_account_or_account_type_toggling_selector_id_label){
-            throw new Exception("variable _account_or_account_type_toggling_selector_id_label has not been set");
+            throw new Exception("variable \$_account_or_account_type_toggling_selector_id_label has not been set");
         }
     }
 

@@ -4,9 +4,9 @@ namespace Tests\Browser;
 
 use App\Traits\Tests\Dusk\AccountOrAccountTypeTogglingSelector as DuskTraitAccountOrAccountTypeTogglingSelector;
 use App\Traits\Tests\Dusk\BatchFilterEntries as DuskTraitBatchFilterEntries;
-use App\Traits\Tests\Dusk\BulmaDatePicker as DuskTraitBulmaDatePicker;
-use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
+use App\Traits\Tests\Dusk\StatsDateRange as DuskTraitStatsDateRange;
 use App\Traits\Tests\Dusk\StatsSidePanel as DuskTraitStatsSidePanel;
+use App\Traits\Tests\Dusk\TailwindColors as DuskTraitTailwindColors;
 use Illuminate\Support\Collection;
 use Laravel\Dusk\Browser;
 use Tests\Browser\Pages\StatsPage;
@@ -24,7 +24,9 @@ class StatsTrendingTest extends StatsBase {
 
     use DuskTraitAccountOrAccountTypeTogglingSelector;
     use DuskTraitBatchFilterEntries;
+    use DuskTraitStatsDateRange;
     use DuskTraitStatsSidePanel;
+    use DuskTraitTailwindColors;
 
     private static $SELECTOR_STATS_TRENDING = "#stats-trending";
     private static $SELECTOR_CHART_TRENDING = 'canvas#line-chart';
@@ -36,7 +38,10 @@ class StatsTrendingTest extends StatsBase {
 
     public function __construct($name = null, array $data = [], $dataName = ''){
         parent::__construct($name, $data, $dataName);
-        $this->_account_or_account_type_toggling_selector_id_label = 'trending-chart';
+        $chart_designation = 'trending-chart';
+        $this->_account_or_account_type_toggling_selector_id_label = $chart_designation;
+        $this->date_range_chart_name = $chart_designation;
+        $this->include_transfers_chart_name = $chart_designation;
     }
 
     /**
@@ -71,22 +76,22 @@ class StatsTrendingTest extends StatsBase {
 
             $browser
                 ->assertVisible(self::$SELECTOR_STATS_TRENDING)
-                ->with(self::$SELECTOR_STATS_TRENDING, function(Browser $stats_trending) use ($accounts){
+                ->within(self::$SELECTOR_STATS_TRENDING, function(Browser $stats_trending) use ($accounts){
                     $stats_trending
                         ->assertVisible(self::$SELECTOR_STATS_FORM_TRENDING)
-                        ->with(self::$SELECTOR_STATS_FORM_TRENDING, function(Browser $form) use ($accounts){
+                        ->within(self::$SELECTOR_STATS_FORM_TRENDING, function(Browser $form) use ($accounts){
                             // account/account-type selector
                             $this->assertDefaultStateOfAccountOrAccountTypeTogglingSelectorComponent($form, $accounts);
 
-                            // bulma date-picker
-                            $this->assertDefaultStateBulmaDatePicker($form);
+                            // date range
+                            $this->assertDefaultStateDateRange($form);
 
                             // button
                             $form
                                 ->assertVisible(self::$SELECTOR_BUTTON_GENERATE)
                                 ->assertSeeIn(self::$SELECTOR_BUTTON_GENERATE, self::$LABEL_GENERATE_CHART_BUTTON);
-                            $button_classes = $form->attribute(self::$SELECTOR_BUTTON_GENERATE, 'class');
-                            $this->assertStringContainsString('is-primary', $button_classes);
+                            $this->assertElementBackgroundColor($form, self::$SELECTOR_BUTTON_GENERATE, self::blue(600));
+                            $this->assertElementTextColor($form, self::$SELECTOR_BUTTON_GENERATE, self::white());
                         });
                 });
         });
@@ -104,7 +109,7 @@ class StatsTrendingTest extends StatsBase {
             $this->clickStatsSidePanelOptionTrending($browser);
             $browser
                 ->assertVisible(self::$SELECTOR_STATS_TRENDING)
-                ->with(self::$SELECTOR_STATS_TRENDING, function(Browser $stats_trending){
+                ->within(self::$SELECTOR_STATS_TRENDING, function(Browser $stats_trending){
                     $stats_trending
                         ->assertVisible(self::$SELECTOR_STATS_RESULTS_TRENDING)
                         ->assertSeeIn(self::$SELECTOR_STATS_RESULTS_TRENDING, self::$LABEL_NO_STATS_DATA);
@@ -162,7 +167,7 @@ class StatsTrendingTest extends StatsBase {
      * @group stats-trending-1
      * test (see provider)/25
      */
-    public function testGenerateTrendingChart($datepicker_start, $datepicker_end, bool $is_switch_toggled, bool $is_random_selector_value, bool $are_disabled_select_options_available, bool $include_transfers){
+    public function testGenerateTrendingChart(?string $datepicker_start, ?string $datepicker_end, bool $is_switch_toggled, bool $is_random_selector_value, bool $are_disabled_select_options_available, bool $include_transfers){
         $accounts = collect($this->getApiAccounts());
         $account_types = collect($this->getApiAccountTypes());
 
@@ -173,7 +178,7 @@ class StatsTrendingTest extends StatsBase {
             $this->clickStatsSidePanelOptionTrending($browser);
             $browser
                 ->assertVisible(self::$SELECTOR_STATS_FORM_TRENDING)
-                ->with(self::$SELECTOR_STATS_FORM_TRENDING, function(Browser $form) use ($accounts, $account_types, $datepicker_start, $datepicker_end, $is_switch_toggled, &$filter_data, $is_random_selector_value, $are_disabled_select_options_available){
+                ->within(self::$SELECTOR_STATS_FORM_TRENDING, function(Browser $form) use ($accounts, $account_types, $datepicker_start, $datepicker_end, $is_switch_toggled, &$filter_data, $is_random_selector_value, $are_disabled_select_options_available){
                     if($are_disabled_select_options_available){
                         $this->toggleShowDisabledAccountOrAccountTypeCheckbox($form);
                     }
@@ -189,12 +194,17 @@ class StatsTrendingTest extends StatsBase {
                     $this->selectAccountOrAccountTypeValue($form, $account_or_account_type_id);
                     $filter_data = $this->generateFilterArrayElementAccountOrAccountypeId($filter_data, $is_switch_toggled, $account_or_account_type_id);
 
-                    if(!is_null($datepicker_start) && !is_null($datepicker_end)){
-                        $this->setDateRange($form, $datepicker_start, $datepicker_end);
+                    if(!is_null($datepicker_start)){
+                        $this->setDateRangeDate($form, 'start', $datepicker_start);
                     } else {
                         $datepicker_start = $this->month_start;
+                    }
+                    if(!is_null($datepicker_end)){
+                        $this->setDateRangeDate($form, 'end', $datepicker_end);
+                    } else {
                         $datepicker_end = $this->month_end;
                     }
+
                     $filter_data = $this->generateFilterArrayElementDatepicker($filter_data, $datepicker_start, $datepicker_end);
 
                     $this->generateEntryFromFilterData($filter_data, $this->getName());
@@ -212,8 +222,8 @@ class StatsTrendingTest extends StatsBase {
 
             $browser
                 ->assertDontSeeIn(self::$SELECTOR_STATS_RESULTS_TRENDING, self::$LABEL_NO_STATS_DATA)
-                ->with(self::$SELECTOR_STATS_RESULTS_TRENDING, function(Browser $stats_results) use ($include_transfers){
-                    $this->assertIncludeTransfersCheckboxButtonDefaultState($stats_results);
+                ->within(self::$SELECTOR_STATS_RESULTS_TRENDING, function(Browser $stats_results) use ($include_transfers){
+                    $this->assertIncludeTransfersButtonDefaultState($stats_results);
                     if($include_transfers){
                         $this->clickIncludeTransfersCheckboxButton($stats_results);
                         $this->assertIncludesTransfersCheckboxButtonStateActive($stats_results);
