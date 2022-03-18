@@ -8,7 +8,6 @@
     "build-prod": "mix --production && echo 'process completed @ ' `date`"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-free": "5.15.4",
     "@tailwindcss/forms": "^0.5.0",
     "@voerro/vue-tagsinput": "^2",
     "autoprefixer": "^10.4.2",
