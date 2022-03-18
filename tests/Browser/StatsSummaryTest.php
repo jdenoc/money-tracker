@@ -4,8 +4,6 @@ namespace Tests\Browser;
 
 use App\Traits\Tests\Dusk\AccountOrAccountTypeTogglingSelector as DuskTraitAccountOrAccountTypeTogglingSelector;
 use App\Traits\Tests\Dusk\BatchFilterEntries as DuskTraitBatchFilterEntries;
-use App\Traits\Tests\Dusk\BulmaDatePicker as DuskTraitBulmaDatePicker;
-use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\StatsSidePanel as DuskTraitStatsSidePanel;
 use Facebook\WebDriver\Remote\RemoteWebElement;
 use Facebook\WebDriver\WebDriverBy;
@@ -26,8 +24,6 @@ class StatsSummaryTest extends StatsBase {
 
     use DuskTraitAccountOrAccountTypeTogglingSelector;
     use DuskTraitBatchFilterEntries;
-    use DuskTraitBulmaDatePicker;
-    use DuskTraitLoading;
     use DuskTraitStatsSidePanel;
 
     private static $LABEL_GENERATE_TABLE_BUTTON = "Generate Tables";

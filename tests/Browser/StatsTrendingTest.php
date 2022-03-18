@@ -24,8 +24,6 @@ class StatsTrendingTest extends StatsBase {
 
     use DuskTraitAccountOrAccountTypeTogglingSelector;
     use DuskTraitBatchFilterEntries;
-    use DuskTraitBulmaDatePicker;
-    use DuskTraitLoading;
     use DuskTraitStatsSidePanel;
 
     private static $SELECTOR_STATS_TRENDING = "#stats-trending";
@@ -235,7 +233,7 @@ class StatsTrendingTest extends StatsBase {
      * @throws Throwable
      *
      * @group stats-trending-1
-     * test 16/25
+     * test 18/25
      */
     public function testGeneratingATrendingChartWontCauseSummaryTablesToBecomeVisible(){
         $this->generatingADifferentChartWontCauseSummaryTablesToBecomeVisible(
