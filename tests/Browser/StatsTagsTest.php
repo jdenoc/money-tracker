@@ -5,8 +5,6 @@ namespace Tests\Browser;
 use App\Entry;
 use App\Traits\Tests\Dusk\AccountOrAccountTypeTogglingSelector as DuskTraitAccountOrAccountTypeTogglingSelector;
 use App\Traits\Tests\Dusk\BatchFilterEntries as DuskTraitBatchFilterEntries;
-use App\Traits\Tests\Dusk\BulmaDatePicker as DuskTraitBulmaDatePicker;
-use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\StatsSidePanel as DuskTraitStatsSidePanel;
 use App\Traits\Tests\Dusk\TagsInput as DuskTraitTagsInput;
 use Illuminate\Support\Collection;
@@ -24,10 +22,8 @@ use Throwable;
  */
 class StatsTagsTest extends StatsBase {
 
-    use DuskTraitLoading;
     use DuskTraitAccountOrAccountTypeTogglingSelector;
     use DuskTraitBatchFilterEntries;
-    use DuskTraitBulmaDatePicker;
     use DuskTraitTagsInput;
     use DuskTraitStatsSidePanel;
 

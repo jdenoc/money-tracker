@@ -4,8 +4,6 @@ namespace Tests\Browser;
 
 use App\Traits\Tests\Dusk\AccountOrAccountTypeTogglingSelector as DuskTraitAccountOrAccountTypeTogglingSelector;
 use App\Traits\Tests\Dusk\BatchFilterEntries as DuskTraitBatchFilterEntries;
-use App\Traits\Tests\Dusk\BulmaDatePicker as DuskTraitBulmaDatePicker;
-use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\StatsSidePanel as DuskTraitStatsSidePanel;
 use Illuminate\Support\Collection;
 use Laravel\Dusk\Browser;
@@ -23,9 +21,7 @@ use Throwable;
 class StatsDistributionTest extends StatsBase {
 
     use DuskTraitAccountOrAccountTypeTogglingSelector;
-    use DuskTraitBulmaDatePicker;
     use DuskTraitBatchFilterEntries;
-    use DuskTraitLoading;
     use DuskTraitStatsSidePanel;
 
     private static $SELECTOR_STATS_DISTRIBUTION = '#stats-distribution';

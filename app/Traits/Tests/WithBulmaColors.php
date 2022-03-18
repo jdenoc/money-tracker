@@ -2,7 +2,7 @@
 
 namespace App\Traits\Tests;
 
-use Jdenoc\TailwindColors\BulmaColors;
+use Jdenoc\BulmaColors\BulmaColors;
 
 trait WithBulmaColors {
 
