@@ -2,10 +2,10 @@
 
 namespace Tests\Feature\Api\Delete;
 
-use App\Account;
-use App\AccountType;
-use App\Attachment;
-use App\Entry;
+use App\Models\Account;
+use App\Models\AccountType;
+use App\Models\Attachment;
+use App\Models\Entry;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,8 +14,8 @@ class DeleteAttachmentTest extends TestCase {
 
     use WithFaker;
 
-    private string $_attachment_base_uri = '/api/attachment/';
-    private string $_entry_base_uri = '/api/entry/';
+    private $_attachment_base_uri = '/api/attachment/';
+    private $_entry_base_uri = '/api/entry/';
 
     public function testDeleteAttachmentWhenNoRecordsExist(){
         // GIVEN - no attachment records

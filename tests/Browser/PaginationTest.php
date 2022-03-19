@@ -2,7 +2,7 @@
 
 namespace Tests\Browser;
 
-use App\Entry;
+use App\Models\Entry;
 use App\Traits\MaxEntryResponseValue;
 use App\Traits\Tests\Dusk\Loading;
 use App\Traits\Tests\Dusk\Navbar;

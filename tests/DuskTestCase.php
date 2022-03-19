@@ -2,7 +2,7 @@
 
 namespace Tests;
 
-use App\Entry;
+use App\Models\Entry;
 use App\Traits\EntryFilterKeys;
 use App\Traits\Tests\Dusk\ResizeBrowser as DuskTraitResizeBrowser;
 use App\Traits\Tests\LogTestName;

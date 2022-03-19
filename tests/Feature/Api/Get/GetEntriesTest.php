@@ -2,13 +2,14 @@
 
 namespace Tests\Feature\Api\Get;
 
-use App\AccountType;
-use App\Entry;
+use App\Models\AccountType;
+use App\Models\Entry;
 use App\Traits\MaxEntryResponseValue;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
+use Tests\Feature\Api\ListEntriesBase;
 
-class GetEntriesTest extends \Tests\Feature\Api\ListEntriesBase {
+class GetEntriesTest extends ListEntriesBase {
 
     use MaxEntryResponseValue;
 

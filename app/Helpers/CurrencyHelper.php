@@ -2,7 +2,7 @@
 
 namespace App\Helpers;
 
-use App\Currency;
+use App\Models\Currency;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 

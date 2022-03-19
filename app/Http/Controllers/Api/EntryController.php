@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Entry;
-use App\AccountType;
-use App\Attachment;
+use App\Http\Controllers\Controller;
+use App\Models\Entry;
+use App\Models\AccountType;
+use App\Models\Attachment;
 use App\Traits\EntryFilterKeys;
 use App\Traits\EntryResponseKeys;
 use App\Traits\EntryTransferKeys;
 use App\Traits\MaxEntryResponseValue;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -430,7 +430,7 @@ class EntryController extends Controller {
         } else {
             foreach($entries_collection as $entry){
                 $entry->has_attachments = $entry->has_attachments();
-                $entry->tags = ($entry->has_tags()) ? $entry->tags = $entry->get_tag_ids() : [];
+                $entry->tags = ($entry->has_tags()) ? $entry->get_tag_ids() : [];
                 $entry->is_transfer = !is_null($entry->transfer_entry_id);
                 unset($entry->transfer_entry_id);
             }

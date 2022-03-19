@@ -2,9 +2,9 @@
 
 namespace Tests\Unit;
 
+use App\Models\AccountType;
+use InvalidArgumentException;
 use Tests\TestCase;
-
-use App;
 
 class BaseModelTest extends TestCase {
 
@@ -21,7 +21,7 @@ class BaseModelTest extends TestCase {
         $column = 'type';
 
         // WHEN
-        $enum_values = App\AccountType::get_enum_values($column);
+        $enum_values = AccountType::get_enum_values($column);
 
         // THEN
         $this->assertNotEmpty($enum_values);
@@ -41,7 +41,7 @@ class BaseModelTest extends TestCase {
         $column = 'id';
 
         // WHEN
-        $enum_values = App\AccountType::get_enum_values($column);
+        $enum_values = AccountType::get_enum_values($column);
 
         // THEN
         $this->assertEmpty($enum_values);
@@ -56,14 +56,14 @@ class BaseModelTest extends TestCase {
      */
     public function testGetEnumValuesFromADataBaseTableColumnThatDoesNotExist(){
         // THEN
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         // GIVEN
         // the database column account_types.foobar does not exist as of 2017-02-05
         $column = 'foobar';
 
         // WHEN
-        $enum_values = App\AccountType::get_enum_values($column);
+        $enum_values = AccountType::get_enum_values($column);
     }
 
 }

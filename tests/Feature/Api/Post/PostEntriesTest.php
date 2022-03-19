@@ -2,14 +2,15 @@
 
 namespace Tests\Feature\Api\Post;
 
-use App\AccountType;
-use App\Entry;
-use App\Tag;
+use App\Models\AccountType;
+use App\Models\Entry;
+use App\Models\Tag;
 use App\Traits\EntryFilterKeys;
 use App\Traits\MaxEntryResponseValue;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
+use Tests\Feature\Api\ListEntriesBase;
 
-class PostEntriesTest extends \Tests\Feature\Api\ListEntriesBase {
+class PostEntriesTest extends ListEntriesBase {
 
     use EntryFilterKeys;
     use MaxEntryResponseValue;
