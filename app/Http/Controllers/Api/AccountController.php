@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Account;
 use Symfony\Component\HttpFoundation\Response;
-
-use App\Account;
 
 class AccountController extends Controller {
 

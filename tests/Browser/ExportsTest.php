@@ -2,7 +2,7 @@
 
 namespace Tests\Browser;
 
-use App\AccountType;
+use App\Models\AccountType;
 use App\Traits\ExportsHelper;
 use App\Traits\Tests\Dusk\FilterModal;
 use App\Traits\Tests\Dusk\Loading;

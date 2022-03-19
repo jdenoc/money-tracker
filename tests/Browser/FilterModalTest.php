@@ -2,9 +2,9 @@
 
 namespace Tests\Browser;
 
-use App\Account;
-use App\AccountType;
 use App\Helpers\CurrencyHelper;
+use App\Models\Account;
+use App\Models\AccountType;
 use App\Traits\Tests\Dusk\FilterModal as DuskTraitFilterModal;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;

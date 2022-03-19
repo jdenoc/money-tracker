@@ -2,10 +2,10 @@
 
 namespace Tests\Feature\Api;
 
-use App\Account;
-use App\Attachment;
-use App\Entry;
-use App\Tag;
+use App\Models\Account;
+use App\Models\Attachment;
+use App\Models\Entry;
+use App\Models\Tag;
 use App\Traits\EntryFilterKeys;
 use App\Traits\MaxEntryResponseValue;
 use Carbon\Carbon;
@@ -31,7 +31,7 @@ class ListEntriesBase extends TestCase {
      */
     protected $_generated_tags;
 
-    protected string $_uri = '/api/entries';
+    protected $_uri = '/api/entries';
 
     public function setUp(): void{
         parent::setUp();

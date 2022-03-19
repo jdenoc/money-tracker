@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\AccountType;
-use Carbon\Carbon;
 use App\Http\Controllers\Controller;
+use App\Models\AccountType;
+use Carbon\Carbon;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 
 class AccountTypeController extends Controller {
