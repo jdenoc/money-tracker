@@ -4,7 +4,7 @@ use Faker\Generator as Faker;
 use App\Helpers\DatabaseFactoryConstants AS FactoryConstants;
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
-$factory->define(App\Attachment::class, function(Faker $faker){
+$factory->define(App\Models\Attachment::class, function(Faker $faker){
     $faker->addProvider(new App\Providers\Faker\ProjectFilenameProvider($faker));
     return [
         'uuid'=>$faker->uuid(),

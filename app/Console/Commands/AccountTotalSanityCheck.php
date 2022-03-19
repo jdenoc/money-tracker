@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Account;
-use App\AccountTotalSanityCheck as SanityCheckAlertObject;
+use App\Models\Account;
+use App\Models\AccountTotalSanityCheck as SanityCheckAlertObject;
 use Eklundkristoffer\DiscordWebhook\DiscordClient;
 use Eklundkristoffer\DiscordWebhook\DiscordContentObject;
 use Illuminate\Console\Command;

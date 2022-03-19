@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Attachment;
+use App\Models\Attachment;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 

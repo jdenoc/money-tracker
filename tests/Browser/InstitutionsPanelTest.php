@@ -2,8 +2,8 @@
 
 namespace Tests\Browser;
 
-use App\Account;
-use App\Institution;
+use App\Models\Account;
+use App\Models\Institution;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\WaitTimes;
 use Facebook\WebDriver\WebDriverBy;

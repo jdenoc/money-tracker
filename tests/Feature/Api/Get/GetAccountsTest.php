@@ -2,17 +2,16 @@
 
 namespace Tests\Feature\Api\Get;
 
+use App\Models\Account;
 use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
 use Symfony\Component\HttpFoundation\Response;
-
-use App\Account;
+use Tests\TestCase;
 
 class GetAccountsTest extends TestCase {
 
     use WithFaker;
 
-    private string $_uri = '/api/accounts';
+    private $_uri = '/api/accounts';
 
     public function testGetListOfAccountsWhenTheyAreAvailable(){
         // GIVEN

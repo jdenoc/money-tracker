@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Web;
 
-use App\AccountType;
+use App\Models\AccountType;
 use App\Traits\EntryFilterKeys;
 use App\Traits\ExportsHelper;
 use App\Traits\Tests\GenerateFilterTestCases;

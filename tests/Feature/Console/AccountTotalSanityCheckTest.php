@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Console;
 
-use App\Account;
-use App\AccountType;
-use App\Entry;
+use App\Models\Account;
+use App\Models\AccountType;
+use App\Models\Entry;
 use App\Traits\Tests\TruncateDatabaseTables;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -18,11 +18,11 @@ class AccountTotalSanityCheckTest extends TestCase {
     use TruncateDatabaseTables;
     use WithFaker;
 
-    private string $_command = 'sanity-check:account-total';
-    private array $_screen_only_notification_options = ['--notify-screen'=>true, '--dont-notify-discord'=>true];
+    private $_command = 'sanity-check:account-total';
+    private $_screen_only_notification_options = ['--notify-screen'=>true, '--dont-notify-discord'=>true];
 
-    private static string $TEMPLATE_CHECKING_ACCOUNT_OK = "Checking account ID:%d\n\tOK";
-    private static string $TEMPLATE_ACCOUNT_NOT_FOUND = "Account %d not found";
+    private static $TEMPLATE_CHECKING_ACCOUNT_OK = "Checking account ID:%d\n\tOK";
+    private static $TEMPLATE_ACCOUNT_NOT_FOUND = "Account %d not found";
 
     public function setUp(): void{
         parent::setUp();

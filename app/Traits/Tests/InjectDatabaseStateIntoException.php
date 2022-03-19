@@ -2,13 +2,13 @@
 
 namespace App\Traits\Tests;
 
-use App\Account;
-use App\AccountType;
-use App\Attachment;
-use App\Entry;
-use App\Institution;
-use App\Tag;
-use App\User;
+use App\Models\Account;
+use App\Models\AccountType;
+use App\Models\Attachment;
+use App\Models\Entry;
+use App\Models\Institution;
+use App\Models\Tag;
+use App\Models\User;
 
 /**
  * @deprecated - use artisan snapshot:create

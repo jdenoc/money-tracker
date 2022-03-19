@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Api\Get;
 
-use App\Institution;
+use App\Models\Institution;
 use Illuminate\Foundation\Testing\WithFaker;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
@@ -11,7 +11,7 @@ class GetInstitutionsTest extends TestCase {
 
     use WithFaker;
 
-    protected string $_base_uri = '/api/institutions';
+    protected $_base_uri = '/api/institutions';
 
     public function testGetInstitutionsWhenNoneAreAvailable(){
         // GIVEN - no institutions exist in database

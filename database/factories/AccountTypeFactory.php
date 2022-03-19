@@ -4,9 +4,9 @@ use Faker\Generator as Faker;
 use App\Helpers\DatabaseFactoryConstants AS FactoryConstants;
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
-$factory->define(App\AccountType::class, function(Faker $faker){
+$factory->define(App\Models\AccountType::class, function(Faker $faker){
     $bank_account_number = $faker->bankAccountNumber();
-    $account_types = App\AccountType::get_enum_values('type');
+    $account_types = App\Models\AccountType::get_enum_values('type');
     $account_type = $account_types[array_rand($account_types)];
 
     return [

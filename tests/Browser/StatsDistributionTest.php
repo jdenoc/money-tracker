@@ -2,6 +2,7 @@
 
 namespace Tests\Browser;
 
+use App\Models\Entry;
 use App\Traits\Tests\Dusk\AccountOrAccountTypeTogglingSelector as DuskTraitAccountOrAccountTypeTogglingSelector;
 use App\Traits\Tests\Dusk\BatchFilterEntries as DuskTraitBatchFilterEntries;
 use App\Traits\Tests\Dusk\StatsSidePanel as DuskTraitStatsSidePanel;
@@ -320,7 +321,7 @@ class StatsDistributionTest extends StatsBase {
             $account_type_id = $account_types->pluck('id')->random();
         }
 
-        $disabled_entry = factory(\App\Entry::class)->create(['memo'=>$this->getName().' - ALL tags', 'account_type_id'=>$account_type_id, 'disabled'=>false, 'entry_date'=>date('Y-m-d', strtotime('-1 day'))]);
+        $disabled_entry = factory(Entry::class)->create(['memo'=>$this->getName().' - ALL tags', 'account_type_id'=>$account_type_id, 'disabled'=>false, 'entry_date'=>date('Y-m-d', strtotime('-1 day'))]);
         foreach($tags->pluck('id')->all() as $tag_id){
             $disabled_entry->tags()->attach($tag_id);
         }
