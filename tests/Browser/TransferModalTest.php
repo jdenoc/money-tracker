@@ -2,9 +2,9 @@
 
 namespace Tests\Browser;
 
-use App\Account;
-use App\AccountType;
-use App\Entry;
+use App\Models\Account;
+use App\Models\AccountType;
+use App\Models\Entry;
 use App\Traits\EntryTransferKeys;
 use App\Traits\Tests\Dusk\FileDragNDrop as DuskTraitFileDragNDrop;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
@@ -41,10 +41,10 @@ class TransferModalTest extends DuskTestCase {
 
     use WithFaker;
 
-    private static string $METHOD_TO = 'to';
-    private static string $METHOD_FROM = 'from';
-    private static string $METHOD_ACCOUNT = 'account';
-    private static string $METHOD_ACCOUNT_TYPE = 'account-type';
+    private static $METHOD_TO = 'to';
+    private static $METHOD_FROM = 'from';
+    private static $METHOD_ACCOUNT = 'account';
+    private static $METHOD_ACCOUNT_TYPE = 'account-type';
 
     /**
      * @throws Throwable

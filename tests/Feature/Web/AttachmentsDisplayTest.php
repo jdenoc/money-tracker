@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Web;
 
-use App\Attachment;
+use App\Models\Attachment;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;

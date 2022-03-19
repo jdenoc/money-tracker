@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Api\Delete;
 
-use App\Account;
-use App\AccountType;
-use App\Entry;
+use App\Models\Account;
+use App\Models\AccountType;
+use App\Models\Entry;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\WithFaker;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
@@ -14,7 +14,7 @@ class DeleteEntryTest extends TestCase {
 
     use WithFaker;
 
-    private string $_base_uri = '/api/entry/';
+    private $_base_uri = '/api/entry/';
 
     public function testMarkingEntryDeleted(){
         // GIVEN

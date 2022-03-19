@@ -2,11 +2,11 @@
 
 namespace Tests\Feature\Api\Post;
 
-use App\Account;
-use App\AccountType;
-use App\Attachment;
-use App\Entry;
-use App\Tag;
+use App\Models\Account;
+use App\Models\AccountType;
+use App\Models\Attachment;
+use App\Models\Entry;
+use App\Models\Tag;
 use App\Traits\EntryResponseKeys;
 use Illuminate\Foundation\Testing\WithFaker;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
@@ -17,7 +17,7 @@ class PostEntryTest extends TestCase {
     use EntryResponseKeys;
     use WithFaker;
 
-    private string $_base_uri = '/api/entry';
+    private $_base_uri = '/api/entry';
 
     public function testCreateEntryWithoutData(){
         // GIVEN
