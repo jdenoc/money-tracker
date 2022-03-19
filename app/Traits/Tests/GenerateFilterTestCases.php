@@ -2,7 +2,7 @@
 
 namespace App\Traits\Tests;
 
-use App\Account;
+use App\Models\Account;
 use App\Traits\EntryFilterKeys;
 use Faker\Generator as FakerGenerator;
 use Illuminate\Support\Collection;

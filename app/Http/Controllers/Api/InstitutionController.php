@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Institution;
 use App\Http\Controllers\Controller;
+use App\Models\Institution;
 use Illuminate\Http\Response;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 

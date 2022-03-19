@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Tag;
 use Symfony\Component\HttpFoundation\Response;
-
-use App\Tag;
 
 class TagController extends Controller {
 

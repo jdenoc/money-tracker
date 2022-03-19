@@ -2,10 +2,11 @@
 
 namespace Tests\Feature\Api\Post;
 
-use App\AccountType;
-use App\Entry;
-use App\Tag;
+use App\Models\AccountType;
+use App\Models\Entry;
+use App\Models\Tag;
 use App\Traits\Tests\GenerateFilterTestCases;
+use App\Traits\MaxEntryResponseValue;
 use Exception;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\Feature\Api\ListEntriesBase;
@@ -13,6 +14,7 @@ use Tests\Feature\Api\ListEntriesBase;
 class PostEntriesTest extends ListEntriesBase {
 
     use GenerateFilterTestCases;
+    use MaxEntryResponseValue;
 
     public function providerPostEntriesFilter():array{
         // need to call setUp() before running through a data provider method

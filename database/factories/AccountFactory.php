@@ -4,7 +4,7 @@ use Faker\Generator as Faker;
 use App\Helpers\DatabaseFactoryConstants AS FactoryConstants;
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
-$factory->define(App\Account::class, function(Faker $faker){
+$factory->define(App\Models\Account::class, function(Faker $faker){
     $faker->addProvider(new App\Providers\Faker\ProjectCurrencyCodeProvider($faker));
     $account_name = $faker->company().' account';
     $disabled = $faker->boolean();

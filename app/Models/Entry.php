@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use App\Traits\EntryFilterKeys;
 use Carbon\Carbon;
@@ -48,7 +48,7 @@ class Entry extends BaseModel {
      * entries.account_type_id = account_types.id
      */
     public function account_type(){
-        return $this->belongsTo('App\AccountType', 'account_type_id');
+        return $this->belongsTo('App\Models\AccountType', 'account_type_id');
     }
 
     /**
@@ -56,14 +56,14 @@ class Entry extends BaseModel {
      * entry_tags.tag_id = tags.id
      */
     public function tags(){
-        return $this->belongsToMany('App\Tag', 'entry_tags', 'entry_id', 'tag_id');
+        return $this->belongsToMany('App\Models\Tag', 'entry_tags', 'entry_id', 'tag_id');
     }
 
     /**
      * attachments.entry_id = entries.id
      */
     public function attachments(){
-        return $this->hasMany('App\Attachment');
+        return $this->hasMany('App\Models\Attachment');
     }
 
     public function save(array $options = []){

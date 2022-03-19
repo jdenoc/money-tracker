@@ -2,9 +2,9 @@
 
 namespace Tests\Browser;
 
-use App\Account;
-use App\AccountType;
-use App\Entry;
+use App\Models\Account;
+use App\Models\AccountType;
+use App\Models\Entry;
 use App\Traits\EntryFilterKeys;
 use App\Traits\Tests\Dusk\BulmaDatePicker as DuskTraitBulmaDatePicker;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 class AccountType extends BaseModel {
 
@@ -22,11 +22,11 @@ class AccountType extends BaseModel {
     ];
 
     public function account(){
-        return $this->belongsTo('App\Account', 'account_id');
+        return $this->belongsTo('App\Models\Account', 'account_id');
     }
 
     public function entries(){
-        return $this->hasMany('App\Entry', 'account_type_id');
+        return $this->hasMany('App\Models\Entry', 'account_type_id');
     }
 
 }

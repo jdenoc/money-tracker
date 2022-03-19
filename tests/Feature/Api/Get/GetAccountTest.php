@@ -3,18 +3,17 @@
 namespace Tests\Feature\Api\Get;
 
 use App\Helpers\CurrencyHelper;
+use App\Models\Account;
+use App\Models\AccountType;
 use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
 use Symfony\Component\HttpFoundation\Response;
-
-use App\Account;
-use App\AccountType;
+use Tests\TestCase;
 
 class GetAccountTest extends TestCase {
 
     use WithFaker;
 
-    private string $_base_uri = '/api/account/';
+    private $_base_uri = '/api/account/';
 
     public function testGetAccountData(){
         // GIVEN

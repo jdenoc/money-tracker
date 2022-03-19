@@ -2,11 +2,11 @@
 
 namespace Tests\Feature\Api\Post;
 
-use App\Account;
-use App\AccountType;
-use App\Attachment;
-use App\Entry;
-use App\Tag;
+use App\Models\Account;
+use App\Models\AccountType;
+use App\Models\Attachment;
+use App\Models\Entry;
+use App\Models\Tag;
 use App\Traits\EntryResponseKeys;
 use App\Traits\EntryTransferKeys;
 use App\Traits\Tests\StorageTestFiles;
@@ -27,7 +27,7 @@ class PostEntryTransferTest extends TestCase {
     const FLAG_OVERRIDE_TO = "override_to_account_type_id";
     const FLAG_OVERRIDE_FROM = "override_from_account_type_id";
 
-    private string $_base_uri = '/api/entry/transfer';
+    private $_base_uri = '/api/entry/transfer';
 
     public function testCreateEntryTransferWithoutData(){
         // GIVEN
