@@ -2,24 +2,23 @@
 
 namespace Tests\Feature\Api\Get;
 
-use App\Account;
+use App\Models\Account;
+use App\Models\AccountType;
+use App\Models\Attachment;
+use App\Models\Entry;
+use App\Models\Tag;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
-
-use App\AccountType;
-use App\Attachment;
-use App\Entry;
-use App\Tag;
+use Tests\TestCase;
 
 class GetEntryTest extends TestCase {
 
     use WithFaker;
 
-    private int $_generate_tag_count;
-    private int $_generate_attachment_count;
-    private string $_base_uri = '/api/entry/';
+    private $_generate_tag_count;
+    private $_generate_attachment_count;
+    private $_base_uri = '/api/entry/';
 
     public function setUp(): void{
         parent::setUp();

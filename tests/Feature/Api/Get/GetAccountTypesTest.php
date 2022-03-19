@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Api\Get;
 
-use App\AccountType;
+use App\Models\AccountType;
 use Illuminate\Foundation\Testing\WithFaker;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
@@ -11,7 +11,7 @@ class GetAccountTypesTest extends TestCase {
 
     use WithFaker;
 
-    private string $_uri = '/api/account-types';
+    private $_uri = '/api/account-types';
 
     public function testGetAccountTypesWhenNoAccountTypesExist(){
         // GIVEN - no account_types exist

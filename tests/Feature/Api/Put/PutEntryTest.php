@@ -2,11 +2,11 @@
 
 namespace Tests\Feature\Api\Put;
 
-use App\Account;
-use App\AccountType;
-use App\Attachment;
-use App\Entry;
-use App\Tag;
+use App\Models\Account;
+use App\Models\AccountType;
+use App\Models\Attachment;
+use App\Models\Entry;
+use App\Models\Tag;
 use App\Traits\EntryResponseKeys;
 use Illuminate\Foundation\Testing\WithFaker;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;

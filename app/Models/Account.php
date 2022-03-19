@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 class Account extends BaseModel {
 
@@ -23,11 +23,11 @@ class Account extends BaseModel {
     ];
 
     public function institution(){
-        $this->belongsTo('App\Institution', 'institution_id');
+        $this->belongsTo('App\Modals\Institution', 'institution_id');
     }
 
     public function account_types(){
-        return $this->hasMany('App\AccountType', 'account_id');
+        return $this->hasMany('App\Models\AccountType', 'account_id');
     }
 
     public function update_total($value){

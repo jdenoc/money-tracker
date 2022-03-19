@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 class Institution extends BaseModel {
 
@@ -21,7 +21,7 @@ class Institution extends BaseModel {
     ];
 
     public function accounts(){
-        return $this->hasMany('App\Account', 'institution_id');
+        return $this->hasMany('App\Models\Account', 'institution_id');
     }
 
     public static function find_institution_with_accounts($institution_id){

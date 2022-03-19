@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-use App\Entry;
+use App\Models\Entry;
 use App\Traits\ExportsHelper;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;

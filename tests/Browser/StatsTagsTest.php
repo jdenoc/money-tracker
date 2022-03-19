@@ -2,14 +2,14 @@
 
 namespace Tests\Browser;
 
-use App\Entry;
+use App\Models\Entry;
 use App\Traits\Tests\Dusk\AccountOrAccountTypeTogglingSelector as DuskTraitAccountOrAccountTypeTogglingSelector;
 use App\Traits\Tests\Dusk\BatchFilterEntries as DuskTraitBatchFilterEntries;
 use App\Traits\Tests\Dusk\StatsSidePanel as DuskTraitStatsSidePanel;
 use App\Traits\Tests\Dusk\TagsInput as DuskTraitTagsInput;
+use Laravel\Dusk\Browser;
 use Illuminate\Support\Collection;
 use Tests\Browser\Pages\StatsPage;
-use Laravel\Dusk\Browser;
 use Throwable;
 
 /**

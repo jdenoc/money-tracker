@@ -2,10 +2,10 @@
 
 namespace Tests\Browser;
 
-use App\AccountType;
-use App\Attachment;
-use App\Entry;
-use App\Tag;
+use App\Models\AccountType;
+use App\Models\Attachment;
+use App\Models\Entry;
+use App\Models\Tag;
 use App\Traits\EntryTransferKeys;
 use App\Traits\Tests\Dusk\FileDragNDrop as DuskTraitFileDragNDrop;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
@@ -53,10 +53,10 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     const INI_POSTMAXSIZE = 'post_max_size';
     const INI_UPLOADMAXFILESIZE = 'upload_max_filesize';
 
-    private static string $HTACCESS_FILEPATH = 'public/.htaccess';
-    private static string $BKUP_EXT = '.bkup';
+    private static $HTACCESS_FILEPATH = 'public/.htaccess';
+    private static $BKUP_EXT = '.bkup';
 
-    private static string $TEST_NAME_OVERRIDE_HTACCESS = 'testAttemptToAddAnAttachmentTooLargeToAnExistingEntry';
+    private static $TEST_NAME_OVERRIDE_HTACCESS = 'testAttemptToAddAnAttachmentTooLargeToAnExistingEntry';
 
     private $_class_lock = "fa-lock";
     private $_class_unlock = "fa-unlock-alt";
@@ -131,7 +131,6 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                             $this->assertStringContainsString($this->_class_light_grey_text, $entry_confirm_class);
                         })
 
-//                        ->within($this->_selector_modal_body, function(Browser $modal_body) use ($entry_data, $data_expense_switch_label, $expense_switch_colour){
                         ->within($this->_selector_modal_body, function(Browser $modal_body) use ($entry_data, $is_expense){
                             if($is_expense){
                                 $data_expense_switch_label = $this->_label_expense_switch_expense;
