@@ -76,7 +76,7 @@ Money Tracker is a web portal dedicated to help record and manage income & expen
 ---
 
 ## Other Documentation
-- [Laravel](https://laravel.com/docs/7.x/)
+- [Laravel](https://laravel.com/docs/9.x/)
 - [VueJS](https://vuejs.org/v2/guide/)
 - [Bulma](https://bulma.io/documentation/)
 - [ChartJs](https://www.chartjs.org/)
