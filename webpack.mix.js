@@ -6,7 +6,7 @@ const mix = require('laravel-mix');
  |--------------------------------------------------------------------------
  |
  | Mix provides a clean, fluent API for defining some Webpack build steps
- | for your Laravel application. By default, we are compiling the Sass
+ | for your Laravel applications. By default, we are compiling the SCSS
  | file for the application as well as bundling up all the JS files.
  |
  */
@@ -31,4 +31,14 @@ mix
     .copy(directory.fontAwesome+'webfonts/fa-regular-400.woff2', directory.webfont+'fa-regular-400.woff2')
 
     .sass(directory.resource+'sass/app.scss', directory.css)
+
+    /**
+     * Note: Laravel wants to use postCss instead of SASS
+     * That is why this is here and commented out.
+     * We currently don't use postCss
+     */
+    // .postCss('resources/css/app.css', 'public/css', [
+    //     //
+    // ])
+
     .version();

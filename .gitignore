@@ -1,6 +1,12 @@
-#development
-.idea
+# OS
 .DS_Store
+
+# development
+.idea
+_ide_helper*.php
+.phpstorm.meta.php
+phpunit.dusk.xml
+.phpunit.result.cache
 
 # composer
 vendor
@@ -14,8 +20,5 @@ npm-debug.log
 mix-manifest.json
 public/vue
 
+# misc
 .env
-phpunit.dusk.xml
-.phpunit.result.cache
-_ide_helper*.php
-.phpstorm.meta.php
