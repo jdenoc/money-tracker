@@ -1,6 +1,14 @@
 <?php
 
+namespace Database\Seeders;
+
+use App\Account;
+use App\AccountType;
+use App\Attachment;
+use App\Entry;
 use App\Helpers\CurrencyHelper;
+use App\Institution;
+use App\Tag;
 use App\Traits\EntryTransferKeys;
 use App\Traits\MaxEntryResponseValue;
 use App\Traits\Tests\StorageTestFiles as TestStorageTestFilesTrait;
@@ -8,6 +16,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Collection;
+use Storage;
 
 class UiSampleDatabaseSeeder extends Seeder {
 
@@ -30,18 +39,18 @@ class UiSampleDatabaseSeeder extends Seeder {
     private $attachment_stored_count = 0;
 
     /**
-     * Run the database seeds.
+     * Run the database seeders.
      */
     public function run(){
         $this->setUpFaker();
 
         // ***** TAGS *****
-        $tags = factory(App\Tag::class, self::COUNT_TAG)->create();
+        $tags = factory(Tag::class, self::COUNT_TAG)->create();
         $tag_ids = $tags->pluck('id')->toArray();
         $this->command->line(self::CLI_OUTPUT_PREFIX."Tags seeded [".$tags->count()."]");
 
         // ***** INSTITUTIONS *****
-        $institutions = factory(App\Institution::class, self::COUNT_INSTITUTION)->create(['active'=>1]);
+        $institutions = factory(Institution::class, self::COUNT_INSTITUTION)->create(['active'=>1]);
         $institution_ids = $institutions->pluck('id')->toArray();
         $this->command->line(self::CLI_OUTPUT_PREFIX."Institutions seeded [".$institutions->count()."]");
 
@@ -192,7 +201,7 @@ class UiSampleDatabaseSeeder extends Seeder {
      * @return Collection
      */
     private function addAccountToCollection(Collection $account_collection, array $data): Collection{
-        return $this->addToCollection($account_collection, App\Account::class, $data);
+        return $this->addToCollection($account_collection, Account::class, $data);
     }
 
     /**
@@ -201,7 +210,7 @@ class UiSampleDatabaseSeeder extends Seeder {
      * @return Collection
      */
     private function addAccountTypeToCollection(Collection $account_type_collection, array $data): Collection{
-        return $this->addToCollection($account_type_collection, App\AccountType::class, $data, $this->faker->numberBetween(self::COUNT_MIN, self::COUNT_ACCOUNT_TYPE));
+        return $this->addToCollection($account_type_collection, AccountType::class, $data, $this->faker->numberBetween(self::COUNT_MIN, self::COUNT_ACCOUNT_TYPE));
     }
 
     /**
@@ -210,7 +219,7 @@ class UiSampleDatabaseSeeder extends Seeder {
      * @return Collection
      */
     private function addEntryToCollection(Collection $entry_collection, array $data): Collection{
-        return $this->addToCollection($entry_collection, App\Entry::class, $data, $this->faker->numberBetween(self::COUNT_MIN, self::COUNT_ENTRY*2));
+        return $this->addToCollection($entry_collection, Entry::class, $data, $this->faker->numberBetween(self::COUNT_MIN, self::COUNT_ENTRY*2));
     }
 
     /**
@@ -227,10 +236,10 @@ class UiSampleDatabaseSeeder extends Seeder {
 
     /**
      * @param int[] $tag_ids
-     * @param App\Entry $entry
+     * @param Entry $entry
      * @param bool $attach_all
      */
-    private function attachTagToEntry($tag_ids, App\Entry $entry, bool $attach_all=false): void{
+    private function attachTagToEntry($tag_ids, Entry $entry, bool $attach_all=false): void{
         if($attach_all){
             $entry_tag_ids = $tag_ids;
         } else {
@@ -246,21 +255,21 @@ class UiSampleDatabaseSeeder extends Seeder {
      */
     private function assignAttachmentToEntry(int $entry_id, $transfer_entry_ids, Collection $entries_collection): void{
         if(in_array($entry_id, $transfer_entry_ids)){
-            $new_attachment = factory(App\Attachment::class)->create(['entry_id'=>$entry_id]);
+            $new_attachment = factory(Attachment::class)->create(['entry_id'=>$entry_id]);
             $this->storeAttachment($new_attachment);
             $transfer_entry = $entries_collection->where('id', $entry_id)->first();
-            $attachment = factory(App\Attachment::class)->create(['entry_id'=>$transfer_entry->transfer_entry_id, 'name'=>$new_attachment->name]);
+            $attachment = factory(Attachment::class)->create(['entry_id'=>$transfer_entry->transfer_entry_id, 'name'=>$new_attachment->name]);
             $this->storeAttachment($attachment);
         } else {
-            $attachment = factory(App\Attachment::class)->create(['entry_id'=>$entry_id]);
+            $attachment = factory(Attachment::class)->create(['entry_id'=>$entry_id]);
             $this->storeAttachment($attachment);
         }
     }
 
     /**
-     * @param App\Attachment $attachment
+     * @param Attachment $attachment
      */
-    private function storeAttachment(App\Attachment $attachment): void{
+    private function storeAttachment(Attachment $attachment): void{
         $test_file_path = $this->getTestFileStoragePathFromFilename($attachment->name);
         if(Storage::exists($test_file_path)){
             Storage::copy($test_file_path, $attachment->get_storage_file_path());
