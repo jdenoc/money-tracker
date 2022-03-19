@@ -2,7 +2,7 @@
 
 namespace App\Traits\Tests\Dusk;
 
-use App\Account;
+use App\Models\Account;
 use App\Traits\Tests\WithBulmaColors;
 use InvalidArgumentException;
 use Laravel\Dusk\Browser;

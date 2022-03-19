@@ -3,8 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-
-use App\Attachment;
+use App\Models\Attachment;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 
 class AttachmentController extends Controller {

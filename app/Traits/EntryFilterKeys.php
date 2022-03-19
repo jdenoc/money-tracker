@@ -2,6 +2,8 @@
 
 namespace App\Traits;
 
+use App\Models\Tag;
+
 trait EntryFilterKeys {
 
     // filter parameter keys
@@ -41,7 +43,7 @@ trait EntryFilterKeys {
         ];
 
         if($include_tag_ids){
-            $tags = \App\Tag::all();
+            $tags = Tag::all();
             $tag_ids = $tags->pluck('id')->toArray();
             $filter_details['tags.*'] = 'in:'.implode(',', $tag_ids);
         }

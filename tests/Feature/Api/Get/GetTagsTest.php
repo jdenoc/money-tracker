@@ -2,14 +2,13 @@
 
 namespace Tests\Feature\Api\Get;
 
+Use App\Models\Tag;
 use Tests\TestCase;
 use Symfony\Component\HttpFoundation\Response;
 
-Use App\Tag;
-
 class GetTagsTest extends TestCase {
 
-    private string $_uri = '/api/tags';
+    private $_uri = '/api/tags';
 
     public function testObtainingListOfTagsWhenTagsArePresentInDatabase(){
         // GIVEN

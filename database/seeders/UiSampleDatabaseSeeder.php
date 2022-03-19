@@ -2,13 +2,13 @@
 
 namespace Database\Seeders;
 
-use App\Account;
-use App\AccountType;
-use App\Attachment;
-use App\Entry;
 use App\Helpers\CurrencyHelper;
-use App\Institution;
-use App\Tag;
+use App\Models\Account;
+use App\Models\AccountType;
+use App\Models\Attachment;
+use App\Models\Entry;
+use App\Models\Institution;
+use App\Models\Tag;
 use App\Traits\EntryTransferKeys;
 use App\Traits\MaxEntryResponseValue;
 use App\Traits\Tests\StorageTestFiles as TestStorageTestFilesTrait;

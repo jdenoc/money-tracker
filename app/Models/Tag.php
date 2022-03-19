@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 class Tag extends BaseModel {
 
@@ -14,7 +14,7 @@ class Tag extends BaseModel {
     ];
 
     public function entries(){
-        return $this->belongsToMany('App\Entry', 'entry_tags', 'tag_id', 'entry_id');
+        return $this->belongsToMany('App\Models\Entry', 'entry_tags', 'tag_id', 'entry_id');
     }
 
 }

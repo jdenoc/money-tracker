@@ -2,18 +2,18 @@
 
 namespace Tests\Feature\Api\Get;
 
-use App\Account;
-use App\Institution;
+use App\Models\Account;
+use App\Models\Institution;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
+use Tests\TestCase;
 
 class GetInstitutionTest extends TestCase {
 
     use WithFaker;
 
-    protected string $_base_uri = '/api/institution/';
+    protected $_base_uri = '/api/institution/';
 
     public function testGetInstitutionWhenNoInstitutionExists(){
         // GIVEN - no institution
