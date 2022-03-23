@@ -3,8 +3,8 @@
 namespace Tests\Browser;
 
 use Facebook\WebDriver\WebDriverBy;
-use Tests\DuskTestCase;
 use Laravel\Dusk\Browser;
+use Tests\DuskTestCase;
 
 /**
  * Class ATest
