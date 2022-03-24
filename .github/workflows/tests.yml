@@ -151,6 +151,7 @@ jobs:
 
   tests-unit:
     needs:
+      - pre-build
       - build
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -225,6 +226,7 @@ jobs:
 
   tests-e2e-demo:
     needs:
+      - pre-build
       - build
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -275,6 +277,7 @@ jobs:
 
   tests-e2e-notifications:
     needs:
+      - pre-build
       - build
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -325,6 +328,7 @@ jobs:
 
   tests-e2e-navigation:
     needs:
+      - pre-build
       - build
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -384,6 +388,7 @@ jobs:
 
   tests-e2e-entry-modal:
     needs:
+      - pre-build
       - build
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -440,6 +445,7 @@ jobs:
 
   tests-e2e-transfer-modal:
     needs:
+      - pre-build
       - build
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -493,6 +499,7 @@ jobs:
 
   tests-e2e-filter-modal:
     needs:
+      - pre-build
       - build
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -546,6 +553,7 @@ jobs:
 
   tests-e2e-stats-summary:
     needs:
+      - pre-build
       - build
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -596,6 +604,7 @@ jobs:
 
   tests-e2e-stats-trending:
     needs:
+      - pre-build
       - build
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -646,6 +655,7 @@ jobs:
 
   tests-e2e-stats-distribution:
     needs:
+      - pre-build
       - build
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -699,6 +709,7 @@ jobs:
 
   tests-e2e-stats-tags:
     needs:
+      - pre-build
       - build
     runs-on: ubuntu-latest
     timeout-minutes: 60
