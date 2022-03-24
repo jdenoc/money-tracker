@@ -19,9 +19,9 @@ env:
 
 jobs:
 
-  build:
+  pre-build:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 1
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -42,12 +42,72 @@ jobs:
         id: cache-key-vue
         run: echo "::set-output name=value::cache-vue-${{ hashFiles('package*.json') }}-${{ hashFiles('resources/*') }}"
 
+      - name: Generate cache paths [docker]
+        id: cache-path-docker
+        run: echo "::set-output name=value::.docker/images"
+
+      - name: Generate cache paths [composer]
+        id: cache-path-composer
+        run: echo "::set-output name=value::vendor"
+
+      - name: Generate cache paths [npm]
+        id: cache-path-npm
+        run: echo "::set-output name=value::node_modules"
+
+      - name: Generate cache paths [vue]
+        id: cache-path-vue
+        run: |
+          VUE_CACHE_PATH=$(cat << EOF
+          public/vue
+          public/mix-manifest.json
+          EOF
+          )
+          VUE_CACHE_PATH="${VUE_CACHE_PATH//'%'/'%25'}"
+          VUE_CACHE_PATH="${VUE_CACHE_PATH//$'\n'/'%0A'}"
+          VUE_CACHE_PATH="${VUE_CACHE_PATH//$'\r'/'%0D'}"
+          echo "::set-output name=value::$VUE_CACHE_PATH"
+
+      - name: Generate failure content paths for artifact upload
+        id: failure-artifact-paths
+        run: |
+          FAILURE_UPLOAD_PATHS=$(cat <<EOF
+          storage/logs/*.log
+          tests/Browser/console/*.log
+          tests/Browser/db-dump/*.sql
+          tests/Browser/screenshots/
+          !tests/Browser/screenshots/.gitignore
+          EOF
+          )
+          FAILURE_UPLOAD_PATHS="${FAILURE_UPLOAD_PATHS//'%'/'%25'}"
+          FAILURE_UPLOAD_PATHS="${FAILURE_UPLOAD_PATHS//$'\n'/'%0A'}"
+          FAILURE_UPLOAD_PATHS="${FAILURE_UPLOAD_PATHS//$'\r'/'%0D'}"
+          echo "::set-output name=value::$FAILURE_UPLOAD_PATHS"
+    outputs:
+      cache-key-docker: ${{ steps.cache-key-docker.outputs.value }}
+      cache-key-composer: ${{ steps.cache-key-composer.outputs.value }}
+      cache-key-npm: ${{ steps.cache-key-npm.outputs.value }}
+      cache-key-vue: ${{ steps.cache-key-vue.outputs.value }}
+      cache-path-docker: ${{ steps.cache-path-docker.outputs.value }}
+      cache-path-composer: ${{ steps.cache-path-composer.outputs.value }}
+      cache-path-npm: ${{ steps.cache-path-npm.outputs.value }}
+      cache-path-vue: ${{ steps.cache-path-vue.outputs.value }}
+      failure-upload-paths: ${{ steps.failure-artifact-paths.outputs.value }}
+
+  build:
+    needs:
+      - pre-build
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Cache Docker images
         id: docker-image-cache
         uses: actions/cache@v2
         with:
-          path: .docker/images
-          key: ${{ steps.cache-key-docker.outputs.value }}
+          path: ${{ needs.pre-build.outputs.cache-path-docker }}
+          key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
       - name: Docker build
         uses: ./.github/actions/setup-docker
@@ -57,8 +117,8 @@ jobs:
         id: composer-cache
         uses: actions/cache@v2
         with:
-          path: vendor
-          key: ${{ steps.cache-key-composer.outputs.value }}
+          path: ${{ needs.pre-build.outputs.cache-path-composer }}
+          key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
       - name: Composer setup
         uses: ./.github/actions/setup-composer
@@ -71,8 +131,8 @@ jobs:
         id: npm-cache
         uses: actions/cache@v2
         with:
-          path: node_modules
-          key: ${{ steps.cache-key-npm.outputs.value }}
+          path: ${{ needs.pre-build.outputs.cache-path-npm }}
+          key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
       - name: npm setup
         uses: ./.github/actions/setup-npm
@@ -82,19 +142,12 @@ jobs:
         id: vue-cache
         uses: actions/cache@v2
         with:
-          path: |
-            public/vue
-            public/mix-manifest.json
-          key: ${{ steps.cache-key-vue.outputs.value }}
+          path: ${{ needs.pre-build.outputs.cache-path-vue }}
+          key: ${{ needs.pre-build.outputs.cache-key-vue }}
 
       - name: Build Vue
         uses: ./.github/actions/build-vue
         if: steps.vue-cache.outputs.cache-hit != 'true'
-    outputs:
-      cache-key-docker: ${{ steps.cache-key-docker.outputs.value }}
-      cache-key-composer: ${{ steps.cache-key-composer.outputs.value }}
-      cache-key-npm: ${{ steps.cache-key-npm.outputs.value }}
-      cache-key-vue: ${{ steps.cache-key-vue.outputs.value }}
 
   tests-unit:
     needs:
@@ -110,22 +163,22 @@ jobs:
         id: docker-image-cache
         uses: actions/cache@v2
         with:
-          path: .docker/images
-          key: ${{ needs.build.outputs.cache-key-docker }}
+          path: ${{ needs.pre-build.outputs.cache-path-docker }}
+          key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
       - name: Get Cached Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
-          path: vendor
-          key: ${{ needs.build.outputs.cache-key-composer }}
+          path: ${{ needs.pre-build.outputs.cache-path-composer }}
+          key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
       - name: Get Cached npm packages
         id: npm-cache
         uses: actions/cache@v2
         with:
-          path: node_modules
-          key: ${{ needs.build.outputs.cache-key-npm }}
+          path: ${{ needs.pre-build.outputs.cache-path-npm }}
+          key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
       # NOTE: vue cache not needed for unit tests
 
@@ -168,15 +221,12 @@ jobs:
         with:
           name: ${{ github.sha }}-unit
           path: storage/logs/*.log
-          retention-days: 30
+          retention-days: 10
 
   tests-e2e-demo:
     needs:
       - build
     runs-on: ubuntu-latest
-    env:
-      DUSK_SCREENSHOT_DIR: 'tests/Browser/screenshots/'
-      DUSK_DB_DUMP_DIR: 'tests/Browser/db-dump/'
     timeout-minutes: 60
     steps:
       - name: Checkout
@@ -187,31 +237,29 @@ jobs:
         id: docker-image-cache
         uses: actions/cache@v2
         with:
-          path: .docker/images
-          key: ${{ needs.build.outputs.cache-key-docker }}
+          path: ${{ needs.pre-build.outputs.cache-path-docker }}
+          key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
       - name: Get Cached Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
-          path: vendor
-          key: ${{ needs.build.outputs.cache-key-composer }}
+          path: ${{ needs.pre-build.outputs.cache-path-composer }}
+          key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
       - name: Get Cached npm packages
         id: npm-cache
         uses: actions/cache@v2
         with:
-          path: node_modules
-          key: ${{ needs.build.outputs.cache-key-npm }}
+          path: ${{ needs.pre-build.outputs.cache-path-npm }}
+          key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
       - name: Get Cached vue
         id: vue-cache
         uses: actions/cache@v2
         with:
-          path: |
-            public/vue
-            public/mix-manifest.json
-          key: ${{ needs.build.outputs.cache-key-vue }}
+          path: ${{ needs.pre-build.outputs.cache-path-vue }}
+          key: ${{ needs.pre-build.outputs.cache-key-vue }}
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -222,21 +270,13 @@ jobs:
         if: failure()
         with:
           name: ${{ github.sha }}-e2e
-          path: |
-            storage/logs/*.log
-            tests/Browser/console/*.log
-            ${{ env.DUSK_DB_DUMP_DIR }}*.sql
-            ${{ env.DUSK_SCREENSHOT_DIR }}
-            !${{ env.DUSK_SCREENSHOT_DIR }}.gitignore
-          retention-days: 30
+          path: ${{ needs.pre-build.outputs.failure-upload-paths }}
+          retention-days: 10
 
   tests-e2e-notifications:
     needs:
       - build
     runs-on: ubuntu-latest
-    env:
-      DUSK_SCREENSHOT_DIR: 'tests/Browser/screenshots/'
-      DUSK_DB_DUMP_DIR: 'tests/Browser/db-dump/'
     timeout-minutes: 60
     steps:
       - name: Checkout
@@ -247,31 +287,29 @@ jobs:
         id: docker-image-cache
         uses: actions/cache@v2
         with:
-          path: .docker/images
-          key: ${{ needs.build.outputs.cache-key-docker }}
+          path: ${{ needs.pre-build.outputs.cache-path-docker }}
+          key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
       - name: Get Cached Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
-          path: vendor
-          key: ${{ needs.build.outputs.cache-key-composer }}
+          path: ${{ needs.pre-build.outputs.cache-path-composer }}
+          key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
       - name: Get Cached npm packages
         id: npm-cache
         uses: actions/cache@v2
         with:
-          path: node_modules
-          key: ${{ needs.build.outputs.cache-key-npm }}
+          path: ${{ needs.pre-build.outputs.cache-path-npm }}
+          key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
       - name: Get Cached vue
         id: vue-cache
         uses: actions/cache@v2
         with:
-          path: |
-            public/vue
-            public/mix-manifest.json
-          key: ${{ needs.build.outputs.cache-key-vue }}
+          path: ${{ needs.pre-build.outputs.cache-path-vue }}
+          key: ${{ needs.pre-build.outputs.cache-key-vue }}
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -282,21 +320,13 @@ jobs:
         if: failure()
         with:
           name: ${{ github.sha }}-e2e
-          path: |
-            storage/logs/*.log
-            tests/Browser/console/*.log
-            ${{ env.DUSK_DB_DUMP_DIR }}*.sql
-            ${{ env.DUSK_SCREENSHOT_DIR }}
-            !${{ env.DUSK_SCREENSHOT_DIR }}.gitignore
-          retention-days: 30
+          path: ${{ needs.pre-build.outputs.failure-upload-paths }}
+          retention-days: 10
 
   tests-e2e-navigation:
     needs:
       - build
     runs-on: ubuntu-latest
-    env:
-      DUSK_SCREENSHOT_DIR: 'tests/Browser/screenshots/'
-      DUSK_DB_DUMP_DIR: 'tests/Browser/db-dump/'
     timeout-minutes: 60
     steps:
       - name: Checkout
@@ -307,31 +337,29 @@ jobs:
         id: docker-image-cache
         uses: actions/cache@v2
         with:
-          path: .docker/images
-          key: ${{ needs.build.outputs.cache-key-docker }}
+          path: ${{ needs.pre-build.outputs.cache-path-docker }}
+          key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
       - name: Get Cached Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
-          path: vendor
-          key: ${{ needs.build.outputs.cache-key-composer }}
+          path: ${{ needs.pre-build.outputs.cache-path-composer }}
+          key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
       - name: Get Cached npm packages
         id: npm-cache
         uses: actions/cache@v2
         with:
-          path: node_modules
-          key: ${{ needs.build.outputs.cache-key-npm }}
+          path: ${{ needs.pre-build.outputs.cache-path-npm }}
+          key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
       - name: Get Cached vue
         id: vue-cache
         uses: actions/cache@v2
         with:
-          path: |
-            public/vue
-            public/mix-manifest.json
-          key: ${{ needs.build.outputs.cache-key-vue }}
+          path: ${{ needs.pre-build.outputs.cache-path-vue }}
+          key: ${{ needs.pre-build.outputs.cache-key-vue }}
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -351,21 +379,13 @@ jobs:
         if: failure()
         with:
           name: ${{ github.sha }}-e2e
-          path: |
-            storage/logs/*.log
-            tests/Browser/console/*.log
-            ${{ env.DUSK_DB_DUMP_DIR }}*.sql
-            ${{ env.DUSK_SCREENSHOT_DIR }}
-            !${{ env.DUSK_SCREENSHOT_DIR }}.gitignore
-          retention-days: 30
+          path: ${{ needs.pre-build.outputs.failure-upload-paths }}
+          retention-days: 10
 
   tests-e2e-entry-modal:
     needs:
       - build
     runs-on: ubuntu-latest
-    env:
-      DUSK_SCREENSHOT_DIR: 'tests/Browser/screenshots/'
-      DUSK_DB_DUMP_DIR: 'tests/Browser/db-dump/'
     timeout-minutes: 60
     steps:
       - name: Checkout
@@ -376,31 +396,29 @@ jobs:
         id: docker-image-cache
         uses: actions/cache@v2
         with:
-          path: .docker/images
-          key: ${{ needs.build.outputs.cache-key-docker }}
+          path: ${{ needs.pre-build.outputs.cache-path-docker }}
+          key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
       - name: Get Cached Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
-          path: vendor
-          key: ${{ needs.build.outputs.cache-key-composer }}
+          path: ${{ needs.pre-build.outputs.cache-path-composer }}
+          key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
       - name: Get Cached npm packages
         id: npm-cache
         uses: actions/cache@v2
         with:
-          path: node_modules
-          key: ${{ needs.build.outputs.cache-key-npm }}
+          path: ${{ needs.pre-build.outputs.cache-path-npm }}
+          key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
       - name: Get Cached vue
         id: vue-cache
         uses: actions/cache@v2
         with:
-          path: |
-            public/vue
-            public/mix-manifest.json
-          key: ${{ needs.build.outputs.cache-key-vue }}
+          path: ${{ needs.pre-build.outputs.cache-path-vue }}
+          key: ${{ needs.pre-build.outputs.cache-key-vue }}
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -417,21 +435,13 @@ jobs:
         if: failure()
         with:
           name: ${{ github.sha }}-e2e
-          path: |
-            storage/logs/*.log
-            tests/Browser/console/*.log
-            ${{ env.DUSK_DB_DUMP_DIR }}*.sql
-            ${{ env.DUSK_SCREENSHOT_DIR }}
-            !${{ env.DUSK_SCREENSHOT_DIR }}.gitignore
-          retention-days: 30
+          path: ${{ needs.pre-build.outputs.failure-upload-paths }}
+          retention-days: 10
 
   tests-e2e-transfer-modal:
     needs:
       - build
     runs-on: ubuntu-latest
-    env:
-      DUSK_SCREENSHOT_DIR: 'tests/Browser/screenshots/'
-      DUSK_DB_DUMP_DIR: 'tests/Browser/db-dump/'
     timeout-minutes: 60
     steps:
       - name: Checkout
@@ -442,31 +452,29 @@ jobs:
         id: docker-image-cache
         uses: actions/cache@v2
         with:
-          path: .docker/images
-          key: ${{ needs.build.outputs.cache-key-docker }}
+          path: ${{ needs.pre-build.outputs.cache-path-docker }}
+          key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
       - name: Get Cached Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
-          path: vendor
-          key: ${{ needs.build.outputs.cache-key-composer }}
+          path: ${{ needs.pre-build.outputs.cache-path-composer }}
+          key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
       - name: Get Cached npm packages
         id: npm-cache
         uses: actions/cache@v2
         with:
-          path: node_modules
-          key: ${{ needs.build.outputs.cache-key-npm }}
+          path: ${{ needs.pre-build.outputs.cache-path-npm }}
+          key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
       - name: Get Cached vue
         id: vue-cache
         uses: actions/cache@v2
         with:
-          path: |
-            public/vue
-            public/mix-manifest.json
-          key: ${{ needs.build.outputs.cache-key-vue }}
+          path: ${{ needs.pre-build.outputs.cache-path-vue }}
+          key: ${{ needs.pre-build.outputs.cache-key-vue }}
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -480,21 +488,13 @@ jobs:
         if: failure()
         with:
           name: ${{ github.sha }}-e2e
-          path: |
-            storage/logs/*.log
-            tests/Browser/console/*.log
-            ${{ env.DUSK_DB_DUMP_DIR }}*.sql
-            ${{ env.DUSK_SCREENSHOT_DIR }}
-            !${{ env.DUSK_SCREENSHOT_DIR }}.gitignore
-          retention-days: 30
+          path: ${{ needs.pre-build.outputs.failure-upload-paths }}
+          retention-days: 10
 
   tests-e2e-filter-modal:
     needs:
       - build
     runs-on: ubuntu-latest
-    env:
-      DUSK_SCREENSHOT_DIR: 'tests/Browser/screenshots/'
-      DUSK_DB_DUMP_DIR: 'tests/Browser/db-dump/'
     timeout-minutes: 60
     steps:
       - name: Checkout
@@ -505,31 +505,29 @@ jobs:
         id: docker-image-cache
         uses: actions/cache@v2
         with:
-          path: .docker/images
-          key: ${{ needs.build.outputs.cache-key-docker }}
+          path: ${{ needs.pre-build.outputs.cache-path-docker }}
+          key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
       - name: Get Cached Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
-          path: vendor
-          key: ${{ needs.build.outputs.cache-key-composer }}
+          path: ${{ needs.pre-build.outputs.cache-path-composer }}
+          key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
       - name: Get Cached npm packages
         id: npm-cache
         uses: actions/cache@v2
         with:
-          path: node_modules
-          key: ${{ needs.build.outputs.cache-key-npm }}
+          path: ${{ needs.pre-build.outputs.cache-path-npm }}
+          key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
       - name: Get Cached vue
         id: vue-cache
         uses: actions/cache@v2
         with:
-          path: |
-            public/vue
-            public/mix-manifest.json
-          key: ${{ needs.build.outputs.cache-key-vue }}
+          path: ${{ needs.pre-build.outputs.cache-path-vue }}
+          key: ${{ needs.pre-build.outputs.cache-key-vue }}
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -543,21 +541,13 @@ jobs:
         if: failure()
         with:
           name: ${{ github.sha }}-e2e
-          path: |
-            storage/logs/*.log
-            tests/Browser/console/*.log
-            ${{ env.DUSK_DB_DUMP_DIR }}*.sql
-            ${{ env.DUSK_SCREENSHOT_DIR }}
-            !${{ env.DUSK_SCREENSHOT_DIR }}.gitignore
-          retention-days: 30
+          path: ${{ needs.pre-build.outputs.failure-upload-paths }}
+          retention-days: 10
 
   tests-e2e-stats-summary:
     needs:
       - build
     runs-on: ubuntu-latest
-    env:
-      DUSK_SCREENSHOT_DIR: 'tests/Browser/screenshots/'
-      DUSK_DB_DUMP_DIR: 'tests/Browser/db-dump/'
     timeout-minutes: 60
     steps:
       - name: Checkout
@@ -568,31 +558,29 @@ jobs:
         id: docker-image-cache
         uses: actions/cache@v2
         with:
-          path: .docker/images
-          key: ${{ needs.build.outputs.cache-key-docker }}
+          path: ${{ needs.pre-build.outputs.cache-path-docker }}
+          key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
       - name: Get Cached Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
-          path: vendor
-          key: ${{ needs.build.outputs.cache-key-composer }}
+          path: ${{ needs.pre-build.outputs.cache-path-composer }}
+          key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
       - name: Get Cached npm packages
         id: npm-cache
         uses: actions/cache@v2
         with:
-          path: node_modules
-          key: ${{ needs.build.outputs.cache-key-npm }}
+          path: ${{ needs.pre-build.outputs.cache-path-npm }}
+          key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
       - name: Get Cached vue
         id: vue-cache
         uses: actions/cache@v2
         with:
-          path: |
-            public/vue
-            public/mix-manifest.json
-          key: ${{ needs.build.outputs.cache-key-vue }}
+          path: ${{ needs.pre-build.outputs.cache-path-vue }}
+          key: ${{ needs.pre-build.outputs.cache-key-vue }}
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -603,21 +591,13 @@ jobs:
         if: failure()
         with:
           name: ${{ github.sha }}-e2e
-          path: |
-            storage/logs/*.log
-            tests/Browser/console/*.log
-            ${{ env.DUSK_DB_DUMP_DIR }}*.sql
-            ${{ env.DUSK_SCREENSHOT_DIR }}
-            !${{ env.DUSK_SCREENSHOT_DIR }}.gitignore
-          retention-days: 30
+          path: ${{ needs.pre-build.outputs.failure-upload-paths }}
+          retention-days: 10
 
   tests-e2e-stats-trending:
     needs:
       - build
     runs-on: ubuntu-latest
-    env:
-      DUSK_SCREENSHOT_DIR: 'tests/Browser/screenshots/'
-      DUSK_DB_DUMP_DIR: 'tests/Browser/db-dump/'
     timeout-minutes: 60
     steps:
       - name: Checkout
@@ -628,31 +608,29 @@ jobs:
         id: docker-image-cache
         uses: actions/cache@v2
         with:
-          path: .docker/images
-          key: ${{ needs.build.outputs.cache-key-docker }}
+          path: ${{ needs.pre-build.outputs.cache-path-docker }}
+          key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
       - name: Get Cached Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
-          path: vendor
-          key: ${{ needs.build.outputs.cache-key-composer }}
+          path: ${{ needs.pre-build.outputs.cache-path-composer }}
+          key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
       - name: Get Cached npm packages
         id: npm-cache
         uses: actions/cache@v2
         with:
-          path: node_modules
-          key: ${{ needs.build.outputs.cache-key-npm }}
+          path: ${{ needs.pre-build.outputs.cache-path-npm }}
+          key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
       - name: Get Cached vue
         id: vue-cache
         uses: actions/cache@v2
         with:
-          path: |
-            public/vue
-            public/mix-manifest.json
-          key: ${{ needs.build.outputs.cache-key-vue }}
+          path: ${{ needs.pre-build.outputs.cache-path-vue }}
+          key: ${{ needs.pre-build.outputs.cache-key-vue }}
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -663,21 +641,13 @@ jobs:
         if: failure()
         with:
           name: ${{ github.sha }}-e2e
-          path: |
-            storage/logs/*.log
-            tests/Browser/console/*.log
-            ${{ env.DUSK_DB_DUMP_DIR }}*.sql
-            ${{ env.DUSK_SCREENSHOT_DIR }}
-            !${{ env.DUSK_SCREENSHOT_DIR }}.gitignore
-          retention-days: 30
+          path: ${{ needs.pre-build.outputs.failure-upload-paths }}
+          retention-days: 10
 
   tests-e2e-stats-distribution:
     needs:
       - build
     runs-on: ubuntu-latest
-    env:
-      DUSK_SCREENSHOT_DIR: 'tests/Browser/screenshots/'
-      DUSK_DB_DUMP_DIR: 'tests/Browser/db-dump/'
     timeout-minutes: 60
     steps:
       - name: Checkout
@@ -688,31 +658,29 @@ jobs:
         id: docker-image-cache
         uses: actions/cache@v2
         with:
-          path: .docker/images
-          key: ${{ needs.build.outputs.cache-key-docker }}
+          path: ${{ needs.pre-build.outputs.cache-path-docker }}
+          key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
       - name: Get Cached Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
-          path: vendor
-          key: ${{ needs.build.outputs.cache-key-composer }}
+          path: ${{ needs.pre-build.outputs.cache-path-composer }}
+          key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
       - name: Get Cached npm packages
         id: npm-cache
         uses: actions/cache@v2
         with:
-          path: node_modules
-          key: ${{ needs.build.outputs.cache-key-npm }}
+          path: ${{ needs.pre-build.outputs.cache-path-npm }}
+          key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
       - name: Get Cached vue
         id: vue-cache
         uses: actions/cache@v2
         with:
-          path: |
-            public/vue
-            public/mix-manifest.json
-          key: ${{ needs.build.outputs.cache-key-vue }}
+          path: ${{ needs.pre-build.outputs.cache-path-vue }}
+          key: ${{ needs.pre-build.outputs.cache-key-vue }}
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -726,21 +694,13 @@ jobs:
         if: failure()
         with:
           name: ${{ github.sha }}-e2e
-          path: |
-            storage/logs/*.log
-            tests/Browser/console/*.log
-            ${{ env.DUSK_DB_DUMP_DIR }}*.sql
-            ${{ env.DUSK_SCREENSHOT_DIR }}
-            !${{ env.DUSK_SCREENSHOT_DIR }}.gitignore
-          retention-days: 30
+          path: ${{ needs.pre-build.outputs.failure-upload-paths }}
+          retention-days: 10
 
   tests-e2e-stats-tags:
     needs:
       - build
     runs-on: ubuntu-latest
-    env:
-      DUSK_SCREENSHOT_DIR: 'tests/Browser/screenshots/'
-      DUSK_DB_DUMP_DIR: 'tests/Browser/db-dump/'
     timeout-minutes: 60
     steps:
       - name: Checkout
@@ -751,31 +711,29 @@ jobs:
         id: docker-image-cache
         uses: actions/cache@v2
         with:
-          path: .docker/images
-          key: ${{ needs.build.outputs.cache-key-docker }}
+          path: ${{ needs.pre-build.outputs.cache-path-docker }}
+          key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
       - name: Get Cached Composer packages
         id: composer-cache
         uses: actions/cache@v2
         with:
-          path: vendor
-          key: ${{ needs.build.outputs.cache-key-composer }}
+          path: ${{ needs.pre-build.outputs.cache-path-composer }}
+          key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
       - name: Get Cached npm packages
         id: npm-cache
         uses: actions/cache@v2
         with:
-          path: node_modules
-          key: ${{ needs.build.outputs.cache-key-npm }}
+          path: ${{ needs.pre-build.outputs.cache-path-npm }}
+          key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
       - name: Get Cached vue
         id: vue-cache
         uses: actions/cache@v2
         with:
-          path: |
-            public/vue
-            public/mix-manifest.json
-          key: ${{ needs.build.outputs.cache-key-vue }}
+          path: ${{ needs.pre-build.outputs.cache-path-vue }}
+          key: ${{ needs.pre-build.outputs.cache-key-vue }}
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
@@ -789,13 +747,8 @@ jobs:
         if: failure()
         with:
           name: ${{ github.sha }}-e2e
-          path: |
-            storage/logs/*.log
-            tests/Browser/console/*.log
-            ${{ env.DUSK_DB_DUMP_DIR }}*.sql
-            ${{ env.DUSK_SCREENSHOT_DIR }}
-            !${{ env.DUSK_SCREENSHOT_DIR }}.gitignore
-          retention-days: 30
+          path: ${{ needs.pre-build.outputs.failure-upload-paths }}
+          retention-days: 10
 
   notification:
     runs-on: ubuntu-latest
