@@ -12,7 +12,7 @@ trait OutputTestInfo {
     }
 
     protected function outputTestName(){
-        fwrite(STDOUT, "  - ".self::$TEST_COUNT.") ".$this->getName()."\n");
+        fwrite(STDOUT, "  - ".self::$TEST_COUNT.") ".$this->getName()." [start:".date('c')."]\n");
     }
 
     protected function incrementTestCount(){
