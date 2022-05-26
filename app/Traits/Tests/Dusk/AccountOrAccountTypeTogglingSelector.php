@@ -140,8 +140,15 @@ trait AccountOrAccountTypeTogglingSelector {
                 ->select(self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT, $selector_value);
 
             if(!$this->_disable_checkbox_checked){
-                $option_class = $component->attribute(self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT.' option', 'class');
-                Assert::assertStringNotContainsString('disabled-option', $option_class);
+                $options = $component->elements(self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT.' option');
+                foreach ($options as $option){
+                    $option_class = $option->getAttribute('class');
+                    if(is_string($option_class)){
+                        Assert::assertStringNotContainsString('disabled-option', $option_class);
+                    } else {
+                        Assert::assertNull($option_class);
+                    }
+                }
             }
         });
     }
