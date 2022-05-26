@@ -112,6 +112,8 @@ jobs:
       - name: Docker build
         uses: ./.github/actions/setup-docker
         if: steps.docker-image-cache.outputs.cache-hit != 'true'
+        with:
+          image-path: ${{ needs.pre-build.outputs.cache-path-docker }}
 
       - name: Cache Composer packages
         id: composer-cache
@@ -184,22 +186,32 @@ jobs:
       # NOTE: vue cache not needed for unit tests
 
       - uses: ./.github/actions/app-init
+        with:
+          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
       - name: unit tests - PUT API endpoints
         run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-put
 
       - uses: ./.github/actions/app-init
+        with:
+          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
       - name: unit tests - GET API endpoints
         run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-get
 
       - uses: ./.github/actions/app-init
+        with:
+          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
       - name: unit tests - POST API endpoints
         run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-post
 
       - uses: ./.github/actions/app-init
+        with:
+          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
       - name: unit tests - DELETE API endpoints
         run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-delete
 
       - uses: ./.github/actions/app-init
+        with:
+          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
       - name: unit tests - console
         # artisan app:version testing doesn't work well when configs have been cached
         # because we're not caching, we need to create a new .env file
@@ -209,10 +221,14 @@ jobs:
           docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite console
 
       - uses: ./.github/actions/app-init
+        with:
+          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
       - name: unit tests - web
         run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite web
 
       - uses: ./.github/actions/app-init
+        with:
+          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
       - name: unit tests - unit (generic)
         run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite unit
 
@@ -265,6 +281,8 @@ jobs:
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
+        with:
+          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
       - run: .docker/cmd/artisan.sh dusk --group demo --stop-on-failure
 
       - name: Failure upload
@@ -316,6 +334,8 @@ jobs:
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
+        with:
+          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
       - run: .docker/cmd/artisan.sh dusk --group notifications-1 --stop-on-failure
 
       - name: Failure upload
@@ -367,15 +387,23 @@ jobs:
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
+        with:
+          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
       - run: .docker/cmd/artisan.sh dusk --group navigation-1 --stop-on-failure
 
       - uses: ./.github/actions/app-init
+        with:
+          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
       - run: .docker/cmd/artisan.sh dusk --group navigation-2 --stop-on-failure
 
       - uses: ./.github/actions/app-init
+        with:
+          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
       - run: .docker/cmd/artisan.sh dusk --group navigation-3 --stop-on-failure
 
       - uses: ./.github/actions/app-init
+        with:
+          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
       - run: .docker/cmd/artisan.sh dusk --group navigation-4 --stop-on-failure
 
       - name: Failure upload
@@ -427,12 +455,18 @@ jobs:
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
+        with:
+          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
       - run: .docker/cmd/artisan.sh dusk --group entry-modal-1 --stop-on-failure
 
       - uses: ./.github/actions/app-init
+        with:
+          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
       - run: .docker/cmd/artisan.sh dusk --group entry-modal-2 --stop-on-failure
 
       - uses: ./.github/actions/app-init
+        with:
+          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
       - run: .docker/cmd/artisan.sh dusk --group entry-modal-3 --stop-on-failure
 
       - name: Failure upload
@@ -484,9 +518,13 @@ jobs:
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
+        with:
+          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
       - run: .docker/cmd/artisan.sh dusk --group transfer-modal-1 --stop-on-failure
 
       - uses: ./.github/actions/app-init
+        with:
+          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
       - run: .docker/cmd/artisan.sh dusk --group transfer-modal-2 --stop-on-failure
 
       - name: Failure upload
@@ -538,9 +576,13 @@ jobs:
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
+        with:
+          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
       - run: .docker/cmd/artisan.sh dusk --group filter-modal-1 --stop-on-failure
 
       - uses: ./.github/actions/app-init
+        with:
+          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
       - run: .docker/cmd/artisan.sh dusk --group filter-modal-2 --stop-on-failure
 
       - name: Failure upload
@@ -592,6 +634,8 @@ jobs:
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
+        with:
+          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
       - run: .docker/cmd/artisan.sh dusk --group stats-summary --stop-on-failure
 
       - name: Failure upload
@@ -643,6 +687,8 @@ jobs:
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
+        with:
+          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
       - run: .docker/cmd/artisan.sh dusk --group stats-trending --stop-on-failure
 
       - name: Failure upload
@@ -694,9 +740,13 @@ jobs:
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
+        with:
+          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
       - run: .docker/cmd/artisan.sh dusk --group stats-distribution-1 --stop-on-failure
 
       - uses: ./.github/actions/app-init
+        with:
+          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
       - run: .docker/cmd/artisan.sh dusk --group stats-distribution-2 --stop-on-failure
 
       - name: Failure upload
@@ -748,9 +798,13 @@ jobs:
 
       # end-2-end tests
       - uses: ./.github/actions/app-init
+        with:
+          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
       - run: .docker/cmd/artisan.sh dusk --group stats-tags-1 --stop-on-failure
 
       - uses: ./.github/actions/app-init
+        with:
+          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
       - run: .docker/cmd/artisan.sh dusk --group stats-tags-2 --stop-on-failure
 
       - name: Failure upload

@@ -1,14 +1,16 @@
 # .github/actions/app-init/action.yml
 name: App Init
 description: Initialise app for use
+inputs:
+  docker-image-directory:
+    description: "Directory docker image(s) were cached/saved"
+    required: true
 runs:
   using: composite
   steps:
     # re-load docker images
     - run: |
-        docker load < .docker/images/application.tar.gz
-        docker load < .docker/images/database.tar.gz
-        docker load < .docker/images/selenium.tar.gz
+        docker image load < ${ inputs.docker-image-directory }/$PROJECT_NAME.tar.gz
         docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME up -d
         docker container exec -t mysql.money-tracker iterate-mysql-health-check
         docker container ls
