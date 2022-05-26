@@ -38,7 +38,7 @@ abstract class DuskTestCase extends BaseTestCase {
      */
     protected function driver(){
         return RemoteWebDriver::create(
-            config('app.selenium_server_url'),
+            "http://selenium:4444/wd/hub",
             DesiredCapabilities::chrome()
         );
     }

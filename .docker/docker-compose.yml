@@ -39,18 +39,18 @@ services:
       - net.money-tracker
 
   selenium: # needed for e2e (End-to-End) testing
-    image: selenium/standalone-chrome:3.141.59-xenon
+    image: selenium/standalone-chrome:4.1.4
     container_name: "selenium.money-tracker"
     hostname: selenium.money-tracker
+    shm_size: "2g"
+    ports:
+      - 5901:5900
     depends_on:
       - application
     links:
       - application:money-tracker.docker
-    volumes:
-      - /dev/shm:/dev/shm
-    environment:  # see tests/DuskTestCase.php#16-17 for updates
-      - SCREEN_WIDTH=1400
-      - SCREEN_HEIGHT=2500
+    environment:
+      - VNC_NO_PASSWORD=1
     networks:
       - net.money-tracker
 
