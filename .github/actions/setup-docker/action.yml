@@ -1,6 +1,10 @@
 # .github/actions/setup-docker/action.yml
 name: Docker Setup
 description: build docker containers for use while testing
+inputs:
+  image-path:
+    description: 'Path where docker images are saved'
+    required: true
 runs:
   using: composite
   steps:
@@ -12,8 +16,6 @@ runs:
       shell: bash
     # save docker images
     - run: |
-        mkdir -p .docker/images
-        docker save ${PROJECT_NAME}_application | gzip > .docker/images/application.tar.gz
-        docker save ${PROJECT_NAME}_database | gzip > .docker/images/database.tar.gz
-        docker save selenium/standalone-chrome:3.141.59-xenon | gzip > .docker/images/selenium.tar.gz
+        mkdir -p ${{ inputs.image-path }}
+        docker image save $(docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME images -q) | gzip > ${{ inputs.image-path }}/$PROJECT_NAME.tar.gz
       shell: bash
