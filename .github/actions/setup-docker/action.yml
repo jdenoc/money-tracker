@@ -17,5 +17,5 @@ runs:
     # save docker images
     - run: |
         mkdir -p ${{ inputs.image-path }}
-        docker image save $(docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME images -q) | gzip > ${{ inputs.image-path }}/$PROJECT_NAME.tar.gz
+        docker save $(docker container ls --format "{{.Image}}") | gzip > ${{ inputs.image-path }}/${PROJECT_NAME}.tar.gz
       shell: bash
