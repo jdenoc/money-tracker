@@ -140,15 +140,7 @@ trait AccountOrAccountTypeTogglingSelector {
                 ->select(self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT, $selector_value);
 
             if(!$this->_disable_checkbox_checked){
-                $options = $component->elements(self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT.' option');
-                foreach ($options as $option){
-                    $option_class = $option->getAttribute('class');
-                    if(is_string($option_class)){
-                        Assert::assertStringNotContainsString('disabled-option', $option_class);
-                    } else {
-                        Assert::assertNull($option_class);
-                    }
-                }
+                $this->assertSelectOptionsClassOfAccountOrAccountTypeAreNotDisabled($component);
             }
         });
     }
@@ -159,9 +151,8 @@ trait AccountOrAccountTypeTogglingSelector {
      */
     public function assertSelectOptionValuesOfAccountOrAccountType(Browser $browser, array $accounts_or_account_types){
         $browser->with($this->getAccountOrAccountTypeTogglingSelectorComponentId($this->_account_or_account_type_toggling_selector_label_id), function(Browser $component) use ($accounts_or_account_types){
-            $option_class = $component->attribute(self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT.' option', 'class');
             if(!$this->_disable_checkbox_checked){
-                Assert::assertStringNotContainsString('disabled-option', $option_class);
+                $this->assertSelectOptionsClassOfAccountOrAccountTypeAreNotDisabled($component);
                 $option_values = collect($accounts_or_account_types)->where('disabled', false)->pluck('id')->toArray();
             } else {
                 $option_values = collect($accounts_or_account_types)->pluck('id')->toArray();
@@ -172,6 +163,18 @@ trait AccountOrAccountTypeTogglingSelector {
                 $option_values
             );
         });
+    }
+
+    private function assertSelectOptionsClassOfAccountOrAccountTypeAreNotDisabled(Browser $component){
+        $options = $component->elements(self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT.' option');
+        foreach ($options as $option){
+            $option_class = $option->getAttribute('class');
+            if(is_string($option_class)){
+                Assert::assertStringNotContainsString('disabled-option', $option_class);
+            } else {
+                Assert::assertNull($option_class);
+            }
+        }
     }
 
 }
