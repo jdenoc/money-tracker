@@ -29,10 +29,9 @@ trait ExportsHelper {
         // without this do-while loop we run the risk of generating
         // a filename that is off by 1 seconds from the download
         do{
-            $filename = $this->generateExportFilename();
             $microtime = explode(' ', microtime())[0];
-        }while($microtime > 0.2 || $microtime < 0.1);
-        return $filename;
+        }while($microtime > 0.25);
+        return $this->generateExportFilename();
     }
 
     protected function getCsvHeaderLine():array{
