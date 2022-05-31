@@ -45,6 +45,8 @@ services:
     shm_size: "2g"
     ports:
       - 5901:5900
+    volumes:
+      - ../storage/app/test/downloads:/home/seluser/Downloads
     depends_on:
       - application
     links:
