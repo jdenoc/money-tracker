@@ -39,7 +39,7 @@ services:
       - net.money-tracker
 
   selenium: # needed for e2e (End-to-End) testing
-    image: selenium/standalone-chrome:4.1.4
+    image: selenium/standalone-chrome:4.2.0
     container_name: "selenium.money-tracker"
     hostname: selenium.money-tracker
     shm_size: "2g"
