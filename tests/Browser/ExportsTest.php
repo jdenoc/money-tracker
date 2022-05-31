@@ -9,7 +9,6 @@ use App\Traits\Tests\Dusk\Loading;
 use App\Traits\Tests\Dusk\Navbar;
 use App\Traits\Tests\Dusk\Notification;
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\File;
 use Laravel\Dusk\Browser;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
@@ -33,7 +32,6 @@ class ExportsTest extends DuskTestCase {
     use Notification;
 
     private static $SELECTOR_EXPORT_BTN = '#filter-export-btn';
-    private static $DOWNLOAD_DIR = 'app/test/downloads/';
 
     public function __construct($name = null, array $data = [], $dataName = ''){
         parent::__construct($name, $data, $dataName);
@@ -42,8 +40,9 @@ class ExportsTest extends DuskTestCase {
 
     public function setUp(): void{
         parent::setUp();
+        $this->setAbsoluteDownloadDir();
+        $this->clearStorageDownloadDir();
         $this->initFilterModalColors();
-        File::cleanDirectory(storage_path(self::$DOWNLOAD_DIR));
     }
 
     /**
@@ -133,9 +132,8 @@ class ExportsTest extends DuskTestCase {
             $this->dismissNotification($browser);
 
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_SUCCESS, "Export Complete");
-            $this->assertFileExists(storage_path(self::$DOWNLOAD_DIR).$filename);
-
-            $fp = fopen(storage_path(self::$DOWNLOAD_DIR).$filename, 'r');
+            $this->assertFileExists($this->getAbsoluteDownloadDir().$filename, "Directory Contents: ".print_r(\Storage::files(self::$STORAGE_DOWNLOAD_DIR), true));
+            $fp = fopen($this->getAbsoluteDownloadDir().$filename, 'r');
 
             // assert header line of file
             $header = fgetcsv($fp);

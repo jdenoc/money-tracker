@@ -8,28 +8,19 @@ trait StorageTestFiles {
 
     protected static $storage_path = "test/";   // storage/app/test/
 
-    /**
-     * @return array
-     */
     public static function getTestFilePaths(): array{
         $file_paths =  Storage::files(self::$storage_path);
         $file_paths = array_filter($file_paths, function(string $filename){
-            if(strpos($filename, 'git') === false){
-                return $filename;
-            }
+            return !\Str::contains($filename, ['git', 'DS_Store']);
         });
         return array_values($file_paths);
     }
 
-    /**
-     * @return array
-     */
     public static function getTestFilenames(): array{
         $file_paths = self::getTestFilePaths();
-        $filenames = array_map(function(string $file_path){
+        return array_map(function(string $file_path){
             return str_replace(self::$storage_path, '', $file_path);
         }, $file_paths);
-        return $filenames;
     }
 
     /**

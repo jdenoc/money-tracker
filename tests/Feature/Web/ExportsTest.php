@@ -7,6 +7,7 @@ use App\Traits\EntryFilterKeys;
 use App\Traits\ExportsHelper;
 use App\Traits\Tests\GenerateFilterTestCases;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\Feature\Api\ListEntriesBase;
 
@@ -20,10 +21,10 @@ class ExportsTest extends ListEntriesBase {
     const DOWNLOAD_LOCATION_CONFIG = 'excel.temporary_files.local_path';
 
     public function tearDown(): void{
-        $download_location =config(self::DOWNLOAD_LOCATION_CONFIG);
-        foreach(File::allFiles($download_location) as $laravel_excel_temp_file){
-            if(File::exists($laravel_excel_temp_file)){
-                File::delete($laravel_excel_temp_file);
+        $download_location = config(self::DOWNLOAD_LOCATION_CONFIG);
+        foreach (File::files($download_location) as $file){
+            if(!Str::contains($file, 'gitignore')){
+                File::delete($file);
             }
         }
         parent::tearDown();
