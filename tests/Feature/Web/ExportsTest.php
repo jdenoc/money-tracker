@@ -6,6 +6,7 @@ use App\AccountType;
 use App\Traits\EntryFilterKeys;
 use App\Traits\ExportsHelper;
 use App\Traits\Tests\GenerateFilterTestCases;
+use Faker\Factory;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
@@ -56,7 +57,7 @@ class ExportsTest extends ListEntriesBase {
     }
 
     public function providerExportPostRequest():array{
-        return $this->generateFilterTestCases($this->makeFaker());
+        return $this->generateFilterTestCases($this->makeFaker(Factory::DEFAULT_LOCALE));   // manually setting local to bypass needing to access configs
     }
 
     /**
@@ -79,7 +80,7 @@ class ExportsTest extends ListEntriesBase {
         // THEN
         $download_response->assertStatus(HttpStatus::HTTP_OK);
         $download_response->assertHeader('content-type', 'text/csv');
-        $download_response->assertHeader('content-disposition', 'attachment; filename="'.$filename.'"');
+        $download_response->assertHeader('content-disposition', sprintf('attachment; filename=%s', $filename));
 
         // We don't need to do any validation on the data from POST /api/entries
         // That is handled in another test suite
