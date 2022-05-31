@@ -71,6 +71,7 @@ jobs:
         id: failure-artifact-paths
         run: |
           FAILURE_UPLOAD_PATHS=$(cat <<EOF
+          storage/app/test/downloads/*.csv
           storage/logs/*.log
           tests/Browser/console/*.log
           tests/Browser/db-dump/*.sql
@@ -584,6 +585,16 @@ jobs:
         with:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
       - run: .docker/cmd/artisan.sh dusk --group filter-modal-2 --stop-on-failure
+
+      - uses: ./.github/actions/app-init
+        with:
+          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
+      - run: .docker/cmd/artisan.sh dusk --group filter-modal-export-1 --stop-on-failure
+
+      - uses: ./.github/actions/app-init
+        with:
+          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
+      - run: .docker/cmd/artisan.sh dusk --group filter-modal-export-2 --stop-on-failure
 
       - name: Failure upload
         uses: actions/upload-artifact@v2

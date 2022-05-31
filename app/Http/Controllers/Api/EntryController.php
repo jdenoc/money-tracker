@@ -430,7 +430,7 @@ class EntryController extends Controller {
         } else {
             foreach($entries_collection as $entry){
                 $entry->has_attachments = $entry->has_attachments();
-                $entry->tags = ($entry->has_tags()) ? $entry->tags = $entry->get_tag_ids() : [];
+                $entry->tags = ($entry->has_tags()) ? $entry->get_tag_ids() : [];
                 $entry->is_transfer = !is_null($entry->transfer_entry_id);
                 unset($entry->transfer_entry_id);
             }

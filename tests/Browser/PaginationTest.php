@@ -4,6 +4,7 @@ namespace Tests\Browser;
 
 use App\Entry;
 use App\Traits\MaxEntryResponseValue;
+use App\Traits\Tests\Dusk\FilterModal;
 use App\Traits\Tests\Dusk\Loading;
 use App\Traits\Tests\Dusk\Navbar;
 use Illuminate\Support\Facades\DB;
@@ -23,6 +24,7 @@ use Throwable;
  */
 class PaginationTest extends DuskTestCase {
 
+    use FilterModal;
     use HomePageSelectors;
     use Loading;
     use Navbar;
