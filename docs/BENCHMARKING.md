@@ -3,7 +3,7 @@
 
 ### Enlightn
 Enlightn scans your Laravel app code to provide you actionable recommendations on improving its performance, security & more.
-```
+```bash
 # install enlightn
 .docker/cmd/composer.sh require enlightn/enlightn --dev
 .docker/cmd/artisan.sh vendor:publish --tag=enlightn

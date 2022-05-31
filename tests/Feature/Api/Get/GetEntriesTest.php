@@ -7,8 +7,9 @@ use App\Entry;
 use App\Traits\MaxEntryResponseValue;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
+use Tests\Feature\Api\ListEntriesBase;
 
-class GetEntriesTest extends \Tests\Feature\Api\ListEntriesBase {
+class GetEntriesTest extends ListEntriesBase {
 
     use MaxEntryResponseValue;
 
@@ -29,7 +30,7 @@ class GetEntriesTest extends \Tests\Feature\Api\ListEntriesBase {
         // GIVEN
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
 
-        $generate_entry_count = $this->_faker->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE);
+        $generate_entry_count = $this->faker->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE);
         $generated_entries = $this->batch_generate_entries($generate_entry_count, $generated_account_type->id, [], true);
         $generated_disabled_entries = $generated_entries->where('disabled', 1);
         if($generated_disabled_entries->count() > 0){   // if there are no disabled entries, then there is no need to do any fancy filtering
@@ -64,7 +65,7 @@ class GetEntriesTest extends \Tests\Feature\Api\ListEntriesBase {
         $page_limit = 3;
         // GIVEN
         $generated_account_type = factory(AccountType::class)->create(['account_id' => $this->_generated_account->id]);
-        $generate_entry_count = $this->_faker->numberBetween(($page_limit-1)*self::$MAX_ENTRIES_IN_RESPONSE+1, $page_limit*self::$MAX_ENTRIES_IN_RESPONSE);
+        $generate_entry_count = $this->faker->numberBetween(($page_limit-1)*self::$MAX_ENTRIES_IN_RESPONSE+1, $page_limit*self::$MAX_ENTRIES_IN_RESPONSE);
         $generated_entries = $this->batch_generate_entries($generate_entry_count, $generated_account_type->id);
 
         $entries_in_response = [];
@@ -93,7 +94,7 @@ class GetEntriesTest extends \Tests\Feature\Api\ListEntriesBase {
         $this->runEntryListAssertions($generate_entry_count, $entries_in_response, $generated_entries);
     }
 
-    public function providerLargeDataSets(){
+    public function providerLargeDataSets():array{
         return [
             '200 entry records'=>[200],
             '500 entry records'=>[500],
@@ -111,7 +112,7 @@ class GetEntriesTest extends \Tests\Feature\Api\ListEntriesBase {
      * @dataProvider providerLargeDataSets
      * @param int $entry_count
      */
-    public function testLargeDataSets($entry_count){
+    public function testLargeDataSets(int $entry_count){
         // GIVEN
         $table = with(new Entry)->getTable();
         /** @var AccountType $generated_account_type */

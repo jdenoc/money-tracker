@@ -13,11 +13,11 @@ ll ~/.ssh/
 ssh-add ~/.ssh/{private-ssh-key-file-name}
 ```
 
-If it turns out you don't actually have a ssh key, consider using [these instructions](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) to create one.
+If it turns out you don't actually have an ssh key, consider using [these instructions](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) to create one.
 
 ---
 
-**Step 2.c** & **Step 3**  
+**Step 3.c** & **Step 4**  
 If you are having issues installing using npm or using the build script, you likely have memory issues.  
 To resolve this prefix your npm command with:
 ```bash
@@ -34,17 +34,22 @@ You may not be able to. Try a different system and perform tasks there, transfer
 
 ---
 
-**Step 4**  
+**Step 5**  
 Sometime you will be alerted that you can't clear the cache. This is usually a permission issue.
-```bash
-# 1.)  identify what groups your user is in
-groups
-# 2.)  find out the existing permissions 
-ls -lah storage/framework/cache/data
-# 3.) confirm that the group associated with the storage/framework/cache/data directory
-#     matches one of the groups your user is associated with.
-# 4.)  you likely need to add group write access
-chmod g+w -R storage/framework/cache/data
-# 4.a) alternatively you could delete the cache data directory
-rm -rf storage/framework/cache/data
-```
+1. Identify what groups your user belongs to
+    ```bash
+    groups
+    ````
+2. Find out the existing permissions
+    ```bash
+    ls -lah storage/framework/cache/data
+    ```
+3. Confirm that the group associated with the storage/framework/cache/data directory matches one of the groups your user is associated with.
+4. You will likely need to add group write access
+    ```bash
+    chmod g+w -R storage/framework/cache/data
+    ```
+    1. Alternatively you could delete the cache data directory
+        ```bash
+        rm -rf storage/framework/cache/data
+        ```

@@ -35,7 +35,6 @@ cp .env .env.bkup
 ```
 # *** OPTIONAL ***
 # New/Updates to composer packages
-rm -rf vendor/
 composer install --no-dev -a
 ```
 
@@ -76,9 +75,9 @@ php artisan view:cache
 ```
 # take site out of maintenance mode
 php artisan up
-``
+```
 
 ---
 
 #### Issues?
-Having issues? Take a look at the [F.A,Q,](FAQ.md#production-updates) for potential solutions.
+Having issues? Take a look at the [FAQ](FAQ.md#production-updates) for potential solutions.

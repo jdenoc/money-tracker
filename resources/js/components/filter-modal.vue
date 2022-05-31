@@ -187,7 +187,14 @@
             <footer class="modal-card-foot">
                 <div class="container">
                     <div class="field is-grouped">
-                        <div class="control is-expanded"></div>
+                        <div class="control is-expanded">
+                          <button type="button" id="filter-export-btn" class="button is-info"
+                                  v-on:click="exportData"
+                                  v-bind:class="{'is-hidden': !canGenerateFilteredResults}"
+                          >
+                            <i class="fas fa-file-download has-padding-right"></i>Export
+                          </button>
+                        </div>
                         <div class="control">
                             <button type="button" id="filter-cancel-btn" class="button" v-on:click="closeModal">Cancel</button>
                             <button type="button" id="filter-reset-btn" class="button is-warning" v-on:click="resetFields">
@@ -208,6 +215,8 @@
     // utilities
     import _ from 'lodash';
     import {Currency} from "../currency";
+    import {SnotifyStyle} from "vue-snotify";
+    import axios from "axios";
     import Store from '../store';
     // mixins
     import {accountsObjectMixin} from "../mixins/accounts-object-mixin";
@@ -242,9 +251,9 @@
                 defaultData: {
                     startDate: "",
                     endDate: "",
-                    accountOrAccountTypeSelected: null, // will be set by resetFields
+                    accountOrAccountTypeSelected: null, // will be set when component is mounted
                     accountOrAccountTypeId: "",
-                    tags: [],
+                    tags: {},
                     isIncome: false,
                     isExpense: false,
                     hasAttachment: false,
@@ -279,6 +288,14 @@
                     width: 200,
                 };
             },
+            canGenerateFilteredResults: function(){
+              let filterData = _.cloneDeep(this.filterData);
+              delete filterData.tags;
+              let defaultData = _.cloneDeep(this.defaultData);
+              delete defaultData.tags;
+              return !_.isEqual(filterData, defaultData)
+                  || Object.values( this.filterData.tags ).includes(true);
+            }
         },
         methods: {
             setModalState: function(modal){
@@ -293,11 +310,10 @@
                 this.isVisible = false;
             },
             resetFields: function(){
-                this.defaultData.accountOrAccountTypeSelected = this.accountAccountTypeToggle.accountValue;
-                for(let t in this.listTags){
-                    this.defaultData.tags[this.listTags[t]['id']] = false;
-                }
-                this.filterData = _.clone(this.defaultData);
+              this.filterData = _.cloneDeep(this.defaultData);
+              for(let t in this.listTags){
+                this.filterData.tags[this.listTags[t]['id']] = false;
+              }
             },
             flipCompanionSwitch: function(companionFilter){
                 if(this.filterData[companionFilter] === true){
@@ -313,61 +329,7 @@
             makeFilterRequest: function(){
                 this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
                 this.closeModal();
-
-                let filterDataParameters = {};
-
-                if(!_.isEmpty(this.filterData.startDate)){
-                    filterDataParameters.start_date = this.filterData.startDate;
-                }
-                if(!_.isEmpty(this.filterData.endDate)){
-                    filterDataParameters.end_date = this.filterData.endDate;
-                }
-
-                if(this.filterData.accountOrAccountTypeSelected === this.accountAccountTypeToggle.accountValue){
-                    filterDataParameters.account = this.filterData.accountOrAccountTypeId;
-                } else if(this.filterData.accountOrAccountTypeSelected === this.accountAccountTypeToggle.accountTypeValue){
-                    filterDataParameters.account_type = this.filterData.accountOrAccountTypeId;
-                }
-
-                if(_.isArray(this.filterData.tags)){
-                    filterDataParameters.tags = [];
-                    this.filterData.tags.forEach(function(isSelected, tagId){
-                        if(isSelected){
-                            filterDataParameters.tags.push(tagId);
-                        }
-                    });
-                    if(_.isEmpty(filterDataParameters.tags)){
-                        delete filterDataParameters.tags;
-                    }
-                }
-
-                if(this.filterData.isIncome){
-                    filterDataParameters.expense = false;
-                } else if(this.filterData.isExpense){
-                    filterDataParameters.expense = true;
-                }
-
-                if(this.filterData.hasAttachment){
-                    filterDataParameters.attachments = true;
-                } else if(this.filterData.noAttachment){
-                    filterDataParameters.attachments = false;
-                }
-
-                if(this.filterData.isTransfer){
-                    filterDataParameters.is_transfer = true;
-                }
-
-                if(this.filterData.unconfirmed){
-                    filterDataParameters.unconfirmed = true;
-                }
-
-                if(!_.isEmpty(this.filterData.minValue)){
-                    filterDataParameters.min_value = this.filterData.minValue;
-                }
-                if(!_.isEmpty(this.filterData.maxValue)){
-                    filterDataParameters.max_value = this.filterData.maxValue;
-                }
-
+                let filterDataParameters = this.processFilterParameters();
                 this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, {pageNumber: 0, filterParameters: filterDataParameters});
             },
             processListOfObjects: function(listOfObjects, canShowDisabled=true){
@@ -377,6 +339,91 @@
                     });
                 }
                 return _.orderBy(listOfObjects, 'name');
+            },
+            processFilterParameters: function(){
+              let filterDataParameters = {};
+
+              if(!_.isEmpty(this.filterData.startDate)){
+                filterDataParameters.start_date = this.filterData.startDate;
+              }
+              if(!_.isEmpty(this.filterData.endDate)){
+                filterDataParameters.end_date = this.filterData.endDate;
+              }
+
+              if(_.isNumber(this.filterData.accountOrAccountTypeId)){
+                if(this.filterData.accountOrAccountTypeSelected === this.accountAccountTypeToggle.accountValue){
+                  filterDataParameters.account = this.filterData.accountOrAccountTypeId;
+                } else if(this.filterData.accountOrAccountTypeSelected === this.accountAccountTypeToggle.accountTypeValue){
+                  filterDataParameters.account_type = this.filterData.accountOrAccountTypeId;
+                }
+              }
+
+              if(Object.values(this.filterData.tags).includes(true)){
+                filterDataParameters.tags = [];
+                Object.entries(this.filterData.tags).forEach(function([tagId,isSelected]){
+                  if(isSelected){
+                    filterDataParameters.tags.push(tagId)
+                  }
+                })
+
+                if(_.isEmpty(filterDataParameters.tags)){
+                  delete filterDataParameters.tags;
+                }
+              }
+
+              if(this.filterData.isIncome){
+                filterDataParameters.expense = false;
+              } else if(this.filterData.isExpense){
+                filterDataParameters.expense = true;
+              }
+
+              if(this.filterData.hasAttachment){
+                filterDataParameters.attachments = true;
+              } else if(this.filterData.noAttachment){
+                filterDataParameters.attachments = false;
+              }
+
+              if(this.filterData.isTransfer){
+                filterDataParameters.is_transfer = true;
+              }
+
+              if(this.filterData.unconfirmed){
+                filterDataParameters.unconfirmed = true;
+              }
+
+              if(!_.isEmpty(this.filterData.minValue)){
+                filterDataParameters.min_value = this.filterData.minValue;
+              }
+              if(!_.isEmpty(this.filterData.maxValue)){
+                filterDataParameters.max_value = this.filterData.maxValue;
+              }
+              return filterDataParameters;
+            },
+            exportData: function(){
+              this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, {type: SnotifyStyle.info, message: "Export Process started"});
+              let filterDataParameters = this.processFilterParameters();
+              return axios({
+                method: 'post',
+                url: '/export',
+                data: filterDataParameters,
+                responseType: 'arraybuffer',
+              })
+                .then(function(response){
+                  let filename = response.headers['content-disposition'].split(';').pop().trim().split('=').pop().replaceAll('"', '');
+
+                  const url = window.URL.createObjectURL(new Blob([response.data]))
+                  const link = document.createElement('a')
+                  link.href = url
+                  link.setAttribute('download', filename)
+                  document.body.appendChild(link)
+                  link.click()
+
+                  this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, {type: SnotifyStyle.success, message: "Export Complete"});
+                  link.remove();
+                }.bind(this))
+                .catch(function(){
+                  this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, {type: SnotifyStyle.error, message: "Export Failed"});
+                }.bind(this));
             }
         },
         created: function(){
@@ -384,7 +431,8 @@
             this.$eventHub.listen(this.$eventHub.EVENT_FILTER_MODAL_CLOSE, this.closeModal);
         },
         mounted: function(){
-            this.resetFields();
+          this.defaultData.accountOrAccountTypeSelected = this.accountAccountTypeToggle.accountValue;
+          this.resetFields();
         }
     }
 </script>

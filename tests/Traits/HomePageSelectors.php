@@ -74,25 +74,6 @@ trait HomePageSelectors {
     private $_selector_modal_transfer_btn_cancel = "#transfer-cancel-btn";
     private $_selector_modal_transfer_btn_save = "#transfer-save-btn";
 
-    // filter-modal
-    private $_selector_modal_filter = "@filter-modal";  // see Browser\Pages\HomePage.php
-    private $_selector_modal_filter_field_start_date = "#filter-start-date";
-    private $_selector_modal_filter_field_end_date = "#filter-end-date";
-    private $_selector_modal_filter_field_tags= "#filter-tags";
-    private $_selector_modal_filter_field_switch_income = "#filter-is-income";
-    private $_selector_modal_filter_field_switch_expense = "#filter-is-expense";
-    private $_selector_modal_filter_field_switch_has_attachment = "#filter-has-attachment";
-    private $_selector_modal_filter_field_switch_no_attachment = "#filter-no-attachment";
-    private $_selector_modal_filter_field_switch_transfer = "#filter-is-transfer";
-    private $_selector_modal_filter_field_switch_unconfirmed = "#filter-unconfirmed";
-    private $_selector_modal_filter_field_min_value = "#filter-min-value";
-    private $_selector_modal_filter_field_max_value = "#filter-max-value";
-    private $_selector_modal_filter_field_min_value_icon = "#filter-min-value+span i";
-    private $_selector_modal_filter_field_max_value_icon = "#filter-max-value+span i";
-    private $_selector_modal_filter_btn_cancel = "#filter-cancel-btn";
-    private $_selector_modal_filter_btn_reset = "#filter-reset-btn";
-    private $_selector_modal_filter_btn_filter = "#filter-btn";
-
     // entries-table
     private $_selector_table = "#entry-table";
     private $_selector_table_head = 'thead';
@@ -145,9 +126,5 @@ trait HomePageSelectors {
     // ###*** COLOURS ***###
     private $_color_expense_switch_expense = "";
     private $_color_expense_switch_income = "";
-    private $_color_filter_switch_default = "";
-    private $_color_filter_switch_active = "";
-    private $_color_filter_btn_tag_default = "";
-    private $_color_filter_btn_tag_active = "#3082c5";
 
 }

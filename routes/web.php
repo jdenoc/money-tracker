@@ -17,3 +17,4 @@ Route::get('/stats', 'Web\StatsController@display');
 Route::get('/attachment/{uuid}', 'Web\AttachmentController@display');
 Route::post('/attachment/upload', 'Web\AttachmentController@upload');
 Route::delete('/attachment/upload', 'Web\AttachmentController@deleteUpload');
+Route::post('/export', 'Web\ExportsController@export');

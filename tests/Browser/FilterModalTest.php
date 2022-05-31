@@ -5,10 +5,9 @@ namespace Tests\Browser;
 use App\Account;
 use App\AccountType;
 use App\Helpers\CurrencyHelper;
-use App\Traits\Tests\Dusk\AccountOrAccountTypeTogglingSelector as DuskTraitAccountOrAccountTypeTogglingSelector;
+use App\Traits\Tests\Dusk\FilterModal as DuskTraitFilterModal;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
-use App\Traits\Tests\WithBulmaColors;
 use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\DB;
@@ -30,14 +29,11 @@ use Throwable;
  */
 class FilterModalTest extends DuskTestCase {
 
-    use DuskTraitAccountOrAccountTypeTogglingSelector;
+    use DuskTraitFilterModal;
     use DuskTraitLoading;
     use DuskTraitNavbar;
     use HomePageSelectors;
     use WithFaker;
-    use WithBulmaColors;
-
-    private $_partial_selector_filter_tag = "#filter-tag-";
 
     public function __construct($name = null, array $data = [], $dataName = ''){
         parent::__construct($name, $data, $dataName);
@@ -46,9 +42,7 @@ class FilterModalTest extends DuskTestCase {
 
     public function setUp(): void{
         parent::setUp();
-        $this->_color_filter_switch_default = $this->bulmaColors->getColor('COLOR_GREY_LIGHT');
-        $this->_color_filter_switch_active = $this->bulmaColors->getColor('COLOR_INFO');
-        $this->_color_filter_btn_tag_default = $this->bulmaColors->getColor('COLOR_LIGHT');
+        $this->initFilterModalColors();
     }
 
     /**
@@ -235,20 +229,7 @@ class FilterModalTest extends DuskTestCase {
      * test 4/25
      */
     public function testModalHasTheCorrectNumberOfInputs(){
-        $filter_modal_field_selectors = [
-            $this->_selector_modal_filter_field_start_date,
-            $this->_selector_modal_filter_field_end_date,
-            self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT,
-            $this->_selector_modal_filter_field_tags,
-            $this->_selector_modal_filter_field_switch_income,
-            $this->_selector_modal_filter_field_switch_expense,
-            $this->_selector_modal_filter_field_switch_has_attachment,
-            $this->_selector_modal_filter_field_switch_no_attachment,
-            $this->_selector_modal_filter_field_switch_transfer,
-            $this->_selector_modal_filter_field_switch_unconfirmed,
-            $this->_selector_modal_filter_field_min_value,
-            $this->_selector_modal_filter_field_max_value,
-        ];
+        $filter_modal_field_selectors = $this->filterModalInputs();
 
         $this->browse(function(Browser $browser) use ($filter_modal_field_selectors){
             $browser->visit(new HomePage());
@@ -669,20 +650,7 @@ class FilterModalTest extends DuskTestCase {
     }
 
     public function providerClickFilterButtonToFilterResults():array{
-        return [
-            "Start Date"=>[$this->_selector_modal_filter_field_start_date],                         // test 1/25
-            "End Date"=>[$this->_selector_modal_filter_field_end_date],                             // test 2/25
-            "Account&Account-type"=>[self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT],        // test 3/25
-            "Tags"=>[$this->_partial_selector_filter_tag],                                          // test 4/25
-            "Income"=>[$this->_selector_modal_filter_field_switch_income],                          // test 5/25
-            "Expense"=>[$this->_selector_modal_filter_field_switch_expense],                        // test 6/25
-            "Has Attachments"=>[$this->_selector_modal_filter_field_switch_has_attachment],         // test 7/25
-            "No Attachments"=>[$this->_selector_modal_filter_field_switch_no_attachment],           // test 8/25
-            "Transfer"=>[$this->_selector_modal_filter_field_switch_transfer],                      // test 9/25
-            "Unconfirmed"=>[$this->_selector_modal_filter_field_switch_unconfirmed],                // test 10/25
-            "Min Range"=>[$this->_selector_modal_filter_field_min_value],                           // test 11/25
-            "Max Range"=>[$this->_selector_modal_filter_field_max_value],                           // test 12/25
-        ];
+        return $this->filterModalInputs();  // test (?)/25
     }
 
     /**
@@ -696,70 +664,14 @@ class FilterModalTest extends DuskTestCase {
      */
     public function testClickFilterButtonToFilterResults($filter_param){
         $this->browse(function(Browser $browser) use ($filter_param){
-            $filter_value = '';
+            $filter_value = null;
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $this->openFilterModal($browser);
             $browser
                 // modify all (or at least most) fields
                 ->with($this->_selector_modal_filter.' '.$this->_selector_modal_body, function(Browser $modal) use ($filter_param, &$filter_value){
-                    switch($filter_param){
-                        case $this->_selector_modal_filter_field_start_date:
-                        case $this->_selector_modal_filter_field_end_date:
-                            $filter_value = ['actual'=>$this->faker->date("Y-m-d")];
-                            $browser_date = $modal->getDateFromLocale($modal->getBrowserLocale(), $filter_value['actual']);
-                            $filter_value['typed'] = $modal->processLocaleDateForTyping($browser_date);
-                            $modal->type($filter_param, $filter_value['typed']);
-                            break;
-
-                        case self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT:
-                            $is_account = $this->faker->boolean;
-                            if($is_account){
-                                // account
-                                $filter_values = $this->getApiAccounts();
-                            } else {
-                                // account-type
-                                $this->toggleAccountOrAccountTypeSwitch($modal);
-                                $filter_values = $this->getApiAccountTypes();
-                            }
-                            $filter_value = collect($filter_values)->where('disabled', false)->random();
-                            $this->selectAccountOrAccountTypeValue($modal, $filter_value['id']);
-
-                            if($is_account){
-                                $account = Account::find_account_with_types($filter_value['id']);
-                                $filter_value = $account->account_types->pluck('name')->toArray();
-                            } else {
-                                $filter_value = $filter_value['name'];
-                            }
-                            break;
-
-                        case $this->_partial_selector_filter_tag:
-                            $tags = $this->getApiTags();
-                            $filter_value = collect($tags)->random(3)->toArray();
-                            foreach($filter_value as $tag){
-                                $modal->click($filter_param.$tag['id'].'+label');
-                            }
-                            break;
-
-                        case $this->_selector_modal_filter_field_switch_income:
-                        case $this->_selector_modal_filter_field_switch_expense:
-                        case $this->_selector_modal_filter_field_switch_has_attachment:
-                        case $this->_selector_modal_filter_field_switch_no_attachment:
-                        case $this->_selector_modal_filter_field_switch_transfer:
-                        case $this->_selector_modal_filter_field_switch_unconfirmed:
-                            $this->toggleToggleButton($modal, $filter_param);
-                            break;
-
-                        case $this->_selector_modal_filter_field_min_value:
-                        case $this->_selector_modal_filter_field_max_value:
-                            $filter_value = $this->faker->randomFloat(2, 0, 100);
-                            // need to use type() here otherwise vuejs won't pick up the update
-                            $modal->type($filter_param, $filter_value);
-                            break;
-
-                        default:
-                            throw new InvalidArgumentException("Unknown filter parameter provided:".$filter_param);
-                    }
+                    $filter_value = $this->filterModalInputInteraction($modal, $filter_param);
                 })
 
                 ->with($this->_selector_modal_filter.' '.$this->_selector_modal_foot, function(Browser $modal){

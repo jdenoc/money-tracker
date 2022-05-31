@@ -6,19 +6,20 @@ use App\Account;
 use App\Attachment;
 use App\Entry;
 use App\Tag;
+use App\Traits\EntryFilterKeys;
+use App\Traits\MaxEntryResponseValue;
 use Carbon\Carbon;
-use Faker\Factory as FakerFactory;
+use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Collection;
 use Tests\TestCase;
 
 class ListEntriesBase extends TestCase {
 
-    const MIN_TEST_ENTRIES = 4;
+    use EntryFilterKeys;
+    use MaxEntryResponseValue;
+    use WithFaker;
 
-    /**
-     * @var \Faker\Generator
-     */
-    protected $_faker;
+    const MIN_TEST_ENTRIES = 4;
 
     /**
      * @var Account
@@ -35,15 +36,10 @@ class ListEntriesBase extends TestCase {
      */
     protected $_uri = '/api/entries';
 
-    public function __construct($name = null, array $data = [], $dataName = ''){
-        parent::__construct($name, $data, $dataName);
-        $this->_faker = FakerFactory::create();
-    }
-
     protected function setUp(): void{
         parent::setUp();
         $this->_generated_account = factory(Account::class)->create();
-        $this->_generated_tags = factory(Tag::class, $this->_faker->randomDigitNotNull)->create();
+        $this->_generated_tags = factory(Tag::class, $this->faker->randomDigitNotNull)->create();
     }
 
     /**
@@ -64,19 +60,19 @@ class ListEntriesBase extends TestCase {
         $generated_entry = factory(Entry::class)->create($new_entry_data);
 
         if(!$entry_disabled){    // no sense cluttering up the database with test data for something that isn't supposed to appear anyway
-            if(isset($override_entry_components['has_attachments']) && $override_entry_components['has_attachments'] == true){
+            if(isset($override_entry_components['has_attachments']) && $override_entry_components['has_attachments'] === true){
                 $generate_attachment_count = 1;
-            } elseif(isset($override_entry_components['has_attachments']) && $override_entry_components['has_attachments'] == false) {
+            } elseif(isset($override_entry_components['has_attachments']) && $override_entry_components['has_attachments'] === false) {
                 $generate_attachment_count = 0;
             } else {
-                $generate_attachment_count = $this->_faker->randomDigit;
+                $generate_attachment_count = $this->faker->randomDigit();
             }
             factory(Attachment::class, $generate_attachment_count)->create(['entry_id' => $generated_entry->id]);
 
             if(isset($override_entry_components['tags'])){
                 $generated_entry->tags()->sync($override_entry_components['tags']);
             } else {
-                $assign_tag_to_entry_count = $this->_faker->numberBetween(0, $this->_generated_tags->count());
+                $assign_tag_to_entry_count = $this->faker->numberBetween(0, $this->_generated_tags->count());
                 for($j = 0; $j < $assign_tag_to_entry_count; $j++){
                     $randomly_selected_tag = $this->_generated_tags->random();
                     $generated_entry->tags()->syncWithoutDetaching([$randomly_selected_tag->id]);
@@ -88,24 +84,74 @@ class ListEntriesBase extends TestCase {
     }
 
     /**
-     * @param int $generate_entry_count
-     * @param int $generated_account_type_id
+     * @param int   $totalEntriesToCreate
+     * @param int   $account_type_id
      * @param array $filter_details
-     * @param bool $randomly_mark_entries_disabled
-     * @param bool $mark_entries_disabled
+     * @param bool  $randomly_mark_entries_disabled
+     * @param bool  $mark_entries_disabled
+     *
      * @return Collection
      */
-    protected function batch_generate_entries($generate_entry_count, $generated_account_type_id, $filter_details=[], $randomly_mark_entries_disabled=false, $mark_entries_disabled=false){
+    protected function batch_generate_entries(int $totalEntriesToCreate, int $account_type_id, $filter_details=[], $randomly_mark_entries_disabled=false, $mark_entries_disabled=false){
         $generated_entries = collect();
-        for($i=0; $i<$generate_entry_count; $i++){
+        for($i= 0; $i < $totalEntriesToCreate; $i++){
             $generated_entry = $this->generate_entry_record(
-                $generated_account_type_id,
-                ($randomly_mark_entries_disabled ? $this->_faker->boolean : $mark_entries_disabled),
+                $account_type_id,
+                ($randomly_mark_entries_disabled ? $this->faker->boolean : $mark_entries_disabled),
                 $filter_details
             );
             $generated_entries->push($generated_entry);
         }
         return $generated_entries;
+    }
+
+    /**
+     * @param array $filters
+     * @return array
+     */
+    protected function convert_filters_to_entry_components(array $filters):array{
+        $entry_components = [];
+        foreach($filters as $filter_name => $constraint){
+            switch($filter_name){
+                case self::$FILTER_KEY_START_DATE:
+                case self::$FILTER_KEY_END_DATE:
+                    $entry_components['entry_date'] = $constraint;
+                    break;
+                case self::$FILTER_KEY_MIN_VALUE:
+                case self::$FILTER_KEY_MAX_VALUE:
+                    $entry_components['entry_value'] = $constraint;
+                    break;
+                case self::$FILTER_KEY_ACCOUNT_TYPE:
+                    $entry_components['account_type_id'] = $constraint;
+                    break;
+                case self::$FILTER_KEY_EXPENSE:
+                    if($constraint === true){
+                        $entry_components[$filter_name] = 1;
+                    } elseif($constraint === false) {
+                        $entry_components[$filter_name] = 0;
+                    }
+                    break;
+                case self::$FILTER_KEY_UNCONFIRMED:
+                    if($constraint === true){
+                        $entry_components['confirm'] = 0;
+                    }
+                    break;
+                case self::$FILTER_KEY_ATTACHMENTS:
+                    $entry_components['has_attachments'] = $constraint;
+                    break;
+                case self::$FILTER_KEY_TAGS:
+                    $entry_components[$filter_name] = is_array($constraint) ? $constraint : [$constraint];
+                    break;
+                case self::$FILTER_KEY_IS_TRANSFER:
+                if($constraint === true){
+                    $entry_components['transfer_entry_id'] = $this->faker->randomDigitNotNull;
+                } elseif($constraint === false) {
+                    $entry_components['transfer_entry_id'] = null;
+                }
+                break;
+            }
+        }
+        return $entry_components;
     }
 
     /**

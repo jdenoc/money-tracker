@@ -6,6 +6,9 @@ use Jdenoc\BulmaColors\BulmaColors;
 
 trait WithBulmaColors {
 
+    /**
+     * @var BulmaColors
+     */
     protected $bulmaColors;
 
     protected function setupBulmaColors(){
