@@ -5,6 +5,10 @@ inputs:
   docker-image-directory:
     description: "Directory docker image(s) were cached/saved"
     required: true
+  is-cacheless:
+    description: "Set to true to clear cache and create an alternative .env file"
+    required: false
+    default: "false"
 runs:
   using: composite
   steps:
@@ -30,4 +34,10 @@ runs:
     - run: |
         docker container exec -t --user www-data app.money-tracker touch storage/logs/php_error.log
         docker container exec -t --user www-data app.money-tracker touch storage/logs/laravel.log
+      shell: bash
+    # clear cache and create alternative .env file
+    - if: ${{ inputs.is-cacheless }}
+      run: |
+        .docker/cmd/artisan.sh config:clear
+        docker container exec -t --user www-data app.money-tracker cp .env.docker .env.testing
       shell: bash
