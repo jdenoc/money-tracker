@@ -17,7 +17,7 @@ runs:
         docker load -i ${{ inputs.docker-image-directory }}/${PROJECT_NAME}.tar.gz
         docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME up -d
         docker container exec -t mysql.money-tracker iterate-mysql-health-check
-        docker container ls
+        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps
       shell: bash
     # make sure user `www-data` has ownership of everything
     - run: docker container exec -t app.money-tracker chown -R www-data:www-data .
