@@ -11,8 +11,8 @@ runs:
       shell: bash
     # output docker logs into a file
     - run: |
-        chown -R $(whoami) storage/logs
-        touch storage/logs/docker.log
+        docker container exec -t --user www-data:www-data app.money-tracker touch storage/logs/docker.log
+        docker container exec -t app.money-tracker chmod -R 777 storage/logs/docker.log
         docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME logs >> storage/logs/docker.log
       shell: bash
     # output docker container configurations
