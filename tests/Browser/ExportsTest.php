@@ -9,6 +9,7 @@ use App\Traits\Tests\Dusk\Loading;
 use App\Traits\Tests\Dusk\Navbar;
 use App\Traits\Tests\Dusk\Notification;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\File;
 use Laravel\Dusk\Browser;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
@@ -132,7 +133,7 @@ class ExportsTest extends DuskTestCase {
             $this->dismissNotification($browser);
 
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_SUCCESS, "Export Complete");
-            $this->assertFileExists($this->getAbsoluteDownloadDir().$filename, "Directory Contents: ".print_r(\Storage::files(self::$STORAGE_DOWNLOAD_DIR), true));
+            $this->assertFileExists($this->getAbsoluteDownloadDir().$filename, "Directory [".$this->getAbsoluteDownloadDir()."] contents: ".print_r(File::files($this->getAbsoluteDownloadDir()), true));
             $fp = fopen($this->getAbsoluteDownloadDir().$filename, 'r');
 
             // assert header line of file
