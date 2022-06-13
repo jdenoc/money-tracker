@@ -72,9 +72,13 @@ jobs:
         run: |
           FAILURE_UPLOAD_PATHS=$(cat <<EOF
           storage/app/test/downloads/*.csv
+          !storage/app/test/downloads/.gitignore
           storage/logs/*.log
+          !storage/logs/.gitignore
           tests/Browser/console/*.log
+          !tests/Browser/console/.gitignore
           tests/Browser/db-dump/*.sql
+          !tests/Browser/db-dump/.gitignore
           tests/Browser/screenshots/
           !tests/Browser/screenshots/.gitignore
           EOF
