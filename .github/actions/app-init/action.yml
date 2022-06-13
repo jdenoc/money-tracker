@@ -32,12 +32,12 @@ runs:
       shell: bash
     # setup laravel log files
     - run: |
-        docker container exec -t --user www-data app.money-tracker touch storage/logs/php_error.log
-        docker container exec -t --user www-data app.money-tracker touch storage/logs/laravel.log
+        docker container exec -t --user www-data:www-data app.money-tracker touch storage/logs/php_error.log
+        docker container exec -t --user www-data:www-data app.money-tracker touch storage/logs/laravel.log
       shell: bash
     # clear cache and create alternative .env file
     - if: ${{ inputs.is-cacheless != 'false' }}
       run: |
         .docker/cmd/artisan.sh config:clear
-        docker container exec -t --user www-data app.money-tracker cp .env.docker .env.testing
+        docker container exec -t --user www-data:www-data app.money-tracker cp .env.docker .env.testing
       shell: bash
