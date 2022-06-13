@@ -231,11 +231,8 @@ jobs:
         run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite unit
 
       - name: Failure docker inspection
+        uses: ./.github/actions/failure-docker-inspect
         if: failure()
-        run: |
-          docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps
-          docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME logs >> storage/logs/docker.log
-          docker inspect $(docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps -q)
 
       - name: Failure upload
         uses: actions/upload-artifact@v2
@@ -291,11 +288,8 @@ jobs:
       - run: .docker/cmd/artisan.sh dusk --group demo --stop-on-failure
 
       - name: Failure docker inspection
+        uses: ./.github/actions/failure-docker-inspect
         if: failure()
-        run: |
-          docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps
-          docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME logs >> storage/logs/docker.log
-          docker inspect $(docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps -q)
 
       - name: Failure upload
         uses: actions/upload-artifact@v2
@@ -351,11 +345,8 @@ jobs:
       - run: .docker/cmd/artisan.sh dusk --group notifications-1 --stop-on-failure
 
       - name: Failure docker inspection
+        uses: ./.github/actions/failure-docker-inspect
         if: failure()
-        run: |
-          docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps
-          docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME logs >> storage/logs/docker.log
-          docker inspect $(docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps -q)
 
       - name: Failure upload
         uses: actions/upload-artifact@v2
@@ -426,11 +417,8 @@ jobs:
       - run: .docker/cmd/artisan.sh dusk --group navigation-4 --stop-on-failure
 
       - name: Failure docker inspection
+        uses: ./.github/actions/failure-docker-inspect
         if: failure()
-        run: |
-          docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps
-          docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME logs >> storage/logs/docker.log
-          docker inspect $(docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps -q)
 
       - name: Failure upload
         uses: actions/upload-artifact@v2
@@ -496,11 +484,8 @@ jobs:
       - run: .docker/cmd/artisan.sh dusk --group entry-modal-3 --stop-on-failure
 
       - name: Failure docker inspection
+        uses: ./.github/actions/failure-docker-inspect
         if: failure()
-        run: |
-          docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps
-          docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME logs >> storage/logs/docker.log
-          docker inspect $(docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps -q)
 
       - name: Failure upload
         uses: actions/upload-artifact@v2
@@ -561,11 +546,8 @@ jobs:
       - run: .docker/cmd/artisan.sh dusk --group transfer-modal-2 --stop-on-failure
 
       - name: Failure docker inspection
+        uses: ./.github/actions/failure-docker-inspect
         if: failure()
-        run: |
-          docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps
-          docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME logs >> storage/logs/docker.log
-          docker inspect $(docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps -q)
 
       - name: Failure upload
         uses: actions/upload-artifact@v2
@@ -636,11 +618,8 @@ jobs:
       - run: .docker/cmd/artisan.sh dusk --group filter-modal-export-2 --stop-on-failure
 
       - name: Failure docker inspection
+        uses: ./.github/actions/failure-docker-inspect
         if: failure()
-        run: |
-          docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps
-          docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME logs >> storage/logs/docker.log
-          docker inspect $(docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps -q)
 
       - name: Failure upload
         uses: actions/upload-artifact@v2
@@ -696,11 +675,8 @@ jobs:
       - run: .docker/cmd/artisan.sh dusk --group stats-summary --stop-on-failure
 
       - name: Failure docker inspection
+        uses: ./.github/actions/failure-docker-inspect
         if: failure()
-        run: |
-          docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps
-          docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME logs >> storage/logs/docker.log
-          docker inspect $(docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps -q)
 
       - name: Failure upload
         uses: actions/upload-artifact@v2
@@ -756,11 +732,8 @@ jobs:
       - run: .docker/cmd/artisan.sh dusk --group stats-trending --stop-on-failure
 
       - name: Failure docker inspection
+        uses: ./.github/actions/failure-docker-inspect
         if: failure()
-        run: |
-          docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps
-          docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME logs >> storage/logs/docker.log
-          docker inspect $(docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps -q)
 
       - name: Failure upload
         uses: actions/upload-artifact@v2
@@ -821,11 +794,8 @@ jobs:
       - run: .docker/cmd/artisan.sh dusk --group stats-distribution-2 --stop-on-failure
 
       - name: Failure docker inspection
+        uses: ./.github/actions/failure-docker-inspect
         if: failure()
-        run: |
-          docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps
-          docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME logs >> storage/logs/docker.log
-          docker inspect $(docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps -q)
 
       - name: Failure upload
         uses: actions/upload-artifact@v2
@@ -884,6 +854,10 @@ jobs:
         with:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
       - run: .docker/cmd/artisan.sh dusk --group stats-tags-2 --stop-on-failure
+
+      - name: Failure docker inspection
+        uses: ./.github/actions/failure-docker-inspect
+        if: failure()
 
       - name: Failure upload
         uses: actions/upload-artifact@v2

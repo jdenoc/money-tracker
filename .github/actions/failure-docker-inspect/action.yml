@@ -1,0 +1,19 @@
+# .github/actions/failure-docker-inspect/action.yml
+name: Failure - Docker Inspection
+description: Provide a snap-shot of docker containers used after a failure
+runs:
+  using: composite
+  steps:
+    # confirm docker containers running
+    - run: |
+        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps
+        docker container ls
+      shell: bash
+    # output docker logs into a file
+    - run: |
+        touch storage/logs/docker.log
+        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME logs >> storage/logs/docker.log
+      shell: bash
+    # output docker container configurations
+    - run: docker inspect $(docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps -q)
+      shell: bash
