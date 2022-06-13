@@ -26,7 +26,6 @@ class EntriesExport implements FromCollection, WithHeadings, WithMapping, WithCo
     }
 
     public function map($row): array{
-        error_log($row);
         $income_value = $row->expense ? '' : $row->entry_value;
         $expense_value = $row->expense ? $row->entry_value : '';
         $has_attachment = $row->has_attachments();
