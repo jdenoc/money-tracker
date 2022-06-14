@@ -11,7 +11,7 @@ runs:
       shell: bash
     # output docker logs into a file
     - run: |
-        docker container exec -t --user www-data:www-data $(docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps -q application) touch storage/logs/docker.log
+        docker container exec -t --user www-data $(docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps -q application) touch storage/logs/docker.log
         docker container exec -t $(docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps -q application) chmod -R 777 storage/logs/docker.log
         docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME logs >> storage/logs/docker.log
       shell: bash
