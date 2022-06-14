@@ -10,7 +10,7 @@ services:
     container_name: "app.money-tracker"
     hostname: app.money-tracker
     ports:
-      - 80:80
+      - "80:80"
     volumes:
       - ..:/var/www/money-tracker  # .. is interpreted as relative to the location of the docker-compose file
     environment:
@@ -44,7 +44,7 @@ services:
     hostname: selenium.money-tracker
     shm_size: "2g"
     ports:
-      - 5901:5900
+      - "5901:5900"   # for VNC
     volumes:
       - ../storage/app/test/downloads:/home/seluser/Downloads
     depends_on:
