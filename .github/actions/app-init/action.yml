@@ -21,9 +21,9 @@ runs:
       shell: bash
     # ensure correct user:group ownership
     - run: |
-        docker container exec -t $(docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps -q application) chown -R www-data .
-        docker container exec -t $(docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps -q selenium) chgrp seluser /home/seluser/Downloads
-        docker container exec -t $(docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps -q selenium) chmod g+w /home/seluser/Downloads
+        docker container exec -t --user root $(docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps -q application) chown -R www-data .
+        docker container exec -t --user root $(docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps -q selenium) chgrp seluser /home/seluser/Downloads
+        docker container exec -t --user root $(docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps -q selenium) chmod g+w /home/seluser/Downloads
       shell: bash
     # general application setup
     - run: |
