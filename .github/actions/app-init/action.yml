@@ -16,11 +16,14 @@ runs:
     - run: |
         docker load -i ${{ inputs.docker-image-directory }}/${PROJECT_NAME}.tar.gz
         docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME up -d
-        docker container exec -t mysql.money-tracker iterate-mysql-health-check
+        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME exec database iterate-mysql-health-check
         docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps
       shell: bash
-    # make sure user `www-data` has ownership of everything
-    - run: docker container exec -t app.money-tracker chown -R www-data:www-data .
+    # ensure correct user:group ownership
+    - run: |
+        docker container exec -t app.money-tracker chown -R www-data:www-data .
+        docker container exec -t selenium.money-tracker chgrp seluser /home/seluser/Downloads
+        docker container exec -t selenium.money-tracker chmod g+w /home/seluser/Downloads
       shell: bash
     # general application setup
     - run: |
