@@ -274,11 +274,13 @@ export default {
     },
     canGenerateFilteredResults: function(){
       let filterData = _.cloneDeep(this.filterData);
+      delete filterData.accountOrAccountTypeSelected;
       delete filterData.tags;
       let defaultData = _.cloneDeep(this.defaultData);
+      delete defaultData.accountOrAccountTypeSelected;
       delete defaultData.tags;
       return !_.isEqual(filterData, defaultData)
-          || Object.values( this.filterData.tags ).includes(true);
+        || (_.isArray(this.filterData.tags) && !_.isEmpty(this.filterData.tags));
     }
   },
   methods: {
@@ -352,17 +354,11 @@ export default {
         }
       }
 
-      if(Object.values(this.filterData.tags).includes(true)){
+      if(_.isArray(this.filterData.tags) && !_.isEmpty(this.filterData.tags)){
         filterDataParameters.tags = [];
-        Object.entries(this.filterData.tags).forEach(function([tagId,isSelected]){
-          if(isSelected){
-            filterDataParameters.tags.push(tagId)
-          }
-        })
-
-        if(_.isEmpty(filterDataParameters.tags)){
-          delete filterDataParameters.tags;
-        }
+        this.filterData.tags.forEach(function(tag){
+          filterDataParameters.tags.push(tag.id);
+        });
       }
 
       if(this.filterData.isIncome){
