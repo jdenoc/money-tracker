@@ -115,26 +115,38 @@ class ExportsTest extends DuskTestCase {
     public function testPerformExport(string $filter_input_selector){
         $this->browse(function(Browser $browser) use ($filter_input_selector) {
             $filter_value = null;
-            $filename = '';
 
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $this->openFilterModal($browser);
             $browser
-                ->within($this->_selector_modal_filter, function (Browser $modal) use ($filter_input_selector, &$filter_value, &$filename) {
+                ->within($this->_selector_modal_filter, function (Browser $modal) use ($filter_input_selector, &$filter_value) {
                     $filter_value = $this->filterModalInputInteraction($modal, $filter_input_selector);
                     $modal->assertVisible($this->_selector_modal_foot.' '.self::$SELECTOR_EXPORT_BTN);
-
-                    $filename = $this->pregenerateExportFilenameAtStartOfSecond();
                     $modal->click($this->_selector_modal_foot.' '.self::$SELECTOR_EXPORT_BTN);
                 });
+
+            $timestamp = now()->getTimestamp();
 
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_INFO, "Export Process started");
             $this->dismissNotification($browser);
 
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_SUCCESS, "Export Complete");
-            $this->assertFileExists($this->getAbsoluteDownloadDir().$filename, "Directory [".$this->getAbsoluteDownloadDir()."] contents: ".print_r(File::files($this->getAbsoluteDownloadDir()), true));
-            $fp = fopen($this->getAbsoluteDownloadDir().$filename, 'r');
+
+            $files =  File::glob(storage_path('app/test/downloads/entries.*.csv'));
+            $file_path = $files[array_key_last($files)];
+            $this->assertNotEmpty($file_path);
+
+            // make sure export filename is within a time period variance after clicking on the export button
+            $timestamp_variance = 2;
+            $file_timestamp=filter_var(basename($file_path), FILTER_SANITIZE_NUMBER_INT);
+            $this->assertTrue(
+                $file_timestamp >= ($timestamp-$timestamp_variance) && $file_timestamp <= ($timestamp+$timestamp_variance),
+                sprintf("Failed asserting %d >= %d <= %d", ($timestamp-$timestamp_variance), $file_timestamp, ($timestamp+$timestamp_variance))
+            );
+
+            $this->assertFileExists($file_path, "Directory [".$this->getAbsoluteDownloadDir()."] contents: ".print_r(File::files($this->getAbsoluteDownloadDir()), true));
+            $fp = fopen($file_path, 'r');
 
             // assert header line of file
             $header = fgetcsv($fp);
