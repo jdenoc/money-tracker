@@ -778,7 +778,6 @@ class FilterModalTest extends DuskTestCase {
         });
     }
 
-
     /**
      * @throws Throwable
      *
