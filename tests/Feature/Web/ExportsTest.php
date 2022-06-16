@@ -122,4 +122,13 @@ class ExportsTest extends ListEntriesBase {
         fclose($file_handle);
     }
 
+    private function pregenerateExportFilenameAtStartOfSecond():string{
+        // without this do-while loop we run the risk of generating
+        // a filename that is off by 1 seconds from the download
+        do{
+            $microtime = explode(' ', microtime())[0];
+        }while($microtime > 0.25);
+        return $this->generateExportFilename();
+    }
+
 }
