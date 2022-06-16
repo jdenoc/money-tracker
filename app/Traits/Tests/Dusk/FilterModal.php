@@ -50,7 +50,7 @@ trait FilterModal {
         return [
             "Start Date"=>[$this->_selector_modal_filter_field_start_date],                         // test 1/25
             "End Date"=>[$this->_selector_modal_filter_field_end_date],                             // test 2/25
-            "Account&Account-type"=>[self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT],        // test 3/25
+            "Account & AccountType"=>[self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT],        // test 3/25
             "Tags"=>[$this->_partial_selector_filter_tag],                                          // test 4/25
             "Income"=>[$this->_selector_modal_filter_field_switch_income],                          // test 5/25
             "Expense"=>[$this->_selector_modal_filter_field_switch_expense],                        // test 6/25
@@ -75,7 +75,7 @@ trait FilterModal {
                 break;
 
             case self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT:
-                $is_account = $this->faker->boolean;
+                $is_account = $this->faker->boolean();
                 if($is_account){
                     // account
                     $filter_values = $this->getApiAccounts();
