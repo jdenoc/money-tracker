@@ -165,4 +165,11 @@ abstract class DuskTestCase extends BaseTestCase {
         return $entries_response->json();
     }
 
+    public static function assertContains($needle, iterable $haystack, string $message = ''): void{
+        if(empty($message)){
+            $message = sprintf("Failed asserting that %s contains '%s'.", print_r($haystack, true), $needle);
+        }
+        parent::assertContains($needle, $haystack, $message);
+    }
+
 }
