@@ -2,7 +2,7 @@
 
 namespace App\Traits;
 
-use Storage;
+use Illuminate\Support\Facades\Storage;
 
 trait ExportsHelper {
 
@@ -25,22 +25,13 @@ trait ExportsHelper {
         return 'entries.'.now()->getTimestamp().'.csv';
     }
 
-    protected function pregenerateExportFilenameAtStartOfSecond():string{
-        // without this do-while loop we run the risk of generating
-        // a filename that is off by 1 seconds from the download
-        do{
-            $microtime = explode(' ', microtime())[0];
-        }while($microtime > 0.25);
-        return $this->generateExportFilename();
-    }
-
     protected function getCsvHeaderLine():array{
         return ['ID','Date','Memo','Income','Expense','AccountType','Attachment','Transfer','Tags'];
     }
 
     protected function clearStorageDownloadDir(){
         foreach(Storage::files(self::$STORAGE_DOWNLOAD_DIR) as $f){
-            if(!\Str::contains($f, '.gitignore')){
+            if(!str_contains($f, '.gitignore')){
                 Storage::delete($f);
             }
         }
