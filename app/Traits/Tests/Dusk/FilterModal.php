@@ -13,31 +13,31 @@ trait FilterModal {
     use WithBulmaColors;
 
     // selectors
-    private $_selector_modal_filter = "@filter-modal";  // see Browser\Pages\HomePage.php
-    private $_selector_modal_filter_field_start_date = "#filter-start-date";
-    private $_selector_modal_filter_field_end_date = "#filter-end-date";
-    private $_selector_modal_filter_field_tags= "#filter-tags";
-    private $_selector_modal_filter_field_switch_income = "#filter-is-income";
-    private $_selector_modal_filter_field_switch_expense = "#filter-is-expense";
-    private $_selector_modal_filter_field_switch_has_attachment = "#filter-has-attachment";
-    private $_selector_modal_filter_field_switch_no_attachment = "#filter-no-attachment";
-    private $_selector_modal_filter_field_switch_transfer = "#filter-is-transfer";
-    private $_selector_modal_filter_field_switch_unconfirmed = "#filter-unconfirmed";
-    private $_selector_modal_filter_field_min_value = "#filter-min-value";
-    private $_selector_modal_filter_field_max_value = "#filter-max-value";
-    private $_selector_modal_filter_field_min_value_icon = "#filter-min-value+span i";
-    private $_selector_modal_filter_field_max_value_icon = "#filter-max-value+span i";
-    private $_selector_modal_filter_btn_cancel = "#filter-cancel-btn";
-    private $_selector_modal_filter_btn_reset = "#filter-reset-btn";
-    private $_selector_modal_filter_btn_filter = "#filter-btn";
-    private $_partial_selector_filter_tag = "#filter-tag-";
+    private string $_selector_modal_filter = "@filter-modal";  // see Browser\Pages\HomePage.php
+    private string $_selector_modal_filter_field_start_date = "#filter-start-date";
+    private string $_selector_modal_filter_field_end_date = "#filter-end-date";
+    private string $_selector_modal_filter_field_tags= "#filter-tags";
+    private string $_selector_modal_filter_field_switch_income = "#filter-is-income";
+    private string $_selector_modal_filter_field_switch_expense = "#filter-is-expense";
+    private string $_selector_modal_filter_field_switch_has_attachment = "#filter-has-attachment";
+    private string $_selector_modal_filter_field_switch_no_attachment = "#filter-no-attachment";
+    private string $_selector_modal_filter_field_switch_transfer = "#filter-is-transfer";
+    private string $_selector_modal_filter_field_switch_unconfirmed = "#filter-unconfirmed";
+    private string $_selector_modal_filter_field_min_value = "#filter-min-value";
+    private string $_selector_modal_filter_field_max_value = "#filter-max-value";
+    private string $_selector_modal_filter_field_min_value_icon = "#filter-min-value+span i";
+    private string $_selector_modal_filter_field_max_value_icon = "#filter-max-value+span i";
+    private string $_selector_modal_filter_btn_cancel = "#filter-cancel-btn";
+    private string $_selector_modal_filter_btn_reset = "#filter-reset-btn";
+    private string $_selector_modal_filter_btn_filter = "#filter-btn";
+    private string $_partial_selector_filter_tag = "#filter-tag-";
 
     // colors
-    private $_color_filter_btn_export = '';
-    private $_color_filter_switch_default = "";
-    private $_color_filter_switch_active = "";
-    private $_color_filter_btn_tag_default = "";
-    private $_color_filter_btn_tag_active = "#3082c5";
+    private string $_color_filter_btn_export = '';
+    private string $_color_filter_switch_default = "";
+    private string $_color_filter_switch_active = "";
+    private string $_color_filter_btn_tag_default = "";
+    private string $_color_filter_btn_tag_active = "#3082c5";
 
     protected function initFilterModalColors(){
         $this->_color_filter_btn_export = $this->bulmaColors->getColor('COLOR_INFO');
@@ -50,7 +50,7 @@ trait FilterModal {
         return [
             "Start Date"=>[$this->_selector_modal_filter_field_start_date],                         // test 1/25
             "End Date"=>[$this->_selector_modal_filter_field_end_date],                             // test 2/25
-            "Account & AccountType"=>[self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT],        // test 3/25
+            "Account & AccountType"=>[self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT],       // test 3/25
             "Tags"=>[$this->_partial_selector_filter_tag],                                          // test 4/25
             "Income"=>[$this->_selector_modal_filter_field_switch_income],                          // test 5/25
             "Expense"=>[$this->_selector_modal_filter_field_switch_expense],                        // test 6/25
