@@ -43,7 +43,7 @@ class FilterModalTest extends DuskTestCase {
 
     public function __construct($name = null, array $data = [], $dataName = ''){
         parent::__construct($name, $data, $dataName);
-        $this->_account_or_account_type_toggling_selector_id_label = "filter-modal";
+        $this->initFilterModalTogglingSelectorLabelId();
 
         $default_currency = CurrencyHelper::getCurrencyDefaults();
         $this->_default_currency_character = CurrencyHelper::convertCurrencyHtmlToCharacter($default_currency->html);
