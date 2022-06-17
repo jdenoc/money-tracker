@@ -103,5 +103,4 @@ trait GenerateFilterTestCases {
         return $filter_details;
     }
 
-
 }

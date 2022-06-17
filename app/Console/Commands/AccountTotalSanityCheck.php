@@ -65,7 +65,7 @@ class AccountTotalSanityCheck extends Command {
                     $sanity_check_object = $this->retrieveExpectedAccountTotalData($account);
                     $this->notifySanityCheck($sanity_check_object);
                 }
-            } elseif(!is_null($account_id) && (int)$account_id === 0){
+            } elseif(!is_null($account_id) && (int)$account_id === 0){ // without the is_null check, we would just convert null to 0 in this check, which would be true
                 $this->notifyInternally("Account 0 does not exist", self::LOG_LEVEL_WARNING);
             } else {
                 $accounts = Account::all();
