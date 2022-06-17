@@ -36,7 +36,7 @@ class ExportsTest extends DuskTestCase {
 
     public function __construct($name = null, array $data = [], $dataName = ''){
         parent::__construct($name, $data, $dataName);
-        $this->_account_or_account_type_toggling_selector_label_id = 'filter-modal';
+        $this->initFilterModalTogglingSelectorLabelId();
     }
 
     public function setUp(): void{
@@ -89,7 +89,7 @@ class ExportsTest extends DuskTestCase {
                     $this->filterModalInputInteraction($modal, $filter_input_selector);
 
                     $modal->assertVisible($this->_selector_modal_foot.' '.self::$SELECTOR_EXPORT_BTN);
-                    $this->assertElementColor($modal, $this->_selector_modal_foot.' '.self::$SELECTOR_EXPORT_BTN, $this->_color_filter_btn_export);
+                    $this->assertElementBackgroundColor($modal, $this->_selector_modal_foot.' '.self::$SELECTOR_EXPORT_BTN, $this->_color_filter_btn_export);
                     $modal
                         ->click($this->_selector_modal_foot.' '.$this->_selector_modal_filter_btn_reset)
                         ->assertMissing($this->_selector_modal_foot.' '.self::$SELECTOR_EXPORT_BTN);
@@ -171,7 +171,7 @@ class ExportsTest extends DuskTestCase {
                         }
                         break;
 
-                    case $this->_partial_selector_filter_tag:
+                    case $this->_selector_modal_filter_field_tags:
                         $this->assertNotEmpty($line[8]);
                         $row_tags = json_decode($line[8], true);
                         foreach ($filter_value as $filtered_tag){
@@ -197,6 +197,10 @@ class ExportsTest extends DuskTestCase {
                     case $this->_selector_modal_filter_field_switch_transfer:
                         $this->assertNotEmpty($line[7]);
                         $this->assertTrue(filter_var($line[7], FILTER_VALIDATE_BOOL));
+                        break;
+
+                    case $this->_selector_modal_filter_field_switch_unconfirmed:
+                        // export does not include information related to entry confirmation
                         break;
 
                     case $this->_selector_modal_filter_field_min_value:
