@@ -10,6 +10,7 @@ use Laravel\Dusk\Browser;
 trait FilterModal {
 
     use AccountOrAccountTypeTogglingSelector;
+    use TagsInput;
     use WithTailwindColors;
 
     // selectors
@@ -30,14 +31,12 @@ trait FilterModal {
     private string $_selector_modal_filter_btn_cancel = "#filter-cancel-btn";
     private string $_selector_modal_filter_btn_reset = "#filter-reset-btn";
     private string $_selector_modal_filter_btn_filter = "#filter-btn";
-    private string $_partial_selector_filter_tag = "#filter-tag-";
 
     // colors
     private string $_color_filter_btn_export = '';
     private string $_color_filter_switch_default = "";
     private string $_color_filter_switch_active = "";
     private string $_color_filter_switch_inactive = "";
-    private string $_color_filter_btn_tag_active = "#3082c5";
 
     protected function initFilterModalColors(){
         $this->_color_filter_btn_export = $this->tailwindColors->blue(600);
@@ -46,12 +45,16 @@ trait FilterModal {
         $this->_color_filter_switch_default = $this->_color_filter_switch_inactive;
     }
 
+    protected function initFilterModalTogglingSelectorLabelId(){
+        $this->_account_or_account_type_toggling_selector_id_label = 'filter-modal';
+    }
+
     protected function filterModalInputs():array{
         return [
             "Start Date"=>[$this->_selector_modal_filter_field_start_date],                         // test 1/25
             "End Date"=>[$this->_selector_modal_filter_field_end_date],                             // test 2/25
             "Account & AccountType"=>[self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT],       // test 3/25
-            "Tags"=>[$this->_partial_selector_filter_tag],                                          // test 4/25
+            "Tags"=>[$this->_selector_modal_filter_field_tags],                                     // test 4/25
             "Income"=>[$this->_selector_modal_filter_field_switch_income],                          // test 5/25
             "Expense"=>[$this->_selector_modal_filter_field_switch_expense],                        // test 6/25
             "Has Attachments"=>[$this->_selector_modal_filter_field_switch_has_attachment],         // test 7/25
@@ -95,7 +98,7 @@ trait FilterModal {
                 }
                 break;
 
-            case $this->_partial_selector_filter_tag:
+            case $this->_selector_modal_filter_field_tags:
                 $tags = $this->getApiTags();
                 $filter_value = collect($tags)->random(3)->toArray();
                 foreach($filter_value as $tag){

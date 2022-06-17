@@ -295,7 +295,6 @@ export default {
       }
     },
     exportData: function(){
-      // TODO: validate
       this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, {type: SnotifyStyle.info, message: "Export Process started"});
       let filterDataParameters = this.processFilterParameters();
       return axios({
@@ -347,9 +346,9 @@ export default {
       }
 
       if(_.isNumber(this.filterData.accountOrAccountTypeId)){
-        if(this.filterData.accountOrAccountTypeSelected === this.accountAccountTypeToggle.accountValue){
+        if(this.filterData.accountOrAccountTypeSelected === this.accountAccountTypeToggleValues.account){
           filterDataParameters.account = this.filterData.accountOrAccountTypeId;
-        } else if(this.filterData.accountOrAccountTypeSelected === this.accountAccountTypeToggle.accountTypeValue){
+        } else if(this.filterData.accountOrAccountTypeSelected === this.accountAccountTypeToggleValues.accountType){
           filterDataParameters.account_type = this.filterData.accountOrAccountTypeId;
         }
       }

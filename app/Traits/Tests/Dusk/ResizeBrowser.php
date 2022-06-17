@@ -6,6 +6,7 @@ use Laravel\Dusk\Browser;
 
 trait ResizeBrowser {
 
+    // Average browser window size
     protected static $RESIZE_BROWSER_WIDTH_PX = 1366;
     protected static $RESIZE_BROWSER_HEIGHT_PX = 784;
     protected static $FORCE_NO_RESIZE = false;
