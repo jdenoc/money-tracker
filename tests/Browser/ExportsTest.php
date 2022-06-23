@@ -164,10 +164,10 @@ class ExportsTest extends DuskTestCase {
                     case self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT:
                         if(is_array($filter_value)){    // account
                             $account_type_ids = AccountType::whereIn('name', $filter_value)->pluck('id')->all();
-                            $this->assertContains($line[5], $account_type_ids);
+                            $this->assertContains((int)$line[5], $account_type_ids);
                         } else {    // account-type
                             $account_type_id = AccountType::where('name', $filter_value)->pluck('id')->first();
-                            $this->assertEquals($line[5], $account_type_id);
+                            $this->assertEquals((int)$line[5], $account_type_id);
                         }
                         break;
 
