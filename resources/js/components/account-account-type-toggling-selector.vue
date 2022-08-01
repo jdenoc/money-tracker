@@ -136,7 +136,6 @@ export default {
         return this.rawAccountTypesData;
       }
     },
-
     toggleButtonProperties: function(){
       return {
         colorChecked: this.tailwindColors.gray[400],
@@ -146,7 +145,7 @@ export default {
         labelChecked: "Account",
         labelUnchecked: "Account Type",
         toggleId: this.getIdForToggleSwitch,
-        width: 140,
+        width: 140, // px
       };
     },
     selectedToggleSwitch: function(){
