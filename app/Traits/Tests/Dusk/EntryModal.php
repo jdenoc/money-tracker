@@ -19,7 +19,7 @@ trait EntryModal {
     private $_color_expense_switch_income = "";
 
     private function initEntryModalColours(){
-        $this->_color_expense_switch_expense = $this->tailwindColors->amber(300);
+        $this->_color_expense_switch_expense = $this->tailwindColors->yellow(400);
         $this->_color_expense_switch_income = $this->tailwindColors->teal(500);
     }
 
