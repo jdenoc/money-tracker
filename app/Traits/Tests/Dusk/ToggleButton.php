@@ -11,32 +11,26 @@ trait ToggleButton {
     use AssertElementColor;
     use WaitTimes;
 
-    private static $SELECTOR_TOGGLE_BUTTON_SWITCH_CORE = ".v-switch-core";
+    private static string $SELECTOR_TOGGLE_BUTTON = ".vue-toggles";
 
-    /**
-     * @param Browser $browser
-     * @param string $selector
-     * @param string $label
-     * @param string|null $color
-     */
-    public function assertToggleButtonState(Browser $browser, string $selector, string $label, ?string $color=null){
+    public function assertToggleButtonState(Browser $browser, string $selector, string $label, ?string $color=null):void {
         $browser
             ->assertVisible($selector)
             ->assertSeeIn($selector, $label);
         if(!is_null($color)){
             $element_selector = $browser->resolver->format($selector);
-            $this->assertElementBackgroundColour($browser, $element_selector.' '.self::$SELECTOR_TOGGLE_BUTTON_SWITCH_CORE, $color);
+            $this->assertElementBackgroundColour($browser, $element_selector.self::$SELECTOR_TOGGLE_BUTTON, $color);
         }
     }
 
-    /**
-     * @param Browser $browser
-     * @param string $selector
-     */
-    public function toggleToggleButton(Browser $browser, string $selector){
+    public function toggleToggleButton(Browser $browser, string $selector):void {
         $browser
             ->click($selector)
-            ->pause(self::$WAIT_HALF_SECOND_IN_MILLISECONDS);   // wait for transition to complete
+            ->pause($this->toggleButtonTransitionTimeInMilliseconds());   // wait for transition to complete
+    }
+
+    private function toggleButtonTransitionTimeInMilliseconds():int {
+        return self::$WAIT_QUARTER_SECONDS_IN_MILLISECONDS;
     }
 
 }

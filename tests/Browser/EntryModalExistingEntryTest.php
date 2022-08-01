@@ -216,9 +216,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                             $this->assertEquals("true", $modal_body->attribute($this->_selector_modal_entry_field_value, "readonly"));
                             $this->assertEquals("true", $modal_body->attribute($this->_selector_modal_entry_field_account_type, "disabled"));
                             $this->assertEquals("true", $modal_body->attribute($this->_selector_modal_entry_field_memo, "readonly"));
-
-                            $classes = $modal_body->attribute($this->_selector_modal_entry_field_expense, "class");
-                            $this->assertStringContainsString($this->_class_disabled, $classes);
+                            $this->assertEquals("true", $modal_body->attribute($this->_selector_modal_entry_field_expense, "aria-readonly"));
                         })
 
                         ->within($this->_selector_modal_foot, function(Browser $modal_foot){
@@ -268,9 +266,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                     $this->assertNotEquals("true", $modal_body->attribute($this->_selector_modal_entry_field_value, 'readonly'));
                     $this->assertNotEquals("true", $modal_body->attribute($this->_selector_modal_entry_field_account_type, 'disabled'));
                     $this->assertNotEquals("true", $modal_body->attribute($this->_selector_modal_entry_field_memo, 'readonly'));
-
-                    $classes = $modal_body->attribute($this->_selector_modal_entry_field_expense, "class");
-                    $this->assertStringNotContainsString($this->_class_disabled, $classes);
+                    $this->assertNotEquals("true", $modal_body->attribute($this->_selector_modal_entry_field_expense, 'readonly'));
                 })
 
                 ->within($this->_selector_modal_foot, function(Browser $modal_foot){
