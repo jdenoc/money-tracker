@@ -333,15 +333,15 @@ export default {
     },
     toggleButtonProperties: function(){
       return {
-        colorChecked: this.tailwindColors.amber[300],
+        colorChecked: this.tailwindColors.yellow[400],
         colorUnchecked: this.tailwindColors.teal[500],
         disabled: this.isLocked,
         fontSize: 20, // px
         labelChecked: 'Expense',
         labelUnchecked: 'Income',
-        height: 40,
+        height: 40, // px
         toggleId: "entry-expense",
-        width: 200,
+        width: 200, // px
       };
     },
   },
