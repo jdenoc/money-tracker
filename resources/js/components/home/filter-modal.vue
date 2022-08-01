@@ -268,8 +268,8 @@ export default {
         fontSize: 14, // px
         labelChecked: 'Enabled',
         labelUnchecked: 'Disabled',
-        height: 40,
-        width: 200,
+        height: 40,   // px
+        width: 200,   // px
       };
     },
     canGenerateFilteredResults: function(){
