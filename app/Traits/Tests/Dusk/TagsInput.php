@@ -49,4 +49,14 @@ trait TagsInput {
         $browser->assertSeeIn(self::$SELECTOR_TAGS_INPUT_CONTAINER, $tag);
     }
 
+    public function assertCountOfTagsInInput(Browser $browser, int $expectedTagCount){
+        if($expectedTagCount === 0){
+            $browser->assertMissing(self::$SELECTOR_TAGS_INPUT_CONTAINER.' '.self::$SELECTOR_TAGS_INPUT_TAG);
+        } else {
+            $this->assertTagsInputHasTagsInInput($browser);
+            $tags = $browser->elements(self::$SELECTOR_TAGS_INPUT_CONTAINER.' '.self::$SELECTOR_TAGS_INPUT_TAG);
+            $this->assertCount($expectedTagCount, $tags);
+        }
+    }
+
 }
