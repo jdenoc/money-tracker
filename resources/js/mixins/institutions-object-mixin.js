@@ -2,24 +2,20 @@ import _ from 'lodash';
 import {Institutions} from "../institutions";
 
 export const institutionsObjectMixin = {
-    data: function(){
-        return {
-            institutionsObject: new Institutions()
-        }
-    },
 
     computed: {
+        institutionsObject: function(){
+            return new Institutions();
+        },
         rawInstitutionsData: function(){
             return this.institutionsObject.retrieve;
         },
         areInstitutionsAvailable: function(){
             return !_.isEmpty(this.rawInstitutionsData);
         },
-    },
-
-    methods: {
-        fetchInstitutions: function(){
-            return this.institutionsObject.fetch();
-        }
+        listInstitutions: function(){
+            return _.orderBy(this.rawInstitutionsData, ['name', 'active'], ['asc', 'desc']);
+        },
     }
+
 };
