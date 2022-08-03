@@ -10,16 +10,13 @@ Vue.use(Snotify, {toast: {timeout: 8000}});    // 8 seconds
 import eventHub from "./plugins/eventHub";
 Vue.use(eventHub);
 
+// components
 import LoadingModal from './components/loading-modal';
 import Navbar from './components/navbar';
 import Notification from './components/notification';
 import SettingsDisplay from "../js/components/settings/settings-display";
 import SettingsNav from "../js/components/settings/settings-nav";
-
-import SettingsAccounts from "../js/components/settings/settings-accounts";
-import SettingsAccountTypes from "../js/components/settings/settings-account-types";
-import SettingsInstitutions from "../js/components/settings/settings-institutions";
-
+// objects
 import {Accounts} from "./accounts";
 import {AccountTypes} from "./account-types";
 import {Institutions} from "./institutions";
@@ -27,14 +24,11 @@ import {Tags} from "./tags";
 import {Version} from './version';
 
 new Vue({
-    el: "#app",
+    el: "#app-settings",
     components: {
         LoadingModal,
         Navbar,
         Notification,
-        SettingsAccounts,
-        SettingsAccountTypes,
-        SettingsInstitutions,
         SettingsDisplay,
         SettingsNav,
     },
