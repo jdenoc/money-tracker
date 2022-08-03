@@ -15,8 +15,8 @@ trait EntryModal {
     use ToggleButton;
 
     // colours
-    private $_color_expense_switch_expense = "";
-    private $_color_expense_switch_income = "";
+    private string $_color_expense_switch_expense = "";
+    private string $_color_expense_switch_income = "";
 
     private function initEntryModalColours(){
         $this->_color_expense_switch_expense = $this->tailwindColors->yellow(400);
@@ -70,12 +70,78 @@ JS;
 
     // TODO: delete modal
 
-    // TODO: lock modal
+    protected function lockEntryModal(Browser $modal){
+        $modal
+            ->assertVisible($this->_selector_modal_entry_btn_lock.' svg.unlock-icon')
+            ->click($this->_selector_modal_entry_btn_lock)
+            ->assertVisible($this->_selector_modal_entry_btn_lock.' svg.lock-icon');
+    }
 
-    // TODO: unlock modal
-
-    // TODO: fill in fields
+    protected function unlockEntryModal(Browser $modal){
+        $modal
+            ->assertVisible($this->_selector_modal_entry_btn_lock.' svg.lock-icon')
+            ->click($this->_selector_modal_entry_btn_lock)
+            ->assertVisible($this->_selector_modal_entry_btn_lock.' svg.unlock-icon');
+    }
 
     // TODO: click transfer entry button
+
+    protected function setEntryModalDate(Browser $modal, string $date){
+        $browser_date = $modal->getDateFromLocale($modal->getBrowserLocale(), $date);
+        $new_value_to_type = $modal->processLocaleDateForTyping($browser_date);
+        $modal->type($this->_selector_modal_entry_field_date, $new_value_to_type);
+    }
+
+    protected function assertEntryModalDate(Browser $modal, string $date){
+        $modal->assertInputValue($this->_selector_modal_entry_field_date, $date);
+    }
+
+    protected function setEntryModalValue(Browser $modal, string $value){
+        $modal->type($this->_selector_modal_entry_field_value, $value);
+    }
+
+    protected function assertEntryModalValue(Browser $modal, string $value){
+        $modal->assertInputValue($this->_selector_modal_entry_field_value, $value);
+    }
+
+    protected function setEntryModalAccountType(Browser $modal, int $accountTypeId){
+        $modal->select($this->_selector_modal_entry_field_account_type, $accountTypeId);
+    }
+
+    protected function assertEntryModalAccountType(Browser $modal, int $accountTypeId){
+        $modal
+            ->assertSelected($this->_selector_modal_entry_field_account_type, $accountTypeId)
+            ->assertSee($this->_label_account_type_meta_account_name)
+            ->assertSee($this->_label_account_type_meta_last_digits);
+    }
+
+    protected function setEntryModalMemo(Browser $modal, string $memo){
+        $modal->type($this->_selector_modal_entry_field_memo, $memo);
+    }
+
+    protected function assertEntryModalMemo(Browser $modal, string $memo){
+        $modal->assertInputValue($this->_selector_modal_entry_field_memo, $memo);
+    }
+
+    protected function toggleEntryModalExpense(Browser $modal){
+        $this->toggleToggleButton($modal, $this->_selector_modal_entry_field_expense);
+    }
+
+    protected function assertEntryModalExpenseState(Browser $modal, bool $isExpense){
+        $data_expense_switch_label = $isExpense ? $this->_label_expense_switch_expense : $this->_label_expense_switch_income;
+        $expense_switch_color = $isExpense ? $this->_color_expense_switch_expense : $this->_color_expense_switch_income;
+        $this->assertToggleButtonState($modal, $this->_selector_modal_entry_field_expense, $data_expense_switch_label, $expense_switch_color);
+    }
+
+    protected function assertTagInEntryModalLockedTags(Browser $modal, string $tag){
+        $modal
+            ->assertVisible($this->_selector_modal_entry_tags_locked.$this->_selector_tags_tag)
+            ->assertSeeIn($this->_selector_modal_entry_tags_locked, $tag);
+    }
+
+    public function assertCountOfLockedTagsInEntryModal(Browser $modal, int $expectedTagCount){
+        $tags = $modal->elements(self::$SELECTOR_TAGS_INPUT_CONTAINER.' '.self::$SELECTOR_TAGS_INPUT_TAG);
+        $this->assertCount($expectedTagCount, $tags);
+    }
 
 }
