@@ -30,11 +30,11 @@ export class ObjectBaseClass {
             switch(error.response.status){
                 case 404:
                     // TODO: fill in stuff here
-                    break;
+                    return {};
                 case 500:
                 default:
                     // TODO: fill in stuff here
-                    break;
+                    return {};
             }
         }
     }
