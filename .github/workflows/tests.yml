@@ -39,11 +39,7 @@ jobs:
 
       - name: Generate cache keys [vue]
         id: cache-key-vue
-<<<<<<< HEAD
         run: echo "value=cache-vue-${{ hashFiles('package*.json') }}-${{ hashFiles('resources/*') }}-${{ hashFiles('tailwind.config.js') }}-${{ hashFiles('webpack.mix.js') }}" >> $GITHUB_OUTPUT
-=======
-        run: echo "::set-output name=value::cache-vue-${{ hashFiles('package*.json') }}-${{ hashFiles('resources/*') }}-${{ hashFiles('tailwind.config.js') }}-${{ hashFiles('webpack.mix.js') }}"
->>>>>>> e537538 (- Updated the key used for caching vue files in the `tests` Github Action workflow.)
 
       - name: Generate cache paths [docker]
         id: cache-path-docker
@@ -60,22 +56,10 @@ jobs:
       - name: Generate cache paths [vue]
         id: cache-path-vue
         run: |
-<<<<<<< HEAD
           echo "value<<EOF" >> $GITHUB_OUTPUT
           echo "public/dist" >> $GITHUB_OUTPUT 
           echo "public/mix-manifest.json" >> $GITHUB_OUTPUT 
           echo "EOF" >> $GITHUB_OUTPUT
-=======
-          VUE_CACHE_PATH=$(cat << EOF
-          public/dist
-          public/mix-manifest.json
-          EOF
-          )
-          VUE_CACHE_PATH="${VUE_CACHE_PATH//'%'/'%25'}"
-          VUE_CACHE_PATH="${VUE_CACHE_PATH//$'\n'/'%0A'}"
-          VUE_CACHE_PATH="${VUE_CACHE_PATH//$'\r'/'%0D'}"
-          echo "::set-output name=value::$VUE_CACHE_PATH"
->>>>>>> e537538 (- Updated the key used for caching vue files in the `tests` Github Action workflow.)
 
       - name: Generate failure content paths for artifact upload
         id: failure-artifact-paths
