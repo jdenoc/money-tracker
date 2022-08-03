@@ -861,6 +861,63 @@ jobs:
           path: ${{ needs.pre-build.outputs.failure-upload-paths }}
           retention-days: 10
 
+  tests-e2e-settings:
+    needs:
+      - pre-build
+      - build
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # retrieve cache
+      - name: Get Cached Docker images
+        id: docker-image-cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ needs.pre-build.outputs.cache-path-docker }}
+          key: ${{ needs.pre-build.outputs.cache-key-docker }}
+
+      - name: Get Cached Composer packages
+        id: composer-cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ needs.pre-build.outputs.cache-path-composer }}
+          key: ${{ needs.pre-build.outputs.cache-key-composer }}
+
+      - name: Get Cached npm packages
+        id: npm-cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ needs.pre-build.outputs.cache-path-npm }}
+          key: ${{ needs.pre-build.outputs.cache-key-npm }}
+
+      - name: Get Cached vue
+        id: vue-cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ needs.pre-build.outputs.cache-path-vue }}
+          key: ${{ needs.pre-build.outputs.cache-key-vue }}
+
+      # end-2-end tests
+      - uses: ./.github/actions/app-init
+        with:
+          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
+      - run: .docker/cmd/artisan.sh dusk --group settings-institutions --stop-on-failure
+
+      - name: Failure docker inspection
+        uses: ./.github/actions/failure-docker-inspect
+        if: failure()
+
+      - name: Failure upload
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: ${{ github.sha }}-e2e-settings
+          path: ${{ needs.pre-build.outputs.failure-upload-paths }}
+          retention-days: 10
+
   notification:
     runs-on: ubuntu-latest
     needs:  # make sure the notification is sent AFTER the jobs you want included have completed
@@ -875,6 +932,7 @@ jobs:
       - tests-e2e-stats-trending
       - tests-e2e-stats-distribution
       - tests-e2e-stats-tags
+      - tests-e2e-settings
     if: ${{ always() }} # You always want to be notified: success, failure, or cancelled
     timeout-minutes: 15
     steps:

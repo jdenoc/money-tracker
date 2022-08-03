@@ -1,5 +1,5 @@
 <template>
-  <div id="settings-display">
+  <div id="settings-display" class="ml-2 w-4/5 px-12 pt-4 mt-4">
     <settings-home v-if="noSettingsAreSelected"></settings-home>
     <settings-institutions v-if="isVisibleSettings.institutions"></settings-institutions>
     <settings-accounts v-if="isVisibleSettings.accounts"></settings-accounts>
@@ -9,10 +9,10 @@
 </template>
 
 <script>
-import SettingsInstitutions from "./settings-institutions";
-import SettingsHome from "./settings-home";
 import SettingsAccounts from "./settings-accounts";
 import SettingsAccountTypes from "./settings-account-types";
+import SettingsHome from "./settings-home";
+import SettingsInstitutions from "./settings-institutions";
 import SettingsTags from "./settings-tags";
 
 import {settingsNavMixin} from "../../mixins/settings-nav-mixin";
@@ -20,7 +20,13 @@ import _ from "lodash";
 
 export default {
   name: "settings-display",
-  components: {SettingsTags, SettingsAccounts, SettingsAccountTypes, SettingsHome, SettingsInstitutions},
+  components: {
+    SettingsAccounts,
+    SettingsAccountTypes,
+    SettingsInstitutions,
+    SettingsHome,
+    SettingsTags,
+  },
   mixins: [settingsNavMixin],
   computed: {
     noSettingsAreSelected: function(){
@@ -45,7 +51,4 @@ export default {
 </script>
 
 <style scoped>
-  #settings-display{
-    margin-top: 15px;
-  }
 </style>
