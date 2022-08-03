@@ -1,10 +1,12 @@
 * text=auto
-*.scss linguist-vendored
 
 *.blade.php diff=html
-*.css diff=css
-*.html diff=html
-*.md diff=markdown
-*.php diff=php
+*.css       diff=css
+*.html      diff=html
+*.md        diff=markdown
+*.php       diff=php
+*.js        diff=javascript
+*.scss      diff=css
 
 /.github export-ignore
+/docs    export-ignore
