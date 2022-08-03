@@ -33,6 +33,14 @@ Route::get('institution/{institution_id}', 'Api\InstitutionController@get_instit
 // GET /api/institute/{institution_id}
 Route::get('institute/{institution_id}', 'Api\InstitutionController@get_institution')
     ->name('institute');
+Route::put('institution/{institution_id}', 'Api\InstitutionController@update_institution')
+    ->name('institution.put');
+Route::put('institute/{institution_id}', 'Api\InstitutionController@update_institution')
+    ->name('institute.put');
+Route::post('institution', 'Api\InstitutionController@create_institution')
+    ->name('institution.post');
+Route::post('institute', 'Api\InstitutionController@create_institution')
+    ->name('institute.post');
 
 // GET /api/tags
 Route::get('tags', 'Api\TagController@get_tags')

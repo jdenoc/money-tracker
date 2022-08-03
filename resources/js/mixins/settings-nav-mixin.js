@@ -3,8 +3,7 @@ export const settingsNavMixin = {
         return {
             isVisibleSettings: {
                 institutions: false,
-                // accounts: false,
-                accounts: true,     // TODO: used just for testing
+                accounts: false,
                 accountTypes: false,
                 tags: false,
             }
@@ -26,7 +25,7 @@ export const settingsNavMixin = {
             if(this.isVisibleSettings.hasOwnProperty(settingsToMakeVisible)){
                 this.isVisibleSettings[settingsToMakeVisible] = true;
             } else {
-                console.error("FEATURE IS NOT AVAILABLE");
+                console.warn("FEATURE IS NOT AVAILABLE");
             }
         },
     },

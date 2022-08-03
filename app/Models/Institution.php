@@ -8,8 +8,10 @@ class Institution extends BaseModel {
 
     use HasFactory;
 
+    const CREATED_AT = 'create_stamp';
+    const UPDATED_AT = 'modified_stamp';
+
     protected $table = 'institutions';
-    public $timestamps = false; // turns off default laravel time stamping
     protected $fillable = [
         'name'
     ];
@@ -18,10 +20,6 @@ class Institution extends BaseModel {
     ];
     protected $casts = [
         'active'=>'boolean'
-    ];
-    protected $dates = [
-        'create_stamp',
-        'modified_stamp'
     ];
 
     public function accounts(){
