@@ -20,6 +20,7 @@ use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
+use InvalidArgumentException;
 use Laravel\Dusk\Browser;
 use LengthException;
 use Tests\Browser\Pages\HomePage;
@@ -130,17 +131,11 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                         })
 
                         ->within($this->_selector_modal_body, function(Browser $modal_body) use ($entry_data, $is_expense){
-                            $data_expense_switch_label = $is_expense ? $this->_label_expense_switch_expense : $this->_label_expense_switch_income;
-                            $expense_switch_color = $is_expense ? $this->_color_expense_switch_expense : $this->_color_expense_switch_income;
-
-                            $modal_body
-                                ->assertInputValue($this->_selector_modal_entry_field_date, $entry_data['entry_date'])
-                                ->assertInputValue($this->_selector_modal_entry_field_value, $entry_data['entry_value'])
-                                ->assertSelected($this->_selector_modal_entry_field_account_type, $entry_data['account_type_id'])
-                                ->assertInputValue($this->_selector_modal_entry_field_memo, $entry_data['memo'])
-                                ->assertSeeIn($this->_selector_modal_entry_meta, $this->_label_account_type_meta_account_name)
-                                ->assertSeeIn($this->_selector_modal_entry_meta, $this->_label_account_type_meta_last_digits);
-                            $this->assertToggleButtonState($modal_body, $this->_selector_modal_entry_field_expense, $data_expense_switch_label, $expense_switch_color);
+                            $this->assertEntryModalDate($modal_body, $entry_data['entry_date']);
+                            $this->assertEntryModalValue($modal_body, $entry_data['entry_value']);
+                            $this->assertEntryModalAccountType($modal_body, $entry_data['account_type_id']);
+                            $this->assertEntryModalMemo($modal_body, $entry_data['memo']);
+                            $this->assertEntryModalExpenseState($modal_body, $is_expense);
                         })
 
                         ->within($this->_selector_modal_foot, function(Browser $modal_foot){
@@ -197,17 +192,11 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                         })
 
                         ->within($this->_selector_modal_body, function(Browser $modal_body) use ($entry_data, $is_expense){
-                            $data_expense_switch_label = $is_expense ? $this->_label_expense_switch_expense : $this->_label_expense_switch_income;
-                            $expense_switch_color = $is_expense ? $this->_color_expense_switch_expense : $this->_color_expense_switch_income;
-
-                            $modal_body
-                                ->assertInputValue($this->_selector_modal_entry_field_date, $entry_data['entry_date'])
-                                ->assertInputValue($this->_selector_modal_entry_field_value, $entry_data['entry_value'])
-                                ->assertSelected($this->_selector_modal_entry_field_account_type, $entry_data['account_type_id'])
-                                ->assertSee($this->_label_account_type_meta_account_name)
-                                ->assertSee($this->_label_account_type_meta_last_digits)
-                                ->assertInputValue($this->_selector_modal_entry_field_memo, $entry_data['memo']);
-                            $this->assertToggleButtonState($modal_body, $this->_selector_modal_entry_field_expense, $data_expense_switch_label, $expense_switch_color);
+                            $this->assertEntryModalDate($modal_body, $entry_data['entry_date']);
+                            $this->assertEntryModalValue($modal_body, $entry_data['entry_value']);
+                            $this->assertEntryModalAccountType($modal_body, $entry_data['account_type_id']);
+                            $this->assertEntryModalMemo($modal_body, $entry_data['memo']);
+                            $this->assertEntryModalExpenseState($modal_body, $is_expense);
                             $modal_body
                                 ->assertMissing($this->_selector_modal_entry_field_upload)
                                 ->assertDontSee(self::$LABEL_FILE_DRAG_N_DROP);
@@ -344,11 +333,9 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                             $this->assertTagInInput($entry_modal, $entry_tag);
                         }
                     } else {
-                        $entry_modal
-                            ->assertVisible($this->_selector_tags)
-                            ->assertVisible($this->_selector_tags_tag);
+                        $entry_modal->assertVisible($this->_selector_modal_entry_tags_locked);
                         foreach($entry_tags as $entry_tag){
-                            $entry_modal->assertSeeIn($this->_selector_tags, $entry_tag);
+                            $this->assertTagInEntryModalLockedTags($entry_modal, $entry_tag);
                         }
                     }
                 });
@@ -717,13 +704,11 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                 ->within($this->_selector_modal_entry, function(Browser $entry_modal) use ($transfer_entry_data){
                     $entry_modal
                         ->within($this->_selector_modal_body, function(Browser $modal_body) use ($transfer_entry_data){
-                            $modal_body
-                                ->assertInputValue($this->_selector_modal_entry_field_date, $transfer_entry_data['entry_date'])
-                                ->assertInputValue($this->_selector_modal_entry_field_value, $transfer_entry_data['entry_value'])
-                                ->assertSelected($this->_selector_modal_entry_field_account_type, $transfer_entry_data['account_type_id'])
-                                ->assertInputValue($this->_selector_modal_entry_field_memo, $transfer_entry_data['memo']);
-                            $expense_switch_label = $transfer_entry_data['expense'] ? $this->_label_expense_switch_expense : $this->_label_expense_switch_income;
-                            $this->assertToggleButtonState($modal_body, $this->_selector_modal_entry_field_expense, $expense_switch_label);
+                            $this->assertEntryModalDate($modal_body, $transfer_entry_data['entry_date']);
+                            $this->assertEntryModalValue($modal_body, $transfer_entry_data['entry_value']);
+                            $this->assertEntryModalAccountType($modal_body, $transfer_entry_data['account_type_id']);
+                            $this->assertEntryModalMemo($modal_body, $transfer_entry_data['memo']);
+                            $this->assertEntryModalExpenseState($modal_body, $transfer_entry_data['expense']);
                         })
                         ->within($this->_selector_modal_head, function(Browser $modal_head) use ($transfer_entry_data){
                             $modal_entry_id = $modal_head->inputValue($this->_selector_modal_entry_field_entry_id);
@@ -742,13 +727,11 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                 ->within($this->_selector_modal_entry, function(Browser $entry_modal) use ($entry_data){
                     $entry_modal
                         ->within($this->_selector_modal_body, function(Browser $modal_body) use ($entry_data){
-                            $modal_body
-                                ->assertInputValue($this->_selector_modal_entry_field_date, $entry_data['entry_date'])
-                                ->assertInputValue($this->_selector_modal_entry_field_value, $entry_data['entry_value'])
-                                ->assertSelected($this->_selector_modal_entry_field_account_type, $entry_data['account_type_id'])
-                                ->assertInputValue($this->_selector_modal_entry_field_memo, $entry_data['memo']);
-                            $expense_switch_label = $entry_data['expense'] ? $this->_label_expense_switch_expense : $this->_label_expense_switch_income;
-                            $this->assertToggleButtonState($modal_body, $this->_selector_modal_entry_field_expense, $expense_switch_label);
+                            $this->assertEntryModalDate($modal_body, $entry_data['entry_date']);
+                            $this->assertEntryModalValue($modal_body, $entry_data['entry_value']);
+                            $this->assertEntryModalAccountType($modal_body, $entry_data['account_type_id']);
+                            $this->assertEntryModalMemo($modal_body, $entry_data['memo']);
+                            $this->assertEntryModalExpenseState($modal_body, $entry_data['expense']);
                         })
                         ->within($this->_selector_modal_head, function(Browser $modal_head) use ($entry_data){
                             $modal_entry_id = $modal_head->inputValue($this->_selector_modal_entry_field_entry_id);
@@ -1137,10 +1120,136 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     }
 
     /**
-     * @param int|bool $get_id
-     * @return string
+     * @return void
+     * @throws Throwable
+     *
+     * @group entry-modal-3
+     * test 8/25
      */
-    private function randomConfirmedEntrySelector($get_id=false): string{
+    public function testMarkingEntryUnconfirmedAfterUnlockingMakesLockButtonDisappear(){
+        $this->browse(function(Browser $browser) {
+            $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
+
+            $entry_selector = $this->randomConfirmedEntrySelector(true);
+            $browser
+                ->openExistingEntryModal($entry_selector)
+                ->within($this->_selector_modal_entry, function (Browser $entry_modal) use ($entry_selector) {
+                    // unlock modal
+                    $this->unlockEntryModal($entry_modal);
+                    // toggle the confirmed button
+                    $this->assertConfirmedButtonActive($entry_modal);
+                    $this->interactWithConfirmButton($entry_modal);
+                    $this->assertConfirmedButtonInActive($entry_modal);
+                    // lock button missing
+                    $entry_modal->assertMissing($this->_selector_modal_foot.' '.$this->_selector_modal_entry_btn_lock);
+                });
+        });
+    }
+
+    public function providerOpenExistingConfirmedEntryUnlockingChangingValuesAndRelockingResetsValues(){
+        return [
+            'date'=>[$this->_selector_modal_entry_field_date],                    // test 9/25
+            'value'=>[$this->_selector_modal_entry_field_value],                  // test 10/25
+            'account-type'=>[$this->_selector_modal_entry_field_account_type],    // test 11/25
+            'memo'=>[$this->_selector_modal_entry_field_memo],                    // test 12/25
+            'expense'=>[$this->_selector_modal_entry_field_expense],              // test 13/25
+            'tags'=>[$this->_selector_modal_entry_tags_locked],                   // test 14/25
+        ];
+    }
+
+    /**
+     * @dataProvider providerOpenExistingConfirmedEntryUnlockingChangingValuesAndRelockingResetsValues
+     * @param string $modal_input_selector
+     *
+     * @return void
+     * @throws Throwable
+     */
+    public function testOpenExistingConfirmedEntryUnlockingChangingValuesAndRelockingResetsValues(string $modal_input_selector){
+        if($modal_input_selector === $this->_selector_modal_entry_tags_locked){
+            // make sure there is at least one tag that doesn't belong to an entry
+            $tag_to_test = $this->faker->word();
+            factory(Tag::class)->create(['name'=>$tag_to_test]);
+        } else {
+            $tag_to_test = null;
+        }
+
+        $this->browse(function(Browser $browser) use ($modal_input_selector, $tag_to_test){
+            $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
+
+            $entry_selector = $this->randomConfirmedEntrySelector(true);
+            $browser
+                ->openExistingEntryModal($entry_selector)
+                ->within($this->_selector_modal_entry, function(Browser $entry_modal) use ($modal_input_selector, $entry_selector, $tag_to_test){
+                    // retrieve entry data prior to input changes to avoid worry of values changing unintentionally
+                    $entry_id = $this->getEntryIdFromSelector($entry_selector);
+                    $entry_data = $this->getApiEntry($entry_id);
+
+                    // unlock modal
+                    $entry_modal->within($this->_selector_modal_foot, function(Browser $modal_foot){
+                        $this->unlockEntryModal($modal_foot);
+                    });
+
+                    // modify an input
+                    $entry_modal->within($this->_selector_modal_body, function(Browser $modal_body) use ($modal_input_selector, $entry_data, $tag_to_test){
+                        switch($modal_input_selector){
+                            case $this->_selector_modal_entry_field_date:
+                                $temp_value = $this->faker->date('Y-m-d');
+                                $this->setEntryModalDate($modal_body, $temp_value);
+                                break;
+                            case $this->_selector_modal_entry_field_value:
+                                $temp_value = $this->faker->randomFloat(2);
+                                $this->setEntryModalValue($modal_body, $temp_value);
+                                break;
+                            case $this->_selector_modal_entry_field_account_type:
+                                $account_types = $this->getApiAccountTypes();
+                                $this->assertGreaterThan(1, count($account_types), "Account-types available are not suffient for running this test");
+                                do{
+                                    $account_type = $this->faker->randomElement($account_types);
+                                    $temp_value = $account_type['id'];
+                                }while($entry_data['account_type_id'] == $temp_value);
+
+                                $this->setEntryModalAccountType($modal_body, $temp_value);
+                                break;
+                            case $this->_selector_modal_entry_field_memo:
+                                $temp_value = $this->faker->sentence();
+                                $this->setEntryModalMemo($modal_body, $temp_value);
+                                break;
+                            case $this->_selector_modal_entry_field_expense:
+                                $this->toggleEntryModalExpense($modal_body);
+                                $this->assertEntryModalExpenseState($modal_body, !$entry_data['expense']);
+                                break;
+                            case $this->_selector_modal_entry_tags_locked:
+                                $this->fillTagsInputUsingAutocomplete($modal_body, $tag_to_test);
+                                break;
+                            default:
+                                throw new InvalidArgumentException($modal_input_selector.' is not valid or accounted for');
+                        }
+                    });
+
+                    // relock modal and confirm input values are unchanged
+                    $entry_modal
+                        ->within($this->_selector_modal_foot, function(Browser $modal_foot){
+                            $this->lockEntryModal($modal_foot);
+                        })
+                        ->within($this->_selector_modal_body, function(Browser $modal_body) use ($entry_data){
+                            $this->assertEntryModalDate($modal_body, $entry_data['entry_date']);
+                            $this->assertEntryModalValue($modal_body, $entry_data['entry_value']);
+                            $this->assertEntryModalAccountType($modal_body, $entry_data['account_type_id']);
+                            $this->assertEntryModalMemo($modal_body, $entry_data['memo']);
+                            $this->assertEntryModalExpenseState($modal_body, $entry_data['expense']);
+
+                            foreach ($entry_data['tags'] as $tag){
+                                $this->assertTagInEntryModalLockedTags($modal_body, $tag['name']);
+                            }
+                            $this->assertCountOfLockedTagsInEntryModal($modal_body, count($entry_data['tags']));
+                        });
+                });
+        });
+    }
+
+    private function randomConfirmedEntrySelector(bool $get_id=false): string{
         if($get_id){
             return $this->randomEntrySelector(['confirm'=>true]);
         } else {
