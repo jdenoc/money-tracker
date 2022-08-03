@@ -142,7 +142,7 @@
               v-bind:selected-tags.sync="entryData.tags"
           ></tags-input>
 
-          <div v-show="isLocked" class="tags flex flex-wrap shadow border-t rounded py-1 px-2 min-h-full">
+          <div v-show="isLocked" id="entry-tags-locked" class="tags flex flex-wrap shadow border-t rounded py-1 px-2 min-h-full">
             <span class="tag rounded-full bg-gray-200 text-gray-800 text-xs px-2 py-1 mx-1 my-0.5"
                   v-text="tag"
                   v-for="tag in displayReadOnlyTags"
@@ -522,6 +522,7 @@ export default {
       if(this.isLocked){
         this.unlockModal();
       } else {
+        this.entryData = this.entryObject.find(this.entryData.id);
         this.lockModal();
       }
     },

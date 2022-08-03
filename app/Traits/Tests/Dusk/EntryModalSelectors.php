@@ -15,7 +15,8 @@ trait EntryModalSelectors {
     private $_selector_modal_entry_meta = "#entry-account-type-meta";
     private $_selector_modal_entry_field_memo = "textarea#entry-memo";
     private $_selector_modal_entry_field_expense = "#entry-expense";
-    private $_selector_tags = ".tags";
+    private $_selector_modal_entry_tags = "#entry-tags";
+    private $_selector_modal_entry_tags_locked = "#entry-tags-locked";
     private $_selector_tags_tag = ".tags .tag";
     private $_selector_modal_entry_field_upload = "#entry-modal-file-upload";
     private $_selector_modal_entry_dropzone_hidden_file_input = "#entry-modal-hidden-file-input";
@@ -30,8 +31,8 @@ trait EntryModalSelectors {
     private $_selector_modal_entry_btn_save = "button#entry-save-btn";
 
     // labels
-    private $_label_btn_confirmed = "Confirmed";
-    private $_label_expense_switch_expense = "Expense";
-    private $_label_expense_switch_income = "Income";
+    private string $_label_btn_confirmed = "Confirmed";
+    private string $_label_expense_switch_expense = "Expense";
+    private string $_label_expense_switch_income = "Income";
 
 }

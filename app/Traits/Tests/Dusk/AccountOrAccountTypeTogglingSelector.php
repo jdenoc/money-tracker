@@ -15,15 +15,15 @@ trait AccountOrAccountTypeTogglingSelector {
     use DuskTraitToggleButton;
     use WaitTimes;
 
-    private static $SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT = ".select-account-or-account-types-id";
+    private static string $SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT = ".select-account-or-account-types-id";
 
-    private static $LABEL_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_TOGGLE_ACCOUNT = "Account";
-    private static $LABEL_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_TOGGLE_ACCOUNTTYPE = "Account Type";
-    private static $LABEL_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_TOGGLE_DEFAULT = "Account";
-    private static $LABEL_ACCOUNT_AND_ACCOUNT_TYPE_SELECT_OPTION_DEFAULT = "[ ALL ]";
+    private static string $LABEL_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_TOGGLE_ACCOUNT = "Account";
+    private static string $LABEL_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_TOGGLE_ACCOUNTTYPE = "Account Type";
+    private static string $LABEL_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_TOGGLE_DEFAULT = "Account";
+    private static string $LABEL_ACCOUNT_AND_ACCOUNT_TYPE_SELECT_OPTION_DEFAULT = "[ ALL ]";
 
-    private $_account_or_account_type_toggling_selector_id_label;
-    private $_disable_checkbox_checked = false;
+    private string $_account_or_account_type_toggling_selector_id_label;
+    private bool $_disable_checkbox_checked = false;
 
     private function assertAccountOrAccountTypeTogglingSelectorIdLabelBeenSet(){
         if(!$this->_account_or_account_type_toggling_selector_id_label){
