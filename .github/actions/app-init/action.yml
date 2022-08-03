@@ -16,14 +16,14 @@ runs:
     - run: |
         docker load -i ${{ inputs.docker-image-directory }}/${PROJECT_NAME}.tar.gz
         docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME up -d
-        docker container exec -t $(docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps -q database) iterate-mysql-health-check
+        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME exec -T database iterate-mysql-health-check
         docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps
       shell: bash
     # ensure correct user:group ownership
     - run: |
-        docker container exec -t --user root $(docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps -q application) chown -R www-data .
-        docker container exec -t --user root $(docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps -q selenium) chgrp seluser /home/seluser/Downloads
-        docker container exec -t --user root $(docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps -q selenium) chmod g+w /home/seluser/Downloads
+        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME exec -T --user root application chown -R www-data .
+        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME exec -T --user root selenium chgrp seluser /home/seluser/Downloads
+        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME exec -T --user root selenium chmod g+w /home/seluser/Downloads
       shell: bash
     # general application setup
     - run: |
@@ -35,12 +35,12 @@ runs:
       shell: bash
     # setup laravel log files
     - run: |
-        docker container exec -t --user www-data $(docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps -q application) touch storage/logs/php_error.log
-        docker container exec -t --user www-data $(docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps -q application) touch storage/logs/laravel.log
+        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME exec -T --user www-data application touch storage/logs/php_error.log
+        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME exec -T --user www-data application touch storage/logs/laravel.log
       shell: bash
     # clear cache and create alternative .env file
     - if: ${{ inputs.is-cacheless != 'false' }}
       run: |
         .docker/cmd/artisan.sh config:clear
-        docker container exec -t --user www-data $(docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps -q application) cp .env.docker .env.testing
+        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME exec -T --user www-data application cp .env.docker .env.testing
       shell: bash
