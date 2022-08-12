@@ -1,130 +1,111 @@
 <template>
-  <section id="settings-accounts" class="container">
-    <h3 class="subtitle is-3 is-family-monospace"><i aria-hidden="true" class="fas fa-cogs"></i> Accounts</h3>
-    <form>
-      <div class="field is-horizontal">
-        <!-- name -->
-        <div class="field-label is-normal">
-          <label class="label" for="settings-account-name">Name:</label>
-        </div>
-        <div class="field-body"><div class="field"><div class="control">
-          <input id="settings-account-name" name="name" type="text" class="input" v-model="form.name" />
-        </div></div></div>
+  <section id="settings-accounts" class="max-w-lg">
+    <h3 class="text-2xl mb-5">Accounts</h3>
+    <form class="grid grid-cols-6 gap-2">
+      <!-- name -->
+      <label for="settings-account-name" class="font-medium justify-self-end py-2 col-span-2">Name:</label>
+      <input id="settings-account-name" name="name" type="text" class="rounded text-gray-700 col-span-4" autocomplete="off" o v-model="form.name" />
+
+      <!-- institution -->
+      <label for="settings-account-institution" class="font-medium justify-self-end py-2 col-span-2">Institution:</label>
+      <div class="relative text-gray-700 col-span-4">
+        <span class="loading absolute inset-y-3 left-2" v-show="!areInstitutionsAvailable">
+          <svg class="animate-spin mr-3 h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        </span>
+
+        <select id="settings-account-institution" class="rounded w-full" v-model="form.institutionId">
+          <option value="" selected></option>
+          <option
+              v-for="institution in listInstitutions"
+              v-bind:key="institution.id"
+              v-bind:value="institution.id"
+              v-text="institution.name"
+              v-show="institution.active"
+          ></option>
+        </select>
       </div>
 
-      <div class="field is-horizontal">
-        <!-- institution -->
-        <div class="field-label is-normal">
-          <label class="label" for="settings-account-institution">Institution:</label>
-        </div>
-        <div class="field-body"><div class="field"><div class="control">
-          <div class="select">
-            <select id="settings-account-institution" v-model="form.institutionId" v-bind:class="{'is-loading': !areInstitutionsAvailable}">
-              <option value="" selected></option>
-              <option
-                v-for="institution in listInstitutions"
-                v-bind:key="institution.id"
-                v-bind:value="institution.id"
-                v-text="institution.name"
-                v-show="institution.active"
-              ></option>
-            </select>
-          </div>
-        </div></div></div>
-      </div>
-
-      <div class="field is-horizontal">
-        <!-- total -->
-        <div class="field-label is-normal">
-          <label class="label" for="settings-account-total">Total:</label>
-        </div>
-        <div class="field-body"><div class="field"><div class="control has-icons-left">
-          <input id="settings-account-total" name="total" type="text" class="input" placeholder="0.00"
-            v-model="form.total"
-            v-on:change="decimaliseTotal"
+      <!-- currency -->
+      <div class="font-medium justify-self-end py-2 col-span-2">Currency:</div>
+      <div class="col-span-4 flex flex-wrap gap-y-1 gap-x-1.5">
+        <label class="settings-account-currency rounded-md px-2 py-1.5 text-base border border-gray-300"
+               v-for="currency in listCurrencies"
+               v-bind:class="{
+                  'bg-white hover:bg-gray-100 text-gray-700': form.currency !== currency.code,
+                  'bg-blue-600 text-white opacity-90 hover:opacity-100 ': form.currency === currency.code,
+                }"
+        >
+          <input type="radio" name="settings-account-currency" class="appearance-none hidden"
+                 v-bind:id="'settings-account-currency-'+currency.label"
+                 v-model="form.currency"
+                 v-bind:value="currency.code"
           />
-          <span class="icon is-small is-left">
-            <i v-bind:class="currencyObject.getClassFromCode(form.currency)"></i>
-          </span>
-        </div></div></div>
+          <span v-text="currency.code"></span>
+        </label>
       </div>
 
-      <div class="field is-horizontal">
-        <!-- currency -->
-        <div class="field-label is-normal"><label class="label">Currency:</label></div>
-        <div class="field-body"><div class="field is-grouped">
-          <span v-for="currency in listCurrencies" class="settings-account-currency">
-            <input class="is-checkradio is-info" type="radio" name="currency"
-              v-bind:id="'settings-account-currency-'+currency.label"
-              v-bind:value="currency.code"
-              v-model="form.currency"
-            />
-            <label v-bind:for="'settings-account-currency-'+currency.label" v-text="currency.code">
-              <i v-bind:class="currency.class"></i>
-            </label>
-          </span>
-        </div></div>
+      <!-- total -->
+      <label for="settings-account-total" class="font-medium justify-self-end py-2 col-span-2">Total:</label>
+      <div class="col-span-4 relative text-gray-700">
+        <input id="settings-account-total" name="total" type="text" class="placeholder-gray-400 placeholder-opacity-80 rounded w-full pl-6" placeholder="0.00" autocomplete="off"
+               v-model="form.total"
+               v-on:change="decimaliseTotal"
+        />
+        <span class="absolute left-3 inset-y-2 mt-px text-gray-400 font-medium" v-html="currencyObject.getHtmlFromCode(form.currency)"></span>
       </div>
 
-      <div class="field is-horizontal">
-        <!-- Active State -->
-        <div class="field-label is-normal"><label class="label" for="settings-account-disabled">Active State:</label></div>
-        <div class="field-body"><div class="field"><div class="control">
-          <toggle-button
-              id="settings-account-disabled"
-              v-model="form.disabled"
-              v-bind:value="form.disabled"
-              v-bind:labels="toggleButtonProperties.labels"
-              v-bind:color="toggleButtonProperties.colors"
-              v-bind:height="toggleButtonProperties.height"
-              v-bind:width="toggleButtonProperties.width"
-              v-bind:sync="true"
-          />
-        </div></div></div>
+      <!-- Active State -->
+      <label for="settings-account-disabled" class="font-medium justify-self-end py-2 col-span-2">Active State:</label>
+      <div class="col-span-4">
+        <toggle-button v-bind:toggle-state.sync="form.disabled" toggle-id="settings-account-disabled" v-bind="toggleButtonProperties"></toggle-button>
       </div>
 
-      <div class="field is-horizontal" v-if="isDataInForm">
-        <div class="field-label"><label class="label">Created:</label></div>
-        <div class="field-body" v-text="makeDateReadable(form.createStamp)"></div>
-      </div>
+      <div class="font-medium" v-show="isDataInForm">Created:</div>
+      <div class="col-span-5 italic text-sm self-center leading-none justify-self-end" v-show="isDataInForm" v-text="makeDateReadable(form.createStamp)"></div>
 
-      <div class="field is-horizontal" v-if="isDataInForm">
-        <div class="field-label"><label class="label">Modified:</label></div>
-        <div class="field-body" v-text="makeDateReadable(form.modifiedStamp)"></div>
-      </div>
+      <div class="font-medium" v-show="isDataInForm">Modified:</div>
+      <div class="col-span-5 italic text-sm self-center leading-none justify-self-end" v-show="isDataInForm" v-text="makeDateReadable(form.modifiedStamp)"></div>
 
-      <div class="field is-horizontal" v-if="isDataInForm">
-        <div class="field-label"><label class="label">Disabled:</label></div>
-        <div class="field-body" v-text="makeDateReadable(form.disabledStamp)"></div>
-      </div>
+      <div class="font-medium" v-show="isDataInForm">Disabled:</div>
+      <div class="col-span-5 italic text-sm self-center leading-none justify-self-end" v-show="isDataInForm" v-text="makeDateReadable(form.disabledStamp)"></div>
 
-      <div class="field is-grouped is-grouped-centered">
-        <div class="control">
-          <button class="button is-primary" type="button" v-on:click="save()"><i class="fas fa-save"></i> Save</button>
-        </div>
-        <div class="control">
-          <button class="button" type="button" v-on:click="setFormDefaults()">Clear</button>
-        </div>
-      </div>
+      <button type="button" class="inline-flex justify-center rounded-md border border-gray-300 px-3 py-2 mx-1 mt-6 bg-gray-50 hover:bg-white col-span-3" v-on:click="setFormDefaults()">Clear</button>
+      <button type="button" class="inline-flex justify-center rounded-md border border-gray-300 px-3 py-2 ml-1 mt-6 text-white bg-green-500 opacity-90 hover:opacity-100 col-span-3 disabled:opacity-50 disabled:cursor-not-allowed"
+              v-on:click="save"
+              v-bind:disabled="!canSave"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mt-px mr-1" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+        </svg>
+        Save
+      </button>
     </form>
 
     <!-- TODO: display account-types in a non-interactive way -->
 
-    <hr/>
+    <hr class="my-6"/>
 
-    <spinner v-if="!areAccountsAvailable"></spinner>
+    <spinner v-if="!areAccountsAvailable" id="loading-settings-accounts"></spinner>
 
-    <ul class="block-list is-small is-info" v-else>
+    <ul class="mt-4 mr-8 mb-2 ml-2 text-sm" v-else>
       <li
-        v-for="account in listAccounts"
-        v-bind:key="account.id"
-        v-bind:id="'settings-account-'+account.id"
-        v-bind:class="{'is-highlighted': form.id===account.id, 'is-outlined': !account.disabled, 'has-background-white-bis': account.disabled}"
+          class="list-none p-4 mb-2 border "
+          v-for="account in listAccounts"
+          v-bind:key="account.id"
+          v-bind:id="'settings-account-'+account.id"
+          v-bind:class="{
+            'border-l-4': form.id===account.id,
+            'text-blue-400 border-blue-400 hover:border-blue-500 is-active': !account.disabled,
+            'text-gray-500 border-gray-500 hover:border-gray-700 is-disabled': account.disabled
+          }"
       >
         <span
-          v-text="account.name"
-          v-bind:class="{'has-text-grey': account.disabled}"
-          v-on:click="retrieveUpToDateAccountData(account.id)"
+            class="cursor-pointer"
+            v-text="account.name"
+            v-on:click="retrieveUpToDateAccountData(account.id)"
         ></span>
       </li>
     </ul>
@@ -132,16 +113,18 @@
 </template>
 
 <script>
+// utilities
+import _ from "lodash";
 import {Account} from "../../account";
 import {Currency} from "../../currency";
-import _ from "lodash";
+// mixins
 import {accountsObjectMixin} from '../../mixins/accounts-object-mixin';
 import {institutionsObjectMixin} from "../../mixins/institutions-object-mixin";
 import {decimaliseInputMixin} from "../../mixins/decimalise-input-mixin";
 import {settingsMixin} from "../../mixins/settings-mixin";
-import {ToggleButton} from 'vue-js-toggle-button';
-
+// components
 import Spinner from 'vue-spinner-component/src/Spinner.vue';
+import ToggleButton from "../toggle-button";
 
 export default {
   name: "settings-accounts",
@@ -149,7 +132,7 @@ export default {
     ToggleButton,
     Spinner
   },
-  mixins: [accountsObjectMixin, decimaliseInputMixin, settingsMixin],
+  mixins: [accountsObjectMixin, decimaliseInputMixin, institutionsObjectMixin, settingsMixin],
   data: function(){
     return {
       accountObject: new Account(),
@@ -157,6 +140,18 @@ export default {
     }
   },
   computed: {
+    canSave: function(){
+      if(!_.isNull(this.form.id)){
+        let accountData = this.accountObject.find(this.form.id);
+        accountData = this.sanitiseData(accountData);
+        return !_.isEqual(accountData, this.form);
+      } else {
+        return !_.isEmpty(this.form.name) &&
+          _.isNumber(this.form.institutionId) &&
+          !_.isEmpty(this.form.currency) &&
+          !_.isEmpty(this.form.total);
+      }
+    },
     listAccounts: function(){
       return _.orderBy(this.rawAccountsData, ['disabled', 'name'], ['asc', 'asc']);
     },
@@ -164,21 +159,25 @@ export default {
       return _.sortBy(this.currencyObject.list(), ['code']);
     },
     listInstitutions: function(){
-      return _.sortBy(this.institutionObject.retrieve, 'name');
+      return _.sortBy(this.rawInstitutionsData, 'name');
     },
     formDefaultData: function(){
       return {
         id: null,
         name: '',
-        institutionId: 0,
+        institutionId: "",
         disabled: false,
         total: '',
-        currency: null, // this gets set when component is mounted
+        currency: this.currencyObject.default.code,
         createStamp: '',
         modifiedStamp: '',
         disabledStamp: '',
+        // accountTypes: [],
       };
     },
+    toggleButtonProperties: function(){
+      return _.cloneDeep(this.altDefaultToggleButtonProperties);
+    }
   },
   methods: {
     decimaliseTotal: function(){
@@ -187,59 +186,65 @@ export default {
       }
     },
     makeDateReadable(isoDateString){
-      return new Date(isoDateString).toString();
+      if(_.isNull(isoDateString)){
+        return isoDateString;
+      } else {
+        return new Date(isoDateString).toString();
+      }
     },
     fillForm: function(account){
       this.form = _.clone(account);
-
-      Object.keys(this.form).forEach(function(k){
+      this.form = this.sanitiseData(this.form);
+    },
+    sanitiseData(data){
+      Object.keys(data).forEach(function(k){
         switch(k){
           case 'institution_id':
           case 'create_stamp':
           case 'modified_stamp':
           case 'disabled_stamp':
             let camelCasedKey = _.camelCase(k);
-            this.form[camelCasedKey] = this.form[k];
-            delete this.form[k];
+            data[camelCasedKey] = data[k];
+            delete data[k];
             break;
         }
       }.bind(this));
-      this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
+      return data;
     },
     setFormDefaults: function(){
       this.fillForm(this.formDefaultData);
-      this.form.currency = this.currencyObject.default.code;
     },
 
     retrieveUpToDateAccountData: function(accountId = null){
       if(_.isNumber(accountId)){
         this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
 
-        new Promise(function(resolve, reject){
-          let accountData = this.accountObject.find(accountId);
-          if(this.accountObject.isDataUpToDate(accountData)){
-            resolve(accountData);
-          } else {
-            reject(accountId);
-          }
-        }.bind(this))
-          .then(this.fillForm.bind(this))
-          .catch(function(accountId){
-            this.accountObject.fetch(accountId)
-              .then(function(fetchResult){
-                let freshlyFetchedAccountData = {};
-                if(fetchResult.fetched){
-                  freshlyFetchedAccountData = this.accountObject.find(accountId);
-                }
+        let accountData = this.accountObject.find(accountId);
+        if(this.accountObject.isDataUpToDate(accountData)){
+          this.fillForm(accountData);
+          this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
+        } else {
+          this.accountObject
+            .fetch(accountId)
+            .then(function(fetchResult){
+              if(fetchResult.fetched){
+                let freshlyFetchedAccountData = this.accountObject.find(accountId);
                 this.fillForm(freshlyFetchedAccountData);
-                if(!_.isEmpty(fetchResult.notification)){
-                  this.$eventHub.broadcast(
-                    this.$eventHub.EVENT_NOTIFICATION,
-                    {type: fetchResult.notification.type, message: fetchResult.notification.message}
-                  );
-                }
-              }.bind(this));
-          }.bind(this));
+              } else {
+                this.setFormDefaults();
+              }
+
+              if(!_.isEmpty(fetchResult.notification)){
+                this.$eventHub.broadcast(
+                  this.$eventHub.EVENT_NOTIFICATION,
+                  {type: fetchResult.notification.type, message: fetchResult.notification.message}
+                );
+              }
+            }.bind(this))
+            .finally(function(){
+              this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
+            }.bind(this));
+        }
       } else {
         this.setFormDefaults();
       }
@@ -265,9 +270,10 @@ export default {
             break;
         }
       }.bind(this));
+
+      this.accountObject.setFetchedState = false
       this.accountObject.save(accountData)
         .then(function(notification){
-          this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
           // show a notification if needed
           if(!_.isEmpty(notification)){
             this.$eventHub.broadcast(
@@ -278,9 +284,10 @@ export default {
         }.bind(this))
         .finally(function(){
           this.setFormDefaults();
-          this.accountsObject.setFetchedState = false;
-          this.fetchAccounts();
-        }.bind(this))
+          this.fetchAccounts().finally(function(){
+            this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
+          }.bind(this));
+        }.bind(this));
     }
   },
   mounted: function(){
@@ -290,12 +297,4 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "../../../sass/settings";
-
-  .settings-account-currency{
-    margin-top: 0.4rem;
-  }
-  .subtitle{
-    margin-left: 3.5rem;
-  }
 </style>

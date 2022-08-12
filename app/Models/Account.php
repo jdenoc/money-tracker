@@ -3,13 +3,16 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Carbon\Carbon;
 
 class Account extends BaseModel {
 
     use HasFactory;
 
+    const CREATED_AT = 'create_stamp';
+    const UPDATED_AT = 'modified_stamp';
+
     protected $table = 'accounts';
-    public $timestamps = false; // turns off default laravel time stamping
     protected $fillable = [
         'name', 'institution_id' ,'total'
     ];
@@ -21,8 +24,6 @@ class Account extends BaseModel {
         'total'=>'float'
     ];
     protected $dates = [
-        'create_stamp',
-        'modified_stamp',
         'disabled_stamp'
     ];
 
@@ -42,6 +43,13 @@ class Account extends BaseModel {
         return $this->hasMany('App\Models\AccountType', 'account_id');
     }
 
+    public function save(array $options = []){
+        if(!$this->getOriginal('disabled') && $this->disabled){
+            $this->disabled_stamp = new Carbon();
+        }
+        return parent::save($options);
+    }
+
     public function update_total($value){
         $this->total += $value;
         $this->save();
@@ -57,11 +65,7 @@ class Account extends BaseModel {
     }
 
     public static function getRequiredFieldsForCreation(){
-        $fields = self::$required_fields;
-        unset($fields[array_search('disabled', $fields)]);
-        // using array_values here to reset the array index
-        // after we unset the "disabled" element
-        return array_values($fields);
+        return self::$required_fields;
     }
 
 }

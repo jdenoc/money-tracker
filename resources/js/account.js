@@ -1,5 +1,3 @@
-// import { AccountTypes } from "./account-types";
-// import { Institutions } from "./institutions";
 import { ObjectBaseClass } from './objectBaseClass';
 import { SnotifyStyle } from 'vue-snotify';
 import Store from './store';
@@ -58,7 +56,7 @@ export class Account extends ObjectBaseClass {
             case "PUT":
                 return {type: SnotifyStyle.success, message: "Account updated"};
             // case "DELETE":
-            //     return {deleted: true, notification: {type: SnotifyStyle.success, message: "Entry was deleted"}}
+            //     return {deleted: true, notification: {type: SnotifyStyle.success, message: "Account was deleted"}}
         }
     }
 
