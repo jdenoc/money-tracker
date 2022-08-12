@@ -41,7 +41,7 @@
       </svg>
     </td>
     <td class="row-entry-tags align-top py-1 "><div class="tags flex flex-wrap">
-      <span class="tag rounded-full bg-gray-800 bg-gray-600 text-gray-300 px-2 py-1 text-xs mx-1 mb-1" v-for="tagId in tagIds" v-text="getTagName(tagId)"></span>
+      <span class="tag rounded-full bg-gray-800 text-gray-300 px-2 py-1 text-xs mx-1 mb-1" v-for="tagId in tagIds" v-text="getTagName(tagId)"></span>
     </div></td>
   </tr>
 </template>

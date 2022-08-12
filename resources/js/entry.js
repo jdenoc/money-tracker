@@ -85,6 +85,8 @@ export class Entry extends ObjectBaseClass {
                 return {type: SnotifyStyle.success, message: "Entry updated"};
             case "DELETE":
                 return {deleted: true, notification: {type: SnotifyStyle.success, message: "Entry was deleted"}}
+            default:
+                return {};
         }
     }
 
@@ -128,6 +130,8 @@ export class Entry extends ObjectBaseClass {
                         default:
                             return {deleted: false, notification: {type: SnotifyStyle.error, message: "An error occurred while attempting to delete entry [%s]"}};
                     }
+                default:
+                    return {};
             }
         }
     }
