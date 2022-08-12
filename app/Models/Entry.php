@@ -108,7 +108,7 @@ class Entry extends BaseModel {
      * @param string $sort_direction
      * @return \Illuminate\Support\Collection
      */
-    public static function get_collection_of_non_disabled_entries($filters = [], $limit=10, $offset=0, $sort_by=self::DEFAULT_SORT_PARAMETER, $sort_direction=self::DEFAULT_SORT_DIRECTION){
+    public static function get_collection_of_non_disabled_entries(array $filters = [], int $limit=10, int $offset=0, string $sort_by=self::DEFAULT_SORT_PARAMETER, string $sort_direction=self::DEFAULT_SORT_DIRECTION){
         $entries_query = self::build_entry_query($filters);
         // this makes sure that the correct ID is present if a JOIN is required
         $entries_query->distinct()->select("entries.*");
@@ -121,7 +121,7 @@ class Entry extends BaseModel {
      * @param array $filters
      * @return int
      */
-    public static function count_non_disabled_entries($filters = []){
+    public static function count_non_disabled_entries(array $filters = []):int{
         $entries_query = self::build_entry_query($filters);
         // due to the risk of failure with potentially adding GROUP BY to the query
         // we're going to use the generated query as a subquery and count from that
@@ -132,7 +132,7 @@ class Entry extends BaseModel {
      * @param array $filters
      * @return mixed
      */
-    private static function build_entry_query($filters){
+    private static function build_entry_query(array $filters){
         $entries_query = Entry::where('entries.disabled', 0);
         return self::filter_entry_collection($entries_query, $filters);
     }
@@ -142,7 +142,7 @@ class Entry extends BaseModel {
      * @param array $filters
      * @return mixed
      */
-    private static function filter_entry_collection($entries_query, $filters){
+    private static function filter_entry_collection($entries_query, array $filters){
         foreach($filters as $filter_name => $filter_constraint){
             switch($filter_name){
                 case self::$FILTER_KEY_START_DATE:
@@ -223,11 +223,11 @@ class Entry extends BaseModel {
     /**
      * @return bool
      */
-    public function has_attachments(){
+    public function has_attachments():bool{
         return $this->attachments()->count() > 0;
     }
 
-    public function has_tags(){
+    public function has_tags():bool{
         try{
             return $this->tags()->count() > 0;
         } catch(\Exception $e){
@@ -239,7 +239,7 @@ class Entry extends BaseModel {
     /**
      * @return array
      */
-    public function get_tag_ids(){
+    public function get_tag_ids():array{
         $collection_of_tags = $this->tags()->getResults();
         if(is_null($collection_of_tags) || $collection_of_tags->isEmpty()){
             return [];
@@ -248,7 +248,7 @@ class Entry extends BaseModel {
         }
     }
 
-    public static function get_fields_required_for_creation(){
+    public static function get_fields_required_for_creation():array{
         $fields = self::$required_entry_fields;
         unset($fields[array_search('disabled', $fields)]);
         // using array_values here to reset the array index
@@ -256,7 +256,7 @@ class Entry extends BaseModel {
         return array_values($fields);
     }
 
-    public static function get_fields_required_for_update(){
+    public static function get_fields_required_for_update():array{
         return self::$required_entry_fields;
     }
 
