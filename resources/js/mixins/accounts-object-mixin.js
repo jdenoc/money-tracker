@@ -2,13 +2,10 @@ import _ from 'lodash';
 import {Accounts} from "../accounts";
 
 export const accountsObjectMixin = {
-    data: function(){
-        return {
-            accountsObject: new Accounts()
-        }
-    },
-
     computed: {
+        accountsObject: function(){
+            return new Accounts();
+        },
         rawAccountsData: function(){
             return this.accountsObject.retrieve;
         },
