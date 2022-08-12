@@ -30,14 +30,14 @@
 
     <hr class="my-6"/>
 
-    <spinner v-if="!areInstitutionsAvailable" id="loading-institutions"></spinner>
+    <spinner v-if="!areInstitutionsAvailable" id="loading-settings-institutions"></spinner>
 
     <ul class="mt-4 mr-8 mb-2 ml-2 text-sm" v-else>
       <li
           class="list-none p-4 mb-2 border"
           v-for="institution in listInstitutions"
           v-bind:key="institution.id"
-          v-bind:id="'institution-'+institution.id"
+          v-bind:id="'settings-institution-'+institution.id"
           v-bind:class="{
             'border-l-4': form.id===institution.id,
             'text-blue-400 border-blue-400 hover:border-blue-500 is-active': institution.active,
@@ -184,8 +184,6 @@ export default {
                   {type: fetchResult.notification.type, message: fetchResult.notification.message}
                 );
               }
-
-
             }.bind(this))
             .finally(function(){
               this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
