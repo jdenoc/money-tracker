@@ -23,6 +23,7 @@ export const settingsMixin = {
                 height: 40, // px
                 width: 250, // px
                 transitionSpeed: 75, // ms
+                reverse: true,
             };
         },
         altDefaultToggleButtonProperties: function(){
@@ -31,6 +32,7 @@ export const settingsMixin = {
             properties.colorUnchecked = this.tailwindColors.blue[600];
             properties.labelChecked = 'Inactive';
             properties.labelUnchecked = 'Active';
+            properties.reverse = false;
             return properties;
         }
     },
