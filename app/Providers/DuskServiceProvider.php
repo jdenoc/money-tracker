@@ -18,7 +18,7 @@ class DuskServiceProvider extends DuskServiceProviderBase {
         Browser::macro('scrollToElement', function ($element = null) {
             $this->script([
                 "document.querySelector('$element').scrollIntoView();",
-                "window.scrollBy(0, -52);"  // adjust for height of navbar
+                "window.scrollBy(0, -64);"  // adjust for height of navbar; see tailwind class: max-h-16
             ]);
 
             return $this;
