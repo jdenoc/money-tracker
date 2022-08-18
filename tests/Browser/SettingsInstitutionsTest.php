@@ -16,10 +16,7 @@ class SettingsInstitutionsTest extends SettingsBaseTest {
     use DuskTraitToggleButton;
 
     private static string $SELECTOR_SETTINGS_NAV_INSTITUTIONS = 'li.settings-nav-option:nth-child(1)';
-//    private static string $SELECTOR_SETTINGS_NAV_TAGS = 'li.settings-nav-option:nth-child(4)';
-
     private static string $SELECTOR_SETTINGS_DISPLAY_SECTION_INSTITUTIONS = 'section#settings-institutions';
-//    private static string $SELECTOR_SETTINGS_DISPLAY_SECTION_TAGS = 'section#settings-tags';
 
     private static string $SELECTOR_SETTINGS_INSTITUTION_FORM_LABEL_NAME = "label[for='settings-institution-name']:nth-child(1)";
     private static string $SELECTOR_SETTINGS_INSTITUTION_FORM_INPUT_NAME = 'input#settings-institution-name:nth-child(2)';

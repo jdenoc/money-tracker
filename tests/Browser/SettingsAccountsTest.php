@@ -203,7 +203,7 @@ class SettingsAccountsTest extends SettingsBaseTest {
         });
     }
 
-    public function testClickExistingAccountDisplaysDataInFormAndClearingFormThenReclickSameInstitution(){
+    public function testClickExistingAccountDisplaysDataInFormAndClearingFormThenReclickSameAccount(){
         $this->browse(function(Browser $browser){
             $browser->visit(new SettingsPage());
             $this->navigateToAccountsSettingsOnSettingsPage($browser);
