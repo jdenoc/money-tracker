@@ -31,6 +31,7 @@ services:
     hostname: mysql.money-tracker
     volumes:
       - db.money-tracker:/var/lib/mysql
+      - ../storage/logs:/var/log/mysql  # for logs
     environment:
       # if you change any of these, be sure to change the corresponding values in .env.docker
       - MYSQL_RANDOM_ROOT_PASSWORD=yes
