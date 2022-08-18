@@ -61,13 +61,22 @@ Route::put('account/{account_id}', 'Api\AccountController@update_account')
 
 // GET /api/account-types
 Route::get('account-types', 'Api\AccountTypeController@list_account_types')
-    ->name('account_type.get');
+    ->name('account_types.get');
 // GET /api/account-types/types
 Route::get('account-types/types', 'Api\AccountTypeController@list_account_type_types')
     ->name('account-type.types.get');
+// GET /api/account-type/{account_type_id}
+Route::get('account-type/{account_type_id}', 'Api\AccountTypeController@get_account_type')
+    ->name('account_type.get');
 // DELETE /api/account-type/{account_type_id}
 Route::delete('account-type/{account_type_id}', 'Api\AccountTypeController@disable_account_type')
     ->name('account_type.delete');
+// POST /api/account-type
+Route::post('account-type', 'Api\AccountTypeController@create_account_type')
+    ->name('account_type.post');
+// PUT /api/account-type/{account_type_id}
+Route::put('account-type/{account_type_id}', 'Api\AccountTypeController@update_account_type')
+    ->name('account_type.put');
 
 // GET /api/entries
 Route::get('entries', 'Api\EntryController@get_paged_entries')
