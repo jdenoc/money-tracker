@@ -170,7 +170,7 @@ class SettingsAccountTypesTest extends SettingsBaseTest {
         });
     }
 
-    public function testClickExistingAccountTypeDisplaysDataInFormAndClearingFormThenReclickSameInstitution(){
+    public function testClickExistingAccountTypeDisplaysDataInFormAndClearingFormThenReclickSameAccountType(){
         $this->browse(function(Browser $browser){
             $browser->visit(new SettingsPage());
             $this->navigateToAccountTypesSettingsOnSettingsPage($browser);
@@ -380,10 +380,6 @@ class SettingsAccountTypesTest extends SettingsBaseTest {
             $browser->assertSeeIn(self::$SELECTOR_SETTINGS_ACCOUNT_TYPE_FORM_DISABLED, $this->convertDateToECMA262Format($accountType->disabled_stamp));
         }
 
-        $browser
-            ->assertVisible(self::$SELECTOR_SETTINGS_ACCOUNT_TYPE_FORM_BUTTON_SAVE)
-            ->assertVisible(self::$SELECTOR_SETTINGS_ACCOUNT_TYPE_FORM_BUTTON_SAVE.' svg')
-            ->assertSeeIn(self::$SELECTOR_SETTINGS_ACCOUNT_TYPE_FORM_BUTTON_SAVE, self::$LABEL_BUTTON_SAVE);
         $this->assertElementBackgroundColor($browser, self::$SELECTOR_SETTINGS_ACCOUNT_TYPE_FORM_BUTTON_SAVE, $this->color_button_save);
         $save_button_state = $browser->attribute(self::$SELECTOR_SETTINGS_ACCOUNT_TYPE_FORM_BUTTON_SAVE, 'disabled');
         $this->assertEquals("true", $save_button_state);    // no changes; so button remains disabled
