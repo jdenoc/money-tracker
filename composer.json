@@ -25,6 +25,7 @@
         "spatie/laravel-db-snapshots": "^2.2"
     },
     "require-dev": {
+        "ext-intl": "*",
         "barryvdh/laravel-ide-helper": "^2.2",
         "facade/ignition": "^2.5",
         "fakerphp/faker": "1.15.0",
