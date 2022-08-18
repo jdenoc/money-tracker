@@ -45,6 +45,12 @@ Route::post('institute', 'Api\InstitutionController@create_institution')
 // GET /api/tags
 Route::get('tags', 'Api\TagController@get_tags')
     ->name('tags');
+// POST /api/tag
+Route::post('tag', 'Api\TagController@createTag')
+    ->name('tag.post');
+// PUT /api/tag/{tag_id}
+Route::put('tag/{tag_id}', 'Api\TagController@updateTag')
+    ->name('tag.put');
 
 // GET /api/accounts
 Route::get('accounts', 'Api\AccountController@get_accounts')
