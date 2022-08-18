@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Carbon\Carbon;
 
 class AccountType extends BaseModel {
 
@@ -25,6 +26,14 @@ class AccountType extends BaseModel {
         'disabled_stamp'
     ];
 
+    private static $required_fields = [
+        'name',
+        'account_id',
+        'disabled',
+        'type',
+        'last_digits',
+    ];
+
     public function account(){
         return $this->belongsTo('App\Models\Account', 'account_id');
     }
@@ -33,8 +42,23 @@ class AccountType extends BaseModel {
         return $this->hasMany('App\Models\Entry', 'account_type_id');
     }
 
+    public function save(array $options = []){
+        if(!$this->getOriginal('disabled') && $this->disabled){
+            $this->disabled_stamp = new Carbon();
+        }
+        return parent::save($options);
+    }
+
     public static function getEnumValues(){
         return parent::get_enum_values('type');
+    }
+
+    public static function getRequiredFieldsForUpdate(){
+        return self::$required_fields;
+    }
+
+    public static function getRequiredFieldsForCreation(){
+        return self::$required_fields;
     }
 
 }
