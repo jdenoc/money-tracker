@@ -62,14 +62,13 @@ import {Institution} from "../../institution";
 // mixins
 import {institutionsObjectMixin} from "../../mixins/institutions-object-mixin";
 import {settingsMixin} from "../../mixins/settings-mixin";
-import {tailwindColorsMixin} from "../../mixins/tailwind-colors-mixin";
 // components
 import Spinner from 'vue-spinner-component/src/Spinner.vue';
 import ToggleButton from "../toggle-button";
 
 export default {
   name: "settings-institutions",
-  mixins: [institutionsObjectMixin, settingsMixin, tailwindColorsMixin],
+  mixins: [institutionsObjectMixin, settingsMixin],
   components: {
     Spinner,
     ToggleButton,
@@ -105,12 +104,38 @@ export default {
     }
   },
   methods: {
-    fillForm: function(institution){
-      this.form = _.cloneDeep(institution);
-      this.form = this.sanitiseData(this.form);
-    },
-    setFormDefaults: function(){
-      this.fillForm(this.defaultFormData);
+    retrieveUpToDateInstitutionData: function(institutionId = null){
+      if(_.isNumber(institutionId)){
+        this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
+
+        let institutionData = this.institutionsObject.find(institutionId);
+        if(this.institutionsObject.isDataUpToDate(institutionData)){
+          this.fillForm(institutionData);
+          this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
+        } else {
+          this.institutionObject.fetch(institutionId)
+              .then(function(fetchResult){
+                if(fetchResult.fetched){
+                  let freshlyFetchedInstitutionData = this.institutionsObject.find(institutionId);
+                  this.fillForm(freshlyFetchedInstitutionData);
+                } else {
+                  this.setFormDefaults();
+                }
+
+                if(!_.isEmpty(fetchResult.notification)){
+                  this.$eventHub.broadcast(
+                      this.$eventHub.EVENT_NOTIFICATION,
+                      {type: fetchResult.notification.type, message: fetchResult.notification.message}
+                  );
+                }
+              }.bind(this))
+              .finally(function(){
+                this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
+              }.bind(this));
+        }
+      } else {
+        this.setFormDefaults();
+      }
     },
     sanitiseData(data){
       Object.keys(data).forEach(function(k){
@@ -160,39 +185,6 @@ export default {
           }.bind(this));
         }.bind(this));
     },
-    retrieveUpToDateInstitutionData: function(institutionId = null){
-      if(_.isNumber(institutionId)){
-        this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
-
-        let institutionData = this.institutionsObject.find(institutionId);
-        if(this.institutionsObject.isDataUpToDate(institutionData)){
-          this.fillForm(institutionData);
-          this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
-        } else {
-          this.institutionObject.fetch(institutionId)
-            .then(function(fetchResult){
-              if(fetchResult.fetched){
-                let freshlyFetchedInstitutionData = this.institutionsObject.find(institutionId);
-                this.fillForm(freshlyFetchedInstitutionData);
-              } else {
-                this.setFormDefaults();
-              }
-
-              if(!_.isEmpty(fetchResult.notification)){
-                this.$eventHub.broadcast(
-                  this.$eventHub.EVENT_NOTIFICATION,
-                  {type: fetchResult.notification.type, message: fetchResult.notification.message}
-                );
-              }
-            }.bind(this))
-            .finally(function(){
-              this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
-            }.bind(this));
-        }
-      } else {
-        this.setFormDefaults();
-      }
-    }
   },
   mounted: function(){
     this.setFormDefaults();
