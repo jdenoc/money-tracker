@@ -8,6 +8,10 @@ use App\Models\BaseModel;
 use Illuminate\Database\Eloquent\Collection;
 use Laravel\Dusk\Browser;
 
+/**
+ * @group settings
+ * @group settings-accounts-types
+ */
 class SettingsAccountTypesTest extends SettingsBaseTest {
 
     protected static string $SELECTOR_SETTINGS_NAV_ELEMENT = 'li.settings-nav-option:nth-child(3)';
@@ -234,9 +238,10 @@ class SettingsAccountTypesTest extends SettingsBaseTest {
 
         switch($selector){
             case self::$SELECTOR_SETTINGS_FORM_INPUT_NAME:
+                $account_types = $this->getAllNodes();
                 do{
                     $name = $this->faker->word();
-                } while($node->name == $name);
+                } while($node->name == $name || $account_types->contains('name', $name));
                 $section
                     ->clear($selector)
                     ->type($selector, $this->faker->word());
