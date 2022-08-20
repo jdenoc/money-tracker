@@ -127,11 +127,12 @@ export default {
   components: {Spinner, ToggleButton},
   mixins: [settingsMixin, accountTypesObjectMixin, accountsObjectMixin],
   data: function(){
-    return {
-      accountTypeObject: new AccountType(),
-    }
+    return { }
   },
   computed: {
+    accountTypeObject: function(){
+      return new AccountType();
+    },
     canSave: function(){
       if(!_.isNull(this.form.id)){
         let accountTypeData = this.accountTypesObject.find(this.form.id);
@@ -144,7 +145,7 @@ export default {
             _.isNumber(this.form.accountId) && this.form.accountId !== 0;
       }
     },
-    formDefaultData: function(){
+    defaultFormData: function(){
       return {
         id: null,
         name: '',
@@ -174,13 +175,6 @@ export default {
     }
   },
   methods: {
-    setFormDefaults: function(){
-      this.fillForm(this.formDefaultData);
-    },
-    fillForm: function(accountTypeData){
-      this.form = _.clone(accountTypeData);
-      this.form = this.sanitiseData(this.form);
-    },
     save: function(){
       this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
 
