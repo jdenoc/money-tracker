@@ -34,7 +34,7 @@ class SettingsBaseTest extends DuskTestCase {
 
     private static string $SELECTOR_SETTINGS_DISPLAY = '#settings-display';
     private static string $SELECTOR_SETTINGS_DISPLAY_SECTION_DEFAULT = 'section#settings-default';
-    private static string $SELECTOR_SETTINGS_HEADER = 'h3';
+    protected static string $SELECTOR_SETTINGS_HEADER = 'h3';
     protected static string $SELECTOR_SETTINGS_DISPLAY_SECTION = '';
     protected static string $LABEL_SETTINGS_SECTION_HEADER = '';
 

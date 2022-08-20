@@ -41,8 +41,8 @@ class SettingsInstitutionsTest extends SettingsBaseTest {
 
     public function providerSaveExistingSettingNode():array {
         return [
-            [self::$SELECTOR_SETTINGS_FORM_INPUT_NAME],
-            [self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE],
+            'name'=>[self::$SELECTOR_SETTINGS_FORM_INPUT_NAME],
+            'active'=>[self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE],
         ];
     }
 
@@ -69,13 +69,17 @@ class SettingsInstitutionsTest extends SettingsBaseTest {
 
     /**
      * Form defaults:
-     *   Name: (empty)
+     *   Name: ""
      *   Active State: "Active"
      *   Save button [disabled]
      */
     protected function assertFormDefaults(Browser $section){
-        $section->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, '');
+        $section
+            ->scrollToElement(self::$SELECTOR_SETTINGS_HEADER)
+
+            ->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, '');
         $this->assertActiveStateToggleActive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
+
         $section
             ->assertMissing(self::$SELECTOR_SETTINGS_FORM_LABEL_CREATED)
             ->assertMissing(self::$SELECTOR_SETTINGS_FORM_CREATED)
