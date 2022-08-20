@@ -271,7 +271,7 @@ class SettingsBaseTest extends DuskTestCase {
                     $this->interactWithNode($section, $node);
                     $this->assertFormWithExistingData($section, $node);
 
-                    $this->interactWithFormElement($section, $form_element);
+                    $this->interactWithFormElement($section, $form_element, $node);
 
                     $this->assertSaveButtonEnabled($section);
                     $this->clickSaveButton($section);
@@ -329,7 +329,7 @@ class SettingsBaseTest extends DuskTestCase {
         $this->throwEmptyMethodException(__FUNCTION__);
     }
 
-    protected function interactWithFormElement(Browser $section, string $selector){
+    protected function interactWithFormElement(Browser $section, string $selector, BaseModel $node=null){
         $this->throwEmptyMethodException(__FUNCTION__);
     }
 
@@ -366,8 +366,8 @@ class SettingsBaseTest extends DuskTestCase {
     protected function assertSaveButtonDefault(Browser $section){
         $section
             ->assertVisible(static::$SELECTOR_SETTINGS_FORM_BUTTON_SAVE)
-            ->assertVisible(self::$SELECTOR_SETTINGS_FORM_BUTTON_SAVE.' svg')
-            ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_BUTTON_SAVE, self::$LABEL_SETTINGS_FORM_BUTTON_SAVE);
+            ->assertVisible(static::$SELECTOR_SETTINGS_FORM_BUTTON_SAVE.' svg')
+            ->assertSeeIn(static::$SELECTOR_SETTINGS_FORM_BUTTON_SAVE, self::$LABEL_SETTINGS_FORM_BUTTON_SAVE);
         $this->assertElementBackgroundColor($section, static::$SELECTOR_SETTINGS_FORM_BUTTON_SAVE, $this->color_button_save);
         $this->assertSaveButtonDisabled($section);
     }
