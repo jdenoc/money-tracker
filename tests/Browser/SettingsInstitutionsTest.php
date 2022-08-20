@@ -174,14 +174,17 @@ class SettingsInstitutionsTest extends SettingsBaseTest {
 
         switch($selector){
             case self::$SELECTOR_SETTINGS_FORM_INPUT_NAME:
+                $institutions = $this->getAllNodes();
                 do{
                     $name = $this->faker->word();
-                }while($node->name == $name);
+                }while($node->name == $name || $institutions->contains('name', $name));
                 $section->type($selector, $name);
                 break;
+
             case self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE:
                 $this->toggleToggleButton($section, $selector);
                 break;
+
             default:
                 throw new \UnexpectedValueException(sprintf("Unexpected form element [%s] provided", $selector));
         }

@@ -921,6 +921,16 @@ jobs:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
       - run: .docker/cmd/artisan.sh dusk --group settings-accounts --stop-on-failure
 
+      - uses: ./.github/actions/app-init
+        with:
+          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
+      - run: .docker/cmd/artisan.sh dusk --group settings-account-types --stop-on-failure
+
+      - uses: ./.github/actions/app-init
+        with:
+          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
+      - run: .docker/cmd/artisan.sh dusk --group settings-tags --stop-on-failure
+
       - name: Failure docker inspection
         uses: ./.github/actions/failure-docker-inspect
         if: failure()
