@@ -283,9 +283,10 @@ class SettingsAccountsTest extends SettingsBaseTest {
 
         switch($selector){
             case self::$SELECTOR_SETTINGS_FORM_INPUT_NAME:
+                $accounts = $this->getAllNodes();
                 do{
                     $name = $this->faker->word();
-                }while($node->name == $name);
+                }while($node->name == $name || $accounts->contains('name', $name));
                 $section
                     ->clear($selector)
                     ->type($selector, $name);
