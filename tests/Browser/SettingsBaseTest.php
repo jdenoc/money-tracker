@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Laravel\Dusk\Browser;
 use Tests\Browser\Pages\SettingsPage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
+use Throwable;
 
 class SettingsBaseTest extends DuskTestCase {
 
@@ -58,12 +59,6 @@ class SettingsBaseTest extends DuskTestCase {
     private string $color_button_save;
 
     public function setUp(): void{
-        // TODO: vvv remove vvv
-//        self::$DUMP_READY = true;
-//        self::$FRESH_RUN = false;
-//        self::$SNAPSHOT_NAME = class_basename(get_called_class());
-        // TODO: ^^^ remove ^^^
-
         parent::setUp();
         $this->assertConstantsSet();
         $this->initSettingsColors();
@@ -99,7 +94,7 @@ class SettingsBaseTest extends DuskTestCase {
     // ------------ ------------ ------------
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * test 1/25
      */
@@ -124,7 +119,7 @@ class SettingsBaseTest extends DuskTestCase {
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * test 2/25
      */
@@ -143,7 +138,7 @@ class SettingsBaseTest extends DuskTestCase {
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * test 3/25
      */
@@ -162,7 +157,7 @@ class SettingsBaseTest extends DuskTestCase {
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * test 4/25
      */
@@ -184,7 +179,7 @@ class SettingsBaseTest extends DuskTestCase {
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * test 5/25
      */
@@ -205,13 +200,14 @@ class SettingsBaseTest extends DuskTestCase {
                     $this->assertFormDefaults($section);
 
                     $this->interactWithNode($section, $node, false);
+                    $this->assertFormWithExistingData($section, $node);
                 });
             });
         });
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * test 6/25
      */
@@ -253,7 +249,7 @@ class SettingsBaseTest extends DuskTestCase {
 
     /**
      * @dataProvider providerSaveExistingSettingNode
-     * @throws \Throwable
+     * @throws Throwable
      *
      * test ?/25
      */

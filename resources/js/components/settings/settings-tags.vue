@@ -58,9 +58,7 @@ export default {
     Spinner
   },
   data: function(){
-    return {
-      tagObject: new Tag()
-    };
+    return { };
   },
   computed: {
     canSave: function(){
@@ -71,19 +69,19 @@ export default {
         return !_.isEmpty(this.form.name);
       }
     },
-    formDefaultData: function(){
+    defaultFormData: function(){
       return {
         id: null,
         name: '',
       };
     },
+    tagObject: function(){
+      return new Tag();
+    }
   },
   methods: {
     fillForm: function(tagData){
       this.form = _.cloneDeep(tagData);
-    },
-    setFormDefaults: function(){
-      this.fillForm(this.formDefaultData);
     },
     save: function(){
       // TODO: consider putting logic in place to stop duplicate tag names
