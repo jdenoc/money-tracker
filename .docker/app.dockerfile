@@ -5,10 +5,10 @@ RUN touch /etc/apache2/conf-available/servername.conf \
   && echo 'ServerName app.money-tracker' > /etc/apache2/conf-available/servername.conf \
   && a2enconf servername
 
-# install generic packages
-RUN apt update --fix-missing \
-  && apt upgrade -y
-RUN apt install -y apt-utils curl zlib1g-dev libicu-dev g++ --no-install-recommends
+# install generic packages & extensions
+RUN apt-get update --fix-missing \
+  && apt-get upgrade -y
+RUN apt-get install -y apt-utils curl zlib1g-dev libicu-dev g++ --no-install-recommends
 
 # install php intl extension
 RUN docker-php-ext-install intl
@@ -17,15 +17,15 @@ RUN docker-php-ext-install intl
 RUN docker-php-ext-install pcntl
 
 # install php mysql extension
-RUN apt install -y default-mysql-client --no-install-recommends
+RUN apt-get install -y default-mysql-client --no-install-recommends
 RUN docker-php-ext-install pdo_mysql
 
 # install php zip extension
-RUN apt install -y libzip-dev --no-install-recommends
+RUN apt-get install -y libzip-dev --no-install-recommends
 RUN docker-php-ext-install zip
 
 # install php gd extension
-RUN apt install -y libpng-dev libjpeg-dev libfreetype6-dev --no-install-recommends
+RUN apt-get install -y libpng-dev libjpeg-dev libfreetype6-dev --no-install-recommends
 RUN docker-php-ext-configure gd --enable-gd --with-jpeg --with-freetype
 RUN docker-php-ext-install gd
 
@@ -55,7 +55,7 @@ RUN if [ "$DISABLE_XDEBUG" = false ]; \
 EXPOSE 9003
 
 # clean up after installs
-RUN apt autoremove -y
+RUN apt-get autoremove -y
 
 # enable mod_rewrite apache module
 RUN a2enmod rewrite
