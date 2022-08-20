@@ -134,12 +134,12 @@ export default {
   },
   mixins: [accountsObjectMixin, decimaliseInputMixin, institutionsObjectMixin, settingsMixin],
   data: function(){
-    return {
-      accountObject: new Account(),
-      currencyObject: new Currency(),
-    }
+    return { }
   },
   computed: {
+    accountObject: function(){
+      return new Account();
+    },
     canSave: function(){
       if(!_.isNull(this.form.id)){
         let accountData = this.accountObject.find(this.form.id);
@@ -152,16 +152,10 @@ export default {
           !_.isEmpty(this.form.total);
       }
     },
-    listAccounts: function(){
-      return _.orderBy(this.rawAccountsData, ['disabled', 'name'], ['asc', 'asc']);
+    currencyObject: function(){
+      return new Currency();
     },
-    listCurrencies: function(){
-      return _.sortBy(this.currencyObject.list(), ['code']);
-    },
-    listInstitutions: function(){
-      return _.sortBy(this.rawInstitutionsData, 'name');
-    },
-    formDefaultData: function(){
+    defaultFormData: function(){
       return {
         id: null,
         name: '',
@@ -174,6 +168,15 @@ export default {
         disabledStamp: '',
         // accountTypes: [],
       };
+    },
+    listAccounts: function(){
+      return _.orderBy(this.rawAccountsData, ['disabled', 'name'], ['asc', 'asc']);
+    },
+    listCurrencies: function(){
+      return _.sortBy(this.currencyObject.list(), ['code']);
+    },
+    listInstitutions: function(){
+      return _.sortBy(this.rawInstitutionsData, 'name');
     },
     toggleButtonProperties: function(){
       return _.cloneDeep(this.altDefaultToggleButtonProperties);
@@ -192,10 +195,6 @@ export default {
         return new Date(isoDateString).toString();
       }
     },
-    fillForm: function(account){
-      this.form = _.clone(account);
-      this.form = this.sanitiseData(this.form);
-    },
     sanitiseData(data){
       Object.keys(data).forEach(function(k){
         switch(k){
@@ -211,10 +210,46 @@ export default {
       }.bind(this));
       return data;
     },
-    setFormDefaults: function(){
-      this.fillForm(this.formDefaultData);
-    },
+    save: function(){
+      this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
 
+      let accountData = {};
+      Object.keys(this.form).forEach(function(formDatumKey){
+        switch (formDatumKey){
+          case 'id':
+          case 'name':
+          case 'disabled':
+          case 'total':
+          case 'currency':
+            accountData[formDatumKey] = this.form[formDatumKey];
+            break;
+          case 'institutionId':
+            accountData['institution_id'] = this.form[formDatumKey];
+            break;
+          default:
+            // do nothing...
+            break;
+        }
+      }.bind(this));
+
+      this.accountObject.setFetchedState = false
+      this.accountObject.save(accountData)
+          .then(function(notification){
+            // show a notification if needed
+            if(!_.isEmpty(notification)){
+              this.$eventHub.broadcast(
+                  this.$eventHub.EVENT_NOTIFICATION,
+                  {type: notification.type, message: notification.message}
+              );
+            }
+          }.bind(this))
+          .finally(function(){
+            this.setFormDefaults();
+            this.fetchAccounts().finally(function(){
+              this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
+            }.bind(this));
+          }.bind(this));
+    },
     retrieveUpToDateAccountData: function(accountId = null){
       if(_.isNumber(accountId)){
         this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
@@ -249,46 +284,6 @@ export default {
         this.setFormDefaults();
       }
     },
-    save: function(){
-      this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
-
-      let accountData = {};
-      Object.keys(this.form).forEach(function(formDatumKey){
-        switch (formDatumKey){
-          case 'id':
-          case 'name':
-          case 'disabled':
-          case 'total':
-          case 'currency':
-            accountData[formDatumKey] = this.form[formDatumKey];
-            break;
-          case 'institutionId':
-            accountData['institution_id'] = this.form[formDatumKey];
-            break;
-          default:
-            // do nothing...
-            break;
-        }
-      }.bind(this));
-
-      this.accountObject.setFetchedState = false
-      this.accountObject.save(accountData)
-        .then(function(notification){
-          // show a notification if needed
-          if(!_.isEmpty(notification)){
-            this.$eventHub.broadcast(
-                this.$eventHub.EVENT_NOTIFICATION,
-                {type: notification.type, message: notification.message}
-            );
-          }
-        }.bind(this))
-        .finally(function(){
-          this.setFormDefaults();
-          this.fetchAccounts().finally(function(){
-            this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
-          }.bind(this));
-        }.bind(this));
-    }
   },
   mounted: function(){
     this.setFormDefaults();
