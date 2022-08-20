@@ -162,10 +162,18 @@ class SettingsInstitutionsTest extends SettingsBaseTest {
         }
     }
 
-    protected function interactWithFormElement(Browser $section, string $selector){
+    protected function interactWithFormElement(Browser $section, string $selector, BaseModel $node=null){
+        if(is_null($node)){
+            $node = new Institution();
+        }
+        $this->assertNodeIsOfTypeInstitution($node);
+
         switch($selector){
             case self::$SELECTOR_SETTINGS_FORM_INPUT_NAME:
-                $section->type($selector, $this->faker->word());
+                do{
+                    $name = $this->faker->word();
+                }while($node->name == $name);
+                $section->type($selector, $name);
                 break;
             case self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE:
                 $this->toggleToggleButton($section, $selector);
