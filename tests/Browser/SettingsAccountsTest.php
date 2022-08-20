@@ -77,7 +77,7 @@ class SettingsAccountsTest extends SettingsBaseTest {
 
     /**
      * Form defaults:
-     *   Name: (empty)
+     *   Name: ""
      *   Institution: (Empty)
      *   Currency: "USD"
      *   Total: ""
@@ -86,6 +86,8 @@ class SettingsAccountsTest extends SettingsBaseTest {
      */
     protected function assertFormDefaults(Browser $section){
         $section
+            ->scrollToElement(self::$SELECTOR_SETTINGS_HEADER)
+
             ->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, '')
             ->waitUntilMissing(self::$SELECTOR_SETTINGS_FORM_LOADING_INSTITUTION, self::$WAIT_SECONDS)
             ->assertSelected(self::$SELECTOR_SETTINGS_FORM_SELECT_INSTITUTION, '')
@@ -93,6 +95,7 @@ class SettingsAccountsTest extends SettingsBaseTest {
             ->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_TOTAL, '')
             ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_CURRENCY_TOTAL, CurrencyHelper::convertCurrencyHtmlToCharacter($this->default_currency->html));
         $this->assertActiveStateToggleActive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
+
         $section
             ->assertMissing(self::$SELECTOR_SETTINGS_FORM_LABEL_CREATED)
             ->assertMissing(self::$SELECTOR_SETTINGS_FORM_CREATED)
@@ -283,8 +286,11 @@ class SettingsAccountsTest extends SettingsBaseTest {
                 do{
                     $name = $this->faker->word();
                 }while($node->name == $name);
-                $section->type($selector, $name);
+                $section
+                    ->clear($selector)
+                    ->type($selector, $name);
                 break;
+
             case self::$SELECTOR_SETTINGS_FORM_SELECT_INSTITUTION:
                 do{
                     $institution = Institution::get()->random();
@@ -293,6 +299,7 @@ class SettingsAccountsTest extends SettingsBaseTest {
                     ->waitUntilMissing(self::$SELECTOR_SETTINGS_FORM_LOADING_INSTITUTION, self::$WAIT_SECONDS)
                     ->select($selector, $institution->id);
                 break;
+
             case self::$TEMPLATE_SELECTOR_SETTINGS_FORM_RADIO_CURRENCY_INPUT:
                 do{
                     $currency = CurrencyHelper::fetchCurrencies()->random();
@@ -302,6 +309,7 @@ class SettingsAccountsTest extends SettingsBaseTest {
                     ->click($selector_currency.'+span')
                     ->assertRadioSelected($selector_currency, $currency->code);
                 break;
+
             case self::$SELECTOR_SETTINGS_FORM_INPUT_TOTAL:
                 do{
                     $total = $this->faker->randomFloat(2);
@@ -310,9 +318,11 @@ class SettingsAccountsTest extends SettingsBaseTest {
                     ->clear($selector)
                     ->type($selector, $total);
                 break;
+
             case self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE:
                 $this->toggleToggleButton($section, $selector);
                 break;
+
             default:
                 throw new \UnexpectedValueException(sprintf("Unexpected form element [%s] provided", $selector));
         }
