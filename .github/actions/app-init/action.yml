@@ -16,7 +16,6 @@ runs:
     - run: |
         docker load -i ${{ inputs.docker-image-directory }}/${PROJECT_NAME}.tar.gz
         docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME up -d
-        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME exec -T database iterate-mysql-health-check
         docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps --status=running
       shell: bash
     # ensure correct user:group ownership
