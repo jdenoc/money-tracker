@@ -15,6 +15,11 @@ runs:
     # save docker images
     - run: |
         mkdir -p ${{ inputs.image-path }}
-        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME up -d
-        docker save $(docker-compose -f .docker/docker-compose.yml -p moneytracker images -q) | gzip > ${{ inputs.image-path }}/${PROJECT_NAME}.tar.gz
+        docker image ls "$PROJECT_NAME*" --no-trunc
+        
+        IFS=$'\n'
+        for image_name in $(docker image ls "$PROJECT_NAME*" --format '{{.Repository}}')
+        do
+          docker save $image_name | gzip > .docker/images/${image_name}.tar.gz
+        done
       shell: bash
