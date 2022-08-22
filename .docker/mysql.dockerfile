@@ -3,6 +3,7 @@ FROM mysql:5.6
 # logging
 RUN LOG_CONF=/etc/mysql/conf.d/logging.cnf \
   && LOG_DIR=/var/log/mysql \
+  && touch $LOG_CONF \
   && echo "[mysqld]" >> $LOG_CONF \
   && echo "general_log = 1" >> $LOG_CONF \
   && echo "general_log_file = $LOG_DIR/mysql_general.log" >> $LOG_CONF \
