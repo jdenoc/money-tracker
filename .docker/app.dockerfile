@@ -85,3 +85,7 @@ RUN echo 'allow_url_fopen = Off' >>  $PHP_INI_DIR/conf.d/php-allow_url_fopen.ini
 RUN echo 'error_log = /var/www/money-tracker/storage/logs/php_error.log' >> $PHP_INI_DIR/conf.d/php-error_log.ini
 # set php timezone
 RUN echo 'date.timezone = "UTC"' >> $PHP_INI_DIR/conf.d/php-date.timezone.ini
+
+# healthcheck
+COPY .docker/healthcheck/app-health-check.sh /usr/local/bin/app-health-check
+RUN chmod +x /usr/local/bin/app-health-check
