@@ -22,8 +22,17 @@ runs:
       shell: bash
     # start containers
     - run: |
-        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME up -d
-        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps --status=running
+        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME up -d --force-recreate
+        
+        i=0
+        while [[ $(docker container ls --filter "status=running" -q) != $(docker container ls --filter "status=running" --filter "health=healthy" -q) ]]
+        do
+          sleep 1
+          i=$((i+1))
+        done
+        echo "it took $i seconds for containers to become healthy"
+        
+        docker container ls --size --no-trunc
       shell: bash
     # ensure correct user:group ownership
     - run: |
