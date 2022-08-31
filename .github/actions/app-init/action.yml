@@ -28,7 +28,7 @@ runs:
         while [[
           $(docker container ls --filter "status=running" -q) != $(docker container ls --filter "status=running" --filter "health=healthy" -q)
           &&
-          $(docker container ls --filter "status=running" --filter "health=unhealthy" -q) -eq 0
+          $(docker container ls --filter "status=running" --filter "health=unhealthy" -q | wc -l) -eq 0
         ]]; do
           sleep 1
           i=$((i+1))
@@ -38,7 +38,7 @@ runs:
           fi
         done
         
-        unhealthy_count=$(docker container ls --filter "status=running" --filter "health=unhealthy" -q)
+        unhealthy_count=$(docker container ls --filter "status=running" --filter "health=unhealthy" -q | wc -l)
         if [[ $unhealthy_count -eq 0 ]]; then
           echo "it took $i seconds for containers to become healthy"
           docker container ls --size --no-trunc
