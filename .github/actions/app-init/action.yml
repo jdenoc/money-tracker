@@ -29,8 +29,11 @@ runs:
         while [[ $(docker container ls --filter "status=running" -q) != $(docker container ls --filter "status=running" --filter "health=healthy" -q) ]]
         do
           sleep 1
-          echo "$(docker container ls --filter "status=running" --filter "health=healthy" -q | wc -l) healthy containers"
           i=$((i+1))
+          if [[ $(($i % 10)) -eq 0 ]]; then
+            docker container ls --format "Status: {{.Status}}\tName: {{.Names}}"
+            echo "$(docker container ls --filter "status=running" --filter "health=healthy" -q | wc -l) healthy container(s)"
+          fi
         done
         echo "it took $i seconds for containers to become healthy"
         
