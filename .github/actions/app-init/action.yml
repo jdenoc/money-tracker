@@ -33,7 +33,6 @@ runs:
           sleep 1
           i=$((i+1))
           if [[ $(($i % 10)) -eq 0 ]]; then
-            docker container ls --format "Status: {{.Status}}\tName: {{.Names}}"
             echo "$(docker container ls --filter "status=running" --filter "health=healthy" -q | wc -l) healthy container(s)"
           fi
         done
@@ -44,6 +43,7 @@ runs:
           docker container ls --size --no-trunc
         else
           echo "Failing due to $unhealthy_count containers"
+          docker inspect --format "{{json .State.Health}}" $(docker container ls --filter "status=running" --filter "health=unhealthy" -q)
           # force a failure due to unhealthy containers
           exit 1;
         fi
