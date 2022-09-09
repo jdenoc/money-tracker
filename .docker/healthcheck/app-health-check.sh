@@ -1,3 +1,9 @@
 #!/usr/bin/env bash
 
-curl --silent --show-error --fail http://localhost/api/version || exit 1
+http_code=$(curl -i --silent --write-out '%{http_code}' --output /var/log/php/healthcheck.log http://localhost/api/version)
+
+if [[ $http_code -eq 200 ]]; then
+  exit 0  # success
+else
+  exit 1  # failure
+fi
