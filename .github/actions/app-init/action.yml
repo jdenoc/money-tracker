@@ -50,7 +50,7 @@ runs:
       shell: bash
     # ensure correct user:group ownership
     - run: |
-        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME exec -T --user root application chown -R www-data .
+        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME exec -T --user root application chown -R www-data /var/www/money-tracker
         docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME exec -T --user root selenium chgrp seluser /home/seluser/Downloads
         docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME exec -T --user root selenium chmod g+w /home/seluser/Downloads
       shell: bash
@@ -64,7 +64,6 @@ runs:
       shell: bash
     # setup laravel log files
     - run: |
-        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME exec -T --user www-data application touch storage/logs/php_error.log
         docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME exec -T --user www-data application touch storage/logs/laravel.log
       shell: bash
     # clear cache and create alternative .env file
