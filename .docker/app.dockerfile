@@ -1,5 +1,8 @@
 FROM php:8.0-apache
 
+ENV DOCKER_LOG_STDOUT /proc/self/fd/1
+ENV DOCKER_LOG_STDERR /proc/self/fd/2
+
 # install generic packages & extensions
 RUN apt-get update --fix-missing \
   && apt-get upgrade -y
@@ -11,10 +14,11 @@ RUN touch /etc/apache2/conf-available/servername.conf \
   && a2enconf servername
 
 # modify apache logging
-RUN rm -rf /var/log/apache2/{access,error,other_vhosts_access}.log \
-  && ln -sf /proc/self/fd/1 /var/log/apache2/access.log \
-  && ln -sf /proc/self/fd/2 /var/log/apache2/error.log \
-  && ln -sf /proc/self/fd/1 /var/log/apache2/other_vhosts_access.log
+RUN APACHE_LOG_DIR=/var/log/apache2 \
+  && rm -rf $APACHE_LOG_DIR/{access,error,other_vhosts_access}.log \
+  && ln -sf $DOCKER_LOG_STDOUT $APACHE_LOG_DIR/access.log \
+  && ln -sf $DOCKER_LOG_STDERR $APACHE_LOG_DIR/error.log \
+  && ln -sf $DOCKER_LOG_STDOUT $APACHE_LOG_DIR/other_vhosts_access.log
 RUN echo 'LogFormat "%t [apache] %H %m %U %q | status:%>s" docker_log' > /etc/apache2/conf-available/dockerlog.conf \
   && a2enconf dockerlog
 
@@ -25,10 +29,11 @@ RUN a2enmod rewrite
 COPY .docker/money-tracker.vhost.conf /etc/apache2/sites-available/000-default.conf
 
 # setup web directory
-WORKDIR /var/www/money-tracker
+ENV WORK_DIR /var/www/money-tracker
+WORKDIR $WORK_DIR
 ENV APACHE_RUN_USER www-data
 ENV APACHE_RUN_GROUP www-data
-ENV APACHE_DOCUMENT_ROOT /var/www/money-tracker/public
+ENV APACHE_DOCUMENT_ROOT $WORK_DIR/public
 RUN mkdir -p $APACHE_DOCUMENT_ROOT \
   && chown -R "$APACHE_RUN_USER:$APACHE_RUN_GROUP" "${APACHE_DOCUMENT_ROOT}"
 
@@ -88,7 +93,7 @@ RUN apt-get autoremove -y
 
 # alias for php artisan
 # allows us to call artisan without prefixing it with "php"
-RUN echo '#!/usr/bin/env bash\nphp /var/www/money-tracker/artisan "$@"' > /usr/local/bin/artisan \
+RUN echo '#!/usr/bin/env bash\nphp ${WORK_DIR}/artisan "$@"' > /usr/local/bin/artisan \
   && chmod +x /usr/local/bin/artisan
 
 # select a php.ini config file; we use php.ini-development as it has "display_errors = On"
@@ -98,7 +103,7 @@ RUN echo "expose_php = Off" > $PHP_INI_DIR/conf.d/php-expose_php.ini
 RUN echo "allow_url_fopen = Off" > $PHP_INI_DIR/conf.d/php-allow_url_fopen.ini
 # set php error logging
 RUN PHP_ERROR_LOG=$PHP_LOG_DIR/errors.log \
-  && ln -sf /proc/self/fd/2 $PHP_ERROR_LOG \
+  && ln -sf $DOCKER_LOG_STDERR $PHP_ERROR_LOG \
   && echo "error_log = $PHP_ERROR_LOG" > $PHP_INI_DIR/conf.d/php-error_log.ini
 # set php timezone
 RUN echo 'date.timezone = "UTC"' > $PHP_INI_DIR/conf.d/php-date.timezone.ini
@@ -106,4 +111,4 @@ RUN echo 'date.timezone = "UTC"' > $PHP_INI_DIR/conf.d/php-date.timezone.ini
 # healthcheck
 COPY .docker/healthcheck/app-health-check.sh /usr/local/bin/app-health-check
 RUN chmod +x /usr/local/bin/app-health-check
-RUN ln -sf /proc/self/fd/1 $PHP_LOG_DIR/healthcheck.log
+RUN ln -sf $DOCKER_LOG_STDOUT $PHP_LOG_DIR/healthcheck.log
