@@ -14,7 +14,7 @@ runs:
         docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME exec -T --user root application chown -R www-data storage/logs
         docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME exec -T --user www-data application touch storage/logs/docker.log
         docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME exec -T --user www-data application chmod -R 777 storage/logs/docker.log
-        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME logs >> storage/logs/docker.log
+        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME logs > storage/logs/docker.log
       shell: bash
     # output docker container configurations
     - run: docker inspect $(docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps -q)
