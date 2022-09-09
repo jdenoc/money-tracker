@@ -33,8 +33,8 @@ RUN mkdir -p $APACHE_DOCUMENT_ROOT \
   && chown -R "$APACHE_RUN_USER:$APACHE_RUN_GROUP" "${APACHE_DOCUMENT_ROOT}"
 
 # create php log directory
-RUN PHP_LOG_DIR=/var/log/php \
-  && mkdir -p $PHP_LOG_DIR \
+ENV PHP_LOG_DIR=/var/log/php
+RUN mkdir -p $PHP_LOG_DIR \
   && chown "$APACHE_RUN_USER:$APACHE_RUN_GROUP" "${PHP_LOG_DIR}"
 
 # install php intl extension
@@ -67,7 +67,7 @@ RUN docker-php-ext-enable igbinary \
 ARG DISABLE_XDEBUG
 RUN if [ "$DISABLE_XDEBUG" = false ]; \
   then \
-    XDEBUG_LOG=/var/log/php/xdebug.log \
+    XDEBUG_LOG=$PHP_LOG_DIR/xdebug.log \
     && touch $XDEBUG_LOG; \
     pecl install xdebug-3.1.3; \
     docker-php-ext-enable xdebug; \
@@ -97,7 +97,7 @@ RUN cp $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini
 RUN echo "expose_php = Off" > $PHP_INI_DIR/conf.d/php-expose_php.ini
 RUN echo "allow_url_fopen = Off" > $PHP_INI_DIR/conf.d/php-allow_url_fopen.ini
 # set php error logging
-RUN PHP_ERROR_LOG=/var/log/php/errors.log \
+RUN PHP_ERROR_LOG=$PHP_LOG_DIR/errors.log \
   && ln -sf /proc/self/fd/2 $PHP_ERROR_LOG \
   && echo "error_log = $PHP_ERROR_LOG" > $PHP_INI_DIR/conf.d/php-error_log.ini
 # set php timezone
@@ -106,3 +106,4 @@ RUN echo 'date.timezone = "UTC"' > $PHP_INI_DIR/conf.d/php-date.timezone.ini
 # healthcheck
 COPY .docker/healthcheck/app-health-check.sh /usr/local/bin/app-health-check
 RUN chmod +x /usr/local/bin/app-health-check
+RUN ln -sf /proc/self/fd/1 $PHP_LOG_DIR/healthcheck.log
