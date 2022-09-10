@@ -11,7 +11,7 @@ class GetAccountsTest extends TestCase {
 
     use WithFaker;
 
-    private $_uri = '/api/accounts';
+    private string $_uri = '/api/accounts';
 
     public function testGetListOfAccountsWhenTheyAreAvailable(){
         // GIVEN
@@ -46,8 +46,10 @@ class GetAccountsTest extends TestCase {
             $this->assertEmpty($account_in_response, "Unknown nodes found in JSON response:".json_encode($account_in_response));
         }
         foreach($generated_accounts as $generated_account){
+            $generated_account_as_array = $generated_account->toArray();
+            unset($generated_account_as_array["modified_stamp"],$generated_account_as_array["create_stamp"]);
             $this->assertTrue(
-                in_array($generated_account->toArray(), $response_body_as_array),
+                in_array($generated_account_as_array, $response_body_as_array),
                 "Factory generate account in JSON: ".$generated_account->toJson()."\nResponse Body:".$response->getContent()
             );
         }
