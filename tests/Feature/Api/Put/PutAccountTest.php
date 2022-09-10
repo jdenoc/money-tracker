@@ -2,11 +2,11 @@
 
 namespace Tests\Feature\Api\Put;
 
-use App\Account;
-use App\Institution;
+use App\Models\Account;
+use App\Models\Institution;
 use App\Traits\AccountResponseKeys;
-use Illuminate\Foundation\Testing\TestResponse;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Testing\TestResponse;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 
@@ -15,7 +15,7 @@ class PutAccountTest extends TestCase {
     use AccountResponseKeys;
     use WithFaker;
 
-    private $_base_uri = '/api/account/%d';
+    private string $_base_uri = '/api/account/%d';
 
     public function setUp(): void{
         parent::setUp();
@@ -140,7 +140,6 @@ class PutAccountTest extends TestCase {
     }
 
     private function assertPostResponseHasCorrectKeys(array $response_as_array, string $failure_message){
-        $this->assertTrue(is_array($response_as_array), $failure_message);
         $this->assertArrayHasKey(self::$RESPONSE_KEY_ID, $response_as_array, $failure_message);
         $this->assertArrayHasKey(self::$RESPONSE_KEY_ERROR, $response_as_array, $failure_message);
     }
