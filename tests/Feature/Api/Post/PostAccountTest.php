@@ -2,11 +2,11 @@
 
 namespace Tests\Feature\Api\Post;
 
-use App\Account;
-use App\Institution;
+use App\Models\Account;
+use App\Models\Institution;
 use App\Traits\AccountResponseKeys;
-use Illuminate\Foundation\Testing\TestResponse;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Testing\TestResponse;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 
@@ -15,9 +15,9 @@ class PostAccountTest extends TestCase {
     use AccountResponseKeys;
     use WithFaker;
 
-    private $_base_uri = '/api/account';
+    private string $_base_uri = '/api/account';
 
-    protected function setUp(): void{
+    public function setUp(): void{
         parent::setUp();
         factory(Institution::class, 3)->create(['active'=>true]);
     }
@@ -34,7 +34,7 @@ class PostAccountTest extends TestCase {
     }
 
     public function providerCreateAccountMissingProperty(): array{
-        // Application must he initialised before factory helpers can be used withi a provider method
+        // Application must be initialised before factory helpers can be used withi a provider method
         $this->initialiseApplication();
         $account_data = $this->generateDummyAccountData();
 
@@ -135,7 +135,6 @@ class PostAccountTest extends TestCase {
     }
 
     private function assertPostResponseHasCorrectKeys(array $response_as_array, string $failure_message){
-        $this->assertTrue(is_array($response_as_array), $failure_message);
         $this->assertArrayHasKey(self::$RESPONSE_KEY_ID, $response_as_array, $failure_message);
         $this->assertArrayHasKey(self::$RESPONSE_KEY_ERROR, $response_as_array, $failure_message);
     }
