@@ -63,7 +63,7 @@ class SettingsTagsTest extends SettingsBaseTest {
     }
 
     protected function assertFormWithExistingData(Browser $section, BaseModel $node){
-        $this->assertNodeIsOfTypeTag($node);
+        $this->assertNodeIsOfType($node, Tag::class);
 
         $section
             ->scrollToElement(self::$SELECTOR_SETTINGS_HEADER)
@@ -96,7 +96,7 @@ class SettingsTagsTest extends SettingsBaseTest {
     }
 
     protected function interactWithNode(Browser $section, BaseModel $node, bool $is_fresh_load=true){
-        $this->assertNodeIsOfTypeTag($node);
+        $this->assertNodeIsOfType($node, Tag::class);
 
         $selector = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID, $node->id);
         $section
@@ -108,7 +108,7 @@ class SettingsTagsTest extends SettingsBaseTest {
         if(is_null($node)){
             $node = new Tag();
         }
-        $this->assertNodeIsOfTypeTag($node);
+        $this->assertNodeIsOfType($node, Tag::class);
 
         switch($selector){
             case self::$SELECTOR_SETTINGS_FORM_INPUT_NAME:
@@ -124,13 +124,6 @@ class SettingsTagsTest extends SettingsBaseTest {
             default:
                 throw new \UnexpectedValueException(sprintf("Unexpected form element [%s] provided", $selector));
         }
-    }
-
-    private function assertNodeIsOfTypeTag($node){
-        $this->assertTrue(
-            get_class($node) === Tag::class,
-            sprintf("node of type [%s] was incorrectly provided", get_class($node))
-        );
     }
 
 }
