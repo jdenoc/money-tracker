@@ -344,7 +344,7 @@ class PutEntryTest extends TestCase {
     public function testUpdateEntryWithTagThatDoesNotExist(){
         // GIVEN - see setUp()
         $generate_tag_count = $this->faker->numberBetween(2, 5);
-        factory(Tag::class, $generate_tag_count)->create();
+        Tag::factory($generate_tag_count)->create();
         $put_entry_data = ['tags'=>Tag::all()->pluck('id')->toArray()];
         do{
             $non_existent_tag_id = $this->faker->unique()->randomNumber(3);
@@ -377,7 +377,7 @@ class PutEntryTest extends TestCase {
     public function testUpdateEntryWithTagsSoTheyAreNotDuplicated(){
         // GIVEN - see setUp()
         $generate_tag_count = $this->faker->numberBetween(2, 5);
-        $generated_tags = factory(Tag::class, $generate_tag_count)->create();
+        $generated_tags = Tag::factory()->count($generate_tag_count)->create();
         $generated_tag_ids = $generated_tags->pluck('pivot.tag_id')->toArray();
         $attaching_tag_id = $this->faker->randomElement($generated_tag_ids);
         $this->_generated_entry->tags()->attach($attaching_tag_id);

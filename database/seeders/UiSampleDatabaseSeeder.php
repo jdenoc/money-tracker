@@ -16,7 +16,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Collection;
-use Storage;
+use Illuminate\Support\Facades\Storage;
 
 class UiSampleDatabaseSeeder extends Seeder {
 
@@ -45,7 +45,7 @@ class UiSampleDatabaseSeeder extends Seeder {
         $this->setUpFaker();
 
         // ***** TAGS *****
-        $tags = factory(Tag::class, self::COUNT_TAG)->create();
+        $tags = Tag::factory()->count(self::COUNT_TAG)->create();
         $tag_ids = $tags->pluck('id')->toArray();
         $this->command->line(self::CLI_OUTPUT_PREFIX."Tags seeded [".$tags->count()."]");
 
