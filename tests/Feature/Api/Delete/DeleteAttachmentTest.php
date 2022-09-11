@@ -32,7 +32,7 @@ class DeleteAttachmentTest extends TestCase {
         // GIVEN
         $generated_account = Account::factory()->create();
         $generated_account_type = AccountType::factory()->create(['account_id'=>$generated_account->id]);
-        $generated_entry = factory(Entry::class)->create(['account_type_id'=>$generated_account_type->id]);
+        $generated_entry = Entry::factory()->create(['account_type_id'=>$generated_account_type->id]);
         $generated_attachment = Attachment::factory()->create(['entry_id'=>$generated_entry->id]);
 
         // WHEN

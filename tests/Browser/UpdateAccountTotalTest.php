@@ -51,7 +51,7 @@ class UpdateAccountTotalTest extends DuskTestCase {
         $this->_account_type_id = $account_types_collection->where('disabled', false)->where('account_id', $account['id'])->pluck('id')->random();
 
         // make sure that at least 1 entry exists for the test
-        factory(Entry::class, 1)->create(['entry_date'=>date("Y-m-d"), 'disabled'=>0, 'confirm'=>0, 'account_type_id'=>$this->_account_type_id]);
+        Entry::factory()->count(1)->create(['entry_date'=>date("Y-m-d"), 'disabled'=>0, 'confirm'=>0, 'account_type_id'=>$this->_account_type_id]);
         // account['total'] will have changed after the new entry is created. need to re-fetch
         $this->_account = $this->getAccount($account['id']);
     }

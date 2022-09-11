@@ -4,11 +4,13 @@ namespace App\Models;
 
 use App\Traits\EntryFilterKeys;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Query\Builder;
 
 class Entry extends BaseModel {
 
     use EntryFilterKeys;
+    use HasFactory;
 
     const CREATED_AT = 'create_stamp';
     const UPDATED_AT = 'modified_stamp';
