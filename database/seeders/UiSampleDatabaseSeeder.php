@@ -200,13 +200,11 @@ class UiSampleDatabaseSeeder extends Seeder {
         return $account_collection->merge($new_account_collection);
     }
 
-    /**
-     * @param Collection $account_type_collection
-     * @param array $data
-     * @return Collection
-     */
     private function addAccountTypeToCollection(Collection $account_type_collection, array $data): Collection{
-        return $this->addToCollection($account_type_collection, AccountType::class, $data, $this->faker->numberBetween(self::COUNT_MIN, self::COUNT_ACCOUNT_TYPE));
+        $new_account_type_collection = AccountType::factory()
+            ->count($this->faker->numberBetween(self::COUNT_MIN, self::COUNT_ACCOUNT_TYPE))
+            ->create($data);
+        return $account_type_collection->merge($new_account_type_collection);
     }
 
     /**
