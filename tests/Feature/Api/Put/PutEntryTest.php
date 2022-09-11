@@ -407,7 +407,7 @@ class PutEntryTest extends TestCase {
 
     public function testUpdateEntryWithAttachments(){
         // GIVEN
-        $attachment_data = factory(Attachment::class)->make();
+        $attachment_data = Attachment::factory()->make();
         $put_entry_data = ['attachments'=>[[
             'uuid'=>$attachment_data->uuid,
             'name'=>$attachment_data->name
@@ -440,11 +440,11 @@ class PutEntryTest extends TestCase {
 
     public function testUpdateEntryWithAttachmentsAndAttachmentsAreAlreadyAttached(){
         // GIVEN
-        $unattached_attachment = factory(Attachment::class)->make();
+        $unattached_attachment = Attachment::factory()->make();
         $put_entry_data = ['attachments'=>[
             ['uuid'=>$unattached_attachment->uuid, 'name'=>$unattached_attachment->name]
         ]];
-        $attached_attachments = factory(Attachment::class, 3)->create(['entry_id'=>$this->_generated_entry->id]);
+        $attached_attachments = Attachment::factory()->count(3)->create(['entry_id'=>$this->_generated_entry->id]);
         foreach($attached_attachments as $attached_attachment){
             $put_entry_data['attachments'][] = ['uuid'=>$attached_attachment->uuid, 'name'=>$attached_attachment->name];
         }
