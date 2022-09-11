@@ -136,7 +136,7 @@
         <div class="col-span-3 relative text-gray-700">
           <input id="filter-min-value" name="filter-min-value" type="text" placeholder="999.99" autocomplete="off" class="placeholder-gray-400 placeholder-opacity-80 rounded w-full pl-6 filter-modal-element"
               v-model="filterData.minValue"
-              v-on:change="filterData.minValue = decimaliseValue(filterData.minValue)"
+              v-on:change="decimaliseValue('minValue')"
           />
           <span class="currency-symbol absolute left-3 inset-y-2 mt-px text-gray-400 font-medium" v-html="accountCurrencyHtml" ></span>
         </div>
@@ -146,7 +146,7 @@
         <div class="col-span-3 relative text-gray-700">
           <input id="filter-max-value" name="filter-max-value" type="text" placeholder="999.99" autocomplete="off" class="placeholder-gray-400 placeholder-opacity-80 rounded w-full pl-6 filter-modal-element"
               v-model="filterData.maxValue"
-              v-on:change="filterData.maxValue = decimaliseValue(filterData.maxValue)"
+              v-on:change="decimaliseValue('maxValue')"
           />
           <span class="currency-symbol absolute left-3 inset-y-2 mt-px text-gray-400 font-medium" v-html="accountCurrencyHtml" ></span>
         </div>
