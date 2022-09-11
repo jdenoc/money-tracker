@@ -184,7 +184,7 @@ class GetEntryTest extends TestCase {
      * @return array
      */
     private function generateTagsAndOutputAsArray($generated_entry){
-        $generated_tags = factory(Tag::class, $this->_generate_tag_count)->create();
+        $generated_tags = Tag::factory()->count($this->_generate_tag_count)->create();
         $generated_tags_as_array = [];
         $generated_tag_i = 0;
         foreach($generated_tags as $generated_tag){
