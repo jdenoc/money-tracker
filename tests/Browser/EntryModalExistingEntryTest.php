@@ -796,9 +796,9 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         // catch/create potentially missed database entries
         $account_type_id = AccountType::all()->random()->pluck('id')->first();
         $tag_ids = Tag::all()->pluck('id')->toArray();
-        $entry = factory(Entry::class)->create(['entry_date'=>date('Y-m-d'),'expense'=>true, 'confirm'=>false, 'account_type_id'=>$account_type_id]);
+        $entry = Entry::factory()->create(['entry_date'=>date('Y-m-d'),'expense'=>true, 'confirm'=>false, 'account_type_id'=>$account_type_id]);
         $entry->tags()->syncWithoutDetaching($this->faker->randomElements($tag_ids, 2));
-        $entry = factory(Entry::class)->create(['entry_date'=>date('Y-m-d'),'expense'=>false, 'confirm'=>false, 'account_type_id'=>$account_type_id]);
+        $entry = Entry::factory()->create(['entry_date'=>date('Y-m-d'),'expense'=>false, 'confirm'=>false, 'account_type_id'=>$account_type_id]);
         $entry->tags()->syncWithoutDetaching($this->faker->randomElements($tag_ids, 2));
         unset($entry, $tag_ids, $account_type_id);
 
@@ -1062,7 +1062,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         // GIVEN
         $account_type_id = AccountType::all()->pluck('id')->random();
 
-        $entry = factory(Entry::class)->create([
+        $entry = Entry::factory()->create([
             'entry_date'=>Carbon::tomorrow()->format('Y-m-d'),
             'account_type_id'=>$account_type_id,
             'disabled'=>false,
