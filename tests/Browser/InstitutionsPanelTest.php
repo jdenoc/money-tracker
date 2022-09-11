@@ -113,7 +113,7 @@ class InstitutionsPanelTest extends DuskTestCase {
         $institutions_collection = $this->getInstitutionsCollection(false);
         $institution_id = $institutions_collection->pluck('id')->random(1)->first();
         DB::table('accounts')->truncate();
-        factory(Account::class, 3)->create(['disabled'=>0, 'institution_id'=>$institution_id]);
+        Account::factory()->count(4)->create(['disabled'=>0, 'institution_id'=>$institution_id]);
 
         $this->browse(function(Browser $browser){
             $browser->visit(new HomePage());
@@ -190,7 +190,7 @@ class InstitutionsPanelTest extends DuskTestCase {
         $new_institution = factory(Institution::class)->create(['active'=>true]);
         $institution_id = $new_institution->id;
         DB::table('accounts')->truncate();
-        $new_account = factory(Account::class)->create(['institution_id'=>$institution_id, 'total'=>$test_total, 'disabled'=>false]);
+        $new_account = Account::factory()->create(['institution_id'=>$institution_id, 'total'=>$test_total, 'disabled'=>false]);
         DB::statement("UPDATE account_types SET account_id=:id", ['id'=>$new_account->id]);
         $this->assertEquals($test_total, $new_account->total);
 
@@ -340,7 +340,7 @@ class InstitutionsPanelTest extends DuskTestCase {
         $accounts_collection = collect($accounts);
         if($include_disabled_accounts){
             if($accounts_collection->where('disabled', true)->count() == 0){
-                $disabled_account = factory(Account::class, 1)->create(['disabled'=>true, 'institution_id'=>$institutions_collection->random(1)->pluck('id')->first()]);
+                $disabled_account = Account::factory()->count(1)->create(['disabled'=>true, 'institution_id'=>$institutions_collection->random(1)->pluck('id')->first()]);
                 $accounts_collection->push($disabled_account);
             }
         } else {
