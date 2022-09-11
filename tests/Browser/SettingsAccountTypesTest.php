@@ -131,7 +131,7 @@ class SettingsAccountTypesTest extends SettingsBaseTest {
     }
 
     protected function assertFormWithExistingData(Browser $section, BaseModel $node){
-        $this->assertNodeIsOfTypeAccountType($node);
+        $this->assertNodeIsOfType($node, AccountType::class);
 
         $section
             ->scrollToElement(self::$SELECTOR_SETTINGS_HEADER)
@@ -217,7 +217,7 @@ class SettingsAccountTypesTest extends SettingsBaseTest {
     }
 
     protected function interactWithNode(Browser $section, BaseModel $node, bool $is_fresh_load=true){
-        $this->assertNodeIsOfTypeAccountType($node);
+        $this->assertNodeIsOfType($node, AccountType::class);
 
         $class_state = $node->disabled ? '.is-disabled' : '.is-active';
         $selector_account_type_id = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID.$class_state, $node->id);
@@ -234,7 +234,7 @@ class SettingsAccountTypesTest extends SettingsBaseTest {
         if(is_null($node)){
             $node = new AccountType();
         }
-        $this->assertNodeIsOfTypeAccountType($node);
+        $this->assertNodeIsOfType($node, AccountType::class);
 
         switch($selector){
             case self::$SELECTOR_SETTINGS_FORM_INPUT_NAME:
@@ -277,13 +277,6 @@ class SettingsAccountTypesTest extends SettingsBaseTest {
             default:
                 throw new \UnexpectedValueException(sprintf("Unexpected form element [%s] provided", $selector));
         }
-    }
-
-    private function assertNodeIsOfTypeAccountType($node){
-        $this->assertTrue(
-            get_class($node) === AccountType::class,
-            sprintf("node of type [%s] was incorrectly provided", get_class($node))
-        );
     }
 
 }
