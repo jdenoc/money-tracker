@@ -35,7 +35,7 @@ class ListEntriesBase extends TestCase {
 
     public function setUp(): void{
         parent::setUp();
-        $this->_generated_account = factory(Account::class)->create();
+        $this->_generated_account = Account::factory()->create();
         $this->_generated_tags = factory(Tag::class, $this->faker->randomDigitNotZero())->create();
     }
 

@@ -106,7 +106,7 @@ class PostEntryTest extends TestCase {
 
     public function testCreateEntryAndAccountTotalUpdate(){
         // GIVEN
-        $generated_account = factory(Account::class)->create();
+        $generated_account = Account::factory()->create();
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
         $generated_entry_data = $this->generateEntryData();
         $generated_entry_data['account_type_id'] = $generated_account_type->id;
@@ -166,7 +166,7 @@ class PostEntryTest extends TestCase {
             $non_existent_tag_id = $this->faker->randomNumber();
         }while(in_array($non_existent_tag_id, $generated_tag_ids));
 
-        $generated_account = factory(Account::class)->create();
+        $generated_account = Account::factory()->create();
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
         $generated_entry_data = $this->generateEntryData();
         $generated_entry_data['tags'] = [$non_existent_tag_id];
@@ -211,7 +211,7 @@ class PostEntryTest extends TestCase {
     public function testCreateEntryWithAttachments(){
         // GIVEN
         $generated_attachments = factory(Attachment::class, $this->faker->randomDigitNotZero())->make();
-        $generated_account = factory(Account::class)->create();
+        $generated_account = Account::factory()->create();
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
         $generated_entry_data = $this->generateEntryData();
         $generated_entry_data['account_type_id'] = $generated_account_type->id;
@@ -261,7 +261,7 @@ class PostEntryTest extends TestCase {
 
     public function testCreateEntryWithRelatedTransferEntryId(){
         // GIVEN
-        $generated_account = factory(Account::class)->create();
+        $generated_account = Account::factory()->create();
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
         $generated_entry_data = $this->generateEntryData();
         $generated_entry_data['account_type_id'] = $generated_account_type->id;
