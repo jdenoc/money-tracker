@@ -325,9 +325,9 @@ class FilterModalTest extends DuskTestCase {
         $institutions = $this->getApiInstitutions();
         $institution_id = collect($institutions)->pluck('id')->random(1)->first();
 
-        factory(Account::class, 3)->create(['disabled'=>0, 'institution_id'=>$institution_id]);
+        Account::factory()->count(3)->create(['disabled'=>0, 'institution_id'=>$institution_id]);
         if($has_disabled_account){
-            factory(Account::class, 1)->create(['disabled'=>1, 'institution_id'=>$institution_id]);
+            Account::factory()->count(1)->create(['disabled'=>1, 'institution_id'=>$institution_id]);
         }
         $accounts = $this->getApiAccounts();
 

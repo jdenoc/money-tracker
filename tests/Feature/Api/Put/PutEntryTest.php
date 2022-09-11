@@ -25,7 +25,7 @@ class PutEntryTest extends TestCase {
     public function setUp(): void{
         parent::setUp();
         // GIVEN - for all tests
-        $this->_generated_account = factory(Account::class)->create();
+        $this->_generated_account = Account::factory()->create();
         $this->_generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
         $this->_generated_entry = factory(Entry::class)->create(['account_type_id'=>$this->_generated_account_type->id]);
     }
@@ -134,7 +134,7 @@ class PutEntryTest extends TestCase {
 
     public function testUpdateEntryAndChangeAccountTypeCausingAccountTotalsToUpdate(){
         // GIVEN - see setUp()
-        $generated_account2 = factory(Account::class)->create();
+        $generated_account2 = Account::factory()->create();
         $generated_account_type2 = factory(AccountType::class)->create(['account_id'=>$generated_account2->id]);
         $entry_data = $this->_generated_entry->toArray();
         $entry_data['account_type_id'] = $generated_account_type2->id;
