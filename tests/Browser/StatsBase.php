@@ -123,7 +123,7 @@ class StatsBase extends DuskTestCase {
             $new_entry_data['account_type_id'] = AccountType::all()->pluck('id')->random();
         }
 
-        $entry = factory(Entry::class)->create($new_entry_data);
+        $entry = Entry::factory()->create($new_entry_data);
         if(!empty($filter_data[self::$FILTER_KEY_TAGS])){
             $entry->tags()->attach($filter_data[self::$FILTER_KEY_TAGS]);
         }

@@ -265,7 +265,7 @@ class PostEntryTest extends TestCase {
         $generated_account_type = AccountType::factory()->create(['account_id'=>$generated_account->id]);
         $generated_entry_data = $this->generateEntryData();
         $generated_entry_data['account_type_id'] = $generated_account_type->id;
-        $generated_transfer_entry = factory(Entry::class)->create($generated_entry_data);
+        $generated_transfer_entry = Entry::factory()->create($generated_entry_data);
         $generated_entry_data['transfer_entry_id'] = $generated_transfer_entry->id;
 
         // WHEN
@@ -297,7 +297,7 @@ class PostEntryTest extends TestCase {
     }
 
     private function generateEntryData():array{
-        $entry_data = factory(Entry::class)->make();
+        $entry_data = Entry::factory()->make();
         return [
             'account_type_id'=>$entry_data->account_type_id,
             'confirm'=>$entry_data->confirm,
