@@ -2,9 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Storage;
 
 class Attachment extends BaseModel {
+
+    use HasFactory;
 
     const STORAGE_TMP_UPLOAD = 'tmp-uploads';
     const STORAGE_ATTACHMENTS = 'attachments';

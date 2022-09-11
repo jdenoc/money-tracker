@@ -249,13 +249,13 @@ class UiSampleDatabaseSeeder extends Seeder {
      */
     private function assignAttachmentToEntry(int $entry_id, $transfer_entry_ids, Collection $entries_collection): void{
         if(in_array($entry_id, $transfer_entry_ids)){
-            $new_attachment = factory(Attachment::class)->create(['entry_id'=>$entry_id]);
+            $new_attachment = Attachment::factory()->create(['entry_id'=>$entry_id]);
             $this->storeAttachment($new_attachment);
             $transfer_entry = $entries_collection->where('id', $entry_id)->first();
-            $attachment = factory(Attachment::class)->create(['entry_id'=>$transfer_entry->transfer_entry_id, 'name'=>$new_attachment->name]);
+            $attachment = Attachment::factory()->create(['entry_id'=>$transfer_entry->transfer_entry_id, 'name'=>$new_attachment->name]);
             $this->storeAttachment($attachment);
         } else {
-            $attachment = factory(Attachment::class)->create(['entry_id'=>$entry_id]);
+            $attachment = Attachment::factory()->create(['entry_id'=>$entry_id]);
             $this->storeAttachment($attachment);
         }
     }

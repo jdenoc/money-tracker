@@ -64,7 +64,7 @@ class ListEntriesBase extends TestCase {
             } else {
                 $generate_attachment_count = $this->faker->randomDigitNotZero();
             }
-            factory(Attachment::class, $generate_attachment_count)->create(['entry_id' => $generated_entry->id]);
+            Attachment::factory()->count($generate_attachment_count)->create(['entry_id' => $generated_entry->id]);
 
             if(isset($override_entry_components['tags'])){
                 $generated_entry->tags()->sync($override_entry_components['tags']);
