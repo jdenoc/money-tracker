@@ -1,13 +1,16 @@
 <?php
 
-use Faker\Generator as Faker;
+namespace Database\Factories;
 
-/**
- * @var \Illuminate\Database\Eloquent\Factory $factory
- */
-$factory->define(App\Models\Institution::class, function (Faker $faker) {
-    return [
-        'name'=>$faker->company(),
-        'active'=>$faker->boolean()
-    ];
-});
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+class InstitutionFactory extends Factory {
+
+    public function definition():array {
+        return [
+            'name'=>$this->faker->company(),
+            'active'=>$this->faker->boolean()
+        ];
+    }
+
+}
