@@ -89,7 +89,7 @@ class SettingsInstitutionsTest extends SettingsBaseTest {
     }
 
     protected function assertFormWithExistingData(Browser $section, BaseModel $node){
-        $this->assertNodeIsOfTypeInstitution($node);
+        $this->assertNodeIsOfType($node, Institution::class);
         $section->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, $node->name);
         if($node->active){
             $this->assertActiveStateToggleActive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
@@ -152,7 +152,7 @@ class SettingsInstitutionsTest extends SettingsBaseTest {
     }
 
     protected function interactWithNode(Browser $section, BaseModel $node, bool $is_fresh_load=true){
-        $this->assertNodeIsOfTypeInstitution($node);
+        $this->assertNodeIsOfType($node, Institution::class);
         $institution_class_state = $node->active ? '.is-active' : '.is-disabled';
         $selector_institution_id = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID.$institution_class_state, $node->id);
         $section
@@ -170,7 +170,7 @@ class SettingsInstitutionsTest extends SettingsBaseTest {
         if(is_null($node)){
             $node = new Institution();
         }
-        $this->assertNodeIsOfTypeInstitution($node);
+        $this->assertNodeIsOfType($node, Institution::class);
 
         switch($selector){
             case self::$SELECTOR_SETTINGS_FORM_INPUT_NAME:
@@ -188,13 +188,6 @@ class SettingsInstitutionsTest extends SettingsBaseTest {
             default:
                 throw new \UnexpectedValueException(sprintf("Unexpected form element [%s] provided", $selector));
         }
-    }
-
-    private function assertNodeIsOfTypeInstitution($node){
-        $this->assertTrue(
-            get_class($node) === Institution::class,
-            sprintf("node of type [%s] was incorrectly provided", get_class($node))
-        );
     }
 
 }
