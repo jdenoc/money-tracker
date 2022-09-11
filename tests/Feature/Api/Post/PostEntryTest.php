@@ -160,7 +160,7 @@ class PostEntryTest extends TestCase {
     public function testCreateEntryWithTagsButOneTagDoesNotExist(){
         // GIVEN
         $generate_tag_count = 3;
-        $generated_tags = factory(Tag::class, $generate_tag_count)->create();
+        $generated_tags = Tag::factory()->count($generate_tag_count)->create();
         $generated_tag_ids = $generated_tags->pluck('id')->toArray();
         do{
             $non_existent_tag_id = $this->faker->randomNumber();

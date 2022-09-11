@@ -2,7 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 class Tag extends BaseModel {
+
+    use HasFactory;
 
     protected $table = 'tags';
     public $timestamps = false; // turns off default laravel timestamping

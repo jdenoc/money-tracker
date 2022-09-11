@@ -121,7 +121,7 @@ class PostEntriesTest extends ListEntriesBase {
         // GIVEN
         $min_number_of_tags = 2;
         while($this->_generated_tags->count() < $min_number_of_tags){
-            $this->_generated_tags = factory(Tag::class, $this->faker->randomDigitNotZero())->create();
+            $this->_generated_tags = Tag::factory()->count($this->faker->randomDigitNotZero())->create();
         }
         $tag_ids = $this->_generated_tags->pluck('id')->toArray();
         $filter_details[self::$FILTER_KEY_TAGS] = $this->faker->randomElements($tag_ids, $this->faker->numberBetween($min_number_of_tags, count($tag_ids)));
