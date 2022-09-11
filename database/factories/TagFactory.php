@@ -1,10 +1,15 @@
 <?php
 
-use Faker\Generator as Faker;
+namespace Database\Factories;
 
-/** @var \Illuminate\Database\Eloquent\Factory $factory */
-$factory->define(App\Models\Tag::class, function(Faker $faker){
-    return [
-        'name'=>$faker->unique()->colorName(),
-    ];
-});
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+class TagFactory extends Factory {
+
+    public function definition():array {
+        return [
+            'name'=>$this->faker->unique()->colorName(),
+        ];
+    }
+
+}
