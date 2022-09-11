@@ -161,7 +161,7 @@ class SettingsAccountsTest extends SettingsBaseTest {
     }
 
     protected function assertFormWithExistingData(Browser $section, BaseModel $node){
-        $this->assertNodeIsOfTypeAccount($node);
+        $this->assertNodeIsOfType($node, Account::class);
         $currency = CurrencyHelper::fetchCurrencies()->where('code', $node->currency)->first();
         $section
             ->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, $node->name)
@@ -261,7 +261,7 @@ class SettingsAccountsTest extends SettingsBaseTest {
     }
 
     protected function interactWithNode(Browser $section, BaseModel $node, bool $is_fresh_load=true){
-        $this->assertNodeIsOfTypeAccount($node);
+        $this->assertNodeIsOfType($node, Account::class);
         $class_state = $node->disabled ? '.is-disabled' : '.is-active';
         $selector = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID.$class_state.' span', $node->id);
         $section
@@ -279,7 +279,7 @@ class SettingsAccountsTest extends SettingsBaseTest {
         if(is_null($node)){
             $node = new Account();
         }
-        $this->assertNodeIsOfTypeAccount($node);
+        $this->assertNodeIsOfType($node, Account::class);
 
         switch($selector){
             case self::$SELECTOR_SETTINGS_FORM_INPUT_NAME:
@@ -329,10 +329,4 @@ class SettingsAccountsTest extends SettingsBaseTest {
         }
     }
 
-    private function assertNodeIsOfTypeAccount($node){
-        $this->assertTrue(
-            get_class($node) === Account::class,
-            sprintf("node of type [%s] was incorrectly provided", get_class($node))
-        );
-    }
 }
