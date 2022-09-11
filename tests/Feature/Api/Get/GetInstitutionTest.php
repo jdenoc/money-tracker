@@ -31,7 +31,7 @@ class GetInstitutionTest extends TestCase {
 
     public function testGetInstitutionWithoutAccounts(){
         // GIVEN
-        $generated_institution = factory(Institution::class)->create();
+        $generated_institution = Institution::factory()->create();
 
         // WHEN
         $response = $this->get($this->_base_uri.$generated_institution->id);
@@ -50,7 +50,7 @@ class GetInstitutionTest extends TestCase {
     public function testGetInstitution(){
         // GIVEN
         $generated_account_count = $this->faker->randomDigitNotZero();
-        $generated_institution = factory(Institution::class)->create();
+        $generated_institution = Institution::factory()->create();
         $generated_accounts = Account::factory()->count($generated_account_count)->create(['institution_id'=>$generated_institution->id]);
         // These nodes are not in the response output. Let's hide them from the object collection.
         $generated_accounts->makeHidden(['institution_id', 'disabled_stamp']);

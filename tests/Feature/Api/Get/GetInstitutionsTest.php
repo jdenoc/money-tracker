@@ -43,7 +43,7 @@ class GetInstitutionsTest extends TestCase {
         $generated_institutions = [];
         for($i=0; $i<$institutions_count; $i++){
             $active_flag = $this->faker->boolean(($all_active? 100:50));
-            $generated_institution = factory(Institution::class)->create(['active'=>$active_flag]);
+            $generated_institution = Institution::factory()->create(['active'=>$active_flag]);
             $generated_institutions[$generated_institution->id] = $generated_institution;
             unset($generated_institution, $active_flag);
         }
