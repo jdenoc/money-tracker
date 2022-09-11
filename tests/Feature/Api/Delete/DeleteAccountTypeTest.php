@@ -34,7 +34,7 @@ class DeleteAccountTypeTest extends TestCase {
 
     public function testDisabledAccountType(){
         // GIVEN
-        $generated_account = factory(Account::class)->create();
+        $generated_account = Account::factory()->create();
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
 
         // WHEN
