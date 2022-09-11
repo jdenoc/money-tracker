@@ -52,7 +52,7 @@ class AttachmentsDisplayTest extends TestCase {
 
     public function testFileNotOnDisk(){
         //GIVEN - file does NOT exist on disk
-        $generated_attachment = factory(Attachment::class)->create([self::ATTACHMENT_PARAMETER_UUID=>$this->generateValidUuid()]);
+        $generated_attachment = Attachment::factory()->create([self::ATTACHMENT_PARAMETER_UUID=>$this->generateValidUuid()]);
 
         //WHEN
         $response = $this->get(sprintf(self::WEB_ATTACHMENT_URI, $generated_attachment->uuid));
@@ -67,7 +67,7 @@ class AttachmentsDisplayTest extends TestCase {
             // file extension should NOT be in the approved list
             $file_ext = $this->faker->fileExtension();
         }while(in_array($file_ext, $this->_valid_file_types));
-        $generated_attachment = factory(Attachment::class)->create([
+        $generated_attachment = Attachment::factory()->create([
             self::ATTACHMENT_PARAMETER_UUID => $this->generateValidUuid(),
             self::ATTACHMENT_PARAMETER_FILENAME => $this->faker->word().'.'.$file_ext
         ]);
@@ -83,7 +83,7 @@ class AttachmentsDisplayTest extends TestCase {
 
     public function testViewingAValidAttachment(){
         //GIVEN
-        $generated_attachment = factory(Attachment::class)->create([
+        $generated_attachment = Attachment::factory()->create([
             self::ATTACHMENT_PARAMETER_UUID => $this->generateValidUuid(),
             self::ATTACHMENT_PARAMETER_FILENAME => $this->faker->word().'.'.$this->faker->randomElement($this->_valid_file_types)
         ]);

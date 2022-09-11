@@ -1,15 +1,21 @@
 <?php
 
-use Faker\Generator as Faker;
-use App\Helpers\DatabaseFactoryConstants AS FactoryConstants;
+namespace Database\Factories;
 
-/** @var \Illuminate\Database\Eloquent\Factory $factory */
-$factory->define(App\Models\Attachment::class, function(Faker $faker){
-    $faker->addProvider(new App\Providers\Faker\ProjectFilenameProvider($faker));
-    return [
-        'uuid'=>$faker->uuid(),
-        'name'=>$faker->filename(),
-        'entry_id'=>$faker->randomNumber(FactoryConstants::MAX_RAND_ID_LENGTH, true),
-        'stamp'=>date(FactoryConstants::DATE_FORMAT)
-    ];
-});
+use App\Helpers\DatabaseFactoryConstants as FactoryConstants;
+use App\Providers\Faker\ProjectFilenameProvider;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+class AttachmentFactory extends Factory {
+
+    public function definition(): array {
+        $this->faker->addProvider(new ProjectFilenameProvider($this->faker));
+        return [
+            'uuid'=>$this->faker->uuid(),
+            'name'=>$this->faker->filename(),
+            'entry_id'=>$this->faker->randomNumber(FactoryConstants::MAX_RAND_ID_LENGTH, true),
+            'stamp'=>date(FactoryConstants::DATE_FORMAT)
+        ];
+    }
+
+}

@@ -167,7 +167,7 @@ class GetEntryTest extends TestCase {
      * @return array
      */
     private function generateAttachmentsAndOutputAsArray(int $generated_entry_id){
-        $generated_attachments = factory(Attachment::class, $this->_generate_attachment_count)->create(['entry_id'=>$generated_entry_id]);
+        $generated_attachments = Attachment::factory()->count($this->_generate_attachment_count)->create(['entry_id'=>$generated_entry_id]);
         $generated_attachments_as_array = [];
         $generated_attachment_i = 0;
         foreach($generated_attachments as $generated_attachment){
