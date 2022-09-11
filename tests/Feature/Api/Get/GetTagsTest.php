@@ -13,7 +13,7 @@ class GetTagsTest extends TestCase {
     public function testObtainingListOfTagsWhenTagsArePresentInDatabase(){
         // GIVEN
         $tag_count = 5;
-        $generated_tags = factory(Tag::class, $tag_count)->create();
+        $generated_tags = Tag::factory()->count($tag_count)->create();
 
         // WHEN
         $response = $this->get($this->_uri);

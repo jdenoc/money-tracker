@@ -841,7 +841,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         // make sure there is at least one tag that doesn't belong to an entry
         // to doubly make sure there is no overlap, name the tag after the test
         // which is outside the typical tag name assignment
-        factory(Tag::class)->create(['name'=>$this->getName(false)]);
+        Tag::factory()->create(['name'=>$this->getName(false)]);
         $tags_from_api = collect($this->getApiTags());
 
         $this->browse(function(Browser $browser) use ($tags_from_api){
@@ -1169,7 +1169,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         if($modal_input_selector === $this->_selector_modal_entry_tags_locked){
             // make sure there is at least one tag that doesn't belong to an entry
             $tag_to_test = $this->faker->word();
-            factory(Tag::class)->create(['name'=>$tag_to_test]);
+            Tag::factory()->create(['name'=>$tag_to_test]);
         } else {
             $tag_to_test = null;
         }
