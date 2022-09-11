@@ -2,7 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 class AccountType extends BaseModel {
+
+    use HasFactory;
 
     const CREATED_AT = 'create_stamp';
     const UPDATED_AT = 'modified_stamp';

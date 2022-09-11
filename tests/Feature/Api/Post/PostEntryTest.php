@@ -107,7 +107,7 @@ class PostEntryTest extends TestCase {
     public function testCreateEntryAndAccountTotalUpdate(){
         // GIVEN
         $generated_account = Account::factory()->create();
-        $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
+        $generated_account_type = AccountType::factory()->create(['account_id'=>$generated_account->id]);
         $generated_entry_data = $this->generateEntryData();
         $generated_entry_data['account_type_id'] = $generated_account_type->id;
 
@@ -167,7 +167,7 @@ class PostEntryTest extends TestCase {
         }while(in_array($non_existent_tag_id, $generated_tag_ids));
 
         $generated_account = Account::factory()->create();
-        $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
+        $generated_account_type = AccountType::factory()->create(['account_id'=>$generated_account->id]);
         $generated_entry_data = $this->generateEntryData();
         $generated_entry_data['tags'] = [$non_existent_tag_id];
         $generated_entry_data['tags'] = array_merge($generated_entry_data['tags'], $generated_tag_ids);
@@ -212,7 +212,7 @@ class PostEntryTest extends TestCase {
         // GIVEN
         $generated_attachments = factory(Attachment::class, $this->faker->randomDigitNotZero())->make();
         $generated_account = Account::factory()->create();
-        $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
+        $generated_account_type = AccountType::factory()->create(['account_id'=>$generated_account->id]);
         $generated_entry_data = $this->generateEntryData();
         $generated_entry_data['account_type_id'] = $generated_account_type->id;
         $generated_entry_data['attachments'] = [];
@@ -262,7 +262,7 @@ class PostEntryTest extends TestCase {
     public function testCreateEntryWithRelatedTransferEntryId(){
         // GIVEN
         $generated_account = Account::factory()->create();
-        $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
+        $generated_account_type = AccountType::factory()->create(['account_id'=>$generated_account->id]);
         $generated_entry_data = $this->generateEntryData();
         $generated_entry_data['account_type_id'] = $generated_account_type->id;
         $generated_transfer_entry = factory(Entry::class)->create($generated_entry_data);
