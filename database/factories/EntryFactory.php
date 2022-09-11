@@ -1,19 +1,24 @@
 <?php
 
-use Faker\Generator as Faker;
-use App\Helpers\DatabaseFactoryConstants AS FactoryConstants;
+namespace Database\Factories;
 
-/** @var \Illuminate\Database\Eloquent\Factory $factory */
-$factory->define(App\Models\Entry::class, static function(Faker $faker){
-    return [
-        'entry_date'=>$faker->date(),
-        'account_type_id'=>$faker->randomNumber(FactoryConstants::MAX_RAND_ID_LENGTH, true),
-        'entry_value'=>$faker->randomFloat(FactoryConstants::CURRENCY_MAX_DECIMAL, 0, 100),  // 0.00 < entry_value < 100.00
-        'memo'=>$faker->words(3, true),
-        'expense'=>$faker->boolean(),
-        'confirm'=>$faker->boolean(),
-        'disabled'=>false,
-        'transfer_entry_id'=>null
-    ];
-});
+use App\Helpers\DatabaseFactoryConstants AS FactoryConstants;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+class EntryFactory extends Factory {
+
+    public function definition():array {
+        return [
+            'entry_date'=>$this->faker->date(),
+            'account_type_id'=>$this->faker->randomNumber(FactoryConstants::MAX_RAND_ID_LENGTH, true),
+            'entry_value'=>$this->faker->randomFloat(FactoryConstants::CURRENCY_MAX_DECIMAL, 0, 100),  // 0.00 < entry_value < 100.00
+            'memo'=>$this->faker->words(3, true),
+            'expense'=>$this->faker->boolean(),
+            'confirm'=>$this->faker->boolean(),
+            'disabled'=>false,
+            'transfer_entry_id'=>null
+        ];
+    }
+
+}
 

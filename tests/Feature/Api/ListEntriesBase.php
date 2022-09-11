@@ -54,7 +54,7 @@ class ListEntriesBase extends TestCase {
             $new_entry_data['disabled_stamp'] = new Carbon();
         }
         /** @var Entry $generated_entry */
-        $generated_entry = factory(Entry::class)->create($new_entry_data);
+        $generated_entry = Entry::factory()->create($new_entry_data);
 
         if(!$entry_disabled){    // no sense cluttering up the database with test data for something that isn't supposed to appear anyway
             if(isset($override_entry_components['has_attachments']) && $override_entry_components['has_attachments'] === true){
