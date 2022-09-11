@@ -53,7 +53,7 @@ class GetInstitutionTest extends TestCase {
         $generated_institution = Institution::factory()->create();
         $generated_accounts = Account::factory()->count($generated_account_count)->create(['institution_id'=>$generated_institution->id]);
         // These nodes are not in the response output. Let's hide them from the object collection.
-        $generated_accounts->makeHidden(['institution_id', 'disabled_stamp']);
+        $generated_accounts->makeHidden(['institution_id', 'create_stamp', 'modified_stamp', 'disabled_stamp']);
 
         // WHEN
         $response = $this->get($this->_base_uri.$generated_institution->id);
