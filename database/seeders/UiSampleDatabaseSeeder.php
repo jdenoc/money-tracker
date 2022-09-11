@@ -195,13 +195,9 @@ class UiSampleDatabaseSeeder extends Seeder {
             ->chunk(self::$MAX_ENTRIES_IN_RESPONSE)->first();
     }
 
-    /**
-     * @param Collection $account_collection
-     * @param array $data
-     * @return Collection
-     */
     private function addAccountToCollection(Collection $account_collection, array $data): Collection{
-        return $this->addToCollection($account_collection, Account::class, $data);
+        $new_account_collection = Account::factory()->count(1)->create($data);
+        return $account_collection->merge($new_account_collection);
     }
 
     /**

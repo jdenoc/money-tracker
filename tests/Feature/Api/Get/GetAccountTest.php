@@ -18,7 +18,7 @@ class GetAccountTest extends TestCase {
     public function testGetAccountData(){
         // GIVEN
         $account_type_count = $this->faker->randomDigitNotZero();
-        $generated_account = factory(Account::class)->create();
+        $generated_account = Account::factory()->create();
         $generated_account_types = factory(AccountType::class, $account_type_count)->create(['account_id'=>$generated_account->id]);
         // These nodes are not in the response output. Let's hide them from the object collection
         $generated_account_types->makeHidden(['account_id', 'last_updated']);
@@ -36,7 +36,7 @@ class GetAccountTest extends TestCase {
     public function testGetAccountDataWhenAnAccountTypesRecordIsDisabled(){
         // GIVEN
         $account_type_count = $this->faker->randomDigitNotZero();
-        $generated_account = factory(Account::class)->create();
+        $generated_account = Account::factory()->create();
         $generated_account_types = factory(AccountType::class, $account_type_count)->create(['account_id'=>$generated_account->id]);
         $generated_disabled_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id, 'disabled'=>true]);
         $account_type_count++;
@@ -56,7 +56,7 @@ class GetAccountTest extends TestCase {
 
     public function testGetAccountDataWhenNoAccountTypeRecordsExist(){
         // GIVEN
-        $generated_account = factory(Account::class)->create();
+        $generated_account = Account::factory()->create();
 
         // WHEN
         $response = $this->get($this->_base_uri.$generated_account->id);
@@ -69,7 +69,7 @@ class GetAccountTest extends TestCase {
     public function testGetAccountDataWhenOnlyDisabledAccountTypeRecordsExist(){
         // GIVEN
         $account_type_count = $this->faker->randomDigitNotZero();
-        $generated_account = factory(Account::class)->create();
+        $generated_account = Account::factory()->create();
         factory(AccountType::class, $account_type_count)->create(['account_id'=>$generated_account->id, 'disabled'=>true]);
 
         // WHEN

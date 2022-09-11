@@ -16,7 +16,7 @@ class GetAccountsTest extends TestCase {
     public function testGetListOfAccountsWhenTheyAreAvailable(){
         // GIVEN
         $account_count = $this->faker->randomDigitNotZero();
-        $generated_accounts = factory(Account::class, $account_count)->create();
+        $generated_accounts = Account::factory()->count($account_count)->create();
         // These nodes are not in the response output. Let's hide them from the object collection.
         $generated_accounts->makeHidden(['disabled_stamp']);
 
