@@ -1076,7 +1076,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         $tag_ids = $tags->pluck('id')->toArray();
         $entry->tags()->syncWithoutDetaching($tag_ids);
         // attach attachments to this entry
-        $attachment = factory(Attachment::class)->create(['entry_id'=>$entry->id]);
+        $attachment = Attachment::factory()->create(['entry_id'=>$entry->id]);
         $test_file_path = $this->getTestFileStoragePathFromFilename($attachment->name);
         if(Storage::exists($test_file_path)){
             Storage::copy($test_file_path, $attachment->get_storage_file_path());
