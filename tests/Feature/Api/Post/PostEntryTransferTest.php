@@ -84,7 +84,7 @@ class PostEntryTransferTest extends TestCase {
      */
     public function testCreateEntryTransferWithMissingData($transfer_data, string $expected_response_error_msg){
         // GIVEN - $transfer_data by providerCreateEntryTransferWithMissingData
-        $account = factory(Account::class)->create();
+        $account = Account::factory()->create();
         if(isset($transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE])){
             $account_type1 = factory(AccountType::class)->create(['account_id'=>$account->id]);
             $transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE] = $account_type1->id;
@@ -124,7 +124,7 @@ class PostEntryTransferTest extends TestCase {
      */
     public function testCreatingEntryTransferWithInvalidAccountType($transfer_data, $override_account_type_id){
         // GIVEN - $transfer_data
-        $account = factory(Account::class)->create();
+        $account = Account::factory()->create();
         $account_type = factory(AccountType::class)->create(['account_id'=>$account->id]);
         if($override_account_type_id[self::FLAG_OVERRIDE_TO]){
             $transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE] = $account_type->id;
@@ -183,7 +183,7 @@ class PostEntryTransferTest extends TestCase {
     public function testCreateEntryTransfer($transfer_data, $remain_external_account_type_id){
         $non_external_account_counter = 0;
         // GIVEN - $transfer_data
-        $account = factory(Account::class)->create();
+        $account = Account::factory()->create();
         if(!$remain_external_account_type_id[self::FLAG_OVERRIDE_TO]){
             $account_type = factory(AccountType::class)->create(['account_id'=>$account->id]);
             $transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE] = $account_type->id;
@@ -247,7 +247,7 @@ class PostEntryTransferTest extends TestCase {
      */
     public function testCreateEntryTransferWithTagsAndAttachments(array $flags){
         // GIVEN
-        $generated_account = factory(Account::class)->create();
+        $generated_account = Account::factory()->create();
         $generated_account_type1 = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
         $generated_account_type2 = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
         $transfer_data = $this->generateTransferData();

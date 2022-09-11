@@ -43,7 +43,7 @@ class GetEntryTest extends TestCase {
 
     public function testGetEntryData(){
         // GIVEN
-        $generated_account = factory(Account::class)->create();
+        $generated_account = Account::factory()->create();
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
         $generated_entry = factory(Entry::class)->create(['account_type_id'=>$generated_account_type->id]);
         $generated_tags_as_array = $this->generateTagsAndOutputAsArray($generated_entry);
@@ -64,7 +64,7 @@ class GetEntryTest extends TestCase {
 
     public function testGetEntryDataWithRelatedTransferEntry(){
         // GIVEN
-        $generated_account = factory(Account::class)->create();
+        $generated_account = Account::factory()->create();
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
         $generated_transfer_entry = factory(Entry::class)->create(['account_type_id'=>$generated_account_type->id]);
         $generated_entry = factory(Entry::class)->create(['account_type_id'=>$generated_account_type->id, 'transfer_entry_id'=>$generated_transfer_entry->id]);
@@ -86,7 +86,7 @@ class GetEntryTest extends TestCase {
 
     public function testGetEntryDataWithNoAssociatedTags(){
         // GIVEN
-        $generated_account = factory(Account::class)->create();
+        $generated_account = Account::factory()->create();
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
         $generated_entry = factory(Entry::class)->create(['account_type_id'=>$generated_account_type->id]);
         $generated_attachments_as_array = $this->generateAttachmentsAndOutputAsArray($generated_entry->id);
@@ -107,7 +107,7 @@ class GetEntryTest extends TestCase {
 
     public function testGetEntryWithNoAssociatedAttachments(){
         // GIVEN
-        $generated_account = factory(Account::class)->create();
+        $generated_account = Account::factory()->create();
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
         $generated_entry = factory(Entry::class)->create(['account_type_id'=>$generated_account_type->id]);
         $generated_tags_as_array = $this->generateTagsAndOutputAsArray($generated_entry);
@@ -128,7 +128,7 @@ class GetEntryTest extends TestCase {
 
     public function testGetEntryWithNoAssociatedTagsAndAttachments(){
         // GIVEN
-        $generated_account = factory(Account::class)->create();
+        $generated_account = Account::factory()->create();
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
         $generated_entry = factory(Entry::class)->create(['account_type_id'=>$generated_account_type->id]);
 
@@ -148,7 +148,7 @@ class GetEntryTest extends TestCase {
 
     public function testGetEntryThatIsMarkedDisabled(){
         // GIVEN
-        $generated_account = factory(Account::class)->create();
+        $generated_account = Account::factory()->create();
         $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
         $generated_entry = factory(Entry::class)->create(['disabled'=>1, 'account_type_id'=>$generated_account_type->id]);
 

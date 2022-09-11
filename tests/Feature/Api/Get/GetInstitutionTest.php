@@ -51,8 +51,8 @@ class GetInstitutionTest extends TestCase {
         // GIVEN
         $generated_account_count = $this->faker->randomDigitNotZero();
         $generated_institution = factory(Institution::class)->create();
-        $generated_accounts = factory(Account::class, $generated_account_count)->create(['institution_id'=>$generated_institution->id]);
-        // These nodes are not in the response output. Lets hide them from the object collection.
+        $generated_accounts = Account::factory()->count($generated_account_count)->create(['institution_id'=>$generated_institution->id]);
+        // These nodes are not in the response output. Let's hide them from the object collection.
         $generated_accounts->makeHidden(['institution_id', 'disabled_stamp']);
 
         // WHEN
