@@ -264,7 +264,7 @@ class PostEntryTransferTest extends TestCase {
         }
 
         if($flags[self::FLAG_HAS_ATTACHMENTS]){
-            $generated_attachments = factory(Attachment::class, $this->faker->randomDigitNotZero())->make();
+            $generated_attachments = Attachment::factory()->count($this->faker->randomDigitNotZero())->make();
 
             $transfer_data['attachments'] = [];
             foreach($generated_attachments as $generated_attachment){
