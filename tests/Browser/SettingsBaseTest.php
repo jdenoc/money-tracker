@@ -64,33 +64,8 @@ class SettingsBaseTest extends DuskTestCase {
         $this->initSettingsColors();
     }
 
-    protected function initSettingsColors(){
-        $this->color_button_save = $this->tailwindColors->green(500);
-    }
-
-    protected function assertConstantsSet(){
-        $constants_to_be_set = [
-            'SELECTOR_SETTINGS_NAV_ELEMENT'=>static::$SELECTOR_SETTINGS_NAV_ELEMENT,
-            'LABEL_SETTINGS_NAV_ELEMENT'=>static::$LABEL_SETTINGS_NAV_ELEMENT,
-
-            'SELECTOR_SETTINGS_DISPLAY_SECTION'=>static::$SELECTOR_SETTINGS_DISPLAY_SECTION,
-            'LABEL_SETTINGS_SECTION_HEADER'=>static::$LABEL_SETTINGS_SECTION_HEADER,
-
-            'SELECTOR_SETTINGS_FORM_BUTTON_CLEAR'=>static::$SELECTOR_SETTINGS_FORM_BUTTON_CLEAR,
-            'SELECTOR_SETTINGS_FORM_BUTTON_SAVE'=>static::$SELECTOR_SETTINGS_FORM_BUTTON_SAVE,
-
-            'SELECTOR_SETTINGS_LOADING_NODES'=>static::$SELECTOR_SETTINGS_LOADING_NODES,
-            'TEMPLATE_SELECTOR_SETTINGS_NODE_ID'=>static::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID,
-
-            'LABEL_SETTINGS_NOTIFICATION_NEW'=>static::$LABEL_SETTINGS_NOTIFICATION_NEW,
-            'LABEL_SETTINGS_NOTIFICATION_UPDATE'=>static::$LABEL_SETTINGS_NOTIFICATION_UPDATE,
-        ];
-
-        foreach($constants_to_be_set as $constant_name=>$constant_value){
-            $this->assertNotEmpty($constant_value, sprintf("The constant %s must have a value set", $constant_name));
-        }
-    }
-
+    // ------------ ------------ ------------
+    // ------------ tests        ------------
     // ------------ ------------ ------------
 
     /**
@@ -288,6 +263,8 @@ class SettingsBaseTest extends DuskTestCase {
     }
 
     // ------------ ------------ ------------
+    // ------------ to override  ------------
+    // ------------ ------------ ------------
 
     private function throwEmptyMethodException(string $method){
         throw new \Exception("The method '".$method."' needs to be filled in.");
@@ -330,19 +307,30 @@ class SettingsBaseTest extends DuskTestCase {
     }
 
     // ------------ ------------ ------------
+    // ------------ asserts      ------------
+    // ------------ ------------ ------------
 
-    private function navigateToSettingsSectionOnSettingsPage(Browser $browser){
-        $browser
-            ->assertVisible(self::$SELECTOR_SETTINGS_NAV)
-            ->within(self::$SELECTOR_SETTINGS_NAV, function(Browser $side_panel){
-                $side_panel
-                    ->assertMissing(self::$SELECTOR_SETTINGS_NAV_ACTIVE)
-                    ->assertVisible(static::$SELECTOR_SETTINGS_NAV_ELEMENT)
-                    ->assertSeeIn(static::$SELECTOR_SETTINGS_NAV_ELEMENT, static::$LABEL_SETTINGS_NAV_ELEMENT)
-                    ->click(static::$SELECTOR_SETTINGS_NAV_ELEMENT)
-                    ->assertVisible(self::$SELECTOR_SETTINGS_NAV_ACTIVE)
-                    ->assertSeeIn(self::$SELECTOR_SETTINGS_NAV_ACTIVE, static::$LABEL_SETTINGS_NAV_ELEMENT);
-            });
+    protected function assertConstantsSet(){
+        $constants_to_be_set = [
+            'SELECTOR_SETTINGS_NAV_ELEMENT'=>static::$SELECTOR_SETTINGS_NAV_ELEMENT,
+            'LABEL_SETTINGS_NAV_ELEMENT'=>static::$LABEL_SETTINGS_NAV_ELEMENT,
+
+            'SELECTOR_SETTINGS_DISPLAY_SECTION'=>static::$SELECTOR_SETTINGS_DISPLAY_SECTION,
+            'LABEL_SETTINGS_SECTION_HEADER'=>static::$LABEL_SETTINGS_SECTION_HEADER,
+
+            'SELECTOR_SETTINGS_FORM_BUTTON_CLEAR'=>static::$SELECTOR_SETTINGS_FORM_BUTTON_CLEAR,
+            'SELECTOR_SETTINGS_FORM_BUTTON_SAVE'=>static::$SELECTOR_SETTINGS_FORM_BUTTON_SAVE,
+
+            'SELECTOR_SETTINGS_LOADING_NODES'=>static::$SELECTOR_SETTINGS_LOADING_NODES,
+            'TEMPLATE_SELECTOR_SETTINGS_NODE_ID'=>static::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID,
+
+            'LABEL_SETTINGS_NOTIFICATION_NEW'=>static::$LABEL_SETTINGS_NOTIFICATION_NEW,
+            'LABEL_SETTINGS_NOTIFICATION_UPDATE'=>static::$LABEL_SETTINGS_NOTIFICATION_UPDATE,
+        ];
+
+        foreach($constants_to_be_set as $constant_name=>$constant_value){
+            $this->assertNotEmpty($constant_value, sprintf("The constant %s must have a value set", $constant_name));
+        }
     }
 
     private function assertSettingsSectionDisplayed(Browser $settings_display){
@@ -378,6 +366,35 @@ class SettingsBaseTest extends DuskTestCase {
         $this->assertEmpty($save_button_state, "Save button appears to NOT be enabled");
     }
 
+    protected function assertNodeIsOfType($node, string $type){
+        $this->assertTrue(
+            get_class($node) === $type,
+            sprintf("node of type [%s] was incorrectly provided", get_class($node))
+        );
+    }
+
+    // ------------ ------------ ------------
+    // ------------ utilities    ------------
+    // ------------ ------------ ------------
+
+    protected function initSettingsColors(){
+        $this->color_button_save = $this->tailwindColors->green(500);
+    }
+
+    private function navigateToSettingsSectionOnSettingsPage(Browser $browser){
+        $browser
+            ->assertVisible(self::$SELECTOR_SETTINGS_NAV)
+            ->within(self::$SELECTOR_SETTINGS_NAV, function(Browser $side_panel){
+                $side_panel
+                    ->assertMissing(self::$SELECTOR_SETTINGS_NAV_ACTIVE)
+                    ->assertVisible(static::$SELECTOR_SETTINGS_NAV_ELEMENT)
+                    ->assertSeeIn(static::$SELECTOR_SETTINGS_NAV_ELEMENT, static::$LABEL_SETTINGS_NAV_ELEMENT)
+                    ->click(static::$SELECTOR_SETTINGS_NAV_ELEMENT)
+                    ->assertVisible(self::$SELECTOR_SETTINGS_NAV_ACTIVE)
+                    ->assertSeeIn(self::$SELECTOR_SETTINGS_NAV_ACTIVE, static::$LABEL_SETTINGS_NAV_ELEMENT);
+            });
+    }
+
     private function clickSaveButton(Browser $section){
         $section
             ->scrollToElement(self::$SELECTOR_SETTINGS_HEADER)
@@ -387,7 +404,8 @@ class SettingsBaseTest extends DuskTestCase {
     private function clickClearButton(Browser $browser){
         $browser
             ->scrollToElement(self::$SELECTOR_SETTINGS_HEADER)
-            ->click(static::$SELECTOR_SETTINGS_FORM_BUTTON_CLEAR);
+            ->click(static::$SELECTOR_SETTINGS_FORM_BUTTON_CLEAR)
+            ->pause($this->toggleButtonTransitionTimeInMilliseconds());   // wait for toggle button transition to complete;
     }
 
     protected function convertDateToECMA262Format(string $date):string{
