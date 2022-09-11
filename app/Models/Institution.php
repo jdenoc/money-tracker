@@ -2,7 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 class Institution extends BaseModel {
+
+    use HasFactory;
 
     protected $table = 'institutions';
     public $timestamps = false; // turns off default laravel time stamping
