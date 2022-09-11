@@ -339,7 +339,7 @@ class PostEntryTransferTest extends TestCase {
     }
 
     private function generateTransferData():array{
-        $entry_data = factory(Entry::class)->make();
+        $entry_data = Entry::factory()->make();
         return [
             'entry_date'=>$entry_data->entry_date,
             'entry_value'=>$entry_data->entry_value,
