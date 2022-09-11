@@ -693,7 +693,9 @@ class TransferModalTest extends DuskTestCase {
                     $this->assertNotEmpty($modal_entry_id1);
                     $this->assertEquals($e1_1->id, $modal_entry_id1);
 
-                    $modal->click($this->_selector_modal_entry_btn_transfer);
+                    $modal
+                        ->scrollToElement($this->_selector_modal_entry_btn_transfer)
+                        ->click($this->_selector_modal_entry_btn_transfer);
                     $this->waitForLoadingToStop($modal);
 
                     $modal_entry_id2 = $modal->value($this->_selector_modal_entry_field_entry_id);
@@ -709,7 +711,9 @@ class TransferModalTest extends DuskTestCase {
                     $this->assertNotEmpty($modal_entry_id1);
                     $this->assertEquals($e2_1->id, $modal_entry_id1);
 
-                    $modal->click($this->_selector_modal_entry_btn_transfer);
+                    $modal
+                        ->scrollToElement($this->_selector_modal_entry_btn_transfer)
+                        ->click($this->_selector_modal_entry_btn_transfer);
                     $this->waitForLoadingToStop($modal);
 
                     $modal_entry_id2 = $modal->value($this->_selector_modal_entry_field_entry_id);
