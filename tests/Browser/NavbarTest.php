@@ -2,6 +2,7 @@
 
 namespace Tests\Browser;
 
+use App\Traits\Tests\Dusk\BrowserDimensions as DuskTraitBrowserDimensions;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
 use Tests\Browser\Pages\HomePage;
@@ -20,11 +21,9 @@ use Throwable;
  */
 class NavbarTest extends DuskTestCase {
 
+    use DuskTraitBrowserDimensions;
     use DuskTraitNavbar;
     use DuskTraitLoading;
-
-    // threshold values taken from https://tailwindcss.com/docs/responsive-design
-    private static $MAX_SM_WIDTH_PX = 767;
 
     private $_label_add_entry = "Add Entry";
     private $_label_filter = "Filter";
@@ -271,8 +270,8 @@ class NavbarTest extends DuskTestCase {
         $pageObject = $this->getDuskPageObject($page_name);
         $this->browse(function(Browser $browser) use ($pageObject){
             $browser
-                ->resize(self::$MAX_SM_WIDTH_PX, self::$RESIZE_BROWSER_HEIGHT_PX)
-                ->visit($pageObject);
+                ->visit($pageObject)
+                ->resize(self::$MAX_SM_BROWSER_WIDTH_PX, self::$DEFAULT_BROWSER_HEIGHT_PX);
             $this->waitForLoadingToStop($browser);
             $browser->within(self::$SELECTOR_NAVBAR, function (Browser $navbar) {
                 $this->assertLogoVisible($navbar);  // make sure the logo is still visible
@@ -308,8 +307,8 @@ class NavbarTest extends DuskTestCase {
         $pageObject = $this->getDuskPageObject($page_name);
         $this->browse(function(Browser $browser) use ($pageObject, $page_name){
             $browser
-                ->resize(self::$MAX_SM_WIDTH_PX, self::$RESIZE_BROWSER_HEIGHT_PX)
-                ->visit($pageObject);
+                ->visit($pageObject)
+                ->resize(self::$MAX_SM_BROWSER_WIDTH_PX, self::$DEFAULT_BROWSER_HEIGHT_PX);
             $this->waitForLoadingToStop($browser);
             $browser->within(self::$SELECTOR_NAVBAR, function(Browser $navbar) use ($page_name){
                 $navbar
@@ -367,8 +366,8 @@ class NavbarTest extends DuskTestCase {
         $pageObject = $this->getDuskPageObject($page_name);
         $this->browse(function(Browser $browser) use ($pageObject){
             $browser
-                ->resize(self::$MAX_SM_WIDTH_PX, self::$RESIZE_BROWSER_HEIGHT_PX)
-                ->visit($pageObject);
+                ->visit($pageObject)
+                ->resize(self::$MAX_SM_BROWSER_WIDTH_PX, self::$DEFAULT_BROWSER_HEIGHT_PX);
             $this->waitForLoadingToStop($browser);
             $browser->within(self::$SELECTOR_NAVBAR, function(Browser $navbar){
                 $navbar->assertVisible(self::$SELECTOR_NAVBAR_SM_SIDEBAR_BTN);
