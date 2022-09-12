@@ -540,7 +540,7 @@ class FilterModalTest extends DuskTestCase {
                     $account_type = $this->faker->randomElement($account_types);
 
                     $tags = $this->getApiTags();
-                    $tags_to_select = $this->faker->randomElements($tags, $this->faker->numberBetween(1, count($tags)));
+                    $tags_to_select = $this->faker->unique->randomElements($tags, $this->faker->numberBetween(1, count($tags)));
 
                     $companion_switch_set_1 = [$this->_selector_modal_filter_field_switch_expense, $this->_selector_modal_filter_field_switch_income];
                     $companion_switch_set_2 = [$this->_selector_modal_filter_field_switch_has_attachment, $this->_selector_modal_filter_field_switch_no_attachment];
