@@ -20,8 +20,8 @@ class PutAccountTest extends TestCase {
     public function setUp(): void{
         parent::setUp();
 
-        $institution = factory(Institution::class)->create(['active'=>true]);
-        factory(Account::class, 10)->create(['disabled'=>false, 'institution_id'=>$institution->id]);
+        $institution = Institution::factory()->create(['active'=>true]);
+        Account::factory()->count(10)->create(['disabled'=>false, 'institution_id'=>$institution->id]);
     }
 
     public function testUpdateAccountWithoutData(){
@@ -124,7 +124,7 @@ class PutAccountTest extends TestCase {
     }
 
     private function generateAccountData(){
-        return factory(Account::class)->make();
+        return Account::factory()->make();
     }
 
     private function getExistingActiveInstitutionId(): int{
