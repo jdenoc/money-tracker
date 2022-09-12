@@ -157,7 +157,8 @@ class SettingsInstitutionsTest extends SettingsBaseTest {
         $selector_institution_id = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID.$institution_class_state, $node->id);
         $section
             ->assertVisible($selector_institution_id)
-            ->click($selector_institution_id.' span');
+            ->click($selector_institution_id.' span')
+            ->pause($this->toggleButtonTransitionTimeInMilliseconds());
 
         if($is_fresh_load){
             $section->elsewhere(self::$SELECTOR_PRIMARY_DIV, function(Browser $body){
