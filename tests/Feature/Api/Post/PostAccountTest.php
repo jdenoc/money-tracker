@@ -19,7 +19,7 @@ class PostAccountTest extends TestCase {
 
     public function setUp(): void{
         parent::setUp();
-        factory(Institution::class, 3)->create(['active'=>true]);
+        Institution::factory()->count(3)->create(['active'=>true]);
     }
 
     public function testCreateAccountWithoutData(){
@@ -110,7 +110,7 @@ class PostAccountTest extends TestCase {
     }
 
     private function generateDummyAccountData(): array{
-        $account_data = factory(Account::class)->make(['disabled'=>false]);
+        $account_data = Account::factory()->make(['disabled'=>false]);
         return [
             'name'=>$account_data->name,
             'institution_id'=>$account_data->institution_id,
