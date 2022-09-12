@@ -7,6 +7,7 @@ use App\Models\Account;
 use App\Models\BaseModel;
 use App\Models\Currency;
 use App\Models\Institution;
+use App\Traits\Tests\Dusk\ToggleButton as DuskTraitToggleButton;
 use Illuminate\Database\Eloquent\Collection;
 use Laravel\Dusk\Browser;
 
@@ -15,6 +16,8 @@ use Laravel\Dusk\Browser;
  * @group settings-accounts
  */
 class SettingsAccountsTest extends SettingsBaseTest {
+
+    use DuskTraitToggleButton;
 
     protected static string $SELECTOR_SETTINGS_NAV_ELEMENT = 'li.settings-nav-option:nth-child(2)';
     protected static string $LABEL_SETTINGS_NAV_ELEMENT = 'Accounts';
@@ -266,7 +269,8 @@ class SettingsAccountsTest extends SettingsBaseTest {
         $selector = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID.$class_state.' span', $node->id);
         $section
             ->assertVisible($selector)
-            ->click($selector);
+            ->click($selector)
+            ->pause($this->toggleButtonTransitionTimeInMilliseconds());
 
         if($is_fresh_load){
             $section->elsewhere(self::$SELECTOR_PRIMARY_DIV, function(Browser $body){

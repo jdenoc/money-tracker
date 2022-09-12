@@ -5,6 +5,7 @@ namespace Tests\Browser;
 use App\Models\Account;
 use App\Models\AccountType;
 use App\Models\BaseModel;
+use App\Traits\Tests\Dusk\ToggleButton as DuskTraitToggleButton;
 use Illuminate\Database\Eloquent\Collection;
 use Laravel\Dusk\Browser;
 
@@ -13,6 +14,8 @@ use Laravel\Dusk\Browser;
  * @group settings-accounts-types
  */
 class SettingsAccountTypesTest extends SettingsBaseTest {
+
+    use DuskTraitToggleButton;
 
     protected static string $SELECTOR_SETTINGS_NAV_ELEMENT = 'li.settings-nav-option:nth-child(3)';
     protected static string $LABEL_SETTINGS_NAV_ELEMENT = 'Account-types';
@@ -223,7 +226,8 @@ class SettingsAccountTypesTest extends SettingsBaseTest {
         $selector_account_type_id = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID.$class_state, $node->id);
         $section
             ->assertVisible($selector_account_type_id)
-            ->click($selector_account_type_id.' span');
+            ->click($selector_account_type_id.' span')
+            ->pause($this->toggleButtonTransitionTimeInMilliseconds());
 
         $section->elsewhere(self::$SELECTOR_PRIMARY_DIV, function(Browser $body){
             $this->waitForLoadingToStop($body);
