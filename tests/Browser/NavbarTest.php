@@ -6,6 +6,7 @@ use App\Traits\Tests\Dusk\BrowserDimensions as DuskTraitBrowserDimensions;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
 use Tests\Browser\Pages\HomePage;
+use Tests\Browser\Pages\SettingsPage;
 use Tests\Browser\Pages\StatsPage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Laravel\Dusk\Browser;
@@ -379,12 +380,13 @@ class NavbarTest extends DuskTestCase {
     private function getDuskPageObject(string $page_name){
         switch($page_name){
             case 'home':
-            default:
                 return new HomePage();
             case 'stats':
                 return new StatsPage();
             case 'settings':
-                $this->markTestIncomplete('settings page does not yet exist');
+                return new SettingsPage();
+            default:
+                throw new \UnexpectedValueException("Page name provided [$page_name] does not exist or is unsupported");
         }
     }
 
