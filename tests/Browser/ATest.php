@@ -25,8 +25,9 @@ class ATest extends DuskTestCase {
      */
     public function testBasicExample(){
         $this->browse(function (Browser $browser) {
-            $browser->visit('/laravel')
-                    ->assertSee('Laravel');
+            $browser
+                ->visit('/laravel')
+                ->assertSee('Laravel');
         });
     }
 
@@ -59,10 +60,11 @@ class ATest extends DuskTestCase {
         }
 
         $this->browse(function (Browser $browser) use ($url, $title){
-            $browser->visit($url)->assertTitleContains($title);
+            $browser
+                ->visit($url)
+                ->assertTitleContains($title);
 
-            $link_elements = $browser->driver
-                ->findElements(WebDriverBy::cssSelector('link'));
+            $link_elements = $browser->driver->findElements(WebDriverBy::cssSelector('link'));
             foreach($link_elements as $link_element){
                 if(in_array($link_element->getAttribute('rel'), ['apple-touch-icon', 'icon'])){
                     $this->assertStringContainsString(
