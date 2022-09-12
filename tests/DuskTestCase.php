@@ -4,18 +4,17 @@ namespace Tests;
 
 use App\Models\Entry;
 use App\Traits\EntryFilterKeys;
-use App\Traits\Tests\Dusk\ResizeBrowser as DuskTraitResizeBrowser;
 use App\Traits\Tests\LogTestName;
 use App\Traits\Tests\OutputTestInfo;
 use App\Traits\Tests\StorageTestFiles;
 use Laravel\Dusk\TestCase as BaseTestCase;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
+use Tests\Browser\ResizedBrowser;
 
 abstract class DuskTestCase extends BaseTestCase {
 
     use CreatesApplication;
-    use DuskTraitResizeBrowser;
     use EntryFilterKeys;
     use LogTestName;
     use OutputTestInfo;
@@ -41,6 +40,10 @@ abstract class DuskTestCase extends BaseTestCase {
             "http://selenium:4444/wd/hub",
             DesiredCapabilities::chrome()
         );
+    }
+
+    protected function newBrowser($driver){
+        return new ResizedBrowser($driver);
     }
 
     /**
@@ -78,10 +81,6 @@ abstract class DuskTestCase extends BaseTestCase {
 
     protected function setUpTraits(){
         $uses = array_flip(class_uses_recursive(static::class));
-
-        if (isset($uses[\App\Traits\Tests\Dusk\ResizeBrowser::class])){
-            $this->resizeBrowser();
-        }
 
         if (isset($uses[\App\Traits\Tests\LogTestName::class])){
             $this->runTestNameLogging($this->getName(true));
