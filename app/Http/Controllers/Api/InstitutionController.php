@@ -70,9 +70,21 @@ class InstitutionController extends Controller {
         }
 
         if(is_null($institutionId)){
-            $institution_to_modify = new Institution();
             $http_response_status_code = HttpStatus::HTTP_CREATED;
+            $required_fields = Institution::getRequiredFieldsForCreation();
+            $institution_to_modify = new Institution();
+
+            // missing (required) data check
+            $missing_properties = array_diff_key(array_flip($required_fields), $institution_data);
+            if(count($missing_properties) > 0){
+                return response(
+                    [self::$RESPONSE_KEY_ID=>self::$ERROR_ID, self::$RESPONSE_KEY_ERROR=>$this->fillMissingPropertyErrorMessage(array_keys($missing_properties))],
+                    HttpStatus::HTTP_BAD_REQUEST
+                );
+            }
         } else {
+            $http_response_status_code = HttpStatus::HTTP_OK;
+            $required_fields = Institution::getRequiredFieldsForUpdate();
             try{
                 $institution_to_modify = Institution::findOrFail($institutionId);
             } catch(Exception $exception){
@@ -81,16 +93,6 @@ class InstitutionController extends Controller {
                     HttpStatus::HTTP_NOT_FOUND
                 );
             }
-            $http_response_status_code = HttpStatus::HTTP_OK;
-        }
-
-        $required_fields = $this->institutionFields();
-        $missing_properties = array_diff_key(array_flip($required_fields), $institution_data);
-        if(count($missing_properties) > 0){
-            return response(
-                [self::$RESPONSE_KEY_ID=>self::$ERROR_ID, self::$RESPONSE_KEY_ERROR=>sprintf(self::$ERROR_MSG_MISSING_PROPERTY, json_encode(array_keys($missing_properties)))],
-                HttpStatus::HTTP_BAD_REQUEST
-            );
         }
 
         foreach($institution_data as $property=>$value){
@@ -108,13 +110,6 @@ class InstitutionController extends Controller {
             [self::$RESPONSE_KEY_ID=>$institution_to_modify->id, self::$RESPONSE_KEY_ERROR=>self::$ERROR_MSG_NO_ERROR],
             $http_response_status_code
         );
-    }
-
-    private function institutionFields():array{
-        return [
-            'name',
-            'active'
-        ];
     }
 
 }

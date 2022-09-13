@@ -82,8 +82,9 @@ class AccountTypeController extends Controller {
 
         // check validity of account_id value
         if(isset($account_type_data['account_id'])){
-            $account = Account::find($account_type_data['account_id']);
-            if(empty($account)){
+            try{
+                Account::findOrFail($account_type_data['account_id']);
+            }catch (\Exception $exception){
                 return response(
                     [self::$RESPONSE_KEY_ERROR=>self::$ERROR_MSG_INVALID_ACCOUNT, self::$RESPONSE_KEY_ID=>self::$ERROR_ID],
                     HttpStatus::HTTP_BAD_REQUEST
