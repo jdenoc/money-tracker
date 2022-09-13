@@ -115,9 +115,10 @@ class AccountController extends Controller {
             $required_properties = Account::getRequiredFieldsForUpdate();
             $http_response_status_code = HttpStatus::HTTP_OK;
 
-            // check to make sure account exists. if it doesn't then we can't update it
-            $account_to_modify = Account::find($account_id);
-            if(is_null($account_to_modify)){
+            try{
+                // check to make sure account exists. if it doesn't then we can't update it
+                $account_to_modify = Account::findOrFail($account_id);
+            } catch(\Exception $exception){
                 return response(
                     [self::$RESPONSE_KEY_ID=>self::$ERROR_ID, self::$RESPONSE_KEY_ERROR=>self::$ERROR_MSG_DOES_NOT_EXIST],
                     HttpStatus::HTTP_NOT_FOUND

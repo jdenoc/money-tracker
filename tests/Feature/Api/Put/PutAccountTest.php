@@ -15,6 +15,8 @@ class PutAccountTest extends TestCase {
     use AccountResponseKeys;
     use WithFaker;
 
+    const METHOD = "PUT";
+
     private string $_base_uri = '/api/account/%d';
 
     public function setUp(): void{
@@ -30,7 +32,7 @@ class PutAccountTest extends TestCase {
         $account = $this->getRandomActiveExistingAccount();
 
         // WHEN
-        $response = $this->json('PUT', sprintf($this->_base_uri, $account->id), $account_data);
+        $response = $this->json(self::METHOD, sprintf($this->_base_uri, $account->id), $account_data);
 
         // THEN
         $this->assertFailedPostResponse($response, HttpStatus::HTTP_BAD_REQUEST, self::$ERROR_MSG_NO_DATA);
@@ -38,15 +40,16 @@ class PutAccountTest extends TestCase {
 
     public function testUpdateAccountWithInvalidInstitutionId(){
         // GIVEN
+        $existing_instituion_ids = Institution::all()->pluck('id')->toArray();
         $account = $this->getRandomActiveExistingAccount();
         do{
             // there should only be 1 institution in existance
             $institution_id = $this->faker->randomNumber(1);
-        } while ($institution_id == $account->institution_id);
+        } while ($institution_id == $account->institution_id || in_array($institution_id, $existing_instituion_ids));
         $account->institution_id = $institution_id;
 
         // WHEN
-        $response = $this->json('PUT', sprintf($this->_base_uri, $account->id), $account->toArray());
+        $response = $this->json(self::METHOD, sprintf($this->_base_uri, $account->id), $account->toArray());
 
         // THEN
         $this->assertFailedPostResponse($response, HttpStatus::HTTP_BAD_REQUEST, self::$ERROR_MSG_INVALID_INSTITUTION);
@@ -62,13 +65,13 @@ class PutAccountTest extends TestCase {
         $account_data['institution_id'] = $this->getExistingActiveInstitutionId();
 
         // WHEN
-        $response = $this->json('PUT', sprintf($this->_base_uri, $account_id), $account_data->toArray());
+        $response = $this->json(self::METHOD, sprintf($this->_base_uri, $account_id), $account_data->toArray());
 
         // THEN
         $this->assertFailedPostResponse($response, HttpStatus::HTTP_NOT_FOUND, self::$ERROR_MSG_DOES_NOT_EXIST);
     }
 
-    public function providerUpdateAccountEachProperty(): array{
+    public function providerUpdateAccountEachProperty(): array {
         $this->initialiseApplication();
         $dummy_account_data = $this->generateAccountData();
         $required_fields = Account::getRequiredFieldsForUpdate();
@@ -92,10 +95,10 @@ class PutAccountTest extends TestCase {
         }
 
         // WHEN
-        $response = $this->json('PUT', sprintf($this->_base_uri, $account->id), $account_data);
+        $response = $this->json(self::METHOD, sprintf($this->_base_uri, $account->id), $account_data);
 
         // THEN
-        $failure_message = "POST Response is ".$response->getContent();
+        $failure_message = self::METHOD." Response is ".$response->getContent();
         $this->assertResponseStatus($response, HttpStatus::HTTP_OK, $failure_message);
         $response_as_array = $response->json();
         $this->assertPostResponseHasCorrectKeys($response_as_array, $failure_message);
@@ -108,10 +111,10 @@ class PutAccountTest extends TestCase {
         $account = $this->getRandomActiveExistingAccount();
 
         // WHEN
-        $response = $this->json('PUT', sprintf($this->_base_uri, $account->id), $account->toArray());
+        $response = $this->json(self::METHOD, sprintf($this->_base_uri, $account->id), $account->toArray());
 
         // THEN
-        $failure_message = "POST Response is ".$response->getContent();
+        $failure_message = self::METHOD." Response is ".$response->getContent();
         $this->assertResponseStatus($response, HttpStatus::HTTP_OK, $failure_message);
         $response_as_array = $response->json();
         $this->assertPostResponseHasCorrectKeys($response_as_array, $failure_message);
@@ -132,7 +135,7 @@ class PutAccountTest extends TestCase {
     }
 
     private function assertFailedPostResponse(TestResponse $response, $expected_response_status, $expected_error_message){
-        $failure_message = "POST Response is ".$response->getContent();
+        $failure_message = self::METHOD." Response is ".$response->getContent();
         $this->assertResponseStatus($response, $expected_response_status, $failure_message);
         $response_as_array = $response->json();
         $this->assertPostResponseHasCorrectKeys($response_as_array, $failure_message);
