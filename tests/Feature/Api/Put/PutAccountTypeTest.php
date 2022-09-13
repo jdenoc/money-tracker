@@ -98,6 +98,7 @@ class PutAccountTypeTest extends TestCase {
 
     public function providerUpdateAccountTypeEachProperty(): array {
         $this->initialiseApplication();
+        $this->artisan('migrate:fresh');
         $dummy_account_type_data = $this->generateAccountTypeData();
         $required_fields = AccountType::getRequiredFieldsForUpdate();
 
