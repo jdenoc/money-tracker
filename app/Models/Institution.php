@@ -22,6 +22,11 @@ class Institution extends BaseModel {
         'active'=>'boolean'
     ];
 
+    private static $required_fields = [
+        'name',
+        'active'
+    ];
+
     public function accounts(){
         return $this->hasMany('App\Models\Account', 'institution_id');
     }
@@ -29,6 +34,14 @@ class Institution extends BaseModel {
     public static function find_institution_with_accounts($institution_id){
         $institution = Institution::with('accounts')->where('id', $institution_id);
         return $institution->first();
+    }
+
+    public static function getRequiredFieldsForUpdate(){
+        return self::$required_fields;
+    }
+
+    public static function getRequiredFieldsForCreation(){
+        return self::$required_fields;
     }
 
 }
