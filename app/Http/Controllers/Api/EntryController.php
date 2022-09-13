@@ -159,9 +159,10 @@ class EntryController extends Controller {
             $successful_http_status_code = HttpStatus::HTTP_OK;
             $required_fields = Entry::get_fields_required_for_update();
 
-            // check to make sure entry exists. if it doesn't then we can't update it
-            $entry_being_modified = Entry::find($update_id);
-            if(is_null($entry_being_modified)){
+            try{
+                // check to make sure entry exists. if it doesn't then we can't update it
+                $entry_being_modified = Entry::findOrFail($update_id);
+            } catch (\Exception $exception){
                 return response(
                     [self::$RESPONSE_SAVE_KEY_ID=>self::$ERROR_ENTRY_ID, self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_DOES_NOT_EXIST],
                     HttpStatus::HTTP_NOT_FOUND
