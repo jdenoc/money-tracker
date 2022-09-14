@@ -38,14 +38,14 @@ trait FilterModal {
     private string $_color_filter_switch_active = "";
     private string $_color_filter_switch_inactive = "";
 
-    protected function initFilterModalColors(){
+    protected function initFilterModalColors():void{
         $this->_color_filter_btn_export = $this->tailwindColors->blue(600);
         $this->_color_filter_switch_active = $this->tailwindColors->blue(600);
         $this->_color_filter_switch_inactive = $this->tailwindColors->gray(400);
         $this->_color_filter_switch_default = $this->_color_filter_switch_inactive;
     }
 
-    protected function initFilterModalTogglingSelectorLabelId(){
+    protected function initFilterModalTogglingSelectorLabelId():void{
         $this->_account_or_account_type_toggling_selector_id_label = 'filter-modal';
     }
 
@@ -71,7 +71,7 @@ trait FilterModal {
         switch($filter_input_selector){
             case $this->_selector_modal_filter_field_start_date:
             case $this->_selector_modal_filter_field_end_date:
-                $filter_value = ['actual'=>$this->faker->date("Y-m-d")];
+                $filter_value = ['actual'=>$this->faker->dateTimeBetween('-15 months', '-1 month')->format("Y-m-d")];
                 $browser_date = $modal->getDateFromLocale($modal->getBrowserLocale(), $filter_value['actual']);
                 $filter_value['typed'] = $modal->processLocaleDateForTyping($browser_date);
                 $modal->type($filter_input_selector, $filter_value['typed']);
