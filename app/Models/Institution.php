@@ -3,10 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Mostafaznv\LaraCache\CacheEntity;
+use Mostafaznv\LaraCache\Traits\LaraCache;
 
 class Institution extends BaseModel {
 
     use HasFactory;
+    use LaraCache;
 
     const CREATED_AT = 'create_stamp';
     const UPDATED_AT = 'modified_stamp';
@@ -44,4 +47,18 @@ class Institution extends BaseModel {
         return self::$required_fields;
     }
 
+    static public function cacheEntities(): array {
+        return [
+            CacheEntity::make('all')
+                ->forever()
+                ->cache(function(){
+                    return Institution::all();
+                }),
+            CacheEntity::make('count')
+                ->forever()
+                ->cache(function(){
+                    return Institution::count();
+                })
+        ];
+    }
 }

@@ -120,7 +120,7 @@ jobs:
         if: steps.composer-cache.outputs.cache-hit != 'true'
         with:
           github-token: ${{ github.token }}
-          php-version: "8.0"
+          php-version: "8.0.22"
 
       - name: Cache npm packages
         id: npm-cache

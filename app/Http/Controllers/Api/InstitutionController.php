@@ -19,13 +19,13 @@ class InstitutionController extends Controller {
      * @return Response
      */
     public function get_institutions():Response{
-        $institutions = Institution::all();
+        $institutions = Institution::cache()->get('all');
         if(is_null($institutions) || $institutions->isEmpty()){
             return response([], HttpStatus::HTTP_NOT_FOUND);
         } else {
             $institutions->makeHidden(['create_stamp', 'modified_stamp']);
             $institutions = $institutions->toArray();
-            $institutions['count'] = Institution::count();
+            $institutions['count'] = Institution::cache()->get('count');
             return response($institutions, HttpStatus::HTTP_OK);
         }
     }
