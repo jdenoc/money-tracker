@@ -17,12 +17,12 @@ class TagController extends Controller {
      * GET /api/tags
      */
     public function get_tags(){
-        $tags = Tag::all();
+        $tags = Tag::cache()->get('all');
         if(is_null($tags) || $tags->isEmpty()){
             return response([], HttpStatus::HTTP_NOT_FOUND);
         } else {
             $tags = $tags->toArray();
-            $tags['count'] = Tag::count();
+            $tags['count'] = Tag::cache()->get('count');
             return response($tags, HttpStatus::HTTP_OK);
         }
     }
