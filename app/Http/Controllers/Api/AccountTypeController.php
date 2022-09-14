@@ -15,18 +15,18 @@ class AccountTypeController extends Controller {
     use AccountTypeResponseKeys;
 
     public function list_account_types(){
-        $account_types = AccountType::all();
+        $account_types = AccountType::cache()->get('all');
         if(is_null($account_types) || $account_types->isEmpty()){
             return response([], HttpStatus::HTTP_NOT_FOUND);
         } else {
             $account_types = $account_types->toArray();
-            $account_types['count'] = AccountType::count();
+            $account_types['count'] = AccountType::cache()->get('count');
             return response($account_types, HttpStatus::HTTP_OK);
         }
     }
 
     public function list_account_type_types(){
-        return response(AccountType::getEnumValues(), HttpStatus::HTTP_OK);
+        return response(AccountType::cache()->get('types'), HttpStatus::HTTP_OK);
     }
 
     /**
@@ -94,7 +94,7 @@ class AccountTypeController extends Controller {
 
         // check validity of type value
         if(isset($account_type_data['type'])){
-            $types = AccountType::getEnumValues();
+            $types = AccountType::cache()->get('types');
             if(!in_array($account_type_data['type'], $types)){
                 return response(
                     [self::$RESPONSE_KEY_ID=>self::$ERROR_ID, self::$RESPONSE_KEY_ERROR=>self::$ERROR_MSG_INVALID_TYPE],

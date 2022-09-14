@@ -1,5 +1,4 @@
 FROM composer:2.1.11
-
 # uses PHP 8.0
 
 # install php gd extension

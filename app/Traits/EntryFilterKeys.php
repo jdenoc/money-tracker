@@ -43,7 +43,7 @@ trait EntryFilterKeys {
         ];
 
         if($include_tag_ids){
-            $tags = Tag::all();
+            $tags = Tag::cache()->get('all');
             $tag_ids = $tags->pluck('id')->toArray();
             $filter_details['tags.*'] = 'in:'.implode(',', $tag_ids);
         }

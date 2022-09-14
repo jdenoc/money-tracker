@@ -7,6 +7,7 @@ use App\Models\Account;
 use App\Models\Institution;
 use App\Traits\AccountResponseKeys;
 use Illuminate\Http\Request;
+use PHPUnit\Exception;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 
 class AccountController extends Controller {
@@ -18,7 +19,7 @@ class AccountController extends Controller {
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      */
     public function get_accounts(){
-        $accounts = Account::all();
+        $accounts = Account::cache()->get('all');
         if(is_null($accounts) || $accounts->isEmpty()){
             return response([], HttpStatus::HTTP_NOT_FOUND);
         } else {
@@ -28,7 +29,7 @@ class AccountController extends Controller {
                 'disabled_stamp'
             ]);
             $accounts = $accounts->toArray();
-            $accounts['count'] = Account::count();
+            $accounts['count'] = Account::cache()->get('count');
 
             return response($accounts, HttpStatus::HTTP_OK);
         }
