@@ -4,10 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Carbon\Carbon;
+use Mostafaznv\LaraCache\CacheEntity;
+use Mostafaznv\LaraCache\Traits\LaraCache;
 
 class AccountType extends BaseModel {
 
     use HasFactory;
+    use LaraCache;
 
     const CREATED_AT = 'create_stamp';
     const UPDATED_AT = 'modified_stamp';
@@ -61,4 +64,17 @@ class AccountType extends BaseModel {
         return self::$required_fields;
     }
 
+    static public function cacheEntities(): array {
+        return [
+            CacheEntity::make('all')->forever()->cache(function(){
+                return AccountType::all();
+            }),
+            CacheEntity::make('count')->forever()->cache(function(){
+                return AccountType::count();
+            }),
+            CacheEntity::make('types')->forever()->cache(function(){
+                return AccountType::getEnumValues();
+            })
+        ];
+    }
 }
