@@ -15,7 +15,7 @@ use Laravel\Dusk\Browser;
  * @group settings
  * @group settings-accounts
  */
-class SettingsAccountsTest extends SettingsBaseTest {
+class SettingsAccountsTest extends SettingsBase {
 
     use DuskTraitToggleButton;
 
@@ -269,14 +269,14 @@ class SettingsAccountsTest extends SettingsBaseTest {
         $selector = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID.$class_state.' span', $node->id);
         $section
             ->assertVisible($selector)
-            ->click($selector)
-            ->pause($this->toggleButtonTransitionTimeInMilliseconds());
+            ->click($selector);
 
         if($is_fresh_load){
             $section->elsewhere(self::$SELECTOR_PRIMARY_DIV, function(Browser $body){
                 $this->waitForLoadingToStop($body);
             });
         }
+        $section->pause($this->toggleButtonTransitionTimeInMilliseconds());
     }
 
     protected function interactWithFormElement(Browser $section, string $selector, BaseModel $node=null){
