@@ -15,6 +15,9 @@ services:
       - ..:/var/www/money-tracker  # .. is interpreted as relative to the location of the docker-compose file
     environment:
       - APP_ENV=docker
+    depends_on:
+      - database
+      - cache
     dns_search:
       - money-tracker.docker
     networks:
@@ -37,6 +40,13 @@ services:
     networks:
       - net.money-tracker
 
+  cache:
+    image: memcached:1.6
+    container_name: "memcached.money-tracker"
+    hostname: memcached.money-tracker
+    networks:
+      - net.money-tracker
+
   selenium: # needed for e2e (End-to-End) testing
     image: selenium/standalone-chrome:4.2.0
     container_name: "selenium.money-tracker"
@@ -46,12 +56,12 @@ services:
       - "5901:5900"   # for VNC
     volumes:
       - ../storage/app/test/downloads:/home/seluser/Downloads
+    environment:
+      - VNC_NO_PASSWORD=1
     depends_on:
       - application
     links:
       - application:money-tracker.docker
-    environment:
-      - VNC_NO_PASSWORD=1
     networks:
       - net.money-tracker
 

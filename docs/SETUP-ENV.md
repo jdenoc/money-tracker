@@ -12,4 +12,6 @@ That being said, there are certainly variables that should be modified at this p
 - `DB_DATABASE`
 - `DB_USERNAME`
 - `DB_PASSWORD`
+- `CACHE_DRIVER` (should be `memcached`)
+- `MEMCACHED_HOST`
 - `DISCORD_WEBHOOK_URL`
