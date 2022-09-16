@@ -16,7 +16,7 @@ use Tests\Browser\Pages\SettingsPage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Throwable;
 
-class SettingsBaseTest extends DuskTestCase {
+class SettingsBase extends DuskTestCase {
 
     use DuskTraitToggleButton;
     use DuskTraitLoading;
