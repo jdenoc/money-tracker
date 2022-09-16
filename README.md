@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/github/license/jdenoc/laravel-app-version?style=flat-square)](LICENSE)
 
 ## About
-Money Tracker is a web portal dedicated to help record and manage income & expenses, built on the [Laravel framework](https://laravel.com/docs/7.x).
+Money Tracker is a web portal dedicated to help record and manage income & expenses, built on the [Laravel framework](https://laravel.com/docs/8.x).
 
 ## Topics
 - [Requirements](#requirements)
@@ -58,7 +58,9 @@ Money Tracker is a web portal dedicated to help record and manage income & expen
   - Ctype PHP Extension
   - DOM PHP Extension
   - Fileinfo PHP Extension
+  - IgBinary PHP Extension
   - JSON PHP Extension
+  - Memcached PHP Extension
   - Mbstring PHP Extension
   - OpenSSL PHP Extension
   - PCNTL PHP Extension
@@ -76,15 +78,15 @@ Money Tracker is a web portal dedicated to help record and manage income & expen
 ---
 
 ## Other Documentation
-- [Laravel](https://laravel.com/docs/7.x/)
+- [Laravel](https://laravel.com/docs/8.x/)
 - [VueJS](https://vuejs.org/v2/guide/)
 - [TailwindCSS](https://tailwindcss.com/)
 - [ChartJs](https://www.chartjs.org/)
 - [Docker](https://docs.docker.com/)
 - [Composer](https://getcomposer.org/doc/)
 - [npm](https://docs.npmjs.com/cli/v6)
-- [PhpUnit](https://phpunit.readthedocs.io/en/8.5/)
-- [Laravel Dusk](https://laravel.com/docs/6.x/dusk)
+- [PhpUnit](https://phpunit.readthedocs.io/en/9.5/)
+- [Laravel Dusk](https://laravel.com/docs/8.x/dusk)
 - [GitHub Actions](https://docs.github.com/en/actions)
 - [git](https://git-scm.com/doc)
 - [F.A.Q.](docs/FAQ.md)
