@@ -5,7 +5,7 @@ RUN touch /etc/apache2/conf-available/servername.conf \
   && echo 'ServerName app.money-tracker' > /etc/apache2/conf-available/servername.conf \
   && a2enconf servername
 
-# install generic packages & extensions
+# install generic packages
 RUN apt update --fix-missing \
   && apt upgrade -y
 RUN apt install -y apt-utils curl zlib1g-dev libicu-dev g++ --no-install-recommends
@@ -28,6 +28,13 @@ RUN docker-php-ext-install zip
 RUN apt install -y libpng-dev libjpeg-dev libfreetype6-dev --no-install-recommends
 RUN docker-php-ext-configure gd --enable-gd --with-jpeg --with-freetype
 RUN docker-php-ext-install gd
+
+# install php igbinary & memcached extensions
+RUN apt-get install -y libmemcached-dev \
+  && pecl install igbinary-3.2.7 \
+  && pecl install memcached-3.2.0
+RUN docker-php-ext-enable igbinary \
+  && docker-php-ext-enable memcached
 
 # install xdebug
 ARG DISABLE_XDEBUG
