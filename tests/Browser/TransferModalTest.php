@@ -549,11 +549,17 @@ class TransferModalTest extends DuskTestCase {
         $this->browse(function(Browser $browser) use ($is_to_account_external, $is_from_account_external, $has_tags, $has_attachments){
             $all_account_types = $this->getApiAccountTypes();
             $account_types = $this->faker->randomElements($all_account_types, 2);
-            $tag = '';
             if($has_tags){
                 $all_tags = $this->getApiTags();
                 $tag = $this->faker->randomElement($all_tags);
                 $tag = $tag['name'];
+            } else {
+                $tag = '';
+            }
+            if($has_attachments){
+                $attachment_path = Storage::path($this->getRandomTestFileStoragePath());
+            } else {
+                $attachment_path = '';
             }
 
             // get locale date string from browser
@@ -562,19 +568,20 @@ class TransferModalTest extends DuskTestCase {
 
             // generate some test values
             $transfer_entry_data = [
+                'date'=>$browser_locale_date_for_typing,
                 'memo'=>"Test transfer - save".($has_tags?" w/ tags":'').($has_attachments?" w/ attachments":'').' - '.$this->faker->uuid(),
                 'value'=>$this->faker->randomFloat(2, 0, 100),
                 'from_account_type_id'=>($is_from_account_external ? self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID : $account_types[0]['id']),
                 'to_account_type_id'=>($is_to_account_external ? self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID : $account_types[1]['id']),
                 'tag'=>$tag,
-                'attachment_path'=>Storage::path($this->getRandomTestFileStoragePath()),
+                'attachment_path'=>$attachment_path,
             ];
 
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $this->openTransferModal($browser);
             $browser
-                ->within($this->_selector_modal_transfer, function(Browser $modal) use ($transfer_entry_data, $browser_locale_date_for_typing, $has_tags, $has_attachments){
+                ->within($this->_selector_modal_transfer, function(Browser $modal) use ($transfer_entry_data, $has_tags, $has_attachments){
                     // laravel dusk has an issue typing into input[type="date"] fields
                     // work-around for this is to use individual keystrokes
                     $backspace_count = strlen($modal->inputValue($this->_selector_modal_transfer_field_date));
@@ -586,7 +593,7 @@ class TransferModalTest extends DuskTestCase {
                     $this->waitUntilSelectLoadingIsMissing($modal, $this->_selector_modal_transfer_field_to);
 
                     $modal
-                        ->type($this->_selector_modal_transfer_field_date, $browser_locale_date_for_typing)
+                        ->type($this->_selector_modal_transfer_field_date, $transfer_entry_data['date'])
                         ->type($this->_selector_modal_transfer_field_value, $transfer_entry_data['value'])
                         ->select($this->_selector_modal_transfer_field_from, $transfer_entry_data['from_account_type_id'])
                         ->select($this->_selector_modal_transfer_field_to, $transfer_entry_data['to_account_type_id'])
