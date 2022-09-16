@@ -12,7 +12,7 @@ use Laravel\Dusk\Browser;
  * @group settings
  * @group settings-institutions
  */
-class SettingsInstitutionsTest extends SettingsBaseTest {
+class SettingsInstitutionsTest extends SettingsBase {
 
     use DuskTraitToggleButton;
 
@@ -157,14 +157,14 @@ class SettingsInstitutionsTest extends SettingsBaseTest {
         $selector_institution_id = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID.$institution_class_state, $node->id);
         $section
             ->assertVisible($selector_institution_id)
-            ->click($selector_institution_id.' span')
-            ->pause($this->toggleButtonTransitionTimeInMilliseconds());
+            ->click($selector_institution_id.' span');
 
         if($is_fresh_load){
             $section->elsewhere(self::$SELECTOR_PRIMARY_DIV, function(Browser $body){
                 $this->waitForLoadingToStop($body);
             });
         }
+        $section->pause($this->toggleButtonTransitionTimeInMilliseconds()); // wait for toggle to transition
     }
 
     protected function interactWithFormElement(Browser $section, string $selector, BaseModel $node=null){

@@ -11,7 +11,7 @@ use Laravel\Dusk\Browser;
  * @group settings
  * @group settings-tags
  */
-class SettingsTagsTest extends SettingsBaseTest {
+class SettingsTagsTest extends SettingsBase {
 
     protected static string $SELECTOR_SETTINGS_NAV_ELEMENT = 'li.settings-nav-option:nth-child(4)';
     protected static string $LABEL_SETTINGS_NAV_ELEMENT = 'Tags';
