@@ -3,6 +3,7 @@
 namespace Tests;
 
 use App\Traits\Tests\DatabaseMigrations;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Class DuskWithMigrationsTestCase
@@ -21,6 +22,11 @@ abstract class DuskWithMigrationsTestCase extends DuskTestCase {
     public function setUp(): void{
         parent::setUp();
         $this->migrate();
+    }
+
+    protected function tearDown(): void {
+        Cache::flush();
+        parent::tearDown();
     }
 
     public static function tearDownAfterClass(): void{
