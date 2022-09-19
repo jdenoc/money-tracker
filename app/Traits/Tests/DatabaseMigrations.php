@@ -20,7 +20,8 @@ trait DatabaseMigrations {
                 $file_contents = file_get_contents($snapshot_file_path);
                 $file_contents = str_replace(';;', ';', $file_contents);
                 $file_contents = str_replace('DELIMITER ;', "\n", $file_contents);
-                $file_contents = str_replace("/*!50017 DEFINER=`jdenoc`@`%`*/", "", $file_contents);
+                $db_username = config('database.connections.'.config('database.default').'.username');
+                $file_contents = str_replace("/*!50017 DEFINER=`$db_username`@`%`*/", "", $file_contents);
                 file_put_contents($snapshot_file_path, $file_contents);
                 self::$DUMP_READY = true;
             });
