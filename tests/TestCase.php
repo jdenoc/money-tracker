@@ -6,6 +6,7 @@ use App\Traits\Tests\OutputTestInfo;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Testing\TestResponse;
 
 abstract class TestCase extends BaseTestCase {
@@ -24,6 +25,7 @@ abstract class TestCase extends BaseTestCase {
     }
 
     public function tearDown(): void{
+        Cache::flush();
         parent::tearDown();
         $this->incrementTestCount();
     }
