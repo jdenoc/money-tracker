@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "43f3e546c37824964e3aef51ad86aa71",
+    "content-hash": "d8da415b588d35b8d512c0bee66d4ebb",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -7623,6 +7623,41 @@
             "time": "2020-07-09T08:09:16+00:00"
         },
         {
+            "name": "jdenoc/faker-tailwind-colors",
+            "version": "0.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jdenoc/faker-tailwind-colors.git",
+                "reference": "729049c77e16748c70e30616587dd406f411fec7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jdenoc/faker-tailwind-colors/zipball/729049c77e16748c70e30616587dd406f411fec7",
+                "reference": "729049c77e16748c70e30616587dd406f411fec7",
+                "shasum": ""
+            },
+            "require": {
+                "fakerphp/faker": "1.15.0",
+                "jdenoc/tailwind-colors": "^0.0.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Jdenoc\\Faker\\TailwindColors\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Faker Provider for TailwindCSS Colors",
+            "support": {
+                "issues": "https://github.com/jdenoc/faker-tailwind-colors/issues",
+                "source": "https://github.com/jdenoc/faker-tailwind-colors/tree/0.0.1"
+            },
+            "time": "2022-09-30T00:42:57+00:00"
+        },
+        {
             "name": "jdenoc/laravel-make-trait",
             "version": "2.0.0",
             "source": {
@@ -7676,16 +7711,16 @@
         },
         {
             "name": "jdenoc/tailwind-colors",
-            "version": "0.0.1",
+            "version": "0.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jdenoc/tailwind-colors.git",
-                "reference": "207929fedc071bc1a4ff60cd460a9866318b316e"
+                "reference": "1d5626610f1951f99cdefba7ac4a592d7c3e91a4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jdenoc/tailwind-colors/zipball/207929fedc071bc1a4ff60cd460a9866318b316e",
-                "reference": "207929fedc071bc1a4ff60cd460a9866318b316e",
+                "url": "https://api.github.com/repos/jdenoc/tailwind-colors/zipball/1d5626610f1951f99cdefba7ac4a592d7c3e91a4",
+                "reference": "1d5626610f1951f99cdefba7ac4a592d7c3e91a4",
                 "shasum": ""
             },
             "type": "library",
@@ -7698,12 +7733,12 @@
             "license": [
                 "MIT"
             ],
-            "description": "Provides a PHP class that contains colors documented in tailwindcss",
+            "description": "Provides a PHP class that contains hex value colors documented in the TailwindCSS framework",
             "support": {
                 "issues": "https://github.com/jdenoc/tailwind-colors/issues",
-                "source": "https://github.com/jdenoc/tailwind-colors/tree/0.0.1"
+                "source": "https://github.com/jdenoc/tailwind-colors/tree/0.0.2"
             },
-            "time": "2022-03-16T01:00:27+00:00"
+            "time": "2022-03-16T22:39:52+00:00"
         },
         {
             "name": "laravel/dusk",
