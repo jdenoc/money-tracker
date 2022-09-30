@@ -11,7 +11,7 @@ class GetAccountTypesTest extends TestCase {
 
     use WithFaker;
 
-    private $_uri = '/api/account-types';
+    private string $_uri = '/api/account-types';
 
     public function testGetAccountTypesWhenNoAccountTypesExist(){
         // GIVEN - no account_types exist
