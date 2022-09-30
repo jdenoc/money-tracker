@@ -11,7 +11,7 @@ class GetInstitutionsTest extends TestCase {
 
     use WithFaker;
 
-    protected $_base_uri = '/api/institutions';
+    protected string $_base_uri = '/api/institutions';
 
     public function testGetInstitutionsWhenNoneAreAvailable(){
         // GIVEN - no institutions exist in database

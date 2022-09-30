@@ -16,9 +16,9 @@ class GetEntryTest extends TestCase {
 
     use WithFaker;
 
-    private $_generate_tag_count;
-    private $_generate_attachment_count;
-    private $_base_uri = '/api/entry/';
+    private int $_generate_tag_count;
+    private int $_generate_attachment_count;
+    private string $_base_uri = '/api/entry/%d';
 
     public function setUp(): void{
         parent::setUp();
@@ -32,7 +32,7 @@ class GetEntryTest extends TestCase {
         $entry_id = 99999;
 
         // WHEN
-        $response = $this->get($this->_base_uri.$entry_id);
+        $response = $this->get(sprintf($this->_base_uri, $entry_id));
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_NOT_FOUND);
@@ -50,7 +50,7 @@ class GetEntryTest extends TestCase {
         $generated_attachments_as_array = $this->generateAttachmentsAndOutputAsArray($generated_entry->id);
 
         // WHEN
-        $response = $this->get($this->_base_uri.$generated_entry->id);
+        $response = $this->get(sprintf($this->_base_uri, $generated_entry->id));
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_OK);
@@ -72,7 +72,7 @@ class GetEntryTest extends TestCase {
         $generated_attachments_as_array = $this->generateAttachmentsAndOutputAsArray($generated_entry->id);
 
         // WHEN
-        $response = $this->get($this->_base_uri.$generated_entry->id);
+        $response = $this->get(sprintf($this->_base_uri, $generated_entry->id));
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_OK);
@@ -92,7 +92,7 @@ class GetEntryTest extends TestCase {
         $generated_attachments_as_array = $this->generateAttachmentsAndOutputAsArray($generated_entry->id);
 
         // WHEN
-        $response = $this->get($this->_base_uri.$generated_entry->id);
+        $response = $this->get(sprintf($this->_base_uri, $generated_entry->id));
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_OK);
@@ -113,7 +113,7 @@ class GetEntryTest extends TestCase {
         $generated_tags_as_array = $this->generateTagsAndOutputAsArray($generated_entry);
 
         // WHEN
-        $response = $this->get($this->_base_uri.$generated_entry->id);
+        $response = $this->get(sprintf($this->_base_uri, $generated_entry->id));
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_OK);
@@ -133,7 +133,7 @@ class GetEntryTest extends TestCase {
         $generated_entry = Entry::factory()->create(['account_type_id'=>$generated_account_type->id]);
 
         // WHEN
-        $response = $this->get($this->_base_uri.$generated_entry->id);
+        $response = $this->get(sprintf($this->_base_uri, $generated_entry->id));
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_OK);
@@ -153,7 +153,7 @@ class GetEntryTest extends TestCase {
         $generated_entry = Entry::factory()->create(['disabled'=>1, 'account_type_id'=>$generated_account_type->id]);
 
         // WHEN
-        $response = $this->get($this->_base_uri.$generated_entry->id);
+        $response = $this->get(sprintf($this->_base_uri, $generated_entry->id));
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_NOT_FOUND);
