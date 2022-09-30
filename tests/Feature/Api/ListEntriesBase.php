@@ -31,7 +31,7 @@ class ListEntriesBase extends TestCase {
      */
     protected $_generated_tags;
 
-    protected $_uri = '/api/entries';
+    protected string $_uri = '/api/entries';
 
     public function setUp(): void{
         parent::setUp();
