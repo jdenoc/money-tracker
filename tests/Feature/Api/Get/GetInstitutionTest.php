@@ -13,14 +13,14 @@ class GetInstitutionTest extends TestCase {
 
     use WithFaker;
 
-    protected $_base_uri = '/api/institution/';
+    protected string $_base_uri = '/api/institution/%d';
 
     public function testGetInstitutionWhenNoInstitutionExists(){
         // GIVEN - no institution
         $institution_id = $this->faker->randomDigitNotZero();
 
         // WHEN
-        $response = $this->get($this->_base_uri.$institution_id);
+        $response = $this->get(sprintf($this->_base_uri, $institution_id));
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_NOT_FOUND);
@@ -34,7 +34,7 @@ class GetInstitutionTest extends TestCase {
         $generated_institution = Institution::factory()->create();
 
         // WHEN
-        $response = $this->get($this->_base_uri.$generated_institution->id);
+        $response = $this->get(sprintf($this->_base_uri, $generated_institution->id));
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_OK);
@@ -56,7 +56,7 @@ class GetInstitutionTest extends TestCase {
         $generated_accounts->makeHidden(['institution_id', 'create_stamp', 'modified_stamp', 'disabled_stamp']);
 
         // WHEN
-        $response = $this->get($this->_base_uri.$generated_institution->id);
+        $response = $this->get(sprintf($this->_base_uri, $generated_institution->id));
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_OK);

@@ -13,7 +13,7 @@ class GetAccountTest extends TestCase {
 
     use WithFaker;
 
-    private $_base_uri = '/api/account/';
+    private string $_base_uri = '/api/account/%d';
 
     public function testGetAccountData(){
         // GIVEN
@@ -24,7 +24,7 @@ class GetAccountTest extends TestCase {
         $generated_account_types->makeHidden(['account_id', 'last_updated']);
 
         // WHEN
-        $response = $this->get($this->_base_uri.$generated_account->id);
+        $response = $this->get(sprintf($this->_base_uri, $generated_account->id));
 
         // THEN
         $response->assertStatus(Response::HTTP_OK);
@@ -45,7 +45,7 @@ class GetAccountTest extends TestCase {
         $generated_account_types->makeHidden(['account_id', 'last_updated']);
 
         // WHEN
-        $response = $this->get($this->_base_uri.$generated_account->id);
+        $response = $this->get(sprintf($this->_base_uri, $generated_account->id));
 
         // THEN
         $response->assertStatus(Response::HTTP_OK);
@@ -59,7 +59,7 @@ class GetAccountTest extends TestCase {
         $generated_account = Account::factory()->create();
 
         // WHEN
-        $response = $this->get($this->_base_uri.$generated_account->id);
+        $response = $this->get(sprintf($this->_base_uri, $generated_account->id));
 
         // THEN
         $response->assertStatus(Response::HTTP_OK);
@@ -73,7 +73,7 @@ class GetAccountTest extends TestCase {
         AccountType::factory()->count($account_type_count)->create(['account_id'=>$generated_account->id, 'disabled'=>true]);
 
         // WHEN
-        $response = $this->get($this->_base_uri.$generated_account->id);
+        $response = $this->get(sprintf($this->_base_uri, $generated_account->id));
 
         // THEN
         $response->assertStatus(Response::HTTP_OK);
@@ -84,7 +84,7 @@ class GetAccountTest extends TestCase {
         // GIVEN - no database records are created
 
         // WHEN
-        $response = $this->get($this->_base_uri.$this->faker->randomDigitNotZero());
+        $response = $this->get(sprintf($this->_base_uri, $this->faker->randomDigitNotZero()));
 
         // THEN
         $response->assertStatus(Response::HTTP_NOT_FOUND);
