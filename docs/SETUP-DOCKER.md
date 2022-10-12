@@ -32,9 +32,6 @@ This will generate Laravel Facades that PhpStorm can use.
 ### Bring "_UP_" application container(s)
 ```bash
 docker-compose -f .docker/docker-compose.yml -p "moneytracker" up -d
-# composer doesn't write to the correct .env file during setup
-# so we need to generate the APP_KEY value again
-.docker/cmd/artisan.sh key:generate
 ```
 
 <small>***OPTIONAL***</small>:
@@ -45,7 +42,13 @@ DISABLE_XDEBUG=true docker-compose -f .docker/docker-compose.yml -p "moneytracke
 ```
 `DISABLE_XDEBUG=true` is required _once_ to build the docker image. Afterwards, it is never used again.
 
-### Set application version value
+### Set application key
+composer doesn't write to the correct .env file during setup so we need to generate the `APP_KEY` value again
+```bash
+.docker/cmd/artisan.sh key:generate
+```
+
+### Set application version
 _**Note:** you can replace_ `git describe --always` _with any value you want_
 ```bash
 .docker/cmd/artisan.sh app:version `git describe --always`
