@@ -25,7 +25,7 @@ This will generate Laravel Facades that PhpStorm can use.
 
 ### Run npm install
 ```bash
-.docker/cmd/npm.sh install
+.docker/cmd/npm.sh ci
 .docker/cmd/npm.sh run-script build-dev
 ```
 
