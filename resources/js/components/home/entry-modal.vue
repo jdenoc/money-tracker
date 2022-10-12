@@ -409,7 +409,7 @@ export default {
         }
         new Promise(function(resolve, reject){
           let entryData = this.entryObject.find(entryId);
-          if(this.entryObject.isEntryCurrent(entryData)){
+          if(this.entryObject.isDataUpToDate(entryData)){
             resolve(entryData);
           } else {
             reject(entryId);

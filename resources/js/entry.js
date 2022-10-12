@@ -1,7 +1,3 @@
-/**
- * Created by denis.oconnor on 2018-08-20
- */
-
 import _ from 'lodash';
 import { ObjectBaseClass } from './objectBaseClass';
 import { SnotifyStyle } from 'vue-snotify';
@@ -141,14 +137,6 @@ export class Entry extends ObjectBaseClass {
             responseData = this.updateEntryFetchStamp(responseData)
         }
         return responseData;
-    }
-
-    /**
-     * @depricated use isDataUpToDate() instead
-     */
-    isEntryCurrent(entryData){
-        console.warn("entry.isEntryCurrent() has been depricated in favour of entry.isDataUpToDate()");
-        return this.isDataUpToDate(entryData);
     }
 
     updateEntryFetchStamp(entryData){
