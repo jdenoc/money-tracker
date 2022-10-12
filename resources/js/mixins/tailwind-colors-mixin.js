@@ -1,13 +1,12 @@
-import twc from 'tailwindcss/src/public/colors';
-import {theme} from '../../../tailwind.config';
+import resolveConfig from 'tailwindcss/resolveConfig'
+import tailwindConfig from '../../../tailwind.config.js'
 import _ from 'lodash';
 
 export const tailwindColorsMixin = {
 
     computed: {
         tailwindColors: function(){
-            // adding values from tailwind.config.js
-            return _.merge(twc, theme.extend.colors)
+            return resolveConfig(tailwindConfig).theme.colors;
         },
         tailwindColorNames: function(){
             return Object.keys(this.tailwindColors);
