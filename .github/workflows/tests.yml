@@ -105,7 +105,7 @@ jobs:
 
       - name: Cache Docker images
         id: docker-image-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-docker }}
           key: ${{ needs.pre-build.outputs.cache-key-docker }}
@@ -118,7 +118,7 @@ jobs:
 
       - name: Cache Composer packages
         id: composer-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-composer }}
           key: ${{ needs.pre-build.outputs.cache-key-composer }}
@@ -132,7 +132,7 @@ jobs:
 
       - name: Cache npm packages
         id: npm-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-npm }}
           key: ${{ needs.pre-build.outputs.cache-key-npm }}
@@ -143,7 +143,7 @@ jobs:
 
       - name: Cache vue
         id: vue-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-vue }}
           key: ${{ needs.pre-build.outputs.cache-key-vue }}
@@ -165,21 +165,21 @@ jobs:
       # retrieve cache
       - name: Get Cached Docker images
         id: docker-image-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-docker }}
           key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
       - name: Get Cached Composer packages
         id: composer-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-composer }}
           key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
       - name: Get Cached npm packages
         id: npm-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-npm }}
           key: ${{ needs.pre-build.outputs.cache-key-npm }}
@@ -255,28 +255,28 @@ jobs:
       # retrieve cache
       - name: Get Cached Docker images
         id: docker-image-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-docker }}
           key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
       - name: Get Cached Composer packages
         id: composer-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-composer }}
           key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
       - name: Get Cached npm packages
         id: npm-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-npm }}
           key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
       - name: Get Cached vue
         id: vue-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-vue }}
           key: ${{ needs.pre-build.outputs.cache-key-vue }}
@@ -312,28 +312,28 @@ jobs:
       # retrieve cache
       - name: Get Cached Docker images
         id: docker-image-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-docker }}
           key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
       - name: Get Cached Composer packages
         id: composer-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-composer }}
           key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
       - name: Get Cached npm packages
         id: npm-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-npm }}
           key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
       - name: Get Cached vue
         id: vue-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-vue }}
           key: ${{ needs.pre-build.outputs.cache-key-vue }}
@@ -369,28 +369,28 @@ jobs:
       # retrieve cache
       - name: Get Cached Docker images
         id: docker-image-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-docker }}
           key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
       - name: Get Cached Composer packages
         id: composer-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-composer }}
           key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
       - name: Get Cached npm packages
         id: npm-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-npm }}
           key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
       - name: Get Cached vue
         id: vue-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-vue }}
           key: ${{ needs.pre-build.outputs.cache-key-vue }}
@@ -441,28 +441,28 @@ jobs:
       # retrieve cache
       - name: Get Cached Docker images
         id: docker-image-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-docker }}
           key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
       - name: Get Cached Composer packages
         id: composer-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-composer }}
           key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
       - name: Get Cached npm packages
         id: npm-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-npm }}
           key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
       - name: Get Cached vue
         id: vue-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-vue }}
           key: ${{ needs.pre-build.outputs.cache-key-vue }}
@@ -508,28 +508,28 @@ jobs:
       # retrieve cache
       - name: Get Cached Docker images
         id: docker-image-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-docker }}
           key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
       - name: Get Cached Composer packages
         id: composer-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-composer }}
           key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
       - name: Get Cached npm packages
         id: npm-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-npm }}
           key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
       - name: Get Cached vue
         id: vue-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-vue }}
           key: ${{ needs.pre-build.outputs.cache-key-vue }}
@@ -570,28 +570,28 @@ jobs:
       # retrieve cache
       - name: Get Cached Docker images
         id: docker-image-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-docker }}
           key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
       - name: Get Cached Composer packages
         id: composer-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-composer }}
           key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
       - name: Get Cached npm packages
         id: npm-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-npm }}
           key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
       - name: Get Cached vue
         id: vue-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-vue }}
           key: ${{ needs.pre-build.outputs.cache-key-vue }}
@@ -642,28 +642,28 @@ jobs:
       # retrieve cache
       - name: Get Cached Docker images
         id: docker-image-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-docker }}
           key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
       - name: Get Cached Composer packages
         id: composer-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-composer }}
           key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
       - name: Get Cached npm packages
         id: npm-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-npm }}
           key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
       - name: Get Cached vue
         id: vue-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-vue }}
           key: ${{ needs.pre-build.outputs.cache-key-vue }}
@@ -699,28 +699,28 @@ jobs:
       # retrieve cache
       - name: Get Cached Docker images
         id: docker-image-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-docker }}
           key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
       - name: Get Cached Composer packages
         id: composer-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-composer }}
           key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
       - name: Get Cached npm packages
         id: npm-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-npm }}
           key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
       - name: Get Cached vue
         id: vue-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-vue }}
           key: ${{ needs.pre-build.outputs.cache-key-vue }}
@@ -756,28 +756,28 @@ jobs:
       # retrieve cache
       - name: Get Cached Docker images
         id: docker-image-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-docker }}
           key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
       - name: Get Cached Composer packages
         id: composer-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-composer }}
           key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
       - name: Get Cached npm packages
         id: npm-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-npm }}
           key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
       - name: Get Cached vue
         id: vue-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-vue }}
           key: ${{ needs.pre-build.outputs.cache-key-vue }}
@@ -818,28 +818,28 @@ jobs:
       # retrieve cache
       - name: Get Cached Docker images
         id: docker-image-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-docker }}
           key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
       - name: Get Cached Composer packages
         id: composer-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-composer }}
           key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
       - name: Get Cached npm packages
         id: npm-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-npm }}
           key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
       - name: Get Cached vue
         id: vue-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-vue }}
           key: ${{ needs.pre-build.outputs.cache-key-vue }}
