@@ -89,7 +89,8 @@ RUN if [ "$DISABLE_XDEBUG" = false ]; \
 EXPOSE 9003
 
 # clean up after installs
-RUN apt-get autoremove -y
+RUN apt-get autoremove \
+  && apt-get clean
 
 # alias for php artisan
 # allows us to call artisan without prefixing it with "php"
