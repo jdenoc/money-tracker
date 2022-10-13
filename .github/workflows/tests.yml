@@ -28,61 +28,51 @@ jobs:
 
       - name: Generate cache keys [docker]
         id: cache-key-docker
-        run: echo "::set-output name=value::cache-docker-${{ hashFiles('.docker/*') }}1"
+        run: echo "value=cache-docker-${{ hashFiles('.docker/*') }}" >> $GITHUB_OUTPUT
 
       - name: Generate cache keys [composer]
         id: cache-key-composer
-        run: echo "::set-output name=value::cache-composer-${{ hashFiles('composer.*') }}"
+        run: echo "value=cache-composer-${{ hashFiles('composer.*') }}" >> $GITHUB_OUTPUT
 
       - name: Generate cache keys [npm]
         id: cache-key-npm
-        run: echo "::set-output name=value::cache-npm-${{ hashFiles('package*.json') }}"
+        run: echo "value=cache-npm-${{ hashFiles('package*.json') }}" >> $GITHUB_OUTPUT
 
       - name: Generate cache keys [vue]
         id: cache-key-vue
-        run: echo "::set-output name=value::cache-vue-${{ hashFiles('package*.json') }}-${{ hashFiles('resources/*') }}"
+        run: echo "value=cache-vue-${{ hashFiles('package*.json') }}-${{ hashFiles('resources/*') }}-${{ hashFiles('webpack.mix.js') }}" >> $GITHUB_OUTPUT
 
       - name: Generate cache paths [docker]
         id: cache-path-docker
-        run: echo "::set-output name=value::.docker/images"
+        run: echo "value=.docker/images" >> $GITHUB_OUTPUT
 
       - name: Generate cache paths [composer]
         id: cache-path-composer
-        run: echo "::set-output name=value::vendor"
+        run: echo "value=vendor" >> $GITHUB_OUTPUT
 
       - name: Generate cache paths [npm]
         id: cache-path-npm
-        run: echo "::set-output name=value::node_modules"
+        run: echo "value=node_modules" >> $GITHUB_OUTPUT
 
       - name: Generate cache paths [vue]
         id: cache-path-vue
         run: |
-          VUE_CACHE_PATH=$(cat << EOF
-          public/vue
-          public/mix-manifest.json
-          EOF
-          )
-          VUE_CACHE_PATH="${VUE_CACHE_PATH//'%'/'%25'}"
-          VUE_CACHE_PATH="${VUE_CACHE_PATH//$'\n'/'%0A'}"
-          VUE_CACHE_PATH="${VUE_CACHE_PATH//$'\r'/'%0D'}"
-          echo "::set-output name=value::$VUE_CACHE_PATH"
+          echo "value<<EOF" >> $GITHUB_OUTPUT
+          echo "public/vue" >> $GITHUB_OUTPUT 
+          echo "public/mix-manifest.json" >> $GITHUB_OUTPUT 
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Generate failure content paths for artifact upload
         id: failure-artifact-paths
         run: |
-          FAILURE_UPLOAD_PATHS=$(cat <<EOF
-          storage/app/test/downloads/*.csv
-          storage/logs/*.log
-          tests/Browser/console/*.log
-          tests/Browser/db-dump/*.sql
-          tests/Browser/screenshots/
-          !tests/Browser/screenshots/.gitignore
-          EOF
-          )
-          FAILURE_UPLOAD_PATHS="${FAILURE_UPLOAD_PATHS//'%'/'%25'}"
-          FAILURE_UPLOAD_PATHS="${FAILURE_UPLOAD_PATHS//$'\n'/'%0A'}"
-          FAILURE_UPLOAD_PATHS="${FAILURE_UPLOAD_PATHS//$'\r'/'%0D'}"
-          echo "::set-output name=value::$FAILURE_UPLOAD_PATHS"
+          echo "value<<EOF" >> $GITHUB_OUTPUT
+          echo "storage/app/test/downloads/*.csv" >> $GITHUB_OUTPUT
+          echo "storage/logs/*.log" >> $GITHUB_OUTPUT
+          echo "tests/Browser/console/*.log" >> $GITHUB_OUTPUT
+          echo "tests/Browser/db-dump/*.sql" >> $GITHUB_OUTPUT
+          echo "tests/Browser/screenshots/" >> $GITHUB_OUTPUT
+          echo "!tests/Browser/screenshots/.gitignore" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
     outputs:
       cache-key-docker: ${{ steps.cache-key-docker.outputs.value }}
       cache-key-composer: ${{ steps.cache-key-composer.outputs.value }}
