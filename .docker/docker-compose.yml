@@ -51,9 +51,16 @@ services:
       - net.money-tracker
 
   cache:
-    image: memcached:1.6
+    build:
+      context: ..
+      dockerfile: .docker/memcached.dockerfile
     container_name: "memcached.money-tracker"
     hostname: memcached.money-tracker
+    healthcheck:
+      test: /usr/local/bin/memcached-health-check
+      interval: 5s
+      timeout: 10s
+      retries: 10
     networks:
       - net.money-tracker
 
