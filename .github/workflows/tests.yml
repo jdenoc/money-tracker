@@ -182,45 +182,45 @@ jobs:
         with:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
       - name: unit tests - PUT API endpoints
-        run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-put
+        run: .docker/cmd/artisan.sh test --testsuite api-put
 
       - uses: ./.github/actions/app-init
         with:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
       - name: unit tests - GET API endpoints
-        run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-get
+        run: .docker/cmd/artisan.sh test --testsuite api-get
 
       - uses: ./.github/actions/app-init
         with:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
       - name: unit tests - POST API endpoints
-        run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-post
+        run: .docker/cmd/artisan.sh test --testsuite api-post
 
       - uses: ./.github/actions/app-init
         with:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
       - name: unit tests - DELETE API endpoints
-        run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-delete
+        run: .docker/cmd/artisan.sh test --testsuite api-delete
 
       - uses: ./.github/actions/app-init
         with:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
           is-cacheless: true  # artisan app:version testing doesn't work well when configs have been cached
       - name: unit tests - console
-        run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite console
+        run: .docker/cmd/artisan.sh test --testsuite console
 
       - uses: ./.github/actions/app-init
         with:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
           is-cacheless: true  # testing the /export endpoint doesn't work well when configs have been cached
       - name: unit tests - web
-        run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite web
+        run: .docker/cmd/artisan.sh test --testsuite web
 
       - uses: ./.github/actions/app-init
         with:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
       - name: unit tests - unit (generic)
-        run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite unit
+        run: .docker/cmd/artisan.sh test --testsuite unit
 
       - name: Failure docker inspection
         uses: ./.github/actions/failure-docker-inspect
