@@ -15,10 +15,6 @@ services:
       - ..:/var/www/money-tracker
     environment:
       - APP_ENV=docker
-    healthcheck:
-      test: /usr/local/bin/app-health-check
-      timeout: 5s
-      retries: 10
     depends_on:
       - database
       - cache
@@ -42,11 +38,6 @@ services:
       - MYSQL_DATABASE=money_tracker
       - MYSQL_USER=jdenoc
       - MYSQL_PASSWORD=password
-    healthcheck:
-      test: /usr/local/bin/mysql-health-check
-      interval: 5s
-      timeout: 10s
-      retries: 10
     networks:
       - net.money-tracker
 
@@ -56,11 +47,6 @@ services:
       dockerfile: .docker/memcached.dockerfile
     container_name: "memcached.money-tracker"
     hostname: memcached.money-tracker
-    healthcheck:
-      test: /usr/local/bin/memcached-health-check
-      interval: 5s
-      timeout: 10s
-      retries: 10
     networks:
       - net.money-tracker
 
@@ -77,10 +63,6 @@ services:
       - ../storage/app/test/downloads:/home/seluser/Downloads
     environment:
       - VNC_NO_PASSWORD=1
-    healthcheck:
-      test: /home/seluser/selenium-health-check
-      timeout: 10s
-      retries: 3
     depends_on:
       - application
     links:
