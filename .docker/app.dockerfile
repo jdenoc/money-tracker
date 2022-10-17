@@ -73,7 +73,9 @@ ARG DISABLE_XDEBUG
 RUN if [ "$DISABLE_XDEBUG" = false ]; \
   then \
     XDEBUG_LOG=$PHP_LOG_DIR/xdebug.log \
-    && touch $XDEBUG_LOG; \
+      && touch $XDEBUG_LOG \
+      && chgrp $APACHE_RUN_GROUP $XDEBUG_LOG \
+      && chmod g+w $XDEBUG_LOG; \
     pecl install xdebug-3.1.3; \
     docker-php-ext-enable xdebug; \
     XDEBUG_INI=`php --ini | grep xdebug | tr -d ,` \
