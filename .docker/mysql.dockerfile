@@ -14,6 +14,8 @@ RUN LOG_CONF=/etc/mysql/conf.d/logging.cnf \
   && echo "slow_query_log_file = $LOG_DIR/mysql_slow.log" >> $LOG_CONF \
   && echo "log_queries_not_using_indexes = 1" >> $LOG_CONF
 
-# healthcheck
+# health-check
 COPY .docker/healthcheck/mysql-health-check.sh /usr/local/bin/mysql-health-check
 RUN chmod +x /usr/local/bin/mysql-health-check
+HEALTHCHECK --interval=5s --timeout=10s --retries=10 \
+  CMD /usr/local/bin/mysql-health-check
