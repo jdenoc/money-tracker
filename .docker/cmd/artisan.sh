@@ -5,7 +5,7 @@ FLAGS=
 
 case "$OPTIONS" in
   -h|--help|?)
-    echo "Laravel artisan command https://laravel.com/docs/6.x/artisan#introduction"
+    echo "Laravel artisan command https://laravel.com/docs/8.x/artisan#introduction"
     echo "Usage:"
     echo "  $0 [options] {artisan command}"
     echo "Options:"
