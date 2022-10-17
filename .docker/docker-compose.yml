@@ -12,7 +12,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ..:/var/www/money-tracker  # .. is interpreted as relative to the location of the docker-compose file
+      - ..:/var/www/money-tracker
     environment:
       - APP_ENV=docker
     healthcheck:
