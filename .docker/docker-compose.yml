@@ -11,6 +11,7 @@ services:
     hostname: app.money-tracker
     ports:
       - "80:80"
+      - "9003:9003"
     volumes:
       - ..:/var/www/money-tracker
     environment:
