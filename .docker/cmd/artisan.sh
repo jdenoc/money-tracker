@@ -23,5 +23,4 @@ case "$OPTIONS" in
   ;;
 esac
 
-
 docker container exec $FLAGS app.money-tracker artisan "$@"
