@@ -6,7 +6,7 @@ runs:
   steps:
     # confirm docker containers running
     - run: |
-        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps --status=running
+        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps --filter status=running
         docker container ls --size --no-trunc
       shell: bash
     # output docker logs into a file
