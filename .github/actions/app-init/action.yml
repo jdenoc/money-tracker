@@ -20,6 +20,10 @@ runs:
         done
         docker image ls "$PROJECT_NAME*" --no-trunc
       shell: bash
+    # setup laravel log files
+    - run: |
+        touch storage/logs/laravel.log
+      shell: bash
     # start containers
     - run: |
         docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME up -d --force-recreate
@@ -61,10 +65,6 @@ runs:
         .docker/cmd/artisan.sh app:version $(git describe --always)
         .docker/cmd/artisan.sh optimize
         .docker/cmd/artisan.sh view:cache
-      shell: bash
-    # setup laravel log files
-    - run: |
-        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME exec -T --user www-data application touch storage/logs/laravel.log
       shell: bash
     # clear cache and create alternative .env file
     - if: ${{ inputs.is-cacheless != 'false' }}
