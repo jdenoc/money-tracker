@@ -20,9 +20,10 @@ runs:
         done
         docker image ls "$PROJECT_NAME*" --no-trunc
       shell: bash
-    # setup laravel log files
+    # setup laravel log file(s)
     - run: |
         touch storage/logs/laravel.log
+        chown 33:33 storage/logs/laravel.log  # user & group ID for the www-data user in the application docker container
       shell: bash
     # start containers
     - run: |
