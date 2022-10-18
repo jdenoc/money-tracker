@@ -6,4 +6,4 @@ if [[ "$(docker images -q composer-local 2> /dev/null)" == "" ]]; then
   docker build --rm --file $DOCKERFILE_PATH --tag composer-local $CONTEXT_PATH
 fi
 
-docker container run --rm -t --volume $PWD:/app composer-local "$@"
+docker container run --rm -t --volume "$PWD":/app composer-local "$@"
