@@ -23,7 +23,11 @@ runs:
     # setup laravel log file(s)
     - run: |
         touch storage/logs/laravel.log
-        chown 33:33 storage/logs/laravel.log  # user & group ID for the www-data user in the application docker container
+        docker container run --rm \
+          --workdir /var/www/money-tracker \
+          -v $PWD:/var/www/money-tracker \
+          php:8.0-apache \
+          chown www-data:www-data storage/logs/laravel.log
       shell: bash
     # start containers
     - run: |
