@@ -225,7 +225,7 @@ jobs:
         if: failure()
 
       - name: Failure upload
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: ${{ github.sha }}-unit
@@ -282,7 +282,7 @@ jobs:
         if: failure()
 
       - name: Failure upload
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: ${{ github.sha }}-e2e
@@ -339,7 +339,7 @@ jobs:
         if: failure()
 
       - name: Failure upload
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: ${{ github.sha }}-e2e
@@ -411,7 +411,7 @@ jobs:
         if: failure()
 
       - name: Failure upload
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: ${{ github.sha }}-e2e
@@ -478,7 +478,7 @@ jobs:
         if: failure()
 
       - name: Failure upload
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: ${{ github.sha }}-e2e
@@ -540,7 +540,7 @@ jobs:
         if: failure()
 
       - name: Failure upload
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: ${{ github.sha }}-e2e
@@ -612,7 +612,7 @@ jobs:
         if: failure()
 
       - name: Failure upload
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: ${{ github.sha }}-e2e
@@ -669,7 +669,7 @@ jobs:
         if: failure()
 
       - name: Failure upload
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: ${{ github.sha }}-e2e
@@ -726,7 +726,7 @@ jobs:
         if: failure()
 
       - name: Failure upload
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: ${{ github.sha }}-e2e
@@ -788,7 +788,7 @@ jobs:
         if: failure()
 
       - name: Failure upload
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: ${{ github.sha }}-e2e
@@ -850,7 +850,7 @@ jobs:
         if: failure()
 
       - name: Failure upload
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: ${{ github.sha }}-e2e
