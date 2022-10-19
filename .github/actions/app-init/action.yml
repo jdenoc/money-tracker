@@ -20,14 +20,12 @@ runs:
         done
         docker image ls "$PROJECT_NAME*" --no-trunc
       shell: bash
-    # setup laravel log file(s)
+    # set initial user:group ownership
     - run: |
-        touch storage/logs/laravel.log
-        docker container run --rm \
-          --workdir /var/www/money-tracker \
-          -v $PWD:/var/www/money-tracker \
-          php:8.0-apache \
-          chown www-data:www-data storage/logs/laravel.log
+        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME \
+          run --rm -T --no-deps --user root \
+          application \
+          chown -R www-data:www-data /var/www/money-tracker
       shell: bash
     # start containers
     - run: |
@@ -57,9 +55,8 @@ runs:
           exit 1;
         fi
       shell: bash
-    # ensure correct user:group ownership
+    # ensure correct user:group ownership for other containers
     - run: |
-        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME exec -T --user root application chown -R www-data /var/www/money-tracker
         docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME exec -T --user root selenium chgrp seluser /home/seluser/Downloads
         docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME exec -T --user root selenium chmod g+w /home/seluser/Downloads
       shell: bash
