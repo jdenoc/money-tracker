@@ -9,6 +9,6 @@ RUN apt-get update \
 COPY .docker/healthcheck/memcached-health-check.sh /usr/local/bin/memcached-health-check
 RUN chmod +x /usr/local/bin/memcached-health-check
 HEALTHCHECK --interval=5s --timeout=10s --retries=10 \
-  CMD /usr/local/bin/memcached-health-check
+  CMD memcached-health-check
 
 USER memcache
