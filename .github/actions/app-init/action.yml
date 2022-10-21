@@ -12,25 +12,29 @@ inputs:
 runs:
   using: composite
   steps:
-    # re-load docker images
-    - run: |
+    - name: re-load docker images
+      run: |
         for image_name in $(ls ${{ inputs.docker-image-directory }}/${PROJECT_NAME}*.tar.gz)
         do
           docker load -i $image_name
         done
         docker image ls "$PROJECT_NAME*" --no-trunc
       shell: bash
-    # set initial user:group ownership
-    - run: |
+
+    - name: set initial user:group ownership
+      run: |
         docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME \
           run --rm -T --no-deps --user root \
           application \
           chown -R www-data:www-data /var/www/money-tracker
       shell: bash
-    # start containers
-    - run: |
+
+    - name: start containers
+      run: |
+        # start containers
         docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME up -d --force-recreate
         
+        # wait until health status determined
         i=0
         while [[
           $(docker container ls --filter "status=running" -q) != $(docker container ls --filter "status=running" --filter "health=healthy" -q)
@@ -44,6 +48,7 @@ runs:
           fi
         done
         
+        # check if any containers are unhealthy
         unhealthy_count=$(docker container ls --filter "status=running" --filter "health=unhealthy" -q | wc -l)
         if [[ $unhealthy_count -eq 0 ]]; then
           echo "it took $i seconds for containers to become healthy"
@@ -55,21 +60,24 @@ runs:
           exit 1;
         fi
       shell: bash
-    # ensure correct user:group ownership for other containers
-    - run: |
+
+    - name: ensure correct user:group ownership for other containers
+      run: |
         docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME exec -T --user root selenium chgrp seluser /home/seluser/Downloads
         docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME exec -T --user root selenium chmod g+w /home/seluser/Downloads
       shell: bash
-    # general application setup
-    - run: |
+
+    - name: general application setup
+      run: |
         .docker/cmd/artisan.sh optimize:clear
         .docker/cmd/artisan.sh key:generate
         .docker/cmd/artisan.sh app:version $(git describe --always)
         .docker/cmd/artisan.sh optimize
         .docker/cmd/artisan.sh view:cache
       shell: bash
-    # clear cache and create alternative .env file
+
     - if: ${{ inputs.is-cacheless != 'false' }}
+      name: clear cache and create alternative .env file
       run: |
         .docker/cmd/artisan.sh config:clear
         docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME exec -T --user www-data application cp .env.docker .env.testing
