@@ -14,16 +14,16 @@ runs:
   steps:
     - name: re-load docker images
       run: |
-        for image_name in $(ls ${{ inputs.docker-image-directory }}/${PROJECT_NAME}*.tar.gz)
+        for image_name in $(ls ${{ inputs.docker-image-directory }}/*.tar.gz)
         do
           docker load -i $image_name
         done
-        docker image ls "$PROJECT_NAME*" --no-trunc
+        docker-compose images
       shell: bash
 
     - name: set initial user:group ownership
       run: |
-        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME \
+        docker-compose \
           run --rm -T --no-deps --user root \
           application \
           chown -R www-data:www-data /var/www/money-tracker
@@ -32,7 +32,7 @@ runs:
     - name: start containers
       run: |
         # start containers
-        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME up -d --force-recreate
+        docker-compose up -d --force-recreate
         
         # wait until health status determined
         i=0
@@ -63,8 +63,8 @@ runs:
 
     - name: ensure correct user:group ownership for other containers
       run: |
-        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME exec -T --user root selenium chgrp seluser /home/seluser/Downloads
-        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME exec -T --user root selenium chmod g+w /home/seluser/Downloads
+        docker-compose exec -T --user root selenium chgrp seluser /home/seluser/Downloads
+        docker-compose exec -T --user root selenium chmod g+w /home/seluser/Downloads
       shell: bash
 
     - name: general application setup
@@ -80,5 +80,5 @@ runs:
       name: clear cache and create alternative .env file
       run: |
         .docker/cmd/artisan.sh config:clear
-        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME exec -T --user www-data application cp .env.docker .env.testing
+        docker-compose exec -T --user www-data application cp .env.docker .env.testing
       shell: bash

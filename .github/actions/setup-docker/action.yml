@@ -9,16 +9,16 @@ runs:
   using: composite
   steps:
     - name: build docker images
-      run: docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME build --build-arg DISABLE_XDEBUG=true
+      run: docker-compose build --build-arg DISABLE_XDEBUG=true
       shell: bash
 
     - name: save docker images
       run: |
         mkdir -p ${{ inputs.image-path }}
-        docker image ls "$PROJECT_NAME*" --no-trunc
+        docker-compose images
         
         IFS=$'\n'
-        for image_name in $(docker image ls "$PROJECT_NAME*" --format '{{.Repository}}')
+        for image_name in $(docker-compose images | tail -n +2 | awk '{print $2}')
         do
           docker save $image_name | gzip > .docker/images/${image_name}.tar.gz
         done
