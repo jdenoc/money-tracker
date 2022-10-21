@@ -116,4 +116,4 @@ COPY .docker/healthcheck/app-health-check.sh /usr/local/bin/app-health-check
 RUN chmod +x /usr/local/bin/app-health-check
 RUN ln -sf $DOCKER_LOG_STDOUT $PHP_LOG_DIR/healthcheck.log
 HEALTHCHECK --timeout=5s --retries=10 \
-  CMD /usr/local/bin/app-health-check
+  CMD app-health-check
