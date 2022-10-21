@@ -15,10 +15,10 @@ runs:
     - name: save docker images
       run: |
         mkdir -p ${{ inputs.image-path }}
-        docker image ls --no-trunc
+        docker image ls "$(basename $PWD)*" --no-trunc
         
         IFS=$'\n'
-        for image_name in $(docker image ls --format '{{.Repository}}')
+        for image_name in $(docker image ls "$(basename $PWD)*" --format '{{.Repository}}')
         do
           docker save $image_name | gzip > ${{ inputs.image-path }}/${image_name}.tar.gz
         done
