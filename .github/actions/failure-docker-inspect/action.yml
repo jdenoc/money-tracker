@@ -6,18 +6,18 @@ runs:
   steps:
     - name: confirm docker containers running
       run: |
-        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps --filter status=running
+        docker-compose ps --filter status=running
         docker container ls --size --no-trunc
       shell: bash
 
     - name: output docker logs into a file
       run: |
-        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME exec -T --user root application chown -R www-data storage/logs
-        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME exec -T --user www-data application touch storage/logs/docker.log
-        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME exec -T --user www-data application chmod -R 777 storage/logs/docker.log
-        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME logs > storage/logs/docker.log
+        docker-compose exec -T --user root application chown -R www-data storage/logs
+        docker-compose exec -T --user www-data application touch storage/logs/docker.log
+        docker-compose exec -T --user www-data application chmod -R 777 storage/logs/docker.log
+        docker-compose logs > storage/logs/docker.log
       shell: bash
 
     - name: output docker container configurations
-      run: docker inspect $(docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps -q)
+      run: docker inspect $(docker-compose ps -q)
       shell: bash
