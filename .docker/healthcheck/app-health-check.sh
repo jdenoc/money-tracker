@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+echo "[$(date +"%Y-%m-%d %T %Z")] HEALTHCHECK" >> /var/log/php/healthcheck.log
 http_code=$(curl --silent --write-out '%{http_code}' --output /dev/null http://localhost/api/version)
 
 if [[ $http_code -eq 200 ]]; then
