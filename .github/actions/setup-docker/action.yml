@@ -15,11 +15,11 @@ runs:
     - name: save docker images
       run: |
         mkdir -p ${{ inputs.image-path }}
-        docker-compose images
+        docker image ls --no-trunc
         
         IFS=$'\n'
-        for image_name in $(docker-compose images | tail -n +2 | awk '{print $2}')
+        for image_name in $(docker image ls --format '{{.Repository}}')
         do
-          docker save $image_name | gzip > .docker/images/${image_name}.tar.gz
+          docker save $image_name | gzip > ${{ inputs.image-path }}/${image_name}.tar.gz
         done
       shell: bash
