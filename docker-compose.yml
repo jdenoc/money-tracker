@@ -3,7 +3,7 @@ version: '3'
 services:
   application:
     build:
-      context: .. # interpreted as relative to the location of the docker-compose file
+      context: .
       dockerfile: .docker/app.dockerfile
       args:
         - DISABLE_XDEBUG=${DISABLE_XDEBUG:-false}
@@ -13,7 +13,7 @@ services:
       - "80:80"
       - "9003:9003"
     volumes:
-      - ..:/var/www/money-tracker
+      - ${PWD}:/var/www/money-tracker
     environment:
       - APP_ENV=docker
     depends_on:
@@ -26,13 +26,13 @@ services:
 
   database:
     build:
-      context: .. # interpreted as relative to the location of the docker-compose file
+      context: .
       dockerfile: .docker/mysql.dockerfile
     container_name: "mysql.money-tracker"
     hostname: mysql.money-tracker
     volumes:
       - db.money-tracker:/var/lib/mysql
-      - ../storage/logs:/var/log/mysql  # for logs
+      - ${PWD}/storage/logs:/var/log/mysql  # for logs
     environment:
       # if you change any of these, be sure to change the corresponding values in .env.docker
       - MYSQL_RANDOM_ROOT_PASSWORD=yes
@@ -44,7 +44,7 @@ services:
 
   cache:
     build:
-      context: ..
+      context: .
       dockerfile: .docker/memcached.dockerfile
     container_name: "memcached.money-tracker"
     hostname: memcached.money-tracker
@@ -53,7 +53,7 @@ services:
 
   selenium: # needed for e2e (End-to-End) testing
     build:
-      context: ..
+      context: .
       dockerfile: .docker/selenium.dockerfile
     container_name: "selenium.money-tracker"
     hostname: selenium.money-tracker
@@ -61,7 +61,7 @@ services:
     ports:
       - "5901:5900"   # for VNC
     volumes:
-      - ../storage/app/test/downloads:/home/seluser/Downloads
+      - ${PWD}/storage/app/test/downloads:/home/seluser/Downloads
     environment:
       - VNC_NO_PASSWORD=1
     depends_on:
