@@ -18,4 +18,4 @@ RUN LOG_CONF=/etc/mysql/conf.d/logging.cnf \
 COPY .docker/healthcheck/mysql-health-check.sh /usr/local/bin/mysql-health-check
 RUN chmod +x /usr/local/bin/mysql-health-check
 HEALTHCHECK --interval=5s --timeout=10s --retries=10 \
-  CMD /usr/local/bin/mysql-health-check
+  CMD mysql-health-check
