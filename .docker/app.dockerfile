@@ -1,7 +1,7 @@
 FROM php:8.0-apache
 
-ENV DOCKER_LOG_STDOUT /proc/self/fd/1
-ENV DOCKER_LOG_STDERR /proc/self/fd/2
+ENV DOCKER_LOG_STDOUT /proc/1/fd/1
+ENV DOCKER_LOG_STDERR /proc/1/fd/2
 
 # install generic packages & extensions
 RUN apt-get update --fix-missing \
