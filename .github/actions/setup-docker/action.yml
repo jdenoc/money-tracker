@@ -8,11 +8,12 @@ inputs:
 runs:
   using: composite
   steps:
-    # build docker
-    - run: docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME build --build-arg DISABLE_XDEBUG=true
+    - name: build docker images
+      run: docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME build --build-arg DISABLE_XDEBUG=true
       shell: bash
-    # save docker images
-    - run: |
+
+    - name: save docker images
+      run: |
         mkdir -p ${{ inputs.image-path }}
         docker image ls "$PROJECT_NAME*" --no-trunc
         
