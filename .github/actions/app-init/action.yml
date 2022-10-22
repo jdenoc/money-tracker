@@ -31,15 +31,8 @@ runs:
 
     - name: create laravel logs
       run: |
-        docker-compose \
-          run --rm -T --no-deps --user www-data \
-          application \
-          touch /var/log/php/laravel.log
-        
-        docker-compose \
-          run --rm -T --no-deps --user www-data \
-          application \
-          ln -s /var/log/php/laravel.log storage/logs/laravel.log
+        docker-compose run --rm --no-deps -T --user www-data application touch /var/log/php/laravel.log
+        docker-compose run --rm --no-deps -T --user www-data application ln -s /var/log/php/laravel.log storage/logs/laravel.log
       shell: bash
 
     - name: start containers
