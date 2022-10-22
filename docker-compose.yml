@@ -13,7 +13,8 @@ services:
       - "80:80"
       - "9003:9003"   # for xdebug
     volumes:
-      - ${PWD}:/var/www/money-tracker
+      - .:/var/www/money-tracker
+      - ./.docker/logs/application:/var/logs/php  # for logs
     environment:
       - APP_ENV=docker
     depends_on:
@@ -32,7 +33,7 @@ services:
     hostname: mysql.money-tracker
     volumes:
       - db.money-tracker:/var/lib/mysql
-      - ${PWD}/storage/logs:/var/log/mysql  # for logs
+      - ./.docker/logs/database:/var/log/mysql  # for logs
     environment:
       # if you change any of these, be sure to change the corresponding values in .env.docker
       - MYSQL_RANDOM_ROOT_PASSWORD=yes
