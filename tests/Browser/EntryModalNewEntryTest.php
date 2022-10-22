@@ -507,7 +507,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
             $this->openNewEntryModal($browser);
             $browser
                 ->within($this->_selector_modal_entry.' '.$this->_selector_modal_body, function(Browser $entry_modal_body){
-                    $upload_file_path = Storage::path($this->getRandomTestFileStoragePath());
+                    $upload_file_path = $this->getFullPathOfRandomAttachmentFromTestStorage();
                     $this->uploadAttachmentUsingDragNDropAndSuccess($entry_modal_body, $this->_selector_modal_entry_field_upload, $this->_selector_modal_entry_dropzone_hidden_file_input, $upload_file_path);
                     $this->removeUploadedAttachmentFromDragNDrop($entry_modal_body, $this->_selector_modal_entry_field_upload);
                 });
@@ -527,7 +527,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
             $this->openNewEntryModal($browser);
             $browser
                 ->within($this->_selector_modal_entry.' '.$this->_selector_modal_body, function(Browser $modal_body){
-                    $upload_file_path = Storage::path($this->getRandomTestFileStoragePath());
+                    $upload_file_path = $this->getFullPathOfRandomAttachmentFromTestStorage();
                     $this->uploadAttachmentUsingDragNDropAndSuccess($modal_body, $this->_selector_modal_entry_field_upload, $this->_selector_modal_entry_dropzone_hidden_file_input, $upload_file_path);
                 })
                 ->within($this->_selector_modal_entry.' '.$this->_selector_modal_foot, function(Browser $modal_foot){
@@ -683,7 +683,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
 
         $this->browse(function(Browser $browser) use ($account_type, $has_tags, $has_attachments){
             $memo_field = "Test entry - generic".($has_tags?" w\ tags":"").($has_attachments?" \w attachments":"");
-            $upload_file_path = $has_attachments ? Storage::path($this->getRandomTestFileStoragePath()) : '';
+            $upload_file_path = $has_attachments ? $this->getFullPathOfRandomAttachmentFromTestStorage() : '';
 
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
