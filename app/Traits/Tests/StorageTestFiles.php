@@ -7,11 +7,11 @@ use Illuminate\Support\Str;
 
 trait StorageTestFiles {
 
-    protected static string $storage_test_attachment_path = "attachments/";   // storage/tests/attachments
+    protected static string $storage_test_attachment_path = "attachments/";   // storage/tests/attachments/
     public static string $TEST_STORAGE_DISK_NAME = 'tests';
 
     public static function getTestStorageAttachmentFilePaths(): array{
-        $file_paths = Storage::disk('tests')->files(self::$storage_test_attachment_path);
+        $file_paths = Storage::disk(self::$TEST_STORAGE_DISK_NAME)->files(self::$storage_test_attachment_path);
         $file_paths = array_filter($file_paths, function(string $filename){
             return !Str::contains($filename, ['git', 'DS_Store']);
         });
