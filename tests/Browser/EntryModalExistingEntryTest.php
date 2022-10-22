@@ -1360,7 +1360,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @return string
      */
     private function getTestDummyFilename(): string{
-        return Storage::path(self::$storage_path.$this->getName(false).'.txt');
+        return Storage::disk('tests')->path(self::$storage_test_attachment_path.$this->getName(false).'.txt');
     }
 
     private function addRulesToHtaccessToDisableDisplayErrors(){
