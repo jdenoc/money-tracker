@@ -14,7 +14,7 @@ services:
       - "9003:9003"   # for xdebug
     volumes:
       - .:/var/www/money-tracker
-      - ./.docker/logs/application:/var/logs/php  # for logs
+      - ./.docker/logs/application:/var/log/php  # for logs
     environment:
       - APP_ENV=docker
     depends_on:
