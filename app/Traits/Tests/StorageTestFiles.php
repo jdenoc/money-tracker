@@ -38,7 +38,7 @@ trait StorageTestFiles {
     }
 
     public function copyFromTestDiskToAppDisk($testDiskFilePath, $appDiskFilePath){
-        Storage::disk('app')->put($appDiskFilePath, Storage::disk(self::$TEST_STORAGE_DISK_NAME)->get($testDiskFilePath));
+        Storage::disk(config('filesystems.default'))->put($appDiskFilePath, Storage::disk(self::$TEST_STORAGE_DISK_NAME)->get($testDiskFilePath));
     }
 
 }
