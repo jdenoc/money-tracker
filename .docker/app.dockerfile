@@ -72,6 +72,7 @@ RUN docker-php-ext-enable igbinary \
 ARG DISABLE_XDEBUG
 RUN if [ "$DISABLE_XDEBUG" = false ]; \
   then \
+    # xdebug can not write DOCKER_LOG_STDOUT, so we'll write to an actual file instead
     XDEBUG_LOG=$PHP_LOG_DIR/xdebug.log \
       && touch $XDEBUG_LOG \
       && chgrp $APACHE_RUN_GROUP $XDEBUG_LOG \
