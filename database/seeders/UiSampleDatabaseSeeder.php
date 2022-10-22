@@ -243,10 +243,9 @@ class UiSampleDatabaseSeeder extends Seeder {
     }
 
     private function storeAttachment(Attachment $attachment): void{
-        $test_file_path = $this->getTestFileStoragePathFromFilename($attachment->name);
-        if(Storage::disk('tests')->exists($test_file_path)){
-            // copy from storage/tests/attachments/file.ext storage/app/attachments/file-hash.ext
-            Storage::put($attachment->get_storage_file_path(), Storage::disk('tests')->get($test_file_path));
+        $test_file_path = $this->getTestStorageFileAttachmentFilePathFromFilename($attachment->name);
+        if(Storage::disk(self::$TEST_STORAGE_DISK_NAME)->exists($test_file_path)){
+            $this->copyFromTestDiskToAppDisk($test_file_path, $attachment->get_storage_file_path());
             $this->attachment_stored_count++;
         }
     }

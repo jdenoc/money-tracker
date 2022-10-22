@@ -895,7 +895,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      */
     public function testUploadAttachmentToExistingEntryWithoutSaving(){
         $this->browse(function(Browser $browser){
-            $upload_file_path = Storage::path($this->getRandomTestFileStoragePath());
+            $upload_file_path = $this->getFullPathOfRandomAttachmentFromTestStorage();
             $entry_selector = $this->randomEntrySelector(['confirm'=>false]);
 
             $browser->visit(new HomePage());
@@ -1088,10 +1088,9 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         $entry->tags()->syncWithoutDetaching($tag_ids);
         // attach attachments to this entry
         $attachment = Attachment::factory()->create(['entry_id'=>$entry->id]);
-        $test_file_path = $this->getTestFileStoragePathFromFilename($attachment->name);
-        if(Storage::disk('tests')->exists($test_file_path)){
-            // copy storage/tests/attachments/file.ext storage/app/attachments/file-hash.ext
-            Storage::put($attachment->get_storage_file_path(), Storage::disk('tests')->get($test_file_path));
+        $test_file_path = $this->getTestStorageFileAttachmentFilePathFromFilename($attachment->name);
+        if(Storage::disk(self::$TEST_STORAGE_DISK_NAME)->exists($test_file_path)){
+            $this->copyFromTestDiskToAppDisk($test_file_path, $attachment->get_storage_file_path());
         }
         // generate the selector
         $selector_entry_id = sprintf(self::$PLACEHOLDER_SELECTOR_EXISTING_ENTRY_ROW, $entry->id);

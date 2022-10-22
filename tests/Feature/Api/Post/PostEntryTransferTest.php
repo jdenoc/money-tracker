@@ -270,7 +270,7 @@ class PostEntryTransferTest extends TestCase {
             $transfer_data['attachments'] = [];
             foreach($generated_attachments as $generated_attachment){
                 $generated_attachment->storage_store(
-                    Storage::disk('tests')->get($this->getTestFileStoragePathFromFilename($generated_attachment->name)),
+                    Storage::disk(self::$TEST_STORAGE_DISK_NAME)->get($this->getTestStorageFileAttachmentFilePathFromFilename($generated_attachment->name)),
                     true
                 );
                 $transfer_data['attachments'][] = [
