@@ -11,7 +11,7 @@ services:
     hostname: app.money-tracker
     ports:
       - "80:80"
-      - "9003:9003"
+      - "9003:9003"   # for xdebug
     volumes:
       - ${PWD}:/var/www/money-tracker
     environment:
