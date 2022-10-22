@@ -12,12 +12,16 @@ runs:
 
     - name: output docker logs into a file
       run: |
-        docker-compose exec -T --user root application chown -R www-data storage/logs
-        docker-compose exec -T --user www-data application touch storage/logs/docker.log
-        docker-compose exec -T --user www-data application chmod -R 777 storage/logs/docker.log
-        docker-compose logs > storage/logs/docker.log
+        DOCKER_LOG=.docker/logs/docker.log
+        touch $DOCKER_LOG
+        docker-compose logs > $DOCKER_LOG
       shell: bash
 
     - name: output docker container configurations
-      run: docker inspect $(docker-compose ps -q)
+      run: |
+        INSPECT_FILE=.docker/logs/docker-inspect.json
+        touch $INSPECT_FILE
+        echo "{" >> $INSPECT_FILE
+        docker inspect $(docker-compose ps -q) >> $INSPECT_FILE
+        echo "}" >> $INSPECT_FILE
       shell: bash

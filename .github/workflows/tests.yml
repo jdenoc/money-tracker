@@ -65,8 +65,11 @@ jobs:
         id: failure-artifact-paths
         run: |
           echo "value<<EOF" >> $GITHUB_OUTPUT
+          echo ".docker/logs/*.json" >> $GITHUB_OUTPUT
+          echo ".docker/logs/*.log" >> $GITHUB_OUTPUT
+          echo ".docker/logs/application/*.log" >> $GITHUB_OUTPUT
+          echo ".docker/logs/database/*.log" >> $GITHUB_OUTPUT
           echo "database/snapshots/*.sql" >> $GITHUB_OUTPUT
-          echo "storage/logs/*.log" >> $GITHUB_OUTPUT
           echo "storage/tests/downloads/*.csv" >> $GITHUB_OUTPUT
           echo "tests/Browser/console/*.log" >> $GITHUB_OUTPUT
           echo "tests/Browser/screenshots/" >> $GITHUB_OUTPUT
