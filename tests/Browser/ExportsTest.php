@@ -10,6 +10,7 @@ use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
 use App\Traits\Tests\Dusk\Notification as DuskTraitNotification;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Dusk\Browser;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
@@ -133,7 +134,7 @@ class ExportsTest extends DuskTestCase {
 
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_SUCCESS, "Export Complete");
 
-            $files =  File::glob(storage_path('app/test/downloads/entries.*.csv'));
+            $files = File::glob(Storage::disk(self::$TEST_STORAGE_DISK_NAME)->path(self::$storage_test_attachment_path.'/entries.*.csv'));
             $file_path = $files[array_key_last($files)];
             $this->assertNotEmpty($file_path);
 

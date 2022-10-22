@@ -84,9 +84,9 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         if($this->getName(false) === self::$TEST_NAME_OVERRIDE_HTACCESS){
             $this->revertHtaccessToOriginalState();
             // remove any files that any tests may have created
-            Storage::delete(
+            Storage::disk(self::$TEST_STORAGE_DISK_NAME)->delete(
                 // need to remove the filepath prefix before we can delete the file from storage
-                str_replace(Storage::path(''), '',$this->getTestDummyFilename())
+                str_replace(Storage::disk(self::$TEST_STORAGE_DISK_NAME)->path(''), '', $this->getTestDummyFilename())
             );
         }
         $this->assertFileDoesNotExist($this->getTestDummyFilename());
@@ -1360,7 +1360,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @return string
      */
     private function getTestDummyFilename(): string{
-        return Storage::disk('tests')->path(self::$storage_test_attachment_path.$this->getName(false).'.txt');
+        return Storage::disk(self::$TEST_STORAGE_DISK_NAME)->path(self::$storage_test_attachment_path.$this->getName(false).'.txt');
     }
 
     private function addRulesToHtaccessToDisableDisplayErrors(){
