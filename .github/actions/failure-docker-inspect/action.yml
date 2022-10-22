@@ -13,14 +13,16 @@ runs:
     - name: output docker logs into a file
       run: |
         DOCKER_LOG=.docker/logs/docker.log
-        touch $DOCKER_LOG
+        docker-compose run --rm --no-deps -T --user root application touch $DOCKER_LOG
+        docker-compose run --rm --no-deps -T --user root application chmod -R 777 $DOCKER_LOG
         docker-compose logs > $DOCKER_LOG
       shell: bash
 
     - name: output docker container configurations
       run: |
         INSPECT_FILE=.docker/logs/docker-inspect.json
-        touch $INSPECT_FILE
+        docker-compose run --rm --no-deps -T --user root application touch $INSPECT_FILE
+        docker-compose run --rm --no-deps -T --user root application chmod -R 777 $INSPECT_FILE
         echo "{" >> $INSPECT_FILE
         docker inspect $(docker-compose ps -q) >> $INSPECT_FILE
         echo "}" >> $INSPECT_FILE
