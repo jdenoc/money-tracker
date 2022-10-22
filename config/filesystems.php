@@ -40,6 +40,11 @@ return [
             'root' => database_path('snapshots'),
         ],
 
+        'tests' => [
+            'driver' => 'local',
+            'root' => storage_path('tests'),
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),

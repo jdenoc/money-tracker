@@ -61,7 +61,7 @@ services:
     ports:
       - "5901:5900"   # for VNC
     volumes:
-      - ${PWD}/storage/app/test/downloads:/home/seluser/Downloads
+      - ./storage/tests/downloads:/home/seluser/Downloads
     environment:
       - VNC_NO_PASSWORD=1
     depends_on:
