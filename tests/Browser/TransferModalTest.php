@@ -449,7 +449,7 @@ class TransferModalTest extends DuskTestCase {
         $account_types = $this->faker->randomElements($all_account_types, 2);
 
         $this->browse(function(Browser $browser) use ($account_types, $has_tags, $has_attachments){
-            $upload_file_path = $has_attachments ? Storage::path($this->getRandomTestFileStoragePath()) : '';
+            $upload_file_path = $has_attachments ? $this->getFullPathOfRandomAttachmentFromTestStorage() : '';
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $this->openTransferModal($browser);
@@ -557,7 +557,7 @@ class TransferModalTest extends DuskTestCase {
                 $tag = '';
             }
             if($has_attachments){
-                $attachment_path = Storage::path($this->getRandomTestFileStoragePath());
+                $attachment_path = $this->getFullPathOfRandomAttachmentFromTestStorage();
             } else {
                 $attachment_path = '';
             }
