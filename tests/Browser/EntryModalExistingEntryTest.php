@@ -1089,8 +1089,9 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         // attach attachments to this entry
         $attachment = Attachment::factory()->create(['entry_id'=>$entry->id]);
         $test_file_path = $this->getTestFileStoragePathFromFilename($attachment->name);
-        if(Storage::exists($test_file_path)){
-            Storage::copy($test_file_path, $attachment->get_storage_file_path());
+        if(Storage::disk('tests')->exists($test_file_path)){
+            // copy storage/tests/attachments/file.ext storage/app/attachments/file-hash.ext
+            Storage::put($attachment->get_storage_file_path(), Storage::disk('tests')->get($test_file_path));
         }
         // generate the selector
         $selector_entry_id = sprintf(self::$PLACEHOLDER_SELECTOR_EXISTING_ENTRY_ROW, $entry->id);

@@ -25,8 +25,8 @@ trait StorageTestFiles {
     }
 
     public function getTestFileStoragePathFromFilename(string $filename): string{
-        if(in_array(self::$storage_test_attachment_path.$filename, self::getTestFilePaths())){
-            throw new \OutOfBoundsException("filename provided does not exist");
+        if(!in_array(self::$storage_test_attachment_path.$filename, self::getTestFilePaths())){
+            throw new \OutOfBoundsException("filename [$filename] does not exist and so can not provide a file path");
         }
         return self::$storage_test_attachment_path.$filename;
     }

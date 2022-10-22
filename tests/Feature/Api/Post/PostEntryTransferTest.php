@@ -11,6 +11,7 @@ use App\Traits\EntryResponseKeys;
 use App\Traits\EntryTransferKeys;
 use App\Traits\Tests\StorageTestFiles;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 use Illuminate\Http\Response as HttpStatus;
 
@@ -268,7 +269,10 @@ class PostEntryTransferTest extends TestCase {
 
             $transfer_data['attachments'] = [];
             foreach($generated_attachments as $generated_attachment){
-                $generated_attachment->storage_store(file_get_contents(storage_path('app/'.$this->getTestFileStoragePathFromFilename($generated_attachment->name))), true);
+                $generated_attachment->storage_store(
+                    Storage::disk('tests')->get($this->getTestFileStoragePathFromFilename($generated_attachment->name)),
+                    true
+                );
                 $transfer_data['attachments'][] = [
                     'uuid'=>$generated_attachment->uuid,
                     'name'=>$generated_attachment->name

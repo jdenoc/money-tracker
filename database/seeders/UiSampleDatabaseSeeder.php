@@ -36,7 +36,7 @@ class UiSampleDatabaseSeeder extends Seeder {
 
     const YEAR_IN_DAYS = 365;
 
-    private $attachment_stored_count = 0;
+    private int $attachment_stored_count = 0;
 
     /**
      * Run the database seeders.
@@ -185,10 +185,6 @@ class UiSampleDatabaseSeeder extends Seeder {
         $this->command->line(self::CLI_OUTPUT_PREFIX."Assigned Attachments to all varieties of entries [".$this->attachment_stored_count."]");
     }
 
-    /**
-     * @param Collection $entries
-     * @return Collection
-     */
     private function firstFromApiCall(Collection $entries): Collection{
         return $entries
             ->sortByDesc('entry_date')
@@ -246,13 +242,11 @@ class UiSampleDatabaseSeeder extends Seeder {
         }
     }
 
-    /**
-     * @param Attachment $attachment
-     */
     private function storeAttachment(Attachment $attachment): void{
         $test_file_path = $this->getTestFileStoragePathFromFilename($attachment->name);
-        if(Storage::exists($test_file_path)){
-            Storage::copy($test_file_path, $attachment->get_storage_file_path());
+        if(Storage::disk('tests')->exists($test_file_path)){
+            // copy from storage/tests/attachments/file.ext storage/app/attachments/file-hash.ext
+            Storage::put($attachment->get_storage_file_path(), Storage::disk('tests')->get($test_file_path));
             $this->attachment_stored_count++;
         }
     }
