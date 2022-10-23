@@ -33,7 +33,7 @@ class ExportsTest extends DuskTestCase {
     use HomePageSelectors;
     use WithFaker;
 
-    private static $SELECTOR_EXPORT_BTN = '#filter-export-btn';
+    private static string $SELECTOR_EXPORT_BTN = '#filter-export-btn';
 
     public function __construct($name = null, array $data = [], $dataName = ''){
         parent::__construct($name, $data, $dataName);
@@ -42,7 +42,6 @@ class ExportsTest extends DuskTestCase {
 
     public function setUp(): void{
         parent::setUp();
-        $this->setAbsoluteDownloadDir();
         $this->clearStorageDownloadDir();
         $this->initFilterModalColors();
     }
@@ -134,7 +133,8 @@ class ExportsTest extends DuskTestCase {
 
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_SUCCESS, "Export Complete");
 
-            $files = File::glob(Storage::disk(self::$TEST_STORAGE_DISK_NAME)->path(self::$storage_test_attachment_path.'/entries.*.csv'));
+            $files = File::glob(Storage::disk(self::$TEST_STORAGE_DISK_NAME)->path(self::$STORAGE_DOWNLOAD_DIR.'entries.*.csv'));
+            $this->assertNotEmpty($files);
             $file_path = $files[array_key_last($files)];
             $this->assertNotEmpty($file_path);
 
