@@ -21,17 +21,20 @@ class Kernel extends ConsoleKernel {
      * Define the application's command schedule.
      *
      * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
-     * @return void
      */
     protected function schedule(Schedule $schedule){
-        $schedule->command('storage:clear-tmp-uploads')->daily();
+        // make sure entry totals add up to account totals
         $schedule->command("sanity-check:account-total")->dailyAt("03:17");
+        // clear contents of storage/app/tmp-uploads/
+        $schedule->command('storage:clear-tmp-uploads')->daily();
+        // database backup
+        $schedule->command('snapshot:create '.date('Ymd.His.e').' --compress')->dailyAt("02:15");
+        // clear stale backups
+        $schedule->command('snapshot:cleanup --keep=30')->dailyAt("02:45");
     }
 
     /**
      * Register the commands for the application.
-     *
-     * @return void
      */
     protected function commands(){
         $this->load(__DIR__.'/Commands');
