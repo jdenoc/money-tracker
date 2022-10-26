@@ -12,7 +12,7 @@ class ExportsController extends Controller {
 
     use ExportsHelper;
 
-    public function export(Request $request){
+    public function __invoke(Request $request) {
         $export_filename = $this->generateExportFilename();
         $post_body = $request->getContent();
         $filter_data = json_decode($post_body, true);
