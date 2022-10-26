@@ -12,11 +12,11 @@ trait DatabaseMigrations {
     protected static bool $FRESH_RUN = true;
     protected static string $SNAPSHOT_NAME = '';
 
-    public function migrate($with_seeder=true){
+    public function migrate(bool $with_seeder=true){
         if(self::$FRESH_RUN){
             // init a listener to clean up file
             Event::listen(CreatedSnapshot::class, function(CreatedSnapshot $event){
-                $snapshot_file_path =  $event->snapshot->disk->getDriver()->getAdapter()->getPathPrefix().'/'.$event->snapshot->fileName;
+                $snapshot_file_path = $event->snapshot->disk->getDriver()->getAdapter()->getPathPrefix().'/'.$event->snapshot->fileName;
                 $file_contents = file_get_contents($snapshot_file_path);
                 $file_contents = str_replace(';;', ';', $file_contents);
                 $file_contents = str_replace('DELIMITER ;', "\n", $file_contents);
