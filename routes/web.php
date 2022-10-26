@@ -1,5 +1,10 @@
 <?php
 
+use App\Http\Controllers\Web\AttachmentController;
+use App\Http\Controllers\Web\ExportsController;
+use App\Http\Controllers\Web\HomeController;
+use App\Http\Controllers\Web\SettingsController;
+use App\Http\Controllers\Web\StatsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,12 +18,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/laravel', 'Web\HomeController@laravelWelcome')->name('laravel-welcome');
-Route::get('/', 'Web\HomeController@display');
-Route::get('/home', 'Web\HomeController@display');
-Route::get('/stats', 'Web\StatsController@display');
-Route::get('/settings', 'Web\SettingsController@display');
-Route::get('/attachment/{uuid}', 'Web\AttachmentController@display');
-Route::post('/attachment/upload', 'Web\AttachmentController@upload');
-Route::delete('/attachment/upload', 'Web\AttachmentController@deleteUpload');
-Route::post('/export', 'Web\ExportsController@export');
+Route::get('/laravel', [HomeController::class, 'laravelWelcome'])->name('laravel-welcome');
+Route::get('/', [HomeController::class, 'display']);
+Route::get('/home', [HomeController::class, 'display']);
+Route::get('/stats', StatsController::class);
+Route::get('/settings', SettingsController::class);
+Route::get('/attachment/{uuid}', [AttachmentController::class, 'display']);
+Route::post('/attachment/upload', [AttachmentController::class, 'upload']);
+Route::delete('/attachment/upload', [AttachmentController::class, 'deleteUpload']);
+Route::post('/export', ExportsController::class);
