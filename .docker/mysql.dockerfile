@@ -1,4 +1,10 @@
-FROM mysql:5.6
+FROM mysql:8.0
+
+# allows stored function creators to be trusted not to create stored functions that may cause unsafe events to be written to the binary log
+RUN LOG_BIN_TRUST_CONF=/etc/mysql/conf.d/log_bin_trust.cnf \
+  && touch $LOG_BIN_TRUST_CONF \
+  && echo "[mysqld]" >> $LOG_BIN_TRUST_CONF \
+  && echo "log_bin_trust_function_creators = 1" >> $LOG_BIN_TRUST_CONF
 
 # logging
 RUN LOG_CONF=/etc/mysql/conf.d/logging.cnf \
