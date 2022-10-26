@@ -10,3 +10,5 @@ This Cron will call the Laravel command scheduler every minute. When the command
 Here is a list of commands that will _scheduled_ as part of this setup:
 - `artisan sanity-check:account-total`
 - `artisan storage:clear-tmp-uploads`
+- `artisan snapshot:create --compress`
+- `artisan snapshot:cleanup --keep=30`
