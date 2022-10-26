@@ -64,12 +64,18 @@ _**Note:** you can replace_ `git describe --always` _with any value you want_
 .docker/cmd/artisan.sh migrate:fresh --seeder=UiSampleDatabaseSeeder
 ```
 
-<small>***OPTIONAL***</small>:
-If you have a database dump file, you can load it with this command:
+### Load database backup
+If you have a database dump/backup file, you can load it with this command:
 ```bash
 .docker/cmd/mysql.sh < /path/to/file.sql
 ```
-`.docker/cmd/mysql.sh -i` can be used just like the typical `mysql` command, but is run within the mysql container
+
+Alternatively, you may wish to load the dump/backup sql files by copying the mysql dump file into the `database/snapshots/` directory and running the `snapshot:load` command.
+For example:
+```bash
+cp /path/to/file.sql database/snapshots/dump-file.sql
+.docker/cmd/artisan.sh snapshot:load dump-file
+```
 
 ### Tear-down
 ```bash
