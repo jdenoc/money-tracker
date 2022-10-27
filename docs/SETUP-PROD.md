@@ -90,11 +90,28 @@ php artisan view:cache
 </p>
 </details>
 
+<details><summary><strong>Setup monitoring</strong></summary>
+<p>
+
+Setup schedule monitoring. Requires [tasks to be scheduled](#scheduled-task-setup).
+```bash
+php artisan schedule-monitor:sync
+```
+This will also start health-check monitoring.
+
+</p>
+</details>
+
 
 ---
 
 ### Database Setup
 This is the exact same process as we do for our Local/dev setup. See instructions [here](SETUP-LOCAL.md#database-setup).
+
+---
+
+### Scheduled Task Setup
+For an ongoing _healthy_ application we should run some scheduled tasks. See instructions [here](SETUP-TASKS.md).
 
 ---
 

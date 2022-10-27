@@ -4,6 +4,11 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Spatie\DbSnapshots\Commands\Cleanup as SnapshotCleanup;
+use Spatie\DbSnapshots\Commands\Create as SnapshotCreate;
+use Spatie\Health\Commands\RunHealthChecksCommand;
+use Spatie\Health\Commands\ScheduleCheckHeartbeatCommand;
+use Spatie\ScheduleMonitor\Models\MonitoredScheduledTaskLogItem;
 
 class Kernel extends ConsoleKernel {
 
@@ -12,10 +17,7 @@ class Kernel extends ConsoleKernel {
      *
      * @var array
      */
-    protected $commands = [
-        Commands\AccountTotalSanityCheck::class,
-        Commands\ClearTmpUploads::class,
-    ];
+    protected $commands = [];
 
     /**
      * Define the application's command schedule.
@@ -23,14 +25,16 @@ class Kernel extends ConsoleKernel {
      * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
      */
     protected function schedule(Schedule $schedule){
-        // make sure entry totals add up to account totals
-        $schedule->command("sanity-check:account-total")->dailyAt("03:17");
-        // clear contents of storage/app/tmp-uploads/
-        $schedule->command('storage:clear-tmp-uploads')->daily();
-        // database backup
-        $schedule->command('snapshot:create '.date('Ymd.His.e').' --compress')->dailyAt("02:15");
-        // clear stale backups
-        $schedule->command('snapshot:cleanup --keep=30')->dailyAt("02:45");
+        $schedule->command(Commands\AccountTotalSanityCheck::class)->dailyAt("03:17");
+        $schedule->command(Commands\ClearTmpUploads::class)->daily();
+        $schedule->command(SnapshotCreate::class,[date('Ymd.His.e'), '--compress'])->dailyAt("02:15")
+            ->monitorName("snapshot:create {date} --compress"); // specifically used for scheduler monitoring
+        $schedule->command(SnapshotCleanup::class, ['--keep=30'])->dailyAt("02:45");
+        $schedule->command('model:prune', ['--model' => MonitoredScheduledTaskLogItem::class])->dailyAt("01:13")
+            ->description("Clear old schedule monitoring logs");
+        $schedule->command(RunHealthChecksCommand::class)->everyMinute();
+        $schedule->command(ScheduleCheckHeartbeatCommand::class)->everyMinute()
+            ->description('Health Check for scheduler');
     }
 
     /**
