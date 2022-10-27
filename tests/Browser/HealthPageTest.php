@@ -7,6 +7,13 @@ use Facebook\WebDriver\WebDriverBy;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
 
+/**
+ * Class HealthPageTest
+ *
+ * @package Tests\Browser
+ *
+ * @group demo
+ */
 class HealthPageTest extends DuskTestCase {
 
     use HealthCheck;
