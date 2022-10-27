@@ -79,6 +79,9 @@ php artisan app:version $MOST_RECENT_TAG
 # setup new cache
 php artisan optimize
 php artisan view:cache
+
+# re-sync schedule monitoring
+php artisan schedule-monitor:sync
 ```
 
 ---

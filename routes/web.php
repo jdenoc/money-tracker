@@ -6,6 +6,8 @@ use App\Http\Controllers\Web\HomeController;
 use App\Http\Controllers\Web\SettingsController;
 use App\Http\Controllers\Web\StatsController;
 use Illuminate\Support\Facades\Route;
+use Spatie\Health\Http\Controllers\HealthCheckResultsController;
+use Spatie\Health\Http\Controllers\HealthCheckJsonResultsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,3 +29,5 @@ Route::get('/attachment/{uuid}', [AttachmentController::class, 'display']);
 Route::post('/attachment/upload', [AttachmentController::class, 'upload']);
 Route::delete('/attachment/upload', [AttachmentController::class, 'deleteUpload']);
 Route::post('/export', ExportsController::class);
+Route::get('/health', HealthCheckResultsController::class);
+Route::get('/health.json', HealthCheckJsonResultsController::class);
