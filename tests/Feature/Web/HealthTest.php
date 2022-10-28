@@ -33,4 +33,5 @@ class HealthTest extends TestCase {
             $response->assertJsonFragment(['label'=>$health_info_label]);
         }
     }
+
 }
