@@ -1,4 +1,4 @@
-FROM selenium/standalone-chrome:4.2
+FROM selenium/standalone-chrome:4.5.3
 
 # health-check
 COPY --chown=seluser .docker/healthcheck/selenium-health-check.sh /home/seluser/selenium-health-check
