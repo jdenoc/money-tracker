@@ -231,9 +231,7 @@ jobs:
         if: failure()
         with:
           name: ${{ github.sha }}-unit
-          path: |
-            storage/logs/*.log
-            database/snapshots/*.sql
+          path: ${{ needs.pre-build.outputs.failure-upload-paths }}
           retention-days: 10
 
   tests-e2e-demo:
