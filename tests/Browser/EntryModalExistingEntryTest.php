@@ -7,6 +7,7 @@ use App\Models\Attachment;
 use App\Models\Entry;
 use App\Models\Tag;
 use App\Traits\EntryTransferKeys;
+use App\Traits\Tests\Dusk\BrowserDateUtil as DuskTraitBrowserDateUtil;
 use App\Traits\Tests\Dusk\EntryModal as DuskTraitEntryModal;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
@@ -39,6 +40,7 @@ use Throwable;
  */
 class EntryModalExistingEntryTest extends DuskTestCase {
 
+    use DuskTraitBrowserDateUtil;
     use DuskTraitEntryModal;
     use DuskTraitLoading;
     use DuskTraitNavbar;
@@ -449,8 +451,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                         $modal_body->keys($this->_selector_modal_entry_field_date, "{backspace}");
                     }
 
-                    $browser_date = $modal_body->getDateFromLocale($modal_body->getBrowserLocale(), $new_value);
-                    $new_value_to_type = $modal_body->processLocaleDateForTyping($browser_date);
+                    $browser_date = $this->getDateFromLocale($this->getBrowserLocale($modal_body), $new_value);
+                    $new_value_to_type = $this->processLocaleDateForTyping($browser_date);
                     $modal_body->type($this->_selector_modal_entry_field_date, $new_value_to_type);
                 })
                 ->with($this->_selector_modal_foot, function(Browser $modal_foot){
@@ -459,7 +461,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_SUCCESS, self::$LABEL_SUCCESS_NOTIFICATION);
             $this->waitForLoadingToStop($browser);
             $browser
-                ->scrollToElement($entry_selector)
+                ->scrollIntoView($entry_selector)
                 ->openExistingEntryModal($entry_selector)
                 ->within($this->_selector_modal_body, function(Browser $modal_body) use (&$old_value, $new_value){
                     $this->assertNotEquals($old_value, $modal_body->value($this->_selector_modal_entry_field_date));
@@ -1113,7 +1115,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
             $class_selectors .= $this->_class_has_attachments;
             $class_selectors .= $this->_class_has_tags;
             $browser
-                ->scrollToElement($selector_entry_id)
+                ->scrollIntoView($selector_entry_id)
                 ->assertVisible($selector_entry_id.$class_selectors)
                 ->within($selector_entry_id.$class_selectors, function(Browser $entry_table_record) use ($tags){
                     $entry_table_record

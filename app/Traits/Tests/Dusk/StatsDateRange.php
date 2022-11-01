@@ -8,6 +8,8 @@ use Laravel\Dusk\Browser;
 
 trait StatsDateRange {
 
+    use BrowserDateUtil;
+
     private static $SELECTOR_DATERANGE_START = '#%s-start-date';
     private static $SELECTOR_DATERANGE_END = '#%s-end-date';
     private static $SELECTOR_LABEL_DATERANGE = "label[for='%s']";
@@ -54,9 +56,9 @@ trait StatsDateRange {
         }
 
         // get locale date string from browser
-        $locale = $browser->getBrowserLocale();
-        $date_in_locale_format = $browser->getDateFromLocale($locale, $date);
-        $browser_locale_date_for_typing = $browser->processLocaleDateForTyping($date_in_locale_format);
+        $locale = $this->getBrowserLocale($browser);
+        $date_in_locale_format = $this->getDateFromLocale($locale, $date);
+        $browser_locale_date_for_typing = $this->processLocaleDateForTyping($date_in_locale_format);
 
         $browser
             ->type($selector, $browser_locale_date_for_typing)

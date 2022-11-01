@@ -9,6 +9,7 @@ trait EntryModal {
 
     use AccountOrAccountTypeSelector;
     use AssertElementColor;
+    use BrowserDateUtil;
     use EntryModalSelectors;
     use FileDragNDrop;
     use TagsInput;
@@ -87,8 +88,8 @@ JS;
     // TODO: click transfer entry button
 
     protected function setEntryModalDate(Browser $modal, string $date){
-        $browser_date = $modal->getDateFromLocale($modal->getBrowserLocale(), $date);
-        $new_value_to_type = $modal->processLocaleDateForTyping($browser_date);
+        $browser_date = $this->getDateFromLocale($this->getBrowserLocale($modal), $date);
+        $new_value_to_type = $this->processLocaleDateForTyping($browser_date);
         $modal->type($this->_selector_modal_entry_field_date, $new_value_to_type);
     }
 
