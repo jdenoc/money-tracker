@@ -5,6 +5,7 @@ namespace Tests\Browser;
 use App\Helpers\CurrencyHelper;
 use App\Models\Account;
 use App\Models\AccountType;
+use App\Traits\Tests\Dusk\BrowserDateUtil as DuskTraitBrowserDateUtil;
 use App\Traits\Tests\Dusk\FilterModal as DuskTraitFilterModal;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
@@ -31,6 +32,7 @@ use Throwable;
  */
 class FilterModalTest extends DuskTestCase {
 
+    use DuskTraitBrowserDateUtil;
     use DuskTraitFilterModal;
     use DuskTraitLoading;
     use DuskTraitNavbar;
@@ -533,8 +535,8 @@ class FilterModalTest extends DuskTestCase {
             $browser
                 // modify all (or at least most) fields
                 ->within($this->_selector_modal_filter.' '.$this->_selector_modal_body, function(Browser $modal){
-                    $time_from_browser = $modal->getBrowserLocaleDate();
-                    $start_date = $modal->processLocaleDateForTyping($time_from_browser);
+                    $time_from_browser = $this->getBrowserLocaleDate($modal);
+                    $start_date = $this->processLocaleDateForTyping($time_from_browser);
 
                     $account_types = $this->getApiAccountTypes();
                     $account_type = $this->faker->randomElement($account_types);
