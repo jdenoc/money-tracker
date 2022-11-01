@@ -1,6 +1,6 @@
 <template>
   <section id="settings-account-types" class="max-w-lg">
-    <h3 class="text-2xl mb-5">Account Types</h3>
+    <h3 class="text-2xl mb-5 scroll-mt-16">Account Types</h3>
     <form class="grid grid-cols-6 gap-2">
       <!-- name -->
       <label for="settings-account-type-name" class="font-medium justify-self-end py-2 col-span-2">Name:</label>

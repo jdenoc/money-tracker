@@ -1,6 +1,6 @@
 <template>
   <section id="settings-tags" class="max-w-lg">
-    <h3 class="text-2xl mb-5">Tags</h3>
+    <h3 class="text-2xl mb-5 scroll-mt-16">Tags</h3>
     <form class="grid grid-cols-6 gap-2">
       <!-- name -->
       <label for="settings-tag-name" class="font-medium justify-self-end py-2">Tag:</label>

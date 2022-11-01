@@ -397,13 +397,13 @@ class SettingsBase extends DuskTestCase {
 
     private function clickSaveButton(Browser $section){
         $section
-            ->scrollToElement(self::$SELECTOR_SETTINGS_HEADER)
+            ->scrollIntoView(self::$SELECTOR_SETTINGS_HEADER)
             ->click(static::$SELECTOR_SETTINGS_FORM_BUTTON_SAVE);
     }
 
     private function clickClearButton(Browser $browser){
         $browser
-            ->scrollToElement(self::$SELECTOR_SETTINGS_HEADER)
+            ->scrollIntoView(self::$SELECTOR_SETTINGS_HEADER)
             ->click(static::$SELECTOR_SETTINGS_FORM_BUTTON_CLEAR)
             ->pause($this->toggleButtonTransitionTimeInMilliseconds());   // wait for toggle button transition to complete;
     }
