@@ -60,7 +60,7 @@ services:
     hostname: selenium.money-tracker
     shm_size: "2g"
     ports:
-      - "5901:5900"   # for VNC
+      - "7900:7900"   # for VNC via browser
     volumes:
       - ./storage/tests/downloads:/home/seluser/Downloads
     environment:
