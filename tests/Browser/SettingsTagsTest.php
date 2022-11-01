@@ -44,7 +44,7 @@ class SettingsTagsTest extends SettingsBase {
      */
     protected function assertFormDefaults(Browser $section){
         $section
-            ->scrollToElement(self::$SELECTOR_SETTINGS_HEADER)
+            ->scrollIntoView(self::$SELECTOR_SETTINGS_HEADER)
             ->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, '');
         $this->assertSaveButtonDisabled($section);
     }
@@ -66,7 +66,7 @@ class SettingsTagsTest extends SettingsBase {
         $this->assertNodeIsOfType($node, Tag::class);
 
         $section
-            ->scrollToElement(self::$SELECTOR_SETTINGS_HEADER)
+            ->scrollIntoView(self::$SELECTOR_SETTINGS_HEADER)
             ->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, $node->name);
         $this->assertSaveButtonDisabled($section);
     }

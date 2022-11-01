@@ -1,6 +1,6 @@
 <template>
   <div>
-    <table id="entry-table" class="mb-1 w-full table-auto">
+    <table id="entry-table" class="mb-1 w-full table-auto scroll-mt-16">
       <thead>
       <tr>
         <th></th>

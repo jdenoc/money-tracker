@@ -1,6 +1,6 @@
 <template>
   <section id="settings-institutions" class="max-w-lg">
-    <h3 class="text-2xl mb-5">Institutions</h3>
+    <h3 class="text-2xl mb-5 scroll-mt-16">Institutions</h3>
     <form class="grid grid-cols-6 gap-2">
       <label for="settings-institution-name" class="font-medium justify-self-end py-2 col-span-2">Name:</label>
       <input id="settings-institution-name" name="name" type="text" class="rounded text-gray-700 col-span-4" autocomplete="off" v-model="form.name" />
