@@ -36,9 +36,9 @@ class PaginationTest extends DuskTestCase {
     const PAGE_NUMBER_ONE = 1;
     const PAGE_NUMBER_TWO = 2;
 
-    private static $ENTRY_COUNT_ONE = 10;   // number of entries needed to be generated for 1 page of results
-    private static $ENTRY_COUNT_TWO;        // number of entries needed to be generated for 2 pages of results; set in constructor
-    private static $ENTRY_COUNT_THREE;      // number of entries needed to be generated for 3 pages of results; set in constructor
+    private static int $ENTRY_COUNT_ONE = 10;   // number of entries needed to be generated for 1 page of results
+    private static int $ENTRY_COUNT_TWO;        // number of entries needed to be generated for 2 pages of results; set in constructor
+    private static int $ENTRY_COUNT_THREE;      // number of entries needed to be generated for 3 pages of results; set in constructor
 
     public function __construct($name = null, array $data = [], $dataName = ''){
         parent::__construct($name, $data, $dataName);
@@ -110,22 +110,18 @@ class PaginationTest extends DuskTestCase {
         $this->assertEquals($entries_page1['count'], $entries_page2['count']);
         $this->assertGreaterThanOrEqual(self::$MAX_ENTRIES_IN_RESPONSE*2, $entries_page1['count']);
         $this->assertLessThan(self::$MAX_ENTRIES_IN_RESPONSE*3, $entries_page2['count']);
+        unset($entries_page1['count'], $entries_page2['count']);
 
         $this->browse(function (Browser $browser) use ($entries_page1, $entries_page2){
-            unset($entries_page1['count'], $entries_page2['count']);
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
-            $browser
-                ->assertVisible($this->_selector_pagination_btn_next)
-                ->click($this->_selector_pagination_btn_next);
-            $this->waitForLoadingToStop($browser);
-            $browser->assertVisible($this->_selector_pagination_btn_prev);
+            $this->clickNextButton($browser);
+
             $this->assertEntriesDisplayed($browser, $entries_page1);
 
-            $browser
-                ->assertVisible($this->_selector_pagination_btn_next)
-                ->click($this->_selector_pagination_btn_next);
-            $this->waitForLoadingToStop($browser);
+            $browser->assertVisible($this->_selector_pagination_btn_prev);
+
+            $this->clickNextButton($browser);
             $browser
                 ->assertVisible($this->_selector_pagination_btn_prev)
                 ->assertMissing($this->_selector_pagination_btn_next);
@@ -148,14 +144,11 @@ class PaginationTest extends DuskTestCase {
         $this->browse(function (Browser $browser) use ($entries){
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
-            $browser->assertVisible($this->_selector_pagination_btn_next);
 
             $this->assertEntriesDisplayed($browser, $entries);
 
-            $browser->click($this->_selector_pagination_btn_next);
-            $this->waitForLoadingToStop($browser);
-            $browser->click($this->_selector_pagination_btn_prev);
-            $this->waitForLoadingToStop($browser);
+            $this->clickNextButton($browser);
+            $this->clickPrevButton($browser);
 
             $this->assertEntriesDisplayed($browser, $entries);
         });
@@ -175,8 +168,7 @@ class PaginationTest extends DuskTestCase {
         $this->browse(function(Browser $browser) use ($entries_original){
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
-            $browser->click($this->_selector_pagination_btn_next);
-            $this->waitForLoadingToStop($browser);
+            $this->clickNextButton($browser);
 
             $entries_count = $entries_original['count'];
             unset($entries_original['count']);
@@ -227,10 +219,7 @@ class PaginationTest extends DuskTestCase {
 
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
-            $browser
-                ->assertVisible($this->_selector_pagination_btn_next)
-                ->click($this->_selector_pagination_btn_next);
-            $this->waitForLoadingToStop($browser);
+            $this->clickNextButton($browser);
 
             $this->assertEntriesDisplayed($browser, $entries_original);
 
@@ -311,9 +300,25 @@ class PaginationTest extends DuskTestCase {
         });
     }
 
-    private function entryOverrideAttributes(){
+    private function entryOverrideAttributes():array{
         $account_type_id = collect($this->_account_types)->pluck('id')->random(1)->first();
         return ['disabled'=>0, 'account_type_id'=>$account_type_id];
+    }
+
+    private function clickNextButton(Browser $browser){
+        $browser
+            ->scrollIntoView($this->_selector_pagination_btn_next)
+            ->assertVisible($this->_selector_pagination_btn_next)
+            ->click($this->_selector_pagination_btn_next);
+        $this->waitForLoadingToStop($browser);
+    }
+
+    private function clickPrevButton(Browser $browser){
+        $browser
+            ->scrollIntoView($this->_selector_pagination_btn_prev)
+            ->assertVisible($this->_selector_pagination_btn_prev)
+            ->click($this->_selector_pagination_btn_prev);
+        $this->waitForLoadingToStop($browser);
     }
 
 }
