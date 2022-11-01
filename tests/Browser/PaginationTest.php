@@ -4,6 +4,8 @@ namespace Tests\Browser;
 
 use App\Models\Entry;
 use App\Traits\MaxEntryResponseValue;
+use App\Traits\Tests\Dusk\BrowserDateUtil as DuskTraitBrowserDateUtil;
+use App\Traits\Tests\Dusk\BrowserVisibilityUtil as DustTraitBrowserVisibilityUtil;
 use App\Traits\Tests\Dusk\EntryModal as DuskTraitEntryModal;
 use App\Traits\Tests\Dusk\FilterModal as DuskTraitFilterModal;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
@@ -25,6 +27,8 @@ use Throwable;
  */
 class PaginationTest extends DuskTestCase {
 
+    use DuskTraitBrowserDateUtil;
+    use DustTraitBrowserVisibilityUtil;
     use DuskTraitEntryModal;
     use DuskTraitFilterModal;
     use DuskTraitLoading;
@@ -175,7 +179,7 @@ class PaginationTest extends DuskTestCase {
             $this->assertEntriesDisplayed($browser, $entries_original);
 
             $new_entry_date = date("Y-m-d", strtotime($entries_original[0]['entry_date'].' - 1 day'));
-            $new_entry_date_to_type = $browser->processLocaleDateForTyping($browser->getDateFromLocale($browser->getBrowserLocale(), $new_entry_date));
+            $new_entry_date_to_type = $this->processLocaleDateForTyping($this->getDateFromLocale($this->getBrowserLocale($browser), $new_entry_date));
 
             $this->openNewEntryModal($browser);
             $browser
@@ -224,7 +228,7 @@ class PaginationTest extends DuskTestCase {
             $this->assertEntriesDisplayed($browser, $entries_original);
 
             $new_entry_date = date("Y-m-d", strtotime($entries_original[0]['entry_date'].' - 1 day'));
-            $new_entry_date_to_type = $browser->processLocaleDateForTyping($browser->getDateFromLocale($browser->getBrowserLocale(), $new_entry_date));
+            $new_entry_date_to_type = $this->processLocaleDateForTyping($this->getDateFromLocale($this->getBrowserLocale($browser), $new_entry_date));
 
             $this->openTransferModal($browser);
             $browser
@@ -263,13 +267,13 @@ class PaginationTest extends DuskTestCase {
             $browser
                 ->within($this->_selector_modal_filter.' '.$this->_selector_modal_head, function(Browser $modal){
                     $filter_value = date("Y-m-d", strtotime("+10 day"));
-                    $browser_date = $modal->getDateFromLocale($modal->getBrowserLocale(), $filter_value);
-                    $filter_value = $modal->processLocaleDateForTyping($browser_date);
+                    $browser_date = $this->getDateFromLocale($this->getBrowserLocale($modal), $filter_value);
+                    $filter_value = $this->processLocaleDateForTyping($browser_date);
                     $modal->type($this->_selector_modal_filter_field_start_date, $filter_value);
 
                     $filter_value = date("Y-m-d");
-                    $browser_date = $modal->getDateFromLocale($modal->getBrowserLocale(), $filter_value);
-                    $filter_value = $modal->processLocaleDateForTyping($browser_date);
+                    $browser_date = $this->getDateFromLocale($this->getBrowserLocale($modal), $filter_value);
+                    $filter_value = $this->processLocaleDateForTyping($browser_date);
                     $modal->type($this->_selector_modal_filter_field_end_date, $filter_value);
                 })
                 ->within($this->_selector_modal_filter.' '.$this->_selector_modal_foot, function(Browser $modal){
@@ -291,7 +295,7 @@ class PaginationTest extends DuskTestCase {
     private function assertEntriesDisplayed(Browser $browser, $entries){
         $browser->within($this->_selector_table_body, function(Browser $table) use ($entries){
             foreach($entries as $entry){
-                $entry_row_selector = "#entry-".$entry['id'];
+                $entry_row_selector = sprintf(self::$PLACEHOLDER_SELECTOR_EXISTING_ENTRY_ROW, $entry['id']);
                 $table
                     ->assertSeeIn($entry_row_selector.' '.$this->_selector_table_row_date, $entry['entry_date'])
                     ->assertSeeIn($entry_row_selector.' '.$this->_selector_table_row_memo, $entry['memo'])
@@ -311,6 +315,8 @@ class PaginationTest extends DuskTestCase {
             ->assertVisible($this->_selector_pagination_btn_next)
             ->click($this->_selector_pagination_btn_next);
         $this->waitForLoadingToStop($browser);
+        // should scroll to top of page
+        $this->isVisibleInViewport($browser, $this->_selector_table.' '.$this->_selector_table_head);
     }
 
     private function clickPrevButton(Browser $browser){
@@ -319,6 +325,8 @@ class PaginationTest extends DuskTestCase {
             ->assertVisible($this->_selector_pagination_btn_prev)
             ->click($this->_selector_pagination_btn_prev);
         $this->waitForLoadingToStop($browser);
+        // should scroll to/remain at the bottom of the page
+        $this->isVisibleInViewport($browser, $this->_selector_pagination_btn_next);
     }
 
 }

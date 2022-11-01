@@ -4,6 +4,7 @@ namespace Tests\Browser;
 
 use App\Models\Entry;
 use App\Traits\EntryTransferKeys;
+use App\Traits\Tests\Dusk\BrowserDateUtil as DuskTraitBrowserDateUtil;
 use App\Traits\Tests\Dusk\EntryModal as DustTraitEntryModal;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
@@ -26,6 +27,7 @@ use Throwable;
  */
 class UpdateAccountTotalTest extends DuskTestCase {
 
+    use DuskTraitBrowserDateUtil;
     use DustTraitEntryModal;
     use DuskTraitLoading;
     use DuskTraitNavbar;
@@ -126,7 +128,7 @@ class UpdateAccountTotalTest extends DuskTestCase {
 
             // update an existing entry
             $entry = $this->getEntry($this->_account_type_id);
-            $entry_selector = "#entry-".$entry['id'];
+            $entry_selector = sprintf(self::$PLACEHOLDER_SELECTOR_EXISTING_ENTRY_ROW, $entry['id']);
 
             $switch_text = '';
             $browser
@@ -166,7 +168,7 @@ class UpdateAccountTotalTest extends DuskTestCase {
 
             // update an existing entry
             $entry = $this->getEntry($this->_account_type_id);
-            $entry_selector = "#entry-".$entry['id'];
+            $entry_selector = sprintf(self::$PLACEHOLDER_SELECTOR_EXISTING_ENTRY_ROW, $entry['id']);
 
             $new_value = 10.00;
             $browser
@@ -204,7 +206,7 @@ class UpdateAccountTotalTest extends DuskTestCase {
 
             // delete an existing entry
             $entry = $this->getEntry($this->_account_type_id);
-            $entry_selector = "#entry-".$entry['id'];
+            $entry_selector = sprintf(self::$PLACEHOLDER_SELECTOR_EXISTING_ENTRY_ROW, $entry['id']);
 
             $browser
                 ->openExistingEntryModal($entry_selector)
@@ -301,8 +303,8 @@ class UpdateAccountTotalTest extends DuskTestCase {
                 'to_account_type_id'=>($account['to']['account_type_id']),
             ];
             // get locale date string from browser
-            $browser_locale_date = $browser->getBrowserLocaleDate();
-            $browser_locale_date_for_typing = $browser->processLocaleDateForTyping($browser_locale_date);
+            $browser_locale_date = $this->getBrowserLocaleDate($browser);
+            $browser_locale_date_for_typing = $this->processLocaleDateForTyping($browser_locale_date);
 
             $this->openTransferModal($browser);
             $browser

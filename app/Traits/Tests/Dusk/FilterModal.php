@@ -10,6 +10,7 @@ use Laravel\Dusk\Browser;
 trait FilterModal {
 
     use AccountOrAccountTypeTogglingSelector;
+    use BrowserDateUtil;
     use TagsInput;
     use WithTailwindColors;
 
@@ -72,8 +73,8 @@ trait FilterModal {
             case $this->_selector_modal_filter_field_start_date:
             case $this->_selector_modal_filter_field_end_date:
                 $filter_value = ['actual'=>$this->faker->dateTimeBetween('-15 months', '-1 month')->format("Y-m-d")];
-                $browser_date = $modal->getDateFromLocale($modal->getBrowserLocale(), $filter_value['actual']);
-                $filter_value['typed'] = $modal->processLocaleDateForTyping($browser_date);
+                $browser_date = $this->getDateFromLocale($this->getBrowserLocale($modal), $filter_value['actual']);
+                $filter_value['typed'] = $this->processLocaleDateForTyping($browser_date);
                 $modal->type($filter_input_selector, $filter_value['typed']);
                 break;
 
