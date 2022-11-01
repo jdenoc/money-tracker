@@ -1,5 +1,5 @@
 <template>
-  <tr class="border bg-white hover:bg-gray-50"
+  <tr class="border bg-white hover:bg-gray-50 scroll-mt-16"
       v-bind:id="'entry-'+id"
       v-bind:class="{
         'text-gray-500': isFutureEntry,

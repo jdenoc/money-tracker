@@ -1,5 +1,5 @@
 <template>
-  <div id="settings-display" class="ml-2 w-4/5 px-12 pt-4 mt-4">
+  <div id="settings-display" class="ml-2 w-4/5 px-12 pt-4 mt-4 scroll-mt-16">
     <settings-home v-if="noSettingsAreSelected"></settings-home>
     <settings-institutions v-if="isVisibleSettings.institutions"></settings-institutions>
     <settings-accounts v-if="isVisibleSettings.accounts"></settings-accounts>

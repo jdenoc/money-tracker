@@ -1,10 +1,10 @@
 <template>
   <section id="settings-accounts" class="max-w-lg">
-    <h3 class="text-2xl mb-5">Accounts</h3>
+    <h3 class="text-2xl mb-5 scroll-mt-16">Accounts</h3>
     <form class="grid grid-cols-6 gap-2">
       <!-- name -->
       <label for="settings-account-name" class="font-medium justify-self-end py-2 col-span-2">Name:</label>
-      <input id="settings-account-name" name="name" type="text" class="rounded text-gray-700 col-span-4" autocomplete="off" o v-model="form.name" />
+      <input id="settings-account-name" name="name" type="text" class="rounded text-gray-700 col-span-4" autocomplete="off" v-model="form.name" />
 
       <!-- institution -->
       <label for="settings-account-institution" class="font-medium justify-self-end py-2 col-span-2">Institution:</label>

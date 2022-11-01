@@ -74,7 +74,7 @@ class SettingsAccountTypesTest extends SettingsBase {
      */
     protected function assertFormDefaults(Browser $section){
         $section
-            ->scrollToElement(self::$SELECTOR_SETTINGS_HEADER)
+            ->scrollIntoView(self::$SELECTOR_SETTINGS_HEADER)
 
             ->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, '')
             ->waitUntilMissing(self::$SELECTOR_SETTINGS_FORM_LOADING_TYPE, self::$WAIT_SECONDS)
@@ -137,7 +137,7 @@ class SettingsAccountTypesTest extends SettingsBase {
         $this->assertNodeIsOfType($node, AccountType::class);
 
         $section
-            ->scrollToElement(self::$SELECTOR_SETTINGS_HEADER)
+            ->scrollIntoView(self::$SELECTOR_SETTINGS_HEADER)
 
             ->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, $node->name)
             ->waitUntilMissing(self::$SELECTOR_SETTINGS_FORM_LOADING_TYPE, self::$WAIT_SECONDS)
