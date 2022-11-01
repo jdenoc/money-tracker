@@ -60,7 +60,6 @@ export default {
     data: function(){
       return {
         entries: new Entries(),
-        pageMax: 50
       }
     },
     computed: {
@@ -70,8 +69,11 @@ export default {
       currentPage: function(){
         return Store.getters.currentPage;
       },
+      entryCountMax: function(){
+        return 50;
+      },
       isNextButtonVisible: function(){
-        return this.entries.count > this.pageMax && this.pageMax*(this.currentPage+1) < this.entries.count
+        return this.entries.count > this.entryCountMax && this.entryCountMax*(this.currentPage+1) < this.entries.count
       },
       isPrevButtonVisible: function(){
         return this.currentPage !== 0 && !_.isNull(this.currentPage);
@@ -110,18 +112,26 @@ export default {
       },
       nextPage: function(){
         this.setPageNumber(this.currentPage+1);
-        this.updateEntriesTable(this.currentPage, this.currentFilter);
+        this.updateEntriesTable(this.currentPage, this.currentFilter)
+          .finally(this.scrollTableTopIntoView);
       },
       prevPage: function(){
         this.setPageNumber(this.currentPage-1);
-        this.updateEntriesTable(this.currentPage, this.currentFilter);
+        this.updateEntriesTable(this.currentPage, this.currentFilter)
+          .finally(this.scrollPaginationButtonsIntoView);
+      },
+      scrollPaginationButtonsIntoView(){
+        document.querySelector('#pagination-buttons').scrollIntoView();
+      },
+      scrollTableTopIntoView(){
+        document.querySelector('#entry-table').scrollIntoView();
       },
       setPageNumber: function(newPageNumber){
         this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
         Store.dispatch('currentPage', newPageNumber);
       },
       updateEntriesTable: function(pageNumber, filterParameters){
-        this.entries.fetch(pageNumber, filterParameters)
+        return this.entries.fetch(pageNumber, filterParameters)
             .then(function(notification){
               this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, notification);
             }.bind(this))
@@ -139,7 +149,8 @@ export default {
           Store.dispatch('currentFilter', payload.filterParameters);
           this.setPageNumber(payload.pageNumber);
         }
-        this.updateEntriesTable(this.currentPage, this.currentFilter);
+        this.updateEntriesTable(this.currentPage, this.currentFilter)
+            .finally(this.scrollTableTopIntoView);
       },
     },
     created: function(){
