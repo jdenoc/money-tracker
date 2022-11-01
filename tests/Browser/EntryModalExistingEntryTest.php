@@ -56,12 +56,10 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     const INI_POSTMAXSIZE = 'post_max_size';
     const INI_UPLOADMAXFILESIZE = 'upload_max_filesize';
 
-    private static $HTACCESS_FILEPATH = 'public/.htaccess';
-    private static $BKUP_EXT = '.bkup';
+    private static string $HTACCESS_FILEPATH = 'public/.htaccess';
+    private static string $BKUP_EXT = '.bkup';
 
-    private static $TEST_NAME_OVERRIDE_HTACCESS = 'testAttemptToAddAnAttachmentTooLargeToAnExistingEntry';
-
-    private static $LABEL_SUCCESS_NOTIFICATION = "Entry updated";
+    private static string $LABEL_SUCCESS_NOTIFICATION = "Entry updated";
 
     private $_class_unconfirmed = '.unconfirmed';
     private $_class_is_confirmed = '.is-confirmed';
@@ -72,18 +70,24 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     private $_class_existing_attachment = "existing-attachment";
 
     private $_cached_entries_collection = [];
+    private $_tests_that_override_htaccess = [];
+
+    public function __construct(?string $name = null, array $data = [], $dataName = ''){
+        parent::__construct($name, $data, $dataName);
+        $this->_tests_that_override_htacces[] = 'testAttemptToAddAnAttachmentTooLargeToAnExistingEntry';
+    }
 
     public function setUp(): void{
         parent::setUp();
         $this->_cached_entries_collection = [];
-        if($this->getName(false) === self::$TEST_NAME_OVERRIDE_HTACCESS){
+        if(in_array($this->getName(false), $this->_tests_that_override_htacces)){
             $this->addRulesToHtaccessToDisableDisplayErrors();
         }
         $this->initEntryModalColours();
     }
 
     public function tearDown(): void{
-        if($this->getName(false) === self::$TEST_NAME_OVERRIDE_HTACCESS){
+        if(in_array($this->getName(false), $this->_tests_that_override_htacces)){
             $this->revertHtaccessToOriginalState();
             // remove any files that any tests may have created
             Storage::disk(self::$TEST_STORAGE_DISK_NAME)->delete(
