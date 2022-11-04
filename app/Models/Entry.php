@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Query\Builder;
 
 class Entry extends BaseModel {
-
     use EntryFilterKeys;
     use HasFactory;
 
@@ -35,7 +34,6 @@ class Entry extends BaseModel {
     protected $dates = [
         'disabled_stamp'
     ];
-
     private static $required_entry_fields = [
         'account_type_id',
         'confirm',
@@ -49,7 +47,7 @@ class Entry extends BaseModel {
     /**
      * entries.account_type_id = account_types.id
      */
-    public function account_type(){
+    public function account_type() {
         return $this->belongsTo('App\Models\AccountType', 'account_type_id');
     }
 
@@ -57,19 +55,19 @@ class Entry extends BaseModel {
      * entries.id = entry_tags.entry_id
      * entry_tags.tag_id = tags.id
      */
-    public function tags(){
+    public function tags() {
         return $this->belongsToMany('App\Models\Tag', 'entry_tags', 'entry_id', 'tag_id');
     }
 
     /**
      * attachments.entry_id = entries.id
      */
-    public function attachments(){
+    public function attachments() {
         return $this->hasMany('App\Models\Attachment');
     }
 
-    public function save(array $options = []){
-        if($this->exists){
+    public function save(array $options = []) {
+        if ($this->exists) {
             // if the entry already exists
             // remove that original value from the total of originally associated account
             $actual_entry_value = ($this->getOriginal('expense') ? -1 : 1)*$this->getOriginal('entry_value');
@@ -80,7 +78,7 @@ class Entry extends BaseModel {
 
         $saved_entry = parent::save($options);
 
-        if(!$this->disabled){
+        if (!$this->disabled) {
             // add new entry value to account total
             $actual_entry_value = (($this->expense) ? -1 : 1) * $this->entry_value;
             $this->account_type()->first()->account()->first()->update_total($actual_entry_value);
@@ -88,13 +86,13 @@ class Entry extends BaseModel {
         return $saved_entry;
     }
 
-    public function disable(){
+    public function disable() {
         $this->disabled = true;
         $this->disabled_stamp = new Carbon();
         $this->save();
     }
 
-    public static function get_entry_with_tags_and_attachments($entry_id){
+    public static function get_entry_with_tags_and_attachments($entry_id) {
         return Entry::with(['tags', 'attachments'])
             ->where('id', $entry_id)
             ->first();
@@ -108,7 +106,7 @@ class Entry extends BaseModel {
      * @param string $sort_direction
      * @return \Illuminate\Support\Collection
      */
-    public static function get_collection_of_non_disabled_entries(array $filters = [], int $limit=10, int $offset=0, string $sort_by=self::DEFAULT_SORT_PARAMETER, string $sort_direction=self::DEFAULT_SORT_DIRECTION){
+    public static function get_collection_of_non_disabled_entries(array $filters = [], int $limit=10, int $offset=0, string $sort_by=self::DEFAULT_SORT_PARAMETER, string $sort_direction=self::DEFAULT_SORT_DIRECTION) {
         $entries_query = self::build_entry_query($filters);
         // this makes sure that the correct ID is present if a JOIN is required
         $entries_query->distinct()->select("entries.*");
@@ -121,7 +119,7 @@ class Entry extends BaseModel {
      * @param array $filters
      * @return int
      */
-    public static function count_non_disabled_entries(array $filters = []):int{
+    public static function count_non_disabled_entries(array $filters = []): int {
         $entries_query = self::build_entry_query($filters);
         // due to the risk of failure with potentially adding GROUP BY to the query
         // we're going to use the generated query as a subquery and count from that
@@ -132,7 +130,7 @@ class Entry extends BaseModel {
      * @param array $filters
      * @return mixed
      */
-    private static function build_entry_query(array $filters){
+    private static function build_entry_query(array $filters) {
         $entries_query = Entry::where('entries.disabled', 0);
         return self::filter_entry_collection($entries_query, $filters);
     }
@@ -142,9 +140,9 @@ class Entry extends BaseModel {
      * @param array $filters
      * @return mixed
      */
-    private static function filter_entry_collection($entries_query, array $filters){
-        foreach($filters as $filter_name => $filter_constraint){
-            switch($filter_name){
+    private static function filter_entry_collection($entries_query, array $filters) {
+        foreach ($filters as $filter_name => $filter_constraint) {
+            switch($filter_name) {
                 case self::$FILTER_KEY_START_DATE:
                     $entries_query->where('entries.entry_date', '>=', $filter_constraint);
                     break;
@@ -161,30 +159,29 @@ class Entry extends BaseModel {
                     $entries_query->where('entries.account_type_id', $filter_constraint);
                     break;
                 case self::$FILTER_KEY_EXPENSE:
-                    if($filter_constraint === true){
+                    if ($filter_constraint === true) {
                         $entries_query->where('entries.expense', 1);
-                    }
-                    elseif($filter_constraint === false) {
+                    } elseif ($filter_constraint === false) {
                         $entries_query->where('entries.expense', 0);
                     }
                     break;
                 case self::$FILTER_KEY_UNCONFIRMED:
-                    if($filter_constraint === true){
+                    if ($filter_constraint === true) {
                         $entries_query->where('entries.confirm', 0);
                     }
                     break;
                 case self::$FILTER_KEY_ACCOUNT:
-                    $entries_query->join('account_types', static function($join) use ($filter_constraint){
+                    $entries_query->join('account_types', static function($join) use ($filter_constraint) {
                         $join->on('entries.account_type_id', '=', 'account_types.id')
                             ->where('account_types.account_id', $filter_constraint);
                     });
                     break;
                 case self::$FILTER_KEY_ATTACHMENTS:
-                    if($filter_constraint === true){
+                    if ($filter_constraint === true) {
                         // to get COUNT(attachment.id) > 0 use:
                         // INNER JOIN attachments ON attachments.entry_id=entries.id
                         $entries_query->join('attachments', 'entries.id', '=', 'attachments.entry_id');
-                    } elseif($filter_constraint === false) {
+                    } elseif ($filter_constraint === false) {
                         // to get COUNT(attachments.id) == 0 use:
                         // LEFT JOIN attachments
                         //   ON attachments.entry_id=entries.id
@@ -198,7 +195,7 @@ class Entry extends BaseModel {
                     //   ON entry_tags.entry_id=entries.id
                     //   AND entry_tags.tag_id IN ($tag_ids)
                     $tag_ids = (is_array($filter_constraint)) ? $filter_constraint : [$filter_constraint];
-                    $entries_query->rightJoin('entry_tags', static function($join) use ($tag_ids){
+                    $entries_query->rightJoin('entry_tags', static function($join) use ($tag_ids) {
                         $join->on('entry_tags.entry_id', '=', 'entries.id')
                             ->whereIn('entry_tags.tag_id', $tag_ids);
                     })
@@ -206,10 +203,10 @@ class Entry extends BaseModel {
                         ->havingRaw('count(entries.id) >= ?', [count($tag_ids)]);
                     break;
                 case self::$FILTER_KEY_IS_TRANSFER:
-                    if($filter_constraint === true){
+                    if ($filter_constraint === true) {
                         // WHERE entries.transfer_entry_id IS NOT NULL
                         $entries_query->whereNotNull("transfer_entry_id");
-                    } elseif($filter_constraint === false){
+                    } elseif ($filter_constraint === false) {
                         // WHERE entries.transfer_entry_id IS NULL
                         $entries_query->whereNull("transfer_entry_id");
                     }
@@ -223,14 +220,14 @@ class Entry extends BaseModel {
     /**
      * @return bool
      */
-    public function has_attachments():bool{
+    public function has_attachments(): bool {
         return $this->attachments()->count() > 0;
     }
 
-    public function has_tags():bool{
-        try{
+    public function has_tags(): bool {
+        try {
             return $this->tags()->count() > 0;
-        } catch(\Exception $e){
+        } catch(\Exception $e) {
             error_log($e);
             return false;
         }
@@ -239,16 +236,16 @@ class Entry extends BaseModel {
     /**
      * @return array
      */
-    public function get_tag_ids():array{
+    public function get_tag_ids(): array {
         $collection_of_tags = $this->tags()->getResults();
-        if(is_null($collection_of_tags) || $collection_of_tags->isEmpty()){
+        if (is_null($collection_of_tags) || $collection_of_tags->isEmpty()) {
             return [];
         } else {
             return $collection_of_tags->pluck('pivot.tag_id')->toArray();
         }
     }
 
-    public static function get_fields_required_for_creation():array{
+    public static function get_fields_required_for_creation(): array {
         $fields = self::$required_entry_fields;
         unset($fields[array_search('disabled', $fields)]);
         // using array_values here to reset the array index
@@ -256,7 +253,7 @@ class Entry extends BaseModel {
         return array_values($fields);
     }
 
-    public static function get_fields_required_for_update():array{
+    public static function get_fields_required_for_update(): array {
         return self::$required_entry_fields;
     }
 

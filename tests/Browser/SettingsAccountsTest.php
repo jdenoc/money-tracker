@@ -16,7 +16,6 @@ use Laravel\Dusk\Browser;
  * @group settings-accounts
  */
 class SettingsAccountsTest extends SettingsBase {
-
     use DuskTraitToggleButton;
 
     protected static string $SELECTOR_SETTINGS_NAV_ELEMENT = 'li.settings-nav-option:nth-child(2)';
@@ -57,18 +56,18 @@ class SettingsAccountsTest extends SettingsBase {
     private string $color_currency_active;
     private string $color_currency_inactive;
 
-    public function setUp():void {
+    public function setUp(): void {
         parent::setUp();
         $this->default_currency = CurrencyHelper::getCurrencyDefaults();
     }
 
-    protected function initSettingsColors(){
+    protected function initSettingsColors() {
         parent::initSettingsColors();
         $this->color_currency_active = $this->tailwindColors->blue(600);
         $this->color_currency_inactive = $this->tailwindColors->white();
     }
 
-    public function providerSaveExistingSettingNode():array{
+    public function providerSaveExistingSettingNode(): array {
         return [
             'name'=>[self::$SELECTOR_SETTINGS_FORM_INPUT_NAME],
             'institution'=>[self::$SELECTOR_SETTINGS_FORM_SELECT_INSTITUTION],
@@ -87,7 +86,7 @@ class SettingsAccountsTest extends SettingsBase {
      *   Active State: "Active"
      *   Save button [disabled]
      */
-    protected function assertFormDefaults(Browser $section){
+    protected function assertFormDefaults(Browser $section) {
         $section
             ->scrollIntoView(self::$SELECTOR_SETTINGS_HEADER)
 
@@ -109,7 +108,7 @@ class SettingsAccountsTest extends SettingsBase {
         $this->assertSaveButtonDisabled($section);
     }
 
-    protected function assertFormDefaultsFull(Browser $section){
+    protected function assertFormDefaultsFull(Browser $section) {
         $section
             ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_LABEL_NAME, self::$LABEL_SETTINGS_FORM_INPUT_NAME)
             ->assertVisible(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME)
@@ -122,11 +121,11 @@ class SettingsAccountsTest extends SettingsBase {
 
             ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_LABEL_CURRENCY, 'Currency:');
         $currencies = CurrencyHelper::fetchCurrencies();
-        foreach($currencies as $currency){
+        foreach ($currencies as $currency) {
             $radio_selector = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_FORM_RADIO_CURRENCY_INPUT, $currency->label);
             $section
                 ->assertInputValue($radio_selector, $currency->code);
-            if($currency->code === $this->default_currency->code){
+            if ($currency->code === $this->default_currency->code) {
                 $section
                     ->assertRadioSelected($radio_selector, $currency->code)
                     ->assertSeeIn($radio_selector.'+span', $currency->code);
@@ -163,7 +162,7 @@ class SettingsAccountsTest extends SettingsBase {
         $this->assertSaveButtonDefault($section);
     }
 
-    protected function assertFormWithExistingData(Browser $section, BaseModel $node){
+    protected function assertFormWithExistingData(Browser $section, BaseModel $node) {
         $this->assertNodeIsOfType($node, Account::class);
         $currency = CurrencyHelper::fetchCurrencies()->where('code', $node->currency)->first();
         $section
@@ -174,7 +173,7 @@ class SettingsAccountsTest extends SettingsBase {
             ->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_TOTAL, $node->total)
             ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_CURRENCY_TOTAL, CurrencyHelper::convertCurrencyHtmlToCharacter($currency->html));
         ;
-        if($node->disabled){
+        if ($node->disabled) {
             $this->assertActiveStateToggleInactive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
         } else {
             $this->assertActiveStateToggleActive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
@@ -187,7 +186,7 @@ class SettingsAccountsTest extends SettingsBase {
             ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_MODIFIED, $this->convertDateToECMA262Format($node->modified_stamp))
             ->assertVisible(self::$SELECTOR_SETTINGS_FORM_LABEL_DISABLED);
 
-        if(is_null($node->disabled_stamp)){
+        if (is_null($node->disabled_stamp)) {
             $section->assertMissing(self::$SELECTOR_SETTINGS_FORM_DISABLED);
         } else {
             $section->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_DISABLED, $this->convertDateToECMA262Format($node->disabled_stamp));
@@ -196,10 +195,10 @@ class SettingsAccountsTest extends SettingsBase {
         $this->assertSaveButtonDisabled($section);
     }
 
-    protected function assertNodesVisible(Browser $section){
+    protected function assertNodesVisible(Browser $section) {
         $accounts = Account::all();
         $this->assertCount($accounts->count(), $section->elements('hr~ul li'));
-        foreach ($accounts as $account){
+        foreach ($accounts as $account) {
             $selector_account_id = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID, $account->id);
             $section
                 ->assertVisible($selector_account_id)
@@ -207,7 +206,7 @@ class SettingsAccountsTest extends SettingsBase {
             $class_is_disabled = 'is-disabled';
             $class_is_active = 'is-active';
             $account_node_classes = $section->attribute($selector_account_id, 'class');
-            if($account->disabled){
+            if ($account->disabled) {
                 $this->assertStringContainsString($class_is_disabled, $account_node_classes);
                 $this->assertStringNotContainsString($class_is_active, $account_node_classes);
             } else {
@@ -217,7 +216,7 @@ class SettingsAccountsTest extends SettingsBase {
         }
     }
 
-    protected function fillForm(Browser $section){
+    protected function fillForm(Browser $section) {
         $this->interactWithFormElement($section, self::$SELECTOR_SETTINGS_FORM_INPUT_NAME);
         $section->assertInputValueIsNot(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, "");
 
@@ -231,7 +230,7 @@ class SettingsAccountsTest extends SettingsBase {
             ->click($selector_currency.'+span')
             ->assertRadioSelected($selector_currency, $currency->code);
         $this->assertElementBackgroundColor($section, $selector_currency, $this->color_currency_active);
-        if($currency->code !== $this->default_currency->code){
+        if ($currency->code !== $this->default_currency->code) {
             $selector_default_currency = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_FORM_RADIO_CURRENCY_INPUT, $this->default_currency->label);
             $section->assertRadioNotSelected($selector_default_currency, $this->default_currency->code);
             $this->assertElementBackgroundColor($section, $selector_default_currency, $this->color_currency_inactive);
@@ -243,7 +242,7 @@ class SettingsAccountsTest extends SettingsBase {
             ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_CURRENCY_TOTAL, CurrencyHelper::convertCurrencyHtmlToCharacter($currency->html));
 
         $is_account_active = $this->faker->boolean();
-        if(!$is_account_active){
+        if (!$is_account_active) {
             $this->interactWithFormElement($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
             $this->assertActiveStateToggleInactive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
         } else {
@@ -251,19 +250,19 @@ class SettingsAccountsTest extends SettingsBase {
         }
     }
 
-    protected function getNode(int $id=null):BaseModel {
-        if(!is_null($id)){
+    protected function getNode(int $id=null): BaseModel {
+        if (!is_null($id)) {
             return Account::find($id);
         } else {
             return Account::get()->random();
         }
     }
 
-    protected function getAllNodes():Collection{
+    protected function getAllNodes(): Collection {
         return Account::all();
     }
 
-    protected function interactWithNode(Browser $section, BaseModel $node, bool $is_fresh_load=true){
+    protected function interactWithNode(Browser $section, BaseModel $node, bool $is_fresh_load=true) {
         $this->assertNodeIsOfType($node, Account::class);
         $class_state = $node->disabled ? '.is-disabled' : '.is-active';
         $selector = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID.$class_state.' span', $node->id);
@@ -271,63 +270,58 @@ class SettingsAccountsTest extends SettingsBase {
             ->assertVisible($selector)
             ->click($selector);
 
-        if($is_fresh_load){
-            $section->elsewhere(self::$SELECTOR_PRIMARY_DIV, function(Browser $body){
+        if ($is_fresh_load) {
+            $section->elsewhere(self::$SELECTOR_PRIMARY_DIV, function(Browser $body) {
                 $this->waitForLoadingToStop($body);
             });
         }
         $section->pause($this->toggleButtonTransitionTimeInMilliseconds());
     }
 
-    protected function interactWithFormElement(Browser $section, string $selector, BaseModel $node=null){
-        if(is_null($node)){
+    protected function interactWithFormElement(Browser $section, string $selector, BaseModel $node=null) {
+        if (is_null($node)) {
             $node = new Account();
         }
         $this->assertNodeIsOfType($node, Account::class);
 
-        switch($selector){
+        switch($selector) {
             case self::$SELECTOR_SETTINGS_FORM_INPUT_NAME:
                 $accounts = $this->getAllNodes();
-                do{
+                do {
                     $name = $this->faker->word();
-                }while($node->name == $name || $accounts->contains('name', $name));
+                } while ($node->name == $name || $accounts->contains('name', $name));
                 $section
                     ->clear($selector)
                     ->type($selector, $name);
                 break;
-
             case self::$SELECTOR_SETTINGS_FORM_SELECT_INSTITUTION:
-                do{
+                do {
                     $institution = Institution::get()->random();
-                } while($node->institution_id == $institution->id);
+                } while ($node->institution_id == $institution->id);
                 $section
                     ->waitUntilMissing(self::$SELECTOR_SETTINGS_FORM_LOADING_INSTITUTION, self::$WAIT_SECONDS)
                     ->select($selector, $institution->id);
                 break;
-
             case self::$TEMPLATE_SELECTOR_SETTINGS_FORM_RADIO_CURRENCY_INPUT:
-                do{
+                do {
                     $currency = CurrencyHelper::fetchCurrencies()->random();
-                }while($node->currency == $currency->code);
+                } while ($node->currency == $currency->code);
                 $selector_currency = sprintf($selector, $currency->label);
                 $section
                     ->click($selector_currency.'+span')
                     ->assertRadioSelected($selector_currency, $currency->code);
                 break;
-
             case self::$SELECTOR_SETTINGS_FORM_INPUT_TOTAL:
-                do{
+                do {
                     $total = $this->faker->randomFloat(2);
-                }while($node->total == $total);
+                } while ($node->total == $total);
                 $section
                     ->clear($selector)
                     ->type($selector, $total);
                 break;
-
             case self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE:
                 $this->toggleToggleButton($section, $selector);
                 break;
-
             default:
                 throw new \UnexpectedValueException(sprintf("Unexpected form element [%s] provided", $selector));
         }

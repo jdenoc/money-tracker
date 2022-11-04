@@ -6,7 +6,6 @@ use App\Traits\Tests\WaitTimes;
 use Laravel\Dusk\Browser;
 
 trait Navbar {
-
     use WaitTimes;
 
     private static string $SELECTOR_NAVBAR = '#navbar';
@@ -34,25 +33,26 @@ trait Navbar {
     private static string $SELECTOR_NAVBAR_SM_ADD_TRANSFER_BTN = '#navbar-sm-transfer-modal';
     private static string $SELECTOR_NAVBAR_SM_OPEN_FILTER_BTN = '#navbar-sm-filter-modal';
 
-    public function assertLogoVisible(Browser $navbar){
+    public function assertLogoVisible(Browser $navbar) {
         $navbar->assertVisible(self::$SELECTOR_NAVBAR_BRAND_IMAGE);
     }
 
-    public function openNewEntryModal(Browser $navbar){
+    public function openNewEntryModal(Browser $navbar) {
         $this->openModalFromNavbar($navbar, self::$SELECTOR_NAVBAR_NEW_ENTRY_BTN, self::$SELECTOR_MODAL_ENTRY);
     }
 
-    public function openTransferModal(Browser $navbar){
+    public function openTransferModal(Browser $navbar) {
         $this->openModalFromNavbar($navbar, self::$SELECTOR_NAVBAR_ADD_TRANSFER_BTN, self::$SELECTOR_MODAL_TRANSFER);
     }
 
-    public function openFilterModal(Browser $navbar){
+    public function openFilterModal(Browser $navbar) {
         $this->openModalFromNavbar($navbar, self::$SELECTOR_NAVBAR_OPEN_FILTER_BTN, self::$SELECTOR_MODAL_FILTER);
     }
 
-    public function openModalFromNavbar(Browser $navbar, $selector_btn, $selector_modal){
+    public function openModalFromNavbar(Browser $navbar, $selector_btn, $selector_modal) {
         $navbar
             ->click($selector_btn)
             ->waitFor($selector_modal, self::$WAIT_SECONDS);
     }
+
 }

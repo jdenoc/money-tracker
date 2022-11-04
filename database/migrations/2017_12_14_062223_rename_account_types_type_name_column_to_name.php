@@ -15,8 +15,8 @@ class RenameAccountTypesTypeNameColumnToName extends Migration {
      *
      * @return void
      */
-    public function up(){
-        Schema::table(self::$TABLE_NAME, function(Blueprint $table){
+    public function up() {
+        Schema::table(self::$TABLE_NAME, function(Blueprint $table) {
             $table->renameColumn(self::$COLUMN_NAME_ORIGINAL, self::$COLUMN_NAME_UPDATED);
         });
     }
@@ -26,9 +26,10 @@ class RenameAccountTypesTypeNameColumnToName extends Migration {
      *
      * @return void
      */
-    public function down(){
-        Schema::table(self::$TABLE_NAME, function(Blueprint $table){
+    public function down() {
+        Schema::table(self::$TABLE_NAME, function(Blueprint $table) {
             $table->renameColumn(self::$COLUMN_NAME_UPDATED, self::$COLUMN_NAME_ORIGINAL);
         });
     }
+
 }

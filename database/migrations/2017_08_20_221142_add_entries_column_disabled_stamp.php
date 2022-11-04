@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class AddEntriesColumnDisabledStamp extends Migration {
 
@@ -15,8 +16,8 @@ class AddEntriesColumnDisabledStamp extends Migration {
      *
      * @return void
      */
-    public function up(){
-        Schema::table(self::$TABLE, function (Blueprint $table) {
+    public function up() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
             $table->timestamp(self::$COLUMN_NEW)->nullable();
         });
         DB::table(self::$TABLE)->where('disabled', 1)->update([self::$COLUMN_NEW=>DB::raw('modified_stamp')]);
@@ -27,8 +28,8 @@ class AddEntriesColumnDisabledStamp extends Migration {
      *
      * @return void
      */
-    public function down(){
-        Schema::table(self::$TABLE, function (Blueprint $table) {
+    public function down() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
             $table->dropColumn(self::$COLUMN_NEW);
         });
     }

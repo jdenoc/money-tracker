@@ -21,7 +21,6 @@ use Throwable;
  * @group home
  */
 class NavbarTest extends DuskTestCase {
-
     use DuskTraitBrowserDimensions;
     use DuskTraitNavbar;
     use DuskTraitLoading;
@@ -35,7 +34,7 @@ class NavbarTest extends DuskTestCase {
     private $_label_settings = "Settings";
     private $_label_logout = "Logout";
 
-    public function providerNavbarLogoVisible():array{
+    public function providerNavbarLogoVisible(): array {
         return [
             'home'=>['home'],           // test 1/25
             'stats'=>['stats'],         // test 2/25
@@ -51,16 +50,16 @@ class NavbarTest extends DuskTestCase {
      * @group navigation-2
      * test ?/25
      */
-    public function testNavbarLogoVisible(string $page_name){
+    public function testNavbarLogoVisible(string $page_name) {
         $pageObject = $this->getDuskPageObject($page_name);
-        $this->browse(function(Browser $browser) use ($pageObject){
+        $this->browse(function(Browser $browser) use ($pageObject) {
             $browser->visit($pageObject);
             $this->waitForLoadingToStop($browser);
             $this->assertLogoVisible($browser);
         });
     }
 
-    public function providerNavbarAddEntryButton():array{
+    public function providerNavbarAddEntryButton(): array {
         return [
             'home'=>['home', true],             // test 4/25
             'stats'=>['stats', false],          // test 5/25
@@ -77,13 +76,13 @@ class NavbarTest extends DuskTestCase {
      * @group navigation-2
      * test ?/25
      */
-    public function testNavbarAddEntryButton(string $page_name, bool $exists){
+    public function testNavbarAddEntryButton(string $page_name, bool $exists) {
         $pageObject = $this->getDuskPageObject($page_name);
-        $this->browse(function(Browser $browser) use ($pageObject, $exists){
+        $this->browse(function(Browser $browser) use ($pageObject, $exists) {
             $browser->visit($pageObject);
             $this->waitForLoadingToStop($browser);
-            $browser->within(self::$SELECTOR_NAVBAR, function(Browser $navbar) use ($exists){
-                if($exists){
+            $browser->within(self::$SELECTOR_NAVBAR, function(Browser $navbar) use ($exists) {
+                if ($exists) {
                     $navbar
                         ->assertVisible(self::$SELECTOR_NAVBAR_NEW_ENTRY_BTN)
                         ->assertSeeIn(self::$SELECTOR_NAVBAR_NEW_ENTRY_BTN, $this->_label_add_entry);
@@ -96,7 +95,7 @@ class NavbarTest extends DuskTestCase {
         });
     }
 
-    public function providerNavbarAddTransferButton():array{
+    public function providerNavbarAddTransferButton(): array {
         return [
             'home'=>['home', true],             // test 7/25
             'stats'=>['stats', false],          // test 8/25
@@ -113,13 +112,13 @@ class NavbarTest extends DuskTestCase {
      * @group navigation-2
      * test ?/25
      */
-    public function testNavbarAddTransferButton(string $page_name, bool $exists){
+    public function testNavbarAddTransferButton(string $page_name, bool $exists) {
         $pageObject = $this->getDuskPageObject($page_name);
-        $this->browse(function(Browser $browser) use ($pageObject, $exists){
+        $this->browse(function(Browser $browser) use ($pageObject, $exists) {
             $browser->visit($pageObject);
             $this->waitForLoadingToStop($browser);
-            $browser->within(self::$SELECTOR_NAVBAR, function(Browser $navbar) use ($exists){
-                if($exists){
+            $browser->within(self::$SELECTOR_NAVBAR, function(Browser $navbar) use ($exists) {
+                if ($exists) {
                     $navbar
                         ->assertVisible(self::$SELECTOR_NAVBAR_ADD_TRANSFER_BTN)
                         ->assertSeeIn(self::$SELECTOR_NAVBAR_ADD_TRANSFER_BTN, $this->_label_transfer);
@@ -132,7 +131,7 @@ class NavbarTest extends DuskTestCase {
         });
     }
 
-    public function providerNavbarFilterButtonExists():array{
+    public function providerNavbarFilterButtonExists(): array {
         return [
             'home'=>['home', true],             // test 10/25
             'stats'=>['stats', false],          // test 11/25
@@ -149,13 +148,13 @@ class NavbarTest extends DuskTestCase {
      * @group navigation-2
      * test ?/25
      */
-    public function testNavbarFilterButtonExists(string $page_name, bool $exists){
+    public function testNavbarFilterButtonExists(string $page_name, bool $exists) {
         $pageObject = $this->getDuskPageObject($page_name);
-        $this->browse(function(Browser $browser) use ($pageObject, $exists){
+        $this->browse(function(Browser $browser) use ($pageObject, $exists) {
             $browser->visit($pageObject);
             $this->waitForLoadingToStop($browser);
-            $browser->within(self::$SELECTOR_NAVBAR, function(Browser $navbar) use ($exists){
-                if ($exists){
+            $browser->within(self::$SELECTOR_NAVBAR, function(Browser $navbar) use ($exists) {
+                if ($exists) {
                     $navbar
                         ->assertVisible(self::$SELECTOR_NAVBAR_OPEN_FILTER_BTN)
                         ->assertSeeIn(self::$SELECTOR_NAVBAR_OPEN_FILTER_BTN, $this->_label_filter);
@@ -168,7 +167,7 @@ class NavbarTest extends DuskTestCase {
         });
     }
 
-    public function providerNavbarClickProfileImage():array{
+    public function providerNavbarClickProfileImage(): array {
         return [
             'home'=>['home'],           // test 13/25
             'stats'=>['stats'],         // test 14/25
@@ -184,12 +183,12 @@ class NavbarTest extends DuskTestCase {
      * @group navigation-2
      * test ?/25
      */
-    public function testNavbarClickProfileImage(string $page_name){
+    public function testNavbarClickProfileImage(string $page_name) {
         $pageObject = $this->getDuskPageObject($page_name);
-        $this->browse(function(Browser $browser) use ($page_name, $pageObject){
+        $this->browse(function(Browser $browser) use ($page_name, $pageObject) {
             $browser->visit($pageObject);
             $this->waitForLoadingToStop($browser);
-            $browser->within(self::$SELECTOR_NAVBAR, function(Browser $navbar) use ($page_name){
+            $browser->within(self::$SELECTOR_NAVBAR, function(Browser $navbar) use ($page_name) {
                 $navbar
                     ->assertVisible(self::$SELECTOR_NAVBAR_DROPDOWN_BTN)
                     ->assertMissing(self::$SELECTOR_NAVBAR_DROPDOWN)
@@ -197,32 +196,32 @@ class NavbarTest extends DuskTestCase {
                     ->click(self::$SELECTOR_NAVBAR_DROPDOWN_BTN)
                     ->pause(self::$WAIT_ONE_TENTH_OF_A_SECOND_IN_MILLISECONDS)
                     ->assertVisible(self::$SELECTOR_NAVBAR_DROPDOWN)
-                    ->within(self::$SELECTOR_NAVBAR_DROPDOWN, function(Browser $navbar_dropdown) use ($page_name){
+                    ->within(self::$SELECTOR_NAVBAR_DROPDOWN, function(Browser $navbar_dropdown) use ($page_name) {
                         $navbar_dropdown
                             ->assertVisible(self::$SELECTOR_NAVBAR_USERNAME)
                             ->assertSeeIn(self::$SELECTOR_NAVBAR_VERSION, $this->_label_version);
-                        if($page_name == 'home'){
+                        if ($page_name == 'home') {
                             $navbar_dropdown->assertDontSeeLink($this->_label_home);
                         } else {
                             $navbar_dropdown->assertSeeLink($this->_label_home);
                         }
-                        if($page_name == 'stats'){
+                        if ($page_name == 'stats') {
                             $navbar_dropdown->assertDontSeeLink($this->_label_stats);
                         } else {
                             $navbar_dropdown->assertSeeLink($this->_label_stats);
                         }
-                        if($page_name == 'settings'){
+                        if ($page_name == 'settings') {
                             $navbar_dropdown->assertDontSeeLink($this->_label_settings);
                         } else {
                             $navbar_dropdown->assertSeeLink($this->_label_settings);
                         }
                         $navbar_dropdown->assertSeeLink($this->_label_logout);
-                });
+                    });
             });
         });
     }
 
-    public function providerNavbarSmScreenElementsNotVisibleByDefault():array{
+    public function providerNavbarSmScreenElementsNotVisibleByDefault(): array {
         return [
             'home'=>['home'],           // test 16/25
             'stats'=>['stats'],         // test 17/25
@@ -238,12 +237,12 @@ class NavbarTest extends DuskTestCase {
      * @group navigation-2
      * test ?/25
      */
-    public function testNavbarSmScreenElementsNotVisibleByDefault(string $page_name){
+    public function testNavbarSmScreenElementsNotVisibleByDefault(string $page_name) {
         $pageObject = $this->getDuskPageObject($page_name);
-        $this->browse(function(Browser $browser) use ($pageObject){
+        $this->browse(function(Browser $browser) use ($pageObject) {
             $browser->visit($pageObject);
             $this->waitForLoadingToStop($browser);
-            $browser->within(self::$SELECTOR_NAVBAR, function (Browser $navbar) {
+            $browser->within(self::$SELECTOR_NAVBAR, function(Browser $navbar) {
                 $navbar
                     ->assertDontSee(self::$SELECTOR_NAVBAR_SM_SIDEBAR_BTN)
                     ->assertDontSee(self::$SELECTOR_NAVBAR_SM_BURGER_BTN);
@@ -251,7 +250,7 @@ class NavbarTest extends DuskTestCase {
         });
     }
 
-    public function providerNavbarMdScreenElementsNotVisibleForSmScreenSize():array{
+    public function providerNavbarMdScreenElementsNotVisibleForSmScreenSize(): array {
         return [
             'home'=>['home'],           // test 19/25
             'stats'=>['stats'],         // test 20/25
@@ -267,14 +266,14 @@ class NavbarTest extends DuskTestCase {
      * @group navigation-2
      * test ?/25
      */
-    public function testNavbarMdScreenElementsNotVisibleForSmScreenSize(string $page_name){
+    public function testNavbarMdScreenElementsNotVisibleForSmScreenSize(string $page_name) {
         $pageObject = $this->getDuskPageObject($page_name);
-        $this->browse(function(Browser $browser) use ($pageObject){
+        $this->browse(function(Browser $browser) use ($pageObject) {
             $browser
                 ->visit($pageObject)
                 ->resize(self::$MAX_SM_BROWSER_WIDTH_PX, self::$DEFAULT_BROWSER_HEIGHT_PX);
             $this->waitForLoadingToStop($browser);
-            $browser->within(self::$SELECTOR_NAVBAR, function (Browser $navbar) {
+            $browser->within(self::$SELECTOR_NAVBAR, function(Browser $navbar) {
                 $this->assertLogoVisible($navbar);  // make sure the logo is still visible
                 $navbar
                     ->assertDontSee(self::$SELECTOR_NAVBAR_NEW_ENTRY_BTN)
@@ -288,7 +287,7 @@ class NavbarTest extends DuskTestCase {
         });
     }
 
-    public function providerNavberSmScreenBurgerMenu():array{
+    public function providerNavberSmScreenBurgerMenu(): array {
         return [
             'home'=>['home'],           // test 22/25
             'stats'=>['stats'],         // test 23/25
@@ -304,25 +303,25 @@ class NavbarTest extends DuskTestCase {
      * @group navigation-2
      * test ?/25
      */
-    public function testNavberSmScreenBurgerMenu(string $page_name){
+    public function testNavberSmScreenBurgerMenu(string $page_name) {
         $pageObject = $this->getDuskPageObject($page_name);
-        $this->browse(function(Browser $browser) use ($pageObject, $page_name){
+        $this->browse(function(Browser $browser) use ($pageObject, $page_name) {
             $browser
                 ->visit($pageObject)
                 ->resize(self::$MAX_SM_BROWSER_WIDTH_PX, self::$DEFAULT_BROWSER_HEIGHT_PX);
             $this->waitForLoadingToStop($browser);
-            $browser->within(self::$SELECTOR_NAVBAR, function(Browser $navbar) use ($page_name){
+            $browser->within(self::$SELECTOR_NAVBAR, function(Browser $navbar) use ($page_name) {
                 $navbar
                     ->assertVisible(self::$SELECTOR_NAVBAR_SM_BURGER_BTN)
                     ->assertMissing(self::$SELECTOR_NAVBAR_SM_BURGER_MENU)
                     ->click(self::$SELECTOR_NAVBAR_SM_BURGER_BTN)
                     ->assertVisible(self::$SELECTOR_NAVBAR_SM_BURGER_MENU)
-                    ->within(self::$SELECTOR_NAVBAR_SM_BURGER_MENU, function(Browser $navbar_dropdown) use ($page_name){
+                    ->within(self::$SELECTOR_NAVBAR_SM_BURGER_MENU, function(Browser $navbar_dropdown) use ($page_name) {
                         $navbar_dropdown
                             ->assertVisible(self::$SELECTOR_NAVBAR_PROFILE)
                             ->assertVisible(self::$SELECTOR_NAVBAR_USERNAME)
                             ->assertSeeIn(self::$SELECTOR_NAVBAR_VERSION, $this->_label_version);
-                        if($page_name == 'home'){
+                        if ($page_name == 'home') {
                             $navbar_dropdown
                                 ->assertDontSeeLink($this->_label_home)
                                 ->assertSeeIn(self::$SELECTOR_NAVBAR_SM_NEW_ENTRY_BTN, $this->_label_add_entry)
@@ -331,12 +330,12 @@ class NavbarTest extends DuskTestCase {
                         } else {
                             $navbar_dropdown->assertSeeLink($this->_label_home);
                         }
-                        if($page_name == 'stats'){
+                        if ($page_name == 'stats') {
                             $navbar_dropdown->assertDontSeeLink($this->_label_stats);
                         } else {
                             $navbar_dropdown->assertSeeLink($this->_label_stats);
                         }
-                        if($page_name == 'settings'){
+                        if ($page_name == 'settings') {
                             $navbar_dropdown->assertDontSeeLink($this->_label_settings);
                         } else {
                             $navbar_dropdown->assertSeeLink($this->_label_settings);
@@ -347,7 +346,7 @@ class NavbarTest extends DuskTestCase {
         });
     }
 
-    public function providerNavberSmScreenSidebar():array{
+    public function providerNavberSmScreenSidebar(): array {
         return [
             'home'=>['home'],           // test 25/25
             'stats'=>['stats'],         // test 26/25
@@ -363,22 +362,22 @@ class NavbarTest extends DuskTestCase {
      * @group navigation-2
      * test ?/25
      */
-    public function testNavberSmScreenSidebar(string $page_name){
+    public function testNavberSmScreenSidebar(string $page_name) {
         $pageObject = $this->getDuskPageObject($page_name);
-        $this->browse(function(Browser $browser) use ($pageObject){
+        $this->browse(function(Browser $browser) use ($pageObject) {
             $browser
                 ->visit($pageObject)
                 ->resize(self::$MAX_SM_BROWSER_WIDTH_PX, self::$DEFAULT_BROWSER_HEIGHT_PX);
             $this->waitForLoadingToStop($browser);
-            $browser->within(self::$SELECTOR_NAVBAR, function(Browser $navbar){
+            $browser->within(self::$SELECTOR_NAVBAR, function(Browser $navbar) {
                 $navbar->assertVisible(self::$SELECTOR_NAVBAR_SM_SIDEBAR_BTN);
                 $this->markTestIncomplete('need to implement this functionality first');
             });
         });
     }
 
-    private function getDuskPageObject(string $page_name){
-        switch($page_name){
+    private function getDuskPageObject(string $page_name) {
+        switch($page_name) {
             case 'home':
                 return new HomePage();
             case 'stats':

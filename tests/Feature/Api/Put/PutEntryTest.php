@@ -13,16 +13,15 @@ use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 
 class PutEntryTest extends TestCase {
-
     use EntryResponseKeys;
     use WithFaker;
 
-    private $_base_uri = '/api/entry/';
+    private string $_base_uri = '/api/entry/';
     private $_generated_account;
     private $_generated_account_type;
     private $_generated_entry;
 
-    public function setUp(): void{
+    public function setUp(): void {
         parent::setUp();
         // GIVEN - for all tests
         $this->_generated_account = Account::factory()->create();
@@ -30,7 +29,7 @@ class PutEntryTest extends TestCase {
         $this->_generated_entry = Entry::factory()->create(['account_type_id'=>$this->_generated_account_type->id]);
     }
 
-    public function testUpdateEntryWithoutProvidingData(){
+    public function testUpdateEntryWithoutProvidingData() {
         // GIVEN - see setUp()
         $update_data = [];
 
@@ -44,13 +43,13 @@ class PutEntryTest extends TestCase {
         $this->assertFailedPutResponse($response_as_array, self::$ERROR_MSG_SAVE_ENTRY_NO_DATA);
     }
 
-    public function testUpdateEntryButNewAccountTypeDoesNotExist(){
+    public function testUpdateEntryButNewAccountTypeDoesNotExist() {
         // GIVEN - see setUp()
 
         $entry_data = Entry::factory()->make();
         $entry_data = $entry_data->toArray();
         // make sure account_type_id value that does not exist
-        while($entry_data['account_type_id'] == $this->_generated_account_type->id){
+        while ($entry_data['account_type_id'] == $this->_generated_account_type->id) {
             $entry_data['account_type_id'] = $this->faker->randomDigitNotZero();
         }
 
@@ -64,13 +63,13 @@ class PutEntryTest extends TestCase {
         $this->assertFailedPutResponse($response_as_array, self::$ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE);
     }
 
-    public function testUpdateEntryButEntryDoesNotExist(){
+    public function testUpdateEntryButEntryDoesNotExist() {
         // GIVEN - entry does not exist
-        do{
+        do {
             // make sure randomly generated entry ID isn't associated
             // with the pre-generated entry
             $entry_id = $this->faker->randomNumber();
-        }while($entry_id == $this->_generated_entry->id);
+        } while ($entry_id == $this->_generated_entry->id);
         $entry_data = Entry::factory()->make(['account_type_id'=>$this->_generated_account_type->id]);
         $entry_data = $entry_data->toArray();
 
@@ -84,7 +83,7 @@ class PutEntryTest extends TestCase {
         $this->assertFailedPutResponse($response_as_array, self::$ERROR_MSG_SAVE_ENTRY_DOES_NOT_EXIST);
     }
 
-    public function testUpdateEntryAndConfirmAccountTotalUpdated(){
+    public function testUpdateEntryAndConfirmAccountTotalUpdated() {
         // GIVEN - see setUp()
         $entry_data = Entry::factory()->make();
         $entry_data = [
@@ -132,7 +131,7 @@ class PutEntryTest extends TestCase {
         );
     }
 
-    public function testUpdateEntryAndChangeAccountTypeCausingAccountTotalsToUpdate(){
+    public function testUpdateEntryAndChangeAccountTypeCausingAccountTotalsToUpdate() {
         // GIVEN - see setUp()
         $generated_account2 = Account::factory()->create();
         $generated_account_type2 = AccountType::factory()->create(['account_id'=>$generated_account2->id]);
@@ -204,7 +203,7 @@ class PutEntryTest extends TestCase {
         );
     }
 
-    public function testUpdateEntryAsDeletedAndConfirmValueRemovedFromAccountTotal(){
+    public function testUpdateEntryAsDeletedAndConfirmValueRemovedFromAccountTotal() {
         // GIVEN - see setUp()
         $entry_data = [
             'disabled'=>true
@@ -251,7 +250,7 @@ class PutEntryTest extends TestCase {
         );
     }
 
-    public function providerUpdateEntryWithCertainProperties(){
+    public function providerUpdateEntryWithCertainProperties() {
         // PHPUnit data providers are called before setUp() and setUpBeforeClass() are called.
         // With that piece of information, we need to call setUp() earlier than we normally would so that we can use model factories
         //$this->setUp();
@@ -273,7 +272,7 @@ class PutEntryTest extends TestCase {
 
         $update_entry_data = [];
         $required_entry_field_count = count($required_entry_fields);
-        for($i=0; $i<$required_entry_field_count; $i++){
+        for ($i=0; $i<$required_entry_field_count; $i++) {
             $update_entry_data['update ['.$required_entry_fields[$i].']'] = [
                 [$required_entry_fields[$i]=>$generated_entry_data1[$required_entry_fields[$i]]]
             ];
@@ -282,7 +281,7 @@ class PutEntryTest extends TestCase {
         $update_batch_properties = [];
         $batch_entry_fields = array_rand($required_entry_fields, $this->faker->numberBetween(2, count($required_entry_fields)-1));
         $batch_entry_fields = array_intersect_key($required_entry_fields, array_flip($batch_entry_fields));
-        foreach($batch_entry_fields as $entry_property){
+        foreach ($batch_entry_fields as $entry_property) {
             $update_batch_properties[$entry_property] = $generated_entry_data2[$entry_property];
         }
         $update_entry_data['update ['.implode(',', $batch_entry_fields).']'] = [$update_batch_properties];
@@ -294,7 +293,7 @@ class PutEntryTest extends TestCase {
      * @dataProvider providerUpdateEntryWithCertainProperties
      * @param array $entry_data
      */
-    public function testUpdateEntryWithCertainProperties($entry_data){
+    public function testUpdateEntryWithCertainProperties($entry_data) {
         // GIVEN - see setUp()
 
         // WHEN
@@ -310,12 +309,12 @@ class PutEntryTest extends TestCase {
         // THEN
         $get_response->assertStatus(HttpStatus::HTTP_OK);
         $get_response_as_array = $get_response->json();
-        foreach($entry_data as $property=>$value){
+        foreach ($entry_data as $property=>$value) {
             $this->assertEquals($value, $get_response_as_array[$property], "Entry data:".json_encode($entry_data)."\nGet Request:".$get_response->getContent());
         }
     }
 
-    public function testUpdateEntryToHaveTransferEntryCounterpart(){
+    public function testUpdateEntryToHaveTransferEntryCounterpart() {
         // GIVEN - see setup()
         $entry_data = ['transfer_entry_id'=>$this->faker->randomDigitNotZero()];
 
@@ -341,14 +340,14 @@ class PutEntryTest extends TestCase {
         $this->assertEquals($entry_data['transfer_entry_id'], $get_response_as_array['transfer_entry_id']);
     }
 
-    public function testUpdateEntryWithTagThatDoesNotExist(){
+    public function testUpdateEntryWithTagThatDoesNotExist() {
         // GIVEN - see setUp()
         $generate_tag_count = $this->faker->numberBetween(2, 5);
         Tag::factory($generate_tag_count)->create();
         $put_entry_data = ['tags'=>Tag::all()->pluck('id')->toArray()];
-        do{
+        do {
             $non_existent_tag_id = $this->faker->unique()->randomNumber(3);
-        }while(in_array($non_existent_tag_id, $put_entry_data['tags']));
+        } while (in_array($non_existent_tag_id, $put_entry_data['tags']));
         $put_entry_data['tags'][] = $non_existent_tag_id;
 
         // WHEN
@@ -367,14 +366,14 @@ class PutEntryTest extends TestCase {
         $this->assertArrayHasKey('tags', $get_response_as_array);
         $this->assertTrue(is_array($get_response_as_array['tags']));
         $this->assertNotEmpty($get_response_as_array['tags']);
-        foreach($get_response_as_array['tags'] as $idx=>$response_tag){
+        foreach ($get_response_as_array['tags'] as $idx=>$response_tag) {
             $this->assertContains($response_tag['id'], $put_entry_data['tags']);
             unset($get_response_as_array['tags'][$idx]);
         }
         $this->assertEmpty($get_response_as_array['tags']);
     }
 
-    public function testUpdateEntryWithTagsSoTheyAreNotDuplicated(){
+    public function testUpdateEntryWithTagsSoTheyAreNotDuplicated() {
         // GIVEN - see setUp()
         $generate_tag_count = $this->faker->numberBetween(2, 5);
         $generated_tags = Tag::factory()->count($generate_tag_count)->create();
@@ -405,7 +404,7 @@ class PutEntryTest extends TestCase {
         $this->assertCount(count($get_response_as_array['tags']), $unique_tags_in_response, $get_response->getContent());
     }
 
-    public function testUpdateEntryWithAttachments(){
+    public function testUpdateEntryWithAttachments() {
         // GIVEN
         $attachment_data = Attachment::factory()->make();
         $put_entry_data = ['attachments'=>[[
@@ -429,7 +428,7 @@ class PutEntryTest extends TestCase {
         $this->assertArrayHasKey('attachments', $get_response_as_array);
         $this->assertTrue(is_array($get_response_as_array['attachments']));
         $this->assertNotEmpty($get_response_as_array['attachments']);
-        foreach($get_response_as_array['attachments'] as $response_attachment){
+        foreach ($get_response_as_array['attachments'] as $response_attachment) {
             $attachment_data = [
                 'uuid'=>$response_attachment['uuid'],
                 'name'=>$response_attachment['name']
@@ -438,14 +437,14 @@ class PutEntryTest extends TestCase {
         }
     }
 
-    public function testUpdateEntryWithAttachmentsAndAttachmentsAreAlreadyAttached(){
+    public function testUpdateEntryWithAttachmentsAndAttachmentsAreAlreadyAttached() {
         // GIVEN
         $unattached_attachment = Attachment::factory()->make();
         $put_entry_data = ['attachments'=>[
             ['uuid'=>$unattached_attachment->uuid, 'name'=>$unattached_attachment->name]
         ]];
         $attached_attachments = Attachment::factory()->count(3)->create(['entry_id'=>$this->_generated_entry->id]);
-        foreach($attached_attachments as $attached_attachment){
+        foreach ($attached_attachments as $attached_attachment) {
             $put_entry_data['attachments'][] = ['uuid'=>$attached_attachment->uuid, 'name'=>$attached_attachment->name];
         }
 
@@ -467,7 +466,7 @@ class PutEntryTest extends TestCase {
         $this->assertArrayHasKey('attachments', $get_response_as_array);
         $this->assertTrue(is_array($get_response_as_array['attachments']));
         $this->assertNotEmpty($get_response_as_array['attachments']);
-        foreach($get_response_as_array['attachments'] as $response_attachment){
+        foreach ($get_response_as_array['attachments'] as $response_attachment) {
             $attachment_data = [
                 'uuid'=>$response_attachment['uuid'],
                 'name'=>$response_attachment['name']
@@ -477,7 +476,7 @@ class PutEntryTest extends TestCase {
         }
     }
 
-    public function testUpdateEntryWithNoUpdates(){
+    public function testUpdateEntryWithNoUpdates() {
         // GIVEN
         $put_entry_data = $this->_generated_entry->toArray();
 
@@ -505,7 +504,7 @@ class PutEntryTest extends TestCase {
     /**
      * @param array $response_as_array
      */
-    private function assertPutResponseHasCorrectKeys(array $response_as_array){
+    private function assertPutResponseHasCorrectKeys(array $response_as_array) {
         $failure_message = "PUT Response is ".json_encode($response_as_array);
         $this->assertArrayHasKey(self::$RESPONSE_SAVE_KEY_ID, $response_as_array, $failure_message);
         $this->assertArrayHasKey(self::$RESPONSE_SAVE_KEY_ERROR, $response_as_array, $failure_message);
@@ -515,7 +514,7 @@ class PutEntryTest extends TestCase {
      * @param array $response_as_array
      * @param string $response_error_msg
      */
-    private function assertFailedPutResponse(array $response_as_array, string $response_error_msg){
+    private function assertFailedPutResponse(array $response_as_array, string $response_error_msg) {
         $failure_message = "PUT response is ".json_encode($response_as_array);
         $this->assertEquals(self::$ERROR_ENTRY_ID, $response_as_array[self::$RESPONSE_SAVE_KEY_ID], $failure_message);
         $this->assertNotEmpty($response_as_array[self::$RESPONSE_SAVE_KEY_ERROR], $failure_message);
@@ -525,7 +524,7 @@ class PutEntryTest extends TestCase {
     /**
      * @param array $response_as_array
      */
-    private function assertSuccessPutResponse(array $response_as_array){
+    private function assertSuccessPutResponse(array $response_as_array) {
         $failure_message = "PUT response is ".json_encode($response_as_array);
         $this->assertEmpty($response_as_array[self::$RESPONSE_SAVE_KEY_ERROR], $failure_message);
         $this->assertGreaterThan(self::$ERROR_ENTRY_ID, $response_as_array[self::$RESPONSE_SAVE_KEY_ID], $failure_message);

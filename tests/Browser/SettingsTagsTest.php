@@ -31,7 +31,7 @@ class SettingsTagsTest extends SettingsBase {
     protected static string $LABEL_SETTINGS_NOTIFICATION_NEW = 'New tag created';
     protected static string $LABEL_SETTINGS_NOTIFICATION_UPDATE = 'Tag updated';
 
-    public function providerSaveExistingSettingNode():array{
+    public function providerSaveExistingSettingNode(): array {
         return [
             'tag'=>[self::$SELECTOR_SETTINGS_FORM_INPUT_NAME]
         ];
@@ -42,14 +42,14 @@ class SettingsTagsTest extends SettingsBase {
      *   Name: (empty)
      *   Save button [disabled]
      */
-    protected function assertFormDefaults(Browser $section){
+    protected function assertFormDefaults(Browser $section) {
         $section
             ->scrollIntoView(self::$SELECTOR_SETTINGS_HEADER)
             ->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, '');
         $this->assertSaveButtonDisabled($section);
     }
 
-    protected function assertFormDefaultsFull(Browser $section){
+    protected function assertFormDefaultsFull(Browser $section) {
         $section
             ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_LABEL_NAME, self::$LABEL_SETTINGS_INPUT_NAME)
             ->assertVisible(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME)
@@ -62,7 +62,7 @@ class SettingsTagsTest extends SettingsBase {
         $this->assertSaveButtonDefault($section);
     }
 
-    protected function assertFormWithExistingData(Browser $section, BaseModel $node){
+    protected function assertFormWithExistingData(Browser $section, BaseModel $node) {
         $this->assertNodeIsOfType($node, Tag::class);
 
         $section
@@ -71,10 +71,10 @@ class SettingsTagsTest extends SettingsBase {
         $this->assertSaveButtonDisabled($section);
     }
 
-    protected function assertNodesVisible(Browser $section){
+    protected function assertNodesVisible(Browser $section) {
         $tags = $this->getAllNodes();
         $this->assertCount($tags->count(), $section->elements('hr~div span.tag'));
-        foreach ($tags as $tag){
+        foreach ($tags as $tag) {
             $selector_tag_id = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID, $tag->id);
             $section
                 ->assertVisible($selector_tag_id)
@@ -82,20 +82,20 @@ class SettingsTagsTest extends SettingsBase {
         }
     }
 
-    protected function fillForm(Browser $section){
+    protected function fillForm(Browser $section) {
         $this->interactWithFormElement($section, self::$SELECTOR_SETTINGS_FORM_INPUT_NAME);
         $section->assertInputValueIsNot(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, '');
     }
 
-    protected function getNode(int $id=null):BaseModel {
+    protected function getNode(int $id=null): BaseModel {
         return Tag::get()->random();
     }
 
-    protected function getAllNodes():Collection{
+    protected function getAllNodes(): Collection {
         return Tag::all();
     }
 
-    protected function interactWithNode(Browser $section, BaseModel $node, bool $is_fresh_load=true){
+    protected function interactWithNode(Browser $section, BaseModel $node, bool $is_fresh_load=true) {
         $this->assertNodeIsOfType($node, Tag::class);
 
         $selector = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID, $node->id);
@@ -104,23 +104,22 @@ class SettingsTagsTest extends SettingsBase {
             ->click($selector);
     }
 
-    protected function interactWithFormElement(Browser $section, string $selector, BaseModel $node=null){
-        if(is_null($node)){
+    protected function interactWithFormElement(Browser $section, string $selector, BaseModel $node=null) {
+        if (is_null($node)) {
             $node = new Tag();
         }
         $this->assertNodeIsOfType($node, Tag::class);
 
-        switch($selector){
+        switch ($selector) {
             case self::$SELECTOR_SETTINGS_FORM_INPUT_NAME:
                 $tags = $this->getAllNodes();
-                do{
+                do {
                     $name = $this->faker->word();
-                }while($node->name == $name || $tags->contains('name', $name));
+                } while ($node->name == $name || $tags->contains('name', $name));
                 $section
                     ->clear($selector)
                     ->type($selector, $this->faker->word());
                 break;
-
             default:
                 throw new \UnexpectedValueException(sprintf("Unexpected form element [%s] provided", $selector));
         }

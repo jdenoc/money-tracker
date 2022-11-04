@@ -95,8 +95,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Cache Docker images
-        id: docker-image-cache
+      - name: "Cache: Docker images"
+        id: cache-docker-image-cache
         uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-docker }}
@@ -108,8 +108,8 @@ jobs:
         with:
           image-path: ${{ needs.pre-build.outputs.cache-path-docker }}
 
-      - name: Cache Composer packages
-        id: composer-cache
+      - name: "Cache: Composer packages"
+        id: cache-composer
         uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-composer }}
@@ -122,8 +122,8 @@ jobs:
           github-token: ${{ github.token }}
           php-version: "8.0.22"
 
-      - name: Cache npm packages
-        id: npm-cache
+      - name: "Cache: npm packages"
+        id: cache-npm
         uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-npm }}
@@ -133,8 +133,8 @@ jobs:
         uses: ./.github/actions/setup-npm
         if: steps.npm-cache.outputs.cache-hit != 'true'
 
-      - name: Cache vue
-        id: vue-cache
+      - name: "Cache: vue"
+        id: cache-vue
         uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-vue }}
@@ -143,6 +143,10 @@ jobs:
       - name: Build Vue
         uses: ./.github/actions/build-vue
         if: steps.vue-cache.outputs.cache-hit != 'true'
+
+      - name: "Linter: PHP"
+        id: linter-php
+        run: .docker/cmd/composer.sh run-script php-linter
 
   tests-unit:
     needs:

@@ -8,7 +8,6 @@ use Mostafaznv\LaraCache\CacheEntity;
 use Mostafaznv\LaraCache\Traits\LaraCache;
 
 class AccountType extends BaseModel {
-
     use HasFactory;
     use LaraCache;
 
@@ -28,7 +27,6 @@ class AccountType extends BaseModel {
     protected $dates = [
         'disabled_stamp'
     ];
-
     private static $required_fields = [
         'name',
         'account_id',
@@ -37,44 +35,45 @@ class AccountType extends BaseModel {
         'last_digits',
     ];
 
-    public function account(){
+    public function account() {
         return $this->belongsTo('App\Models\Account', 'account_id');
     }
 
-    public function entries(){
+    public function entries() {
         return $this->hasMany('App\Models\Entry', 'account_type_id');
     }
 
-    public function save(array $options = []){
-        if(!$this->getOriginal('disabled') && $this->disabled){
+    public function save(array $options = []) {
+        if (!$this->getOriginal('disabled') && $this->disabled) {
             $this->disabled_stamp = new Carbon();
         }
         return parent::save($options);
     }
 
-    public static function getEnumValues(){
+    public static function getEnumValues() {
         return parent::get_enum_values('type');
     }
 
-    public static function getRequiredFieldsForUpdate(){
+    public static function getRequiredFieldsForUpdate() {
         return self::$required_fields;
     }
 
-    public static function getRequiredFieldsForCreation(){
+    public static function getRequiredFieldsForCreation() {
         return self::$required_fields;
     }
 
-    static public function cacheEntities(): array {
+    public static function cacheEntities(): array {
         return [
-            CacheEntity::make('all')->forever()->cache(function(){
+            CacheEntity::make('all')->forever()->cache(function() {
                 return AccountType::all();
             }),
-            CacheEntity::make('count')->forever()->cache(function(){
+            CacheEntity::make('count')->forever()->cache(function() {
                 return AccountType::count();
             }),
-            CacheEntity::make('types')->forever()->cache(function(){
+            CacheEntity::make('types')->forever()->cache(function() {
                 return AccountType::getEnumValues();
             })
         ];
     }
+
 }

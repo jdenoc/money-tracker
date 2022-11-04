@@ -19,7 +19,6 @@ use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 
 class EntryController extends Controller {
-
     use EntryFilterKeys;
     use EntryTransferKeys;
     use EntryResponseKeys;
@@ -30,9 +29,9 @@ class EntryController extends Controller {
      * @param int $entry_id
      * @return Response
      */
-    public function get_entry(int $entry_id):Response{
+    public function get_entry(int $entry_id): Response {
         $entry = Entry::get_entry_with_tags_and_attachments($entry_id);
-        if(is_null($entry) || empty($entry) || $entry->disabled == 1){
+        if (is_null($entry) || empty($entry) || $entry->disabled == 1) {
             return response([], HttpStatus::HTTP_NOT_FOUND);
         } else {
             // we're not going to show disabled entries,
@@ -49,7 +48,7 @@ class EntryController extends Controller {
      * @param int $page_number
      * @return Response
      */
-    public function get_paged_entries(int $page_number = 0):Response{
+    public function get_paged_entries(int $page_number = 0): Response {
         return $this->provide_paged_entries_response([], $page_number);
     }
 
@@ -59,20 +58,20 @@ class EntryController extends Controller {
      * @param Request $request
      * @return Response
      */
-    public function filter_paged_entries(Request $request, $page_number = 0):Response{
+    public function filter_paged_entries(Request $request, $page_number = 0): Response {
         $post_body = $request->getContent();
         $filter_data = json_decode($post_body, true);
 
-        if(empty($filter_data)){
+        if (empty($filter_data)) {
             return $this->provide_paged_entries_response([], $page_number);
         }
 
-        if(empty($filter_data[self::$FILTER_KEY_SORT]) || !is_array($filter_data[self::$FILTER_KEY_SORT])){
+        if (empty($filter_data[self::$FILTER_KEY_SORT]) || !is_array($filter_data[self::$FILTER_KEY_SORT])) {
             $sort_by = Entry::DEFAULT_SORT_PARAMETER;
             $sort_direction = Entry::DEFAULT_SORT_DIRECTION;
         } else {
             $sort_by = empty($filter_data[self::$FILTER_KEY_SORT][self::$FILTER_KEY_SORT_PARAMETER]) ? Entry::DEFAULT_SORT_PARAMETER : $filter_data[self::$FILTER_KEY_SORT][self::$FILTER_KEY_SORT_PARAMETER];
-            if(empty($filter_data[self::$FILTER_KEY_SORT][self::$FILTER_KEY_SORT_DIRECTION]) || !in_array($filter_data[self::$FILTER_KEY_SORT][self::$FILTER_KEY_SORT_DIRECTION], [Entry::SORT_DIRECTION_ASC, Entry::SORT_DIRECTION_DESC])){
+            if (empty($filter_data[self::$FILTER_KEY_SORT][self::$FILTER_KEY_SORT_DIRECTION]) || !in_array($filter_data[self::$FILTER_KEY_SORT][self::$FILTER_KEY_SORT_DIRECTION], [Entry::SORT_DIRECTION_ASC, Entry::SORT_DIRECTION_DESC])) {
                 $sort_direction = Entry::DEFAULT_SORT_DIRECTION;
             } else {
                 $sort_direction = $filter_data[self::$FILTER_KEY_SORT][self::$FILTER_KEY_SORT_DIRECTION];
@@ -81,7 +80,7 @@ class EntryController extends Controller {
         }
 
         $filter_validator = Validator::make($filter_data, self::getFilterValidationRules(isset($filter_data[self::$FILTER_KEY_TAGS])));
-        if($filter_validator->fails()){
+        if ($filter_validator->fails()) {
             return response([self::$RESPONSE_FILTER_KEY_ERROR=>self::$ERROR_MSG_FILTER_INVALID], HttpStatus::HTTP_BAD_REQUEST);
         }
 
@@ -93,9 +92,9 @@ class EntryController extends Controller {
      * @param int $entry_id
      * @return Response
      */
-    public function delete_entry(int $entry_id):Response{
+    public function delete_entry(int $entry_id): Response {
         $entry = Entry::find($entry_id);
-        if(empty($entry)){
+        if (empty($entry)) {
             return response('', HttpStatus::HTTP_NOT_FOUND);
         } else {
             $entry->disable();
@@ -109,7 +108,7 @@ class EntryController extends Controller {
      * @param Request $request
      * @return Response
      */
-    public function create_entry(Request $request):Response{
+    public function create_entry(Request $request): Response {
         return $this->modify_entry($request);
     }
 
@@ -120,7 +119,7 @@ class EntryController extends Controller {
      * @param Request $request
      * @return Response
      */
-    public function update_entry(int $entry_id, Request $request):Response{
+    public function update_entry(int $entry_id, Request $request): Response {
         return $this->modify_entry($request, $entry_id);
     }
 
@@ -129,25 +128,25 @@ class EntryController extends Controller {
      * @param int|false $update_id
      * @return Response
      */
-    private function modify_entry(Request $request, $update_id=false):Response{
+    private function modify_entry(Request $request, $update_id=false): Response {
         $request_body = $request->getContent();
         $entry_data = json_decode($request_body, true);
 
         // no data check
-        if(empty($entry_data)){
+        if (empty($entry_data)) {
             return response(
                 [self::$RESPONSE_SAVE_KEY_ID=>self::$ERROR_ENTRY_ID, self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_NO_DATA],
                 HttpStatus::HTTP_BAD_REQUEST
             );
         }
 
-        if($update_id === false){
+        if ($update_id === false) {
             $successful_http_status_code = HttpStatus::HTTP_CREATED;
             $required_fields = Entry::get_fields_required_for_creation();
 
             // missing (required) data check
             $missing_properties = array_diff_key(array_flip($required_fields), $entry_data);
-            if(count($missing_properties) > 0){
+            if (count($missing_properties) > 0) {
                 return response(
                     [self::$RESPONSE_SAVE_KEY_ID=>self::$ERROR_ENTRY_ID, self::$RESPONSE_SAVE_KEY_ERROR=>sprintf(self::$ERROR_MSG_SAVE_ENTRY_MISSING_PROPERTY, json_encode(array_keys($missing_properties)))],
                     HttpStatus::HTTP_BAD_REQUEST
@@ -159,10 +158,10 @@ class EntryController extends Controller {
             $successful_http_status_code = HttpStatus::HTTP_OK;
             $required_fields = Entry::get_fields_required_for_update();
 
-            try{
+            try {
                 // check to make sure entry exists. if it doesn't then we can't update it
                 $entry_being_modified = Entry::findOrFail($update_id);
-            } catch (\Exception $exception){
+            } catch (\Exception $exception) {
                 return response(
                     [self::$RESPONSE_SAVE_KEY_ID=>self::$ERROR_ENTRY_ID, self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_DOES_NOT_EXIST],
                     HttpStatus::HTTP_NOT_FOUND
@@ -171,9 +170,9 @@ class EntryController extends Controller {
         }
 
         // check validity of account_type_id value
-        if(isset($entry_data['account_type_id'])){
+        if (isset($entry_data['account_type_id'])) {
             $account_type = AccountType::find($entry_data['account_type_id']);
-            if(empty($account_type)){
+            if (empty($account_type)) {
                 return response(
                     [self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE, self::$RESPONSE_SAVE_KEY_ID=>self::$ERROR_ENTRY_ID],
                     HttpStatus::HTTP_BAD_REQUEST
@@ -181,12 +180,12 @@ class EntryController extends Controller {
             }
         }
 
-        foreach($entry_data as $property=>$value){
-            if(in_array($property, $required_fields)){
+        foreach ($entry_data as $property=>$value) {
+            if (in_array($property, $required_fields)) {
                 $entry_being_modified->$property = $value;
             }
         }
-        if(isset($entry_data['transfer_entry_id'])){
+        if (isset($entry_data['transfer_entry_id'])) {
             $entry_being_modified->transfer_entry_id = $entry_data['transfer_entry_id'];
         }
         $entry_being_modified->save();
@@ -206,14 +205,14 @@ class EntryController extends Controller {
     /**
      * POST /api/entry/transfer
      */
-    public function create_transfer_entries(Request $request){
+    public function create_transfer_entries(Request $request) {
         $request_body = $request->getContent();
         $transfer_data = json_decode($request_body, true);
 
-        if(empty($transfer_data)){
+        if (empty($transfer_data)) {
             return response(
                 [self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_NO_DATA, self::$RESPONSE_SAVE_KEY_ID=>[]],
-            HttpStatus::HTTP_BAD_REQUEST
+                HttpStatus::HTTP_BAD_REQUEST
             );
         }
 
@@ -229,7 +228,7 @@ class EntryController extends Controller {
 
         // missing (required) data check
         $missing_properties = array_diff_key(array_flip($required_transfer_fields), $transfer_data);
-        if(count($missing_properties) > 0){
+        if (count($missing_properties) > 0) {
             return response(
                 [self::$RESPONSE_SAVE_KEY_ERROR=>sprintf(self::$ERROR_MSG_SAVE_ENTRY_MISSING_PROPERTY, json_encode(array_keys($missing_properties))), self::$RESPONSE_SAVE_KEY_ID=>[]],
                 HttpStatus::HTTP_BAD_REQUEST
@@ -238,10 +237,10 @@ class EntryController extends Controller {
 
         $entry_tags = !empty($transfer_data['tags']) && is_array($transfer_data['tags']) ? $transfer_data['tags'] : [];
 
-        if(isset($transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE]) && $transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE] != self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID){
+        if (isset($transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE]) && $transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE] != self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID) {
             try {
                 $from_entry = $this->initTransferEntry($transfer_data, self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE, $required_transfer_fields, $transfer_specific_fields, $entry_tags);
-            } catch(OutOfRangeException $e){
+            } catch(OutOfRangeException $e) {
                 return response(
                     [self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE, self::$RESPONSE_SAVE_KEY_ID=>[]],
                     HttpStatus::HTTP_BAD_REQUEST
@@ -251,10 +250,10 @@ class EntryController extends Controller {
             $from_entry = null;
         }
 
-        if(isset($transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE]) && $transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE] != self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID){
-            try{
+        if (isset($transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE]) && $transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE] != self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID) {
+            try {
                 $to_entry = $this->initTransferEntry($transfer_data, self::$TRANSFER_KEY_TO_ACCOUNT_TYPE, $required_transfer_fields, $transfer_specific_fields, $entry_tags);
-            } catch(OutOfRangeException $e){
+            } catch(OutOfRangeException $e) {
                 return response(
                     [self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE, self::$RESPONSE_SAVE_KEY_ID=>[]],
                     HttpStatus::HTTP_BAD_REQUEST
@@ -265,7 +264,7 @@ class EntryController extends Controller {
         }
 
         $entry_attachments = !empty($transfer_data['attachments']) && is_array($transfer_data['attachments']) ? $transfer_data['attachments'] : [];
-        if(!is_null($to_entry) && !is_null($from_entry)){
+        if (!is_null($to_entry) && !is_null($from_entry)) {
             $to_entry->transfer_entry_id = $from_entry->id;
             $to_entry->save();
             $from_entry->transfer_entry_id = $to_entry->id;
@@ -274,16 +273,16 @@ class EntryController extends Controller {
             // clone the attachments so they can be used in multiple entries
             $new_entry_attachments = [];
             $cloned_entry_attachments = [];
-            foreach($entry_attachments as $entry_attachment){
-                if(!is_array($entry_attachment)){
+            foreach ($entry_attachments as $entry_attachment) {
+                if (!is_array($entry_attachment)) {
                     continue;
                 }
                 $existing_attachment = Attachment::find($entry_attachment['uuid']);
-                if(is_null($existing_attachment)){
+                if (is_null($existing_attachment)) {
                     $new_attachment = new Attachment();
                     $new_attachment->uuid = $entry_attachment['uuid'];
                     $new_attachment->name = $entry_attachment['name'];
-                    if($new_attachment->storage_exists(true)){
+                    if ($new_attachment->storage_exists(true)) {
                         $tmp_file_path = Storage::path($new_attachment->get_tmp_file_path());
                         $clone_attachment = new Attachment();
                         $clone_attachment->uuid = Uuid::uuid4();
@@ -302,7 +301,7 @@ class EntryController extends Controller {
                 [self::$RESPONSE_SAVE_KEY_ID=>[$to_entry->id, $from_entry->id], self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_NO_ERROR],
                 HttpStatus::HTTP_CREATED
             );
-        } elseif(is_null($to_entry) && !is_null($from_entry)){
+        } elseif (is_null($to_entry) && !is_null($from_entry)) {
             // "TO" entry is EXTERNAL
             $from_entry->transfer_entry_id = self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
             $from_entry->save();
@@ -311,7 +310,7 @@ class EntryController extends Controller {
                 [self::$RESPONSE_SAVE_KEY_ID=>[$from_entry->id], self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_NO_ERROR],
                 HttpStatus::HTTP_CREATED
             );
-        } elseif(!is_null($to_entry) && is_null($from_entry)){
+        } elseif (!is_null($to_entry) && is_null($from_entry)) {
             // "FROM" entry is EXTERNAL
             $to_entry->transfer_entry_id = self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
             $to_entry->save();
@@ -339,22 +338,22 @@ class EntryController extends Controller {
      *
      * @throws OutOfRangeException
      */
-    private function initTransferEntry($transfer_data, string $transfer_side, $required_transfer_fields, $transfer_specific_fields, $transfer_entry_tags):Entry{
+    private function initTransferEntry($transfer_data, string $transfer_side, $required_transfer_fields, $transfer_specific_fields, $transfer_entry_tags): Entry {
         // check validity of account_type_id value
         $account_type = AccountType::find($transfer_data[$transfer_side]);
-        if(empty($account_type)){
+        if (empty($account_type)) {
             throw new OutOfRangeException(self::$ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE);
         }
 
         $transfer_entry = new Entry();
-        foreach($transfer_data as $property=>$value){
-            if(in_array($property, $required_transfer_fields)){
-                if(in_array($property, $transfer_specific_fields)){
-                    if($property == $transfer_side){
+        foreach ($transfer_data as $property=>$value) {
+            if (in_array($property, $required_transfer_fields)) {
+                if (in_array($property, $transfer_specific_fields)) {
+                    if ($property == $transfer_side) {
                         $property = 'account_type_id';
-                        if($transfer_side == self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE){
+                        if ($transfer_side == self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE) {
                             $transfer_entry->expense = 1;
-                        } elseif($transfer_side == self::$TRANSFER_KEY_TO_ACCOUNT_TYPE){
+                        } elseif ($transfer_side == self::$TRANSFER_KEY_TO_ACCOUNT_TYPE) {
                             $transfer_entry->expense = 0;
                         }
                     } else {
@@ -375,15 +374,15 @@ class EntryController extends Controller {
      * @param Entry $entry
      * @param int[] $new_entry_tags
      */
-    private function update_entry_tags(Entry $entry, $new_entry_tags){
+    private function update_entry_tags(Entry $entry, $new_entry_tags) {
         $currently_attached_tags = $entry->get_tag_ids();
-        foreach($new_entry_tags as $new_tag){
-            if(!in_array($new_tag, $currently_attached_tags)){
+        foreach ($new_entry_tags as $new_tag) {
+            if (!in_array($new_tag, $currently_attached_tags)) {
                 $entry->tags()->attach($new_tag);
             }
         }
         $tags_to_remove = array_diff($currently_attached_tags, $new_entry_tags);
-        foreach($tags_to_remove as $tag_to_remove){
+        foreach ($tags_to_remove as $tag_to_remove) {
             $entry->tags()->detach($tag_to_remove);
         }
     }
@@ -392,14 +391,14 @@ class EntryController extends Controller {
      * @param Entry $entry
      * @param array $entry_attachments
      */
-    private function attach_attachments_to_entry(Entry $entry, array $entry_attachments){
-        foreach($entry_attachments as $attachment_data){
-            if(!is_array($attachment_data)){
+    private function attach_attachments_to_entry(Entry $entry, array $entry_attachments) {
+        foreach ($entry_attachments as $attachment_data) {
+            if (!is_array($attachment_data)) {
                 continue;
             }
 
             $existing_attachment = Attachment::find($attachment_data['uuid']);
-            if(is_null($existing_attachment)){
+            if (is_null($existing_attachment)) {
                 $new_attachment = new Attachment();
                 $new_attachment->uuid = $attachment_data['uuid'];
                 $new_attachment->name = $attachment_data['name'];
@@ -417,7 +416,7 @@ class EntryController extends Controller {
      * @param string $sort_direction
      * @return Response
      */
-    private function provide_paged_entries_response(array $filters, int $page_number=0, string $sort_by=Entry::DEFAULT_SORT_PARAMETER, string $sort_direction=Entry::DEFAULT_SORT_DIRECTION):Response{
+    private function provide_paged_entries_response(array $filters, int $page_number=0, string $sort_by=Entry::DEFAULT_SORT_PARAMETER, string $sort_direction=Entry::DEFAULT_SORT_DIRECTION): Response {
         $entries_collection = Entry::get_collection_of_non_disabled_entries(
             $filters,
             self::$MAX_ENTRIES_IN_RESPONSE,
@@ -426,10 +425,10 @@ class EntryController extends Controller {
             $sort_direction
         );
 
-        if(is_null($entries_collection) || $entries_collection->isEmpty()){
+        if (is_null($entries_collection) || $entries_collection->isEmpty()) {
             return response([], HttpStatus::HTTP_NOT_FOUND);
         } else {
-            foreach($entries_collection as $entry){
+            foreach ($entries_collection as $entry) {
                 $entry->has_attachments = $entry->has_attachments();
                 $entry->tags = ($entry->has_tags()) ? $entry->get_tag_ids() : [];
                 $entry->is_transfer = !is_null($entry->transfer_entry_id);

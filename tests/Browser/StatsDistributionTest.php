@@ -21,7 +21,6 @@ use Throwable;
  * @group stats-distribution
  */
 class StatsDistributionTest extends StatsBase {
-
     use DuskTraitAccountOrAccountTypeTogglingSelector;
     use DuskTraitBatchFilterEntries;
     use DuskTraitStatsDateRange;
@@ -38,7 +37,7 @@ class StatsDistributionTest extends StatsBase {
 
     private $_color_switch_default;
 
-    public function __construct($name = null, array $data = [], $dataName = ''){
+    public function __construct($name = null, array $data = [], $dataName = '') {
         parent::__construct($name, $data, $dataName);
         $chart_designation = 'distribution-chart';
         $this->_account_or_account_type_toggling_selector_id_label = $chart_designation;
@@ -46,7 +45,7 @@ class StatsDistributionTest extends StatsBase {
         $this->include_transfers_chart_name = $chart_designation;
     }
 
-    public function setUp(): void{
+    public function setUp(): void {
         parent::setUp();
         $this->_color_switch_default = $this->tailwindColors->gray(400);
     }
@@ -57,7 +56,7 @@ class StatsDistributionTest extends StatsBase {
      * @group stats-distribution-1
      * test 1/25
      */
-    public function testSelectDistributionSidebarOption(){
+    public function testSelectDistributionSidebarOption() {
         $this->browse(function(Browser $browser) {
             $browser
                 ->visit(new StatsPage())
@@ -74,15 +73,15 @@ class StatsDistributionTest extends StatsBase {
      * @group stats-distribution-1
      * test 2/25
      */
-    public function testFormHasCorrectElements(){
+    public function testFormHasCorrectElements() {
         $accounts = $this->getApiAccounts();
 
-        $this->browse(function(Browser $browser) use ($accounts){
+        $this->browse(function(Browser $browser) use ($accounts) {
             $browser->visit(new StatsPage());
             $this->clickStatsSidePanelOptionDistribution($browser);
             $browser
                 ->assertVisible(self::$SELECTOR_STATS_FORM_DISTRIBUTION)
-                ->within(self::$SELECTOR_STATS_FORM_DISTRIBUTION, function(Browser $form) use ($accounts){
+                ->within(self::$SELECTOR_STATS_FORM_DISTRIBUTION, function(Browser $form) use ($accounts) {
                     // account/account-type selector
                     $this->assertDefaultStateOfAccountOrAccountTypeTogglingSelectorComponent($form, $accounts);
 
@@ -108,20 +107,20 @@ class StatsDistributionTest extends StatsBase {
      * @group stats-distribution-1
      * test 3/25
      */
-    public function testDefaultDataResultsArea(){
-        $this->browse(function(Browser $browser){
+    public function testDefaultDataResultsArea() {
+        $this->browse(function(Browser $browser) {
             $browser->visit(new StatsPage());
             $this->clickStatsSidePanelOptionDistribution($browser);
             $browser
                 ->assertVisible(self::$SELECTOR_STATS_RESULTS_DISTRIBUTION)
                 ->assertSeeIn(self::$SELECTOR_STATS_RESULTS_DISTRIBUTION, self::$LABEL_NO_STATS_DATA)
-                ->within(self::$SELECTOR_STATS_RESULTS_DISTRIBUTION, function(Browser $stats_results){
+                ->within(self::$SELECTOR_STATS_RESULTS_DISTRIBUTION, function(Browser $stats_results) {
                     $this->assertIncludeTransfersCheckboxButtonNotVisible($stats_results);
                 });
         });
     }
 
-    public function providerGenerateDistributionChart():array{
+    public function providerGenerateDistributionChart(): array {
         //[$datepicker_start, $datepicker_end, $is_account_switch_toggled, $is_expense_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $include_transfers]
         return [
             //  default state of account/account-types; expense; default date range
@@ -195,12 +194,12 @@ class StatsDistributionTest extends StatsBase {
      * @group stats-distribution-2
      * test (see provider)/25
      */
-    public function testGenerateDistributionChart(?string $datepicker_start, ?string $datepicker_end, bool $is_account_switch_toggled, bool $is_expense_switch_toggled, bool $is_random_selector_value, bool $are_disabled_select_options_available, bool $include_transfers){
+    public function testGenerateDistributionChart(?string $datepicker_start, ?string $datepicker_end, bool $is_account_switch_toggled, bool $is_expense_switch_toggled, bool $is_random_selector_value, bool $are_disabled_select_options_available, bool $include_transfers) {
         $accounts = collect($this->getApiAccounts());
         $account_types = collect($this->getApiAccountTypes());
         $tags = collect($this->getApiTags());
 
-        $this->browse(function (Browser $browser) use ($datepicker_start, $datepicker_end, $is_account_switch_toggled, $is_expense_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $include_transfers, $accounts, $account_types, $tags){
+        $this->browse(function(Browser $browser) use ($datepicker_start, $datepicker_end, $is_account_switch_toggled, $is_expense_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $include_transfers, $accounts, $account_types, $tags) {
             $filter_data = [];
 
             $browser->visit(new StatsPage());
@@ -208,12 +207,12 @@ class StatsDistributionTest extends StatsBase {
 
             $browser
                 ->assertVisible(self::$SELECTOR_STATS_FORM_DISTRIBUTION)
-                ->within(self::$SELECTOR_STATS_FORM_DISTRIBUTION, function(Browser $form) use ($is_expense_switch_toggled, $is_account_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $accounts, $account_types, &$filter_data, $datepicker_start, $datepicker_end, $tags){
-                    if($are_disabled_select_options_available){
+                ->within(self::$SELECTOR_STATS_FORM_DISTRIBUTION, function(Browser $form) use ($is_expense_switch_toggled, $is_account_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $accounts, $account_types, &$filter_data, $datepicker_start, $datepicker_end, $tags) {
+                    if ($are_disabled_select_options_available) {
                         $this->toggleShowDisabledAccountOrAccountTypeCheckbox($form);
                     }
 
-                    if($is_account_switch_toggled){
+                    if ($is_account_switch_toggled) {
                         // switch to account-types
                         $this->toggleAccountOrAccountTypeSwitch($form);
                         $account_or_account_type_id = ($is_random_selector_value) ? $account_types->where('disabled', $are_disabled_select_options_available)->pluck('id')->random() : '';
@@ -225,19 +224,19 @@ class StatsDistributionTest extends StatsBase {
                     $this->selectAccountOrAccountTypeValue($form, $account_or_account_type_id);
                     $filter_data = $this->generateFilterArrayElementAccountOrAccountypeId($filter_data, $is_account_switch_toggled, $account_or_account_type_id);
 
-                    if($is_expense_switch_toggled){
+                    if ($is_expense_switch_toggled) {
                         // expense/income - switch
                         $this->toggleToggleButton($form, self::$SELECTOR_STATS_FORM_TOGGLE_EXPENSEINCOME);
                         $this->assertToggleButtonState($form, self::$SELECTOR_STATS_FORM_TOGGLE_EXPENSEINCOME, self::$LABEL_FORM_TOGGLE_EXPENSEINCOME_INCOME, $this->_color_switch_default);
                     }
                     $filter_data = $this->generateFilterArrayElementExpense($filter_data, !$is_expense_switch_toggled);
 
-                    if(!is_null($datepicker_start)){
+                    if (!is_null($datepicker_start)) {
                         $this->setDateRangeDate($form, 'start', $datepicker_start);
                     } else {
                         $datepicker_start = $this->month_start;
                     }
-                    if(!is_null($datepicker_end)){
+                    if (!is_null($datepicker_end)) {
                         $this->setDateRangeDate($form, 'end', $datepicker_end);
                     } else {
                         $datepicker_end = $this->month_end;
@@ -256,9 +255,9 @@ class StatsDistributionTest extends StatsBase {
             $this->waitForLoadingToStop($browser);
             $browser
                 ->assertDontSeeIn(self::$SELECTOR_STATS_RESULTS_DISTRIBUTION, self::$LABEL_NO_STATS_DATA)
-                ->within(self::$SELECTOR_STATS_RESULTS_DISTRIBUTION, function(Browser $stats_results_area) use ($include_transfers){
+                ->within(self::$SELECTOR_STATS_RESULTS_DISTRIBUTION, function(Browser $stats_results_area) use ($include_transfers) {
                     $this->assertIncludeTransfersButtonDefaultState($stats_results_area);
-                    if($include_transfers){
+                    if ($include_transfers) {
                         $this->clickIncludeTransfersCheckboxButton($stats_results_area);
                         $this->assertIncludesTransfersCheckboxButtonStateActive($stats_results_area);
                     }
@@ -268,14 +267,13 @@ class StatsDistributionTest extends StatsBase {
         });
     }
 
-
     /**
      * @throws Throwable
      *
      * @group stats-distribution-1
      * test 4/25
      */
-    public function testGeneratingADistributionChartWontCauseSummaryTablesToBecomeVisible(){
+    public function testGeneratingADistributionChartWontCauseSummaryTablesToBecomeVisible() {
         $this->generatingADifferentChartWontCauseSummaryTablesToBecomeVisible(
             self::$SELECTOR_STATS_SIDE_PANEL_OPTION_DISTRIBUTION,
             self::$SELECTOR_STATS_FORM_DISTRIBUTION,
@@ -288,17 +286,17 @@ class StatsDistributionTest extends StatsBase {
      * @param Collection $tags
      * @return array
      */
-    private function standardiseData($entries, $tags):array{
+    private function standardiseData($entries, $tags): array {
         $standardised_chart_data = [];
 
-        foreach($entries as $entry){
-            if(empty($entry['tags'])){
+        foreach ($entries as $entry) {
+            if (empty($entry['tags'])) {
                 $entry['tags'][] = 0;
             }
-            foreach($entry['tags'] as $tag_id){
+            foreach ($entry['tags'] as $tag_id) {
                 $key = $tag_id === 0 ? 'untagged' : $tags->where('id', $tag_id)->pluck('name')->first();
 
-                if(!isset($standardised_chart_data[$key])){
+                if (!isset($standardised_chart_data[$key])) {
                     $standardised_chart_data[$key] = ['x'=>$key,'y'=>0];
                 }
                 $standardised_chart_data[$key]['y'] += $entry['entry_value'];
@@ -320,9 +318,9 @@ class StatsDistributionTest extends StatsBase {
      * @param Collection $account_types
      * @param Collection $tags
      */
-    private function createEntryWithAllTags(bool $is_account_type_rather_than_account_toggled, $account_or_account_type_id, $account_types, $tags){
-        if(!empty($account_or_account_type_id)){
-            if($is_account_type_rather_than_account_toggled){
+    private function createEntryWithAllTags(bool $is_account_type_rather_than_account_toggled, $account_or_account_type_id, $account_types, $tags) {
+        if (!empty($account_or_account_type_id)) {
+            if ($is_account_type_rather_than_account_toggled) {
                 $account_type_id = $account_or_account_type_id;
             } else {
                 $account_type_id = $account_types->where('account_id', $account_or_account_type_id)->pluck('id')->first();
@@ -332,7 +330,7 @@ class StatsDistributionTest extends StatsBase {
         }
 
         $disabled_entry = Entry::factory()->create(['memo'=>$this->getName().' - ALL tags', 'account_type_id'=>$account_type_id, 'disabled'=>false, 'entry_date'=>date('Y-m-d', strtotime('-1 day'))]);
-        foreach($tags->pluck('id')->all() as $tag_id){
+        foreach ($tags->pluck('id')->all() as $tag_id) {
             $disabled_entry->tags()->attach($tag_id);
         }
     }

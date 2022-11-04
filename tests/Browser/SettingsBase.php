@@ -17,7 +17,6 @@ use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Throwable;
 
 class SettingsBase extends DuskTestCase {
-
     use DuskTraitToggleButton;
     use DuskTraitLoading;
     use DuskTraitNotification;
@@ -58,7 +57,7 @@ class SettingsBase extends DuskTestCase {
 
     private string $color_button_save;
 
-    public function setUp(): void{
+    public function setUp(): void {
         parent::setUp();
         $this->assertConstantsSet();
         $this->initSettingsColors();
@@ -73,18 +72,18 @@ class SettingsBase extends DuskTestCase {
      *
      * test 1/25
      */
-    public function testDefaultSettingsPageState(){
-        $this->browse(function(Browser $browser){
+    public function testDefaultSettingsPageState() {
+        $this->browse(function(Browser $browser) {
             $browser
                 ->visit(new SettingsPage())
                 ->assertVisible(self::$SELECTOR_SETTINGS_NAV)
-                ->within(self::$SELECTOR_SETTINGS_NAV, function(Browser $side_panel){
+                ->within(self::$SELECTOR_SETTINGS_NAV, function(Browser $side_panel) {
                     $side_panel
                         ->assertVisible(self::$SELECTOR_SETTINGS_NAV_HEADER)
                         ->assertSeeIn(self::$SELECTOR_SETTINGS_NAV_HEADER, 'Settings')
                         ->assertMissing(self::$SELECTOR_SETTINGS_NAV_ACTIVE);
                 })
-                ->within(self::$SELECTOR_SETTINGS_DISPLAY, function(Browser $settings_display){
+                ->within(self::$SELECTOR_SETTINGS_DISPLAY, function(Browser $settings_display) {
                     $settings_display
                         ->assertVisible(self::$SELECTOR_SETTINGS_DISPLAY_SECTION_DEFAULT)
                         ->assertSeeIn(self::$SELECTOR_SETTINGS_DISPLAY_SECTION_DEFAULT.' h1', 'Settings')
@@ -98,13 +97,13 @@ class SettingsBase extends DuskTestCase {
      *
      * test 2/25
      */
-    public function testNavigateToSpecificSettingsAndAssertForm(){
-        $this->browse(function(Browser $browser){
+    public function testNavigateToSpecificSettingsAndAssertForm() {
+        $this->browse(function(Browser $browser) {
             $browser->visit(new SettingsPage());
             $this->navigateToSettingsSectionOnSettingsPage($browser);
-            $browser->within(self::$SELECTOR_SETTINGS_DISPLAY, function(Browser $settings_display){
+            $browser->within(self::$SELECTOR_SETTINGS_DISPLAY, function(Browser $settings_display) {
                 $this->assertSettingsSectionDisplayed($settings_display);
-                $settings_display->within(static::$SELECTOR_SETTINGS_DISPLAY_SECTION, function(Browser $section){
+                $settings_display->within(static::$SELECTOR_SETTINGS_DISPLAY_SECTION, function(Browser $section) {
                     $section->assertSeeIn(self::$SELECTOR_SETTINGS_HEADER, static::$LABEL_SETTINGS_SECTION_HEADER);
                     $this->assertFormDefaultsFull($section);
                 });
@@ -117,13 +116,13 @@ class SettingsBase extends DuskTestCase {
      *
      * test 3/25
      */
-    public function testNodesListedUnderFormAreVisible(){
-        $this->browse(function(Browser $browser){
+    public function testNodesListedUnderFormAreVisible() {
+        $this->browse(function(Browser $browser) {
             $browser->visit(new SettingsPage());
             $this->navigateToSettingsSectionOnSettingsPage($browser);
-            $browser->within(self::$SELECTOR_SETTINGS_DISPLAY, function(Browser $settings_display){
+            $browser->within(self::$SELECTOR_SETTINGS_DISPLAY, function(Browser $settings_display) {
                 $this->assertSettingsSectionDisplayed($settings_display);
-                $settings_display->within(static::$SELECTOR_SETTINGS_DISPLAY_SECTION, function(Browser $section){
+                $settings_display->within(static::$SELECTOR_SETTINGS_DISPLAY_SECTION, function(Browser $section) {
                     $section->waitUntilMissing(static::$SELECTOR_SETTINGS_LOADING_NODES, self::$WAIT_SECONDS);
                     $this->assertNodesVisible($section);
                 });
@@ -136,13 +135,13 @@ class SettingsBase extends DuskTestCase {
      *
      * test 4/25
      */
-    public function testFormFieldInteractionAndClearButtonFunctionality(){
-        $this->browse(function(Browser $browser){
+    public function testFormFieldInteractionAndClearButtonFunctionality() {
+        $this->browse(function(Browser $browser) {
             $browser->visit(new SettingsPage());
             $this->navigateToSettingsSectionOnSettingsPage($browser);
-            $browser->within(self::$SELECTOR_SETTINGS_DISPLAY, function(Browser $settings_display){
+            $browser->within(self::$SELECTOR_SETTINGS_DISPLAY, function(Browser $settings_display) {
                 $this->assertSettingsSectionDisplayed($settings_display);
-                $settings_display->within(static::$SELECTOR_SETTINGS_DISPLAY_SECTION, function(Browser $section){
+                $settings_display->within(static::$SELECTOR_SETTINGS_DISPLAY_SECTION, function(Browser $section) {
                     $this->fillForm($section);
                     $this->assertSaveButtonEnabled($section);
 
@@ -158,13 +157,13 @@ class SettingsBase extends DuskTestCase {
      *
      * test 5/25
      */
-    public function testClickExistingNodeWillDisplayDataInFormThenClearFormAndReclickSameNode(){
-        $this->browse(function(Browser $browser){
+    public function testClickExistingNodeWillDisplayDataInFormThenClearFormAndReclickSameNode() {
+        $this->browse(function(Browser $browser) {
             $browser->visit(new SettingsPage());
             $this->navigateToSettingsSectionOnSettingsPage($browser);
-            $browser->within(self::$SELECTOR_SETTINGS_DISPLAY, function(Browser $settings_display){
+            $browser->within(self::$SELECTOR_SETTINGS_DISPLAY, function(Browser $settings_display) {
                 $this->assertSettingsSectionDisplayed($settings_display);
-                $settings_display->within(static::$SELECTOR_SETTINGS_DISPLAY_SECTION, function(Browser $section){
+                $settings_display->within(static::$SELECTOR_SETTINGS_DISPLAY_SECTION, function(Browser $section) {
                     $section->waitUntilMissing(static::$SELECTOR_SETTINGS_LOADING_NODES, self::$WAIT_SECONDS);
 
                     $node = $this->getNode();
@@ -186,20 +185,20 @@ class SettingsBase extends DuskTestCase {
      *
      * test 6/25
      */
-    public function testSaveNewSettingNode(){
-        $this->browse(function(Browser $browser){
+    public function testSaveNewSettingNode() {
+        $this->browse(function(Browser $browser) {
             $browser->visit(new SettingsPage());
             $this->navigateToSettingsSectionOnSettingsPage($browser);
-            $browser->within(self::$SELECTOR_SETTINGS_DISPLAY, function(Browser $settings_display){
+            $browser->within(self::$SELECTOR_SETTINGS_DISPLAY, function(Browser $settings_display) {
                 $this->assertSettingsSectionDisplayed($settings_display);
-                $settings_display->within(static::$SELECTOR_SETTINGS_DISPLAY_SECTION, function(Browser $section){
+                $settings_display->within(static::$SELECTOR_SETTINGS_DISPLAY_SECTION, function(Browser $section) {
                     $nodes = $this->getAllNodes();
                     $this->fillForm($section);
 
                     $this->assertSaveButtonEnabled($section);
                     $this->clickSaveButton($section);
 
-                    $section->elsewhere(self::$SELECTOR_PRIMARY_DIV, function(Browser $body){
+                    $section->elsewhere(self::$SELECTOR_PRIMARY_DIV, function(Browser $body) {
                         $this->waitForLoadingToStop($body);
                         $this->assertNotificationContents($body, self::$NOTIFICATION_TYPE_SUCCESS, static::$LABEL_SETTINGS_NOTIFICATION_NEW);
                         $this->dismissNotification($body);
@@ -209,7 +208,7 @@ class SettingsBase extends DuskTestCase {
 
                     $new_node =$this->getAllNodes()->diff($nodes)->first();
                     $this->interactWithNode($section, $new_node);
-                    $section->elsewhere(self::$SELECTOR_PRIMARY_DIV, function(Browser $body){
+                    $section->elsewhere(self::$SELECTOR_PRIMARY_DIV, function(Browser $body) {
                         $this->waitForLoadingToStop($body);
                     });
                     $this->assertFormWithExistingData($section, $new_node);
@@ -218,7 +217,7 @@ class SettingsBase extends DuskTestCase {
         });
     }
 
-    public function providerSaveExistingSettingNode():array{
+    public function providerSaveExistingSettingNode(): array {
         $this->throwEmptyMethodException(__FUNCTION__);
     }
 
@@ -228,13 +227,13 @@ class SettingsBase extends DuskTestCase {
      *
      * test ?/25
      */
-    public function testSaveExistingSettingNode(string $form_element){
-        $this->browse(function(Browser $browser) use ($form_element){
+    public function testSaveExistingSettingNode(string $form_element) {
+        $this->browse(function(Browser $browser) use ($form_element) {
             $browser->visit(new SettingsPage());
             $this->navigateToSettingsSectionOnSettingsPage($browser);
-            $browser->within(self::$SELECTOR_SETTINGS_DISPLAY, function(Browser $settings_display) use ($form_element){
+            $browser->within(self::$SELECTOR_SETTINGS_DISPLAY, function(Browser $settings_display) use ($form_element) {
                 $this->assertSettingsSectionDisplayed($settings_display);
-                $settings_display->within(static::$SELECTOR_SETTINGS_DISPLAY_SECTION, function(Browser $section) use ($form_element){
+                $settings_display->within(static::$SELECTOR_SETTINGS_DISPLAY_SECTION, function(Browser $section) use ($form_element) {
                     $this->assertFormDefaults($section);
                     $section->waitUntilMissing(static::$SELECTOR_SETTINGS_LOADING_NODES, self::$WAIT_SECONDS);
 
@@ -247,7 +246,7 @@ class SettingsBase extends DuskTestCase {
                     $this->assertSaveButtonEnabled($section);
                     $this->clickSaveButton($section);
 
-                    $section->elsewhere(self::$SELECTOR_PRIMARY_DIV, function(Browser $body){
+                    $section->elsewhere(self::$SELECTOR_PRIMARY_DIV, function(Browser $body) {
                         $this->waitForLoadingToStop($body);
                         $this->assertNotificationContents($body, self::$NOTIFICATION_TYPE_SUCCESS, static::$LABEL_SETTINGS_NOTIFICATION_UPDATE);
                         $this->dismissNotification($body);
@@ -266,43 +265,43 @@ class SettingsBase extends DuskTestCase {
     // ------------ to override  ------------
     // ------------ ------------ ------------
 
-    private function throwEmptyMethodException(string $method){
+    private function throwEmptyMethodException(string $method) {
         throw new \Exception("The method '".$method."' needs to be filled in.");
     }
 
-    protected function assertFormDefaults(Browser $section){
+    protected function assertFormDefaults(Browser $section) {
         $this->throwEmptyMethodException(__FUNCTION__);
     }
 
-    protected function assertFormDefaultsFull(Browser $section){
+    protected function assertFormDefaultsFull(Browser $section) {
         $this->throwEmptyMethodException(__FUNCTION__);
     }
 
-    protected function assertFormWithExistingData(Browser $section, BaseModel $node){
+    protected function assertFormWithExistingData(Browser $section, BaseModel $node) {
         $this->throwEmptyMethodException(__FUNCTION__);
     }
 
-    protected function assertNodesVisible(Browser $section){
+    protected function assertNodesVisible(Browser $section) {
         $this->throwEmptyMethodException(__FUNCTION__);
     }
 
-    protected function fillForm(Browser $section){
+    protected function fillForm(Browser $section) {
         $this->throwEmptyMethodException(__FUNCTION__);
     }
 
-    protected function getNode(int $id=null):BaseModel {
+    protected function getNode(int $id=null): BaseModel {
         $this->throwEmptyMethodException(__FUNCTION__);
     }
 
-    protected function getAllNodes():Collection{
+    protected function getAllNodes(): Collection {
         $this->throwEmptyMethodException(__FUNCTION__);
     }
 
-    protected function interactWithNode(Browser $section, BaseModel $node, bool $is_fresh_load=true){
+    protected function interactWithNode(Browser $section, BaseModel $node, bool $is_fresh_load=true) {
         $this->throwEmptyMethodException(__FUNCTION__);
     }
 
-    protected function interactWithFormElement(Browser $section, string $selector, BaseModel $node=null){
+    protected function interactWithFormElement(Browser $section, string $selector, BaseModel $node=null) {
         $this->throwEmptyMethodException(__FUNCTION__);
     }
 
@@ -310,7 +309,7 @@ class SettingsBase extends DuskTestCase {
     // ------------ asserts      ------------
     // ------------ ------------ ------------
 
-    protected function assertConstantsSet(){
+    protected function assertConstantsSet() {
         $constants_to_be_set = [
             'SELECTOR_SETTINGS_NAV_ELEMENT'=>static::$SELECTOR_SETTINGS_NAV_ELEMENT,
             'LABEL_SETTINGS_NAV_ELEMENT'=>static::$LABEL_SETTINGS_NAV_ELEMENT,
@@ -328,26 +327,26 @@ class SettingsBase extends DuskTestCase {
             'LABEL_SETTINGS_NOTIFICATION_UPDATE'=>static::$LABEL_SETTINGS_NOTIFICATION_UPDATE,
         ];
 
-        foreach($constants_to_be_set as $constant_name=>$constant_value){
+        foreach ($constants_to_be_set as $constant_name=>$constant_value) {
             $this->assertNotEmpty($constant_value, sprintf("The constant %s must have a value set", $constant_name));
         }
     }
 
-    private function assertSettingsSectionDisplayed(Browser $settings_display){
+    private function assertSettingsSectionDisplayed(Browser $settings_display) {
         $settings_display
             ->assertMissing(self::$SELECTOR_SETTINGS_DISPLAY_SECTION_DEFAULT)
             ->assertVisible(static::$SELECTOR_SETTINGS_DISPLAY_SECTION);
     }
 
-    protected function assertActiveStateToggleActive(Browser $settings_display, $toggle_selector){
+    protected function assertActiveStateToggleActive(Browser $settings_display, $toggle_selector) {
         $this->assertToggleButtonState($settings_display, $toggle_selector, 'Active', $this->tailwindColors->blue(600));
     }
 
-    protected function assertActiveStateToggleInactive(Browser $settings_display, $toggle_selector){
+    protected function assertActiveStateToggleInactive(Browser $settings_display, $toggle_selector) {
         $this->assertToggleButtonState($settings_display, $toggle_selector, 'Inactive', $this->tailwindColors->gray(400));
     }
 
-    protected function assertSaveButtonDefault(Browser $section){
+    protected function assertSaveButtonDefault(Browser $section) {
         $section
             ->assertVisible(static::$SELECTOR_SETTINGS_FORM_BUTTON_SAVE)
             ->assertVisible(static::$SELECTOR_SETTINGS_FORM_BUTTON_SAVE.' svg')
@@ -356,17 +355,17 @@ class SettingsBase extends DuskTestCase {
         $this->assertSaveButtonDisabled($section);
     }
 
-    protected function assertSaveButtonDisabled(Browser $section){
+    protected function assertSaveButtonDisabled(Browser $section) {
         $save_button_state = $section->attribute(static::$SELECTOR_SETTINGS_FORM_BUTTON_SAVE, 'disabled');
         $this->assertEquals('true', $save_button_state, "Save button appears to NOT be disabled");    // no changes; so button remains disabled
     }
 
-    protected function assertSaveButtonEnabled(Browser $section){
+    protected function assertSaveButtonEnabled(Browser $section) {
         $save_button_state = $section->attribute(static::$SELECTOR_SETTINGS_FORM_BUTTON_SAVE, 'disabled');
         $this->assertEmpty($save_button_state, "Save button appears to NOT be enabled");
     }
 
-    protected function assertNodeIsOfType($node, string $type){
+    protected function assertNodeIsOfType($node, string $type) {
         $this->assertTrue(
             get_class($node) === $type,
             sprintf("node of type [%s] was incorrectly provided", get_class($node))
@@ -377,14 +376,14 @@ class SettingsBase extends DuskTestCase {
     // ------------ utilities    ------------
     // ------------ ------------ ------------
 
-    protected function initSettingsColors(){
+    protected function initSettingsColors() {
         $this->color_button_save = $this->tailwindColors->green(500);
     }
 
-    private function navigateToSettingsSectionOnSettingsPage(Browser $browser){
+    private function navigateToSettingsSectionOnSettingsPage(Browser $browser) {
         $browser
             ->assertVisible(self::$SELECTOR_SETTINGS_NAV)
-            ->within(self::$SELECTOR_SETTINGS_NAV, function(Browser $side_panel){
+            ->within(self::$SELECTOR_SETTINGS_NAV, function(Browser $side_panel) {
                 $side_panel
                     ->assertMissing(self::$SELECTOR_SETTINGS_NAV_ACTIVE)
                     ->assertVisible(static::$SELECTOR_SETTINGS_NAV_ELEMENT)
@@ -395,20 +394,20 @@ class SettingsBase extends DuskTestCase {
             });
     }
 
-    private function clickSaveButton(Browser $section){
+    private function clickSaveButton(Browser $section) {
         $section
             ->scrollIntoView(self::$SELECTOR_SETTINGS_HEADER)
             ->click(static::$SELECTOR_SETTINGS_FORM_BUTTON_SAVE);
     }
 
-    private function clickClearButton(Browser $browser){
+    private function clickClearButton(Browser $browser) {
         $browser
             ->scrollIntoView(self::$SELECTOR_SETTINGS_HEADER)
             ->click(static::$SELECTOR_SETTINGS_FORM_BUTTON_CLEAR)
             ->pause($this->toggleButtonTransitionTimeInMilliseconds());   // wait for toggle button transition to complete;
     }
 
-    protected function convertDateToECMA262Format(string $date):string{
+    protected function convertDateToECMA262Format(string $date): string {
         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toString
         // ECMA-262 datetime format
         return Carbon::create($date)->format('D M d Y H:i:s \G\M\TO');

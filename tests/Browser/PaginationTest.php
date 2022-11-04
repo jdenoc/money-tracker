@@ -26,7 +26,6 @@ use Throwable;
  * @group home
  */
 class PaginationTest extends DuskTestCase {
-
     use DuskTraitBrowserDateUtil;
     use DustTraitBrowserVisibilityUtil;
     use DuskTraitEntryModal;
@@ -44,7 +43,7 @@ class PaginationTest extends DuskTestCase {
     private static int $ENTRY_COUNT_TWO;        // number of entries needed to be generated for 2 pages of results; set in constructor
     private static int $ENTRY_COUNT_THREE;      // number of entries needed to be generated for 3 pages of results; set in constructor
 
-    public function __construct($name = null, array $data = [], $dataName = ''){
+    public function __construct($name = null, array $data = [], $dataName = '') {
         parent::__construct($name, $data, $dataName);
 
         self::$ENTRY_COUNT_TWO = (self::$MAX_ENTRIES_IN_RESPONSE*2)-10;
@@ -53,7 +52,7 @@ class PaginationTest extends DuskTestCase {
 
     private $_account_types = [];
 
-    public function setUp(): void{
+    public function setUp(): void {
         parent::setUp();
         // clear the `entries` table, so we can test against an exact amount of entries.
         DB::table('entries')->truncate();
@@ -66,12 +65,12 @@ class PaginationTest extends DuskTestCase {
      * @group navigation-3
      * test 1/25
      */
-    public function testPaginationButtonsNotVisibleIfEntryCountLessThanPageMax(){
+    public function testPaginationButtonsNotVisibleIfEntryCountLessThanPageMax() {
         Entry::factory()->count(self::$ENTRY_COUNT_ONE)->create($this->entryOverrideAttributes());
         $entries = $this->getApiEntries();
         $this->assertLessThan(self::$MAX_ENTRIES_IN_RESPONSE, $entries['count']);
 
-        $this->browse(function (Browser $browser){
+        $this->browse(function(Browser $browser) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $browser
@@ -86,12 +85,12 @@ class PaginationTest extends DuskTestCase {
      * @group navigation-3
      * test 2/25
      */
-    public function testNextPaginationButtonVisibleIfEntryCountGreaterThanPageMax(){
+    public function testNextPaginationButtonVisibleIfEntryCountGreaterThanPageMax() {
         Entry::factory()->count(self::$ENTRY_COUNT_TWO)->create($this->entryOverrideAttributes());
         $entries = $this->getApiEntries();
         $this->assertGreaterThanOrEqual(self::$MAX_ENTRIES_IN_RESPONSE, $entries['count']);
 
-        $this->browse(function (Browser $browser){
+        $this->browse(function(Browser $browser) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $browser
@@ -106,7 +105,7 @@ class PaginationTest extends DuskTestCase {
      * @group navigation-3
      * test 3/25
      */
-    public function testPreviousPaginationButtonsVisiblePagedToNextPage(){
+    public function testPreviousPaginationButtonsVisiblePagedToNextPage() {
         Entry::factory()->count(self::$ENTRY_COUNT_THREE)->create($this->entryOverrideAttributes());
         $entries_page1 = $this->getApiEntries(self::PAGE_NUMBER_ONE);
         $entries_page2 = $this->getApiEntries(self::PAGE_NUMBER_TWO);
@@ -116,7 +115,7 @@ class PaginationTest extends DuskTestCase {
         $this->assertLessThan(self::$MAX_ENTRIES_IN_RESPONSE*3, $entries_page2['count']);
         unset($entries_page1['count'], $entries_page2['count']);
 
-        $this->browse(function (Browser $browser) use ($entries_page1, $entries_page2){
+        $this->browse(function(Browser $browser) use ($entries_page1, $entries_page2) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $this->clickNextButton($browser);
@@ -139,13 +138,13 @@ class PaginationTest extends DuskTestCase {
      * @group navigation-3
      * test 4/25
      */
-    public function testClickPreviousPaginationButtonToViewFirstPageOfEntries(){
+    public function testClickPreviousPaginationButtonToViewFirstPageOfEntries() {
         Entry::factory()->count(self::$ENTRY_COUNT_TWO)->create($this->entryOverrideAttributes());
         $entries = $this->getApiEntries();
         $this->assertGreaterThanOrEqual(self::$MAX_ENTRIES_IN_RESPONSE, $entries['count']);
         unset($entries['count']);
 
-        $this->browse(function (Browser $browser) use ($entries){
+        $this->browse(function(Browser $browser) use ($entries) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
 
@@ -164,12 +163,12 @@ class PaginationTest extends DuskTestCase {
      * @group navigation-3
      * test 5/25
      */
-    public function testPaginationWithEntryCreationUsingEntryModal(){
+    public function testPaginationWithEntryCreationUsingEntryModal() {
         Entry::factory()->count(self::$ENTRY_COUNT_TWO)->create($this->entryOverrideAttributes());
         $entries_original = $this->getApiEntries(self::PAGE_NUMBER_ONE);
         $this->assertGreaterThan(self::$MAX_ENTRIES_IN_RESPONSE, $entries_original['count']);
 
-        $this->browse(function(Browser $browser) use ($entries_original){
+        $this->browse(function(Browser $browser) use ($entries_original) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $this->clickNextButton($browser);
@@ -183,7 +182,7 @@ class PaginationTest extends DuskTestCase {
 
             $this->openNewEntryModal($browser);
             $browser
-                ->within($this->_selector_modal_entry, function(Browser $entry_modal_body) use ($new_entry_date_to_type){
+                ->within($this->_selector_modal_entry, function(Browser $entry_modal_body) use ($new_entry_date_to_type) {
                     $account_types = $this->getApiAccountTypes();
                     $account_type_id = collect($account_types)->pluck('id')->random(1)->first();
                     $entry_modal_body
@@ -209,7 +208,7 @@ class PaginationTest extends DuskTestCase {
      * @group navigation-3
      * test 6/25
      */
-    public function testPaginationWithEntryCreationUsingTransferModal(){
+    public function testPaginationWithEntryCreationUsingTransferModal() {
         Entry::factory()->count(self::$ENTRY_COUNT_TWO)->create($this->entryOverrideAttributes());
         $entries_original = $this->getApiEntries(self::PAGE_NUMBER_ONE);
         $this->assertGreaterThan(self::$MAX_ENTRIES_IN_RESPONSE, $entries_original['count']);
@@ -217,7 +216,7 @@ class PaginationTest extends DuskTestCase {
         $all_account_types = $this->getApiAccountTypes();
         $account_type_ids = collect($all_account_types)->pluck('id')->random(2)->toArray();
 
-        $this->browse(function(Browser $browser) use ($entries_original, $account_type_ids){
+        $this->browse(function(Browser $browser) use ($entries_original, $account_type_ids) {
             $entries_count = $entries_original['count'];
             unset($entries_original['count']);
 
@@ -232,7 +231,7 @@ class PaginationTest extends DuskTestCase {
 
             $this->openTransferModal($browser);
             $browser
-                ->within($this->_selector_modal_transfer, function(Browser $modal) use ($new_entry_date_to_type, $account_type_ids){
+                ->within($this->_selector_modal_transfer, function(Browser $modal) use ($new_entry_date_to_type, $account_type_ids) {
                     $modal
                         ->type($this->_selector_modal_transfer_field_date, $new_entry_date_to_type)
                         ->type($this->_selector_modal_transfer_field_value, "4820.23")
@@ -257,15 +256,15 @@ class PaginationTest extends DuskTestCase {
      * @group navigation-3
      * test 7/25
      */
-    public function testNextButtonNotVisibleWhenNoEntriesProvidedByFilter(){
+    public function testNextButtonNotVisibleWhenNoEntriesProvidedByFilter() {
         Entry::factory()->count(self::$ENTRY_COUNT_TWO)->create($this->entryOverrideAttributes());
 
-        $this->browse(function (Browser $browser){
+        $this->browse(function(Browser $browser) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $this->openFilterModal($browser);
             $browser
-                ->within($this->_selector_modal_filter.' '.$this->_selector_modal_head, function(Browser $modal){
+                ->within($this->_selector_modal_filter.' '.$this->_selector_modal_head, function(Browser $modal) {
                     $filter_value = date("Y-m-d", strtotime("+10 day"));
                     $browser_date = $this->getDateFromLocale($this->getBrowserLocale($modal), $filter_value);
                     $filter_value = $this->processLocaleDateForTyping($browser_date);
@@ -276,12 +275,12 @@ class PaginationTest extends DuskTestCase {
                     $filter_value = $this->processLocaleDateForTyping($browser_date);
                     $modal->type($this->_selector_modal_filter_field_end_date, $filter_value);
                 })
-                ->within($this->_selector_modal_filter.' '.$this->_selector_modal_foot, function(Browser $modal){
+                ->within($this->_selector_modal_filter.' '.$this->_selector_modal_foot, function(Browser $modal) {
                     $modal->click($this->_selector_modal_filter_btn_filter);
                 });
             $this->waitForLoadingToStop($browser);
             $browser
-                ->within($this->_selector_table_body, function(Browser $table){
+                ->within($this->_selector_table_body, function(Browser $table) {
                     $table->assertMissing('tr');
                 })
                 ->assertMissing($this->_selector_pagination_btn_next);
@@ -292,24 +291,24 @@ class PaginationTest extends DuskTestCase {
      * @param Browser $browser
      * @param array $entries
      */
-    private function assertEntriesDisplayed(Browser $browser, $entries){
-        $browser->within($this->_selector_table_body, function(Browser $table) use ($entries){
-            foreach($entries as $entry){
+    private function assertEntriesDisplayed(Browser $browser, $entries) {
+        $browser->within($this->_selector_table_body, function(Browser $table) use ($entries) {
+            foreach ($entries as $entry) {
                 $entry_row_selector = sprintf(self::$PLACEHOLDER_SELECTOR_EXISTING_ENTRY_ROW, $entry['id']);
                 $table
                     ->assertSeeIn($entry_row_selector.' '.$this->_selector_table_row_date, $entry['entry_date'])
                     ->assertSeeIn($entry_row_selector.' '.$this->_selector_table_row_memo, $entry['memo'])
-                    ->assertSeeIn($entry_row_selector.' '.$this->_selector_table_row_value , $entry['entry_value']);
+                    ->assertSeeIn($entry_row_selector.' '.$this->_selector_table_row_value, $entry['entry_value']);
             }
         });
     }
 
-    private function entryOverrideAttributes():array{
+    private function entryOverrideAttributes(): array {
         $account_type_id = collect($this->_account_types)->pluck('id')->random(1)->first();
         return ['disabled'=>0, 'account_type_id'=>$account_type_id];
     }
 
-    private function clickNextButton(Browser $browser){
+    private function clickNextButton(Browser $browser) {
         $browser
             ->scrollIntoView($this->_selector_pagination_btn_next)
             ->assertVisible($this->_selector_pagination_btn_next)
@@ -319,7 +318,7 @@ class PaginationTest extends DuskTestCase {
         $this->isVisibleInViewport($browser, $this->_selector_table.' '.$this->_selector_table_head);
     }
 
-    private function clickPrevButton(Browser $browser){
+    private function clickPrevButton(Browser $browser) {
         $browser
             ->scrollIntoView($this->_selector_pagination_btn_prev)
             ->assertVisible($this->_selector_pagination_btn_prev)

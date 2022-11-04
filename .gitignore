@@ -7,6 +7,7 @@ _ide_helper*.php
 .phpstorm.meta.php
 phpunit.dusk.xml
 .phpunit.result.cache
+.php-cs-fixer.cache
 
 # composer
 vendor

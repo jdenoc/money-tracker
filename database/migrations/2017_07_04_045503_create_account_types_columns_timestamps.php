@@ -19,8 +19,8 @@ class CreateAccountTypesColumnsTimestamps extends Migration {
      *
      * @return void
      */
-    public function up(){
-        Schema::table(self::$TABLE, function(Blueprint $table){
+    public function up() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
             $table->timestamp(self::$COLUMN_CREATED)->nullable()->after('disabled');
             $table->timestamp(self::$COLUMN_DISABLED)->nullable()->after(self::$COLUMN_LAST_UPDATE);
             $table->renameColumn(self::$COLUMN_LAST_UPDATE, self::$COLUMN_MODIFIED);
@@ -32,8 +32,8 @@ class CreateAccountTypesColumnsTimestamps extends Migration {
      *
      * @return void
      */
-    public function down(){
-        Schema::table(self::$TABLE, function(Blueprint $table){
+    public function down() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
             $table->dropColumn(self::$COLUMN_CREATED);
             $table->dropColumn(self::$COLUMN_DISABLED);
             $table->renameColumn(self::$COLUMN_MODIFIED, self::$COLUMN_LAST_UPDATE);

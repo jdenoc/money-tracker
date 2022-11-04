@@ -10,14 +10,14 @@ class AppKeyCheck extends Check {
     public function run(): Result {
         $result = Result::make();
 
-        if($this->isAppKeySet()){
+        if ($this->isAppKeySet()) {
             return $result->ok();
         } else {
             return $result->failed("APP_KEY not set");
         }
     }
 
-    protected function isAppKeySet():bool {
+    protected function isAppKeySet(): bool {
         return config('app.key') != "";
     }
 

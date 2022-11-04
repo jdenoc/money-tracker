@@ -9,8 +9,9 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements MustVerifyEmail {
-
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens;
+    use HasFactory;
+    use Notifiable;
 
     /**
      * Indicates if the model should be timestamped.
@@ -49,6 +50,11 @@ class User extends Authenticatable implements MustVerifyEmail {
         'email_verified_at' => 'datetime',
     ];
 
+    /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var string[]|bool
+     */
     protected $guarded = ['id'];
 
 }

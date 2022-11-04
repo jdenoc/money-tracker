@@ -4,14 +4,14 @@ namespace Tests\Browser\Pages;
 
 use Laravel\Dusk\Browser;
 
-class SettingsPage extends Page
-{
+class SettingsPage extends Page {
+
     /**
      * Get the URL for the page.
      *
      * @return string
      */
-    public function url(){
+    public function url() {
         return '/settings';
     }
 
@@ -21,7 +21,7 @@ class SettingsPage extends Page
      * @param  Browser  $browser
      * @return void
      */
-    public function assert(Browser $browser){
+    public function assert(Browser $browser) {
 //        $browser->assertPathIs($this->url());
     }
 
@@ -30,9 +30,10 @@ class SettingsPage extends Page
      *
      * @return array
      */
-    public function elements(){
+    public function elements() {
         return [
 //            '@element' => '#selector',
         ];
     }
+
 }

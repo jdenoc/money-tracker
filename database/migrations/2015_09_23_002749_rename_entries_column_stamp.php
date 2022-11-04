@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
@@ -18,9 +19,9 @@ class RenameEntriesColumnStamp extends Migration {
      *
      * @return void
      */
-    public function up(){
+    public function up() {
         // add a new column
-        Schema::table(self::$TABLE, function (Blueprint $table) {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
             $table->timestamp(self::$COLUMN_CREATE)->nullable();
             $table->timestamp(self::$COLUMN_MODIFIED)->useCurrent();
         });
@@ -29,7 +30,7 @@ class RenameEntriesColumnStamp extends Migration {
         DB::table(self::$TABLE)->update([self::$COLUMN_CREATE=>DB::raw(self::$COLUMN_STAMP)]);
 
         // delete old column
-        Schema::table(self::$TABLE, function (Blueprint $table) {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
             $table->dropColumn(self::$COLUMN_STAMP);
         });
     }
@@ -39,9 +40,9 @@ class RenameEntriesColumnStamp extends Migration {
      *
      * @return void
      */
-    public function down(){
+    public function down() {
         // add a new column
-        Schema::table(self::$TABLE, function (Blueprint $table) {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
             $table->timestamp(self::$COLUMN_STAMP)->useCurrent();
         });
 
@@ -49,7 +50,7 @@ class RenameEntriesColumnStamp extends Migration {
         DB::table(self::$TABLE)->update([self::$COLUMN_STAMP=>DB::raw(self::$COLUMN_CREATE)]);
 
         // delete old column
-        Schema::table(self::$TABLE, function (Blueprint $table) {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
             $table->dropColumn(self::$COLUMN_CREATE);
             $table->dropColumn(self::$COLUMN_MODIFIED);
         });

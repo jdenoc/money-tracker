@@ -13,7 +13,6 @@ use Laravel\Dusk\Browser;
  * @group settings-institutions
  */
 class SettingsInstitutionsTest extends SettingsBase {
-
     use DuskTraitToggleButton;
 
     protected static string $SELECTOR_SETTINGS_NAV_ELEMENT = 'li.settings-nav-option:nth-child(1)';
@@ -39,14 +38,14 @@ class SettingsInstitutionsTest extends SettingsBase {
     protected static string $LABEL_SETTINGS_NOTIFICATION_NEW = 'New Institution created';
     protected static string $LABEL_SETTINGS_NOTIFICATION_UPDATE = 'Institution updated';
 
-    public function providerSaveExistingSettingNode():array {
+    public function providerSaveExistingSettingNode(): array {
         return [
             'name'=>[self::$SELECTOR_SETTINGS_FORM_INPUT_NAME],
             'active'=>[self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE],
         ];
     }
 
-    protected function assertFormDefaultsFull(Browser $section){
+    protected function assertFormDefaultsFull(Browser $section) {
         $section
             ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_LABEL_NAME, self::$LABEL_SETTINGS_FORM_INPUT_NAME)
             ->assertVisible(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME)
@@ -73,7 +72,7 @@ class SettingsInstitutionsTest extends SettingsBase {
      *   Active State: "Active"
      *   Save button [disabled]
      */
-    protected function assertFormDefaults(Browser $section){
+    protected function assertFormDefaults(Browser $section) {
         $section
             ->scrollIntoView(self::$SELECTOR_SETTINGS_HEADER)
 
@@ -88,10 +87,10 @@ class SettingsInstitutionsTest extends SettingsBase {
         $this->assertSaveButtonDisabled($section);
     }
 
-    protected function assertFormWithExistingData(Browser $section, BaseModel $node){
+    protected function assertFormWithExistingData(Browser $section, BaseModel $node) {
         $this->assertNodeIsOfType($node, Institution::class);
         $section->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, $node->name);
-        if($node->active){
+        if ($node->active) {
             $this->assertActiveStateToggleActive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
         } else {
             $this->assertActiveStateToggleInactive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
@@ -106,10 +105,10 @@ class SettingsInstitutionsTest extends SettingsBase {
         $this->assertSaveButtonDisabled($section);
     }
 
-    protected function assertNodesVisible(Browser $section){
+    protected function assertNodesVisible(Browser $section) {
         $institutions = Institution::all();
         $this->assertCount($institutions->count(), $section->elements('hr~ul li'));
-        foreach ($institutions as $institution){
+        foreach ($institutions as $institution) {
             $selector_institution_id = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID, $institution->id);
             $section
                 ->assertVisible($selector_institution_id)
@@ -117,7 +116,7 @@ class SettingsInstitutionsTest extends SettingsBase {
             $class_is_disabled = 'is-disabled';
             $class_is_active = 'is-active';
             $institution_node_classes = $section->attribute($selector_institution_id, 'class');
-            if($institution->active){
+            if ($institution->active) {
                 $this->assertStringNotContainsString($class_is_disabled, $institution_node_classes);
                 $this->assertStringContainsString($class_is_active, $institution_node_classes);
             } else {
@@ -127,11 +126,11 @@ class SettingsInstitutionsTest extends SettingsBase {
         }
     }
 
-    protected function fillForm(Browser $section){
+    protected function fillForm(Browser $section) {
         $this->interactWithFormElement($section, self::$SELECTOR_SETTINGS_FORM_INPUT_NAME);
         $section->assertInputValueIsNot(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, '');
         $is_institution_active = $this->faker->boolean();
-        if(!$is_institution_active){
+        if (!$is_institution_active) {
             $this->interactWithFormElement($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
             $this->assertActiveStateToggleInactive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
         } else {
@@ -139,19 +138,19 @@ class SettingsInstitutionsTest extends SettingsBase {
         }
     }
 
-    protected function getNode(int $id=null):Institution{
-        if(is_null($id)){
+    protected function getNode(int $id=null): Institution {
+        if (is_null($id)) {
             return Institution::get()->random();
         } else {
             return Institution::find($id);
         }
     }
 
-    protected function getAllNodes(): Collection{
+    protected function getAllNodes(): Collection {
         return Institution::all();
     }
 
-    protected function interactWithNode(Browser $section, BaseModel $node, bool $is_fresh_load=true){
+    protected function interactWithNode(Browser $section, BaseModel $node, bool $is_fresh_load=true) {
         $this->assertNodeIsOfType($node, Institution::class);
         $institution_class_state = $node->active ? '.is-active' : '.is-disabled';
         $selector_institution_id = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID.$institution_class_state, $node->id);
@@ -159,33 +158,31 @@ class SettingsInstitutionsTest extends SettingsBase {
             ->assertVisible($selector_institution_id)
             ->click($selector_institution_id.' span');
 
-        if($is_fresh_load){
-            $section->elsewhere(self::$SELECTOR_PRIMARY_DIV, function(Browser $body){
+        if ($is_fresh_load) {
+            $section->elsewhere(self::$SELECTOR_PRIMARY_DIV, function(Browser $body) {
                 $this->waitForLoadingToStop($body);
             });
         }
         $section->pause($this->toggleButtonTransitionTimeInMilliseconds()); // wait for toggle to transition
     }
 
-    protected function interactWithFormElement(Browser $section, string $selector, BaseModel $node=null){
-        if(is_null($node)){
+    protected function interactWithFormElement(Browser $section, string $selector, BaseModel $node=null) {
+        if (is_null($node)) {
             $node = new Institution();
         }
         $this->assertNodeIsOfType($node, Institution::class);
 
-        switch($selector){
+        switch($selector) {
             case self::$SELECTOR_SETTINGS_FORM_INPUT_NAME:
                 $institutions = $this->getAllNodes();
-                do{
+                do {
                     $name = $this->faker->word();
-                }while($node->name == $name || $institutions->contains('name', $name));
+                } while ($node->name == $name || $institutions->contains('name', $name));
                 $section->type($selector, $name);
                 break;
-
             case self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE:
                 $this->toggleToggleButton($section, $selector);
                 break;
-
             default:
                 throw new \UnexpectedValueException(sprintf("Unexpected form element [%s] provided", $selector));
         }

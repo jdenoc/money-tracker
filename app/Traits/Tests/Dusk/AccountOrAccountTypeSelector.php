@@ -6,7 +6,6 @@ use App\Traits\Tests\WaitTimes;
 use Laravel\Dusk\Browser;
 
 trait AccountOrAccountTypeSelector {
-
     use WaitTimes;
 
     /**
@@ -15,7 +14,7 @@ trait AccountOrAccountTypeSelector {
      *
      * @throws \Facebook\WebDriver\Exception\TimeOutException
      */
-    private function waitUntilSelectLoadingIsMissing(Browser $component, string $select_selector){
+    private function waitUntilSelectLoadingIsMissing(Browser $component, string $select_selector) {
         $class_loading = '.loading';
         $parent_visible_script = <<<JS
 return document.querySelector('{$component->resolver->prefix}').querySelector('$select_selector').parentNode.querySelector('$class_loading').offsetParent === null;
