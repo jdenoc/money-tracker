@@ -86,10 +86,6 @@ abstract class DuskTestCase extends BaseTestCase {
             $this->runTestNameLogging($this->getName(true));
         }
 
-        if(isset($uses[\App\Traits\Tests\InjectDatabaseStateIntoException::class])){
-            $this->prepareFailureExceptionForDatabaseInjection();
-        }
-
         if(isset($uses[\App\Traits\Tests\WithTailwindColors::class])){
             $this->setupTailwindColors();
         }
