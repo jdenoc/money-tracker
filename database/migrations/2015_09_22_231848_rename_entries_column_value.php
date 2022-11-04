@@ -15,8 +15,8 @@ class RenameEntriesColumnValue extends Migration {
      *
      * @return void
      */
-    public function up(){
-        Schema::table(self::$TABLE, function (Blueprint $table) {
+    public function up() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
             $table->renameColumn(self::$COLUMN_OLD, self::$COLUMN_NEW);
         });
     }
@@ -26,8 +26,8 @@ class RenameEntriesColumnValue extends Migration {
      *
      * @return void
      */
-    public function down(){
-        Schema::table(self::$TABLE, function (Blueprint $table) {
+    public function down() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
             $table->renameColumn(self::$COLUMN_NEW, self::$COLUMN_OLD);
         });
     }

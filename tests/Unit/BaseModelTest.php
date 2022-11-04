@@ -14,7 +14,7 @@ class BaseModelTest extends TestCase {
      *  WHEN:    we call DatabaseHelper::get_enum_values()
      *  THEN:    the method should return a non-empty array
      */
-    public function testGetEnumValuesWhenColumnIsTypeEnum(){
+    public function testGetEnumValuesWhenColumnIsTypeEnum() {
         // GIVEN
         // as of the migration 2015_09_07_002949_create_account_types_table
         // the database column account_types.type exists and is of type ENUM
@@ -34,7 +34,7 @@ class BaseModelTest extends TestCase {
      *  WHEN:    we call DatabaseHelper::get_enum_values()
      *  THEN:    an empty array is returned
      */
-    public function testGetEnumValuesFromANonEnumColumn(){
+    public function testGetEnumValuesFromANonEnumColumn() {
         // GIVEN
         // as of the migration 2015_09_07_002949_create_account_types_table
         // the database column account_types.id exists and is of type INT
@@ -54,7 +54,7 @@ class BaseModelTest extends TestCase {
      *  WHEN:    we call DatabaseHelper::get_enum_values()
      *  THEN:    InvalidArgumentException is thrown
      */
-    public function testGetEnumValuesFromADataBaseTableColumnThatDoesNotExist(){
+    public function testGetEnumValuesFromADataBaseTableColumnThatDoesNotExist() {
         // THEN
         $this->expectException(InvalidArgumentException::class);
 
@@ -63,7 +63,7 @@ class BaseModelTest extends TestCase {
         $column = 'foobar';
 
         // WHEN
-        $enum_values = AccountType::get_enum_values($column);
+        AccountType::get_enum_values($column);
     }
 
 }

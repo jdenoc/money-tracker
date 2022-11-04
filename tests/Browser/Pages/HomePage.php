@@ -8,7 +8,6 @@ use Laravel\Dusk\Browser;
 use PHPUnit\Framework\Assert as PHPUnit;
 
 class HomePage extends Page {
-
     use WaitTimes;
     use Loading;
 
@@ -17,7 +16,7 @@ class HomePage extends Page {
      *
      * @return string
      */
-    public function url(){
+    public function url() {
         return '/';
     }
 
@@ -27,7 +26,7 @@ class HomePage extends Page {
      * @param  Browser  $browser
      * @return void
      */
-    public function assert(Browser $browser){
+    public function assert(Browser $browser) {
         //
     }
 
@@ -36,7 +35,7 @@ class HomePage extends Page {
      *
      * @return array
      */
-    public function elements(){
+    public function elements() {
         return [
             // entry-modal
             '@entry-modal'=>'#entry-modal',
@@ -50,25 +49,25 @@ class HomePage extends Page {
         ];
     }
 
-    public function openExistingEntryModal(Browser $browser, $entry_table_selector){
+    public function openExistingEntryModal(Browser $browser, $entry_table_selector) {
         $browser
             ->waitFor($entry_table_selector, self::$WAIT_SECONDS)
-            ->with($entry_table_selector, function($table_body){
+            ->with($entry_table_selector, function($table_body) {
                 $table_body->click('@edit-existing-entry-modal-btn');
             });
         $this->waitForLoadingToStop($browser);
         $browser->waitFor('@entry-modal', self::$WAIT_SECONDS);
     }
 
-    public function assertEntryModalSaveButtonIsDisabled(Browser $browser){
+    public function assertEntryModalSaveButtonIsDisabled(Browser $browser) {
         $this->assertModalSaveButtonIsDisabled($browser, "@entry-modal-save-btn", "entry-modal save button is NOT disabled");
     }
 
-    public function assertTransferModalSaveButtonIsDisabled(Browser $browser){
+    public function assertTransferModalSaveButtonIsDisabled(Browser $browser) {
         $this->assertModalSaveButtonIsDisabled($browser, "@transfer-modal-save-btn", "transfer-modal save button is NOT disabled");
     }
 
-    protected function assertModalSaveButtonIsDisabled(Browser $browser, $modal_save_btn_selector, $fail_message){
+    protected function assertModalSaveButtonIsDisabled(Browser $browser, $modal_save_btn_selector, $fail_message) {
         PHPUnit::assertEquals(
             'true',
             $browser->attribute($modal_save_btn_selector, 'disabled'),
@@ -76,15 +75,15 @@ class HomePage extends Page {
         );
     }
 
-    public function assertEntryModalSaveButtonIsNotDisabled(Browser $browser){
+    public function assertEntryModalSaveButtonIsNotDisabled(Browser $browser) {
         $this->assertModalSaveButtonIsNotDisabled($browser, "@entry-modal-save-btn", "entry-modal save button IS disabled");
     }
 
-    public function assertTransferModalSaveButtonIsNotDisabled(Browser $browser){
+    public function assertTransferModalSaveButtonIsNotDisabled(Browser $browser) {
         $this->assertModalSaveButtonIsNotDisabled($browser, "@transfer-modal-save-btn", "transfer-modal save button IS disabled");
     }
 
-    protected function assertModalSaveButtonIsNotDisabled(Browser $browser, $modal_save_btn_selector, $fail_message){
+    protected function assertModalSaveButtonIsNotDisabled(Browser $browser, $modal_save_btn_selector, $fail_message) {
         PHPUnit::assertNotEquals(
             'true',
             $browser->attribute($modal_save_btn_selector, 'disabled'),

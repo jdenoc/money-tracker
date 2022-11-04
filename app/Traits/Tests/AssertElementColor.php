@@ -9,47 +9,47 @@ trait AssertElementColor {
 
     private static string $COLOR_ASSERT_ERROR_MESSAGE_TEMPLATE = "Expected colour [%s] does not match actual colour [%s] of element [%s]";
 
-    public function assertElementBackgroundColor(Browser $browser, string $element_selector, string $expected_colour){
+    public function assertElementBackgroundColor(Browser $browser, string $element_selector, string $expected_colour) {
         $this->assertElementBackgroundColour($browser, $element_selector, $expected_colour);
     }
 
-    public function assertElementBackgroundColour(Browser $browser, string $element_selector, string $expected_colour){
+    public function assertElementBackgroundColour(Browser $browser, string $element_selector, string $expected_colour) {
         $full_selector = $browser->resolver->format($element_selector);
         $element_hex_colour = $this->getElementColor($browser, $full_selector, 'background-color', false);
         PHPUnit::assertEquals(strtoupper($expected_colour), strtoupper($element_hex_colour), sprintf(static::$COLOR_ASSERT_ERROR_MESSAGE_TEMPLATE, $expected_colour, $element_hex_colour, $full_selector));
     }
 
-    public function assertParentElementBackgroundColor(Browser $browser, string $element_selector, string $expected_colour){
+    public function assertParentElementBackgroundColor(Browser $browser, string $element_selector, string $expected_colour) {
         $this->assertParentElementBackgroundColour($browser, $element_selector, $expected_colour);
     }
 
-    public function assertParentElementBackgroundColour(Browser $browser, string $element_selector, string $expected_colour){
+    public function assertParentElementBackgroundColour(Browser $browser, string $element_selector, string $expected_colour) {
         $full_selector = $browser->resolver->format($element_selector);
         $element_hex_colour = $this->getElementColor($browser, $full_selector, 'background-color', true);
         PHPUnit::assertEquals(strtoupper($expected_colour), strtoupper($element_hex_colour), sprintf(static::$COLOR_ASSERT_ERROR_MESSAGE_TEMPLATE, $expected_colour, $element_hex_colour, $full_selector));
     }
 
-    public function assertElementTextColor(Browser $browser, string $element_selector, string $expected_colour){
+    public function assertElementTextColor(Browser $browser, string $element_selector, string $expected_colour) {
         $this->assertElementTextColour($browser, $element_selector, $expected_colour);
     }
 
-    public function assertElementTextColour(Browser $browser, string $element_selector, string $expected_colour){
+    public function assertElementTextColour(Browser $browser, string $element_selector, string $expected_colour) {
         $full_selector = $browser->resolver->format($element_selector);
         $element_hex_colour = $this->getElementColor($browser, $full_selector, 'color', false);
         PHPUnit::assertEquals(strtoupper($expected_colour), strtoupper($element_hex_colour), sprintf(static::$COLOR_ASSERT_ERROR_MESSAGE_TEMPLATE, $expected_colour, $element_hex_colour, $full_selector));
     }
 
-    public function assertParentElementTextColor(Browser $browser, string $element_selector, string $expected_colour){
+    public function assertParentElementTextColor(Browser $browser, string $element_selector, string $expected_colour) {
         $this->assertParentElementTextColour($browser, $element_selector, $expected_colour);
     }
 
-    public function assertParentElementTextColour(Browser $browser, string $element_selector, string $expected_colour){
+    public function assertParentElementTextColour(Browser $browser, string $element_selector, string $expected_colour) {
         $full_selector = $browser->resolver->format($element_selector);
         $element_hex_colour = $this->getElementColor($browser, $full_selector, 'color', true);
         PHPUnit::assertEquals(strtoupper($expected_colour), strtoupper($element_hex_colour), sprintf(static::$COLOR_ASSERT_ERROR_MESSAGE_TEMPLATE, $expected_colour, $element_hex_colour, $full_selector));
     }
 
-    private function getElementColor(Browser $browser, string $element_selector, string $attribute, bool $is_parent_of_selector):string{
+    private function getElementColor(Browser $browser, string $element_selector, string $attribute, bool $is_parent_of_selector): string {
         $document_query_selector = 'document.querySelector("'.$element_selector.'")'.($is_parent_of_selector ? '.parentNode' : '');
 
         $script = <<<JS

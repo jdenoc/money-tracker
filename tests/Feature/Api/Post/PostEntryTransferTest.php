@@ -16,7 +16,6 @@ use Tests\TestCase;
 use Illuminate\Http\Response as HttpStatus;
 
 class PostEntryTransferTest extends TestCase {
-
     use EntryTransferKeys;
     use EntryResponseKeys;
     use StorageTestFiles;
@@ -28,9 +27,9 @@ class PostEntryTransferTest extends TestCase {
     const FLAG_OVERRIDE_TO = "override_to_account_type_id";
     const FLAG_OVERRIDE_FROM = "override_from_account_type_id";
 
-    private $_base_uri = '/api/entry/transfer';
+    private string $_base_uri = '/api/entry/transfer';
 
-    public function testCreateEntryTransferWithoutData(){
+    public function testCreateEntryTransferWithoutData() {
         // GIVEN
         $entry_data = [];
 
@@ -43,7 +42,7 @@ class PostEntryTransferTest extends TestCase {
         $this->assertFailedPostResponse($response->json(), self::$ERROR_MSG_SAVE_ENTRY_NO_DATA);
     }
 
-    public function providerCreateEntryTransferWithMissingData(){
+    public function providerCreateEntryTransferWithMissingData() {
         // We need to initialise the application to allow us to potentially populate the database
         $this->initialiseApplication();
 
@@ -51,7 +50,7 @@ class PostEntryTransferTest extends TestCase {
 
         $missing_data = [];
         // provide data that is missing one property
-        for($i=0; $i<count($required_transfer_fields); $i++){
+        for ($i=0; $i<count($required_transfer_fields); $i++) {
             $transfer_data = $this->generateTransferData();
             unset($transfer_data[$required_transfer_fields[$i]]);
             $missing_data['missing ['.$required_transfer_fields[$i].']'] = [
@@ -64,7 +63,7 @@ class PostEntryTransferTest extends TestCase {
         $transfer_data = $this->generateTransferData();
         $unset_keys = array_rand($required_transfer_fields, mt_rand(2, count($required_transfer_fields)-1));
         $removed_keys = [];
-        foreach($unset_keys as $unset_key){
+        foreach ($unset_keys as $unset_key) {
             $removed_key = $required_transfer_fields[$unset_key];
 
             unset($transfer_data[$removed_key]);
@@ -83,14 +82,14 @@ class PostEntryTransferTest extends TestCase {
      * @param array $transfer_data
      * @param string $expected_response_error_msg
      */
-    public function testCreateEntryTransferWithMissingData($transfer_data, string $expected_response_error_msg){
+    public function testCreateEntryTransferWithMissingData($transfer_data, string $expected_response_error_msg) {
         // GIVEN - $transfer_data by providerCreateEntryTransferWithMissingData
         $account = Account::factory()->create();
-        if(isset($transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE])){
+        if (isset($transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE])) {
             $account_type1 = AccountType::factory()->create(['account_id'=>$account->id]);
             $transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE] = $account_type1->id;
         }
-        if(isset($transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE])){
+        if (isset($transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE])) {
             $account_type2 = AccountType::factory()->create(['account_id'=>$account->id]);
             $transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE] = $account_type2->id;
         }
@@ -104,12 +103,12 @@ class PostEntryTransferTest extends TestCase {
         $this->assertFailedPostResponse($response->json(), $expected_response_error_msg);
     }
 
-    public function providerCreatingEntryTransferWithInvalidAccountType(){
+    public function providerCreatingEntryTransferWithInvalidAccountType() {
         // We need to initialise the application to allow us to potentially populate the database
         $this->initialiseApplication();
 
         $invalid_account_type_id_transfer_data = [];
-        foreach($this->getAccountIdOverrideOptions() as $account_type_id_override_option){
+        foreach ($this->getAccountIdOverrideOptions() as $account_type_id_override_option) {
             $invalid_account_type_id_transfer_data["Invalid account_type:".json_encode($account_type_id_override_option)] = [
                 $this->generateTransferData(),
                 $account_type_id_override_option
@@ -123,14 +122,14 @@ class PostEntryTransferTest extends TestCase {
      * @param array $transfer_data
      * @param array $override_account_type_id
      */
-    public function testCreatingEntryTransferWithInvalidAccountType($transfer_data, $override_account_type_id){
+    public function testCreatingEntryTransferWithInvalidAccountType($transfer_data, $override_account_type_id) {
         // GIVEN - $transfer_data
         $account = Account::factory()->create();
         $account_type = AccountType::factory()->create(['account_id'=>$account->id]);
-        if($override_account_type_id[self::FLAG_OVERRIDE_TO]){
+        if ($override_account_type_id[self::FLAG_OVERRIDE_TO]) {
             $transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE] = $account_type->id;
         }
-        if($override_account_type_id[self::FLAG_OVERRIDE_FROM]){
+        if ($override_account_type_id[self::FLAG_OVERRIDE_FROM]) {
             $account_type[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE] = $account_type->id;
         }
 
@@ -143,7 +142,7 @@ class PostEntryTransferTest extends TestCase {
         $this->assertFailedPostResponse($response->json(), self::$ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE);
     }
 
-    public function testCreateEntryTransferWithOnlyExternalAccountTypeIds(){
+    public function testCreateEntryTransferWithOnlyExternalAccountTypeIds() {
         // GIVEN - $transfer_data
         $transfer_data = $this->generateTransferData();
         $transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE] = self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
@@ -158,12 +157,12 @@ class PostEntryTransferTest extends TestCase {
         $this->assertFailedPostResponse($response->json(), self::$ERROR_MSG_SAVE_TRANSFER_BOTH_EXTERNAL);
     }
 
-    public function providerCreateEntryTransfer(){
+    public function providerCreateEntryTransfer() {
         // We need to initialise the application to allow us to potentially populate the database
         $this->initialiseApplication();
 
         $valid_transfer_data = [];
-        foreach($this->getAccountIdOverrideOptions() as $account_type_id_override_option){
+        foreach ($this->getAccountIdOverrideOptions() as $account_type_id_override_option) {
             $transfer_data = $this->generateTransferData();
             $transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE] = self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
             $transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE] = self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
@@ -181,16 +180,16 @@ class PostEntryTransferTest extends TestCase {
      * @param array $transfer_data
      * @param array $remain_external_account_type_id
      */
-    public function testCreateEntryTransfer($transfer_data, $remain_external_account_type_id){
+    public function testCreateEntryTransfer($transfer_data, $remain_external_account_type_id) {
         $non_external_account_counter = 0;
         // GIVEN - $transfer_data
         $account = Account::factory()->create();
-        if(!$remain_external_account_type_id[self::FLAG_OVERRIDE_TO]){
+        if (!$remain_external_account_type_id[self::FLAG_OVERRIDE_TO]) {
             $account_type = AccountType::factory()->create(['account_id'=>$account->id]);
             $transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE] = $account_type->id;
             $non_external_account_counter++;
         }
-        if(!$remain_external_account_type_id[self::FLAG_OVERRIDE_FROM]){
+        if (!$remain_external_account_type_id[self::FLAG_OVERRIDE_FROM]) {
             $account_type = AccountType::factory()->create(['account_id'=>$account->id]);
             $transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE] = $account_type->id;
             $non_external_account_counter++;
@@ -209,7 +208,7 @@ class PostEntryTransferTest extends TestCase {
         $this->assertNotEmpty($response_as_array[self::$RESPONSE_SAVE_KEY_ID], $failure_message);
         $this->assertCount($non_external_account_counter, $response_as_array[self::$RESPONSE_SAVE_KEY_ID], $failure_message);
 
-        foreach($response_as_array[self::$RESPONSE_SAVE_KEY_ID] as $entry_id){
+        foreach ($response_as_array[self::$RESPONSE_SAVE_KEY_ID] as $entry_id) {
             $get_entry_response = $this->get(str_replace('transfer', $entry_id, $this->_base_uri));
             $this->assertResponseStatus($get_entry_response, HttpStatus::HTTP_OK);
             $failure_message = "Transfer data:".print_r($transfer_data, true)."\nGet Response:".$get_entry_response->getContent()."\n";
@@ -217,15 +216,15 @@ class PostEntryTransferTest extends TestCase {
             $this->assertEquals($transfer_data['entry_date'], $get_entry_response_as_array['entry_date'], $failure_message);
             $this->assertEquals($transfer_data['entry_value'], $get_entry_response_as_array['entry_value'], $failure_message);
             $this->assertEquals($transfer_data['memo'], $get_entry_response_as_array['memo'], $failure_message);
-            if($get_entry_response_as_array['expense'] == 1){
+            if ($get_entry_response_as_array['expense'] == 1) {
                 $this->assertEquals($transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE], $get_entry_response_as_array['account_type_id'], $failure_message);
-            } elseif($get_entry_response_as_array['expense'] == 0){
+            } elseif ($get_entry_response_as_array['expense'] == 0) {
                 $this->assertEquals($transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE], $get_entry_response_as_array['account_type_id'], $failure_message);
             } else {
                 $this->fail("Entry Expense value returned is not valid. Response:".$get_entry_response->getContent());
             }
             $this->assertNotNull($get_entry_response_as_array['transfer_entry_id'], $failure_message);
-            if($non_external_account_counter > 1){
+            if ($non_external_account_counter > 1) {
                 $this->assertTrue(in_array($get_entry_response_as_array['transfer_entry_id'], $response_as_array[self::$RESPONSE_SAVE_KEY_ID]), $failure_message);
             } else {
                 $this->assertEquals(self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID, $get_entry_response_as_array['transfer_entry_id'], $failure_message);
@@ -233,7 +232,7 @@ class PostEntryTransferTest extends TestCase {
         }
     }
 
-    public function providerCreateEntryTransferWithTagsAndAttachments():array{
+    public function providerCreateEntryTransferWithTagsAndAttachments(): array {
         return [
             [[self::FLAG_HAS_TAGS=>false, self::FLAG_HAS_ATTACHMENTS=>false]],    // this is already tested, but for compelitions sake, lets include it
             [[self::FLAG_HAS_TAGS=>false, self::FLAG_HAS_ATTACHMENTS=>true]],
@@ -246,7 +245,7 @@ class PostEntryTransferTest extends TestCase {
      * @dataProvider providerCreateEntryTransferWithTagsAndAttachments
      * @param array $flags
      */
-    public function testCreateEntryTransferWithTagsAndAttachments(array $flags){
+    public function testCreateEntryTransferWithTagsAndAttachments(array $flags) {
         // GIVEN
         $generated_account = Account::factory()->create();
         $generated_account_type1 = AccountType::factory()->create(['account_id'=>$generated_account->id]);
@@ -257,18 +256,18 @@ class PostEntryTransferTest extends TestCase {
         $transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE] = $generated_account_type2->id;
 
         $generated_tag_ids = [];
-        if($flags[self::FLAG_HAS_TAGS]){
+        if ($flags[self::FLAG_HAS_TAGS]) {
             $generate_tag_count = 3;
             $generated_tags = Tag::factory()->count($generate_tag_count)->create();
             $generated_tag_ids = $generated_tags->pluck('id')->toArray();
             $transfer_data['tags'] = $generated_tag_ids;
         }
 
-        if($flags[self::FLAG_HAS_ATTACHMENTS]){
+        if ($flags[self::FLAG_HAS_ATTACHMENTS]) {
             $generated_attachments = Attachment::factory()->count($this->faker->randomDigitNotZero())->make();
 
             $transfer_data['attachments'] = [];
-            foreach($generated_attachments as $generated_attachment){
+            foreach ($generated_attachments as $generated_attachment) {
                 $generated_attachment->storage_store(
                     Storage::disk(self::$TEST_STORAGE_DISK_NAME)->get($this->getTestStorageFileAttachmentFilePathFromFilename($generated_attachment->name)),
                     true
@@ -293,7 +292,7 @@ class PostEntryTransferTest extends TestCase {
         $this->assertNotEmpty($post_response_as_array[self::$RESPONSE_SAVE_KEY_ID], $failure_message);
         $this->assertCount(2, $post_response_as_array[self::$RESPONSE_SAVE_KEY_ID], $failure_message);
 
-        foreach($post_response_as_array[self::$RESPONSE_SAVE_KEY_ID] as $created_entry_id){
+        foreach ($post_response_as_array[self::$RESPONSE_SAVE_KEY_ID] as $created_entry_id) {
             // WHEN
             $get_entry_response = $this->get(str_replace('transfer', $created_entry_id, $this->_base_uri));
 
@@ -304,9 +303,9 @@ class PostEntryTransferTest extends TestCase {
             $this->assertEquals($transfer_data['entry_date'], $get_entry_response_as_array['entry_date'], $failure_message);
             $this->assertEquals($transfer_data['entry_value'], $get_entry_response_as_array['entry_value'], $failure_message);
             $this->assertEquals($transfer_data['memo'], $get_entry_response_as_array['memo'], $failure_message);
-            if($get_entry_response_as_array['expense'] == 1){
+            if ($get_entry_response_as_array['expense'] == 1) {
                 $this->assertEquals($transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE], $get_entry_response_as_array['account_type_id'], $failure_message);
-            } elseif($get_entry_response_as_array['expense'] == 0){
+            } elseif ($get_entry_response_as_array['expense'] == 0) {
                 $this->assertEquals($transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE], $get_entry_response_as_array['account_type_id'], $failure_message);
             } else {
                 $this->fail("Entry Expense value returned is not valid. Response:".$get_entry_response->getContent());
@@ -314,11 +313,11 @@ class PostEntryTransferTest extends TestCase {
             $this->assertNotNull($get_entry_response_as_array['transfer_entry_id'], $failure_message);
             $this->assertTrue(in_array($get_entry_response_as_array['transfer_entry_id'], $post_response_as_array[self::$RESPONSE_SAVE_KEY_ID]), $failure_message);
 
-            if($flags[self::FLAG_HAS_TAGS]){
+            if ($flags[self::FLAG_HAS_TAGS]) {
                 // check tags are set
                 $this->assertTrue(is_array($get_entry_response_as_array['tags']), $failure_message);
                 $this->assertNotEmpty($get_entry_response_as_array['tags'], $failure_message);
-                foreach($get_entry_response_as_array['tags'] as $entry_tag){
+                foreach ($get_entry_response_as_array['tags'] as $entry_tag) {
                     $this->assertContains(
                         $entry_tag['id'],
                         $generated_tag_ids,
@@ -327,13 +326,13 @@ class PostEntryTransferTest extends TestCase {
                 }
             }
 
-            if($flags[self::FLAG_HAS_ATTACHMENTS]){
+            if ($flags[self::FLAG_HAS_ATTACHMENTS]) {
                 // check attachments were set
                 $this->assertArrayHasKey('attachments', $get_entry_response_as_array, $failure_message);
                 $this->assertTrue(is_array($get_entry_response_as_array['attachments']), $failure_message);
                 $this->assertNotEmpty($get_entry_response_as_array['attachments'], $failure_message);
 
-                foreach($get_entry_response_as_array['attachments'] as $attachment){
+                foreach ($get_entry_response_as_array['attachments'] as $attachment) {
                     // We json_encode() the $transfer_data['attachments'] array because assertContains() can't traverse multidimensional arrays
                     // We don't check if the UUID value matches because it changes during processing
                     $this->assertStringContainsString($attachment['name'], json_encode($transfer_data['attachments']), $failure_message.'Generated attachments:'.json_encode($transfer_data['attachments']));
@@ -342,7 +341,7 @@ class PostEntryTransferTest extends TestCase {
         }
     }
 
-    private function generateTransferData():array{
+    private function generateTransferData(): array {
         $entry_data = Entry::factory()->make();
         return [
             'entry_date'=>$entry_data->entry_date,
@@ -353,7 +352,7 @@ class PostEntryTransferTest extends TestCase {
         ];
     }
 
-    private function getRequiredTransferFields():array{
+    private function getRequiredTransferFields(): array {
         $required_transfer_fields = Entry::get_fields_required_for_creation();
         unset(
             $required_transfer_fields[array_search('account_type_id', $required_transfer_fields)],
@@ -366,7 +365,7 @@ class PostEntryTransferTest extends TestCase {
     /**
      * @param array $response_as_array
      */
-    private function assertPostResponseHasCorrectKeys(array $response_as_array){
+    private function assertPostResponseHasCorrectKeys(array $response_as_array) {
         $failure_message = "Response is ".json_encode($response_as_array);
         $this->assertArrayHasKey(self::$RESPONSE_SAVE_KEY_ID, $response_as_array, $failure_message);
         $this->assertArrayHasKey(self::$RESPONSE_SAVE_KEY_ERROR, $response_as_array, $failure_message);
@@ -376,7 +375,7 @@ class PostEntryTransferTest extends TestCase {
      * @param array $response_as_array
      * @param string $response_error_msg
      */
-    private function assertFailedPostResponse(array $response_as_array, string $response_error_msg){
+    private function assertFailedPostResponse(array $response_as_array, string $response_error_msg) {
         $failure_message = "Response is ".json_encode($response_as_array);
         $this->assertTrue(is_array($response_as_array[self::$RESPONSE_SAVE_KEY_ID]), $failure_message);
         $this->assertEmpty($response_as_array[self::$RESPONSE_SAVE_KEY_ID], $failure_message);
@@ -384,7 +383,7 @@ class PostEntryTransferTest extends TestCase {
         $this->assertStringContainsString($response_error_msg, $response_as_array[self::$RESPONSE_SAVE_KEY_ERROR], $failure_message);
     }
 
-    private function getAccountIdOverrideOptions():array{
+    private function getAccountIdOverrideOptions(): array {
         return [
             [self::FLAG_OVERRIDE_TO=>false, self::FLAG_OVERRIDE_FROM=>false],
             [self::FLAG_OVERRIDE_TO=>true, self::FLAG_OVERRIDE_FROM=>false],

@@ -14,8 +14,8 @@ class AddAccountsColumnCurrency extends Migration {
      *
      * @return void
      */
-    public function up(){
-        Schema::table(self::$TABLE, function (Blueprint $table) {
+    public function up() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
             $table->char(self::$NEW_COLUMN, 3)->after("total")->default("USD")
                 ->comment("values conform to the ISO4217 standard");
         });
@@ -26,9 +26,10 @@ class AddAccountsColumnCurrency extends Migration {
      *
      * @return void
      */
-    public function down(){
-        Schema::table(self::$TABLE, function (Blueprint $table) {
+    public function down() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
             $table->dropColumn(self::$NEW_COLUMN);
         });
     }
+
 }

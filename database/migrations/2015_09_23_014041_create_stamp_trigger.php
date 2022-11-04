@@ -10,7 +10,7 @@ class CreateStampTrigger extends Migration {
     /**
      * Create a MySQL trigger to create a trigger on the entries table to add the current time to the entries.create_stamp when inserting a new record
      */
-    public function up(){
+    public function up() {
         DB::unprepared(
             "CREATE TRIGGER ".self::$TRIGGER."
             BEFORE INSERT ON entries
@@ -22,7 +22,7 @@ class CreateStampTrigger extends Migration {
     /**
      * Reverse the migrations.
      */
-    public function down(){
+    public function down() {
         DB::unprepared("DROP TRIGGER IF EXISTS ".self::$TRIGGER);
     }
 

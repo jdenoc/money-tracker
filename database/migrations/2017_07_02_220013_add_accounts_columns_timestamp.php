@@ -18,8 +18,8 @@ class AddAccountsColumnsTimestamp extends Migration {
      *
      * @return void
      */
-    public function up(){
-        Schema::table(self::$TABLE, function (Blueprint $table) {
+    public function up() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
             $table->timestamp(self::$COLUMN_TIMESTAMP_CREATE)->nullable();
             $table->timestamp(self::$COLUMN_TIMESTAMP_MODIFY)->useCurrent();
             $table->timestamp(self::$COLUMN_TIMESTAMP_DISABLE)->nullable();
@@ -31,8 +31,8 @@ class AddAccountsColumnsTimestamp extends Migration {
      *
      * @return void
      */
-    public function down(){
-        Schema::table(self::$TABLE, function (Blueprint $table) {
+    public function down() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
             $table->dropColumn(self::$COLUMN_TIMESTAMP_CREATE);
             $table->dropColumn(self::$COLUMN_TIMESTAMP_MODIFY);
             $table->dropColumn(self::$COLUMN_TIMESTAMP_DISABLE);

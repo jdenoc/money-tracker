@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ExportsController extends Controller {
-
     use ExportsHelper;
 
     public function __invoke(Request $request) {

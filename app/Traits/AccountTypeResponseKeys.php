@@ -15,7 +15,7 @@ trait AccountTypeResponseKeys {
     private static $ERROR_MSG_INVALID_ACCOUNT = 'Account provided does not exist';
     private static $ERROR_MSG_INVALID_TYPE = 'Type provided is invalid';
 
-    protected function fillMissingPropertyErrorMessage($missing_properties): string{
+    protected function fillMissingPropertyErrorMessage($missing_properties): string {
         return sprintf(self::$ERROR_MSG_MISSING_PROPERTY, json_encode($missing_properties));
     }
 

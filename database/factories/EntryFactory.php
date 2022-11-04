@@ -2,12 +2,12 @@
 
 namespace Database\Factories;
 
-use App\Helpers\DatabaseFactoryConstants AS FactoryConstants;
+use App\Helpers\DatabaseFactoryConstants as FactoryConstants;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class EntryFactory extends Factory {
 
-    public function definition():array {
+    public function definition(): array {
         return [
             'entry_date'=>$this->faker->dateTimeBetween('-15 months', 'now')->format('Y-m-d'),
             'account_type_id'=>$this->faker->randomNumber(FactoryConstants::MAX_RAND_ID_LENGTH, true),
@@ -21,4 +21,3 @@ class EntryFactory extends Factory {
     }
 
 }
-

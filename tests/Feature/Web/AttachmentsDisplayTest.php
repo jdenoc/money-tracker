@@ -9,7 +9,6 @@ use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Ramsey\Uuid\Uuid;
 
 class AttachmentsDisplayTest extends TestCase {
-
     use WithFaker;
 
     const WEB_ATTACHMENT_URI = "/attachment/%s";
@@ -28,7 +27,7 @@ class AttachmentsDisplayTest extends TestCase {
         'txt',
     ];
 
-    public function testInvalidUuid(){
+    public function testInvalidUuid() {
         // GIVEN
         $invalid_uuid = $this->faker->word();   // a word will never be a valid UUID
 
@@ -39,7 +38,7 @@ class AttachmentsDisplayTest extends TestCase {
         $this->assertResponseStatus($response, HttpStatus::HTTP_NOT_FOUND);
     }
 
-    public function testNoDatabaseRecord(){
+    public function testNoDatabaseRecord() {
         //GIVEN - no attachment database record
         $uuid = $this->generateValidUuid();
 
@@ -50,7 +49,7 @@ class AttachmentsDisplayTest extends TestCase {
         $this->assertResponseStatus($response, HttpStatus::HTTP_NOT_FOUND);
     }
 
-    public function testFileNotOnDisk(){
+    public function testFileNotOnDisk() {
         //GIVEN - file does NOT exist on disk
         $generated_attachment = Attachment::factory()->create([self::ATTACHMENT_PARAMETER_UUID=>$this->generateValidUuid()]);
 
@@ -61,12 +60,12 @@ class AttachmentsDisplayTest extends TestCase {
         $this->assertResponseStatus($response, HttpStatus::HTTP_NOT_FOUND);
     }
 
-    public function testInvalidAttachmentFileType(){
+    public function testInvalidAttachmentFileType() {
         //GIVEN
-        do{
+        do {
             // file extension should NOT be in the approved list
             $file_ext = $this->faker->fileExtension();
-        }while(in_array($file_ext, $this->_valid_file_types));
+        } while (in_array($file_ext, $this->_valid_file_types));
         $generated_attachment = Attachment::factory()->create([
             self::ATTACHMENT_PARAMETER_UUID => $this->generateValidUuid(),
             self::ATTACHMENT_PARAMETER_FILENAME => $this->faker->word().'.'.$file_ext
@@ -81,7 +80,7 @@ class AttachmentsDisplayTest extends TestCase {
         $this->assertResponseStatus($response, HttpStatus::HTTP_UNSUPPORTED_MEDIA_TYPE);
     }
 
-    public function testViewingAValidAttachment(){
+    public function testViewingAValidAttachment() {
         //GIVEN
         $generated_attachment = Attachment::factory()->create([
             self::ATTACHMENT_PARAMETER_UUID => $this->generateValidUuid(),
@@ -97,10 +96,10 @@ class AttachmentsDisplayTest extends TestCase {
         $this->assertResponseStatus($response, HttpStatus::HTTP_OK);
     }
 
-    private function generateValidUuid():string{
-        do{
+    private function generateValidUuid(): string {
+        do {
             $valid_uuid = $this->faker->uuid();
-        }while(!Uuid::isValid($valid_uuid));
+        } while (!Uuid::isValid($valid_uuid));
         return $valid_uuid;
     }
 

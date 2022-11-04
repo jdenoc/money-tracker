@@ -11,7 +11,7 @@ class DuskServiceProvider extends DuskServiceProviderBase {
      *
      * @return void
      */
-    public function boot(){
+    public function boot() {
         parent::boot(); // needed to allow original DuskServiceProvider to do its thing
     }
 
@@ -21,7 +21,7 @@ class DuskServiceProvider extends DuskServiceProviderBase {
      * @return void
      * @throws \Exception
      */
-    public function register(){
+    public function register() {
         parent::register();  // needed to allow original DuskServiceProvider to do its thing
     }
 

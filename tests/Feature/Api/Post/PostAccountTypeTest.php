@@ -12,7 +12,6 @@ use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 
 class PostAccountTypeTest extends TestCase {
-
     use AccountTypeResponseKeys;
     use WithFaker;
 
@@ -20,13 +19,13 @@ class PostAccountTypeTest extends TestCase {
 
     private string $_base_uri = '/api/account-type';
 
-    public function setUp(): void{
+    public function setUp(): void {
         parent::setUp();
         $institution = Institution::factory()->create(['active'=>true]);
         Account::factory()->count(3)->create(['disabled'=>false, 'institution_id'=>$institution->id]);
     }
 
-    public function testCreateAccountTypeWithoutData(){
+    public function testCreateAccountTypeWithoutData() {
         // GIVEN
         $account_type_data = [];
 
@@ -46,7 +45,7 @@ class PostAccountTypeTest extends TestCase {
         $required_properties = AccountType::getRequiredFieldsForCreation();
 
         // only 1 property missing
-        foreach($required_properties as $property){
+        foreach ($required_properties as $property) {
             $test_cases[$property]['data'] = $account_type_data;
             $test_cases[$property]['error_msg'] = $this->fillMissingPropertyErrorMessage([$property]);
             unset($test_cases[$property]['data'][$property]);
@@ -56,7 +55,7 @@ class PostAccountTypeTest extends TestCase {
         $removed_keys = [];
         $unset_keys = array_rand($required_properties, mt_rand(2, count($required_properties)-1));
         $test_cases['multi-random']['data'] = $account_type_data;
-        foreach($unset_keys as $unset_key){
+        foreach ($unset_keys as $unset_key) {
             $unset_required_property = $required_properties[$unset_key];
             unset($test_cases['multi-random']['data'][$unset_required_property]);
             $removed_keys[] = $unset_required_property;
@@ -72,9 +71,9 @@ class PostAccountTypeTest extends TestCase {
      * @param array  $account_type_data
      * @param string $error_message
      */
-    public function testCreateAccountMissingProperty(array $account_type_data, string $error_message){
+    public function testCreateAccountMissingProperty(array $account_type_data, string $error_message) {
         // GIVEN: see providerCreateAccountMissingProperty()
-        if(isset($account_type_data['account_id'])){
+        if (isset($account_type_data['account_id'])) {
             $account_type_data['account_id'] = Account::where('disabled', false)->get()->random()->id;
         }
 
@@ -85,7 +84,7 @@ class PostAccountTypeTest extends TestCase {
         $this->assertFailedPostResponse($response, HttpStatus::HTTP_BAD_REQUEST, $error_message);
     }
 
-    public function testCreateAccountWithInvalidAccountId(){
+    public function testCreateAccountWithInvalidAccountId() {
         // GIVEN
         $account_type_data = $this->generateDummyAccountTypeData();
         $account_type_data['account_id'] = $this->faker->numberBetween(-999, 0); // account_id should ONLY be an int > 0
@@ -97,7 +96,7 @@ class PostAccountTypeTest extends TestCase {
         $this->assertFailedPostResponse($response, HttpStatus::HTTP_BAD_REQUEST, self::$ERROR_MSG_INVALID_ACCOUNT);
     }
 
-    public function testCreateAccountWithInvalidType(){
+    public function testCreateAccountWithInvalidType() {
         // GIVEN
         $account_type_data = $this->generateDummyAccountTypeData();
         $account_type_data['account_id'] = Account::where('disabled', false)->get()->random()->id;
@@ -110,7 +109,7 @@ class PostAccountTypeTest extends TestCase {
         $this->assertFailedPostResponse($response, HttpStatus::HTTP_BAD_REQUEST, self::$ERROR_MSG_INVALID_TYPE);
     }
 
-    public function testCreateAccount(){
+    public function testCreateAccount() {
         // GIVEN
         $account_type_data = $this->generateDummyAccountTypeData();
         $account_type_data['account_id'] = Account::where('disabled', false)->get()->random()->id;
@@ -127,11 +126,11 @@ class PostAccountTypeTest extends TestCase {
         $this->assertEmpty($response_as_array[self::$RESPONSE_KEY_ERROR], $failure_message);
     }
 
-    private function generateDummyAccountTypeData(): array{
+    private function generateDummyAccountTypeData(): array {
         return AccountType::factory()->make(['disabled'=>false])->toArray();
     }
 
-    private function assertFailedPostResponse(TestResponse $response, $expected_response_status, $expected_error_message){
+    private function assertFailedPostResponse(TestResponse $response, $expected_response_status, $expected_error_message) {
         $failure_message = self::METHOD." Response is ".$response->getContent();
         $this->assertResponseStatus($response, $expected_response_status, $failure_message);
         $response_as_array = $response->json();
@@ -139,12 +138,12 @@ class PostAccountTypeTest extends TestCase {
         $this->assertFailedPostResponseContent($response_as_array, $expected_error_message, $failure_message);
     }
 
-    private function assertPostResponseHasCorrectKeys(array $response_as_array, string $failure_message){
+    private function assertPostResponseHasCorrectKeys(array $response_as_array, string $failure_message) {
         $this->assertArrayHasKey(self::$RESPONSE_KEY_ID, $response_as_array, $failure_message);
         $this->assertArrayHasKey(self::$RESPONSE_KEY_ERROR, $response_as_array, $failure_message);
     }
 
-    private function assertFailedPostResponseContent(array $response_as_array, string $expected_error_msg, string $failure_message){
+    private function assertFailedPostResponseContent(array $response_as_array, string $expected_error_msg, string $failure_message) {
         $this->assertEquals(self::$ERROR_ID, $response_as_array[self::$RESPONSE_KEY_ID], $failure_message);
         $this->assertNotEmpty($response_as_array[self::$RESPONSE_KEY_ERROR], $failure_message);
         $this->assertStringContainsString($expected_error_msg, $response_as_array[self::$RESPONSE_KEY_ERROR], $failure_message);

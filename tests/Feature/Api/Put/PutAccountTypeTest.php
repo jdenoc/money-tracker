@@ -13,7 +13,6 @@ use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 
 class PutAccountTypeTest extends TestCase {
-
     use AccountTypeResponseKeys;
     use WithFaker;
 
@@ -30,13 +29,13 @@ class PutAccountTypeTest extends TestCase {
         );
         AccountType::factory()
             ->count(5)
-            ->state(new Sequence(function() use ($accounts){
+            ->state(new Sequence(function() use ($accounts) {
                 return ['account_id'=>$accounts->random()->id];
             }))
             ->create(['disabled'=>false]);
     }
 
-    public function testUpdateAccountTypeWithoutData(){
+    public function testUpdateAccountTypeWithoutData() {
         // GIVEN
         $account_type_data = [];
         $account_type = $this->getRandomActiveExistingAccountType();
@@ -48,7 +47,7 @@ class PutAccountTypeTest extends TestCase {
         $this->assertFailedPostResponse($response, HttpStatus::HTTP_BAD_REQUEST, self::$ERROR_MSG_NO_DATA);
     }
 
-    public function testUpdateAccountTypeWithInvalidAccountId(){
+    public function testUpdateAccountTypeWithInvalidAccountId() {
         // GIVEN
         $existing_account_ids = Account::all()->pluck('id')->toArray();
         $account_type = $this->getRandomActiveExistingAccountType();
@@ -64,13 +63,13 @@ class PutAccountTypeTest extends TestCase {
         $this->assertFailedPostResponse($response, HttpStatus::HTTP_BAD_REQUEST, self::$ERROR_MSG_INVALID_ACCOUNT);
     }
 
-    public function testUpdateAccountTypeWithInvalidType(){
+    public function testUpdateAccountTypeWithInvalidType() {
         // GIVEN
         $account_type = $this->getRandomActiveExistingAccountType();
         $valid_types = AccountType::getEnumValues();
-        do{
+        do {
             $type = $this->faker->word();
-        }while(in_array($type, $valid_types));
+        } while (in_array($type, $valid_types));
         $account_type->type = $type;
 
         // WHEN
@@ -80,7 +79,7 @@ class PutAccountTypeTest extends TestCase {
         $this->assertFailedPostResponse($response, HttpStatus::HTTP_BAD_REQUEST, self::$ERROR_MSG_INVALID_TYPE);
     }
 
-    public function testUpdateAccountTypeThatDoesNotExist(){
+    public function testUpdateAccountTypeThatDoesNotExist() {
         // GIVEN
         $existing_account_type_ids = AccountType::all()->pluck('id')->toArray();
         do {
@@ -114,7 +113,7 @@ class PutAccountTypeTest extends TestCase {
      *
      * @param array $account_type_data
      */
-    public function testUpdateAccountTypeEachProperty(array $account_type_data){
+    public function testUpdateAccountTypeEachProperty(array $account_type_data) {
         // GIVEN - see providerUpdateAccountEachProperty()
         $account_type = $this->getRandomActiveExistingAccountType();
         if (isset($account_type_data['account_id'])) {
@@ -133,7 +132,7 @@ class PutAccountTypeTest extends TestCase {
         $this->assertEmpty($response_as_array[self::$RESPONSE_KEY_ERROR], $failure_message);
     }
 
-    public function testUpdateAccountTypeWithoutChangingAnything(){
+    public function testUpdateAccountTypeWithoutChangingAnything() {
         // GIVEN
         $account_type = $this->getRandomActiveExistingAccountType();
 
@@ -149,11 +148,11 @@ class PutAccountTypeTest extends TestCase {
         $this->assertEmpty($response_as_array[self::$RESPONSE_KEY_ERROR], $failure_message);
     }
 
-    private function getRandomActiveExistingAccountType(){
+    private function getRandomActiveExistingAccountType() {
         return AccountType::where('disabled', false)->get()->random();
     }
 
-    private function generateAccountTypeData(){
+    private function generateAccountTypeData() {
         return AccountType::factory()->make();
     }
 
@@ -161,7 +160,7 @@ class PutAccountTypeTest extends TestCase {
         return Account::where('disabled', false)->get()->random()->id;
     }
 
-    private function assertFailedPostResponse(TestResponse $response, $expected_response_status,$expected_error_message){
+    private function assertFailedPostResponse(TestResponse $response, $expected_response_status, $expected_error_message) {
         $failure_message = self::METHOD." Response is ".$response->getContent();
         $this->assertResponseStatus($response, $expected_response_status, $failure_message);
         $response_as_array = $response->json();
@@ -169,16 +168,15 @@ class PutAccountTypeTest extends TestCase {
         $this->assertFailedPostResponseContent($response_as_array, $expected_error_message, $failure_message);
     }
 
-    private function assertPostResponseHasCorrectKeys(array $response_as_array, string $failure_message){
+    private function assertPostResponseHasCorrectKeys(array $response_as_array, string $failure_message) {
         $this->assertArrayHasKey(self::$RESPONSE_KEY_ID, $response_as_array, $failure_message);
         $this->assertArrayHasKey(self::$RESPONSE_KEY_ERROR, $response_as_array, $failure_message);
     }
 
-    private function assertFailedPostResponseContent(array $response_as_array, string $expected_error_msg,string $failure_message){
+    private function assertFailedPostResponseContent(array $response_as_array, string $expected_error_msg, string $failure_message) {
         $this->assertEquals(self::$ERROR_ID, $response_as_array[self::$RESPONSE_KEY_ID], $failure_message);
         $this->assertNotEmpty($response_as_array[self::$RESPONSE_KEY_ERROR], $failure_message);
         $this->assertStringContainsString($expected_error_msg, $response_as_array[self::$RESPONSE_KEY_ERROR], $failure_message);
     }
 
 }
-

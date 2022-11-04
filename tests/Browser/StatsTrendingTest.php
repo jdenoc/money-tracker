@@ -20,7 +20,6 @@ use Throwable;
  * @group stats-trending
  */
 class StatsTrendingTest extends StatsBase {
-
     use DuskTraitAccountOrAccountTypeTogglingSelector;
     use DuskTraitBatchFilterEntries;
     use DuskTraitStatsDateRange;
@@ -34,7 +33,7 @@ class StatsTrendingTest extends StatsBase {
     private static $VUE_KEY_COMPARISONDATA = 'comparisonData';
     private static $VUE_KEY_PERIODTOTALSDATA = 'periodTotalsData';
 
-    public function __construct($name = null, array $data = [], $dataName = ''){
+    public function __construct($name = null, array $data = [], $dataName = '') {
         parent::__construct($name, $data, $dataName);
         $chart_designation = 'trending-chart';
         $this->_account_or_account_type_toggling_selector_id_label = $chart_designation;
@@ -48,7 +47,7 @@ class StatsTrendingTest extends StatsBase {
      * @group stats-trending-1
      * test 1/25
      */
-    public function testSelectTrendingSidebarOption(){
+    public function testSelectTrendingSidebarOption() {
         $this->browse(function(Browser $browser) {
             $browser
                 ->visit(new StatsPage())
@@ -65,19 +64,19 @@ class StatsTrendingTest extends StatsBase {
      * @group stats-trending-1
      * test 2/25
      */
-    public function testFormHasCorrectElements(){
+    public function testFormHasCorrectElements() {
         $accounts = $this->getApiAccounts();
 
-        $this->browse(function(Browser $browser) use ($accounts){
+        $this->browse(function(Browser $browser) use ($accounts) {
             $browser->visit(new StatsPage());
             $this->clickStatsSidePanelOptionTrending($browser);
 
             $browser
                 ->assertVisible(self::$SELECTOR_STATS_TRENDING)
-                ->within(self::$SELECTOR_STATS_TRENDING, function(Browser $stats_trending) use ($accounts){
+                ->within(self::$SELECTOR_STATS_TRENDING, function(Browser $stats_trending) use ($accounts) {
                     $stats_trending
                         ->assertVisible(self::$SELECTOR_STATS_FORM_TRENDING)
-                        ->within(self::$SELECTOR_STATS_FORM_TRENDING, function(Browser $form) use ($accounts){
+                        ->within(self::$SELECTOR_STATS_FORM_TRENDING, function(Browser $form) use ($accounts) {
                             // account/account-type selector
                             $this->assertDefaultStateOfAccountOrAccountTypeTogglingSelectorComponent($form, $accounts);
 
@@ -101,13 +100,13 @@ class StatsTrendingTest extends StatsBase {
      * @group stats-trending-1
      * test 3/25
      */
-    public function testDefaultDataResultsArea(){
-        $this->browse(function(Browser $browser){
+    public function testDefaultDataResultsArea() {
+        $this->browse(function(Browser $browser) {
             $browser->visit(new StatsPage());
             $this->clickStatsSidePanelOptionTrending($browser);
             $browser
                 ->assertVisible(self::$SELECTOR_STATS_TRENDING)
-                ->within(self::$SELECTOR_STATS_TRENDING, function(Browser $stats_trending){
+                ->within(self::$SELECTOR_STATS_TRENDING, function(Browser $stats_trending) {
                     $stats_trending
                         ->assertVisible(self::$SELECTOR_STATS_RESULTS_TRENDING)
                         ->assertSeeIn(self::$SELECTOR_STATS_RESULTS_TRENDING, self::$LABEL_NO_STATS_DATA);
@@ -116,7 +115,7 @@ class StatsTrendingTest extends StatsBase {
         });
     }
 
-    public function providerTestGenerateTrendingChart(): array{
+    public function providerTestGenerateTrendingChart(): array {
         return [
             //[$datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $include_transfers]
             // defaults account/account-type & date-picker values
@@ -165,22 +164,22 @@ class StatsTrendingTest extends StatsBase {
      * @group stats-trending-1
      * test (see provider)/25
      */
-    public function testGenerateTrendingChart(?string $datepicker_start, ?string $datepicker_end, bool $is_switch_toggled, bool $is_random_selector_value, bool $are_disabled_select_options_available, bool $include_transfers){
+    public function testGenerateTrendingChart(?string $datepicker_start, ?string $datepicker_end, bool $is_switch_toggled, bool $is_random_selector_value, bool $are_disabled_select_options_available, bool $include_transfers) {
         $accounts = collect($this->getApiAccounts());
         $account_types = collect($this->getApiAccountTypes());
 
-        $this->browse(function (Browser $browser) use ($accounts, $account_types, $datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $include_transfers){
+        $this->browse(function(Browser $browser) use ($accounts, $account_types, $datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $include_transfers) {
             $filter_data = [];
 
             $browser->visit(new StatsPage());
             $this->clickStatsSidePanelOptionTrending($browser);
             $browser
                 ->assertVisible(self::$SELECTOR_STATS_FORM_TRENDING)
-                ->within(self::$SELECTOR_STATS_FORM_TRENDING, function(Browser $form) use ($accounts, $account_types, $datepicker_start, $datepicker_end, $is_switch_toggled, &$filter_data, $is_random_selector_value, $are_disabled_select_options_available){
-                    if($are_disabled_select_options_available){
+                ->within(self::$SELECTOR_STATS_FORM_TRENDING, function(Browser $form) use ($accounts, $account_types, $datepicker_start, $datepicker_end, $is_switch_toggled, &$filter_data, $is_random_selector_value, $are_disabled_select_options_available) {
+                    if ($are_disabled_select_options_available) {
                         $this->toggleShowDisabledAccountOrAccountTypeCheckbox($form);
                     }
-                    if($is_switch_toggled){
+                    if ($is_switch_toggled) {
                         // switch to account-types
                         $this->toggleAccountOrAccountTypeSwitch($form);
                         $account_or_account_type_id = ($is_random_selector_value) ? $account_types->where('disabled', $are_disabled_select_options_available)->pluck('id')->random() : '';
@@ -192,12 +191,12 @@ class StatsTrendingTest extends StatsBase {
                     $this->selectAccountOrAccountTypeValue($form, $account_or_account_type_id);
                     $filter_data = $this->generateFilterArrayElementAccountOrAccountypeId($filter_data, $is_switch_toggled, $account_or_account_type_id);
 
-                    if(!is_null($datepicker_start)){
+                    if (!is_null($datepicker_start)) {
                         $this->setDateRangeDate($form, 'start', $datepicker_start);
                     } else {
                         $datepicker_start = $this->month_start;
                     }
-                    if(!is_null($datepicker_end)){
+                    if (!is_null($datepicker_end)) {
                         $this->setDateRangeDate($form, 'end', $datepicker_end);
                     } else {
                         $datepicker_end = $this->month_end;
@@ -220,9 +219,9 @@ class StatsTrendingTest extends StatsBase {
 
             $browser
                 ->assertDontSeeIn(self::$SELECTOR_STATS_RESULTS_TRENDING, self::$LABEL_NO_STATS_DATA)
-                ->within(self::$SELECTOR_STATS_RESULTS_TRENDING, function(Browser $stats_results) use ($include_transfers){
+                ->within(self::$SELECTOR_STATS_RESULTS_TRENDING, function(Browser $stats_results) use ($include_transfers) {
                     $this->assertIncludeTransfersButtonDefaultState($stats_results);
-                    if($include_transfers){
+                    if ($include_transfers) {
                         $this->clickIncludeTransfersCheckboxButton($stats_results);
                         $this->assertIncludesTransfersCheckboxButtonStateActive($stats_results);
                     }
@@ -243,7 +242,7 @@ class StatsTrendingTest extends StatsBase {
      * @group stats-trending-1
      * test 18/25
      */
-    public function testGeneratingATrendingChartWontCauseSummaryTablesToBecomeVisible(){
+    public function testGeneratingATrendingChartWontCauseSummaryTablesToBecomeVisible() {
         $this->generatingADifferentChartWontCauseSummaryTablesToBecomeVisible(
             self::$SELECTOR_STATS_SIDE_PANEL_OPTION_TRENDING,
             self::$SELECTOR_STATS_FORM_TRENDING,
@@ -260,13 +259,13 @@ class StatsTrendingTest extends StatsBase {
      * @return array
      *
      */
-    private function standardiseChartData(Collection $entries, bool $is_expense): array{
+    private function standardiseChartData(Collection $entries, bool $is_expense): array {
         $standardised_chart_data = [];
         $filtered_entries = $entries->where('expense', $is_expense);
-        foreach($filtered_entries as $entry){
+        foreach ($filtered_entries as $entry) {
             // condense data points with similar entry_date values
             $key = $entry['entry_date'];
-            if(!isset($standardised_chart_data[$key])){
+            if (!isset($standardised_chart_data[$key])) {
                 $standardised_chart_data[$key] = ['x'=>$key, 'y'=>0];
             }
             $standardised_chart_data[$key]['y'] += $entry['entry_value'];
@@ -284,18 +283,18 @@ class StatsTrendingTest extends StatsBase {
      * @param array $expense_data
      * @return array
      */
-    private function comparisonChartData(array $income_data, array $expense_data): array{
+    private function comparisonChartData(array $income_data, array $expense_data): array {
         $comparison_data = [];
-        foreach($income_data as $datum){
+        foreach ($income_data as $datum) {
             $key = $datum['x'];
-            if(!isset($comparison_data[$key])){
+            if (!isset($comparison_data[$key])) {
                 $comparison_data[$key] = ['x'=>$key, 'y'=>0];
             }
             $comparison_data[$key]['y'] += $datum['y'];
         }
-        foreach($expense_data as $datum){
+        foreach ($expense_data as $datum) {
             $key = $datum['x'];
-            if(!isset($comparison_data[$key])){
+            if (!isset($comparison_data[$key])) {
                 $comparison_data[$key] = ['x'=>$key, 'y'=>0];
             }
             $comparison_data[$key]['y'] -= $datum['y'];
@@ -311,10 +310,10 @@ class StatsTrendingTest extends StatsBase {
      * @param array $comparison_chart_data
      * @return array
      */
-    private function periodTotalsChartData(array $comparison_chart_data) : array{
+    private function periodTotalsChartData(array $comparison_chart_data): array {
         $period_totals_data = [];
         $previous_value = 0;
-        foreach($comparison_chart_data as $i=>$chart_datum){
+        foreach ($comparison_chart_data as $i=>$chart_datum) {
             $new_total = $previous_value+$chart_datum['y'];
             $period_totals_data[$i] = ['x'=>$chart_datum['x'], 'y'=>$new_total];
             $previous_value = $new_total;

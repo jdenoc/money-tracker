@@ -8,12 +8,11 @@ use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 
 class GetInstitutionsTest extends TestCase {
-
     use WithFaker;
 
     protected string $_base_uri = '/api/institutions';
 
-    public function testGetInstitutionsWhenNoneAreAvailable(){
+    public function testGetInstitutionsWhenNoneAreAvailable() {
         // GIVEN - no institutions exist in database
 
         // WHEN
@@ -26,7 +25,7 @@ class GetInstitutionsTest extends TestCase {
         $this->assertEmpty($response_body_as_array);
     }
 
-    public function providerGetInstitutions():array{
+    public function providerGetInstitutions(): array {
         return [
             'all active:true'=>[true],      // all institutes are active
             'all active:false'=>[false]     // some institutes are active
@@ -37,12 +36,12 @@ class GetInstitutionsTest extends TestCase {
      * @dataProvider providerGetInstitutions
      * @param bool $all_active
      */
-    public function testGetInstitutions(bool $all_active){
+    public function testGetInstitutions(bool $all_active) {
         // GIVEN
         $institutions_count = $this->faker->randomDigitNotZero();
         $generated_institutions = [];
-        for($i=0; $i<$institutions_count; $i++){
-            $active_flag = $this->faker->boolean(($all_active? 100:50));
+        for ($i=0; $i<$institutions_count; $i++) {
+            $active_flag = $this->faker->boolean(($all_active ? 100 : 50));
             $generated_institution = Institution::factory()->create(['active'=>$active_flag]);
             $generated_institution->makeHidden(['create_stamp', 'modified_stamp']);
             $generated_institutions[$generated_institution->id] = $generated_institution;
@@ -61,7 +60,7 @@ class GetInstitutionsTest extends TestCase {
         $this->assertEquals($institutions_count, $response_body_as_array['count']);
         unset($response_body_as_array['count']);
         $this->assertCount($institutions_count, $response_body_as_array);
-        foreach($response_body_as_array as $institution_in_response){
+        foreach ($response_body_as_array as $institution_in_response) {
             $this->assertArrayHasKey('id', $institution_in_response);
             $this->assertArrayHasKey('name', $institution_in_response);
             $this->assertArrayHasKey('active', $institution_in_response);

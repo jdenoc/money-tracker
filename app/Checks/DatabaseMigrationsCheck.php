@@ -13,7 +13,7 @@ class DatabaseMigrationsCheck extends Check {
 
         $migration_status = $this->migrationStatusOutput();
         $unrun_migrations = $this->findUnRunMigrations($migration_status);
-        if(count($unrun_migrations) === 0){
+        if (count($unrun_migrations) === 0) {
             return $result->ok();
         } else {
             return $result->failed("The following migrations have not been run: ".implode(", ", $unrun_migrations));
@@ -37,9 +37,9 @@ class DatabaseMigrationsCheck extends Check {
         $row_index_migration = 2;
 
         $unrun_migrations = [];
-        foreach ($migration_status_rows as $migration_status_row){
+        foreach ($migration_status_rows as $migration_status_row) {
             $migration_status_row_cells = explode("|", $migration_status_row);
-            if("no" === strtolower(trim($migration_status_row_cells[$row_index_ran]))){
+            if ("no" === strtolower(trim($migration_status_row_cells[$row_index_ran]))) {
                 $unrun_migrations[] = trim($migration_status_row_cells[$row_index_migration]);
             }
         }

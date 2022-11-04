@@ -4,8 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Cookie\Middleware\EncryptCookies as Middleware;
 
-class EncryptCookies extends Middleware
-{
+class EncryptCookies extends Middleware {
 
     /**
      * Indicates if cookies should be serialized.
@@ -22,4 +21,5 @@ class EncryptCookies extends Middleware
     protected $except = [
         //
     ];
+
 }

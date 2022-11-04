@@ -17,9 +17,9 @@ class RenameEntriesColumnDate extends Migration {
      *
      * @return void
      */
-    public function up(){
-        Schema::table(self::$TABLE, function (Blueprint $table) {
-            $table->dropIndex(array(self::$INDEX_OLD));
+    public function up() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
+            $table->dropIndex([self::$INDEX_OLD]);
             $table->renameColumn(self::$COLUMN_OLD, self::$COLUMN_NEW);
             $table->index(self::$INDEX_NEW);
         });
@@ -30,9 +30,9 @@ class RenameEntriesColumnDate extends Migration {
      *
      * @return void
      */
-    public function down(){
-        Schema::table(self::$TABLE, function (Blueprint $table) {
-            $table->dropIndex(array(self::$INDEX_NEW));
+    public function down() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
+            $table->dropIndex([self::$INDEX_NEW]);
             $table->renameColumn(self::$COLUMN_NEW, self::$COLUMN_OLD);
             $table->index(self::$INDEX_OLD);
         });

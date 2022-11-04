@@ -7,7 +7,6 @@ use InvalidArgumentException;
 use Laravel\Dusk\Browser;
 
 trait StatsDateRange {
-
     use BrowserDateUtil;
 
     private static $SELECTOR_DATERANGE_START = '#%s-start-date';
@@ -19,32 +18,32 @@ trait StatsDateRange {
 
     protected $date_range_chart_name = '';
 
-    private function hasDateRangeChartNameBeenSet(){
-        if(!$this->date_range_chart_name){
+    private function hasDateRangeChartNameBeenSet() {
+        if (!$this->date_range_chart_name) {
             throw new Exception("variable \$date_range_chart_name has not been set");
         }
     }
 
-    public function getChartDateStartRangeId():string{
+    public function getChartDateStartRangeId(): string {
         $this->hasDateRangeChartNameBeenSet();
         return sprintf(self::$SELECTOR_DATERANGE_START, $this->date_range_chart_name);
     }
 
-    public function getChartDateEndRangeId():string{
+    public function getChartDateEndRangeId(): string {
         $this->hasDateRangeChartNameBeenSet();
         return sprintf(self::$SELECTOR_DATERANGE_END, $this->date_range_chart_name);
     }
 
-    public function getChartDateStartRangeLabel():string{
+    public function getChartDateStartRangeLabel(): string {
         return sprintf(self::$SELECTOR_LABEL_DATERANGE, ltrim($this->getChartDateStartRangeId(), '#'));
     }
 
-    public function getChartDateEndRangeLabel():string{
+    public function getChartDateEndRangeLabel(): string {
         return sprintf(self::$SELECTOR_LABEL_DATERANGE, ltrim($this->getChartDateEndRangeId(), '#'));
     }
 
-    public function setDateRangeDate(Browser $browser, string $start_or_end, string $date){
-        switch($start_or_end){
+    public function setDateRangeDate(Browser $browser, string $start_or_end, string $date) {
+        switch ($start_or_end) {
             case 'start':
                 $selector = $this->getChartDateStartRangeId();
                 break;
@@ -65,7 +64,7 @@ trait StatsDateRange {
             ->assertValue($selector, $date);
     }
 
-    public function assertDefaultStateDateRange(Browser $browser){
+    public function assertDefaultStateDateRange(Browser $browser) {
         $browser
             ->assertVisible($this->getChartDateStartRangeLabel())
             ->assertSeeIn($this->getChartDateStartRangeLabel(), self::$LABEL_DATERANGE_START)

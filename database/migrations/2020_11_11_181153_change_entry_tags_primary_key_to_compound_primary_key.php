@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class ChangeEntryTagsPrimaryKeyToCompoundPrimaryKey extends Migration {
@@ -16,8 +17,8 @@ class ChangeEntryTagsPrimaryKeyToCompoundPrimaryKey extends Migration {
      *
      * @return void
      */
-    public function up(){
-        Schema::table(self::$TABLE, function (Blueprint $table) {
+    public function up() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
             /**
              * QUERY from below code:
                 delete from entry_tags
@@ -49,14 +50,15 @@ class ChangeEntryTagsPrimaryKeyToCompoundPrimaryKey extends Migration {
      *
      * @return void
      */
-    public function down(){
-        Schema::table(self::$TABLE, function (Blueprint $table) {
+    public function down() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
             $table->dropPrimary();
             $table->index(self::$PRIMARY_INDEX_COLUMNS, self::$OLD_INDEX_NAME);
         });
 
-        Schema::table(self::$TABLE, function (Blueprint $table) {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
             $table->increments(self::$COLUMN_ID)->first();
         });
     }
+
 }

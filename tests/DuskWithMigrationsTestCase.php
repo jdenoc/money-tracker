@@ -16,10 +16,9 @@ use Illuminate\Support\Facades\Cache;
  * and on subsequent tests loan that file.
  */
 abstract class DuskWithMigrationsTestCase extends DuskTestCase {
-
     use DatabaseMigrations;
 
-    public function setUp(): void{
+    public function setUp(): void {
         parent::setUp();
         $this->migrate();
     }
@@ -29,7 +28,7 @@ abstract class DuskWithMigrationsTestCase extends DuskTestCase {
         parent::tearDown();
     }
 
-    public static function tearDownAfterClass(): void{
+    public static function tearDownAfterClass(): void {
         self::cleanup();
         parent::tearDownAfterClass();
     }

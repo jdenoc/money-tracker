@@ -39,7 +39,7 @@ class HealthServiceProvider extends ServiceProvider {
                 ->failWhenUsedSpaceIsAbovePercentage(85),
         ];
 
-        if(config('cache.default') == 'memcached'){
+        if (config('cache.default') == 'memcached') {
             $health_checks[] = CacheCheck::new()
                 ->name('Cache:memcached')
                 ->driver('memcached');
@@ -50,7 +50,7 @@ class HealthServiceProvider extends ServiceProvider {
     /**
      * Bootstrap services.
      */
-    public function boot(){
+    public function boot() {
         //
     }
 

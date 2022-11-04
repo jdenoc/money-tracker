@@ -8,7 +8,6 @@ use InvalidArgumentException;
 use Laravel\Dusk\Browser;
 
 trait FilterModal {
-
     use AccountOrAccountTypeTogglingSelector;
     use BrowserDateUtil;
     use TagsInput;
@@ -39,18 +38,18 @@ trait FilterModal {
     private string $_color_filter_switch_active = "";
     private string $_color_filter_switch_inactive = "";
 
-    protected function initFilterModalColors():void{
+    protected function initFilterModalColors(): void {
         $this->_color_filter_btn_export = $this->tailwindColors->blue(600);
         $this->_color_filter_switch_active = $this->tailwindColors->blue(600);
         $this->_color_filter_switch_inactive = $this->tailwindColors->gray(400);
         $this->_color_filter_switch_default = $this->_color_filter_switch_inactive;
     }
 
-    protected function initFilterModalTogglingSelectorLabelId():void{
+    protected function initFilterModalTogglingSelectorLabelId(): void {
         $this->_account_or_account_type_toggling_selector_id_label = 'filter-modal';
     }
 
-    protected function filterModalInputs():array{
+    protected function filterModalInputs(): array {
         return [
             "Start Date"=>[$this->_selector_modal_filter_field_start_date],                         // test 1/25
             "End Date"=>[$this->_selector_modal_filter_field_end_date],                             // test 2/25
@@ -67,9 +66,9 @@ trait FilterModal {
         ];
     }
 
-    protected function filterModalInputInteraction(Browser $modal, $filter_input_selector){
+    protected function filterModalInputInteraction(Browser $modal, $filter_input_selector) {
         $filter_value = null;
-        switch($filter_input_selector){
+        switch ($filter_input_selector) {
             case $this->_selector_modal_filter_field_start_date:
             case $this->_selector_modal_filter_field_end_date:
                 $filter_value = ['actual'=>$this->faker->dateTimeBetween('-15 months', '-1 month')->format("Y-m-d")];
@@ -77,10 +76,9 @@ trait FilterModal {
                 $filter_value['typed'] = $this->processLocaleDateForTyping($browser_date);
                 $modal->type($filter_input_selector, $filter_value['typed']);
                 break;
-
             case self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT:
                 $is_account = $this->faker->boolean();
-                if($is_account){
+                if ($is_account) {
                     // account
                     $filter_values = $this->getApiAccounts();
                 } else {
@@ -91,23 +89,21 @@ trait FilterModal {
                 $filter_value = collect($filter_values)->where('disabled', false)->random();
                 $this->selectAccountOrAccountTypeValue($modal, $filter_value['id']);
 
-                if($is_account){
+                if ($is_account) {
                     $account = Account::find_account_with_types($filter_value['id']);
                     $filter_value = $account->account_types->pluck('name')->toArray();
                 } else {
                     $filter_value = $filter_value['name'];
                 }
                 break;
-
             case $this->_selector_modal_filter_field_tags:
                 $tags = $this->getApiTags();
                 $filter_value = collect($tags)->random(3)->toArray();
-                foreach($filter_value as $tag){
+                foreach ($filter_value as $tag) {
                     $this->fillTagsInputUsingAutocomplete($modal, $tag['name']);
                     $this->assertTagInInput($modal, $tag['name']);
                 }
                 break;
-
             case $this->_selector_modal_filter_field_switch_income:
             case $this->_selector_modal_filter_field_switch_expense:
             case $this->_selector_modal_filter_field_switch_has_attachment:
@@ -116,14 +112,12 @@ trait FilterModal {
             case $this->_selector_modal_filter_field_switch_unconfirmed:
                 $this->toggleToggleButton($modal, $filter_input_selector);
                 break;
-
             case $this->_selector_modal_filter_field_min_value:
             case $this->_selector_modal_filter_field_max_value:
                 $filter_value = $this->faker->randomFloat(2, 0, 100);
                 // need to use type() here otherwise vuejs won't pick up the update
                 $modal->type($filter_input_selector, $filter_value);
                 break;
-
             default:
                 throw new InvalidArgumentException("Unknown filter parameter provided:".$filter_input_selector);
         }

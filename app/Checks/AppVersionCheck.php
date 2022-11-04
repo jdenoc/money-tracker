@@ -10,14 +10,14 @@ class AppVersionCheck extends Check {
     public function run(): Result {
         $result = Result::make();
 
-        if($this->isAppVersionSet()){
+        if ($this->isAppVersionSet()) {
             return $result->ok();
         } else {
             return $result->failed("APP_VERSION not set");
         }
     }
 
-    protected function isAppVersionSet():bool {
+    protected function isAppVersionSet(): bool {
         return config('app.version') != "";
     }
 

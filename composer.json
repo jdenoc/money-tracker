@@ -30,9 +30,11 @@
     "require-dev": {
         "ext-intl": "*",
         "barryvdh/laravel-ide-helper": "^2.2",
+        "ely/php-code-style": "dev-master#137a898 as 0.4.0-dev",
         "facade/ignition": "^2.5",
         "fakerphp/faker": "1.15.0",
         "filp/whoops": "^2.14.3",
+        "friendsofphp/php-cs-fixer": "^3.13",
         "jdenoc/faker-tailwind-colors": "^0.0.1",
         "jdenoc/laravel-make-trait": "^2.0",
         "jdenoc/tailwind-colors": "0.0.2",
@@ -56,19 +58,20 @@
         }
     },
     "scripts": {
-        "post-update-cmd": [
-            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
-            "@php artisan key:generate --ansi",
-            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
-        ],
-        "post-autoload-dump": [
-            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi"
-        ],
         "ide-helper": [
             "php artisan ide-helper:generate",
             "php artisan ide-helper:meta",
             "php artisan ide-helper:eloquent"
+        ],
+        "php-linter": "vendor/bin/php-cs-fixer fix --dry-run --verbose --diff --stop-on-violation",
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi"
+        ],
+        "post-update-cmd": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
+            "@php artisan key:generate --ansi",
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
         ]
     },
     "config": {
