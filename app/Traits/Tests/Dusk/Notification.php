@@ -7,7 +7,6 @@ use Laravel\Dusk\Browser;
 use PHPUnit\Framework\Assert;
 
 trait Notification {
-
     use WaitTimes;
 
     protected static string $NOTIFICATION_TYPE_ERROR = 'error';
@@ -27,8 +26,8 @@ trait Notification {
      * @param string $notification_message
      * @throws \Facebook\WebDriver\Exception\TimeOutException
      */
-    public function assertNotificationContents(Browser $browser, string $notification_type, string $notification_message){
-        switch($notification_type){
+    public function assertNotificationContents(Browser $browser, string $notification_type, string $notification_message) {
+        switch ($notification_type) {
             case self::$NOTIFICATION_TYPE_ERROR:
                 $notification_class = self::$NOTIFICATION_CLASS_ERROR;
                 break;
@@ -47,7 +46,7 @@ trait Notification {
         $browser
             ->waitFor(self::$SELECTOR_NOTIFICATION, 1.5*self::$WAIT_SECONDS)
             ->mouseover(self::$SELECTOR_NOTIFICATION)
-            ->within(self::$SELECTOR_NOTIFICATION, function(Browser $notification) use ($notification_class, $notification_message){
+            ->within(self::$SELECTOR_NOTIFICATION, function(Browser $notification) use ($notification_class, $notification_message) {
                 Assert::assertStringContainsString(
                     $notification_class,
                     $notification->attribute('', 'class')
@@ -62,7 +61,7 @@ trait Notification {
      *
      * @throws \Facebook\WebDriver\Exception\TimeOutException
      */
-    public function dismissNotification(Browser $browser){
+    public function dismissNotification(Browser $browser) {
         $browser
             ->click(self::$SELECTOR_NOTIFICATION)
             ->waitUntilMissing(self::$SELECTOR_NOTIFICATION, self::$WAIT_SECONDS);

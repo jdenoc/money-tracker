@@ -12,13 +12,13 @@ use Illuminate\Support\Facades\DB;
  * This is purely a base model that we can utilise to bring some useful helper methods
  * @package App
  */
-class BaseModel extends Model{
+class BaseModel extends Model {
 
     /**
      * @return string
      */
-    public static function getTableName(){
-        return with(new static)->getTable();
+    public static function getTableName() {
+        return with(new static())->getTable();
     }
 
     /**
@@ -28,9 +28,9 @@ class BaseModel extends Model{
      * @return array
      * @throws \InvalidArgumentException
      */
-    public static function get_enum_values($column){
+    public static function get_enum_values($column) {
         $column_types = DB::select("SHOW COLUMNS FROM ".self::getTableName()." WHERE Field='".$column."'");
-        if(empty($column_types) || !is_array($column_types)){
+        if (empty($column_types) || !is_array($column_types)) {
             throw new \InvalidArgumentException(self::getTableName().'.'.$column.' does not exist');
         }
 
@@ -38,10 +38,10 @@ class BaseModel extends Model{
         preg_match('/^enum\((.*)\)$/', $column_type->Type, $matches);
 
         $values = [];
-        if(isset($matches[1])){
+        if (isset($matches[1])) {
             $enum_values = explode(',', $matches[1]);
-            if(is_array($enum_values) && !empty($enum_values)){
-                foreach($enum_values as $enum_value){
+            if (is_array($enum_values) && !empty($enum_values)) {
+                foreach ($enum_values as $enum_value) {
                     $values[] = trim($enum_value, "'");
                 }
             }
@@ -49,14 +49,14 @@ class BaseModel extends Model{
         return $values;
     }
 
-    protected function serializeDate(DateTimeInterface $date){
+    protected function serializeDate(DateTimeInterface $date) {
         return $date->format(Carbon::ATOM);
     }
 
-    public function __get($key){
+    public function __get($key) {
         $value = parent::__get($key);
         // Makes sure all timestamps appear in the ATOM format
-        if($value instanceof Carbon){
+        if ($value instanceof Carbon) {
             $value = $value->toAtomString();
         }
         return $value;

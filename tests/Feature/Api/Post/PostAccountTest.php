@@ -11,18 +11,17 @@ use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 
 class PostAccountTest extends TestCase {
-
     use AccountResponseKeys;
     use WithFaker;
 
     private string $_base_uri = '/api/account';
 
-    public function setUp(): void{
+    public function setUp(): void {
         parent::setUp();
         Institution::factory()->count(3)->create(['active'=>true]);
     }
 
-    public function testCreateAccountWithoutData(){
+    public function testCreateAccountWithoutData() {
         // GIVEN
         $account_data = [];
 
@@ -33,7 +32,7 @@ class PostAccountTest extends TestCase {
         $this->assertFailedPostResponse($response, HttpStatus::HTTP_BAD_REQUEST, self::$ERROR_MSG_NO_DATA);
     }
 
-    public function providerCreateAccountMissingProperty(): array{
+    public function providerCreateAccountMissingProperty(): array {
         // Application must be initialised before factory helpers can be used withi a provider method
         $this->initialiseApplication();
         $account_data = $this->generateDummyAccountData();
@@ -42,7 +41,7 @@ class PostAccountTest extends TestCase {
         $required_properties = Account::getRequiredFieldsForCreation();
 
         // only 1 property missing
-        foreach($required_properties as $property){
+        foreach ($required_properties as $property) {
             $test_cases[$property]['data'] = $account_data;
             $test_cases[$property]['error_msg'] = $this->fillMissingPropertyErrorMessage([$property]);
             unset($test_cases[$property]['data'][$property]);
@@ -52,7 +51,7 @@ class PostAccountTest extends TestCase {
         $removed_keys = [];
         $unset_keys = array_rand($required_properties, mt_rand(2, count($required_properties)-1));
         $test_cases['multi-random']['data'] = $account_data;
-        foreach($unset_keys as $unset_key){
+        foreach ($unset_keys as $unset_key) {
             $unset_required_property = $required_properties[$unset_key];
             unset($test_cases['multi-random']['data'][$unset_required_property]);
             $removed_keys[] = $unset_required_property;
@@ -67,9 +66,9 @@ class PostAccountTest extends TestCase {
      * @param array $account_data
      * @param string $error_message
      */
-    public function testCreateAccountMissingProperty(array $account_data, string $error_message){
+    public function testCreateAccountMissingProperty(array $account_data, string $error_message) {
         // GIVEN: see providerCreateAccountMissingProperty()
-        if(isset($account_data['institution_id'])){
+        if (isset($account_data['institution_id'])) {
             $account_data = $this->setValidInstitutionId($account_data);
         }
 
@@ -80,7 +79,7 @@ class PostAccountTest extends TestCase {
         $this->assertFailedPostResponse($response, HttpStatus::HTTP_BAD_REQUEST, $error_message);
     }
 
-    public function testCreateAccountWithInvalidInstitutionId(){
+    public function testCreateAccountWithInvalidInstitutionId() {
         // GIVEN
         $account_data = $this->generateDummyAccountData();
         $account_data['institution_id'] = $this->faker->numberBetween(-999, 0); // instition_id should ONLY be an int > 0
@@ -92,7 +91,7 @@ class PostAccountTest extends TestCase {
         $this->assertFailedPostResponse($response, HttpStatus::HTTP_BAD_REQUEST, self::$ERROR_MSG_INVALID_INSTITUTION);
     }
 
-    public function testCreateAccount(){
+    public function testCreateAccount() {
         // GIVEN
         $account_data = $this->generateDummyAccountData();
         $account_data = $this->setValidInstitutionId($account_data);
@@ -109,7 +108,7 @@ class PostAccountTest extends TestCase {
         $this->assertEmpty($response_as_array[self::$RESPONSE_KEY_ERROR], $failure_message);
     }
 
-    private function generateDummyAccountData(): array{
+    private function generateDummyAccountData(): array {
         $account_data = Account::factory()->make(['disabled'=>false]);
         return [
             'name'=>$account_data->name,
@@ -120,13 +119,13 @@ class PostAccountTest extends TestCase {
         ];
     }
 
-    private function setValidInstitutionId(array $account_data): array{
+    private function setValidInstitutionId(array $account_data): array {
         $institution_id = Institution::where('active', 1)->get()->random()->id;
         $account_data['institution_id'] = $institution_id;
         return $account_data;
     }
 
-    private function assertFailedPostResponse(TestResponse $response, $expected_response_status, $expected_error_message){
+    private function assertFailedPostResponse(TestResponse $response, $expected_response_status, $expected_error_message) {
         $failure_message = "POST Response is ".$response->getContent();
         $this->assertResponseStatus($response, $expected_response_status, $failure_message);
         $response_as_array = $response->json();
@@ -134,12 +133,12 @@ class PostAccountTest extends TestCase {
         $this->assertFailedPostResponseContent($response_as_array, $expected_error_message, $failure_message);
     }
 
-    private function assertPostResponseHasCorrectKeys(array $response_as_array, string $failure_message){
+    private function assertPostResponseHasCorrectKeys(array $response_as_array, string $failure_message) {
         $this->assertArrayHasKey(self::$RESPONSE_KEY_ID, $response_as_array, $failure_message);
         $this->assertArrayHasKey(self::$RESPONSE_KEY_ERROR, $response_as_array, $failure_message);
     }
 
-    private function assertFailedPostResponseContent(array $response_as_array, string $expected_error_msg, string $failure_message){
+    private function assertFailedPostResponseContent(array $response_as_array, string $expected_error_msg, string $failure_message) {
         $this->assertEquals(self::$ERROR_ID, $response_as_array[self::$RESPONSE_KEY_ID], $failure_message);
         $this->assertNotEmpty($response_as_array[self::$RESPONSE_KEY_ERROR], $failure_message);
         $this->assertStringContainsString($expected_error_msg, $response_as_array[self::$RESPONSE_KEY_ERROR], $failure_message);

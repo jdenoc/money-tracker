@@ -9,7 +9,6 @@ use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 
 class PutTagTest extends TestCase {
-
     use WithFaker;
     use TagResponseKeys;
 
@@ -18,12 +17,12 @@ class PutTagTest extends TestCase {
     private string $_uri = '/api/tag/%d';
     private $_generated_tag;
 
-    public function setUp(): void{
+    public function setUp(): void {
         parent::setUp();
         $this->_generated_tag = Tag::factory()->create();
     }
 
-    public function testUpdateExistingTag(){
+    public function testUpdateExistingTag() {
         // GIVEN
         $existing_tag_id = $this->_generated_tag->id;
         $new_tag_data = Tag::factory()->make()->toArray();
@@ -40,7 +39,7 @@ class PutTagTest extends TestCase {
         $this->assertEquals($existing_tag_id, $response_as_array[self::$RESPONSE_KEY_ID]);
     }
 
-    public function testUpdateExistingTagButNameIsEmpty(){
+    public function testUpdateExistingTagButNameIsEmpty() {
         // GIVEN
         $existing_tag_id = $this->_generated_tag->id;
         $new_tag_data = Tag::factory()->make(['name'=>''])->toArray();
@@ -56,7 +55,7 @@ class PutTagTest extends TestCase {
         $this->assertEquals(self::$ERROR_MSG_NO_DATA, $response_as_array[self::$RESPONSE_KEY_ERROR]);
     }
 
-    public function testUpdateExistingTagWithoutData(){
+    public function testUpdateExistingTagWithoutData() {
         // GIVEN
         $existing_tag_id = $this->_generated_tag->id;
         $new_tag_data = [];
@@ -72,11 +71,11 @@ class PutTagTest extends TestCase {
         $this->assertEquals(self::$ERROR_MSG_NO_DATA, $response_as_array[self::$RESPONSE_KEY_ERROR]);
     }
 
-    public function testUpdateTagDoesNotExist(){
+    public function testUpdateTagDoesNotExist() {
         // GIVEN
-        do{
+        do {
             $tag_id = $this->faker->randomDigit();
-        }while($tag_id == $this->_generated_tag->id);
+        } while ($tag_id == $this->_generated_tag->id);
         $new_tag_data = Tag::factory()->make()->toArray();
 
         // WHEN
@@ -90,7 +89,7 @@ class PutTagTest extends TestCase {
         $this->assertEquals(self::$ERROR_MSG_DOES_NOT_EXIST, $response_as_array[self::$RESPONSE_KEY_ERROR]);
     }
 
-    public function testUpdateTagWithoutChangingValues(){
+    public function testUpdateTagWithoutChangingValues() {
         // GIVEN
         $tag_data = $this->_generated_tag->toArray();
 
@@ -108,7 +107,7 @@ class PutTagTest extends TestCase {
     /**
      * @param array $response_as_array
      */
-    private function assertPutResponseHasCorrectKeys(array $response_as_array){
+    private function assertPutResponseHasCorrectKeys(array $response_as_array) {
         $failure_message = self::METHOD." Response is ".json_encode($response_as_array);
         $this->assertArrayHasKey(self::$RESPONSE_KEY_ID, $response_as_array, $failure_message);
         $this->assertArrayHasKey(self::$RESPONSE_KEY_ERROR, $response_as_array, $failure_message);

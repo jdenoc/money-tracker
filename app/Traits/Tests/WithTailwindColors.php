@@ -13,7 +13,7 @@ trait WithTailwindColors {
 
     protected $tailwindColors;
 
-    protected function setupTailwindColors(){
+    protected function setupTailwindColors() {
         $this->tailwindColors = new TailwindColors();
     }
 

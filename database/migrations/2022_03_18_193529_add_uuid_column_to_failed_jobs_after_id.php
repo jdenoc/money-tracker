@@ -13,13 +13,13 @@ class AddUuidColumnToFailedJobsAfterId extends Migration {
     /**
      * Run the migrations.
      */
-    public function up(){
-        Schema::table(self::$TABLE, function (Blueprint $table) {
+    public function up() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
             $table->string(self::$COLUMN)->after('id')->nullable()->unique();
         });
 
         // generate UUIDs for your existing failed jobs
-        DB::table(self::$TABLE)->whereNull(self::$COLUMN)->cursor()->each(function ($job) {
+        DB::table(self::$TABLE)->whereNull(self::$COLUMN)->cursor()->each(function($job) {
             DB::table(self::$TABLE)
                 ->where('id', $job->id)
                 ->update([self::$COLUMN => (string) Illuminate\Support\Str::uuid()]);
@@ -29,9 +29,10 @@ class AddUuidColumnToFailedJobsAfterId extends Migration {
     /**
      * Reverse the migrations.
      */
-    public function down(){
-        Schema::table(self::$TABLE, function (Blueprint $table) {
+    public function down() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
             $table->dropColumn(self::$COLUMN);
         });
     }
+
 }

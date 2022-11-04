@@ -9,13 +9,12 @@ use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 
 class DeleteAccountTypeTest extends TestCase {
-
     use WithFaker;
 
-    private $_disable_account_type_uri = '/api/account-type/';
-    private $_get_account_uri = '/api/account/';
+    private string $_disable_account_type_uri = '/api/account-type/';
+    private string $_get_account_uri = '/api/account/';
 
-    public function testDisableAccountTypeThatDoesNotExist(){
+    public function testDisableAccountTypeThatDoesNotExist() {
         // GIVEN - account_type does not exist
         $account_type_id = $this->faker->randomNumber();
 
@@ -32,7 +31,7 @@ class DeleteAccountTypeTest extends TestCase {
         $this->assertEmpty($response->getContent());
     }
 
-    public function testDisabledAccountType(){
+    public function testDisabledAccountType() {
         // GIVEN
         $generated_account = Account::factory()->create();
         $generated_account_type = AccountType::factory()->create(['account_id'=>$generated_account->id, 'disabled'=>false]);
@@ -53,7 +52,7 @@ class DeleteAccountTypeTest extends TestCase {
         $this->assertTrue(is_array($account_response1_as_array['account_types']), $account_response1->getContent());
         $this->assertNotEmpty($account_response1_as_array['account_types'], $account_response1->getContent());
         $this->assertCount(1, $account_response1_as_array['account_types'], "We only created 1 account_type, why has this happened\n".$account_response1->getContent());
-        foreach($account_response1_as_array['account_types'] as $account_type_in_response){
+        foreach ($account_response1_as_array['account_types'] as $account_type_in_response) {
             $this->assertTrue(is_array($account_type_in_response), $account_response1->getContent());
             $this->assertArrayHasKey('disabled', $account_type_in_response, $account_response1->getContent());
             $this->assertFalse($account_type_in_response['disabled'], $account_response1->getContent());
@@ -67,7 +66,7 @@ class DeleteAccountTypeTest extends TestCase {
         $this->assertTrue(is_array($account_response2_as_array['account_types']), $account_response2->getContent());
         $this->assertNotEmpty($account_response2_as_array['account_types'], $account_response2->getContent());
         $this->assertCount(1, $account_response2_as_array['account_types'], "We only created 1 account_type, why has this happened\n".$account_response2->getContent());
-        foreach($account_response2_as_array['account_types'] as $account_type_in_response){
+        foreach ($account_response2_as_array['account_types'] as $account_type_in_response) {
             $this->assertTrue(is_array($account_type_in_response), $account_response2->getContent());
             $this->assertArrayHasKey('disabled', $account_type_in_response, $account_response2->getContent());
             $this->assertTrue($account_type_in_response['disabled'], $account_response2->getContent());

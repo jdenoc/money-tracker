@@ -9,7 +9,7 @@ class AccountTotalSanityCheck {
     private $account_id;
     private $account_name;
 
-    public function diff(){
+    public function diff() {
         return abs(round($this->actual - $this->expected, 2));
     }
 
@@ -18,7 +18,7 @@ class AccountTotalSanityCheck {
      *
      * @return array
      */
-    public function toArray(){
+    public function toArray() {
         return [
             'actual'=>$this->actual,
             'expected'=>$this->expected,
@@ -28,21 +28,21 @@ class AccountTotalSanityCheck {
         ];
     }
 
-    public function __get($name){
-        if(array_key_exists($name, $this->toArray()) && $name !== 'diff'){
+    public function __get($name) {
+        if (array_key_exists($name, $this->toArray()) && $name !== 'diff') {
             return $this->{$name};
         } else {
             return null;
         }
     }
 
-    public function __set($name, $value){
-        if(array_key_exists($name, $this->toArray()) && $name !== 'diff'){
+    public function __set($name, $value) {
+        if (array_key_exists($name, $this->toArray()) && $name !== 'diff') {
             $this->{$name} = $value;
         }
     }
 
-    public function __toString(){
+    public function __toString() {
         return json_encode($this->toArray(), JSON_THROW_ON_ERROR);
     }
 

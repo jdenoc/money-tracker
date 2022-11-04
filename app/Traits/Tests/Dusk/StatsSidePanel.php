@@ -20,45 +20,45 @@ trait StatsSidePanel {
     private static $LABEL_STATS_SIDE_PANEL_OPTION_DISTRIBUTION = "Distribution";
     private static $LABEL_STATS_SIDE_PANEL_OPTION_TAGS = "Tags";
 
-    public function assertStatsSidePanelHeading(Browser $browser){
+    public function assertStatsSidePanelHeading(Browser $browser) {
         $browser
-            ->within(self::$SELECTOR_STATS_SIDE_PANEL, function(Browser $side_panel){
+            ->within(self::$SELECTOR_STATS_SIDE_PANEL, function(Browser $side_panel) {
                 $side_panel
                     ->assertVisible(self::$SELECTOR_STATS_SIDE_PANEL_HEADING)
                     ->assertSeeIn(self::$SELECTOR_STATS_SIDE_PANEL_HEADING, self::$LABEL_STATS_SIDE_PANEL_HEADING);
             });
     }
 
-    public function clickStatsSidePanelOptionSummary(Browser $browser){
+    public function clickStatsSidePanelOptionSummary(Browser $browser) {
         $this->clickStatsSidePanelOption($browser, self::$SELECTOR_STATS_SIDE_PANEL_OPTION_SUMMARY);
     }
 
-    public function clickStatsSidePanelOptionTrending(Browser $browser){
+    public function clickStatsSidePanelOptionTrending(Browser $browser) {
         $this->clickStatsSidePanelOption($browser, self::$SELECTOR_STATS_SIDE_PANEL_OPTION_TRENDING);
     }
 
-    public function clickStatsSidePanelOptionDistribution(Browser $browser){
+    public function clickStatsSidePanelOptionDistribution(Browser $browser) {
         $this->clickStatsSidePanelOption($browser, self::$SELECTOR_STATS_SIDE_PANEL_OPTION_DISTRIBUTION);
     }
 
-    public function clickStatsSidePanelOptionTags(Browser $browser){
+    public function clickStatsSidePanelOptionTags(Browser $browser) {
         $this->clickStatsSidePanelOption($browser, self::$SELECTOR_STATS_SIDE_PANEL_OPTION_TAGS);
     }
 
-    private function clickStatsSidePanelOption(Browser $browser, $option_selector){
+    private function clickStatsSidePanelOption(Browser $browser, $option_selector) {
         $browser
-            ->within(self::$SELECTOR_STATS_SIDE_PANEL, function(Browser $side_panel) use ($option_selector){
+            ->within(self::$SELECTOR_STATS_SIDE_PANEL, function(Browser $side_panel) use ($option_selector) {
                 $side_panel->click($option_selector);
             });
     }
 
-    public function assertStatsSidePanelOptionIsActive(Browser $browser, string $label){
-        if(!in_array($label, $this->statsSidePanelOptionLabels())){
+    public function assertStatsSidePanelOptionIsActive(Browser $browser, string $label) {
+        if (!in_array($label, $this->statsSidePanelOptionLabels())) {
             throw new \InvalidArgumentException("Label '".$label."' provided is not a valid stats side panel option");
         }
-        
+
         $browser
-            ->within(self::$SELECTOR_STATS_SIDE_PANEL, function(Browser $side_panel) use ($label){
+            ->within(self::$SELECTOR_STATS_SIDE_PANEL, function(Browser $side_panel) use ($label) {
                 $side_panel->assertSeeIn(self::$SELECTOR_STATS_SIDE_PANEL_ACTIVE_OPTION, $label);
             });
     }
@@ -66,7 +66,7 @@ trait StatsSidePanel {
     /**
      * @return array
      */
-    private function statsSidePanelOptionLabels():array{
+    private function statsSidePanelOptionLabels(): array {
         return [
             self::$LABEL_STATS_SIDE_PANEL_OPTION_SUMMARY,
             self::$LABEL_STATS_SIDE_PANEL_OPTION_TRENDING,

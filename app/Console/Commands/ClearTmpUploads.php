@@ -25,15 +25,15 @@ class ClearTmpUploads extends Command {
     /**
      * Execute the console command.
      */
-    public function handle():int{
+    public function handle(): int {
         $tmp_upload_file_count = 0;
         $tmp_upload_files = Storage::files(Attachment::STORAGE_TMP_UPLOAD);
-        foreach($tmp_upload_files as $tmp_upload_file){
-            if(str_contains($tmp_upload_file, 'gitignore')){
+        foreach ($tmp_upload_files as $tmp_upload_file) {
+            if (str_contains($tmp_upload_file, 'gitignore')) {
                 continue;   // don't delete .gitignore file
             }
             $deleted = Storage::delete($tmp_upload_file);
-            if($deleted){
+            if ($deleted) {
                 $tmp_upload_file_count++;
             }
         }

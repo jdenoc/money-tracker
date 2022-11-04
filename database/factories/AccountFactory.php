@@ -2,13 +2,13 @@
 
 namespace Database\Factories;
 
-use App\Helpers\DatabaseFactoryConstants AS FactoryConstants;
+use App\Helpers\DatabaseFactoryConstants as FactoryConstants;
 use App\Providers\Faker\ProjectCurrencyCodeProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class AccountFactory extends Factory {
 
-    public function definition():array{
+    public function definition(): array {
         $this->faker->addProvider(new ProjectCurrencyCodeProvider($this->faker));
         $account_name = $this->faker->company().' account';
         $disabled = $this->faker->boolean();

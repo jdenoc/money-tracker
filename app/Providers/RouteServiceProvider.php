@@ -8,8 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 
-class RouteServiceProvider extends ServiceProvider
-{
+class RouteServiceProvider extends ServiceProvider {
 
     /**
      * The path to the "home" route for your application.
@@ -25,11 +24,10 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
-    {
+    public function boot() {
         $this->configureRateLimiting();
 
-        $this->routes(function () {
+        $this->routes(function() {
             Route::prefix('api')
                 ->middleware('api')
                 ->namespace($this->namespace)
@@ -46,10 +44,10 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    protected function configureRateLimiting()
-    {
-        RateLimiter::for('api', function (Request $request) {
+    protected function configureRateLimiting() {
+        RateLimiter::for('api', function(Request $request) {
             return Limit::perMinute(500)->by(optional($request->user())->id ?: $request->ip());
         });
     }
+
 }

@@ -10,12 +10,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
 class GetAccountTest extends TestCase {
-
     use WithFaker;
 
     private string $_base_uri = '/api/account/%d';
 
-    public function testGetAccountData(){
+    public function testGetAccountData() {
         // GIVEN
         $account_type_count = $this->faker->randomDigitNotZero();
         $generated_account = Account::factory()->create();
@@ -33,7 +32,7 @@ class GetAccountTest extends TestCase {
         $this->assertAccountTypesOK($response_body_as_array['account_types'], $generated_account_types);
     }
 
-    public function testGetAccountDataWhenAnAccountTypesRecordIsDisabled(){
+    public function testGetAccountDataWhenAnAccountTypesRecordIsDisabled() {
         // GIVEN
         $account_type_count = $this->faker->randomDigitNotZero();
         $generated_account = Account::factory()->create();
@@ -54,7 +53,7 @@ class GetAccountTest extends TestCase {
         $this->assertAccountTypesOK($response_body_as_array['account_types'], $generated_account_types);
     }
 
-    public function testGetAccountDataWhenNoAccountTypeRecordsExist(){
+    public function testGetAccountDataWhenNoAccountTypeRecordsExist() {
         // GIVEN
         $generated_account = Account::factory()->create();
 
@@ -66,7 +65,7 @@ class GetAccountTest extends TestCase {
         $this->assertAccountDetailsOK($response->json(), $generated_account, 0);
     }
 
-    public function testGetAccountDataWhenOnlyDisabledAccountTypeRecordsExist(){
+    public function testGetAccountDataWhenOnlyDisabledAccountTypeRecordsExist() {
         // GIVEN
         $account_type_count = $this->faker->randomDigitNotZero();
         $generated_account = Account::factory()->create();
@@ -80,7 +79,7 @@ class GetAccountTest extends TestCase {
         $this->assertAccountDetailsOK($response->json(), $generated_account, $account_type_count);
     }
 
-    public function testGetAccountDataWhenNoAccountDataExists(){
+    public function testGetAccountDataWhenNoAccountDataExists() {
         // GIVEN - no database records are created
 
         // WHEN
@@ -98,7 +97,7 @@ class GetAccountTest extends TestCase {
      * @param Account $generated_account
      * @param int $account_type_count
      */
-    private function assertAccountDetailsOK(array $response_as_array, $generated_account, int $account_type_count){
+    private function assertAccountDetailsOK(array $response_as_array, $generated_account, int $account_type_count) {
         $element = 'id';
         $this->assertArrayHasKey($element, $response_as_array);
         $this->assertEquals($response_as_array[$element], $generated_account->id);
@@ -150,7 +149,7 @@ class GetAccountTest extends TestCase {
 
         $element = 'disabled_stamp';
         $this->assertArrayHasKey($element, $response_as_array);
-        if($response_as_array['disabled']){
+        if ($response_as_array['disabled']) {
             $this->assertDateFormat($response_as_array[$element], DATE_ATOM, $response_as_array[$element]." not in correct format");
         } else {
             $this->assertNull($response_as_array[$element]);
@@ -164,9 +163,9 @@ class GetAccountTest extends TestCase {
      * @param array $account_types_in_response
      * @param AccountType $generated_account_types
      */
-    private function assertAccountTypesOK($account_types_in_response, $generated_account_types){
+    private function assertAccountTypesOK($account_types_in_response, $generated_account_types) {
         $generated_account_types_as_array = $generated_account_types->toArray();
-        foreach($account_types_in_response as $account_type_in_response){
+        foreach ($account_types_in_response as $account_type_in_response) {
             $error_msg = "Factory generate account in JSON: ".json_encode($generated_account_types_as_array)."\nResponse Body component:".json_encode($account_type_in_response);
             $this->assertArrayHasKey('id', $account_type_in_response, $error_msg);
             $this->assertArrayHasKey('type', $account_type_in_response, $error_msg);

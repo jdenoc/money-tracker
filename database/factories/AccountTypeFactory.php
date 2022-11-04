@@ -2,13 +2,13 @@
 
 namespace Database\Factories;
 
-use App\Helpers\DatabaseFactoryConstants AS FactoryConstants;
+use App\Helpers\DatabaseFactoryConstants as FactoryConstants;
 use App\Models\AccountType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class AccountTypeFactory extends Factory {
 
-    public function definition():array{
+    public function definition(): array {
         $bank_account_number = $this->faker->bankAccountNumber();
         $account_types = AccountType::getEnumValues();
         $account_type = $account_types[array_rand($account_types)];

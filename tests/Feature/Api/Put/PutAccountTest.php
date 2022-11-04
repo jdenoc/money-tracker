@@ -11,7 +11,6 @@ use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 
 class PutAccountTest extends TestCase {
-
     use AccountResponseKeys;
     use WithFaker;
 
@@ -19,14 +18,14 @@ class PutAccountTest extends TestCase {
 
     private string $_base_uri = '/api/account/%d';
 
-    public function setUp(): void{
+    public function setUp(): void {
         parent::setUp();
 
         $institution = Institution::factory()->create(['active'=>true]);
         Account::factory()->count(10)->create(['disabled'=>false, 'institution_id'=>$institution->id]);
     }
 
-    public function testUpdateAccountWithoutData(){
+    public function testUpdateAccountWithoutData() {
         // GIVEN
         $account_data = [];
         $account = $this->getRandomActiveExistingAccount();
@@ -38,11 +37,11 @@ class PutAccountTest extends TestCase {
         $this->assertFailedPostResponse($response, HttpStatus::HTTP_BAD_REQUEST, self::$ERROR_MSG_NO_DATA);
     }
 
-    public function testUpdateAccountWithInvalidInstitutionId(){
+    public function testUpdateAccountWithInvalidInstitutionId() {
         // GIVEN
         $existing_instituion_ids = Institution::all()->pluck('id')->toArray();
         $account = $this->getRandomActiveExistingAccount();
-        do{
+        do {
             // there should only be 1 institution in existance
             $institution_id = $this->faker->randomNumber(1);
         } while ($institution_id == $account->institution_id || in_array($institution_id, $existing_instituion_ids));
@@ -55,12 +54,12 @@ class PutAccountTest extends TestCase {
         $this->assertFailedPostResponse($response, HttpStatus::HTTP_BAD_REQUEST, self::$ERROR_MSG_INVALID_INSTITUTION);
     }
 
-    public function testUpdateAccountThatDoesNotExist(){
+    public function testUpdateAccountThatDoesNotExist() {
         // GIVEN
         $existing_account_ids = Account::all()->pluck('id')->toArray();
-        do{
+        do {
             $account_id = $this->faker->randomNumber(2);
-        } while(in_array($account_id, $existing_account_ids));
+        } while (in_array($account_id, $existing_account_ids));
         $account_data = $this->generateAccountData();
         $account_data['institution_id'] = $this->getExistingActiveInstitutionId();
 
@@ -77,7 +76,7 @@ class PutAccountTest extends TestCase {
         $required_fields = Account::getRequiredFieldsForUpdate();
 
         $test_cases = [];
-        foreach ($required_fields as $required_field){
+        foreach ($required_fields as $required_field) {
             $test_cases[$required_field]['data'] = [$required_field=>$dummy_account_data->{$required_field}];
         }
         return $test_cases;
@@ -87,10 +86,10 @@ class PutAccountTest extends TestCase {
      * @dataProvider providerUpdateAccountEachProperty
      * @param array $account_data
      */
-    public function testUpdateAccountEachProperty(array $account_data){
+    public function testUpdateAccountEachProperty(array $account_data) {
         // GIVEN - see providerUpdateAccountEachProperty()
         $account = $this->getRandomActiveExistingAccount();
-        if(isset($account_data['institution_id'])){
+        if (isset($account_data['institution_id'])) {
             $account_data['institution_id'] = $this->getExistingActiveInstitutionId();
         }
 
@@ -106,7 +105,7 @@ class PutAccountTest extends TestCase {
         $this->assertEmpty($response_as_array[self::$RESPONSE_KEY_ERROR], $failure_message);
     }
 
-    public function testUpdateAccountWithoutChangingAnything(){
+    public function testUpdateAccountWithoutChangingAnything() {
         // GIVEN
         $account = $this->getRandomActiveExistingAccount();
 
@@ -122,19 +121,19 @@ class PutAccountTest extends TestCase {
         $this->assertEmpty($response_as_array[self::$RESPONSE_KEY_ERROR], $failure_message);
     }
 
-    private function getRandomActiveExistingAccount(){
+    private function getRandomActiveExistingAccount() {
         return Account::where('disabled', false)->get()->random();
     }
 
-    private function generateAccountData(){
+    private function generateAccountData() {
         return Account::factory()->make();
     }
 
-    private function getExistingActiveInstitutionId(): int{
+    private function getExistingActiveInstitutionId(): int {
         return Institution::where('active', true)->get()->random()->id;
     }
 
-    private function assertFailedPostResponse(TestResponse $response, $expected_response_status, $expected_error_message){
+    private function assertFailedPostResponse(TestResponse $response, $expected_response_status, $expected_error_message) {
         $failure_message = self::METHOD." Response is ".$response->getContent();
         $this->assertResponseStatus($response, $expected_response_status, $failure_message);
         $response_as_array = $response->json();
@@ -142,12 +141,12 @@ class PutAccountTest extends TestCase {
         $this->assertFailedPostResponseContent($response_as_array, $expected_error_message, $failure_message);
     }
 
-    private function assertPostResponseHasCorrectKeys(array $response_as_array, string $failure_message){
+    private function assertPostResponseHasCorrectKeys(array $response_as_array, string $failure_message) {
         $this->assertArrayHasKey(self::$RESPONSE_KEY_ID, $response_as_array, $failure_message);
         $this->assertArrayHasKey(self::$RESPONSE_KEY_ERROR, $response_as_array, $failure_message);
     }
 
-    private function assertFailedPostResponseContent(array $response_as_array, string $expected_error_msg, string $failure_message){
+    private function assertFailedPostResponseContent(array $response_as_array, string $expected_error_msg, string $failure_message) {
         $this->assertEquals(self::$ERROR_ID, $response_as_array[self::$RESPONSE_KEY_ID], $failure_message);
         $this->assertNotEmpty($response_as_array[self::$RESPONSE_KEY_ERROR], $failure_message);
         $this->assertStringContainsString($expected_error_msg, $response_as_array[self::$RESPONSE_KEY_ERROR], $failure_message);

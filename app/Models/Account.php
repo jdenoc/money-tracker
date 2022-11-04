@@ -8,7 +8,6 @@ use Mostafaznv\LaraCache\CacheEntity;
 use Mostafaznv\LaraCache\Traits\LaraCache;
 
 class Account extends BaseModel {
-
     use HasFactory;
     use LaraCache;
 
@@ -29,7 +28,6 @@ class Account extends BaseModel {
     protected $dates = [
         'disabled_stamp'
     ];
-
     private static $required_fields = [
         'name',
         'institution_id',
@@ -38,47 +36,48 @@ class Account extends BaseModel {
         'currency',
     ];
 
-    public function institution(){
+    public function institution() {
         $this->belongsTo('App\Modals\Institution', 'institution_id');
     }
 
-    public function account_types(){
+    public function account_types() {
         return $this->hasMany('App\Models\AccountType', 'account_id');
     }
 
-    public function save(array $options = []){
-        if(!$this->getOriginal('disabled') && $this->disabled){
+    public function save(array $options = []) {
+        if (!$this->getOriginal('disabled') && $this->disabled) {
             $this->disabled_stamp = new Carbon();
         }
         return parent::save($options);
     }
 
-    public function update_total($value){
+    public function update_total($value) {
         $this->total += $value;
         $this->save();
     }
 
-    public static function find_account_with_types($account_id){
+    public static function find_account_with_types($account_id) {
         $account = Account::with('account_types')->where('id', $account_id);
         return $account->first();
     }
 
-    public static function getRequiredFieldsForUpdate(){
+    public static function getRequiredFieldsForUpdate() {
         return self::$required_fields;
     }
 
-    public static function getRequiredFieldsForCreation(){
+    public static function getRequiredFieldsForCreation() {
         return self::$required_fields;
     }
 
-    static public function cacheEntities(): array {
+    public static function cacheEntities(): array {
         return [
-            CacheEntity::make('all')->forever()->cache(function(){
+            CacheEntity::make('all')->forever()->cache(function() {
                 return Account::all();
             }),
-            CacheEntity::make('count')->forever()->cache(function(){
+            CacheEntity::make('count')->forever()->cache(function() {
                 return Account::count();
             })
         ];
     }
+
 }

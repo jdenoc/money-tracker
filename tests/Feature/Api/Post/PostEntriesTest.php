@@ -12,11 +12,10 @@ use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\Feature\Api\ListEntriesBase;
 
 class PostEntriesTest extends ListEntriesBase {
-
     use GenerateFilterTestCases;
     use MaxEntryResponseValue;
 
-    public function providerPostEntriesFilter():array{
+    public function providerPostEntriesFilter(): array {
         // need to call setUp() before running through a data provider method
         // environment needs setting up and isn't until setUp() is called
         //$this->setUp();
@@ -31,7 +30,7 @@ class PostEntriesTest extends ListEntriesBase {
      * @dataProvider providerPostEntriesFilter
      * @param array $filter_details
      */
-    public function testPostEntriesThatDoNotExist(array $filter_details){
+    public function testPostEntriesThatDoNotExist(array $filter_details) {
         // GIVEN - no entries exist
         AccountType::factory()->create(['account_id'=>$this->_generated_account->id]);
         $filter_details = $this->setTestSpecificFilters($this->faker, $filter_details, $this->_generated_account, $this->_generated_tags);
@@ -44,7 +43,7 @@ class PostEntriesTest extends ListEntriesBase {
      * @param array $filter_details
      * @throws Exception
      */
-    public function testPostEntries(array $filter_details){
+    public function testPostEntries(array $filter_details) {
         // GIVEN
         $generate_entry_count = $this->faker->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE);
         /** @var AccountType $generated_account_type */
@@ -53,13 +52,13 @@ class PostEntriesTest extends ListEntriesBase {
 
         $generated_entries = $this->batch_generate_entries($generate_entry_count, $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details), true);
         $generated_disabled_entries = $generated_entries->where('disabled', 1);
-        if($generated_disabled_entries->count() > 0){   // if there are no disabled entries, then there is no need to do any fancy filtering
+        if ($generated_disabled_entries->count() > 0) {   // if there are no disabled entries, then there is no need to do any fancy filtering
             $generated_entries = $generated_entries->sortByDesc('disabled') // sorting so disabled entries are at the start of the collection
                 ->splice($generated_disabled_entries->count()-1);
             $generate_entry_count -= $generated_disabled_entries->count();
         }
 
-        if($generate_entry_count < 1){
+        if ($generate_entry_count < 1) {
             // if we only generate entries that have been marked "disabled"
             // then we should create at least one entry is NOT marked "disabled
             $generated_entry = $this->generate_entry_record($generated_account_type->id, false, $this->convert_filters_to_entry_components($filter_details));
@@ -83,7 +82,7 @@ class PostEntriesTest extends ListEntriesBase {
      * @param array $filter_details
      * @throws Exception
      */
-    public function testPostEntriesByPage(array $filter_details){
+    public function testPostEntriesByPage(array $filter_details) {
         $page_limit = 3;
         // GIVEN
         $generate_entry_count = $this->faker->numberBetween(($page_limit-1)*self::$MAX_ENTRIES_IN_RESPONSE+1, $page_limit*self::$MAX_ENTRIES_IN_RESPONSE);
@@ -92,7 +91,7 @@ class PostEntriesTest extends ListEntriesBase {
         $generated_entries = $this->batch_generate_entries($generate_entry_count, $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
 
         $entries_in_response = [];
-        for($i=0; $i<$page_limit; $i++){
+        for ($i=0; $i<$page_limit; $i++) {
             // WHEN
             $response = $this->json("POST", $this->_uri.'/'.$i, $filter_details);
 
@@ -105,7 +104,7 @@ class PostEntriesTest extends ListEntriesBase {
             $this->assertEquals($generate_entry_count, $response_body_as_array['count']);
             unset($response_body_as_array['count']);
 
-            if($i+1 == $page_limit){
+            if ($i+1 == $page_limit) {
                 $this->assertCount($generate_entry_count-(($page_limit-1)*self::$MAX_ENTRIES_IN_RESPONSE), $response_body_as_array);
             } else {
                 $this->assertCount(self::$MAX_ENTRIES_IN_RESPONSE, $response_body_as_array);
@@ -117,10 +116,10 @@ class PostEntriesTest extends ListEntriesBase {
         $this->runEntryListAssertions($generate_entry_count, $entries_in_response, $generated_entries);
     }
 
-    public function testPostEntriesFilterWithMultipleTagIdsAssignedToOneEntry(){
+    public function testPostEntriesFilterWithMultipleTagIdsAssignedToOneEntry() {
         // GIVEN
         $min_number_of_tags = 2;
-        while($this->_generated_tags->count() < $min_number_of_tags){
+        while ($this->_generated_tags->count() < $min_number_of_tags) {
             $this->_generated_tags = Tag::factory()->count($this->faker->randomDigitNotZero())->create();
         }
         $tag_ids = $this->_generated_tags->pluck('id')->toArray();
@@ -139,12 +138,12 @@ class PostEntriesTest extends ListEntriesBase {
         $this->runEntryListAssertions(count($generated_entries), $response_as_array, $generated_entries);
     }
 
-    public function testPostEntriesFilterWithStartDateGreaterThanEndDate(){
+    public function testPostEntriesFilterWithStartDateGreaterThanEndDate() {
         // GIVEN
         $start_date = $this->faker->date();
-        do{
+        do {
             $end_date = $this->faker->date("Y-m-d", $start_date);  // second parameter guarantees $start_date is >= $end_date
-        }while($start_date < $end_date);
+        } while ($start_date < $end_date);
         $filter_details = [
             self::$FILTER_KEY_START_DATE=>$start_date,
             self::$FILTER_KEY_END_DATE=>$end_date,
@@ -155,12 +154,12 @@ class PostEntriesTest extends ListEntriesBase {
         $this->assertPostEntriesNotFound($filter_details);
     }
 
-    public function testPostEntriesFilterWithEndDateGreaterThanStartDate(){
+    public function testPostEntriesFilterWithEndDateGreaterThanStartDate() {
         // GIVEN
         $end_date = $this->faker->date();
-        do{
+        do {
             $start_date = $this->faker->date("Y-m-d", $end_date); // second parameter guarantees $start_date is <= $end_date
-        }while($start_date > $end_date);
+        } while ($start_date > $end_date);
         $filter_details = [
             self::$FILTER_KEY_START_DATE=>$start_date,
             self::$FILTER_KEY_END_DATE=>$end_date,
@@ -181,12 +180,12 @@ class PostEntriesTest extends ListEntriesBase {
         $this->runEntryListAssertions($generated_entries_count, $response_as_array, $generated_entries);
     }
 
-    public function testPostEntriesFilterWithMinValueGreaterThanMaxValue(){
+    public function testPostEntriesFilterWithMinValueGreaterThanMaxValue() {
         // GIVEN
         $min_value = $this->faker->randomFloat(2, 0, 50);
-        do{
+        do {
             $max_value = $this->faker->randomFloat(2, 0, $min_value);
-        }while($min_value < $max_value);
+        } while ($min_value < $max_value);
         $filter_details = [
             self::$FILTER_KEY_MIN_VALUE=>$min_value,
             self::$FILTER_KEY_MAX_VALUE=>$max_value,
@@ -197,12 +196,12 @@ class PostEntriesTest extends ListEntriesBase {
         $this->assertPostEntriesNotFound($filter_details);
     }
 
-    public function testPostEntriesFilterWithMaxValueGreaterThanMinValue(){
+    public function testPostEntriesFilterWithMaxValueGreaterThanMinValue() {
         // GIVEN
         $max_value = $this->faker->randomFloat(2, 0, 50);
-        do{
+        do {
             $min_value = $this->faker->randomFloat(2, 0, $max_value);
-        }while($min_value > $max_value);
+        } while ($min_value > $max_value);
         $filter_details = [
             self::$FILTER_KEY_MIN_VALUE=>$min_value,
             self::$FILTER_KEY_MAX_VALUE=>$max_value,
@@ -223,7 +222,7 @@ class PostEntriesTest extends ListEntriesBase {
         $this->runEntryListAssertions($generated_entries_count, $response_as_array, $generated_entries);
     }
 
-    public function testPostEntriesFilterSort(){
+    public function testPostEntriesFilterSort() {
         // GIVEN
         $generate_entry_count = $this->faker->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE);
         $generated_account_type = AccountType::factory()->create(['account_id'=>$this->_generated_account->id]);
@@ -255,7 +254,7 @@ class PostEntriesTest extends ListEntriesBase {
     /**
      * @param array $filter_details
      */
-    private function assertPostEntriesNotFound(array $filter_details){
+    private function assertPostEntriesNotFound(array $filter_details) {
         // WHEN
         $response = $this->json("POST", $this->_uri, $filter_details);
 

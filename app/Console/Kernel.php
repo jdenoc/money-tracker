@@ -24,10 +24,10 @@ class Kernel extends ConsoleKernel {
      *
      * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
      */
-    protected function schedule(Schedule $schedule){
+    protected function schedule(Schedule $schedule) {
         $schedule->command(Commands\AccountTotalSanityCheck::class)->dailyAt("03:17");
         $schedule->command(Commands\ClearTmpUploads::class)->daily();
-        $schedule->command(SnapshotCreate::class,[date('Ymd.His.e'), '--compress'])->dailyAt("02:15")
+        $schedule->command(SnapshotCreate::class, [date('Ymd.His.e'), '--compress'])->dailyAt("02:15")
             ->monitorName("snapshot:create {date} --compress"); // specifically used for scheduler monitoring
         $schedule->command(SnapshotCleanup::class, ['--keep=30'])->dailyAt("02:45");
         $schedule->command('model:prune', ['--model' => MonitoredScheduledTaskLogItem::class])->dailyAt("01:13")
@@ -40,7 +40,7 @@ class Kernel extends ConsoleKernel {
     /**
      * Register the commands for the application.
      */
-    protected function commands(){
+    protected function commands() {
         $this->load(__DIR__.'/Commands');
         require base_path('routes/console.php');
     }

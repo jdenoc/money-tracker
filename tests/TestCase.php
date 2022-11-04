@@ -10,21 +10,20 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Testing\TestResponse;
 
 abstract class TestCase extends BaseTestCase {
-
     use CreatesApplication;
     use OutputTestInfo;
     use RefreshDatabase;
 
-    public static function setUpBeforeClass(): void{
+    public static function setUpBeforeClass(): void {
         self::initOutputTestInfo();
     }
 
-    public function setUp(): void{
+    public function setUp(): void {
         $this->outputTestName();
         parent::setUp();
     }
 
-    public function tearDown(): void{
+    public function tearDown(): void {
         Cache::flush();
         parent::tearDown();
         $this->incrementTestCount();
@@ -35,7 +34,7 @@ abstract class TestCase extends BaseTestCase {
      * @param string $format
      * @param string $assert_failure_message
      */
-    protected function assertDateFormat(string $date_string, string $format, string $assert_failure_message=''){
+    protected function assertDateFormat(string $date_string, string $format, string $assert_failure_message='') {
         $date = \DateTime::createFromFormat($format, $date_string);
         $this->assertTrue($date->format($format) === $date_string, $assert_failure_message);
     }
@@ -45,7 +44,7 @@ abstract class TestCase extends BaseTestCase {
      * @param string $actual_datetime
      * @param string $assert_failure_message
      */
-    protected function assertDatetimeWithinOneSecond(string $expected_datetime, string $actual_datetime, string $assert_failure_message=''){
+    protected function assertDatetimeWithinOneSecond(string $expected_datetime, string $actual_datetime, string $assert_failure_message='') {
         $expected_timestamp = strtotime($expected_datetime);
         $actual_timestamp = strtotime($actual_datetime);
         $this->assertTrue(abs($expected_timestamp - $actual_timestamp) <= 1, $assert_failure_message);
@@ -56,10 +55,10 @@ abstract class TestCase extends BaseTestCase {
      * @param int $expected_status
      * @param string $error_message
      */
-    protected function assertResponseStatus($response, int $expected_status, string $error_message=''){
+    protected function assertResponseStatus($response, int $expected_status, string $error_message='') {
         $actual_status = $response->getStatusCode();
         $failure_message = "Expected status code ".$expected_status." but received ".$actual_status.".\nResponse content: ".$response->getContent();
-        $failure_message .= (empty($error_message)) ? '': "\n".$error_message;
+        $failure_message .= (empty($error_message)) ? '' : "\n".$error_message;
         $this->assertTrue($actual_status === $expected_status, $failure_message);
     }
 

@@ -9,8 +9,8 @@ use Illuminate\Session\TokenMismatchException;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Throwable;
 
-class Handler extends ExceptionHandler
-{
+class Handler extends ExceptionHandler {
+
     /**
      * A list of the exception types that should not be reported.
      *
@@ -36,14 +36,14 @@ class Handler extends ExceptionHandler
      *
      * @return void
      */
-    public function register(){
-        $this->reportable(function (Throwable $e) {
+    public function register() {
+        $this->reportable(function(Throwable $e) {
             //
         });
 
-        $this->renderable(function(TokenMismatchException $e, $request){
+        $this->renderable(function(TokenMismatchException $e, $request) {
             // handle TokenMismatchException's for /attachment/upload
-            if($request->is('attachment/upload')){
+            if ($request->is('attachment/upload')) {
                 return response()->json(
                     ['error' => "token mis-match"],
                     HttpStatus::HTTP_UNAUTHORIZED
@@ -51,9 +51,9 @@ class Handler extends ExceptionHandler
             }
         });
 
-        $this->renderable(function(PostTooLargeException $e, $request){
+        $this->renderable(function(PostTooLargeException $e, $request) {
             // handle PostTooLargeException's for /attachment/upload
-            if($request->is('attachment/upload')){
+            if ($request->is('attachment/upload')) {
                 return response()->json(
                     ['error'=>'The uploaded file exceeds your post_max_size ini directive.'],
                     HttpStatus::HTTP_REQUEST_ENTITY_TOO_LARGE
@@ -61,9 +61,9 @@ class Handler extends ExceptionHandler
             }
         });
 
-        $this->renderable(function(Exception $e, $request){
+        $this->renderable(function(Exception $e, $request) {
             // handle generic Exception's for /attachment/upload
-            if($request->is('attachment/upload')){
+            if ($request->is('attachment/upload')) {
                 return response()->json(
                     ['error'=>'Error occurred during upload. Contact admin.'],
                     HttpStatus::HTTP_INTERNAL_SERVER_ERROR
