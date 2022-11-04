@@ -8,12 +8,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
 class GetAccountsTest extends TestCase {
-
     use WithFaker;
 
     private string $_uri = '/api/accounts';
 
-    public function testGetListOfAccountsWhenTheyAreAvailable(){
+    public function testGetListOfAccountsWhenTheyAreAvailable() {
         // GIVEN
         $account_count = $this->faker->randomDigitNotZero();
         $generated_accounts = Account::factory()->count($account_count)->create();
@@ -30,7 +29,7 @@ class GetAccountsTest extends TestCase {
         $this->assertArrayHasKey('count', $response_body_as_array);
         $this->assertEquals($account_count, $response_body_as_array['count']);
         unset($response_body_as_array['count']);
-        foreach($response_body_as_array as $account_in_response){
+        foreach ($response_body_as_array as $account_in_response) {
             $this->assertArrayHasKey('id', $account_in_response);
             unset($account_in_response['id']);
             $this->assertArrayHasKey('name', $account_in_response);
@@ -45,7 +44,7 @@ class GetAccountsTest extends TestCase {
             unset($account_in_response['currency']);
             $this->assertEmpty($account_in_response, "Unknown nodes found in JSON response:".json_encode($account_in_response));
         }
-        foreach($generated_accounts as $generated_account){
+        foreach ($generated_accounts as $generated_account) {
             $generated_account_as_array = $generated_account->toArray();
             unset($generated_account_as_array["modified_stamp"],$generated_account_as_array["create_stamp"]);
             $this->assertTrue(
@@ -55,7 +54,7 @@ class GetAccountsTest extends TestCase {
         }
     }
 
-    public function testGetListOfAccountsWhenNoAccountsAreAvailable(){
+    public function testGetListOfAccountsWhenNoAccountsAreAvailable() {
         // GIVEN - nothing. there should be no data in database
 
         // WHEN

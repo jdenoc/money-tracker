@@ -14,8 +14,8 @@ class AddIndexToEntryTagsPivotTable extends Migration {
      *
      * @return void
      */
-    public function up(){
-        Schema::table(self::$TABLE_NAME, function (Blueprint $table) {
+    public function up() {
+        Schema::table(self::$TABLE_NAME, function(Blueprint $table) {
             $table->index(['entry_id', 'tag_id'], self::$INDEX_NAME);
         });
     }
@@ -25,8 +25,8 @@ class AddIndexToEntryTagsPivotTable extends Migration {
      *
      * @return void
      */
-    public function down(){
-        Schema::table(self::$TABLE_NAME, function (Blueprint $table) {
+    public function down() {
+        Schema::table(self::$TABLE_NAME, function(Blueprint $table) {
             $table->dropIndex(self::$INDEX_NAME);
         });
     }

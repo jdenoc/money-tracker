@@ -9,25 +9,24 @@ use Laravel\Dusk\Browser;
 use Laravel\Dusk\Concerns;
 
 class ResizedBrowser extends Browser {
-
     use BrowserDimensions;
     // carried over from original Browser class
-    use Concerns\InteractsWithAuthentication,
-        Concerns\InteractsWithCookies,
-        Concerns\InteractsWithElements,
-        Concerns\InteractsWithJavascript,
-        Concerns\InteractsWithMouse,
-        Concerns\MakesAssertions,
-        Concerns\MakesUrlAssertions,
-        Concerns\WaitsForElements;
+    use Concerns\InteractsWithAuthentication;
+    use Concerns\InteractsWithCookies;
+    use Concerns\InteractsWithElements;
+    use Concerns\InteractsWithJavascript;
+    use Concerns\InteractsWithMouse;
+    use Concerns\MakesAssertions;
+    use Concerns\MakesUrlAssertions;
+    use Concerns\WaitsForElements;
 
-    public function visit($url){
+    public function visit($url) {
         return parent::visit($url)
             ->resize(self::$DEFAULT_BROWSER_WIDTH_PX, self::$DEFAULT_BROWSER_HEIGHT_PX)
             ->disableFitOnFailure();    // stop screenshots being resized
     }
 
-    public function resize($width, $height){
+    public function resize($width, $height) {
         $width = $width ?? static::$DEFAULT_BROWSER_WIDTH_PX;
         $height = $height ?? static::$DEFAULT_BROWSER_HEIGHT_PX;
 

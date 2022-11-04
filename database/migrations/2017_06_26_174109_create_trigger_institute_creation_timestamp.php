@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
 
 class CreateTriggerInstituteCreationTimestamp extends Migration {
 
@@ -11,7 +12,7 @@ class CreateTriggerInstituteCreationTimestamp extends Migration {
      *
      * @return void
      */
-    public function up(){
+    public function up() {
         DB::unprepared(
             "CREATE TRIGGER ".self::$TRIGGER."
             BEFORE INSERT ON institutions
@@ -25,7 +26,7 @@ class CreateTriggerInstituteCreationTimestamp extends Migration {
      *
      * @return void
      */
-    public function down(){
+    public function down() {
         DB::unprepared("DROP TRIGGER IF EXISTS ".self::$TRIGGER);
     }
 

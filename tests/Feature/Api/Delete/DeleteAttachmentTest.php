@@ -11,13 +11,12 @@ use Tests\TestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 class DeleteAttachmentTest extends TestCase {
-
     use WithFaker;
 
-    private $_attachment_base_uri = '/api/attachment/';
-    private $_entry_base_uri = '/api/entry/';
+    private string $_attachment_base_uri = '/api/attachment/';
+    private string $_entry_base_uri = '/api/entry/';
 
-    public function testDeleteAttachmentWhenNoRecordsExist(){
+    public function testDeleteAttachmentWhenNoRecordsExist() {
         // GIVEN - no attachment records
         $uuid = $this->faker->uuid();
 
@@ -28,7 +27,7 @@ class DeleteAttachmentTest extends TestCase {
         $response->assertStatus(Response::HTTP_NOT_FOUND);
     }
 
-    public function testDeleteAttachment(){
+    public function testDeleteAttachment() {
         // GIVEN
         $generated_account = Account::factory()->create();
         $generated_account_type = AccountType::factory()->create(['account_id'=>$generated_account->id]);
@@ -47,9 +46,9 @@ class DeleteAttachmentTest extends TestCase {
         $this->assertArrayHasKey('attachments', $get_response1_as_array);
         $this->assertTrue(is_array($get_response1_as_array['attachments']));
         $attachment_exists = false;
-        foreach($get_response1_as_array['attachments'] as $attachment_in_response){
+        foreach ($get_response1_as_array['attachments'] as $attachment_in_response) {
             $this->assertArrayHasKey('uuid', $attachment_in_response);
-            if($attachment_in_response['uuid'] == $generated_attachment->uuid){
+            if ($attachment_in_response['uuid'] == $generated_attachment->uuid) {
                 $attachment_exists = true;
                 break;
             }
@@ -65,9 +64,9 @@ class DeleteAttachmentTest extends TestCase {
         $this->assertArrayHasKey('attachments', $get_response2_as_array);
         $this->assertTrue(is_array($get_response2_as_array['attachments']));
         $attachment_exists = false;
-        foreach($get_response2_as_array['attachments'] as $attachment_in_response){
+        foreach ($get_response2_as_array['attachments'] as $attachment_in_response) {
             $this->assertArrayHasKey('uuid', $attachment_in_response);
-            if($attachment_in_response['uuid'] == $generated_attachment->uuid){
+            if ($attachment_in_response['uuid'] == $generated_attachment->uuid) {
                 $attachment_exists = true;
                 break;
             }

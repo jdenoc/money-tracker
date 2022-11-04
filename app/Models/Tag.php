@@ -7,7 +7,6 @@ use Mostafaznv\LaraCache\CacheEntity;
 use Mostafaznv\LaraCache\Traits\LaraCache;
 
 class Tag extends BaseModel {
-
     use HasFactory;
     use LaraCache;
 
@@ -20,18 +19,19 @@ class Tag extends BaseModel {
         'id'
     ];
 
-    public function entries(){
+    public function entries() {
         return $this->belongsToMany('App\Models\Entry', 'entry_tags', 'tag_id', 'entry_id');
     }
 
-    static public function cacheEntities(): array {
+    public static function cacheEntities(): array {
         return [
-            CacheEntity::make('all')->forever()->cache(function(){
+            CacheEntity::make('all')->forever()->cache(function() {
                 return Tag::all();
             }),
-            CacheEntity::make('count')->forever()->cache(function(){
+            CacheEntity::make('count')->forever()->cache(function() {
                 return Tag::count();
             })
         ];
     }
+
 }

@@ -13,7 +13,7 @@ trait InstitutionResponseKeys {
     private static $ERROR_MSG_DOES_NOT_EXIST = 'Institution does not exist';
     private static $ERROR_MSG_MISSING_PROPERTY = "Missing data: %s";
 
-    protected function fillMissingPropertyErrorMessage($missing_properties): string{
+    protected function fillMissingPropertyErrorMessage($missing_properties): string {
         return sprintf(self::$ERROR_MSG_MISSING_PROPERTY, json_encode($missing_properties));
     }
 

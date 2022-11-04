@@ -14,8 +14,8 @@ class DropAttachmentsColumnExt extends Migration {
      *
      * @return void
      */
-    public function up(){
-        Schema::table(self::$TABLE, function (Blueprint $table) {
+    public function up() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
             $table->dropColumn(self::$COLUMN);
         });
     }
@@ -25,8 +25,8 @@ class DropAttachmentsColumnExt extends Migration {
      *
      * @return void
      */
-    public function down(){
-        Schema::table(self::$TABLE, function (Blueprint $table) {
+    public function down() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
             $table->string(self::$COLUMN, 10);
         });
     }

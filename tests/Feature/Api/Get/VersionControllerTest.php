@@ -8,12 +8,11 @@ use Tests\TestCase;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 
 class VersionControllerTest extends TestCase {
-
     use WithFaker;
 
     private string $_base_uri = '/api/version';
 
-    public function testGetVersion(){
+    public function testGetVersion() {
         // GIVEN
         $test_version = $this->faker->randomDigit().'.'.$this->faker->randomDigit().'.'.$this->faker->randomDigit().'-test-'.substr($this->faker->sha1(), 0, 7);
         config([VersionController::CONFIG_VERSION=>$test_version]);
@@ -25,4 +24,5 @@ class VersionControllerTest extends TestCase {
         $this->assertResponseStatus($get_response, HttpStatus::HTTP_OK);
         $this->assertEquals($test_version, $get_response->getContent());
     }
+
 }

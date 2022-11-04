@@ -19,7 +19,6 @@ use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Throwable;
 
 class StatsBase extends DuskTestCase {
-
     use DuskTraitLoading;
     use DuskTraitStatsDateRange;
     use DuskTraitStatsIncludeTransfersCheckboxButton;
@@ -48,7 +47,7 @@ class StatsBase extends DuskTestCase {
     protected $month_start = '';
     protected $month_end = '';
 
-    public function __construct($name = null, array $data = [], $dataName = ''){
+    public function __construct($name = null, array $data = [], $dataName = '') {
         parent::__construct($name, $data, $dataName);
         $this->today = date("Y-m-d");
         $this->previous_year_start = date("Y-01-01", strtotime('-1 year'));
@@ -63,10 +62,10 @@ class StatsBase extends DuskTestCase {
      *
      * @throws Throwable
      */
-    protected function generatingADifferentChartWontCauseSummaryTablesToBecomeVisible(string $side_panel_selector, string $stats_form_selector, string $stats_results_selector){
+    protected function generatingADifferentChartWontCauseSummaryTablesToBecomeVisible(string $side_panel_selector, string $stats_form_selector, string $stats_results_selector) {
         // TODO: rewrite this to accept any stats component; not just redirect to the stats-summary component
         // TODO: wait until all other stats components have been adjusted
-        $this->browse(function (Browser $browser) use ($side_panel_selector, $stats_form_selector, $stats_results_selector){
+        $this->browse(function(Browser $browser) use ($side_panel_selector, $stats_form_selector, $stats_results_selector) {
             $browser
                 ->visit(new StatsPage())
                 ->assertVisible(self::$SELECTOR_STATS_FORM_SUMMARY);
@@ -74,7 +73,7 @@ class StatsBase extends DuskTestCase {
             $this->clickStatsSidePanelOption($browser, $side_panel_selector);
             $browser
                 ->assertVisible($stats_form_selector)
-                ->with($stats_form_selector, function(Browser $form){
+                ->with($stats_form_selector, function(Browser $form) {
                     $this->setDateRangeDate($form, 'start', $this->previous_year_start);
                     $this->setDateRangeDate($form, 'end', $this->today);
                     $form->click(self::$SELECTOR_BUTTON_GENERATE);
@@ -99,22 +98,22 @@ class StatsBase extends DuskTestCase {
      * @param array $filter_data
      * @param string $memo
      */
-    protected function generateEntryFromFilterData(array $filter_data, string $memo = ''){
+    protected function generateEntryFromFilterData(array $filter_data, string $memo = '') {
         $new_entry_data = ['disabled'=>false];
-        if(!empty($memo)){
+        if (!empty($memo)) {
             $new_entry_data['memo'] = $memo;
         }
-        
+
         $new_entry_data['entry_date'] = $this->faker
             ->dateTimeBetween($filter_data[self::$FILTER_KEY_START_DATE], $filter_data[self::$FILTER_KEY_END_DATE])
             ->format("Y-m-d");
-        if(isset($filter_data[self::$FILTER_KEY_EXPENSE])){
+        if (isset($filter_data[self::$FILTER_KEY_EXPENSE])) {
             $new_entry_data['expense'] = $filter_data[self::$FILTER_KEY_EXPENSE];
         }
 
-        if(!empty($filter_data[self::$FILTER_KEY_ACCOUNT_TYPE])){
+        if (!empty($filter_data[self::$FILTER_KEY_ACCOUNT_TYPE])) {
             $new_entry_data['account_type_id'] = $filter_data[self::$FILTER_KEY_ACCOUNT_TYPE];
-        } elseif(!empty($filter_data[self::$FILTER_KEY_ACCOUNT])){
+        } elseif (!empty($filter_data[self::$FILTER_KEY_ACCOUNT])) {
             $account = Account::find_account_with_types($filter_data[self::$FILTER_KEY_ACCOUNT]);
             $new_entry_data['account_type_id'] = $account->account_types->first()->id;
         } else {
@@ -124,7 +123,7 @@ class StatsBase extends DuskTestCase {
         }
 
         $entry = Entry::factory()->create($new_entry_data);
-        if(!empty($filter_data[self::$FILTER_KEY_TAGS])){
+        if (!empty($filter_data[self::$FILTER_KEY_TAGS])) {
             $entry->tags()->attach($filter_data[self::$FILTER_KEY_TAGS]);
         }
     }
@@ -134,9 +133,9 @@ class StatsBase extends DuskTestCase {
      * @param bool $is_transfer
      * @return Collection
      */
-    protected function filterTransferEntries($entries, bool $is_transfer){
+    protected function filterTransferEntries($entries, bool $is_transfer) {
         // TODO: take into account external transfers (e.g.: transfer_entry_id=0)
-        if(!$is_transfer){
+        if (!$is_transfer) {
             return $entries->where('is_transfer', false);
         } else {
             return $entries;

@@ -23,15 +23,15 @@ class ATest extends DuskTestCase {
      *
      * @throws \Throwable
      */
-    public function testBasicExample(){
-        $this->browse(function (Browser $browser) {
+    public function testBasicExample() {
+        $this->browse(function(Browser $browser) {
             $browser
                 ->visit('/laravel')
                 ->assertSee('Laravel');
         });
     }
 
-    public function providerTitleIsCorrect():array{
+    public function providerTitleIsCorrect(): array {
         return [
             // [$url, $title]
             'home'=>['/', "Money Tracker | HOME"],
@@ -46,7 +46,7 @@ class ATest extends DuskTestCase {
      * @param string $title
      * @throws \Throwable
      */
-    public function testTitleAndFaviconAreCorrectAndPresent(string $url, string $title){
+    public function testTitleAndFaviconAreCorrectAndPresent(string $url, string $title) {
         $favicon_file_paths = [
             self::$FAVICON_PATH_PREFIX.'favicon-16x16.png',
             self::$FAVICON_PATH_PREFIX.'favicon-32x32.png',
@@ -55,18 +55,18 @@ class ATest extends DuskTestCase {
             self::$FAVICON_PATH_PREFIX.'android-chrome-512x512.png',
             self::$FAVICON_PATH_PREFIX.'site.webmanifest'
         ];
-        foreach($favicon_file_paths as $favicon_file_path){
+        foreach ($favicon_file_paths as $favicon_file_path) {
             $this->assertFileExists(public_path($favicon_file_path));
         }
 
-        $this->browse(function (Browser $browser) use ($url, $title){
+        $this->browse(function(Browser $browser) use ($url, $title) {
             $browser
                 ->visit($url)
                 ->assertTitleContains($title);
 
             $link_elements = $browser->driver->findElements(WebDriverBy::cssSelector('link'));
-            foreach($link_elements as $link_element){
-                if(in_array($link_element->getAttribute('rel'), ['apple-touch-icon', 'icon'])){
+            foreach ($link_elements as $link_element) {
+                if (in_array($link_element->getAttribute('rel'), ['apple-touch-icon', 'icon'])) {
                     $this->assertStringContainsString(
                         self::$LARAVEL_FAVICON_PATH_PREFIX.self::$FAVICON_PATH_PREFIX,
                         $link_element->getAttribute('href')

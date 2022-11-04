@@ -29,10 +29,10 @@ class AppConfigList extends Command {
     /**
      * Execute the console command.
      */
-    public function handle():int{
+    public function handle(): int {
         $has_options = $this->hasOption(self::OPTION_ONLY_CONFIG) || $this->hasOption(self::OPTION_ONLY_ENV);
 
-        if(($has_options && $this->hasOption(self::OPTION_ONLY_CONFIG)) || !$has_options) {
+        if (($has_options && $this->hasOption(self::OPTION_ONLY_CONFIG)) || !$has_options) {
             // as only as we're
             $config = config()->all();
             $parsed_config = $this->parseConfigValues($config);
@@ -60,7 +60,7 @@ class AppConfigList extends Command {
      * @param array $config_table
      * @return array
      */
-    private function parseConfigValues(array $config, string $config_name_current_level = '', array $config_table = []): array{
+    private function parseConfigValues(array $config, string $config_name_current_level = '', array $config_table = []): array {
         foreach ($config as $config_name => $config_value) {
             if (!empty($config_name_current_level)) {
                 $config_name = $config_name_current_level . '.' . $config_name;
@@ -80,7 +80,7 @@ class AppConfigList extends Command {
      * @param string $variable_name
      * @return array
      */
-    private function output_environment_variable_and_value(string $variable_name): array{
+    private function output_environment_variable_and_value(string $variable_name): array {
         return ['variable' => $variable_name, 'value' => env($variable_name)];
     }
 
@@ -88,7 +88,7 @@ class AppConfigList extends Command {
      * @param string $dot_env_file_path path to .env file
      * @return array
      */
-    private function get_env_names_from_dotenv(string $dot_env_file_path): array{
+    private function get_env_names_from_dotenv(string $dot_env_file_path): array {
         $dot_env_variable_names = [];
         if (File::exists($dot_env_file_path)) {
             try {

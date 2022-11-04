@@ -10,15 +10,14 @@ use App\Http\Controllers\Controller;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 
 class TagController extends Controller {
-
     use TagResponseKeys;
 
     /**
      * GET /api/tags
      */
-    public function get_tags(){
+    public function get_tags() {
         $tags = Tag::cache()->get('all');
-        if(is_null($tags) || $tags->isEmpty()){
+        if (is_null($tags) || $tags->isEmpty()) {
             return response([], HttpStatus::HTTP_NOT_FOUND);
         } else {
             $tags = $tags->toArray();
@@ -32,7 +31,7 @@ class TagController extends Controller {
      * @param Request $request
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function createTag(Request $request){
+    public function createTag(Request $request) {
         return $this->modifyTag($request);
     }
 
@@ -42,29 +41,29 @@ class TagController extends Controller {
      * @param int     $tagId
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function updateTag(Request $request, int $tagId){
+    public function updateTag(Request $request, int $tagId) {
         return $this->modifyTag($request, $tagId);
     }
 
-    private function modifyTag(Request $request, int $tag_id=null){
+    private function modifyTag(Request $request, int $tag_id=null) {
         $request_body = $request->getContent();
         $tag_data = json_decode($request_body, true);
 
         // no data check
-        if(empty($tag_data)){
+        if (empty($tag_data)) {
             return response(
                 [self::$RESPONSE_KEY_ID=>self::$ERROR_ID, self::$RESPONSE_KEY_ERROR=>self::$ERROR_MSG_NO_DATA],
                 HttpStatus::HTTP_BAD_REQUEST
             );
         }
 
-        if(is_null($tag_id)){
+        if (is_null($tag_id)) {
             $tag_to_modify = new Tag();
             $http_response_status_code = HttpStatus::HTTP_CREATED;
         } else {
-            try{
+            try {
                 $tag_to_modify = Tag::findOrFail($tag_id);
-            } catch(Exception $exception){
+            } catch(Exception $exception) {
                 return response(
                     [self::$RESPONSE_KEY_ID=>self::$ERROR_ID, self::$RESPONSE_KEY_ERROR=>self::$ERROR_MSG_DOES_NOT_EXIST],
                     HttpStatus::HTTP_NOT_FOUND
@@ -73,7 +72,7 @@ class TagController extends Controller {
             $http_response_status_code = HttpStatus::HTTP_OK;
         }
 
-        if(empty($tag_data['name'])){
+        if (empty($tag_data['name'])) {
             return response(
                 [self::$RESPONSE_KEY_ID=>self::$ERROR_ID, self::$RESPONSE_KEY_ERROR=>self::$ERROR_MSG_NO_DATA],
                 HttpStatus::HTTP_BAD_REQUEST
@@ -83,7 +82,7 @@ class TagController extends Controller {
         $tag_to_modify->name = $tag_data['name'];
 
         // no sense saving if nothing was changed
-        if($tag_to_modify->isDirty()){    // isDirty() == has changes
+        if ($tag_to_modify->isDirty()) {    // isDirty() == has changes
             $tag_to_modify->save();
         }
 

@@ -9,8 +9,8 @@ class CreateScheduleMonitorTables extends Migration {
     private static string $TABLE_TASKS = 'monitored_scheduled_tasks';
     private static string $TABLE_LOGS = 'monitored_scheduled_task_log_items';
 
-    public function up(){
-        Schema::create(self::$TABLE_TASKS, function (Blueprint $table) {
+    public function up() {
+        Schema::create(self::$TABLE_TASKS, function(Blueprint $table) {
             $table->bigIncrements('id');
 
             $table->string('name');
@@ -31,7 +31,7 @@ class CreateScheduleMonitorTables extends Migration {
             $table->timestamps();
         });
 
-        Schema::create(self::$TABLE_LOGS, function (Blueprint $table) {
+        Schema::create(self::$TABLE_LOGS, function(Blueprint $table) {
             $table->bigIncrements('id');
 
             $table->unsignedBigInteger('monitored_scheduled_task_id');
@@ -49,7 +49,7 @@ class CreateScheduleMonitorTables extends Migration {
         });
     }
 
-    public function down(){
+    public function down() {
         Schema::dropIfExists(self::$TABLE_LOGS);
         Schema::dropIfExists(self::$TABLE_TASKS);
     }

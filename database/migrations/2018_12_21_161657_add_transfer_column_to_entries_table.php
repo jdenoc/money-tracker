@@ -14,8 +14,8 @@ class AddTransferColumnToEntriesTable extends Migration {
      *
      * @return void
      */
-    public function up(){
-        Schema::table(self::$TABLE, function (Blueprint $table) {
+    public function up() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
             $table->unsignedInteger(self::$NEW_COLUMN)->after('disabled')->nullable()
                 ->comment("ID of an entry corresponding to a transfer");
         });
@@ -26,9 +26,10 @@ class AddTransferColumnToEntriesTable extends Migration {
      *
      * @return void
      */
-    public function down(){
-        Schema::table(self::$TABLE, function (Blueprint $table) {
+    public function down() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
             $table->dropColumn(self::$NEW_COLUMN);
         });
     }
+
 }

@@ -14,8 +14,8 @@ class ChangeAccountTypesColumnLastDigitsToVarchar extends Migration {
      *
      * @return void
      */
-    public function up(){
-        Schema::table(self::$TABLE_NAME, function (Blueprint $table) {
+    public function up() {
+        Schema::table(self::$TABLE_NAME, function(Blueprint $table) {
             $table->string(self::$COLUMN_NAME, 4)->nullable()->change();
         });
     }
@@ -25,9 +25,10 @@ class ChangeAccountTypesColumnLastDigitsToVarchar extends Migration {
      *
      * @return void
      */
-    public function down(){
-        Schema::table(self::$TABLE_NAME, function (Blueprint $table) {
+    public function down() {
+        Schema::table(self::$TABLE_NAME, function(Blueprint $table) {
             $table->integer(self::$COLUMN_NAME)->nullable(false)->change();
         });
     }
+
 }

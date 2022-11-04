@@ -13,12 +13,12 @@ class CreateAccountTypesTable extends Migration {
      *
      * @return void
      */
-    public function up(){
-        Schema::create(self::$TABLE, function (Blueprint $table) {
+    public function up() {
+        Schema::create(self::$TABLE, function(Blueprint $table) {
             $table->increments('id');
-            $table->enum('type', array(
+            $table->enum('type', [
                 'checking','savings','credit card','debit card'
-            ));
+            ]);
             $table->integer('last_digits');
             $table->string('type_name', 21);
             $table->unsignedInteger('account_group');
@@ -32,7 +32,7 @@ class CreateAccountTypesTable extends Migration {
      *
      * @return void
      */
-    public function down(){
+    public function down() {
         Schema::dropIfExists(self::$TABLE);
     }
 

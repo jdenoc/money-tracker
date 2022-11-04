@@ -6,7 +6,7 @@ use Laravel\Dusk\Browser;
 
 trait BrowserVisibilityUtil {
 
-    public function isVisibleInViewport(Browser $browser, string $element){
+    public function isVisibleInViewport(Browser $browser, string $element) {
         $isInViewportFunc = <<<JS
 let elementBoundaries = document.querySelector('$element').getBoundingClientRect();
 return elementBoundaries.top > 0

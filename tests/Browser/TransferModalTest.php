@@ -34,7 +34,6 @@ use Throwable;
  * @group home
  */
 class TransferModalTest extends DuskTestCase {
-
     use AssertElementColor;
     use DuskTraitAccountOrAccountTypeSelector;
     use DuskTraitBrowserDateUtil;
@@ -60,8 +59,8 @@ class TransferModalTest extends DuskTestCase {
      * @group transfer-modal-1
      * test 1/25
      */
-    public function testTransferModalNotVisibleByDefault(){
-        $this->browse(function(Browser $browser){
+    public function testTransferModalNotVisibleByDefault() {
+        $this->browse(function(Browser $browser) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $browser->assertMissing($this->_selector_modal_transfer);
@@ -74,8 +73,8 @@ class TransferModalTest extends DuskTestCase {
      * @group transfer-modal-1
      * test 2/25
      */
-    public function testOpenTransferModalFromNavbarElement(){
-        $this->browse(function(Browser $browser){
+    public function testOpenTransferModalFromNavbarElement() {
+        $this->browse(function(Browser $browser) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $this->openTransferModal($browser);
@@ -89,13 +88,13 @@ class TransferModalTest extends DuskTestCase {
      * @group transfer-modal-1
      * test 3/25
      */
-    public function testModalHeaderHasCorrectElements(){
-        $this->browse(function(Browser $browser){
+    public function testModalHeaderHasCorrectElements() {
+        $this->browse(function(Browser $browser) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $this->openTransferModal($browser);
             $browser
-                ->within($this->_selector_modal_transfer.' '.$this->_selector_modal_head, function(Browser $modal){
+                ->within($this->_selector_modal_transfer.' '.$this->_selector_modal_head, function(Browser $modal) {
                     $modal
                         ->assertSee("Transfer")
                         ->assertVisible($this->_selector_modal_btn_close);
@@ -109,13 +108,13 @@ class TransferModalTest extends DuskTestCase {
      * @group transfer-modal-1
      * test 4/25
      */
-    public function testModalBodyHasCorrectElements(){
-        $this->browse(function(Browser $browser){
+    public function testModalBodyHasCorrectElements() {
+        $this->browse(function(Browser $browser) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $this->openTransferModal($browser);
             $browser
-                ->within($this->_selector_modal_transfer.' '.$this->_selector_modal_body, function(Browser $modal){
+                ->within($this->_selector_modal_transfer.' '.$this->_selector_modal_body, function(Browser $modal) {
                     $modal
                         ->assertSee("Date:")
                         ->assertVisible($this->_selector_modal_transfer_field_date)
@@ -160,13 +159,13 @@ class TransferModalTest extends DuskTestCase {
      * @group transfer-modal-1
      * test 5/25
      */
-    public function testModalFooterHasCorrectElements(){
-        $this->browse(function(Browser $browser){
+    public function testModalFooterHasCorrectElements() {
+        $this->browse(function(Browser $browser) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $this->openTransferModal($browser);
             $browser
-                ->within($this->_selector_modal_transfer.' '.$this->_selector_modal_foot, function(Browser $modal){
+                ->within($this->_selector_modal_transfer.' '.$this->_selector_modal_foot, function(Browser $modal) {
                     $modal
                         ->assertSee($this->_label_btn_cancel)
                         ->assertVisible($this->_selector_modal_transfer_btn_cancel)
@@ -183,13 +182,13 @@ class TransferModalTest extends DuskTestCase {
      * @group transfer-modal-1
      * test 6/25
      */
-    public function testCloseTransferModalWithXButtonInHeader(){
-        $this->browse(function(Browser $browser){
+    public function testCloseTransferModalWithXButtonInHeader() {
+        $this->browse(function(Browser $browser) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $this->openTransferModal($browser);
             $browser
-                ->within($this->_selector_modal_transfer.' '.$this->_selector_modal_head, function(Browser $modal){
+                ->within($this->_selector_modal_transfer.' '.$this->_selector_modal_head, function(Browser $modal) {
                     $modal->click($this->_selector_modal_btn_close);
                 })
                 ->assertMissing($this->_selector_modal_transfer);
@@ -202,13 +201,13 @@ class TransferModalTest extends DuskTestCase {
      * @group transfer-modal-1
      * test 7/25
      */
-    public function testCloseTransferModalWithCancelButtonInFooter(){
-        $this->browse(function(Browser $browser){
+    public function testCloseTransferModalWithCancelButtonInFooter() {
+        $this->browse(function(Browser $browser) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $this->openTransferModal($browser);
             $browser
-                ->within($this->_selector_modal_transfer.' '.$this->_selector_modal_foot, function(Browser $modal){
+                ->within($this->_selector_modal_transfer.' '.$this->_selector_modal_foot, function(Browser $modal) {
                     $modal->click($this->_selector_modal_transfer_btn_cancel);
                 })
                 ->assertMissing($this->_selector_modal_transfer);
@@ -221,9 +220,9 @@ class TransferModalTest extends DuskTestCase {
      * @group transfer-modal-1
      * test 8/25
      */
-    public function testCloseTransferModalWithHotkey(){
+    public function testCloseTransferModalWithHotkey() {
         $this->markTestIncomplete("hotkey functionality requires further work");
-        $this->browse(function(Browser $browser){
+        $this->browse(function(Browser $browser) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $this->openTransferModal($browser);
@@ -239,13 +238,13 @@ class TransferModalTest extends DuskTestCase {
      * @group transfer-modal-1
      * test 9/25
      */
-    public function testTransferValueConvertsIntoDecimalOfTwoPlaces(){
-        $this->browse(function(Browser $browser){
+    public function testTransferValueConvertsIntoDecimalOfTwoPlaces() {
+        $this->browse(function(Browser $browser) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $this->openTransferModal($browser);
             $browser
-                ->within($this->_selector_modal_transfer, function(Browser $modal){
+                ->within($this->_selector_modal_transfer, function(Browser $modal) {
                     $modal
                         ->type($this->_selector_modal_transfer_field_value, "F15sae.92fwf3w")
                         ->click($this->_selector_modal_transfer_field_date)
@@ -260,27 +259,27 @@ class TransferModalTest extends DuskTestCase {
      * @group transfer-modal-1
      * test 10/25
      */
-    public function testFillFieldsToEnabledSaveButton(){
+    public function testFillFieldsToEnabledSaveButton() {
         $all_account_types = $this->getApiAccountTypes();
         $account_types = $this->faker->randomElements($all_account_types, 2);
 
-        $this->browse(function(Browser $browser) use ($account_types){
+        $this->browse(function(Browser $browser) use ($account_types) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $this->openTransferModal($browser);
             $browser
-                ->within($this->_selector_modal_transfer, function(Browser $modal){
+                ->within($this->_selector_modal_transfer, function(Browser $modal) {
                     // The date field should already be filled in. No need to fill it in again.
                     $modal->assertInputValue($this->_selector_modal_transfer_field_date, date("Y-m-d"));
                 })
                 ->assertTransferModalSaveButtonIsDisabled()
 
-                ->within($this->_selector_modal_transfer, function(Browser $modal){
+                ->within($this->_selector_modal_transfer, function(Browser $modal) {
                     $modal->type($this->_selector_modal_transfer_field_value, "123.45");
                 })
                 ->assertTransferModalSaveButtonIsDisabled()
 
-                ->within($this->_selector_modal_transfer, function(Browser $modal) use ($account_types){
+                ->within($this->_selector_modal_transfer, function(Browser $modal) use ($account_types) {
                     $this->waitUntilSelectLoadingIsMissing($modal, $this->_selector_modal_transfer_field_from);
                     $modal
                         ->select($this->_selector_modal_transfer_field_from, $account_types[0]['id'])
@@ -290,7 +289,7 @@ class TransferModalTest extends DuskTestCase {
                 })
                 ->assertTransferModalSaveButtonIsDisabled()
 
-                ->within($this->_selector_modal_transfer, function(Browser $modal) use ($account_types){
+                ->within($this->_selector_modal_transfer, function(Browser $modal) use ($account_types) {
                     $this->waitUntilSelectLoadingIsMissing($modal, $this->_selector_modal_transfer_field_to);
                     $modal
                         ->select($this->_selector_modal_transfer_field_to, $account_types[1]['id'])
@@ -300,7 +299,7 @@ class TransferModalTest extends DuskTestCase {
                 })
                 ->assertTransferModalSaveButtonIsDisabled()
 
-                ->within($this->_selector_modal_transfer, function(Browser $modal){
+                ->within($this->_selector_modal_transfer, function(Browser $modal) {
                     $modal
                         ->type($this->_selector_modal_transfer_field_memo, "Test transfer")
                         ->click($this->_selector_modal_transfer_field_date);
@@ -308,7 +307,7 @@ class TransferModalTest extends DuskTestCase {
                 ->assertTransferModalSaveButtonIsNotDisabled()
 
                 // set "from" field to "[External account]"
-                ->within($this->_selector_modal_transfer, function(Browser $modal) use ($account_types){
+                ->within($this->_selector_modal_transfer, function(Browser $modal) use ($account_types) {
                     $modal
                         ->select($this->_selector_modal_transfer_field_from, 0)
                         ->assertMissing($this->_selector_modal_transfer_meta_account_name_from)
@@ -320,7 +319,7 @@ class TransferModalTest extends DuskTestCase {
                 ->assertTransferModalSaveButtonIsNotDisabled()
 
                 // set "to" field to "[External account]"
-                ->within($this->_selector_modal_transfer, function(Browser $modal) use ($account_types){
+                ->within($this->_selector_modal_transfer, function(Browser $modal) use ($account_types) {
                     $modal
                         ->select($this->_selector_modal_transfer_field_to, 0)
                         ->assertMissing($this->_selector_modal_transfer_meta_account_name_to)
@@ -332,7 +331,7 @@ class TransferModalTest extends DuskTestCase {
                 ->assertTransferModalSaveButtonIsNotDisabled()
 
                 // match the "to" field to the "from" field
-                ->within($this->_selector_modal_transfer, function(Browser $modal) use ($account_types){
+                ->within($this->_selector_modal_transfer, function(Browser $modal) use ($account_types) {
                     $modal
                         ->select($this->_selector_modal_transfer_field_from, $account_types[0]['id'])
                         ->assertVisible($this->_selector_modal_transfer_meta_account_name_from)
@@ -344,7 +343,7 @@ class TransferModalTest extends DuskTestCase {
                 ->assertTransferModalSaveButtonIsDisabled()
 
                 // match the "to" field to the "from" field; they're both set to "[External account]"
-                ->within($this->_selector_modal_transfer, function(Browser $modal) use ($account_types){
+                ->within($this->_selector_modal_transfer, function(Browser $modal) use ($account_types) {
                     $modal
                         ->select($this->_selector_modal_transfer_field_from, 0)
                         ->assertMissing($this->_selector_modal_transfer_meta_account_name_from)
@@ -360,7 +359,7 @@ class TransferModalTest extends DuskTestCase {
         });
     }
 
-    public function providerSelectingDisabledTransferAccountTypeMetaDataIsGrey(): array{
+    public function providerSelectingDisabledTransferAccountTypeMetaDataIsGrey(): array {
         // [$transfer_field, $account_type_method]
         return [
             [self::$METHOD_TO, self::$METHOD_ACCOUNT],          // test 11/25
@@ -380,31 +379,31 @@ class TransferModalTest extends DuskTestCase {
      * @group transfer-modal-1
      * test (see provider)/25
      */
-    public function testSelectingDisabledTransferAccountTypeMetaDataIsGrey(string $transfer_field, string $account_type_method){
+    public function testSelectingDisabledTransferAccountTypeMetaDataIsGrey(string $transfer_field, string $account_type_method) {
         $account_types = AccountType::all();
         $disabled_account_type = [];
-        if($account_type_method == self::$METHOD_ACCOUNT){
+        if ($account_type_method == self::$METHOD_ACCOUNT) {
             $disabled_account = Account::where('disabled', true)->get()->random();
             $disabled_account_type = $account_types->where('account_id', $disabled_account['id'])->random();
-        } else if($account_type_method == self::$METHOD_ACCOUNT_TYPE) {
+        } elseif ($account_type_method == self::$METHOD_ACCOUNT_TYPE) {
             $disabled_account_type = $account_types->where('disabled', true)->random();
         } else {
             $this->fail("Unknown account-type method provided");
         }
 
-        $this->browse(function(Browser $browser) use ($disabled_account_type, $transfer_field){
+        $this->browse(function(Browser $browser) use ($disabled_account_type, $transfer_field) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $this->openTransferModal($browser);
             $browser
-                ->within($this->_selector_modal_transfer, function(Browser $modal) use ($disabled_account_type, $transfer_field){
+                ->within($this->_selector_modal_transfer, function(Browser $modal) use ($disabled_account_type, $transfer_field) {
                     $selector_field = '';
                     $selector_meta = '';
-                    if($transfer_field == self::$METHOD_TO){
+                    if ($transfer_field == self::$METHOD_TO) {
                         $this->waitUntilSelectLoadingIsMissing($modal, $this->_selector_modal_transfer_field_to);
                         $selector_field = $this->_selector_modal_transfer_field_to;
                         $selector_meta = $this->_selector_modal_transfer_meta_to;
-                    } else if($transfer_field == self::$METHOD_FROM){
+                    } elseif ($transfer_field == self::$METHOD_FROM) {
                         $this->waitUntilSelectLoadingIsMissing($modal, $this->_selector_modal_transfer_field_from);
                         $selector_field = $this->_selector_modal_transfer_field_from;
                         $selector_meta = $this->_selector_modal_transfer_meta_from;
@@ -425,7 +424,7 @@ class TransferModalTest extends DuskTestCase {
         });
     }
 
-    public function providerResetTransferModalFields():array{
+    public function providerResetTransferModalFields(): array {
         return [
             // [$has_tags, $has_attachments]
             'standard fields'=>[false, false],                           // test 15/25
@@ -445,17 +444,17 @@ class TransferModalTest extends DuskTestCase {
      * @group transfer-modal-1
      * test (see provider)/25
      */
-    public function testResetTransferModalFields($has_tags, $has_attachments){
+    public function testResetTransferModalFields($has_tags, $has_attachments) {
         $all_account_types = $this->getApiAccountTypes();
         $account_types = $this->faker->randomElements($all_account_types, 2);
 
-        $this->browse(function(Browser $browser) use ($account_types, $has_tags, $has_attachments){
+        $this->browse(function(Browser $browser) use ($account_types, $has_tags, $has_attachments) {
             $upload_file_path = $has_attachments ? $this->getFullPathOfRandomAttachmentFromTestStorage() : '';
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $this->openTransferModal($browser);
             $browser
-                ->within($this->_selector_modal_transfer, function(Browser $modal) use ($account_types, $has_tags, $has_attachments, $upload_file_path){
+                ->within($this->_selector_modal_transfer, function(Browser $modal) use ($account_types, $has_tags, $has_attachments, $upload_file_path) {
                     $modal
                         // make sure (almost) all the fields are empty first
                         ->assertInputValue($this->_selector_modal_transfer_field_date, date('Y-m-d'))
@@ -472,32 +471,32 @@ class TransferModalTest extends DuskTestCase {
                         ->select($this->_selector_modal_transfer_field_to, $account_types[1]['id'])
                         ->type($this->_selector_modal_transfer_field_memo, "Test transfer - reset");
 
-                    if($has_tags){
+                    if ($has_tags) {
                         // select tag at random and input the first character into the tags-input field
                         $tags = $this->getApiTags();
                         $tag = $this->faker->randomElement($tags);
                         $this->fillTagsInputUsingAutocomplete($modal, $tag['name']);
                     }
 
-                    if($has_attachments){
+                    if ($has_attachments) {
                         $this->uploadAttachmentUsingDragNDropAndSuccess($modal, $this->_selector_modal_transfer_field_upload, $this->_selector_modal_transfer_dropzone_hidden_file_input, $upload_file_path);
                     }
                 });
 
-            if($has_attachments){
+            if ($has_attachments) {
                 $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_INFO, sprintf(self::$LABEL_FILE_UPLOAD_SUCCESS_NOTIFICATION, basename($upload_file_path)));
                 $this->dismissNotification($browser);
             }
 
             $browser
-                ->within($this->_selector_modal_transfer, function(Browser $modal){
+                ->within($this->_selector_modal_transfer, function(Browser $modal) {
                     $modal->click($this->_selector_modal_transfer_btn_cancel);
                 })
                 ->assertMissing($this->_selector_modal_transfer);
 
             $this->openTransferModal($browser);
             $browser
-                ->within($this->_selector_modal_transfer, function(Browser $modal) use ($account_types){
+                ->within($this->_selector_modal_transfer, function(Browser $modal) use ($account_types) {
                     // make sure (almost) all the fields are empty after re-opening the transfer-modal
                     $modal
                         ->assertInputValue($this->_selector_modal_transfer_field_date, date("Y-m-d"))
@@ -507,7 +506,7 @@ class TransferModalTest extends DuskTestCase {
                         ->assertInputValue($this->_selector_modal_transfer_field_memo, "")
                         ->assertInputValue(self::$SELECTOR_TAGS_INPUT_INPUT, "")
                         ->assertVisible($this->_selector_modal_transfer_field_upload)
-                        ->within($this->_selector_modal_transfer_field_upload, function(Browser $upload_field){
+                        ->within($this->_selector_modal_transfer_field_upload, function(Browser $upload_field) {
                             $upload_field
                                 ->assertMissing(self::$SELECTOR_FILE_DRAG_N_DROP_UPLOAD_THUMBNAIL)
                                 ->assertSee(self::$LABEL_FILE_DRAG_N_DROP);
@@ -516,7 +515,7 @@ class TransferModalTest extends DuskTestCase {
         });
     }
 
-    public function providerSaveTransferEntry(): array{
+    public function providerSaveTransferEntry(): array {
         return [
             // [$is_to_account_external, $is_from_account_external, $has_tags, $has_attachments]
             'TO account is external'                                   => [true,  false, false, false],    // test 1/25
@@ -546,18 +545,18 @@ class TransferModalTest extends DuskTestCase {
      * @group transfer-modal-2
      * test (see provider)/25
      */
-    public function testSaveTransferEntry(bool $is_to_account_external, bool $is_from_account_external, bool $has_tags, bool $has_attachments){
-        $this->browse(function(Browser $browser) use ($is_to_account_external, $is_from_account_external, $has_tags, $has_attachments){
+    public function testSaveTransferEntry(bool $is_to_account_external, bool $is_from_account_external, bool $has_tags, bool $has_attachments) {
+        $this->browse(function(Browser $browser) use ($is_to_account_external, $is_from_account_external, $has_tags, $has_attachments) {
             $all_account_types = $this->getApiAccountTypes();
             $account_types = $this->faker->randomElements($all_account_types, 2);
-            if($has_tags){
+            if ($has_tags) {
                 $all_tags = $this->getApiTags();
                 $tag = $this->faker->randomElement($all_tags);
                 $tag = $tag['name'];
             } else {
                 $tag = '';
             }
-            if($has_attachments){
+            if ($has_attachments) {
                 $attachment_path = $this->getFullPathOfRandomAttachmentFromTestStorage();
             } else {
                 $attachment_path = '';
@@ -570,7 +569,7 @@ class TransferModalTest extends DuskTestCase {
             // generate some test values
             $transfer_entry_data = [
                 'date'=>$browser_locale_date_for_typing,
-                'memo'=>"Test transfer - save".($has_tags?" w/ tags":'').($has_attachments?" w/ attachments":'').' - '.$this->faker->uuid(),
+                'memo'=>"Test transfer - save".($has_tags ? " w/ tags" : '').($has_attachments ? " w/ attachments" : '').' - '.$this->faker->uuid(),
                 'value'=>$this->faker->randomFloat(2, 0, 100),
                 'from_account_type_id'=>($is_from_account_external ? self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID : $account_types[0]['id']),
                 'to_account_type_id'=>($is_to_account_external ? self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID : $account_types[1]['id']),
@@ -582,11 +581,11 @@ class TransferModalTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openTransferModal($browser);
             $browser
-                ->within($this->_selector_modal_transfer, function(Browser $modal) use ($transfer_entry_data, $has_tags, $has_attachments){
+                ->within($this->_selector_modal_transfer, function(Browser $modal) use ($transfer_entry_data, $has_tags, $has_attachments) {
                     // laravel dusk has an issue typing into input[type="date"] fields
                     // work-around for this is to use individual keystrokes
                     $backspace_count = strlen($modal->inputValue($this->_selector_modal_transfer_field_date));
-                    for($i=0; $i<$backspace_count; $i++){
+                    for ($i=0; $i<$backspace_count; $i++) {
                         $modal->keys($this->_selector_modal_transfer_field_date, "{backspace}");
                     }
 
@@ -600,22 +599,22 @@ class TransferModalTest extends DuskTestCase {
                         ->select($this->_selector_modal_transfer_field_to, $transfer_entry_data['to_account_type_id'])
                         ->type($this->_selector_modal_transfer_field_memo, $transfer_entry_data['memo']);
 
-                    if($has_tags){
+                    if ($has_tags) {
                         $this->fillTagsInputUsingAutocomplete($modal, $transfer_entry_data['tag']);
                     }
 
-                    if($has_attachments){
+                    if ($has_attachments) {
                         $this->uploadAttachmentUsingDragNDropAndSuccess($modal, $this->_selector_modal_transfer_field_upload, $this->_selector_modal_transfer_dropzone_hidden_file_input, $transfer_entry_data['attachment_path']);
                     }
                 });
 
-            if($has_attachments){
+            if ($has_attachments) {
                 $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_INFO, sprintf(self::$LABEL_FILE_UPLOAD_SUCCESS_NOTIFICATION, basename($transfer_entry_data['attachment_path'])));
                 $this->dismissNotification($browser);
             }
 
             $browser
-                ->within($this->_selector_modal_transfer, function(Browser $modal){
+                ->within($this->_selector_modal_transfer, function(Browser $modal) {
                     $modal->click($this->_selector_modal_transfer_btn_save);
                 });
 
@@ -625,7 +624,7 @@ class TransferModalTest extends DuskTestCase {
             $browser->assertMissing($this->_selector_modal_transfer);
 
             $entry_modal_date_input_value = date("Y-m-d", strtotime($browser_locale_date));
-            if(!$is_from_account_external){
+            if (!$is_from_account_external) {
                 $this->assertTransferEntrySaved(
                     $browser,
                     $this->_selector_table.' '.$this->_selector_table_unconfirmed_expense.'.is-transfer',
@@ -637,7 +636,7 @@ class TransferModalTest extends DuskTestCase {
                     $has_attachments
                 );
             }
-            if(!$is_to_account_external){
+            if (!$is_to_account_external) {
                 $this->assertTransferEntrySaved(
                     $browser,
                     $this->_selector_table.' '.$this->_selector_table_unconfirmed_income.'.is-transfer',
@@ -658,7 +657,7 @@ class TransferModalTest extends DuskTestCase {
      * @group transfer-modal-2
      * test 13/25
      */
-    public function testOpeningMoreThanOneTransferEntryPairPerSession(){
+    public function testOpeningMoreThanOneTransferEntryPairPerSession() {
         // GIVEN:
         $account_type_id1 = AccountType::where('disabled', true)->get()->random();
         $account_type_id2 = AccountType::where('disabled', true)->whereNotIn('id', [$account_type_id1->id])->get()->random();
@@ -692,11 +691,11 @@ class TransferModalTest extends DuskTestCase {
         $e2_1->save();
 
         //  WHEN/THEN:
-        $this->browse(function (Browser $browser) use ($e1_1, $e1_2, $e2_1, $e2_2){
+        $this->browse(function(Browser $browser) use ($e1_1, $e1_2, $e2_1, $e2_2) {
             $browser
                 ->visit(new HomePage())
                 ->openExistingEntryModal(sprintf(self::$PLACEHOLDER_SELECTOR_EXISTING_ENTRY_ROW, $e1_1->id))
-                ->within($this->_selector_modal_entry, function(Browser $modal) use ($e1_1, $e1_2){
+                ->within($this->_selector_modal_entry, function(Browser $modal) use ($e1_1, $e1_2) {
                     $modal_entry_id1 = $modal->value($this->_selector_modal_entry_field_entry_id);
                     $this->assertNotEmpty($modal_entry_id1);
                     $this->assertEquals($e1_1->id, $modal_entry_id1);
@@ -712,7 +711,7 @@ class TransferModalTest extends DuskTestCase {
                 })
 
                 ->openExistingEntryModal(sprintf(self::$PLACEHOLDER_SELECTOR_EXISTING_ENTRY_ROW, $e2_1->id))
-                ->within($this->_selector_modal_entry, function(Browser $modal) use ($e2_1, $e2_2){
+                ->within($this->_selector_modal_entry, function(Browser $modal) use ($e2_1, $e2_2) {
                     $modal_entry_id1 = $modal->value($this->_selector_modal_entry_field_entry_id);
                     $this->assertNotEmpty($modal_entry_id1);
                     $this->assertEquals($e2_1->id, $modal_entry_id1);
@@ -739,29 +738,29 @@ class TransferModalTest extends DuskTestCase {
      * @param bool $has_tags
      * @param bool $has_attachments
      */
-    private function assertTransferEntrySaved(Browser $browser, string $table_row_selector, array $transfer_entry_data, string $entry_modal_date_input_value, string $account_type_key, string $entry_switch_expense_label, bool $has_tags, bool $has_attachments){
-        if($has_tags){
+    private function assertTransferEntrySaved(Browser $browser, string $table_row_selector, array $transfer_entry_data, string $entry_modal_date_input_value, string $account_type_key, string $entry_switch_expense_label, bool $has_tags, bool $has_attachments) {
+        if ($has_tags) {
             $table_row_selector .= '.has-tags';
         }
-        if($has_attachments){
+        if ($has_attachments) {
             $table_row_selector .= '.has-attachments';
         }
         $browser
-            ->within($table_row_selector, function(Browser $table_row) use ($transfer_entry_data, $entry_modal_date_input_value, $has_tags, $has_attachments){
+            ->within($table_row_selector, function(Browser $table_row) use ($transfer_entry_data, $entry_modal_date_input_value, $has_tags, $has_attachments) {
                 $table_row
                     ->assertSeeIn($this->_selector_table_row_date, $entry_modal_date_input_value)
                     ->assertSeeIn($this->_selector_table_row_memo, $transfer_entry_data['memo'])
                     ->assertSeeIn($this->_selector_table_row_value, $transfer_entry_data['value'])
                     ->assertVisible($this->_selector_table_row_transfer_checkmark);
-                if($has_tags){
+                if ($has_tags) {
                     $table_row->assertSeeIn($this->_selector_table_row_tags, $transfer_entry_data['tag']);
                 }
-                if($has_attachments){
+                if ($has_attachments) {
                     $table_row->assertVisible($this->_selector_table_row_attachment_checkmark);
                 }
             })
             ->openExistingEntryModal($table_row_selector)
-            ->within($this->_selector_modal_entry, function(Browser $modal) use ($transfer_entry_data, $entry_modal_date_input_value, $entry_switch_expense_label, $account_type_key, $has_tags, $has_attachments){
+            ->within($this->_selector_modal_entry, function(Browser $modal) use ($transfer_entry_data, $entry_modal_date_input_value, $entry_switch_expense_label, $account_type_key, $has_tags, $has_attachments) {
                 $modal
                     ->assertInputValue($this->_selector_modal_entry_field_date, $entry_modal_date_input_value)
                     ->assertInputValue($this->_selector_modal_entry_field_value, $transfer_entry_data['value'])
@@ -771,12 +770,12 @@ class TransferModalTest extends DuskTestCase {
                     ->assertInputValue($this->_selector_modal_entry_field_memo, $transfer_entry_data['memo'])
                     ->assertSee($entry_switch_expense_label);
 
-                if($has_tags){
+                if ($has_tags) {
                     $modal->assertVisible(self::$SELECTOR_TAGS_INPUT_CONTAINER);
                     $this->assertTagInInput($modal, $transfer_entry_data['tag']);
                 }
 
-                if($has_attachments){
+                if ($has_attachments) {
                     $modal->assertVisible($this->_selector_modal_entry_existing_attachments);
 
                     $elements = $modal->driver->findElements(WebDriverBy::className('existing-attachment'));

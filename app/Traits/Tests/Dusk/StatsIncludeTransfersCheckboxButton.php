@@ -7,35 +7,34 @@ use Exception;
 use Laravel\Dusk\Browser;
 
 trait StatsIncludeTransfersCheckboxButton {
-
     use AssertElementColor;
 
     private static $LABEL_STATS_INCLUDES_TRANSFER = "Include Transfers";
 
     protected $include_transfers_chart_name = '';
 
-    private function hasIncludeTransfersChartNameBeenSet(){
-        if(!$this->include_transfers_chart_name){
+    private function hasIncludeTransfersChartNameBeenSet() {
+        if (!$this->include_transfers_chart_name) {
             throw new Exception("variable \$include_transfers_chart_name has not been set");
         }
     }
 
-    protected function getIncludeTransfersId():string{
+    protected function getIncludeTransfersId(): string {
         $this->hasIncludeTransfersChartNameBeenSet();
         $element_selector_template = "#%s-include-transfers";
         return sprintf($element_selector_template, $this->include_transfers_chart_name);
     }
 
-    protected function getIncludeTransferLabelSelector():string{
+    protected function getIncludeTransferLabelSelector(): string {
         $element_selector_template = "label[for='%s']";
         return sprintf($element_selector_template, ltrim($this->getIncludeTransfersId(), '#'));
     }
 
-    protected function assertIncludeTransfersCheckboxButtonNotVisible(Browser $browser){
+    protected function assertIncludeTransfersCheckboxButtonNotVisible(Browser $browser) {
         $browser->assertMissing($this->getIncludeTransferLabelSelector());
     }
 
-    protected function assertIncludeTransfersButtonDefaultState(Browser $browser){
+    protected function assertIncludeTransfersButtonDefaultState(Browser $browser) {
         $browser
             ->assertMissing($this->getIncludeTransfersId())
             ->assertVisible($this->getIncludeTransferLabelSelector())
@@ -43,11 +42,11 @@ trait StatsIncludeTransfersCheckboxButton {
         $this->assertIncludesTransfersCheckboxButtonStateInactive($browser);
     }
 
-    protected function clickIncludeTransfersCheckboxButton(Browser $browser){
+    protected function clickIncludeTransfersCheckboxButton(Browser $browser) {
         $browser->click($this->getIncludeTransferLabelSelector());
     }
 
-    protected function assertIncludesTransfersCheckboxButtonStateActive(Browser $browser){
+    protected function assertIncludesTransfersCheckboxButtonStateActive(Browser $browser) {
         $browser
             ->assertVisible($this->getIncludeTransferLabelSelector())
             ->assertChecked($this->getIncludeTransfersId());
@@ -55,7 +54,7 @@ trait StatsIncludeTransfersCheckboxButton {
         $this->assertElementTextColor($browser, $this->getIncludeTransferLabelSelector(), $this->tailwindColors->white());
     }
 
-    protected function assertIncludesTransfersCheckboxButtonStateInactive(Browser $browser){
+    protected function assertIncludesTransfersCheckboxButtonStateInactive(Browser $browser) {
         $browser
             ->assertVisible($this->getIncludeTransferLabelSelector())
             ->assertNotChecked($this->getIncludeTransfersId());

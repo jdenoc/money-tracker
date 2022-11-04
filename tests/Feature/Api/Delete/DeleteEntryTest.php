@@ -11,12 +11,11 @@ use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 
 class DeleteEntryTest extends TestCase {
-
     use WithFaker;
 
-    private $_base_uri = '/api/entry/';
+    private string $_base_uri = '/api/entry/';
 
-    public function testMarkingEntryDeleted(){
+    public function testMarkingEntryDeleted() {
         // GIVEN
         $generated_account = Account::factory()->create();
         $generated_account_type = AccountType::factory()->create(['account_id'=>$generated_account->id]);
@@ -47,7 +46,7 @@ class DeleteEntryTest extends TestCase {
         $this->assertNotEquals($entry->modified_stamp, $newly_disabled_entry->modfied_stamp);
     }
 
-    public function testMarkingEntryDeletedWhenEntryDoesNotExist(){
+    public function testMarkingEntryDeletedWhenEntryDoesNotExist() {
         // GIVEN
         $entry_id = $this->faker->randomNumber();
 

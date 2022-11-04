@@ -32,7 +32,6 @@ use Throwable;
  * @group notifications
  */
 class NotificationsTest extends DuskTestCase {
-
     use DuskTraitAccountOrAccountTypeSelector;
     use DuskTraitEntryModal;
     use DuskTraitLoading;
@@ -47,7 +46,7 @@ class NotificationsTest extends DuskTestCase {
     public function setUp(): void {
         parent::setUp();
 
-        switch ($this->getName()){
+        switch($this->getName()) {
             // disable & clear cache prior to the dropping any tables
             case 'testNotificationFetchAccounts500':
                 Account::cache()->disable();
@@ -81,8 +80,8 @@ class NotificationsTest extends DuskTestCase {
      * @group notifications-1
      * test 1/25
      */
-    public function testNoNotificationOnFetch200(){
-        $this->browse(function (Browser $browser) {
+    public function testNoNotificationOnFetch200() {
+        $this->browse(function(Browser $browser) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $this->assertLogoVisible($browser);   // make sure that other elements are also visible
@@ -96,11 +95,11 @@ class NotificationsTest extends DuskTestCase {
      * @group notifications-1
      * test 2/25
      */
-    public function testNotificationFetchAccounts404(){
+    public function testNotificationFetchAccounts404() {
         // FORCE 404 from `GET /api/accounts`
         $this->truncateTable(Account::getTableName());
 
-        $this->browse(function (Browser $browser) {
+        $this->browse(function(Browser $browser) {
             $browser->visit(new HomePage());
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_INFO, sprintf(self::TEMPLATE_MESSAGE_NOT_FOUND, "accounts"));
             $this->waitForLoadingToStop($browser);
@@ -113,13 +112,13 @@ class NotificationsTest extends DuskTestCase {
      * @group notifications-1
      * test 3/25
      */
-    public function testNotificationFetchAccounts500(){
+    public function testNotificationFetchAccounts500() {
         $table = Account::getTableName();
         $recreate_table_query = $this->getTableRecreationQuery($table);
         // FORCE 500 from `GET /api/accounts`
         $this->dropTable($table);
 
-        $this->browse(function (Browser $browser){
+        $this->browse(function(Browser $browser) {
             $browser->visit(new HomePage());
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_ERROR, sprintf(self::TEMPLATE_MESSAGE_ERROR_OCCURRED, "accounts"));
             $this->waitForLoadingToStop($browser);
@@ -134,11 +133,11 @@ class NotificationsTest extends DuskTestCase {
      * @group notifications-1
      * test 4/25
      */
-    public function testNotificationFetchAccountTypes404(){
+    public function testNotificationFetchAccountTypes404() {
         // FORCE 404 from `GET /api/account-types`
         $this->truncateTable(AccountType::getTableName());
 
-        $this->browse(function (Browser $browser) {
+        $this->browse(function(Browser $browser) {
             $browser->visit(new HomePage());
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_INFO, sprintf(self::TEMPLATE_MESSAGE_NOT_FOUND, "account types"));
             $this->waitForLoadingToStop($browser);
@@ -151,13 +150,13 @@ class NotificationsTest extends DuskTestCase {
      * @group notifications-1
      * test 5/25
      */
-    public function testNotificationFetchAccountTypes500(){
+    public function testNotificationFetchAccountTypes500() {
         $table = AccountType::getTableName();
         $recreate_table_query = $this->getTableRecreationQuery($table);
         // FORCE 500 from `GET /api/account-types`
         $this->dropTable($table);
 
-        $this->browse(function (Browser $browser){
+        $this->browse(function(Browser $browser) {
             $browser->visit(new HomePage());
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_ERROR, sprintf(self::TEMPLATE_MESSAGE_ERROR_OCCURRED, "account types"));
             $this->waitForLoadingToStop($browser);
@@ -172,17 +171,17 @@ class NotificationsTest extends DuskTestCase {
      * @group notifications-1
      * test 6/25
      */
-    public function testNotificationDeleteAttachment404(){
-        $this->browse(function (Browser $browser) {
+    public function testNotificationDeleteAttachment404() {
+        $this->browse(function(Browser $browser) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
 
             $browser
                 ->openExistingEntryModal($this->getEntryTableRowSelector().'.has-attachments')
-                ->within($this->_selector_modal_body, function(Browser $entry_modal){
+                ->within($this->_selector_modal_body, function(Browser $entry_modal) {
                     // FORCE 404 from `DELETE /api/attachment/{uuid}`
                     $this->truncateTable(Attachment::getTableName());
-                    $entry_modal->within($this->_selector_modal_entry_existing_attachments, function(Browser $existing_attachment){
+                    $entry_modal->within($this->_selector_modal_entry_existing_attachments, function(Browser $existing_attachment) {
                         // grab the filename of the attachment
                         $filename = trim($existing_attachment->text($this->_selector_modal_entry_existing_attachments_attachment_name));
 
@@ -204,25 +203,25 @@ class NotificationsTest extends DuskTestCase {
      * @groups notifications-1
      * test 7/25
      */
-    public function testNotificationDeleteAttachment500(){
+    public function testNotificationDeleteAttachment500() {
         $table = Attachment::getTableName();
         $recreate_table_query = $this->getTableRecreationQuery($table);
 
-        $this->browse(function (Browser $browser) use ($table){
+        $this->browse(function(Browser $browser) use ($table) {
             $entry_id = 0;
 
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $browser
                 ->openExistingEntryModal($this->getEntryTableRowSelector().'.has-attachments')
-                ->within($this->_selector_modal_head, function(Browser $modal_head) use (&$entry_id){
+                ->within($this->_selector_modal_head, function(Browser $modal_head) use (&$entry_id) {
                     $entry_id = trim($modal_head->inputValue($this->_selector_modal_entry_field_entry_id));
                 })
-                ->within($this->_selector_modal_body, function(Browser $modal_body) use ($table){
+                ->within($this->_selector_modal_body, function(Browser $modal_body) use ($table) {
                     // FORCE 500 from `DELETE /api/attachment/{uuid}`
                     $this->dropTable($table);
 
-                    $modal_body->within($this->_selector_modal_entry_existing_attachments, function(Browser $existing_attachment){
+                    $modal_body->within($this->_selector_modal_entry_existing_attachments, function(Browser $existing_attachment) {
                         // grab the filename of the attachment
                         $filename = trim($existing_attachment->text($this->_selector_modal_entry_existing_attachments_attachment_name));
 
@@ -247,11 +246,11 @@ class NotificationsTest extends DuskTestCase {
      * @group notifications-1
      * test 8/25
      */
-    public function testNotificationFetchEntries404(){
+    public function testNotificationFetchEntries404() {
         // FORCE 404 from `GET /api/entries`
         $this->truncateTable(Entry::getTableName());
 
-        $this->browse(function (Browser $browser) {
+        $this->browse(function(Browser $browser) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_INFO, "No entries were found");
@@ -264,13 +263,13 @@ class NotificationsTest extends DuskTestCase {
      * @group notifications-1
      * test 9/25
      */
-    public function testNotificationFetchEntries500(){
+    public function testNotificationFetchEntries500() {
         $table = Entry::getTableName();
         $recreate_table_query = $this->getTableRecreationQuery($table);
         // FORCE 500 from `GET /api/entries`
         $this->dropTable($table);
 
-        $this->browse(function (Browser $browser){
+        $this->browse(function(Browser $browser) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_ERROR, sprintf(self::TEMPLATE_MESSAGE_ERROR_OCCURRED, "entries"));
@@ -285,10 +284,10 @@ class NotificationsTest extends DuskTestCase {
      * @group notifications-1
      * test 10/25
      */
-    public function testNotificationSaveNewEntry400(){
+    public function testNotificationSaveNewEntry400() {
         // TODO: finish writing me...
         $this->markTestIncomplete();
-        $this->browse(function (Browser $browser) {
+        $this->browse(function(Browser $browser) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $this->openNewEntryModal($browser);
@@ -310,14 +309,14 @@ class NotificationsTest extends DuskTestCase {
      * @group notifications-1
      * test 11/25
      */
-    public function testNotificationSaveNewEntry500(){
+    public function testNotificationSaveNewEntry500() {
         $table = Entry::getTableName();
         $recreate_table_query = $this->getTableRecreationQuery($table);
 
         $account_types = collect($this->getApiAccountTypes());
         $account_type = $account_types->where('disabled', false)->random();
 
-        $this->browse(function(Browser $browser) use ($account_type, $table){
+        $this->browse(function(Browser $browser) use ($account_type, $table) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $this->openNewEntryModal($browser);
@@ -325,7 +324,7 @@ class NotificationsTest extends DuskTestCase {
             // fill in minimum required fields
             $memo_field = "Test entry - 500 ERROR saving requirements";
             $browser
-                ->within($this->_selector_modal_body, function(Browser $modal_body) use ($account_type, $memo_field){
+                ->within($this->_selector_modal_body, function(Browser $modal_body) use ($account_type, $memo_field) {
                     $this->waitUntilSelectLoadingIsMissing($modal_body, $this->_selector_modal_entry_field_account_type);
                     $modal_body
                         ->type($this->_selector_modal_entry_field_value, "9.99")
@@ -336,7 +335,7 @@ class NotificationsTest extends DuskTestCase {
             // FORCE 500 from `POST /api/entry`
             $this->dropTable($table);
 
-            $browser->with($this->_selector_modal_foot, function($modal_foot){
+            $browser->with($this->_selector_modal_foot, function($modal_foot) {
                 $modal_foot->click($this->_selector_modal_entry_btn_save);
             });
 
@@ -355,11 +354,11 @@ class NotificationsTest extends DuskTestCase {
      * @group notifications-1
      * test 12/25
      */
-    public function testNotificationFetchEntry404(){
+    public function testNotificationFetchEntry404() {
         $entries = collect($this->removeCountFromApiResponse($this->getApiEntries()));
         $entry_id = $entries->pluck('id')->random();
 
-        $this->browse(function (Browser $browser) use($entry_id) {
+        $this->browse(function(Browser $browser) use ($entry_id) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
 
@@ -377,10 +376,10 @@ class NotificationsTest extends DuskTestCase {
      * @group notifications-1
      * test 13/25
      */
-    public function testNotificationFetchEntry500(){
+    public function testNotificationFetchEntry500() {
         $table = Entry::getTableName();
         $recreate_table_query = $this->getTableRecreationQuery($table);
-        $this->browse(function(Browser $browser) use ($table){
+        $this->browse(function(Browser $browser) use ($table) {
             $entry_table_row_selector = $this->getEntryTableRowSelector();
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
@@ -399,19 +398,19 @@ class NotificationsTest extends DuskTestCase {
      * @group notifications-1
      * test (see provider)/25
      */
-    public function testNotificationSaveExistingEntry404(){
+    public function testNotificationSaveExistingEntry404() {
         $entries_collection = collect($this->removeCountFromApiResponse($this->getApiEntries()));
         $entry_id = $entries_collection->where('confirm', false)->pluck('id')->random();
 
-        $this->browse(function (Browser $browser) use ($entry_id) {
+        $this->browse(function(Browser $browser) use ($entry_id) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $browser
                 ->openExistingEntryModal(sprintf(self::$PLACEHOLDER_SELECTOR_EXISTING_ENTRY_ROW, $entry_id))
-                ->within($this->_selector_modal_body, function(Browser $modal_body){
+                ->within($this->_selector_modal_body, function(Browser $modal_body) {
                     $this->toggleToggleButton($modal_body, $this->_selector_modal_entry_field_expense);
                 })
-                ->within($this->_selector_modal_foot, function(Browser $modal_foot){
+                ->within($this->_selector_modal_foot, function(Browser $modal_foot) {
                     // FORCE 404 from `GET /api/entry/{entry_id}`
                     $this->truncateTable(Entry::getTableName());
 
@@ -429,7 +428,7 @@ class NotificationsTest extends DuskTestCase {
      * @group notifications-1
      * test 16/25
      */
-    public function testNotificationSaveExistingEntry500(){
+    public function testNotificationSaveExistingEntry500() {
         $this->markTestSkipped("previous implementation no longer works due to refactoring of EntryController");
 //        $table = Entry::getTableName();
 //        $recreate_table_query = $this->getTableRecreationQuery($table);
@@ -471,8 +470,8 @@ class NotificationsTest extends DuskTestCase {
      * @group notifications-1
      * test 17/25
      */
-    public function testNotificationDeleteEntry200(){
-        $this->browse(function (Browser $browser) {
+    public function testNotificationDeleteEntry200() {
+        $this->browse(function(Browser $browser) {
             $entry_table_row_selector = $this->getEntryTableRowSelector();
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
@@ -490,8 +489,8 @@ class NotificationsTest extends DuskTestCase {
      * @group notifications-1
      * test 18/25
      */
-    public function testNotificationDeleteEntry404(){
-        $this->browse(function (Browser $browser) {
+    public function testNotificationDeleteEntry404() {
+        $this->browse(function(Browser $browser) {
             $entry_table_row_selector = $this->getEntryTableRowSelector();
             $entry_id = '';
 
@@ -499,7 +498,7 @@ class NotificationsTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $browser
                 ->openExistingEntryModal($entry_table_row_selector)
-                ->within($this->_selector_modal_entry, function(Browser $modal) use (&$entry_id){
+                ->within($this->_selector_modal_entry, function(Browser $modal) use (&$entry_id) {
                     $entry_id = $modal->inputValue($this->_selector_modal_entry_field_entry_id);
 
                     // FORCE 404 from `GET /api/entry/{entry_id}`
@@ -518,11 +517,11 @@ class NotificationsTest extends DuskTestCase {
      * @group notifications-1
      * test 20/25
      */
-    public function testNotificationDeleteEntry500(){
+    public function testNotificationDeleteEntry500() {
         $table = Entry::getTableName();
         $recreate_table_query = $this->getTableRecreationQuery($table);
 
-        $this->browse(function (Browser $browser) use ($table){
+        $this->browse(function(Browser $browser) use ($table) {
             $entry_table_row_selector = $this->getEntryTableRowSelector();
             $entry_id = '';
 
@@ -530,11 +529,11 @@ class NotificationsTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $browser
                 ->openExistingEntryModal($entry_table_row_selector)
-                ->within($this->_selector_modal_entry, function(Browser $modal) use (&$entry_id, $table){
+                ->within($this->_selector_modal_entry, function(Browser $modal) use (&$entry_id, $table) {
                     $entry_id = $modal->inputValue($this->_selector_modal_entry_field_entry_id);
                     $this->dropTable($table);
                     $modal->click($this->_selector_modal_entry_btn_delete);
-            });
+                });
 
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_ERROR, sprintf("An error occurred while attempting to delete entry [%s]", $entry_id));
         });
@@ -547,11 +546,11 @@ class NotificationsTest extends DuskTestCase {
      * @group notifications-1
      * test 20/25
      */
-    public function testNotificationFetchInstitutions404(){
+    public function testNotificationFetchInstitutions404() {
         // FORCE 404 from `GET /api/institutions`
         $this->truncateTable(Institution::getTableName());
 
-        $this->browse(function (Browser $browser) {
+        $this->browse(function(Browser $browser) {
             $browser->visit(new HomePage());
             $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_INFO, sprintf(self::TEMPLATE_MESSAGE_NOT_FOUND, "institutions"));
             $this->waitForLoadingToStop($browser);
@@ -564,11 +563,11 @@ class NotificationsTest extends DuskTestCase {
      * @group notifications-1
      * test 21/25
      */
-    public function testNotificationFetchInstitutions500(){
+    public function testNotificationFetchInstitutions500() {
         $table = Institution::getTableName();
         $recreate_table_query = $this->getTableRecreationQuery($table);
 
-        $this->browse(function (Browser $browser) use ($table){
+        $this->browse(function(Browser $browser) use ($table) {
             // FORCE 500 from `GET /api/institutions`
             $this->dropTable($table);
 
@@ -585,11 +584,11 @@ class NotificationsTest extends DuskTestCase {
      * @group notifications-1
      * test 22/25
      */
-    public function testNotificationFetchTags404(){
+    public function testNotificationFetchTags404() {
         // FORCE 404 from `GET /api/tags`
         $this->truncateTable(Tag::getTableName());
 
-        $this->browse(function (Browser $browser) {
+        $this->browse(function(Browser $browser) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $browser->assertMissing(self::$SELECTOR_NOTIFICATION);
@@ -602,11 +601,11 @@ class NotificationsTest extends DuskTestCase {
      * @group notifications-1
      * test 23/25
      */
-    public function testNotificationFetchTags500(){
+    public function testNotificationFetchTags500() {
         $table = Tag::getTableName();
         $recreate_table_query = $this->getTableRecreationQuery($table);
 
-        $this->browse(function (Browser $browser) use ($table){
+        $this->browse(function(Browser $browser) use ($table) {
             // FORCE 500 from `GET /api/tags`
             $this->dropTable($table);
 
@@ -621,42 +620,41 @@ class NotificationsTest extends DuskTestCase {
      * @param string $table_name
      * @return string
      */
-    private function getTableRecreationQuery(string $table_name):string{
+    private function getTableRecreationQuery(string $table_name): string {
         $create_query = DB::select("SHOW CREATE TABLE ".$table_name);
         return $create_query[0]->{"Create Table"};
     }
 
-    private function dropTable(string $tableName){
+    private function dropTable(string $tableName) {
         DB::statement(sprintf("DROP TABLE %s", $tableName));
     }
 
-    private function truncateTable(string $tableName){
+    private function truncateTable(string $tableName) {
         DB::table($tableName)->truncate();
         $this->refreshCache($tableName);
     }
 
-    private function getModelFromTableName(string $tableName):BaseModel{
+    private function getModelFromTableName(string $tableName): BaseModel {
         $model = 'App\Models\\'.Str::studly(Str::singular($tableName));
-        if(class_exists($model)){
+        if (class_exists($model)) {
             return new $model();
         } else {
             throw new \Exception();
         }
     }
 
-    private function refreshCache(string $tableName){
+    private function refreshCache(string $tableName) {
         $model = $this->getModelFromTableName($tableName);
         // Only "refresh" cache if model has a cache
         // Note: Full class name is needed for "needle" without it, the full class name isn't used.
-        if(in_array(\Mostafaznv\LaraCache\Traits\LaraCache::class, class_uses($model))){
+        if (in_array(\Mostafaznv\LaraCache\Traits\LaraCache::class, class_uses($model))) {
             $model::cache()->updateAll();
         }
     }
 
-    private function getEntryTableRowSelector():string{
+    private function getEntryTableRowSelector(): string {
         $unconfirmed_entry_selectors = [$this->_selector_table_unconfirmed_expense, $this->_selector_table_unconfirmed_income];
         return $unconfirmed_entry_selectors[array_rand($unconfirmed_entry_selectors, 1)];
     }
 
 }
-

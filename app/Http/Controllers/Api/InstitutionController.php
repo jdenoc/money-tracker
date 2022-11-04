@@ -11,16 +11,15 @@ use Illuminate\Http\Response;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 
 class InstitutionController extends Controller {
-
     use InstitutionResponseKeys;
 
     /**
      * GET /api/institutions
      * @return Response
      */
-    public function get_institutions():Response{
+    public function get_institutions(): Response {
         $institutions = Institution::cache()->get('all');
-        if(is_null($institutions) || $institutions->isEmpty()){
+        if (is_null($institutions) || $institutions->isEmpty()) {
             return response([], HttpStatus::HTTP_NOT_FOUND);
         } else {
             $institutions->makeHidden(['create_stamp', 'modified_stamp']);
@@ -34,9 +33,9 @@ class InstitutionController extends Controller {
      * @param int $institution_id
      * @return Response
      */
-    public function get_institution(int $institution_id):Response{
+    public function get_institution(int $institution_id): Response {
         $institution = Institution::find_institution_with_accounts($institution_id);
-        if(is_null($institution)){
+        if (is_null($institution)) {
             return response([], HttpStatus::HTTP_NOT_FOUND);
         } else {
             $institution->accounts->makeHidden([
@@ -49,34 +48,34 @@ class InstitutionController extends Controller {
         }
     }
 
-    public function create_institution(Request $request):Response{
+    public function create_institution(Request $request): Response {
         return $this->modify_institution($request);
     }
 
-    public function update_institution(Request $request, int $institutionId):Response{
+    public function update_institution(Request $request, int $institutionId): Response {
         return $this->modify_institution($request, $institutionId);
     }
 
-    private function modify_institution(Request $request, int $institutionId=null):Response{
+    private function modify_institution(Request $request, int $institutionId=null): Response {
         $request_body = $request->getContent();
         $institution_data = json_decode($request_body, true);
 
         // no data check
-        if(empty($institution_data)){
+        if (empty($institution_data)) {
             return response(
                 [self::$RESPONSE_KEY_ID=>self::$ERROR_ID, self::$RESPONSE_KEY_ERROR=>self::$ERROR_MSG_NO_DATA],
                 HttpStatus::HTTP_BAD_REQUEST
             );
         }
 
-        if(is_null($institutionId)){
+        if (is_null($institutionId)) {
             $http_response_status_code = HttpStatus::HTTP_CREATED;
             $required_fields = Institution::getRequiredFieldsForCreation();
             $institution_to_modify = new Institution();
 
             // missing (required) data check
             $missing_properties = array_diff_key(array_flip($required_fields), $institution_data);
-            if(count($missing_properties) > 0){
+            if (count($missing_properties) > 0) {
                 return response(
                     [self::$RESPONSE_KEY_ID=>self::$ERROR_ID, self::$RESPONSE_KEY_ERROR=>$this->fillMissingPropertyErrorMessage(array_keys($missing_properties))],
                     HttpStatus::HTTP_BAD_REQUEST
@@ -85,9 +84,9 @@ class InstitutionController extends Controller {
         } else {
             $http_response_status_code = HttpStatus::HTTP_OK;
             $required_fields = Institution::getRequiredFieldsForUpdate();
-            try{
+            try {
                 $institution_to_modify = Institution::findOrFail($institutionId);
-            } catch(Exception $exception){
+            } catch(Exception $exception) {
                 return response(
                     [self::$RESPONSE_KEY_ID=>self::$ERROR_ID, self::$RESPONSE_KEY_ERROR=>self::$ERROR_MSG_DOES_NOT_EXIST],
                     HttpStatus::HTTP_NOT_FOUND
@@ -95,14 +94,14 @@ class InstitutionController extends Controller {
             }
         }
 
-        foreach($institution_data as $property=>$value){
-            if(in_array($property, $required_fields)){
+        foreach ($institution_data as $property=>$value) {
+            if (in_array($property, $required_fields)) {
                 $institution_to_modify->$property = $value;
             }
         }
 
         // no sense saving if nothing was changed
-        if($institution_to_modify->isDirty()){    // isDirty() == has changes
+        if ($institution_to_modify->isDirty()) {    // isDirty() == has changes
             $institution_to_modify->save();
         }
 

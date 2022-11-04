@@ -10,12 +10,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
 class GetAccountTypeTest extends TestCase {
-
     use WithFaker;
 
     private string $_base_uri = '/api/account-type/%d';
 
-    public function testGetAccountTypeDataWhenNoAccountTypeDataExists(){
+    public function testGetAccountTypeDataWhenNoAccountTypeDataExists() {
         // GIVEN - no database records are created
 
         // WHEN
@@ -28,7 +27,7 @@ class GetAccountTypeTest extends TestCase {
         $this->assertEmpty($response_body_as_array);
     }
 
-    public function testGetAccountTypeData(){
+    public function testGetAccountTypeData() {
         // GIVEN
         $generated_institution = Institution::factory()->create();
         $generated_account = Account::factory()->create(['institution_id'=>$generated_institution->id]);
@@ -47,7 +46,7 @@ class GetAccountTypeTest extends TestCase {
      * @param array       $response_as_array
      * @param AccountType $generated_account_type
      */
-    private function assertAccountTypeDetailsOK(array $response_as_array, $generated_account_type){
+    private function assertAccountTypeDetailsOK(array $response_as_array, $generated_account_type) {
         $element = 'id';
         $this->assertArrayHasKey($element, $response_as_array);
         $this->assertEquals($response_as_array[$element], $generated_account_type->id);
@@ -91,7 +90,7 @@ class GetAccountTypeTest extends TestCase {
 
         $element = 'disabled_stamp';
         $this->assertArrayHasKey($element, $response_as_array);
-        if($response_as_array['disabled']){
+        if ($response_as_array['disabled']) {
             $this->assertDateFormat($response_as_array[$element], DATE_ATOM, $response_as_array[$element]." not in correct format");
         } else {
             $this->assertNull($response_as_array[$element]);

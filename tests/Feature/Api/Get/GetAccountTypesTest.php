@@ -8,12 +8,11 @@ use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 
 class GetAccountTypesTest extends TestCase {
-
     use WithFaker;
 
     private string $_uri = '/api/account-types';
 
-    public function testGetAccountTypesWhenNoAccountTypesExist(){
+    public function testGetAccountTypesWhenNoAccountTypesExist() {
         // GIVEN - no account_types exist
 
         // WHEN
@@ -25,11 +24,11 @@ class GetAccountTypesTest extends TestCase {
         $this->assertEmpty($response->json());
     }
 
-    public function testGetAccountTypes(){
+    public function testGetAccountTypes() {
         // GIVEN
         $account_type_count = $this->faker->randomDigitNotZero();
         $generated_account_types = [];
-        for($i=0; $i<$account_type_count; $i++){
+        for ($i=0; $i<$account_type_count; $i++) {
             $generated_account_type = AccountType::factory()->create(['disabled'=>$this->faker->boolean()]);
             $generated_account_types[$generated_account_type->id] = $generated_account_type;
             unset($generated_account_type);
@@ -46,7 +45,7 @@ class GetAccountTypesTest extends TestCase {
         $this->assertArrayHasKey('count', $response_as_array);
         $this->assertEquals($account_type_count, $response_as_array['count']);
         unset($response_as_array['count']);
-        foreach($response_as_array as $account_type_in_response){
+        foreach ($response_as_array as $account_type_in_response) {
             $this->assertArrayHasKey('id', $account_type_in_response);
             $this->assertArrayHasKey('type', $account_type_in_response);
             $this->assertArrayHasKey('last_digits', $account_type_in_response);

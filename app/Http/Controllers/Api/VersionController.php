@@ -8,7 +8,7 @@ class VersionController extends Controller {
 
     const CONFIG_VERSION = "app.version";
 
-    public function get(){
+    public function get() {
         return response(config(self::CONFIG_VERSION));
     }
 

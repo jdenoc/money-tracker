@@ -9,7 +9,6 @@ use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 
 class PostTagTest extends TestCase {
-
     use WithFaker;
     use TagResponseKeys;
 
@@ -17,7 +16,7 @@ class PostTagTest extends TestCase {
 
     private string $_uri = '/api/tag';
 
-    public function testCreateTag(){
+    public function testCreateTag() {
         // GIVEN
         $tag_data = Tag::factory()->make()->toArray();
 
@@ -32,7 +31,7 @@ class PostTagTest extends TestCase {
         $this->assertEmpty($response_as_array[self::$RESPONSE_KEY_ERROR]);
     }
 
-    public function testCreateTagWithoutData(){
+    public function testCreateTagWithoutData() {
         // GIVEN
         $tag_data = [];
 
@@ -47,7 +46,7 @@ class PostTagTest extends TestCase {
         $this->assertNotEmpty($response_as_array[self::$RESPONSE_KEY_ERROR]);
     }
 
-    public function testCreateTagWithMissingData(){
+    public function testCreateTagWithMissingData() {
         // GIVEN
         $tag_data = Tag::factory()->make(['name'=>''])->toArray();
 
@@ -65,7 +64,7 @@ class PostTagTest extends TestCase {
     /**
      * @param array $response_as_array
      */
-    private function assertPostResponseHasCorrectKeys(array $response_as_array){
+    private function assertPostResponseHasCorrectKeys(array $response_as_array) {
         $failure_message = self::METHOD." Response is ".json_encode($response_as_array);
         $this->assertArrayHasKey(self::$RESPONSE_KEY_ID, $response_as_array, $failure_message);
         $this->assertArrayHasKey(self::$RESPONSE_KEY_ERROR, $response_as_array, $failure_message);
