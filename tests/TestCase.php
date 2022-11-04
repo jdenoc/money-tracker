@@ -31,16 +31,6 @@ abstract class TestCase extends BaseTestCase {
     }
 
     /**
-     * @deprecated - use Response->json() instead
-     * @param Response|TestResponse $response
-     * @return array|null
-     */
-    protected function getResponseAsArray($response){
-        $response_body = $response->getContent();
-        return json_decode($response_body, true);
-    }
-
-    /**
      * @param string $date_string
      * @param string $format
      * @param string $assert_failure_message
