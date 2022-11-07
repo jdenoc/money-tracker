@@ -55,108 +55,108 @@ import EntriesTableEntryRow from "./entries-table-entry-row";
 import Store from '../../store';
 
 export default {
-    name: "entries-table",
-    components: {EntriesTableEntryRow},
-    data: function(){
-      return {
-        entries: new Entries(),
-      }
-    },
-    computed: {
-      currentFilter: function(){
-        return Store.getters.currentFilter;
-      },
-      currentPage: function(){
-        return Store.getters.currentPage;
-      },
-      entryCountMax: function(){
-        return 50;
-      },
-      isNextButtonVisible: function(){
-        return this.entries.count > this.entryCountMax && this.entryCountMax*(this.currentPage+1) < this.entries.count
-      },
-      isPrevButtonVisible: function(){
-        return this.currentPage !== 0 && !_.isNull(this.currentPage);
-      },
-      listOfEntries: function(){
-        return this.entries.retrieve;
-      },
-    },
-    methods: {
-      generateEntryRowOptions: function(entry) {
-        let hasAttachments;
-        if (typeof entry.has_attachments !== 'undefined') {
-          hasAttachments = entry.has_attachments;
-        } else {
-          hasAttachments = !_.isEmpty(entry.attachments);
-        }
-        let isTransfer;
-        if(typeof entry.is_transfer !== 'undefined'){
-          isTransfer = entry.is_transfer;
-        } else {
-          isTransfer = !_.isNull(entry.transfer_entry_id);
-        }
-        return {
-          id: entry.id,
-          date: entry.entry_date,
-          accountTypeId: entry.account_type_id,
-          value: entry.entry_value,
-          memo: entry.memo,
-          expense: entry.expense,
-          confirm: entry.confirm,
-          disabled: entry.disabled,
-          hasAttachments: hasAttachments,
-          isTransfer: isTransfer,
-          tagIds: entry.tags
-        };
-      },
-      nextPage: function(){
-        this.setPageNumber(this.currentPage+1);
-        this.updateEntriesTable(this.currentPage, this.currentFilter)
-          .finally(this.scrollTableTopIntoView);
-      },
-      prevPage: function(){
-        this.setPageNumber(this.currentPage-1);
-        this.updateEntriesTable(this.currentPage, this.currentFilter)
-          .finally(this.scrollPaginationButtonsIntoView);
-      },
-      scrollPaginationButtonsIntoView(){
-        document.querySelector('#pagination-buttons').scrollIntoView();
-      },
-      scrollTableTopIntoView(){
-        document.querySelector('#entry-table').scrollIntoView();
-      },
-      setPageNumber: function(newPageNumber){
-        this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
-        Store.dispatch('currentPage', newPageNumber);
-      },
-      updateEntriesTable: function(pageNumber, filterParameters){
-        return this.entries.fetch(pageNumber, filterParameters)
-            .then(function(notification){
-              this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, notification);
-            }.bind(this))
-            .finally(function(){
-              this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
-            }.bind(this));
-      },
-      updateEntriesTableEventHandler: function(payload){
-        if(_.isNull(payload)){
-          this.setPageNumber(0);
-        }
-        if(!_.isObject(payload)){
-          this.setPageNumber(payload);
-        } else {
-          Store.dispatch('currentFilter', payload.filterParameters);
-          this.setPageNumber(payload.pageNumber);
-        }
-        this.updateEntriesTable(this.currentPage, this.currentFilter)
-            .finally(this.scrollTableTopIntoView);
-      },
-    },
-    created: function(){
-      this.$eventHub.listen(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, this.updateEntriesTableEventHandler);
+  name: "entries-table",
+  components: {EntriesTableEntryRow},
+  data: function(){
+    return {
+      entries: new Entries(),
     }
+  },
+  computed: {
+    currentFilter: function(){
+      return Store.getters.currentFilter;
+    },
+    currentPage: function(){
+      return Store.getters.currentPage;
+    },
+    entryCountMax: function(){
+      return 50;
+    },
+    isNextButtonVisible: function(){
+      return this.entries.count > this.entryCountMax && this.entryCountMax*(this.currentPage+1) < this.entries.count
+    },
+    isPrevButtonVisible: function(){
+      return this.currentPage !== 0 && !_.isNull(this.currentPage);
+    },
+    listOfEntries: function(){
+      return this.entries.retrieve;
+    },
+  },
+  methods: {
+    generateEntryRowOptions: function(entry) {
+      let hasAttachments;
+      if (typeof entry.has_attachments !== 'undefined') {
+        hasAttachments = entry.has_attachments;
+      } else {
+        hasAttachments = !_.isEmpty(entry.attachments);
+      }
+      let isTransfer;
+      if(typeof entry.is_transfer !== 'undefined'){
+        isTransfer = entry.is_transfer;
+      } else {
+        isTransfer = !_.isNull(entry.transfer_entry_id);
+      }
+      return {
+        id: entry.id,
+        date: entry.entry_date,
+        accountTypeId: entry.account_type_id,
+        value: entry.entry_value,
+        memo: entry.memo,
+        expense: entry.expense,
+        confirm: entry.confirm,
+        disabled: entry.disabled,
+        hasAttachments: hasAttachments,
+        isTransfer: isTransfer,
+        tagIds: entry.tags
+      };
+    },
+    nextPage: function(){
+      this.setPageNumber(this.currentPage+1);
+      this.updateEntriesTable(this.currentPage, this.currentFilter)
+        .finally(this.scrollTableTopIntoView);
+    },
+    prevPage: function(){
+      this.setPageNumber(this.currentPage-1);
+      this.updateEntriesTable(this.currentPage, this.currentFilter)
+        .finally(this.scrollPaginationButtonsIntoView);
+    },
+    scrollPaginationButtonsIntoView(){
+      document.querySelector('#pagination-buttons').scrollIntoView();
+    },
+    scrollTableTopIntoView(){
+      document.querySelector('#entry-table').scrollIntoView();
+    },
+    setPageNumber: function(newPageNumber){
+      this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
+      Store.dispatch('currentPage', newPageNumber);
+    },
+    updateEntriesTable: function(pageNumber, filterParameters){
+      return this.entries.fetch(pageNumber, filterParameters)
+        .then(function(notification){
+          this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, notification);
+        }.bind(this))
+        .finally(function(){
+          this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
+        }.bind(this));
+    },
+    updateEntriesTableEventHandler: function(payload){
+      if(_.isNull(payload)){
+        this.setPageNumber(0);
+      }
+      if(!_.isObject(payload)){
+        this.setPageNumber(payload);
+      } else {
+        Store.dispatch('currentFilter', payload.filterParameters);
+        this.setPageNumber(payload.pageNumber);
+      }
+      this.updateEntriesTable(this.currentPage, this.currentFilter)
+        .finally(this.scrollTableTopIntoView);
+    },
+  },
+  created: function(){
+    this.$eventHub.listen(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, this.updateEntriesTableEventHandler);
   }
+}
 </script>
 
 <style scoped>

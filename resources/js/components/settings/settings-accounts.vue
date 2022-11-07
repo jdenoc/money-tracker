@@ -37,6 +37,7 @@
                   'bg-white hover:bg-gray-100 text-gray-700': form.currency !== currency.code,
                   'bg-blue-600 text-white opacity-90 hover:opacity-100 ': form.currency === currency.code,
                 }"
+               v-bind:key="currency.code"
         >
           <input type="radio" name="settings-account-currency" class="appearance-none hidden"
                  v-bind:id="'settings-account-currency-'+currency.label"
@@ -201,11 +202,14 @@ export default {
           case 'institution_id':
           case 'create_stamp':
           case 'modified_stamp':
-          case 'disabled_stamp':
+          case 'disabled_stamp': {
             let camelCasedKey = _.camelCase(k);
             data[camelCasedKey] = data[k];
             delete data[k];
             break;
+          }
+          default:
+            // do nothing
         }
       }.bind(this));
       return data;
@@ -234,21 +238,21 @@ export default {
 
       this.accountObject.setFetchedState = false
       this.accountObject.save(accountData)
-          .then(function(notification){
-            // show a notification if needed
-            if(!_.isEmpty(notification)){
-              this.$eventHub.broadcast(
-                  this.$eventHub.EVENT_NOTIFICATION,
-                  {type: notification.type, message: notification.message}
-              );
-            }
-          }.bind(this))
-          .finally(function(){
-            this.setFormDefaults();
-            this.fetchAccounts().finally(function(){
-              this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
-            }.bind(this));
+        .then(function(notification){
+          // show a notification if needed
+          if(!_.isEmpty(notification)){
+            this.$eventHub.broadcast(
+              this.$eventHub.EVENT_NOTIFICATION,
+              {type: notification.type, message: notification.message}
+            );
+          }
+        }.bind(this))
+        .finally(function(){
+          this.setFormDefaults();
+          this.fetchAccounts().finally(function(){
+            this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
           }.bind(this));
+        }.bind(this));
     },
     retrieveUpToDateAccountData: function(accountId = null){
       if(_.isNumber(accountId)){

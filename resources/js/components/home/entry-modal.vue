@@ -146,6 +146,7 @@
             <span class="tag rounded-full bg-gray-200 text-gray-800 text-xs px-2 py-1 mx-1 my-0.5"
                   v-text="tag"
                   v-for="tag in displayReadOnlyTags"
+                  v-bind:key="tag"
             ></span>
           </div>
         </div>
@@ -370,8 +371,8 @@ export default {
         .then(function(deleteResult){
           if(!_.isEmpty(deleteResult.notification)){
             this.$eventHub.broadcast(
-                this.$eventHub.EVENT_NOTIFICATION,
-                {type: deleteResult.notification.type, message: deleteResult.notification.message.replace('%s', this.entryData.id)}
+              this.$eventHub.EVENT_NOTIFICATION,
+              {type: deleteResult.notification.type, message: deleteResult.notification.message.replace('%s', this.entryData.id)}
             );
           }
           this.closeModal();
@@ -415,23 +416,23 @@ export default {
             reject(entryId);
           }
         }.bind(this))
-            .then(this.openModal)       // resolve
-            .catch(function(entryId){   // reject
-              this.entryObject.fetch(entryId)
-                  .then(function(fetchResult){
-                    let freshlyFetchedEntryData = {};
-                    if(fetchResult.fetched){
-                      freshlyFetchedEntryData = this.entryObject.find(entryId);
-                    }
-                    this.openModal(freshlyFetchedEntryData);
-                    if(!_.isEmpty(fetchResult.notification)){
-                      this.$eventHub.broadcast(
-                          this.$eventHub.EVENT_NOTIFICATION,
-                          {type: fetchResult.notification.type, message: fetchResult.notification.message}
-                      );
-                    }
-                  }.bind(this));
-            }.bind(this));
+          .then(this.openModal)       // resolve
+          .catch(function(entryId){   // reject
+            this.entryObject.fetch(entryId)
+              .then(function(fetchResult){
+                let freshlyFetchedEntryData = {};
+                if(fetchResult.fetched){
+                  freshlyFetchedEntryData = this.entryObject.find(entryId);
+                }
+                this.openModal(freshlyFetchedEntryData);
+                if(!_.isEmpty(fetchResult.notification)){
+                  this.$eventHub.broadcast(
+                    this.$eventHub.EVENT_NOTIFICATION,
+                    {type: fetchResult.notification.type, message: fetchResult.notification.message}
+                  );
+                }
+              }.bind(this));
+          }.bind(this));
       } else {
         this.openModal({});
       }
@@ -486,12 +487,12 @@ export default {
         newEntryData.attachments = [];
         this.entryData.attachments.forEach(function(attachment){
           if(
-              // each "attachment" MUST be an array
-              (_.isArray(attachment) || _.isObject(attachment))
-              // each "attachment" MUST have a "uuid"
-              && (!_.isEmpty(attachment.uuid) && _.isString(attachment.uuid))
-              // each "attachment" MUST have a "name"
-              && (!_.isEmpty(attachment.name) && _.isString(attachment.name))
+            // each "attachment" MUST be an array
+            (_.isArray(attachment) || _.isObject(attachment))
+            // each "attachment" MUST have a "uuid"
+            && (!_.isEmpty(attachment.uuid) && _.isString(attachment.uuid))
+            // each "attachment" MUST have a "name"
+            && (!_.isEmpty(attachment.name) && _.isString(attachment.name))
           ){
             newEntryData.attachments.push(attachment);
           }
@@ -502,8 +503,8 @@ export default {
           // show a notification if needed
           if(!_.isEmpty(notification)){
             this.$eventHub.broadcast(
-                this.$eventHub.EVENT_NOTIFICATION,
-                {type: notification.type, message: notification.message.replace('%s', this.entryData.id)}
+              this.$eventHub.EVENT_NOTIFICATION,
+              {type: notification.type, message: notification.message.replace('%s', this.entryData.id)}
             );
           }
           this.broadcastUpdateRequestForAccountsColumnAndEntriesTable();

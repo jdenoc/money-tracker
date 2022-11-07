@@ -34,10 +34,10 @@ export default {
     }
   },
   watch:{
-    includeTransfers: function(newValue, oldValue){
+    includeTransfers: function(newValue){
       this.propCheck = newValue;
     },
-    propCheck: function(newValue, oldValue){
+    propCheck: function(newValue){
       this.$emit('update-checkradio', newValue)
     }
   },

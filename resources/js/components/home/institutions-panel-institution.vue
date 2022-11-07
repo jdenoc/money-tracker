@@ -47,7 +47,7 @@ export default {
   computed: {
     accountsInInstitution: function(){
       return this.accountsObject.retrieve.filter(function(account){
-          return account.institution_id === this.id;
+        return account.institution_id === this.id;
       }.bind(this));
     },
     activeAccountsInInstitution: function(){

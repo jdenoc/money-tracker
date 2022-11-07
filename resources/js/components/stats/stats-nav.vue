@@ -56,37 +56,37 @@
 </template>
 
 <script>
-    import {statsNavMixin} from '../../mixins/stats-nav-mixin';
+import {statsNavMixin} from '../../mixins/stats-nav-mixin';
 
-    export default {
-        name: "stats-nav",
-        mixins: [statsNavMixin],
-        methods:{
-            showSummaryChart: function(){
-                this.makeChartVisible(this.chartNameSummary);
-                this.$eventHub.broadcast(this.$eventHub.EVENT_STATS_SUMMARY);
-            },
-            showTrendingChart: function(){
-                this.makeChartVisible(this.chartNameTrending);
-                this.$eventHub.broadcast(this.$eventHub.EVENT_STATS_TRENDING);
-            },
-            showTagsChart: function(){
-                this.makeChartVisible(this.chartNameTags);
-                this.$eventHub.broadcast(this.$eventHub.EVENT_STATS_TAGS);
-            },
-            showDistributionChart: function(){
-                this.makeChartVisible(this.chartNameDistribution);
-                this.$eventHub.broadcast(this.$eventHub.EVENT_STATS_DISTRIBUTION);
-            }
-        },
-        mounted: function(){
-            // check which chart is supposed to be visible, then broadcast which chart should be visible
-            let visibleChart = Object.keys(this.isVisibleChart).filter(function(chartName){
-                return this.isVisibleChart[chartName] === true
-            }.bind(this))[0];
-            this['show'+visibleChart.charAt(0).toUpperCase()+visibleChart.slice(1)+'Chart']();
-        }
+export default {
+  name: "stats-nav",
+  mixins: [statsNavMixin],
+  methods:{
+    showSummaryChart: function(){
+      this.makeChartVisible(this.chartNameSummary);
+      this.$eventHub.broadcast(this.$eventHub.EVENT_STATS_SUMMARY);
+    },
+    showTrendingChart: function(){
+      this.makeChartVisible(this.chartNameTrending);
+      this.$eventHub.broadcast(this.$eventHub.EVENT_STATS_TRENDING);
+    },
+    showTagsChart: function(){
+      this.makeChartVisible(this.chartNameTags);
+      this.$eventHub.broadcast(this.$eventHub.EVENT_STATS_TAGS);
+    },
+    showDistributionChart: function(){
+      this.makeChartVisible(this.chartNameDistribution);
+      this.$eventHub.broadcast(this.$eventHub.EVENT_STATS_DISTRIBUTION);
     }
+  },
+  mounted: function(){
+    // check which chart is supposed to be visible, then broadcast which chart should be visible
+    let visibleChart = Object.keys(this.isVisibleChart).filter(function(chartName){
+      return this.isVisibleChart[chartName] === true
+    }.bind(this))[0];
+    this['show'+visibleChart.charAt(0).toUpperCase()+visibleChart.slice(1)+'Chart']();
+  }
+}
 </script>
 
 <style scoped>

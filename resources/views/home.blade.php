@@ -7,7 +7,7 @@
 </head>
 <body>
 <div id="app-home" class="py-16">
-    <navbar page-name="home"></navbar>
+    <nav-bar page-name="home"></nav-bar>
     <institutions-panel></institutions-panel>
     <div class="ml-80">
         <entries-table></entries-table>

@@ -52,7 +52,8 @@ export default {
       let accountTypes = new Accounts().getAccountTypes(this.id);
       let tooltipList = "";
       accountTypes.filter(function(accountType){
-        return accountType.hasOwnProperty('disabled') && !accountType.disabled;
+        return Object.prototype.hasOwnProperty.call(accountType, 'disabled')
+          && !accountType.disabled;
       }).forEach(function(accountType){
         tooltipList += "&bull; "+accountType.name+" ("+accountType.last_digits+")<br/>"
       });
@@ -61,7 +62,7 @@ export default {
     isAccountFilterActive: function(){
       let currentFilter = Store.getters.currentFilter;
       return Object.keys(currentFilter).length === 1
-        && currentFilter.hasOwnProperty('account')
+        && Object.prototype.hasOwnProperty.call(currentFilter, 'account')
         && currentFilter.account === this.id;
     },
     isAccountTotalVisible: function(){
