@@ -48,18 +48,18 @@ export default {
     },
   },
   watch:{
-    startDate: function(newValue, oldValue){
+    startDate: function(newValue){
       // if props.startDate is updated after init
       this.dateRangeStartDate = newValue;
     },
-    endDate: function(newValue, oldValue){
+    endDate: function(newValue){
       // if props.endDate is updated after init
       this.dateRangeEndDate = newValue
     },
-    dateRangeStartDate: function(newValue, oldValue){
+    dateRangeStartDate: function(newValue){
       this.$emit(EMIT_DATE_START, newValue);
     },
-    dateRangeEndDate: function(newValue, oldValue){
+    dateRangeEndDate: function(newValue){
       this.$emit(EMIT_DATE_END, newValue);
     }
   },

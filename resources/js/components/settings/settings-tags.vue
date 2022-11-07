@@ -34,8 +34,8 @@
             }"
             v-on:click="fillForm(tag)"
       >
-      <!-- TODO: add "delete" functionality -->
       </span>
+      <!-- TODO: add "delete" functionality -->
     </div>
   </section>
 </template>
@@ -105,8 +105,8 @@ export default {
           // show a notification if needed
           if(!_.isEmpty(notification)){
             this.$eventHub.broadcast(
-                this.$eventHub.EVENT_NOTIFICATION,
-                notification
+              this.$eventHub.EVENT_NOTIFICATION,
+              notification
             );
           }
         }.bind(this))

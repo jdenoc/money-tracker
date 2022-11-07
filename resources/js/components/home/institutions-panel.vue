@@ -110,7 +110,7 @@ export default {
     updateAccountRecords: function(){
       this.accountsObject.setFetchedState = false;
       this.accountsObject.fetch().then(function(notification){
-          this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, notification);
+        this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, notification);
       }.bind(this));
     }
   },

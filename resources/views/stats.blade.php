@@ -7,10 +7,10 @@
 </head>
 <body>
 <div id="app-stats" class="py-16">
-    <navbar page-name="stats"></navbar>
+    <nav-bar page-name="stats"></nav-bar>
     <stats-nav></stats-nav>
     <div class="ml-80">
-        <stats></stats>
+        <stats-display></stats-display>
 
         <!--
         loading-modal must ALWAYS be on the bottom.
