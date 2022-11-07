@@ -69,11 +69,11 @@ export default {
     },
   },
   watch:{
-    toggleState: function(newValue, oldValue){
+    toggleState: function(newValue){
       // changes passed to the prop.toggleState after initial setup
       this.toggleStateFromProps = newValue;
     },
-    toggleStateFromProps: function(newValue, oldValue){
+    toggleStateFromProps: function(newValue){
       // changes made to the data.toggleStateFromProps
       this.$emit(EMIT_UPDATE_TOGGLE, newValue);
     }

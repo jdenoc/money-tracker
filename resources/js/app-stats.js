@@ -12,9 +12,9 @@ Vue.use(eventHub);
 
 // components
 import LoadingModal from './components/loading-modal';
-import Navbar from './components/navbar';
-import Notification from './components/notification';
-import Stats from "./components/stats/stats";
+import NavBar from './components/nav-bar';
+import NotificationItem from './components/notification-item';
+import StatsDisplay from "./components/stats/stats-display";
 import StatsNav from "./components/stats/stats-nav";
 // objects
 import {Accounts} from "./accounts";
@@ -23,32 +23,32 @@ import {Tags} from "./tags";
 import {Version} from './version';
 
 new Vue({
-    el: "#app-stats",
-    components: {
-        LoadingModal,
-        Navbar,
-        Notification,
-        Stats,
-        StatsNav
+  el: "#app-stats",
+  components: {
+    LoadingModal,
+    NavBar,
+    Notification: NotificationItem,
+    StatsDisplay,
+    StatsNav
+  },
+  store: Store,
+  computed:{ },
+  methods: {
+    displayNotification: function(notification){
+      this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, notification);
     },
-    store: Store,
-    computed:{ },
-    methods: {
-        displayNotification: function(notification){
-            this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, notification);
-        },
-    },
-    mounted: function(){
-        let accounts = new Accounts();
-        accounts.fetch().then(this.displayNotification.bind(this));
+  },
+  mounted: function(){
+    let accounts = new Accounts();
+    accounts.fetch().then(this.displayNotification.bind(this));
 
-        let accountTypes = new AccountTypes();
-        accountTypes.fetch().then(this.displayNotification.bind(this));
+    let accountTypes = new AccountTypes();
+    accountTypes.fetch().then(this.displayNotification.bind(this));
 
-        let tags = new Tags();
-        tags.fetch().then(this.displayNotification.bind(this));
+    let tags = new Tags();
+    tags.fetch().then(this.displayNotification.bind(this));
 
-        let version = new Version();
-        version.fetch();
-    }
+    let version = new Version();
+    version.fetch();
+  }
 });

@@ -342,12 +342,12 @@ export default {
         transferData.attachments = [];
         this.transferData.attachments.forEach(function(attachment){
           if(
-              // each "attachment" MUST be an array
-              (_.isArray(attachment) || _.isObject(attachment))
-              // each "attachment" MUST have a "uuid"
-              && (!_.isEmpty(attachment.uuid) && _.isString(attachment.uuid))
-              // each "attachment" MUST have a "name"
-              && (!_.isEmpty(attachment.name) && _.isString(attachment.name))
+            // each "attachment" MUST be an array
+            (_.isArray(attachment) || _.isObject(attachment))
+            // each "attachment" MUST have a "uuid"
+            && (!_.isEmpty(attachment.uuid) && _.isString(attachment.uuid))
+            // each "attachment" MUST have a "name"
+            && (!_.isEmpty(attachment.name) && _.isString(attachment.name))
           ){
             transferData.attachments.push(attachment);
           }
@@ -357,8 +357,8 @@ export default {
       this.entryObject.saveTransfer(transferData).then(function(notification){
         if(!_.isEmpty(notification)){
           this.$eventHub.broadcast(
-              this.$eventHub.EVENT_NOTIFICATION,
-              {type: notification.type, message: notification.message}
+            this.$eventHub.EVENT_NOTIFICATION,
+            {type: notification.type, message: notification.message}
           );
         }
         this.$eventHub.broadcast(this.$eventHub.EVENT_ACCOUNT_UPDATE);
