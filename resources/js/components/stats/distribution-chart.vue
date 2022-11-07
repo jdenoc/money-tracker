@@ -63,102 +63,102 @@ import {statsChartMixin} from "../../mixins/stats-chart-mixin";
 import {tagsObjectMixin} from "../../mixins/tags-object-mixin";
 import {tailwindColorsMixin} from "../../mixins/tailwind-colors-mixin";
 
-    export default {
-        name: "distribution-chart",
-        mixins: [entriesObjectMixin, statsChartMixin, tagsObjectMixin, tailwindColorsMixin],
-        components: {IncludeTransfersCheckbox, AccountAccountTypeTogglingSelector, DateRange, PieChart, ToggleButton},
-        data: function(){
-          return {
-            accountOrAccountTypeId: '',
-            accountOrAccountTypeToggle: true,
-            endDate: '',
-            expenseOrIncomeToggle: true,
-            startDate: '',
-          }
-        },
-        computed: {
-            chartData: function(){
-              let chartData = this.standardiseData;
-              let chartBgColors = this.getRandomColors(chartData.length);
-
-              return {
-                  labels: chartData.map(function(d){ return d.x }),
-                  datasets: [{
-                      data: chartData.map(function(d){ return d.y }),
-                      backgroundColor: chartBgColors
-                  }]
-              };
-            },
-            chartOptions: function(){
-                return {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    title: {
-                        display: true,
-                        text: this.chartConfig.titleText
-                    },
-                }
-            },
-            standardiseData: function(){
-                let standardisedChartData = [];
-
-                this.largeBatchEntryData
-                    .filter(this.filterIncludeTransferEntries)
-                    .forEach(function(entryDatum){
-                        let tempDatum = _.cloneDeep(entryDatum);
-                        if(tempDatum.tags.length === 0){
-                            tempDatum.tags.push(0);
-                        }
-                        tempDatum.tags.forEach(function(tag){
-                            let key = (tag === 0) ? 'untagged' : this.tagsObject.getNameById(tag);
-                            if(!standardisedChartData.hasOwnProperty(key)){
-                                standardisedChartData[key] = {x: key, y: 0}
-                            }
-                            standardisedChartData[key].y += parseFloat(tempDatum.entry_value);
-                            standardisedChartData[key].y = _.round(standardisedChartData[key].y, 2);
-                        }.bind(this));
-                    }.bind(this), Object.create(null));
-
-                return _.sortBy(Object.values(standardisedChartData), function(o){ return o.x;});
-            },
-            toggleButtonProperties: function(){
-              return {
-                colorChecked: this.tailwindColors.gray[400],
-                colorUnchecked: this.tailwindColors.gray[400],
-                fontSize: 16,  // px
-                labelChecked: "Expense",
-                labelUnchecked: "Income",
-                height: 40, // px
-                width: 512 // px  // tailwind class: .max-w-lg
-              };
-            },
-        },
-        methods: {
-          setChartTitle: function(isExpense, startDate, endDate){
-            this.chartConfig.titleText = (isExpense ? "Expense" : "Income")+" Distribution ["+startDate+" - "+endDate+"]";
-          },
-
-          makeRequest: function(){
-            this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
-
-            let chartDataFilterParameters = {
-              start_date: this.startDate,
-              end_date: this.endDate,
-            };
-
-            chartDataFilterParameters.expense = this.expenseOrIncomeToggle;
-
-            if(this.accountOrAccountTypeToggle === true){
-              chartDataFilterParameters.account = this.accountOrAccountTypeId;
-            } else {
-              chartDataFilterParameters.account_type = this.accountOrAccountTypeId;
-            }
-
-            this.setChartTitle(chartDataFilterParameters.expense, chartDataFilterParameters.start_date, chartDataFilterParameters.end_date);
-            this.multiPageDataFetch(chartDataFilterParameters);
-          }
-        }
+export default {
+  name: "distribution-chart",
+  mixins: [entriesObjectMixin, statsChartMixin, tagsObjectMixin, tailwindColorsMixin],
+  components: {IncludeTransfersCheckbox, AccountAccountTypeTogglingSelector, DateRange, PieChart, ToggleButton},
+  data: function(){
+    return {
+      accountOrAccountTypeId: '',
+      accountOrAccountTypeToggle: true,
+      endDate: '',
+      expenseOrIncomeToggle: true,
+      startDate: '',
     }
+  },
+  computed: {
+    chartData: function(){
+      let chartData = this.standardiseData;
+      let chartBgColors = this.getRandomColors(chartData.length);
+
+      return {
+        labels: chartData.map(function(d){ return d.x }),
+        datasets: [{
+          data: chartData.map(function(d){ return d.y }),
+          backgroundColor: chartBgColors
+        }]
+      };
+    },
+    chartOptions: function(){
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        title: {
+          display: true,
+          text: this.chartConfig.titleText
+        },
+      }
+    },
+    standardiseData: function(){
+      let standardisedChartData = [];
+
+      this.largeBatchEntryData
+        .filter(this.filterIncludeTransferEntries)
+        .forEach(function(entryDatum){
+          let tempDatum = _.cloneDeep(entryDatum);
+          if(tempDatum.tags.length === 0){
+            tempDatum.tags.push(0);
+          }
+          tempDatum.tags.forEach(function(tag){
+            let key = (tag === 0) ? 'untagged' : this.tagsObject.getNameById(tag);
+            if(!Object.prototype.hasOwnProperty.call(standardisedChartData, key)){
+              standardisedChartData[key] = {x: key, y: 0}
+            }
+            standardisedChartData[key].y += parseFloat(tempDatum.entry_value);
+            standardisedChartData[key].y = _.round(standardisedChartData[key].y, 2);
+          }.bind(this));
+        }.bind(this), Object.create(null));
+
+      return _.sortBy(Object.values(standardisedChartData), function(o){ return o.x;});
+    },
+    toggleButtonProperties: function(){
+      return {
+        colorChecked: this.tailwindColors.gray[400],
+        colorUnchecked: this.tailwindColors.gray[400],
+        fontSize: 16,  // px
+        labelChecked: "Expense",
+        labelUnchecked: "Income",
+        height: 40, // px
+        width: 512 // px  // tailwind class: .max-w-lg
+      };
+    },
+  },
+  methods: {
+    setChartTitle: function(isExpense, startDate, endDate){
+      this.chartConfig.titleText = (isExpense ? "Expense" : "Income")+" Distribution ["+startDate+" - "+endDate+"]";
+    },
+
+    makeRequest: function(){
+      this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
+
+      let chartDataFilterParameters = {
+        start_date: this.startDate,
+        end_date: this.endDate,
+      };
+
+      chartDataFilterParameters.expense = this.expenseOrIncomeToggle;
+
+      if(this.accountOrAccountTypeToggle === true){
+        chartDataFilterParameters.account = this.accountOrAccountTypeId;
+      } else {
+        chartDataFilterParameters.account_type = this.accountOrAccountTypeId;
+      }
+
+      this.setChartTitle(chartDataFilterParameters.expense, chartDataFilterParameters.start_date, chartDataFilterParameters.end_date);
+      this.multiPageDataFetch(chartDataFilterParameters);
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

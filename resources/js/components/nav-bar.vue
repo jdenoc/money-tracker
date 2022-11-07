@@ -178,7 +178,7 @@ import {Version} from '../version';
 import _ from 'lodash';
 
 export default {
-  name: "navbar",
+  name: "nav-bar",
   props: {
     pageName: {type: String, required: true}
   },
@@ -225,7 +225,7 @@ export default {
       this.$eventHub.broadcast(this.$eventHub.EVENT_FILTER_MODAL_OPEN);
     },
     openTransferModal: function(){
-        this.$eventHub.broadcast(this.$eventHub.EVENT_TRANSFER_MODAL_OPEN);
+      this.$eventHub.broadcast(this.$eventHub.EVENT_TRANSFER_MODAL_OPEN);
     },
     clickMobileSidebarButton(){
       this.isMobileSidebarVisible = !this.isMobileSidebarVisible;

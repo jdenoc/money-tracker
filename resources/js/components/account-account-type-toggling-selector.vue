@@ -80,7 +80,7 @@ export default {
   props: {
     id: {type: String, required: true},
     accountOrAccountTypeToggled: {type: Boolean, default: true},
-    accountOrAccountTypeId: {type: String|Number, required: true, default: ''}
+    accountOrAccountTypeId: {type: [String,Number], required: true, default: ''}
   },
   data: function(){
     return {
@@ -90,15 +90,15 @@ export default {
     }
   },
   watch: {
-    accountOrAccountTypeToggled: function(newValue, oldValue){
+    accountOrAccountTypeToggled: function(newValue){
       // update to prop.accountOrAccountTypeToggled (for toggle) from parent after init
       this.accountOrAccountTypeToggledFromProps = newValue;
     },
-    accountOrAccountTypeId: function(newValue, oldValue){
+    accountOrAccountTypeId: function(newValue){
       // update to prop.accountOrAccountTypeId (for select) from parent after init
       this.accountOrAccountTypeIdFromProps = newValue;
     },
-    accountOrAccountTypeToggledFromProps: function(newValue, oldValue){
+    accountOrAccountTypeToggledFromProps: function(newValue){
       // data.accountOrAccountTypeToggledFromProps updated
       this.resetAccountOrAccountTypeSelectValue();
       this.$emit(EMIT_UPDATE_TOGGLE, newValue);
@@ -127,13 +127,15 @@ export default {
     },
 
     listProcessedAccountOrAccountTypes: function(){
-        return this.processListOfObjects(this.listAccountOrAccountTypes, this.canShowDisabledAccountAndAccountTypes);
+      return this.processListOfObjects(this.listAccountOrAccountTypes, this.canShowDisabledAccountAndAccountTypes);
     },
     listAccountOrAccountTypes: function(){
       if(this.accountOrAccountTypeToggledFromProps === this.selectedToggleSwitch.account){
         return this.rawAccountsData;
       } else if(this.accountOrAccountTypeToggledFromProps === this.selectedToggleSwitch.accountType){
         return this.rawAccountTypesData;
+      } else {
+        return [];
       }
     },
     toggleButtonProperties: function(){

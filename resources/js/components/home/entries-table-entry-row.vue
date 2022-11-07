@@ -41,7 +41,7 @@
       </svg>
     </td>
     <td class="row-entry-tags align-top py-1 "><div class="tags flex flex-wrap">
-      <span class="tag rounded-full bg-gray-800 text-gray-300 px-2 py-1 text-xs mx-1 mb-1" v-for="tagId in tagIds" v-text="getTagName(tagId)"></span>
+      <span class="tag rounded-full bg-gray-800 text-gray-300 px-2 py-1 text-xs mx-1 mb-1" v-for="tagId in tagIds" v-bind:key="tagId" v-text="getTagName(tagId)"></span>
     </div></td>
   </tr>
 </template>
@@ -64,7 +64,7 @@ export default {
     disabled: {type: Boolean, default: false},
     hasAttachments: {type: Boolean, default: false},
     isTransfer: {type: Boolean, default: false},
-    tagIds: {type: Array, default: []}
+    tagIds: {type: Array, default: function(){ return []; }}
   },
   computed: {
     accountTypeName: function(){

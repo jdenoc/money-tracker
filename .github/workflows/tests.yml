@@ -148,6 +148,10 @@ jobs:
         id: linter-php
         run: .docker/cmd/composer.sh run-script php-linter
 
+      - name: "Linter: JS"
+        id: linter-js
+        run: .docker/cmd/npm.sh run js-linter
+
   tests-unit:
     needs:
       - pre-build

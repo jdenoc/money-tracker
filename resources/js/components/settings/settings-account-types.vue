@@ -203,8 +203,8 @@ export default {
           // show a notification if needed
           if(!_.isEmpty(notification)){
             this.$eventHub.broadcast(
-                this.$eventHub.EVENT_NOTIFICATION,
-                {type: notification.type, message: notification.message}
+              this.$eventHub.EVENT_NOTIFICATION,
+              {type: notification.type, message: notification.message}
             );
           }
         }.bind(this))
@@ -271,6 +271,8 @@ export default {
             data[_.camelCase(k)] = data[k];
             delete data[k];
             break;
+          default:
+            // do nothing
         }
       });
       return data;

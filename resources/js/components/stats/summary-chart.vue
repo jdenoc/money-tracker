@@ -39,7 +39,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(total, currencyIsoCode) in totalIncomeOrExpense">
+                    <tr v-for="(total, currencyIsoCode) in totalIncomeOrExpense" v-bind:key="currencyIsoCode">
                         <td class="text-right py-1 px-4">
                           <span v-html="currencyHtml(currencyIsoCode)"></span>
                           <span v-text="total.income.toFixed(2)"></span>
@@ -82,148 +82,148 @@
 </template>
 
 <script>
-    // components
-    import AccountAccountTypeTogglingSelector from "../account-account-type-toggling-selector";
-    import DateRange from "./date-range";
-    import IncludeTransfersCheckbox from "./include-transfers-checkbox";
-    // utilities
-    import _ from 'lodash';
-    import {Currency} from "../../currency";
-    // mixins
-    import {accountsObjectMixin} from "../../mixins/accounts-object-mixin";
-    import {accountTypesObjectMixin} from "../../mixins/account-types-object-mixin";
-    import {entriesObjectMixin} from "../../mixins/entries-object-mixin";
-    import {statsChartMixin} from "../../mixins/stats-chart-mixin";
+// components
+import AccountAccountTypeTogglingSelector from "../account-account-type-toggling-selector";
+import DateRange from "./date-range";
+import IncludeTransfersCheckbox from "./include-transfers-checkbox";
+// utilities
+import _ from 'lodash';
+import {Currency} from "../../currency";
+// mixins
+import {accountsObjectMixin} from "../../mixins/accounts-object-mixin";
+import {accountTypesObjectMixin} from "../../mixins/account-types-object-mixin";
+import {entriesObjectMixin} from "../../mixins/entries-object-mixin";
+import {statsChartMixin} from "../../mixins/stats-chart-mixin";
 
-    export default {
-        name: "summary-chart",
-        mixins: [statsChartMixin, entriesObjectMixin, accountsObjectMixin, accountTypesObjectMixin],
-        components: {DateRange, IncludeTransfersCheckbox, AccountAccountTypeTogglingSelector},
-        data: function(){
-          return {
-            accountOrAccountTypeId: '',
-            accountOrAccountTypeToggle: true,
-            currencyObject: new Currency(),
-            endDate: '',
-            startDate: '',
-          }
-        },
-        computed: {
-            top10IncomeAndExpenses: function(){
-                let incomeEntries = _.orderBy(
-                    this.filteredEntries(false),
-                    ['entry_value', 'entry_date', 'id'],
-                    ['desc', 'desc', 'desc']
-                );
-
-                let expenseEntries = _.orderBy(
-                    this.filteredEntries(true),
-                    ['entry_value', 'entry_date', 'id'],
-                    ['desc', 'desc', 'desc']
-                );
-
-                let topEntries = [];
-                for(let i=0; i< 10; i++){
-                    if(incomeEntries[i] === undefined && expenseEntries[i] === undefined){
-                        break;
-                    }
-                    topEntries.push({
-                        incomeMemo: incomeEntries[i] ? incomeEntries[i].memo : '',
-                        incomeValue: incomeEntries[i] ? parseFloat(incomeEntries[i].entry_value).toFixed(2) : '',
-                        incomeDate: incomeEntries[i] ? incomeEntries[i].entry_date : '',
-                        expenseMemo: expenseEntries[i] ? expenseEntries[i].memo : '',
-                        expenseValue: expenseEntries[i] ? parseFloat(expenseEntries[i].entry_value).toFixed(2) : '',
-                        expenseDate: expenseEntries[i] ? expenseEntries[i].entry_date : '',
-                    });
-                }
-                return topEntries;
-            },
-
-            totalIncomeOrExpense: function(){
-                let total = {};
-                // init total
-                this.rawAccountsData
-                    .forEach(function(account){
-                        if(total[account.currency] === undefined){
-                            total[account.currency] = {};
-                        }
-                        total[account.currency].income = 0;
-                        total[account.currency].expense = 0;
-                    });
-
-                // tally up values for total
-                this.largeBatchEntryData
-                    .filter(this.filterIncludeTransferEntries)
-                    .forEach(function(datum){
-                        let accountCurrency = this.getAccountCurrencyFromAccountTypeId(datum.account_type_id);
-                        if(datum.expense){
-                            total[accountCurrency].expense += parseFloat(datum.entry_value);
-                        } else {
-                            total[accountCurrency].income += parseFloat(datum.entry_value);
-                        }
-                    }.bind(this));
-
-                // prune empty currencies
-                Object.keys(total).map(function(currency, index) {
-                    if(total[currency].income === 0 && total[currency].expense === 0){
-                        delete total[currency];
-                    }
-                });
-
-                return total;
-            },
-        },
-        methods: {
-            tooltipContent: function(text){
-                return {
-                  content: text,
-                  html: true,
-                  placement: 'right',
-                  classes: 'text-xs font-semibold bg-black py-1.5 px-1 rounded rounded-lg text-white tooltip',
-                }
-            },
-            filteredEntries: function(isExpense){
-                return this.largeBatchEntryData
-                    .filter(this.filterIncludeTransferEntries)
-                    .filter(function(datum){ return datum.expense === isExpense; })
-                    .map(function(entry){
-                        let e = _.clone(entry);
-                        e.entry_value = _.round(entry.entry_value, 2);
-                        return e;
-                    });
-            },
-
-            getAccountCurrencyFromAccountTypeId: function(accountTypeId){
-                let account = this.accountTypesObject.getAccount(accountTypeId);
-                return account.currency;
-            },
-
-            displayData: function(){
-              this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
-
-              let chartDataFilterParameters = {
-                start_date: this.startDate,
-                end_date: this.endDate,
-              };
-
-              if(this.accountOrAccountTypeToggle === true){
-                chartDataFilterParameters.account = this.accountOrAccountTypeId;
-              } else {
-                chartDataFilterParameters.account_type = this.accountOrAccountTypeId;
-              }
-
-              this.multiPageDataFetch(chartDataFilterParameters);
-            },
-
-            resetAccountTypesSelector: function(){
-                this.summaryAccountTypeId = null;
-            },
-
-          currencyHtml: function(currencyISOCode){
-            return this.currencyObject.getHtmlFromCode(currencyISOCode);
-          },
-        }
+export default {
+  name: "summary-chart",
+  mixins: [statsChartMixin, entriesObjectMixin, accountsObjectMixin, accountTypesObjectMixin],
+  components: {DateRange, IncludeTransfersCheckbox, AccountAccountTypeTogglingSelector},
+  data: function(){
+    return {
+      accountOrAccountTypeId: '',
+      accountOrAccountTypeToggle: true,
+      currencyObject: new Currency(),
+      endDate: '',
+      startDate: '',
     }
+  },
+  computed: {
+    top10IncomeAndExpenses: function(){
+      let incomeEntries = _.orderBy(
+        this.filteredEntries(false),
+        ['entry_value', 'entry_date', 'id'],
+        ['desc', 'desc', 'desc']
+      );
+
+      let expenseEntries = _.orderBy(
+        this.filteredEntries(true),
+        ['entry_value', 'entry_date', 'id'],
+        ['desc', 'desc', 'desc']
+      );
+
+      let topEntries = [];
+      for(let i=0; i< 10; i++){
+        if(incomeEntries[i] === undefined && expenseEntries[i] === undefined){
+          break;
+        }
+        topEntries.push({
+          incomeMemo: incomeEntries[i] ? incomeEntries[i].memo : '',
+          incomeValue: incomeEntries[i] ? parseFloat(incomeEntries[i].entry_value).toFixed(2) : '',
+          incomeDate: incomeEntries[i] ? incomeEntries[i].entry_date : '',
+          expenseMemo: expenseEntries[i] ? expenseEntries[i].memo : '',
+          expenseValue: expenseEntries[i] ? parseFloat(expenseEntries[i].entry_value).toFixed(2) : '',
+          expenseDate: expenseEntries[i] ? expenseEntries[i].entry_date : '',
+        });
+      }
+      return topEntries;
+    },
+
+    totalIncomeOrExpense: function(){
+      let total = {};
+      // init total
+      this.rawAccountsData
+        .forEach(function(account){
+          if(total[account.currency] === undefined){
+            total[account.currency] = {};
+          }
+          total[account.currency].income = 0;
+          total[account.currency].expense = 0;
+        });
+
+      // tally up values for total
+      this.largeBatchEntryData
+        .filter(this.filterIncludeTransferEntries)
+        .forEach(function(datum){
+          let accountCurrency = this.getAccountCurrencyFromAccountTypeId(datum.account_type_id);
+          if(datum.expense){
+            total[accountCurrency].expense += parseFloat(datum.entry_value);
+          } else {
+            total[accountCurrency].income += parseFloat(datum.entry_value);
+          }
+        }.bind(this));
+
+      // prune empty currencies
+      Object.keys(total).map(function(currency) {
+        if(total[currency].income === 0 && total[currency].expense === 0){
+          delete total[currency];
+        }
+      });
+
+      return total;
+    },
+  },
+  methods: {
+    tooltipContent: function(text){
+      return {
+        content: text,
+        html: true,
+        placement: 'right',
+        classes: 'text-xs font-semibold bg-black py-1.5 px-1 rounded rounded-lg text-white tooltip',
+      }
+    },
+    filteredEntries: function(isExpense){
+      return this.largeBatchEntryData
+        .filter(this.filterIncludeTransferEntries)
+        .filter(function(datum){ return datum.expense === isExpense; })
+        .map(function(entry){
+          let e = _.clone(entry);
+          e.entry_value = _.round(entry.entry_value, 2);
+          return e;
+        });
+    },
+
+    getAccountCurrencyFromAccountTypeId: function(accountTypeId){
+      let account = this.accountTypesObject.getAccount(accountTypeId);
+      return account.currency;
+    },
+
+    displayData: function(){
+      this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
+
+      let chartDataFilterParameters = {
+        start_date: this.startDate,
+        end_date: this.endDate,
+      };
+
+      if(this.accountOrAccountTypeToggle === true){
+        chartDataFilterParameters.account = this.accountOrAccountTypeId;
+      } else {
+        chartDataFilterParameters.account_type = this.accountOrAccountTypeId;
+      }
+
+      this.multiPageDataFetch(chartDataFilterParameters);
+    },
+
+    resetAccountTypesSelector: function(){
+      this.summaryAccountTypeId = null;
+    },
+
+    currencyHtml: function(currencyISOCode){
+      return this.currencyObject.getHtmlFromCode(currencyISOCode);
+    },
+  }
+}
 </script>
 
 <style lang="scss" scoped>

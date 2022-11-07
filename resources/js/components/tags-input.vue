@@ -43,10 +43,10 @@ export default {
   },
 
   watch:{
-    selectedTags: function(newValue, oldValue){
+    selectedTags: function(newValue){
       this.selectedTagsFromProps = newValue;
     },
-    selectedTagsFromProps: function(newValue, oldValue){
+    selectedTagsFromProps: function(newValue){
       this.$emit(EMIT_UPDATE_TAGS_INPUT, newValue);
     }
   },

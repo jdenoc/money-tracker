@@ -70,7 +70,7 @@ export default {
     enable: function(){
       this.$refs[this.getDropzoneRef].enable();
     },
-    handleUploadError(file, message, xhr){
+    handleUploadError(file, message){
       // response: {'error'}
       this.sendNotification(SnotifyStyle.warning, "File upload failure: "+message.error);
     },
@@ -88,8 +88,8 @@ export default {
 
     sendNotification: function(notificationType, notificationMessage){
       this.$eventHub.broadcast(
-          this.$eventHub.EVENT_NOTIFICATION,
-          {type: notificationType, message: notificationMessage}
+        this.$eventHub.EVENT_NOTIFICATION,
+        {type: notificationType, message: notificationMessage}
       );
     },
     handleBroadcastEvent: function(broadcastPayload){
@@ -112,11 +112,11 @@ export default {
     }
   },
   watch:{
-    attachments: function(newValue, oldValue){
+    attachments: function(newValue){
       // changes passed to the prop.attachments after initial setup
       this.dragNDropFiles = newValue;
     },
-    dragNDropFiles: function(newValue, oldValue){
+    dragNDropFiles: function(newValue){
       // changes made to the data.dragNDropFiles
       this.$emit(EMIT_UPDATE_ATTACHMENTS, newValue);
     }

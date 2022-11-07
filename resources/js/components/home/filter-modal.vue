@@ -305,22 +305,22 @@ export default {
         data: filterDataParameters,
         responseType: 'arraybuffer',
       })
-          .then(function(response){
-            let filename = response.headers['content-disposition'].split(';').pop().trim().split('=').pop().replaceAll('"', '');
+        .then(function(response){
+          let filename = response.headers['content-disposition'].split(';').pop().trim().split('=').pop().replaceAll('"', '');
 
-            const url = window.URL.createObjectURL(new Blob([response.data]))
-            const link = document.createElement('a')
-            link.href = url
-            link.setAttribute('download', filename)
-            document.body.appendChild(link)
-            link.click()
+          const url = window.URL.createObjectURL(new Blob([response.data]))
+          const link = document.createElement('a')
+          link.href = url
+          link.setAttribute('download', filename)
+          document.body.appendChild(link)
+          link.click()
 
-            this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, {type: SnotifyStyle.success, message: "Export Complete"});
-            link.remove();
-          }.bind(this))
-          .catch(function(){
-            this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, {type: SnotifyStyle.error, message: "Export Failed"});
-          }.bind(this));
+          this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, {type: SnotifyStyle.success, message: "Export Complete"});
+          link.remove();
+        }.bind(this))
+        .catch(function(){
+          this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, {type: SnotifyStyle.error, message: "Export Failed"});
+        }.bind(this));
     },
     flipCompanionSwitch: function(companionFilter){
       if(this.filterData[companionFilter] === true){
