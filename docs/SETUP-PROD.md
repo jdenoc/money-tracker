@@ -56,7 +56,7 @@ php artisan app:version $MOST_RECENT_TAG
 
 ```bash
 npm install
-npm run-script build-prod
+npm run build:prod
 ```
 
 </p>

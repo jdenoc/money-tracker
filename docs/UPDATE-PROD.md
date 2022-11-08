@@ -63,7 +63,7 @@ php artisan migrate
 #### Step 4
 ```bash
 # Build website from *.vue files
-npm run-script build-prod
+npm run build:prod
 ```
 
 ---
