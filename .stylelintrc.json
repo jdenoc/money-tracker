@@ -4,6 +4,8 @@
     "stylelint-config-recommended-vue/scss"
   ],
   "rules": {
+    "alpha-value-notation": "number",
+    "color-function-notation": "legacy",
     "custom-property-empty-line-before": null,
     "declaration-empty-line-before": null,
     "no-empty-source": null,
@@ -15,6 +17,18 @@
       "files": ["resources/js/components/notification-item.vue"],
       "rules": {
         "selector-class-pattern": null
+      }
+    },
+    {
+      "files": ["resources/css/tailwind.css"],
+      "rules": {
+        "at-rule-no-unknown": null,
+        "scss/at-rule-no-unknown": [
+          true,
+          {
+            "ignoreAtRules": ["tailwind"]
+          }
+        ]
       }
     }
   ]
