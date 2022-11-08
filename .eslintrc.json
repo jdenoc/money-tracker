@@ -17,6 +17,7 @@
         "vue"
     ],
     "rules": {
+        "default-case": "error",
         "indent": [
             "error",
             2,
@@ -26,16 +27,6 @@
             "error",
             "unix"
         ],
-        "switch-colon-spacing": ["error"],
-        "default-case": "error"
-//        "quotes": [
-//            "error",
-//            "single"
-//        ],
-//        "semi": [
-//            "error",
-//            "always",
-//            { "omitLastInOneLineBlock": true}
-//        ]
+        "switch-colon-spacing": ["error"]
     }
 }
