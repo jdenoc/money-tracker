@@ -3,8 +3,6 @@
 $finder = PhpCsFixer\Finder::create()
     ->files()
     ->in(__DIR__)
-    ->exclude('.docker')
-    ->exclude('.github')
     ->exclude('bootstrap/cache')
     ->exclude('database/snapshots')
     ->exclude('docs')
