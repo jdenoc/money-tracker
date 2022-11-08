@@ -154,7 +154,7 @@ jobs:
 
       - name: "Linter: Style"
         id: linter-style
-        run: .docker/cmd/npm.sh run list:style
+        run: .docker/cmd/npm.sh run lint:style
 
   tests-unit:
     needs:
