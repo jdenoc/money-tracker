@@ -20,7 +20,7 @@
       }
     },
     {
-      "files": ["resources/css/tailwind.css"],
+      "files": ["resources/styles/tailwind.css"],
       "rules": {
         "at-rule-no-unknown": null,
         "scss/at-rule-no-unknown": [

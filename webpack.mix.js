@@ -17,7 +17,7 @@ let directory = {
     destination: 'public/dist/'
 }
 directory.js = directory.destination+'js/';
-directory.css = directory.destination+'css/';
+directory.css = directory.destination+'styles/';
 
 mix
     .extract(['vue', 'lodash', 'axios'])
@@ -26,7 +26,7 @@ mix
     .js(directory.resource+'js/app-settings.js', directory.js).vue()
 
     // tailwind specific
-    .postCss(directory.resource+'css/tailwind.css', directory.css+'app.css', [
+    .postCss(directory.resource+'styles/tailwind.css', directory.css+'app.css', [
         require("tailwindcss"),
     ])
 
