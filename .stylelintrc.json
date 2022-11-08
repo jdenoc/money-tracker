@@ -1,0 +1,21 @@
+{
+  "extends": [
+    "stylelint-config-standard-scss",
+    "stylelint-config-recommended-vue/scss"
+  ],
+  "rules": {
+    "custom-property-empty-line-before": null,
+    "declaration-empty-line-before": null,
+    "no-empty-source": null,
+    "property-no-vendor-prefix": null,
+    "unit-disallowed-list": ["em"]
+  },
+  "overrides": [
+    {
+      "files": ["resources/js/components/notification-item.vue"],
+      "rules": {
+        "selector-class-pattern": null
+      }
+    }
+  ]
+}

@@ -239,7 +239,7 @@ export default {
 
 <style lang="scss" scoped>
 .navbar-overflow-menu-enter-active,
-.navbar-overflow-menu-leave-active{
+.navbar-overflow-menu-leave-active {
   $transition-time: 100ms;
 
   -webkit-transition: all #{$transition-time} ease-in-out;
