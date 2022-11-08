@@ -68,7 +68,7 @@ export default {
 
 <style lang="scss" scoped>
 .institution-accounts-slide-down-enter-active,
-.institution-accounts-slide-down-leave-active{
+.institution-accounts-slide-down-leave-active {
   $transition-time: 100ms;
 
   -webkit-transition: all #{$transition-time} ease-in-out;

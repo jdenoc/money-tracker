@@ -121,9 +121,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.panel{
+.panel {
   .closed-institution-accounts-slide-up-enter-active,
-  .closed-institution-accounts-slide-up-leave-active{
+  .closed-institution-accounts-slide-up-leave-active {
     $transition-time: 100ms;
 
     -webkit-transition: all #{$transition-time} ease-in-out;
