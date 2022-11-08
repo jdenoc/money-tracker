@@ -63,7 +63,7 @@
             "php artisan ide-helper:meta",
             "php artisan ide-helper:eloquent"
         ],
-        "php-linter": "vendor/bin/php-cs-fixer fix --dry-run --verbose --diff --stop-on-violation",
+        "lint:php": "vendor/bin/php-cs-fixer fix --dry-run --verbose --diff",
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"

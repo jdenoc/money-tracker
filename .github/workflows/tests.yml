@@ -146,7 +146,7 @@ jobs:
 
       - name: "Linter: PHP"
         id: linter-php
-        run: .docker/cmd/composer.sh run-script php-linter
+        run: .docker/cmd/composer.sh run-script lint:php
 
       - name: "Linter: JS"
         id: linter-js
