@@ -227,18 +227,21 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @import "../../../styles/tooltip";
-  table:nth-child(3) th:first-child{
-      width: 2%;
-  }
-  table:nth-child(3) th:nth-child(2),
-  table:nth-child(3) th:nth-child(3){
-      width: 48%;
-  }
+@import "../../../styles/tooltip";
 
-  // #account-or-account-type-toggling-selector-for-summary-chart obtained from the account-account-type-toggling-selector component
-  ::v-deep #account-or-account-type-toggling-selector-for-summary-chart select{
-    // tailwind class .w-full
-    width: 100%;
-  }
+table:nth-child(3) th:first-child {
+  width: 2%;
+}
+
+table:nth-child(3) th:nth-child(2),
+table:nth-child(3) th:nth-child(3) {
+  width: 48%;
+}
+
+// #account-or-account-type-toggling-selector-for-summary-chart obtained
+// from the account-account-type-toggling-selector component
+::v-deep #account-or-account-type-toggling-selector-for-summary-chart select {
+  // tailwind class .w-full
+  width: 100%;
+}
 </style>

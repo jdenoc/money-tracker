@@ -99,7 +99,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.tags{
+.tags {
   max-width: 16rem;
 }
 </style>
