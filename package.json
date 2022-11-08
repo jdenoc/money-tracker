@@ -4,8 +4,8 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "build-dev": "mix && echo 'process completed @ ' `date`",
-    "build-prod": "mix --production && echo 'process completed @ ' `date`",
+    "build:dev": "mix && echo 'process completed @ ' `date`",
+    "build:prod": "mix --production && echo 'process completed @ ' `date`",
     "lint:js": "eslint resources/js/** --ext .js --ext .vue",
     "lint:style": "stylelint resources/styles/** resources/js/components/** resources/views/**"
   },
