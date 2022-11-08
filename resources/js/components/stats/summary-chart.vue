@@ -227,7 +227,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @import "../../../sass/tooltip";
+  @import "../../../styles/tooltip";
   table:nth-child(3) th:first-child{
       width: 2%;
   }

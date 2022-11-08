@@ -7,7 +7,7 @@
     "build-dev": "mix && echo 'process completed @ ' `date`",
     "build-prod": "mix --production && echo 'process completed @ ' `date`",
     "lint:js": "eslint resources/js/** --ext .js --ext .vue",
-    "lint:style": "stylelint resources/css/**.css resources/sass/**.{sass,scss} resources/js/components/**.vue"
+    "lint:style": "stylelint resources/styles/** resources/js/components/**"
   },
   "dependencies": {
     "@tailwindcss/forms": "^0.5.0",

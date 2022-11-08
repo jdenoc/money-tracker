@@ -88,5 +88,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "../../../sass/tooltip";
+@import "../../../styles/tooltip";
 </style>
