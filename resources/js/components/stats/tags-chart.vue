@@ -183,9 +183,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-    // #account-or-account-type-toggling-selector-for-tags-chart obtained from the account-account-type-toggling-selector component
-    ::v-deep #account-or-account-type-toggling-selector-for-tags-chart select{
-      // tailwind class .w-full
-      width: 100%;
-    }
+// #account-or-account-type-toggling-selector-for-tags-chart obtained
+// from the account-account-type-toggling-selector component
+::v-deep #account-or-account-type-toggling-selector-for-tags-chart select {
+  // tailwind class .w-full
+  width: 100%;
+}
 </style>
