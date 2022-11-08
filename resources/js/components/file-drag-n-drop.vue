@@ -128,6 +128,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~dropzone/dist/min/dropzone.min.css';
+@import "~dropzone/dist/min/dropzone.min.css";
 @import "~vue2-dropzone/dist/vue2Dropzone.min.css";
 </style>
