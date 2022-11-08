@@ -150,7 +150,11 @@ jobs:
 
       - name: "Linter: JS"
         id: linter-js
-        run: .docker/cmd/npm.sh run js-linter
+        run: .docker/cmd/npm.sh run lint:js
+
+      - name: "Linter: Style"
+        id: linter-style
+        run: .docker/cmd/npm.sh run list:style
 
   tests-unit:
     needs:

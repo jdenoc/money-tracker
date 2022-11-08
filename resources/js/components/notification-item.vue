@@ -38,10 +38,11 @@ export default {
 <style scoped>
 @import "~vue-snotify/styles/material";
 
-.snotifyToast__body{
-  font-size: 1.1em;
+.snotifyToast__body {
+  font-size: 1.1rem;
 }
-.snotify-success .snotifyToast__body{
+
+.snotify-success .snotifyToast__body {
   color: #e1f1e1;
 }
 </style>
