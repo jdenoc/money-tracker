@@ -26,7 +26,7 @@ NODE_OPTIONS="--max_old_space_size=2048"
 
 For example:
 ```bash
-NODE_OPTIONS="--max_old_space_size=2048" npm run build-dev
+NODE_OPTIONS="--max_old_space_size=2048" npm run build:dev
 ```
 
 If you continue to have issues, (and if possible,) increase the value.  
