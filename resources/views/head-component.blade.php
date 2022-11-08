@@ -12,7 +12,7 @@
 <!-- Fonts -->
 <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
 
-<link href="{{mix('dist/css/app.css')}}" rel="stylesheet" type="text/css">
+<link href="{{mix('dist/styles/app.css')}}" rel="stylesheet" type="text/css">
 
 <script type="text/javascript" src="{{mix('dist/js/manifest.js')}}"></script>
 <script type="text/javascript" src="{{mix('dist/js/vendor.js')}}"></script>
