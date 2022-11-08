@@ -277,9 +277,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-    // #account-or-account-type-toggling-selector-for-trending-chart obtained from the account-account-type-toggling-selector component
-    ::v-deep #account-or-account-type-toggling-selector-for-trending-chart select{
-      // tailwind class .w-full
-      width: 100%;
-    }
+// #account-or-account-type-toggling-selector-for-trending-chart obtained
+// from the account-account-type-toggling-selector component
+::v-deep #account-or-account-type-toggling-selector-for-trending-chart select {
+  // tailwind class .w-full
+  width: 100%;
+}
 </style>
