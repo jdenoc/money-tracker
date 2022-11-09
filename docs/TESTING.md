@@ -10,7 +10,7 @@ This project has been set up to use [Github-Actions](https://github.com/jdenoc/m
 Once the docker environment is setup ([instructions here](SETUP-DOCKER.md)) and already running, performing the following commands should run the tests we want:
 ```bash
 # Run PhpUnit tests
-docker container exec -t app.money-tracker vendor/bin/phpunit --stop-on-failure
+.docker/cmd/artisan.sh test
 # Run Laravel Dusk tests
 .docker/cmd/artisan.sh dusk --stop-on-failure
 ```
