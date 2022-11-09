@@ -1,4 +1,4 @@
-# Money Tracker  
+# Money Tracker
 ![Github Actions](https://github.com/jdenoc/money-tracker/workflows/Money-tracker%20CI/badge.svg?branch=master)
 [![Latest Release](https://img.shields.io/github/release/jdenoc/money-tracker.svg?style=flat-square)](https://github.com/jdenoc/money-tracker/releases/latest)
 [![License](https://img.shields.io/github/license/jdenoc/laravel-app-version?style=flat-square)](LICENSE)

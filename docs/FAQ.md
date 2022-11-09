@@ -39,7 +39,7 @@ Sometime you will be alerted that you can't clear the cache. This is usually a p
 1. Identify what groups your user belongs to
     ```bash
     groups
-    ````
+    ```
 2. Find out the existing permissions
     ```bash
     ls -lah storage/framework/cache/data

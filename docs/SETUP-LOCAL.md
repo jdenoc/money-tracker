@@ -55,7 +55,7 @@ php artisan app:version `git describe --always`
 <p>
 
 ```bash
-npm install
+npm ci
 npm run build:dev
 ```
 

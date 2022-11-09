@@ -8,6 +8,10 @@ Enlightn scans your Laravel app code to provide you actionable recommendations o
 .docker/cmd/composer.sh require enlightn/enlightn --dev
 .docker/cmd/artisan.sh vendor:publish --tag=enlightn
 
+# reset cache
+php artisan optimize
+php artisan view:cache
+
 # run enlightn
 .docker/cmd/artisan.sh enlightn --details
 # address any issues that can be addresses, then perform a baseline test
@@ -15,6 +19,10 @@ Enlightn scans your Laravel app code to provide you actionable recommendations o
 
 # remove enlightn
 .docker/cmd/composer.sh remove enlightn/enlightn --dev
+
+# reset cache
+php artisan optimize
+php artisan view:cache
 ```
 
 **Links:**
