@@ -12,7 +12,6 @@ use App\Models\Tag;
 use App\Traits\EntryTransferKeys;
 use App\Traits\MaxEntryResponseValue;
 use App\Traits\Tests\StorageTestFiles as TestStorageTestFilesTrait;
-use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Collection;
@@ -56,9 +55,12 @@ class UiSampleDatabaseSeeder extends Seeder {
         // ***** ACCOUNTS *****
         $accounts = collect();
         foreach ($institution_ids as $institution_id) {
-            $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$institution_id, 'disabled'=>false]);
+            $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$institution_id, 'disabled_stamp'=>null]);
         }
-        $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$this->faker->randomElement($institution_ids), 'disabled'=>true]);
+        $accounts = $this->addAccountToCollection($accounts, [
+            'institution_id'=>$this->faker->randomElement($institution_ids),
+            'disabled_stamp'=>now()
+        ]);
         $currencies = CurrencyHelper::fetchCurrencies();
         foreach ($currencies as $currency) {
             $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$this->faker->randomElement($institution_ids), 'currency'=>$currency->code]);
@@ -76,12 +78,11 @@ class UiSampleDatabaseSeeder extends Seeder {
 
         // ***** ENTRIES *****
         $entries = collect();
-        $entry_date_generator = new Carbon();
         foreach ($account_types->pluck('id') as $account_type_id) {
             $entries = $this->addEntryToCollection($entries, [
                 'account_type_id'=>$account_type_id,
                 'disabled'=>false,
-                'entry_date'=>$entry_date_generator->now()->subDays(rand(0, 1.25*self::YEAR_IN_DAYS))
+                'entry_date'=>now()->subDays(rand(0, 1.25*self::YEAR_IN_DAYS))
             ]);
         }
         $entries = $this->addEntryToCollection($entries, ['account_type_id'=>$account_types->pluck('id')->random(), 'disabled'=>false, 'entry_date'=>$entry_date_generator->now()]);

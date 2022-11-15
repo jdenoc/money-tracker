@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.5/phpunit.xsd"
     bootstrap="vendor/autoload.php"
     colors="true"
     stopOnFailure="true"
@@ -15,8 +15,16 @@
   </coverage>
 
   <testsuites>
+    <testsuite name="api-delete">
+      <directory suffix="Test.php">./tests/Feature/Api/Delete</directory>
+    </testsuite>
+
     <testsuite name="api-get">
       <directory suffix="Test.php">./tests/Feature/Api/Get</directory>
+    </testsuite>
+
+    <testsuite name="api-patch">
+      <directory suffix="Test.php">./tests/Feature/Api/Patch</directory>
     </testsuite>
 
     <testsuite name="api-post">
@@ -27,20 +35,16 @@
       <directory suffix="Test.php">./tests/Feature/Api/Put</directory>
     </testsuite>
 
-    <testsuite name="api-delete">
-      <directory suffix="Test.php">./tests/Feature/Api/Delete</directory>
-    </testsuite>
-
     <testsuite name="console">
       <directory suffix="Test.php">./tests/Feature/Console</directory>
     </testsuite>
 
-    <testsuite name="web">
-      <directory suffix="Test.php">./tests/Feature/Web</directory>
-    </testsuite>
-
     <testsuite name="unit">
       <directory suffix="Test.php">./tests/Unit</directory>
+    </testsuite>
+
+    <testsuite name="web">
+      <directory suffix="Test.php">./tests/Feature/Web</directory>
     </testsuite>
   </testsuites>
   <php>

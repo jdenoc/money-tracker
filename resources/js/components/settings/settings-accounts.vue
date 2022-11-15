@@ -4,7 +4,7 @@
     <form class="grid grid-cols-6 gap-2">
       <!-- name -->
       <label for="settings-account-name" class="font-medium justify-self-end py-2 col-span-2">Name:</label>
-      <input id="settings-account-name" name="name" type="text" class="rounded text-gray-700 col-span-4" autocomplete="off" v-model="form.name" />
+      <input id="settings-account-name" name="name" type="text" class="rounded text-gray-700 col-span-4" autocomplete="off" v-model="form.name" v-bind:readonly="form.disabled" />
 
       <!-- institution -->
       <label for="settings-account-institution" class="font-medium justify-self-end py-2 col-span-2">Institution:</label>
@@ -16,7 +16,7 @@
           </svg>
         </span>
 
-        <select id="settings-account-institution" class="rounded w-full" v-model="form.institutionId">
+        <select id="settings-account-institution" class="rounded w-full" v-model="form.institutionId" v-bind:disabled="form.disabled">
           <option value="" selected></option>
           <option
               v-for="institution in listInstitutions"
@@ -43,6 +43,7 @@
                  v-bind:id="'settings-account-currency-'+currency.label"
                  v-model="form.currency"
                  v-bind:value="currency.code"
+                 v-bind:disabled="form.disabled"
           />
           <span v-text="currency.code"></span>
         </label>
@@ -54,6 +55,7 @@
         <input id="settings-account-total" name="total" type="text" class="placeholder-gray-400 placeholder-opacity-80 rounded w-full pl-6" placeholder="0.00" autocomplete="off"
                v-model="form.total"
                v-on:change="decimaliseTotal"
+               v-bind:readonly="form.disabled"
         />
         <span class="absolute left-3 inset-y-2 mt-px text-gray-400 font-medium" v-html="currencyObject.getHtmlFromCode(form.currency)"></span>
       </div>
@@ -61,7 +63,11 @@
       <!-- Active State -->
       <label for="settings-account-disabled" class="font-medium justify-self-end py-2 col-span-2">Active State:</label>
       <div class="col-span-4">
-        <toggle-button v-bind:toggle-state.sync="form.disabled" toggle-id="settings-account-disabled" v-bind="toggleButtonProperties"></toggle-button>
+        <toggle-button v-bind:toggle-state.sync="form.disabled"
+                       v-bind="toggleButtonProperties"
+                       toggle-id="settings-account-disabled"
+                       v-on:click.native="resetFormAfterActiveStateToggle(form.id)"
+        ></toggle-button>
       </div>
 
       <div class="font-medium" v-show="isDataInForm">Created:</div>
@@ -184,6 +190,21 @@ export default {
     }
   },
   methods: {
+    afterSaveDisplayNotificationIfNeeded(notification){
+      // show a notification if needed
+      if(!_.isEmpty(notification)){
+        this.$eventHub.broadcast(
+            this.$eventHub.EVENT_NOTIFICATION,
+            {type: notification.type, message: notification.message}
+        );
+      }
+    },
+    afterSaveResetFormAndHideLoading(){
+      this.setFormDefaults();
+      this.fetchAccounts().finally(function(){
+        this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
+      }.bind(this));
+    },
     decimaliseTotal: function(){
       if(!_.isEmpty(this.form.total)){
         this.form.total = this.decimaliseValue(this.form.total);
@@ -194,6 +215,46 @@ export default {
         return isoDateString;
       } else {
         return new Date(isoDateString).toString();
+      }
+    },
+    resetFormAfterActiveStateToggle(accountId){
+      // this is called AFTER toggle-state has been updated
+      let accountData = _.clone(this.accountObject.find(accountId));
+      accountData.disabled = this.form.disabled;
+      this.fillForm(accountData);
+    },
+    retrieveUpToDateAccountData: function(accountId = null){
+      if(_.isNumber(accountId)){
+        this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
+
+        let accountData = this.accountObject.find(accountId);
+        if(this.accountObject.isDataUpToDate(accountData)){
+          this.fillForm(accountData);
+          this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
+        } else {
+          this.accountObject
+              .fetch(accountId)
+              .then(function(fetchResult){
+                if(fetchResult.fetched){
+                  let freshlyFetchedAccountData = this.accountObject.find(accountId);
+                  this.fillForm(freshlyFetchedAccountData);
+                } else {
+                  this.setFormDefaults();
+                }
+
+                if(!_.isEmpty(fetchResult.notification)){
+                  this.$eventHub.broadcast(
+                      this.$eventHub.EVENT_NOTIFICATION,
+                      {type: fetchResult.notification.type, message: fetchResult.notification.message}
+                  );
+                }
+              }.bind(this))
+              .finally(function(){
+                this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
+              }.bind(this));
+        }
+      } else {
+        this.setFormDefaults();
       }
     },
     sanitiseData(data){
@@ -222,7 +283,6 @@ export default {
         switch (formDatumKey){
           case 'id':
           case 'name':
-          case 'disabled':
           case 'total':
           case 'currency':
             accountData[formDatumKey] = this.form[formDatumKey];
@@ -237,55 +297,29 @@ export default {
       }.bind(this));
 
       this.accountObject.setFetchedState = false
-      this.accountObject.save(accountData)
-        .then(function(notification){
-          // show a notification if needed
-          if(!_.isEmpty(notification)){
-            this.$eventHub.broadcast(
-              this.$eventHub.EVENT_NOTIFICATION,
-              {type: notification.type, message: notification.message}
-            );
-          }
-        }.bind(this))
-        .finally(function(){
-          this.setFormDefaults();
-          this.fetchAccounts().finally(function(){
-            this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
-          }.bind(this));
-        }.bind(this));
-    },
-    retrieveUpToDateAccountData: function(accountId = null){
-      if(_.isNumber(accountId)){
-        this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
+      if(this.form.disabled){
+        this.accountObject.delete(accountData['id'])
+          .then(this.afterSaveDisplayNotificationIfNeeded)
+          .finally(this.afterSaveResetFormAndHideLoading);
 
-        let accountData = this.accountObject.find(accountId);
-        if(this.accountObject.isDataUpToDate(accountData)){
-          this.fillForm(accountData);
-          this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
-        } else {
-          this.accountObject
-            .fetch(accountId)
-            .then(function(fetchResult){
-              if(fetchResult.fetched){
-                let freshlyFetchedAccountData = this.accountObject.find(accountId);
-                this.fillForm(freshlyFetchedAccountData);
-              } else {
-                this.setFormDefaults();
-              }
-
-              if(!_.isEmpty(fetchResult.notification)){
-                this.$eventHub.broadcast(
-                  this.$eventHub.EVENT_NOTIFICATION,
-                  {type: fetchResult.notification.type, message: fetchResult.notification.message}
-                );
-              }
-            }.bind(this))
-            .finally(function(){
-              this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
-            }.bind(this));
-        }
       } else {
-        this.setFormDefaults();
+        let updateAccount = function(accountData){
+          console.log(accountData);
+          this.accountObject.save(accountData)
+              .then(this.afterSaveDisplayNotificationIfNeeded)
+              .finally(this.afterSaveResetFormAndHideLoading);
+        }.bind(this);
+
+        let existingAccountData = this.accountObject.find(accountData['id']);
+        if(existingAccountData.disabled){
+          this.accountObject.restore(accountData['id'])
+            .then(this.afterSaveDisplayNotificationIfNeeded)
+            .finally(function(){
+              updateAccount(accountData)
+            });
+        } else {
+          updateAccount(accountData);
+        }
       }
     },
   },

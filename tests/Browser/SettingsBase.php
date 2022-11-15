@@ -26,13 +26,13 @@ class SettingsBase extends DuskTestCase {
 
     protected static string $SELECTOR_PRIMARY_DIV = '#app-settings';
 
-    private static string $SELECTOR_SETTINGS_NAV = '#settings-nav';
+    protected static string $SELECTOR_SETTINGS_NAV = '#settings-nav';
     private static string $SELECTOR_SETTINGS_NAV_HEADER = '#settings-panel-header';
     private static string $SELECTOR_SETTINGS_NAV_ACTIVE = 'li.settings-nav-option.is-active';
     protected static string $SELECTOR_SETTINGS_NAV_ELEMENT = '';
     protected static string $LABEL_SETTINGS_NAV_ELEMENT = '';
 
-    private static string $SELECTOR_SETTINGS_DISPLAY = '#settings-display';
+    protected static string $SELECTOR_SETTINGS_DISPLAY = '#settings-display';
     private static string $SELECTOR_SETTINGS_DISPLAY_SECTION_DEFAULT = 'section#settings-default';
     protected static string $SELECTOR_SETTINGS_HEADER = 'h3';
     protected static string $SELECTOR_SETTINGS_DISPLAY_SECTION = '';
@@ -332,7 +332,7 @@ class SettingsBase extends DuskTestCase {
         }
     }
 
-    private function assertSettingsSectionDisplayed(Browser $settings_display) {
+    protected function assertSettingsSectionDisplayed(Browser $settings_display) {
         $settings_display
             ->assertMissing(self::$SELECTOR_SETTINGS_DISPLAY_SECTION_DEFAULT)
             ->assertVisible(static::$SELECTOR_SETTINGS_DISPLAY_SECTION);
@@ -380,7 +380,7 @@ class SettingsBase extends DuskTestCase {
         $this->color_button_save = $this->tailwindColors->green(500);
     }
 
-    private function navigateToSettingsSectionOnSettingsPage(Browser $browser) {
+    protected function navigateToSettingsSectionOnSettingsPage(Browser $browser) {
         $browser
             ->assertVisible(self::$SELECTOR_SETTINGS_NAV)
             ->within(self::$SELECTOR_SETTINGS_NAV, function(Browser $side_panel) {
@@ -394,7 +394,7 @@ class SettingsBase extends DuskTestCase {
             });
     }
 
-    private function clickSaveButton(Browser $section) {
+    protected function clickSaveButton(Browser $section) {
         $section
             ->scrollIntoView(self::$SELECTOR_SETTINGS_HEADER)
             ->click(static::$SELECTOR_SETTINGS_FORM_BUTTON_SAVE);

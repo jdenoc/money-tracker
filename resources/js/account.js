@@ -48,15 +48,17 @@ export class Account extends ObjectBaseClass {
 
   axiosSuccess(response){
     switch(response.config.method.toUpperCase()){
+      case "DELETE":
+        return {type: SnotifyStyle.success, message: "Account was disabled"};
       case 'GET':
         this.assign = this.processSuccessfulResponseData(response.data);
         return {fetched: true, notification: {}};
+      case 'PATCH':
+        return {type: SnotifyStyle.success, message: "Account has been reactivated"};
       case "POST":
         return {type: SnotifyStyle.success, message: "New account created"};
       case "PUT":
         return {type: SnotifyStyle.success, message: "Account updated"};
-      // case "DELETE":
-      //   return {deleted: true, notification: {type: SnotifyStyle.success, message: "Account was deleted"}}
       default:
         // do nothing
     }
@@ -83,6 +85,18 @@ export class Account extends ObjectBaseClass {
         .then(this.axiosSuccess)
         .catch(this.axiosFailure);
     }
+  }
+
+  delete(accountId){
+    return Axios.delete(this.uri+accountId)
+      .then(this.axiosSuccess)
+      .catch(this.axiosFailure);
+  }
+
+  restore(accountId){
+    return Axios.patch(this.uri+accountId)
+      .then(this.axiosSuccess)
+      .catch(this.axiosFailure);
   }
 
   // axiosFailure(error){

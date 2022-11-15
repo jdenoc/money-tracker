@@ -4,16 +4,18 @@ namespace App\Models;
 
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Carbon\Carbon;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Mostafaznv\LaraCache\CacheEntity;
 use Mostafaznv\LaraCache\Traits\LaraCache;
 
 class Account extends BaseModel {
     use HasFactory;
     use LaraCache;
+    use SoftDeletes;
 
     const CREATED_AT = 'create_stamp';
     const UPDATED_AT = 'modified_stamp';
+    const DELETED_AT = 'disabled_stamp';
 
     protected $table = 'accounts';
     protected $attributes = [
@@ -26,16 +28,12 @@ class Account extends BaseModel {
     protected $guarded = [
         'id'
     ];
-    protected $casts = [
-        'disabled'=>'boolean',
-    ];
-    protected $dates = [
-        'disabled_stamp'
+    protected $appends = [
+        'disabled'
     ];
     private static $required_fields = [
         'name',
         'institution_id',
-        'disabled',
         'total',
         'currency',
     ];
@@ -45,7 +43,7 @@ class Account extends BaseModel {
     }
 
     public function account_types() {
-        return $this->hasMany('App\Models\AccountType', 'account_id');
+        return $this->hasMany(AccountType::class, 'account_id');
     }
 
     public function getTotalAttribute($value) {
@@ -57,11 +55,8 @@ class Account extends BaseModel {
         $this->attributes['total'] = $entry_value->getMinorAmount()->toInt();
     }
 
-    public function save(array $options = []) {
-        if (!$this->getOriginal('disabled') && $this->disabled) {
-            $this->disabled_stamp = new Carbon();
-        }
-        return parent::save($options);
+    public function getDisabledAttribute() {
+        return !is_null($this->{self::DELETED_AT});
     }
 
     public function addToTotal(Money $value) {
@@ -75,7 +70,7 @@ class Account extends BaseModel {
     }
 
     public static function find_account_with_types($account_id) {
-        $account = Account::with('account_types')->where('id', $account_id);
+        $account = Account::withTrashed()->with(AccountType::getTableName())->where('id', $account_id);
         return $account->first();
     }
 
@@ -90,10 +85,10 @@ class Account extends BaseModel {
     public static function cacheEntities(): array {
         return [
             CacheEntity::make('all')->forever()->cache(function() {
-                return Account::all();
+                return Account::withTrashed()->get();
             }),
             CacheEntity::make('count')->forever()->cache(function() {
-                return Account::count();
+                return Account::withTrashed()->count();
             })
         ];
     }

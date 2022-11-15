@@ -62,9 +62,15 @@ Route::put('tag/{tag_id}', [TagController::class, 'updateTag'])
 // GET /api/accounts
 Route::get('accounts', [AccountController::class, 'get_accounts'])
     ->name('accounts');
+// DELETE /api/account/{accountId}
+Route::delete('account/{accountId}', [AccountController::class, 'disableAccount'])
+    ->name('account.delete');
 // GET /api/account/{account_id}
 Route::get('account/{account_id}', [AccountController::class, 'get_account'])
     ->name('account.get');
+// PATCH /api/account/{accountId}
+Route::patch('account/{accountId}', [AccountController::class, 'reactivateAccount'])
+    ->name('account.patch');
 // POST /api/account
 Route::post('account', [AccountController::class, 'create_account'])
     ->name('account.post');
