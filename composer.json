@@ -38,7 +38,7 @@
         "jdenoc/faker-tailwind-colors": "^0.0.1",
         "jdenoc/laravel-make-trait": "^2.0",
         "jdenoc/tailwind-colors": "0.0.2",
-        "laravel/dusk": "6.15.0",
+        "laravel/dusk": "^6",
         "laravel/sail": "^1.0.1",
         "mockery/mockery": "^1.4.4",
         "nunomaduro/collision": "^5.10",
