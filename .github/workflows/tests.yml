@@ -193,50 +193,49 @@ jobs:
       - uses: ./.github/actions/app-init
         with:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
-      - name: unit tests - PUT API endpoints
-        run: .docker/cmd/artisan.sh test --testsuite api-put
 
-      - uses: ./.github/actions/app-init
-        with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
-      - name: unit tests - GET API endpoints
-        run: .docker/cmd/artisan.sh test --testsuite api-get
-
-      - uses: ./.github/actions/app-init
-        with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
-      - name: unit tests - POST API endpoints
-        run: .docker/cmd/artisan.sh test --testsuite api-post
-
-      - uses: ./.github/actions/app-init
-        with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
+      - uses: ./.github/actions/app-run
       - name: unit tests - DELETE API endpoints
         run: .docker/cmd/artisan.sh test --testsuite api-delete
 
-      - uses: ./.github/actions/app-init
+      - uses: ./.github/actions/app-run
+      - name: unit tests - GET API endpoints
+        run: .docker/cmd/artisan.sh test --testsuite api-get
+
+      - uses: ./.github/actions/app-run
+      - name: unit tests - PATCH API endpoints
+        run: .docker/cmd/artisan.sh test --testsuite api-patch
+
+      - uses: ./.github/actions/app-run
+      - name: unit tests - POST API endpoints
+        run: .docker/cmd/artisan.sh test --testsuite api-post
+
+      - uses: ./.github/actions/app-run
+      - name: unit tests - PUT API endpoints
+        run: .docker/cmd/artisan.sh test --testsuite api-put
+
+      - uses: ./.github/actions/app-run
         with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
           is-cacheless: true  # artisan app:version testing doesn't work well when configs have been cached
       - name: unit tests - console
         run: .docker/cmd/artisan.sh test --testsuite console
 
-      - uses: ./.github/actions/app-init
+      - uses: ./.github/actions/app-run
         with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
           is-cacheless: true  # testing the /export endpoint doesn't work well when configs have been cached
       - name: unit tests - web
         run: .docker/cmd/artisan.sh test --testsuite web
 
-      - uses: ./.github/actions/app-init
-        with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
+      - uses: ./.github/actions/app-run
       - name: unit tests - unit (generic)
         run: .docker/cmd/artisan.sh test --testsuite unit
 
       - name: Failure docker inspection
         uses: ./.github/actions/failure-docker-inspect
         if: failure()
+
+      - uses: ./.github/actions/app-stop
+        if: always()
 
       - name: Failure upload
         uses: actions/upload-artifact@v3
@@ -289,11 +288,16 @@ jobs:
       - uses: ./.github/actions/app-init
         with:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
+
+      - uses: ./.github/actions/app-run
       - run: .docker/cmd/artisan.sh dusk --group demo --stop-on-failure
 
       - name: Failure docker inspection
         uses: ./.github/actions/failure-docker-inspect
         if: failure()
+
+      - uses: ./.github/actions/app-stop
+        if: always()
 
       - name: Failure upload
         uses: actions/upload-artifact@v3
@@ -346,11 +350,16 @@ jobs:
       - uses: ./.github/actions/app-init
         with:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
+
+      - uses: ./.github/actions/app-run
       - run: .docker/cmd/artisan.sh dusk --group notifications-1 --stop-on-failure
 
       - name: Failure docker inspection
         uses: ./.github/actions/failure-docker-inspect
         if: failure()
+
+      - uses: ./.github/actions/app-stop
+        if: always()
 
       - name: Failure upload
         uses: actions/upload-artifact@v3
@@ -408,21 +417,22 @@ jobs:
       - uses: ./.github/actions/app-init
         with:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
+
+      - uses: ./.github/actions/app-run
       - run: .docker/cmd/artisan.sh dusk --group navigation-2 --stop-on-failure
 
-      - uses: ./.github/actions/app-init
-        with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
+      - uses: ./.github/actions/app-run
       - run: .docker/cmd/artisan.sh dusk --group navigation-3 --stop-on-failure
 
-      - uses: ./.github/actions/app-init
-        with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
+      - uses: ./.github/actions/app-run
       - run: .docker/cmd/artisan.sh dusk --group navigation-4 --stop-on-failure
 
       - name: Failure docker inspection
         uses: ./.github/actions/failure-docker-inspect
         if: failure()
+
+      - uses: ./.github/actions/app-stop
+        if: always()
 
       - name: Failure upload
         uses: actions/upload-artifact@v3
@@ -475,21 +485,22 @@ jobs:
       - uses: ./.github/actions/app-init
         with:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
+
+      - uses: ./.github/actions/app-run
       - run: .docker/cmd/artisan.sh dusk --group entry-modal-1 --stop-on-failure
 
-      - uses: ./.github/actions/app-init
-        with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
+      - uses: ./.github/actions/app-run
       - run: .docker/cmd/artisan.sh dusk --group entry-modal-2 --stop-on-failure
 
-      - uses: ./.github/actions/app-init
-        with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
+      - uses: ./.github/actions/app-run
       - run: .docker/cmd/artisan.sh dusk --group entry-modal-3 --stop-on-failure
 
       - name: Failure docker inspection
         uses: ./.github/actions/failure-docker-inspect
         if: failure()
+
+      - uses: ./.github/actions/app-stop
+        if: always()
 
       - name: Failure upload
         uses: actions/upload-artifact@v3
@@ -542,16 +553,19 @@ jobs:
       - uses: ./.github/actions/app-init
         with:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
+
+      - uses: ./.github/actions/app-run
       - run: .docker/cmd/artisan.sh dusk --group transfer-modal-1 --stop-on-failure
 
-      - uses: ./.github/actions/app-init
-        with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
+      - uses: ./.github/actions/app-run
       - run: .docker/cmd/artisan.sh dusk --group transfer-modal-2 --stop-on-failure
 
       - name: Failure docker inspection
         uses: ./.github/actions/failure-docker-inspect
         if: failure()
+
+      - uses: ./.github/actions/app-stop
+        if: always()
 
       - name: Failure upload
         uses: actions/upload-artifact@v3
@@ -604,26 +618,25 @@ jobs:
       - uses: ./.github/actions/app-init
         with:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
+
+      - uses: ./.github/actions/app-run
       - run: .docker/cmd/artisan.sh dusk --group filter-modal-1 --stop-on-failure
 
-      - uses: ./.github/actions/app-init
-        with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
+      - uses: ./.github/actions/app-run
       - run: .docker/cmd/artisan.sh dusk --group filter-modal-2 --stop-on-failure
 
-      - uses: ./.github/actions/app-init
-        with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
+      - uses: ./.github/actions/app-run
       - run: .docker/cmd/artisan.sh dusk --group filter-modal-export-1 --stop-on-failure
 
-      - uses: ./.github/actions/app-init
-        with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
+      - uses: ./.github/actions/app-run
       - run: .docker/cmd/artisan.sh dusk --group filter-modal-export-2 --stop-on-failure
 
       - name: Failure docker inspection
         uses: ./.github/actions/failure-docker-inspect
         if: failure()
+
+      - uses: ./.github/actions/app-stop
+        if: always()
 
       - name: Failure upload
         uses: actions/upload-artifact@v3
@@ -676,11 +689,16 @@ jobs:
       - uses: ./.github/actions/app-init
         with:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
+
+      - uses: ./.github/actions/app-run
       - run: .docker/cmd/artisan.sh dusk --group stats-summary --stop-on-failure
 
       - name: Failure docker inspection
         uses: ./.github/actions/failure-docker-inspect
         if: failure()
+
+      - uses: ./.github/actions/app-stop
+        if: always()
 
       - name: Failure upload
         uses: actions/upload-artifact@v3
@@ -733,11 +751,16 @@ jobs:
       - uses: ./.github/actions/app-init
         with:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
+
+      - uses: ./.github/actions/app-run
       - run: .docker/cmd/artisan.sh dusk --group stats-trending --stop-on-failure
 
       - name: Failure docker inspection
         uses: ./.github/actions/failure-docker-inspect
         if: failure()
+
+      - uses: ./.github/actions/app-stop
+        if: always()
 
       - name: Failure upload
         uses: actions/upload-artifact@v3
@@ -790,16 +813,19 @@ jobs:
       - uses: ./.github/actions/app-init
         with:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
+
+      - uses: ./.github/actions/app-run
       - run: .docker/cmd/artisan.sh dusk --group stats-distribution-1 --stop-on-failure
 
-      - uses: ./.github/actions/app-init
-        with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
+      - uses: ./.github/actions/app-run
       - run: .docker/cmd/artisan.sh dusk --group stats-distribution-2 --stop-on-failure
 
       - name: Failure docker inspection
         uses: ./.github/actions/failure-docker-inspect
         if: failure()
+
+      - uses: ./.github/actions/app-stop
+        if: always()
 
       - name: Failure upload
         uses: actions/upload-artifact@v3
@@ -852,16 +878,19 @@ jobs:
       - uses: ./.github/actions/app-init
         with:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
+
+      - uses: ./.github/actions/app-run
       - run: .docker/cmd/artisan.sh dusk --group stats-tags-1 --stop-on-failure
 
-      - uses: ./.github/actions/app-init
-        with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
+      - uses: ./.github/actions/app-run
       - run: .docker/cmd/artisan.sh dusk --group stats-tags-2 --stop-on-failure
 
       - name: Failure docker inspection
         uses: ./.github/actions/failure-docker-inspect
         if: failure()
+
+      - uses: ./.github/actions/app-stop
+        if: always()
 
       - name: Failure upload
         uses: actions/upload-artifact@v3
@@ -914,26 +943,25 @@ jobs:
       - uses: ./.github/actions/app-init
         with:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
+
+      - uses: ./.github/actions/app-run
       - run: .docker/cmd/artisan.sh dusk --group settings-institutions --stop-on-failure
 
-      - uses: ./.github/actions/app-init
-        with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
+      - uses: ./.github/actions/app-run
       - run: .docker/cmd/artisan.sh dusk --group settings-accounts --stop-on-failure
 
-      - uses: ./.github/actions/app-init
-        with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
+      - uses: ./.github/actions/app-run
       - run: .docker/cmd/artisan.sh dusk --group settings-account-types --stop-on-failure
 
-      - uses: ./.github/actions/app-init
-        with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
+      - uses: ./.github/actions/app-run
       - run: .docker/cmd/artisan.sh dusk --group settings-tags --stop-on-failure
 
       - name: Failure docker inspection
         uses: ./.github/actions/failure-docker-inspect
         if: failure()
+
+      - uses: ./.github/actions/app-stop
+        if: always()
 
       - name: Failure upload
         uses: actions/upload-artifact@v3
