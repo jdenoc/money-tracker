@@ -59,24 +59,19 @@ Route::post('tag', [TagController::class, 'createTag'])
 Route::put('tag/{tag_id}', [TagController::class, 'updateTag'])
     ->name('tag.put');
 
-// GET /api/accounts
-Route::get('accounts', [AccountController::class, 'get_accounts'])
-    ->name('accounts');
-// DELETE /api/account/{accountId}
-Route::delete('account/{accountId}', [AccountController::class, 'disableAccount'])
-    ->name('account.delete');
-// GET /api/account/{account_id}
-Route::get('account/{account_id}', [AccountController::class, 'get_account'])
-    ->name('account.get');
-// PATCH /api/account/{accountId}
-Route::patch('account/{accountId}', [AccountController::class, 'reactivateAccount'])
-    ->name('account.patch');
-// POST /api/account
-Route::post('account', [AccountController::class, 'create_account'])
-    ->name('account.post');
-// PUT /api/account/{account_id}
-Route::put('account/{account_id}', [AccountController::class, 'update_account'])
-    ->name('account.put');
+Route::controller(AccountController::class)->group(function() {
+    // /api/accounts
+    Route::get('accounts', 'get_accounts')->name('accounts');
+
+    // /api/account/{?}
+    Route::prefix('account/')->name('account.')->group(function() {
+        Route::delete('{accountId}', 'disableAccount')->name('delete');
+        Route::get('{account_id}', 'get_account')->name('get');
+        Route::patch('{accountId}', 'reactivateAccount')->name('patch');
+        Route::post('', 'create_account')->name('post');
+        Route::put('{account_id}', 'update_account')->name('put');
+    });
+});
 
 // GET /api/account-types
 Route::get('account-types', [AccountTypeController::class, 'list_account_types'])
