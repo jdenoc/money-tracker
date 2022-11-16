@@ -16,7 +16,7 @@ use Tests\Browser\Pages\SettingsPage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Throwable;
 
-class SettingsBase extends DuskTestCase {
+abstract class SettingsBase extends DuskTestCase {
     use DuskTraitToggleButton;
     use DuskTraitLoading;
     use DuskTraitNotification;
@@ -217,10 +217,6 @@ class SettingsBase extends DuskTestCase {
         });
     }
 
-    public function providerSaveExistingSettingNode(): array {
-        $this->throwEmptyMethodException(__FUNCTION__);
-    }
-
     /**
      * @dataProvider providerSaveExistingSettingNode
      * @throws Throwable
@@ -265,45 +261,25 @@ class SettingsBase extends DuskTestCase {
     // ------------ to override  ------------
     // ------------ ------------ ------------
 
-    private function throwEmptyMethodException(string $method) {
-        throw new \Exception("The method '".$method."' needs to be filled in.");
-    }
+    abstract protected function assertFormDefaults(Browser $section);
 
-    protected function assertFormDefaults(Browser $section) {
-        $this->throwEmptyMethodException(__FUNCTION__);
-    }
+    abstract protected function assertFormDefaultsFull(Browser $section);
 
-    protected function assertFormDefaultsFull(Browser $section) {
-        $this->throwEmptyMethodException(__FUNCTION__);
-    }
+    abstract protected function assertFormWithExistingData(Browser $section, BaseModel $node);
 
-    protected function assertFormWithExistingData(Browser $section, BaseModel $node) {
-        $this->throwEmptyMethodException(__FUNCTION__);
-    }
+    abstract protected function assertNodesVisible(Browser $section);
 
-    protected function assertNodesVisible(Browser $section) {
-        $this->throwEmptyMethodException(__FUNCTION__);
-    }
+    abstract protected function fillForm(Browser $section);
 
-    protected function fillForm(Browser $section) {
-        $this->throwEmptyMethodException(__FUNCTION__);
-    }
+    abstract protected function getNode(int $id=null): BaseModel;
 
-    protected function getNode(int $id=null): BaseModel {
-        $this->throwEmptyMethodException(__FUNCTION__);
-    }
+    abstract protected function getAllNodes(): Collection;
 
-    protected function getAllNodes(): Collection {
-        $this->throwEmptyMethodException(__FUNCTION__);
-    }
+    abstract protected function interactWithNode(Browser $section, BaseModel $node, bool $is_fresh_load=true);
 
-    protected function interactWithNode(Browser $section, BaseModel $node, bool $is_fresh_load=true) {
-        $this->throwEmptyMethodException(__FUNCTION__);
-    }
+    abstract protected function interactWithFormElement(Browser $section, string $selector, BaseModel $node=null);
 
-    protected function interactWithFormElement(Browser $section, string $selector, BaseModel $node=null) {
-        $this->throwEmptyMethodException(__FUNCTION__);
-    }
+    abstract public function providerSaveExistingSettingNode(): array;
 
     // ------------ ------------ ------------
     // ------------ asserts      ------------
