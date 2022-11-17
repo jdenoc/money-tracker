@@ -8,8 +8,14 @@ inputs:
 runs:
   using: composite
   steps:
+    - id: composer-image-tag
+      run: echo "value=composer-local" >> $GITHUB_OUTPUT
+      shell: bash
+
     - name: build docker images
-      run: docker-compose build --build-arg DISABLE_XDEBUG=true
+      run: |
+        docker-compose build --build-arg DISABLE_XDEBUG=true
+        docker build --file .docker/composer.dockerfile --tag ${{ steps.composer-image-tag.outputs.value }} .
       shell: bash
 
     - name: save docker images
@@ -22,4 +28,5 @@ runs:
         do
           docker save $image_name | gzip > ${{ inputs.image-path }}/${image_name}.tar.gz
         done
+        docker save ${{ steps.composer-image-tag.outputs.value }} | gzip > ${{ inputs.image-path }}/composer-local.tar.gz
       shell: bash
