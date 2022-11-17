@@ -117,7 +117,7 @@ jobs:
 
       - name: Composer setup
         uses: ./.github/actions/setup-composer
-        if: steps.composer-cache.outputs.cache-hit != 'true'
+        if: steps.cache-composer.outputs.cache-hit != 'true'
         with:
           github-token: ${{ github.token }}
           php-version: "8.0.22"
@@ -131,7 +131,7 @@ jobs:
 
       - name: npm setup
         uses: ./.github/actions/setup-npm
-        if: steps.npm-cache.outputs.cache-hit != 'true'
+        if: steps.cache-npm.outputs.cache-hit != 'true'
 
       - name: "Cache: vue"
         id: cache-vue
@@ -142,7 +142,7 @@ jobs:
 
       - name: Build Vue
         uses: ./.github/actions/build-vue
-        if: steps.vue-cache.outputs.cache-hit != 'true'
+        if: steps.cache-vue.outputs.cache-hit != 'true'
 
       - name: "Linter: PHP"
         id: linter-php
