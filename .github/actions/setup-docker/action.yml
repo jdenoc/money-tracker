@@ -22,11 +22,12 @@ runs:
       run: |
         mkdir -p ${{ inputs.image-path }}
         docker image ls "$(basename $PWD)*" --no-trunc
+        docker image ls "${{ steps.composer-image-tag.outputs.value }}" --no-trunc
         
         IFS=$'\n'
         for image_name in $(docker image ls "$(basename $PWD)*" --format '{{.Repository}}')
         do
           docker save $image_name | gzip > ${{ inputs.image-path }}/${image_name}.tar.gz
         done
-        docker save ${{ steps.composer-image-tag.outputs.value }} | gzip > ${{ inputs.image-path }}/composer-local.tar.gz
+        docker save ${{ steps.composer-image-tag.outputs.value }} | gzip > ${{ inputs.image-path }}/${{ steps.composer-image-tag.outputs.value }}.tar.gz
       shell: bash
