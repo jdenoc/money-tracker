@@ -412,11 +412,9 @@ jobs:
       - uses: ./.github/actions/app-init
         with:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
-      - run: .docker/cmd/artisan.sh dusk --group navigation-1 --stop-on-failure
 
-      - uses: ./.github/actions/app-init
-        with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
+      - uses: ./.github/actions/app-run
+      - run: .docker/cmd/artisan.sh dusk --group navigation-1 --stop-on-failure
 
       - uses: ./.github/actions/app-run
       - run: .docker/cmd/artisan.sh dusk --group navigation-2 --stop-on-failure
