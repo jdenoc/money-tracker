@@ -103,10 +103,18 @@ jobs:
           key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
       - name: Docker build
+        id: build-docker
         uses: ./.github/actions/setup-docker
         if: steps.cache-docker-image.outputs.cache-hit != 'true'
         with:
           image-path: ${{ needs.pre-build.outputs.cache-path-docker }}
+
+      - name: Load composer docker image
+        run: |
+          # if the composer docker image hasn't already been loaded, do it now
+          if [[ $(docker image ls -q ${{ steps.build-docker.outputs.image-tag-composer }} | wc -l) -eq 0 ]]; then
+            docker load -i ${{ needs.pre-build.outputs.cache-path-docker }}/${{ steps.build-docker.outputs.image-tag-composer }}.tar.gz
+          fi
 
       - name: "Cache: Composer packages"
         id: cache-composer

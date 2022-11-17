@@ -5,6 +5,10 @@ inputs:
   image-path:
     description: 'Path where docker images are saved'
     required: true
+outputs:
+  image-tag-composer:
+    description: "Name of the docker image for the composer container"
+    value: ${{ steps.composer-image-tag.outputs.value }}
 runs:
   using: composite
   steps:
