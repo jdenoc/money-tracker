@@ -4,7 +4,7 @@
     <form class="grid grid-cols-6 gap-2">
       <!-- name -->
       <label for="settings-account-name" class="font-medium justify-self-end py-2 col-span-2">Name:</label>
-      <input id="settings-account-name" name="name" type="text" class="rounded text-gray-700 col-span-4" autocomplete="off" v-model="form.name" v-bind:readonly="form.disabled" />
+      <input id="settings-account-name" name="name" type="text" class="rounded text-gray-700 col-span-4" autocomplete="off" v-model="form.name" v-bind:readonly="!form.active" />
 
       <!-- institution -->
       <label for="settings-account-institution" class="font-medium justify-self-end py-2 col-span-2">Institution:</label>
@@ -16,7 +16,7 @@
           </svg>
         </span>
 
-        <select id="settings-account-institution" class="rounded w-full" v-model="form.institutionId" v-bind:disabled="form.disabled">
+        <select id="settings-account-institution" class="rounded w-full" v-model="form.institutionId" v-bind:disabled="!form.active">
           <option value="" selected></option>
           <option
               v-for="institution in listInstitutions"
@@ -43,7 +43,7 @@
                  v-bind:id="'settings-account-currency-'+currency.label"
                  v-model="form.currency"
                  v-bind:value="currency.code"
-                 v-bind:disabled="form.disabled"
+                 v-bind:disabled="!form.active"
           />
           <span v-text="currency.code"></span>
         </label>
@@ -55,17 +55,17 @@
         <input id="settings-account-total" name="total" type="text" class="placeholder-gray-400 placeholder-opacity-80 rounded w-full pl-6" placeholder="0.00" autocomplete="off"
                v-model="form.total"
                v-on:change="decimaliseTotal"
-               v-bind:readonly="form.disabled"
+               v-bind:readonly="!form.active"
         />
         <span class="absolute left-3 inset-y-2 mt-px text-gray-400 font-medium" v-html="currencyObject.getHtmlFromCode(form.currency)"></span>
       </div>
 
       <!-- Active State -->
-      <label for="settings-account-disabled" class="font-medium justify-self-end py-2 col-span-2">Active State:</label>
+      <label for="settings-account-active" class="font-medium justify-self-end py-2 col-span-2">Active State:</label>
       <div class="col-span-4">
-        <toggle-button v-bind:toggle-state.sync="form.disabled"
+        <toggle-button v-bind:toggle-state.sync="form.active"
                        v-bind="toggleButtonProperties"
-                       toggle-id="settings-account-disabled"
+                       toggle-id="settings-account-active"
                        v-on:click.native="resetFormAfterActiveStateToggle(form.id)"
         ></toggle-button>
       </div>
@@ -105,8 +105,8 @@
           v-bind:id="'settings-account-'+account.id"
           v-bind:class="{
             'border-l-4': form.id===account.id,
-            'text-blue-400 border-blue-400 hover:border-blue-500 is-active': !account.disabled,
-            'text-gray-500 border-gray-500 hover:border-gray-700 is-disabled': account.disabled
+            'text-blue-400 border-blue-400 hover:border-blue-500 is-active': account.active,
+            'text-gray-500 border-gray-500 hover:border-gray-700 is-disabled': !account.active
           }"
       >
         <span
@@ -167,7 +167,7 @@ export default {
         id: null,
         name: '',
         institutionId: "",
-        disabled: false,
+        active: true,
         total: '',
         currency: this.currencyObject.default.code,
         createStamp: '',
@@ -177,7 +177,7 @@ export default {
       };
     },
     listAccounts: function(){
-      return _.orderBy(this.rawAccountsData, ['disabled', 'name'], ['asc', 'asc']);
+      return _.orderBy(this.rawAccountsData, ['active', 'name'], ['desc', 'asc']);
     },
     listCurrencies: function(){
       return _.sortBy(this.currencyObject.list(), ['code']);
@@ -186,7 +186,7 @@ export default {
       return _.sortBy(this.rawInstitutionsData, 'name');
     },
     toggleButtonProperties: function(){
-      return _.cloneDeep(this.altDefaultToggleButtonProperties);
+      return _.cloneDeep(this.defaultToggleButtonProperties);
     }
   },
   methods: {
@@ -194,8 +194,8 @@ export default {
       // show a notification if needed
       if(!_.isEmpty(notification)){
         this.$eventHub.broadcast(
-            this.$eventHub.EVENT_NOTIFICATION,
-            {type: notification.type, message: notification.message}
+          this.$eventHub.EVENT_NOTIFICATION,
+          {type: notification.type, message: notification.message}
         );
       }
     },
@@ -220,7 +220,7 @@ export default {
     resetFormAfterActiveStateToggle(accountId){
       // this is called AFTER toggle-state has been updated
       let accountData = _.clone(this.accountObject.find(accountId));
-      accountData.disabled = this.form.disabled;
+      accountData.active = this.form.active;
       this.fillForm(accountData);
     },
     retrieveUpToDateAccountData: function(accountId = null){
@@ -233,25 +233,25 @@ export default {
           this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
         } else {
           this.accountObject
-              .fetch(accountId)
-              .then(function(fetchResult){
-                if(fetchResult.fetched){
-                  let freshlyFetchedAccountData = this.accountObject.find(accountId);
-                  this.fillForm(freshlyFetchedAccountData);
-                } else {
-                  this.setFormDefaults();
-                }
+            .fetch(accountId)
+            .then(function(fetchResult){
+              if(fetchResult.fetched){
+                let freshlyFetchedAccountData = this.accountObject.find(accountId);
+                this.fillForm(freshlyFetchedAccountData);
+              } else {
+                this.setFormDefaults();
+              }
 
-                if(!_.isEmpty(fetchResult.notification)){
-                  this.$eventHub.broadcast(
-                      this.$eventHub.EVENT_NOTIFICATION,
-                      {type: fetchResult.notification.type, message: fetchResult.notification.message}
-                  );
-                }
-              }.bind(this))
-              .finally(function(){
-                this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
-              }.bind(this));
+              if(!_.isEmpty(fetchResult.notification)){
+                this.$eventHub.broadcast(
+                  this.$eventHub.EVENT_NOTIFICATION,
+                  {type: fetchResult.notification.type, message: fetchResult.notification.message}
+                );
+              }
+            }.bind(this))
+            .finally(function(){
+              this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
+            }.bind(this));
         }
       } else {
         this.setFormDefaults();
@@ -297,29 +297,27 @@ export default {
       }.bind(this));
 
       this.accountObject.setFetchedState = false
-      if(this.form.disabled){
-        this.accountObject.delete(accountData['id'])
-          .then(this.afterSaveDisplayNotificationIfNeeded)
-          .finally(this.afterSaveResetFormAndHideLoading);
-
-      } else {
+      if(this.form.active){
         let updateAccount = function(accountData){
-          console.log(accountData);
           this.accountObject.save(accountData)
-              .then(this.afterSaveDisplayNotificationIfNeeded)
-              .finally(this.afterSaveResetFormAndHideLoading);
+            .then(this.afterSaveDisplayNotificationIfNeeded)
+            .finally(this.afterSaveResetFormAndHideLoading);
         }.bind(this);
 
         let existingAccountData = this.accountObject.find(accountData['id']);
-        if(existingAccountData.disabled){
+        if(existingAccountData.active){
+          updateAccount(accountData);
+        } else {
           this.accountObject.restore(accountData['id'])
             .then(this.afterSaveDisplayNotificationIfNeeded)
             .finally(function(){
               updateAccount(accountData)
             });
-        } else {
-          updateAccount(accountData);
         }
+      } else {
+        this.accountObject.delete(accountData['id'])
+          .then(this.afterSaveDisplayNotificationIfNeeded)
+          .finally(this.afterSaveResetFormAndHideLoading);
       }
     },
   },

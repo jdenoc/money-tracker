@@ -36,8 +36,8 @@ class SettingsAccountsTest extends SettingsBase {
     private static string $SELECTOR_SETTINGS_FORM_LABEL_TOTAL = "label[for='settings-account-total']:nth-child(7)";
     private static string $SELECTOR_SETTINGS_FORM_INPUT_TOTAL = 'div:nth-child(8) input#settings-account-total';
     private static string $SELECTOR_SETTINGS_FORM_CURRENCY_TOTAL = 'div:nth-child(8) input#settings-account-total+span';
-    private static string $SELECTOR_SETTINGS_FORM_LABEL_ACTIVE = "label[for='settings-account-disabled']:nth-child(9)";
-    private static string $SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE = "div:nth-child(10) #settings-account-disabled";
+    private static string $SELECTOR_SETTINGS_FORM_LABEL_ACTIVE = "label[for='settings-account-active']:nth-child(9)";
+    private static string $SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE = "div:nth-child(10) #settings-account-active";
     private static string $SELECTOR_SETTINGS_FORM_LABEL_CREATED = "div:nth-child(11)";
     private static string $SELECTOR_SETTINGS_FORM_CREATED = "div:nth-child(12)";
     private static string $SELECTOR_SETTINGS_FORM_LABEL_MODIFIED = "div:nth-child(13)";
@@ -182,17 +182,7 @@ class SettingsAccountsTest extends SettingsBase {
             ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_MODIFIED, $this->convertDateToECMA262Format($node->{Account::UPDATED_AT}))
             ->assertVisible(self::$SELECTOR_SETTINGS_FORM_LABEL_DISABLED);
 
-        if ($node->disabled) {
-            $section->assertAttribute(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, 'readonly', 'true');
-            $section->assertAttribute(self::$SELECTOR_SETTINGS_FORM_SELECT_INSTITUTION, 'disabled', 'true');
-            $section->assertAttribute(sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_FORM_RADIO_CURRENCY_INPUT, $currency->label), 'disabled', 'true');
-            $section->assertAttribute(self::$SELECTOR_SETTINGS_FORM_INPUT_TOTAL, 'readonly', 'true');
-
-            $this->assertActiveStateToggleInactive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
-
-            $this->assertNotNull($node->{Account::DELETED_AT});
-            $section->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_DISABLED, $this->convertDateToECMA262Format($node->{Account::DELETED_AT}));
-        } else {
+        if ($node->active) {
             $this->assertEmpty($section->attribute(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, 'readonly'));
             $this->assertEmpty($section->attribute(self::$SELECTOR_SETTINGS_FORM_SELECT_INSTITUTION, 'disabled'));
             $this->assertEmpty($section->attribute(sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_FORM_RADIO_CURRENCY_INPUT, $currency->label), 'disabled'));
@@ -202,6 +192,16 @@ class SettingsAccountsTest extends SettingsBase {
 
             $this->assertNull($node->{Account::DELETED_AT});
             $section->assertMissing(self::$SELECTOR_SETTINGS_FORM_DISABLED);
+        } else {
+            $section->assertAttribute(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, 'readonly', 'true');
+            $section->assertAttribute(self::$SELECTOR_SETTINGS_FORM_SELECT_INSTITUTION, 'disabled', 'true');
+            $section->assertAttribute(sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_FORM_RADIO_CURRENCY_INPUT, $currency->label), 'disabled', 'true');
+            $section->assertAttribute(self::$SELECTOR_SETTINGS_FORM_INPUT_TOTAL, 'readonly', 'true');
+
+            $this->assertActiveStateToggleInactive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
+
+            $this->assertNotNull($node->{Account::DELETED_AT});
+            $section->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_DISABLED, $this->convertDateToECMA262Format($node->{Account::DELETED_AT}));
         }
 
         $this->assertSaveButtonDisabled($section);
@@ -218,13 +218,9 @@ class SettingsAccountsTest extends SettingsBase {
             $class_is_disabled = 'is-disabled';
             $class_is_active = 'is-active';
             $account_node_classes = $section->attribute($selector_account_id, 'class');
-            if ($account->disabled) {
-                $this->assertStringContainsString($class_is_disabled, $account_node_classes);
-                $this->assertStringNotContainsString($class_is_active, $account_node_classes);
-            } else {
-                $this->assertStringContainsString($class_is_active, $account_node_classes);
-                $this->assertStringNotContainsString($class_is_disabled, $account_node_classes);
-            }
+
+            $this->assertStringContainsString(($account->active ? $class_is_active : $class_is_disabled), $account_node_classes);
+            $this->assertStringNotContainsString(($account->active ? $class_is_disabled : $class_is_active), $account_node_classes);
         }
     }
 
@@ -270,7 +266,7 @@ class SettingsAccountsTest extends SettingsBase {
 
     protected function interactWithNode(Browser $section, BaseModel $node, bool $is_fresh_load=true) {
         $this->assertNodeIsOfType($node, Account::class);
-        $class_state = $node->disabled ? '.is-disabled' : '.is-active';
+        $class_state = $node->active ? '.is-active' : '.is-disabled';
         $selector = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID.$class_state.' span', $node->id);
         $section
             ->assertVisible($selector)
@@ -335,8 +331,8 @@ class SettingsAccountsTest extends SettingsBase {
 
     public function providerDisablingOrRestoringAccount(): array {
         return [
-            'disabling account'=>['isInitAccountActive'=>false],
-            'restoring account'=>['isInitAccountActive'=>true],
+            'disabling account'=>['isInitAccountActive'=>true],
+            'restoring account'=>['isInitAccountActive'=>false],
         ];
     }
 
@@ -345,19 +341,12 @@ class SettingsAccountsTest extends SettingsBase {
      * @throws \Throwable
      */
     public function testDisablingOrRestoringAccount(bool $isInitAccountActive) {
-        if ($isInitAccountActive) {
-            $generated_account = Account::factory()->create([
-                'institution_id'=>Institution::all()->random()->id,
-                'disabled_stamp'=>null
-            ]);
-            $this->assertFalse($generated_account->disabled);
-        } else {
-            $generated_account = Account::factory()->create([
-                'institution_id'=>Institution::all()->random()->id,
-                'disabled_stamp'=>now()
-            ]);
-            $this->assertTrue($generated_account->disabled);
-        }
+        $disabled_stamp = ($isInitAccountActive ? null : now());
+        $generated_account = Account::factory()->create([
+            'institution_id'=>Institution::all()->random()->id,
+            'disabled_stamp'=>$disabled_stamp
+        ]);
+        $this->assertEquals($generated_account->active, $isInitAccountActive);
 
         $this->browse(function(Browser $browser) use ($generated_account, $isInitAccountActive) {
             $browser->visit(new SettingsPage());
@@ -398,14 +387,9 @@ class SettingsAccountsTest extends SettingsBase {
                     $this->assertFormDefaults($section);
 
                     $updated_account = Account::withTrashed()->findOrFail($generated_account->id);
-                    $this->assertEquals($updated_account->disabled, !$is_account_active);
-                    if ($is_account_active) {
-                        $this->assertFalse($updated_account->disabled);
-                    } else {
-                        $this->assertTrue($updated_account->disabled);
-                    }
+                    $this->assertEquals($updated_account->active, $is_account_active);
 
-                    // should now be disabled
+                    // should now be disabled/re-enabled
                     $this->interactWithNode($section, $updated_account);
                     $this->assertFormWithExistingData($section, $updated_account);
                 });

@@ -32,7 +32,7 @@ class Account extends BaseModel {
         'id'
     ];
     protected $appends = [
-        'disabled'
+        'active'
     ];
     private static $required_fields = [
         'name',
@@ -58,8 +58,8 @@ class Account extends BaseModel {
         $this->attributes['total'] = $entry_value->getMinorAmount()->toInt();
     }
 
-    public function getDisabledAttribute() {
-        return !is_null($this->{self::DELETED_AT});
+    public function getActiveAttribute() {
+        return is_null($this->{self::DELETED_AT});
     }
 
     public function addToTotal(Money $value) {

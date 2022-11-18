@@ -23,7 +23,7 @@ class PutAccountTest extends TestCase {
 
         Account::factory()
             ->count(10)
-            ->state(['disabled'=>false])
+            ->state(['disabled_stamp'=>null])
             ->for(Institution::factory()->state(['active'=>true]))
             ->create();
     }
@@ -138,7 +138,7 @@ class PutAccountTest extends TestCase {
     }
 
     private function getRandomActiveExistingAccount() {
-        return Account::where('disabled', false)->get()->random();
+        return Account::all()->random();
     }
 
     private function generateAccountData() {

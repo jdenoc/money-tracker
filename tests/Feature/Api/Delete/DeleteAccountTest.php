@@ -43,8 +43,8 @@ class DeleteAccountTest extends TestCase {
         $account_response1_as_array = $account_response1->json();
         $error_msg = "Content:".$account_response1->getContent();
         $this->assertNotEmpty($account_response1_as_array, $error_msg);
-        $this->assertArrayHasKey('disabled', $account_response1_as_array, $error_msg);
-        $this->assertFalse($account_response1_as_array['disabled'], $error_msg);
+        $this->assertArrayHasKey('active', $account_response1_as_array, $error_msg);
+        $this->assertTrue($account_response1_as_array['active'], $error_msg);
         $this->assertArrayHasKey('disabled_stamp', $account_response1_as_array, $error_msg);
         $this->assertNull($account_response1_as_array['disabled_stamp'], $error_msg);
 
@@ -65,8 +65,8 @@ class DeleteAccountTest extends TestCase {
         $account_response2_as_array = $account_response2->json();
         $error_msg = "Content:".$account_response2->getContent();
         $this->assertNotEmpty($account_response2_as_array, $error_msg);
-        $this->assertArrayHasKey('disabled', $account_response2_as_array, $error_msg);
-        $this->assertTrue($account_response2_as_array['disabled'], $error_msg);
+        $this->assertArrayHasKey('active', $account_response2_as_array, $error_msg);
+        $this->assertFalse($account_response2_as_array['active'], $error_msg);
         $this->assertArrayHasKey('disabled_stamp', $account_response1_as_array, $error_msg);
         $this->assertNotNull($account_response2_as_array['disabled_stamp'], $error_msg);
         $this->assertDatetimeWithinOneSecond(now()->toAtomString(), $account_response2_as_array['disabled_stamp'], $error_msg);

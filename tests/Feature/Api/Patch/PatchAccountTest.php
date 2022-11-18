@@ -50,7 +50,7 @@ class PatchAccountTest extends TestCase {
         // THEN
         $this->assertResponseStatus($get_response1, HttpStatus::HTTP_OK);
         $this->assertNotEmpty($get_response1->getContent());
-        $this->assertTrue($get_response1->json('disabled'));
+        $this->assertFalse($get_response1->json('active'));
         $this->assertNotNull($get_response1->json('disabled_stamp'));
 
         // WHEN
@@ -66,7 +66,7 @@ class PatchAccountTest extends TestCase {
         // THEN
         $this->assertResponseStatus($get_response2, HttpStatus::HTTP_OK);
         $this->assertNotEmpty($get_response2->getContent());
-        $this->assertFalse($get_response2->json('disabled'));
+        $this->assertTrue($get_response2->json('active'));
         $this->assertNull($get_response2->json('disabled_stamp'));
     }
 
