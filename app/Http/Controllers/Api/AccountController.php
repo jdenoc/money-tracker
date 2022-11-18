@@ -19,7 +19,7 @@ class AccountController extends Controller {
      * GET /api/accounts
      */
     public function get_accounts(): Response {
-        $accounts = Account::cache()->get('all');
+        $accounts = Account::cache()->get(Account::CACHE_KEY_ALL);
         if (is_null($accounts) || $accounts->isEmpty()) {
             return response([], HttpStatus::HTTP_NOT_FOUND);
         } else {
@@ -29,7 +29,7 @@ class AccountController extends Controller {
                 Account::UPDATED_AT,
             ]);
             $accounts = $accounts->toArray();
-            $accounts['count'] = Account::cache()->get('count');
+            $accounts['count'] = Account::cache()->get(Account::CACHE_KEY_COUNT);
 
             return response($accounts, HttpStatus::HTTP_OK);
         }
