@@ -75,6 +75,10 @@ jobs:
           echo "tests/Browser/screenshots/" >> $GITHUB_OUTPUT
           echo "!tests/Browser/screenshots/.gitignore" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
+
+      - id: image-tag-composer
+        run: echo "value=composer-local" >> $GITHUB_OUTPUT
+
     outputs:
       cache-key-docker: ${{ steps.cache-key-docker.outputs.value }}
       cache-key-composer: ${{ steps.cache-key-composer.outputs.value }}
@@ -85,6 +89,7 @@ jobs:
       cache-path-npm: ${{ steps.cache-path-npm.outputs.value }}
       cache-path-vue: ${{ steps.cache-path-vue.outputs.value }}
       failure-upload-paths: ${{ steps.failure-artifact-paths.outputs.value }}
+      image-tag-composer: ${{ steps.image-tag-composer.outputs.value }}
 
   build:
     needs:
@@ -108,12 +113,13 @@ jobs:
         if: steps.cache-docker-image.outputs.cache-hit != 'true'
         with:
           image-path: ${{ needs.pre-build.outputs.cache-path-docker }}
+          image-tag-composer: ${{ needs.pre-build.outputs.image-tag-composer }}
 
       - name: Load composer docker image
         run: |
           # if the composer docker image hasn't already been loaded, do it now
-          if [[ $(docker image ls -q ${{ steps.build-docker.outputs.image-tag-composer }} | wc -l) -eq 0 ]]; then
-            docker load -i ${{ needs.pre-build.outputs.cache-path-docker }}/${{ steps.build-docker.outputs.image-tag-composer }}.tar.gz
+          if [[ $(docker image ls -q ${{ needs.pre-build.outputs.image-tag-composer }} | wc -l) -eq 0 ]]; then
+            docker load -i ${{ needs.pre-build.outputs.cache-path-docker }}/${{ needs.pre-build.outputs.image-tag-composer }}.tar.gz
           fi
 
       - name: "Cache: Composer packages"
