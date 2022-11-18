@@ -76,7 +76,8 @@ jobs:
           echo "!tests/Browser/screenshots/.gitignore" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
-      - id: image-tag-composer
+      - name: Generate image tag [composer]
+        id: image-tag-composer
         run: echo "value=composer-local" >> $GITHUB_OUTPUT
 
     outputs:
@@ -116,11 +117,8 @@ jobs:
           image-tag-composer: ${{ needs.pre-build.outputs.image-tag-composer }}
 
       - name: Load composer docker image
-        run: |
-          # if the composer docker image hasn't already been loaded, do it now
-          if [[ $(docker image ls -q ${{ needs.pre-build.outputs.image-tag-composer }} | wc -l) -eq 0 ]]; then
-            docker load -i ${{ needs.pre-build.outputs.cache-path-docker }}/${{ needs.pre-build.outputs.image-tag-composer }}.tar.gz
-          fi
+        run: docker load -i ${{ needs.pre-build.outputs.cache-path-docker }}/${{ needs.pre-build.outputs.image-tag-composer }}.tar.gz
+        if: steps.cache-docker-image.outputs.cache-hit != 'true'
 
       - name: "Cache: Composer packages"
         id: cache-composer
