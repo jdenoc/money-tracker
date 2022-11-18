@@ -27,3 +27,7 @@ runs:
         docker inspect $(docker-compose ps -q) >> $INSPECT_FILE
         echo "}" >> $INSPECT_FILE
       shell: bash
+
+    - name: give all files read access to allow artifact upload
+      run: docker-compose run --rm --no-deps -T --user root application chmod -R a+r .
+      shell: bash
