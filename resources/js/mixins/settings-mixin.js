@@ -53,7 +53,11 @@ export const settingsMixin = {
       this.form = this.sanitiseData(formData);
     },
     makeDateReadable(isoDateString){
-      return new Date(isoDateString).toString();
+      if(_.isNull(isoDateString)){
+        return isoDateString;
+      } else {
+        return new Date(isoDateString).toString();
+      }
     },
     sanitiseData(formData){
       console.warn("Using a default sanitiseData(). It should be overridden.");

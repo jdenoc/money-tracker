@@ -210,13 +210,6 @@ export default {
         this.form.total = this.decimaliseValue(this.form.total);
       }
     },
-    makeDateReadable(isoDateString){
-      if(_.isNull(isoDateString)){
-        return isoDateString;
-      } else {
-        return new Date(isoDateString).toString();
-      }
-    },
     resetFormAfterActiveStateToggle(accountId){
       // this is called AFTER toggle-state has been updated
       let accountData = _.clone(this.accountObject.find(accountId));
@@ -308,14 +301,14 @@ export default {
         if(existingAccountData.active){
           updateAccount(accountData);
         } else {
-          this.accountObject.restore(accountData['id'])
+          this.accountObject.enable(accountData['id'])
             .then(this.afterSaveDisplayNotificationIfNeeded)
             .finally(function(){
               updateAccount(accountData)
             });
         }
       } else {
-        this.accountObject.delete(accountData['id'])
+        this.accountObject.disable(accountData['id'])
           .then(this.afterSaveDisplayNotificationIfNeeded)
           .finally(this.afterSaveResetFormAndHideLoading);
       }

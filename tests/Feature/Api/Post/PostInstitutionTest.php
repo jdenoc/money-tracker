@@ -96,10 +96,9 @@ class PostInstitutionTest extends TestCase {
     }
 
     private function generateDummyInstitutionData(): array {
-        $institution_data = Institution::factory()->make(['disabled'=>false]);
+        $institution_data = Institution::factory()->make([Institution::DELETED_AT=>null]);
         return [
             'name'=>$institution_data->name,
-            'active'=>$institution_data->active
         ];
     }
 

@@ -68,11 +68,27 @@ export class Institution extends ObjectBaseClass {
     }
   }
 
+  disable(institutionId){
+    return Axios.delete(this.uri+institutionId)
+      .then(this.axiosSuccess)
+      .catch(this.axiosFailure);
+  }
+
+  enable(institutionId){
+    return Axios.patch(this.uri+institutionId)
+      .then(this.axiosSuccess)
+      .catch(this.axiosFailure);
+  }
+
   axiosSuccess(response){
     switch(response.config.method.toUpperCase()){
+      case 'DELETE':
+        return {type: SnotifyStyle.success, message: "Institution has been disabled"};
       case 'GET':
         this.assign = this.processSuccessfulResponseData(response.data);
         return {fetched: true, notification: {}};
+      case 'PATCH':
+        return {type: SnotifyStyle.success, message: "Institution has been enabled"};
       case 'POST':
         return {type: SnotifyStyle.success, message: "New Institution created"};
       case 'PUT':
@@ -85,6 +101,14 @@ export class Institution extends ObjectBaseClass {
   axiosFailure(error){
     if(error.response){
       switch(error.response.config.method.toUpperCase()){
+        case 'DELETE':
+          switch (error.response.status){
+            case 404:
+              return {type: SnotifyStyle.warning, message: "Institution not found"};
+            case 500:
+            default:
+              return {type: SnotifyStyle.error, message: "An error occurred while attempting to disabled institution"};
+          }
         case 'GET':
           switch(error.response.status){
             case 404:
@@ -92,6 +116,14 @@ export class Institution extends ObjectBaseClass {
             case 500:
             default:
               return {fetched: false, notification: {type: SnotifyStyle.error, message: "An error occurred while attempting to retrieve an institution"}};
+          }
+        case 'PATCH':
+          switch (error.response.status){
+            case 404:
+              return {type: SnotifyStyle.warning, message: "Institution not found"};
+            case 500:
+            default:
+              return {type: SnotifyStyle.error, message: "An error occurred while attempting to enable institution"};
           }
         case 'PUT':
           switch(error.response.status){

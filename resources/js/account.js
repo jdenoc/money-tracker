@@ -60,7 +60,7 @@ export class Account extends ObjectBaseClass {
       case "PUT":
         return {type: SnotifyStyle.success, message: "Account updated"};
       default:
-        // do nothing
+        return {};
     }
   }
 
@@ -87,40 +87,34 @@ export class Account extends ObjectBaseClass {
     }
   }
 
-  delete(accountId){
+  disable(accountId){
     return Axios.delete(this.uri+accountId)
       .then(this.axiosSuccess)
       .catch(this.axiosFailure);
   }
 
-  restore(accountId){
+  enable(accountId){
     return Axios.patch(this.uri+accountId)
       .then(this.axiosSuccess)
       .catch(this.axiosFailure);
   }
 
-  // axiosFailure(error){
-  //     if(error.response){
-  //         switch(error.response.status){
-  //             case 404:
-  //                 this.assign = [];
-  //                 return {type: SnotifyStyle.info, message: "No accounts currently available"};
-  //             case 500:
-  //             default:
-  //                 return {type: SnotifyStyle.error, message: "An error occurred while attempting to retrieve accounts"};
-  //         }
-  //     }
-  // }
-
-  // getInstitution(accountId){
-  //     accountId = parseInt(accountId);
-  //     let account = this.find(accountId);
-  //     if(account.hasOwnProperty('institution_id')){
-  //         return new Institutions().find(account.institution_id);
-  //     } else {
-  //         return {};  // couldn't find the account_type associated with the provided ID
-  //     }
-  // }
+  axiosFailure(error){
+    if(error.response){
+      switch(error.response.config.method.toUpperCase()){
+        case 'GET':
+          switch(error.response.status){
+            case 404:
+              return {fetched: false, notification: {type: SnotifyStyle.info, message: "Institution not found"}};
+            case 500:
+            default:
+              return {fetched: false, notification: {type: SnotifyStyle.error, message: "An error occurred while attempting to retrieve an institution"}};
+          }
+        default:
+          return {};
+      }
+    }
+  }
 
   // getAccountTypes(accountId){
   //     accountId = parseInt(accountId);

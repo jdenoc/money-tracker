@@ -39,11 +39,11 @@ class GetInstitutionsTest extends TestCase {
     public function testGetInstitutions(bool $all_active) {
         // GIVEN
         $institutions_count = $this->faker->randomDigitNotZero();
-        $active_flag = $this->faker->boolean(($all_active ? 100 : 50));
+        $disabled_stamp = function() use ($all_active) { return $this->faker->boolean(($all_active ? 100 : 50)) ? null : now(); };
         $generated_institutions = Institution::factory()
             ->count($institutions_count)
-            ->create(['active'=>function() use ($active_flag) { return $active_flag; }]);
-        $generated_institutions->makeHidden(['create_stamp', 'modified_stamp']);
+            ->create([Institution::DELETED_AT=>$disabled_stamp]);
+        $generated_institutions->makeHidden([Institution::CREATED_AT, Institution::UPDATED_AT, Institution::DELETED_AT]);
 
         // WHEN
         $response = $this->get($this->_base_uri);

@@ -3,6 +3,7 @@
 namespace Tests\Browser;
 
 use App\Models\Account;
+use App\Models\AccountType;
 use App\Models\Institution;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\WaitTimes;
@@ -186,11 +187,11 @@ class InstitutionsPanelTest extends DuskTestCase {
      */
     public function testAccountTotalValueIsTwoDecimalPlaces(string $test_total) {
         DB::table('institutions')->truncate();
-        $new_institution = Institution::factory()->create(['active'=>true]);
+        $new_institution = Institution::factory()->create([Institution::DELETED_AT=>null]);
         $institution_id = $new_institution->id;
         DB::table('accounts')->truncate();
         $new_account = Account::factory()->create(['institution_id'=>$institution_id, 'total'=>$test_total, Account::DELETED_AT=>null]);
-        DB::statement("UPDATE account_types SET account_id=:id", ['id'=>$new_account->id]);
+        DB::statement("UPDATE ".AccountType::getTableName()." SET account_id=:id", ['id'=>$new_account->id]);
         $this->assertEquals($test_total, $new_account->total);
 
         $this->browse(function(Browser $browser) use ($institution_id, $new_account) {
@@ -318,7 +319,7 @@ class InstitutionsPanelTest extends DuskTestCase {
         $institutions_collection = collect($institutions);
         if ($include_inactive_institutions) {
             if ($institutions_collection->where('active', false)->count() == 0) {
-                $inactive_institution = Institution::factory()->count(1)->create(['active'=>false]);
+                $inactive_institution = Institution::factory()->count(1)->create([Institution::DELETED_AT=>now()]);
                 $institutions_collection->push($inactive_institution);
             }
         } else {

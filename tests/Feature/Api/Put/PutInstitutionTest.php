@@ -19,7 +19,7 @@ class PutInstitutionTest extends TestCase {
 
     public function setUp(): void {
         parent::setUp();
-        Institution::factory()->count(3)->create(['active'=>true]);
+        Institution::factory()->count(3)->create([Institution::DELETED_AT=>null]);
     }
 
     public function testUpdateInstitutionWithoutData() {
@@ -98,7 +98,7 @@ class PutInstitutionTest extends TestCase {
     }
 
     private function getRandomActiveExistingInstitution() {
-        return Institution::where('active', true)->get()->random();
+        return Institution::all()->random();
     }
 
     private function generateInstitutionData() {

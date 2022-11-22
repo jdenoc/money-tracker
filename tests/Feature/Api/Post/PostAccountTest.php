@@ -18,7 +18,7 @@ class PostAccountTest extends TestCase {
 
     public function setUp(): void {
         parent::setUp();
-        Institution::factory()->count(3)->create(['active'=>true]);
+        Institution::factory()->count(3)->create([Institution::DELETED_AT=>null]);
     }
 
     public function testCreateAccountWithoutData() {
@@ -133,7 +133,7 @@ class PostAccountTest extends TestCase {
     }
 
     private function setValidInstitutionId(array $account_data): array {
-        $institution_id = Institution::where('active', 1)->get()->random()->id;
+        $institution_id = Institution::all()->random()->id; // active institution
         $account_data['institution_id'] = $institution_id;
         return $account_data;
     }

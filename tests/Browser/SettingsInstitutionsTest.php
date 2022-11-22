@@ -38,6 +38,13 @@ class SettingsInstitutionsTest extends SettingsBase {
     protected static string $LABEL_SETTINGS_NOTIFICATION_NEW = 'New Institution created';
     protected static string $LABEL_SETTINGS_NOTIFICATION_UPDATE = 'Institution updated';
 
+    public function providerDisablingOrRestoringAccount(): array {
+        return [
+            'disabling institution'=>['isInitInstitutionActive'=>true],
+            'restoring institution'=>['isInitInstitutionActive'=>false],
+        ];
+    }
+
     public function providerSaveExistingSettingNode(): array {
         return [
             'name'=>[self::$SELECTOR_SETTINGS_FORM_INPUT_NAME],         // test 7/20

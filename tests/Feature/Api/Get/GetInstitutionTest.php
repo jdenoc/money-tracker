@@ -52,7 +52,7 @@ class GetInstitutionTest extends TestCase {
         $generated_institution = Institution::factory()->create();
         $generated_accounts = Account::factory()->count($generated_account_count)->for($generated_institution)->create();
         // These nodes are not in the response output. Let's hide them from the object collection.
-        $generated_accounts->makeHidden(['institution_id', Account::CREATED_AT, Account::UPDATED_AT, 'disabled_stamp']);
+        $generated_accounts->makeHidden(['institution_id', Account::CREATED_AT, Account::UPDATED_AT, Account::DELETED_AT]);
 
         // WHEN
         $response = $this->get(sprintf($this->_base_uri, $generated_institution->id));
@@ -71,7 +71,7 @@ class GetInstitutionTest extends TestCase {
     }
 
     public function assertInstitutionNode(array $institute_in_response, Institution $generated_institution) {
-        $expeceted_elements = ['id', 'name', 'active', Institution::CREATED_AT, Institution::UPDATED_AT, 'accounts'];
+        $expeceted_elements = ['id', 'name', 'active', Institution::CREATED_AT, Institution::UPDATED_AT, 'accounts', Institution::DELETED_AT];
         $this->assertEqualsCanonicalizing($expeceted_elements, array_keys($institute_in_response));
 
         $failure_message = 'generated institution:'.json_encode($generated_institution)."\nresponse institution:".json_encode($institute_in_response);
@@ -80,6 +80,13 @@ class GetInstitutionTest extends TestCase {
                 case Institution::CREATED_AT:
                 case Institution::UPDATED_AT:
                     $this->assertDateFormat($institute_in_response[$element], Carbon::ATOM, $failure_message."\nfor these value to equal, PHP & MySQL timestamps must be the same");
+                    break;
+                case Institution::DELETED_AT:
+                    if ($generated_institution->active) {
+                        $this->assertNull($institute_in_response[Institution::DELETED_AT]);
+                    } else {
+                        $this->assertDateFormat($institute_in_response[Institution::DELETED_AT], Carbon::ATOM, $failure_message."\nfor these value to equal, PHP & MySQL timestamps must be the same");
+                    }
                     break;
                 case 'accounts':
                     $this->assertIsArray($institute_in_response[$element], $failure_message);
@@ -92,7 +99,7 @@ class GetInstitutionTest extends TestCase {
     }
 
     public function assertInstitutionAccountNodesOK($institution_account_in_response, $generated_accounts) {
-        $expected_elements = ['id', 'name', 'disabled', 'total', 'currency'];
+        $expected_elements = ['id', 'name', 'active', 'total', 'currency'];
         $this->assertEqualsCanonicalizing($expected_elements, array_keys($institution_account_in_response));
 
         $generated_account = $generated_accounts->where('id', $institution_account_in_response['id'])->first();
