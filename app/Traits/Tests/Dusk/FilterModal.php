@@ -3,6 +3,7 @@
 namespace App\Traits\Tests\Dusk;
 
 use App\Models\Account;
+use App\Models\AccountType;
 use App\Traits\Tests\WithTailwindColors;
 use InvalidArgumentException;
 use Laravel\Dusk\Browser;
@@ -90,7 +91,7 @@ trait FilterModal {
                 $this->selectAccountOrAccountTypeValue($modal, $filter_value['id']);
 
                 if ($is_account) {
-                    $account = Account::find_account_with_types($filter_value['id']);
+                    $account = Account::withTrashed()->with(AccountType::getTableName())->findOrFail($filter_value['id']);
                     $filter_value = $account->account_types->pluck('name')->toArray();
                 } else {
                     $filter_value = $filter_value['name'];

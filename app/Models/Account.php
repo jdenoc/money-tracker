@@ -72,11 +72,6 @@ class Account extends BaseModel {
         $this->addToTotal($value->multipliedBy(-1));
     }
 
-    public static function find_account_with_types($account_id) {
-        $account = Account::withTrashed()->with(AccountType::getTableName())->where('id', $account_id);
-        return $account->first();
-    }
-
     public static function getRequiredFieldsForUpdate() {
         return self::$required_fields;
     }

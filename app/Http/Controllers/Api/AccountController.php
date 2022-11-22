@@ -39,10 +39,8 @@ class AccountController extends Controller {
      * GET /api/account/{account_id}
      */
     public function get_account(int $account_id): Response {
-        $account = Account::find_account_with_types($account_id);
-        if (is_null($account)) {
-            return response([], HttpStatus::HTTP_NOT_FOUND);
-        } else {
+        try {
+            $account = Account::withTrashed()->with(AccountType::getTableName())->findOrFail($account_id);
             $account->account_types->makeHidden([
                 'account_id',    // We already know what account this is. We don't need to re-show it.
                 AccountType::CREATED_AT,
@@ -50,6 +48,8 @@ class AccountController extends Controller {
                 'disabled_stamp',
             ]);
             return response($account, HttpStatus::HTTP_OK);
+        } catch (\Exception $e) {
+            return response([], HttpStatus::HTTP_NOT_FOUND);
         }
     }
 
