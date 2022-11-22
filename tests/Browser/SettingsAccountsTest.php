@@ -10,7 +10,6 @@ use App\Models\Institution;
 use App\Traits\Tests\Dusk\ToggleButton as DuskTraitToggleButton;
 use Illuminate\Database\Eloquent\Collection;
 use Laravel\Dusk\Browser;
-use Tests\Browser\Pages\SettingsPage;
 
 /**
  * @group settings
@@ -37,7 +36,7 @@ class SettingsAccountsTest extends SettingsBase {
     private static string $SELECTOR_SETTINGS_FORM_INPUT_TOTAL = 'div:nth-child(8) input#settings-account-total';
     private static string $SELECTOR_SETTINGS_FORM_CURRENCY_TOTAL = 'div:nth-child(8) input#settings-account-total+span';
     private static string $SELECTOR_SETTINGS_FORM_LABEL_ACTIVE = "label[for='settings-account-active']:nth-child(9)";
-    private static string $SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE = "div:nth-child(10) #settings-account-active";
+    protected static string $SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE = "div:nth-child(10) #settings-account-active";
     private static string $SELECTOR_SETTINGS_FORM_LABEL_CREATED = "div:nth-child(11)";
     private static string $SELECTOR_SETTINGS_FORM_CREATED = "div:nth-child(12)";
     private static string $SELECTOR_SETTINGS_FORM_LABEL_MODIFIED = "div:nth-child(13)";
@@ -68,6 +67,13 @@ class SettingsAccountsTest extends SettingsBase {
         parent::initSettingsColors();
         $this->color_currency_active = $this->tailwindColors->blue(600);
         $this->color_currency_inactive = $this->tailwindColors->white();
+    }
+
+    public function providerDisablingOrRestoringAccount(): array {
+        return [
+            'disabling account'=>['isInitAccountActive'=>true],
+            'restoring account'=>['isInitAccountActive'=>false],
+        ];
     }
 
     public function providerSaveExistingSettingNode(): array {
@@ -327,74 +333,6 @@ class SettingsAccountsTest extends SettingsBase {
             default:
                 throw new \UnexpectedValueException(sprintf("Unexpected form element [%s] provided", $selector));
         }
-    }
-
-    public function providerDisablingOrRestoringAccount(): array {
-        return [
-            'disabling account'=>['isInitAccountActive'=>true],
-            'restoring account'=>['isInitAccountActive'=>false],
-        ];
-    }
-
-    /**
-     * @dataProvider providerDisablingOrRestoringAccount
-     * @throws \Throwable
-     */
-    public function testDisablingOrRestoringAccount(bool $isInitAccountActive) {
-        $disabled_stamp = ($isInitAccountActive ? null : now());
-        $generated_account = Account::factory()->create([
-            'institution_id'=>Institution::all()->random()->id,
-            'disabled_stamp'=>$disabled_stamp
-        ]);
-        $this->assertEquals($generated_account->active, $isInitAccountActive);
-
-        $this->browse(function(Browser $browser) use ($generated_account, $isInitAccountActive) {
-            $browser->visit(new SettingsPage());
-            $this->navigateToSettingsSectionOnSettingsPage($browser);
-            $browser->within(self::$SELECTOR_SETTINGS_DISPLAY, function(Browser $settings_display) use ($generated_account, $isInitAccountActive) {
-                $this->assertSettingsSectionDisplayed($settings_display);
-                $settings_display->within(static::$SELECTOR_SETTINGS_DISPLAY_SECTION, function(Browser $section) use ($generated_account, $isInitAccountActive) {
-                    $this->assertFormDefaults($section);
-                    $section->waitUntilMissing(static::$SELECTOR_SETTINGS_LOADING_NODES, self::$WAIT_SECONDS);
-
-                    $this->interactWithNode($section, $generated_account);
-                    $this->assertFormWithExistingData($section, $generated_account);
-
-                    $this->interactWithFormElement($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE, $generated_account);
-                    if ($isInitAccountActive) {
-                        $this->assertActiveStateToggleInactive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
-                        $is_account_active = false;
-                    } else {
-                        $this->assertActiveStateToggleActive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
-                        $is_account_active = true;
-                    }
-
-                    $this->assertSaveButtonEnabled($section);
-                    $this->clickSaveButton($section);
-                    $section->elsewhere(self::$SELECTOR_PRIMARY_DIV, function(Browser $body) use ($is_account_active) {
-                        if ($is_account_active) {
-                            $this->assertNotificationContents($body, self::$NOTIFICATION_TYPE_SUCCESS, static::$LABEL_SETTINGS_NOTIFICAITON_RESTORE);
-                            $this->dismissNotification($body);
-                            $this->waitForLoadingToStop($body);
-                            $this->assertNotificationContents($body, self::$NOTIFICATION_TYPE_SUCCESS, static::$LABEL_SETTINGS_NOTIFICATION_UPDATE);
-                            $this->dismissNotification($body);
-                        } else {
-                            $this->assertNotificationContents($body, self::$NOTIFICATION_TYPE_SUCCESS, static::$LABEL_SETTINGS_NOTIFICAITON_DELETE);
-                            $this->dismissNotification($body);
-                            $this->waitForLoadingToStop($body);
-                        }
-                    });
-                    $this->assertFormDefaults($section);
-
-                    $updated_account = Account::withTrashed()->findOrFail($generated_account->id);
-                    $this->assertEquals($updated_account->active, $is_account_active);
-
-                    // should now be disabled/re-enabled
-                    $this->interactWithNode($section, $updated_account);
-                    $this->assertFormWithExistingData($section, $updated_account);
-                });
-            });
-        });
     }
 
 }

@@ -44,6 +44,7 @@ abstract class SettingsBase extends DuskTestCase {
     protected static string $LABEL_SETTINGS_LABEL_MODIFIED = "Modified:";
     protected static string $LABEL_SETTINGS_LABEL_DISABLED = "Disabled:";
 
+    protected static string $SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE = '';
     protected static string $SELECTOR_SETTINGS_FORM_BUTTON_CLEAR = '';
     protected static string $LABEL_SETTINGS_FORM_BUTTON_CLEAR = "Clear";
     protected static string $SELECTOR_SETTINGS_FORM_BUTTON_SAVE = '';
@@ -54,6 +55,8 @@ abstract class SettingsBase extends DuskTestCase {
 
     protected static string $LABEL_SETTINGS_NOTIFICATION_NEW = '';
     protected static string $LABEL_SETTINGS_NOTIFICATION_UPDATE = '';
+    protected static string $LABEL_SETTINGS_NOTIFICAITON_RESTORE = '';
+    protected static string $LABEL_SETTINGS_NOTIFICAITON_DELETE = '';
 
     private string $color_button_save;
 
@@ -257,6 +260,70 @@ abstract class SettingsBase extends DuskTestCase {
         });
     }
 
+    /**
+     * @dataProvider providerDisablingOrRestoringAccount
+     * @throws \Throwable
+     *
+     * test ?/25
+     */
+    public function testDisablingOrRestoringAccount(bool $isInitObjectActive) {
+        // TODO: remove as soon as other objects have been updated
+        if (!in_array(get_class(), ['SettingsAccountsTest', 'SettingsInstitutionsTest'])) {
+            $this->markTestSkipped();
+        }
+
+        $generated_object = $this->generateObject($isInitObjectActive);
+        $this->assertEquals($generated_object->active, $isInitObjectActive);
+
+        $this->browse(function(Browser $browser) use ($generated_object, $isInitObjectActive) {
+            $browser->visit(new SettingsPage());
+            $this->navigateToSettingsSectionOnSettingsPage($browser);
+            $browser->within(self::$SELECTOR_SETTINGS_DISPLAY, function(Browser $settings_display) use ($generated_object, $isInitObjectActive) {
+                $this->assertSettingsSectionDisplayed($settings_display);
+                $settings_display->within(static::$SELECTOR_SETTINGS_DISPLAY_SECTION, function(Browser $section) use ($generated_object, $isInitObjectActive) {
+                    $this->assertFormDefaults($section);
+                    $section->waitUntilMissing(static::$SELECTOR_SETTINGS_LOADING_NODES, self::$WAIT_SECONDS);
+
+                    $this->interactWithObjectListItem($section, $generated_object);
+                    $this->assertFormWithExistingData($section, $generated_object);
+
+                    $this->interactWithFormElement($section, static::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE, $generated_object);
+                    if ($isInitObjectActive) {
+                        $this->assertActiveStateToggleInactive($section, static::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
+                        $is_object_active = false;
+                    } else {
+                        $this->assertActiveStateToggleActive($section, static::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
+                        $is_object_active = true;
+                    }
+
+                    $this->assertSaveButtonEnabled($section);
+                    $this->clickSaveButton($section);
+                    $section->elsewhere(self::$SELECTOR_PRIMARY_DIV, function(Browser $body) use ($is_object_active) {
+                        if ($is_object_active) {
+                            $this->assertNotificationContents($body, self::$NOTIFICATION_TYPE_SUCCESS, static::$LABEL_SETTINGS_NOTIFICAITON_RESTORE);
+                            $this->dismissNotification($body);
+                            $this->waitForLoadingToStop($body);
+                            $this->assertNotificationContents($body, self::$NOTIFICATION_TYPE_SUCCESS, static::$LABEL_SETTINGS_NOTIFICATION_UPDATE);
+                            $this->dismissNotification($body);
+                        } else {
+                            $this->assertNotificationContents($body, self::$NOTIFICATION_TYPE_SUCCESS, static::$LABEL_SETTINGS_NOTIFICAITON_DELETE);
+                            $this->dismissNotification($body);
+                            $this->waitForLoadingToStop($body);
+                        }
+                    });
+                    $this->assertFormDefaults($section);
+
+                    $updated_object = $this->getObject($generated_object->id);
+                    $this->assertEquals($updated_object->active, $is_object_active);
+
+                    // should now be disabled/re-enabled
+                    $this->interactWithObjectListItem($section, $updated_object);
+                    $this->assertFormWithExistingData($section, $updated_object);
+                });
+            });
+        });
+    }
+
     // ------------ ------------ ------------
     // ------------ to override  ------------
     // ------------ ------------ ------------
@@ -279,6 +346,8 @@ abstract class SettingsBase extends DuskTestCase {
 
     abstract protected function interactWithFormElement(Browser $section, string $selector, BaseModel $node=null);
 
+    abstract public function providerDisablingOrRestoringAccount(): array;
+
     abstract public function providerSaveExistingSettingNode(): array;
 
     // ------------ ------------ ------------
@@ -293,6 +362,7 @@ abstract class SettingsBase extends DuskTestCase {
             'SELECTOR_SETTINGS_DISPLAY_SECTION'=>static::$SELECTOR_SETTINGS_DISPLAY_SECTION,
             'LABEL_SETTINGS_SECTION_HEADER'=>static::$LABEL_SETTINGS_SECTION_HEADER,
 
+            'SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE'=>static::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE,
             'SELECTOR_SETTINGS_FORM_BUTTON_CLEAR'=>static::$SELECTOR_SETTINGS_FORM_BUTTON_CLEAR,
             'SELECTOR_SETTINGS_FORM_BUTTON_SAVE'=>static::$SELECTOR_SETTINGS_FORM_BUTTON_SAVE,
 
@@ -301,6 +371,8 @@ abstract class SettingsBase extends DuskTestCase {
 
             'LABEL_SETTINGS_NOTIFICATION_NEW'=>static::$LABEL_SETTINGS_NOTIFICATION_NEW,
             'LABEL_SETTINGS_NOTIFICATION_UPDATE'=>static::$LABEL_SETTINGS_NOTIFICATION_UPDATE,
+            'LABEL_SETTINGS_NOTIFICAITON_RESTORE'=>static::$LABEL_SETTINGS_NOTIFICAITON_RESTORE,
+            'LABEL_SETTINGS_NOTIFICAITON_DELETE'=>static::$LABEL_SETTINGS_NOTIFICAITON_DELETE,
         ];
 
         foreach ($constants_to_be_set as $constant_name=>$constant_value) {
