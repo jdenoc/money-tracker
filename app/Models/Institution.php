@@ -34,8 +34,7 @@ class Institution extends BaseModel {
     ];
 
     public function accounts() {
-        return $this->hasMany(Account::class, 'institution_id')
-            ->withTrashed()->get();
+        return $this->hasMany(Account::class, 'institution_id');
     }
 
     public function getActiveAttribute() {

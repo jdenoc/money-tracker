@@ -36,8 +36,7 @@ class AccountType extends BaseModel {
     ];
 
     public function account() {
-        return $this->belongsTo(Account::class, 'account_id')
-            ->withTrashed()->first();
+        return $this->belongsTo(Account::class, 'account_id');
     }
 
     public function entries() {
