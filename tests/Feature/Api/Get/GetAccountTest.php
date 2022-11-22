@@ -120,7 +120,7 @@ class GetAccountTest extends TestCase {
                 case Account::UPDATED_AT:
                     $this->assertDateFormat($response_as_array[$expected_element], DATE_ATOM, $response_as_array[$expected_element]." not in correct format");
                     break;
-                case 'disabled_stamp':
+                case Account::DELETED_AT:
                     if ($response_as_array['active']) {
                         $this->assertNull($response_as_array[$expected_element]);
                     } else {

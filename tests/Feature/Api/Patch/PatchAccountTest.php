@@ -28,7 +28,7 @@ class PatchAccountTest extends TestCase {
     public function testRestoringUndeletedAccount() {
         // GIVEN
         $generated_institution = Institution::factory()->create();
-        $generated_account = Account::factory()->create(['institution_id'=>$generated_institution->id, 'disabled_stamp'=>null]);
+        $generated_account = Account::factory()->create(['institution_id'=>$generated_institution->id, Account::DELETED_AT=>null]);
 
         // WHEN
         $response = $this->patch(sprintf(self::PLACEHOLDER_URI_ACCOUNT, $generated_account->id));
@@ -41,7 +41,7 @@ class PatchAccountTest extends TestCase {
     public function testRestoringAccount() {
         // GIVEN
         $generated_institution = Institution::factory()->create();
-        $generated_account = Account::factory()->create(['institution_id'=>$generated_institution->id, 'disabled_stamp'=>'now']);
+        $generated_account = Account::factory()->create(['institution_id'=>$generated_institution->id, Account::DELETED_AT=>now()]);
         $account_uri = sprintf(self::PLACEHOLDER_URI_ACCOUNT, $generated_account->id);
 
         // WHEN
@@ -51,7 +51,7 @@ class PatchAccountTest extends TestCase {
         $this->assertResponseStatus($get_response1, HttpStatus::HTTP_OK);
         $this->assertNotEmpty($get_response1->getContent());
         $this->assertFalse($get_response1->json('active'));
-        $this->assertNotNull($get_response1->json('disabled_stamp'));
+        $this->assertNotNull($get_response1->json(Account::DELETED_AT));
 
         // WHEN
         $patch_response = $this->patch($account_uri);
@@ -67,7 +67,7 @@ class PatchAccountTest extends TestCase {
         $this->assertResponseStatus($get_response2, HttpStatus::HTTP_OK);
         $this->assertNotEmpty($get_response2->getContent());
         $this->assertTrue($get_response2->json('active'));
-        $this->assertNull($get_response2->json('disabled_stamp'));
+        $this->assertNull($get_response2->json(Account::DELETED_AT));
     }
 
 }

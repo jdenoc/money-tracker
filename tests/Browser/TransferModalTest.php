@@ -383,7 +383,7 @@ class TransferModalTest extends DuskTestCase {
         $account_types = AccountType::all();
         $disabled_account_type = [];
         if ($account_type_method == self::$METHOD_ACCOUNT) {
-            $disabled_account = Account::where('disabled', true)->get()->random();
+            $disabled_account = Account::onlyTrashed()->get()->random();
             $disabled_account_type = $account_types->where('account_id', $disabled_account['id'])->random();
         } elseif ($account_type_method == self::$METHOD_ACCOUNT_TYPE) {
             $disabled_account_type = $account_types->where('disabled', true)->random();

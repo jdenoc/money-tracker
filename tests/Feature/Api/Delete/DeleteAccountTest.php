@@ -15,15 +15,27 @@ class DeleteAccountTest extends TestCase {
     public function testDisablingAccountThatDoesNotExist() {
         // GIVEN - account_type does not exist
         $account_id = $this->faker->randomNumber();
+        // confirm account does not exist
+        $dummy_account = Account::find($account_id);
+        $this->assertNull($dummy_account);
 
         // WHEN
         $response = $this->delete(sprintf(self::PLACEHOLDER_URI_ACCOUNT, $account_id));
 
         // THEN
-        // confirm there are no database records
-        $account_collection = Account::all();
-        $this->assertTrue($account_collection->isEmpty(), $account_collection->toJson());
+        // confirm we got the right response
+        $this->assertResponseStatus($response, HttpStatus::HTTP_NOT_FOUND);
+        $this->assertEmpty($response->getContent());
+    }
 
+    public function testDisablingAccountThatIsAlreadyDisabled() {
+        // GIVEN
+        $generated_account = Account::factory()->create([Account::DELETED_AT=>now()]);
+
+        // WHEN
+        $response = $this->delete(sprintf(self::PLACEHOLDER_URI_ACCOUNT, $generated_account->id));
+
+        // THEN
         // confirm we got the right response
         $this->assertResponseStatus($response, HttpStatus::HTTP_NOT_FOUND);
         $this->assertEmpty($response->getContent());
@@ -31,7 +43,7 @@ class DeleteAccountTest extends TestCase {
 
     public function testDisablingAccount() {
         // GIVEN
-        $generated_account = Account::factory()->create(['disabled_stamp'=>null]);
+        $generated_account = Account::factory()->create([Account::DELETED_AT=>null]);
         $account_uri = sprintf(self::PLACEHOLDER_URI_ACCOUNT, $generated_account->id);
 
         // confirm account is NOT disabled
@@ -45,8 +57,8 @@ class DeleteAccountTest extends TestCase {
         $this->assertNotEmpty($account_response1_as_array, $error_msg);
         $this->assertArrayHasKey('active', $account_response1_as_array, $error_msg);
         $this->assertTrue($account_response1_as_array['active'], $error_msg);
-        $this->assertArrayHasKey('disabled_stamp', $account_response1_as_array, $error_msg);
-        $this->assertNull($account_response1_as_array['disabled_stamp'], $error_msg);
+        $this->assertArrayHasKey(Account::DELETED_AT, $account_response1_as_array, $error_msg);
+        $this->assertNull($account_response1_as_array[Account::DELETED_AT], $error_msg);
 
         // disable account
         // WHEN
@@ -67,9 +79,9 @@ class DeleteAccountTest extends TestCase {
         $this->assertNotEmpty($account_response2_as_array, $error_msg);
         $this->assertArrayHasKey('active', $account_response2_as_array, $error_msg);
         $this->assertFalse($account_response2_as_array['active'], $error_msg);
-        $this->assertArrayHasKey('disabled_stamp', $account_response1_as_array, $error_msg);
-        $this->assertNotNull($account_response2_as_array['disabled_stamp'], $error_msg);
-        $this->assertDatetimeWithinOneSecond(now()->toAtomString(), $account_response2_as_array['disabled_stamp'], $error_msg);
+        $this->assertArrayHasKey(Account::DELETED_AT, $account_response1_as_array, $error_msg);
+        $this->assertNotNull($account_response2_as_array[Account::DELETED_AT], $error_msg);
+        $this->assertDatetimeWithinOneSecond(now()->toAtomString(), $account_response2_as_array[Account::DELETED_AT], $error_msg);
     }
 
 }

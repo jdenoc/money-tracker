@@ -60,17 +60,17 @@ class AccountTotalSanityCheck extends Command {
         } else {
             $account_id = $this->argument(self::ARG_ACCOUNT_ID);
             if (!is_null($account_id)) {
-                $account = Account::find($account_id);
-                if (is_null($account)) {
-                    $this->notifyInternally(sprintf("Account %d not found", $account_id), self::LOG_LEVEL_WARNING);
-                } else {
+                try {
+                    $account = Account::findOfFail($account_id);
                     $sanity_check_object = $this->retrieveExpectedAccountTotalData($account);
                     $this->notifySanityCheck($sanity_check_object);
+                } catch (\Exception $e) {
+                    $this->notifyInternally(sprintf("Account %d not found", $account_id), self::LOG_LEVEL_WARNING);
                 }
             } elseif (!is_null($account_id) && (int)$account_id === 0) { // without the is_null check, we would just convert null to 0 in this check, which would be true
                 $this->notifyInternally("Account 0 does not exist", self::LOG_LEVEL_WARNING);
             } else {
-                $accounts = Account::all();
+                $accounts = Account::withTrashed()->get();
                 if ($accounts->isEmpty()) {
                     $this->notifyInternally("No accounts found", self::LOG_LEVEL_WARNING);
                     $webhook_data = new DiscordContentObject();

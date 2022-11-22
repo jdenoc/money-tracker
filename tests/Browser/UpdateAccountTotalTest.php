@@ -369,7 +369,7 @@ class UpdateAccountTotalTest extends DuskTestCase {
         $accounts = $this->getApiAccounts();
         $accounts_collection = collect($accounts);
         if ($is_institution_id) {
-            return $accounts_collection->where('disabled', false)->where('institution_id', $id)->random();
+            return $accounts_collection->where('active', true)->where('institution_id', $id)->random();
         } else {
             return $accounts_collection->where('id', $id)->first();
         }

@@ -25,7 +25,7 @@ class PutAccountTypeTest extends TestCase {
 
         $accounts = Account::factory()
             ->count(3)
-            ->state(['disabled' => false])
+            ->state([Account::DELETED_AT=>null])
             ->for(Institution::factory()->state(['active' => true]))
             ->create();
         AccountType::factory()
@@ -158,7 +158,7 @@ class PutAccountTypeTest extends TestCase {
     }
 
     private function getExistingActiveAccountId(): int {
-        return Account::where('disabled', false)->get()->random()->id;
+        return Account::all()->random()->id;
     }
 
     private function assertFailedPostResponse(TestResponse $response, $expected_response_status, $expected_error_message) {
