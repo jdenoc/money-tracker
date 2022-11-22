@@ -30,19 +30,20 @@ class EntryController extends Controller {
      * @return Response
      */
     public function get_entry(int $entry_id): Response {
-        $entry = Entry::with(['tags', 'attachments'])
-            ->where('id', $entry_id)
-            ->first();
+        try {
+            $entry = Entry::with(['tags', 'attachments'])->findOrFail($entry_id);
+            if ($entry->disabled) {
+                return response([], HttpStatus::HTTP_NOT_FOUND);
+            }
 
-        if (empty($entry) || $entry->disabled == 1) {
-            return response([], HttpStatus::HTTP_NOT_FOUND);
-        } else {
             // we're not going to show disabled entries,
             // so why bother telling someone that something that isn't disabled
             $entry->makeHidden(['disabled', 'disabled_stamp', 'accountType']);
             $entry->tags->makeHidden('pivot');  // this is an artifact left over from the relationship logic
             $entry->attachments->makeHidden('entry_id');  // we already know the attachment is associated with this entry, no need to repeat that
             return response($entry, HttpStatus::HTTP_OK);
+        } catch (\Exception $e) {
+            return response([], HttpStatus::HTTP_NOT_FOUND);
         }
     }
 
