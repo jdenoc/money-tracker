@@ -29,7 +29,8 @@ class Institution extends BaseModel {
     ];
 
     public function accounts() {
-        return $this->hasMany('App\Models\Account', 'institution_id');
+        return $this->hasMany(Account::class, 'institution_id')
+            ->withTrashed()->get();
     }
 
     public static function find_institution_with_accounts($institution_id) {
