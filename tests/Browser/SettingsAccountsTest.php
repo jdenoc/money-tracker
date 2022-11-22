@@ -170,25 +170,25 @@ class SettingsAccountsTest extends SettingsBase {
         $this->assertSaveButtonDefault($section);
     }
 
-    protected function assertFormWithExistingData(Browser $section, BaseModel $node) {
-        $this->assertNodeIsOfType($node, Account::class);
-        $currency = CurrencyHelper::fetchCurrencies()->where('code', $node->currency)->first();
+    protected function assertFormWithExistingData(Browser $section, BaseModel $object) {
+        $this->assertObjectIsOfType($object, Account::class);
+        $currency = CurrencyHelper::fetchCurrencies()->where('code', $object->currency)->first();
         $section
-            ->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, $node->name)
+            ->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, $object->name)
             ->waitUntilMissing(self::$SELECTOR_SETTINGS_FORM_LOADING_INSTITUTION, self::$WAIT_SECONDS)
-            ->assertSelected(self::$SELECTOR_SETTINGS_FORM_SELECT_INSTITUTION, $node->institution_id)
+            ->assertSelected(self::$SELECTOR_SETTINGS_FORM_SELECT_INSTITUTION, $object->institution_id)
             ->assertRadioSelected(sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_FORM_RADIO_CURRENCY_INPUT, $currency->label), $currency->code)
-            ->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_TOTAL, $node->total)
+            ->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_TOTAL, $object->total)
             ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_CURRENCY_TOTAL, CurrencyHelper::convertCurrencyHtmlToCharacter($currency->html));
 
         $section
             ->assertVisible(self::$SELECTOR_SETTINGS_FORM_LABEL_CREATED)
-            ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_CREATED, $this->convertDateToECMA262Format($node->{Account::CREATED_AT}))
+            ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_CREATED, $this->convertDateToECMA262Format($object->{Account::CREATED_AT}))
             ->assertVisible(self::$SELECTOR_SETTINGS_FORM_LABEL_MODIFIED)
-            ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_MODIFIED, $this->convertDateToECMA262Format($node->{Account::UPDATED_AT}))
+            ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_MODIFIED, $this->convertDateToECMA262Format($object->{Account::UPDATED_AT}))
             ->assertVisible(self::$SELECTOR_SETTINGS_FORM_LABEL_DISABLED);
 
-        if ($node->active) {
+        if ($object->active) {
             $this->assertEmpty($section->attribute(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, 'readonly'));
             $this->assertEmpty($section->attribute(self::$SELECTOR_SETTINGS_FORM_SELECT_INSTITUTION, 'disabled'));
             $this->assertEmpty($section->attribute(sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_FORM_RADIO_CURRENCY_INPUT, $currency->label), 'disabled'));
@@ -196,7 +196,7 @@ class SettingsAccountsTest extends SettingsBase {
 
             $this->assertActiveStateToggleActive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
 
-            $this->assertNull($node->{Account::DELETED_AT});
+            $this->assertNull($object->{Account::DELETED_AT});
             $section->assertMissing(self::$SELECTOR_SETTINGS_FORM_DISABLED);
         } else {
             $section->assertAttribute(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, 'readonly', 'true');
@@ -206,14 +206,14 @@ class SettingsAccountsTest extends SettingsBase {
 
             $this->assertActiveStateToggleInactive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
 
-            $this->assertNotNull($node->{Account::DELETED_AT});
-            $section->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_DISABLED, $this->convertDateToECMA262Format($node->{Account::DELETED_AT}));
+            $this->assertNotNull($object->{Account::DELETED_AT});
+            $section->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_DISABLED, $this->convertDateToECMA262Format($object->{Account::DELETED_AT}));
         }
 
         $this->assertSaveButtonDisabled($section);
     }
 
-    protected function assertNodesVisible(Browser $section) {
+    protected function assertObjectListItemsVisible(Browser $section) {
         $accounts = Account::withTrashed()->get();
         $this->assertCount($accounts->count(), $section->elements('hr~ul li'));
         foreach ($accounts as $account) {
@@ -258,22 +258,31 @@ class SettingsAccountsTest extends SettingsBase {
         $this->assertActiveStateToggleActive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
     }
 
-    protected function getNode(int $id=null): BaseModel {
+    protected function getObject(int $id=null): BaseModel {
         if (!is_null($id)) {
-            return Account::find($id);
+            return Account::withTrashed()->findOrFail($id);
         } else {
-            return Account::get()->random();
+            return Account::withTrashed()->get()->random();
         }
     }
 
-    protected function getAllNodes(): Collection {
-        return Account::all();
+    protected function getAllObjects(): Collection {
+        return Account::withTrashed()->get();
     }
 
-    protected function interactWithNode(Browser $section, BaseModel $node, bool $is_fresh_load=true) {
-        $this->assertNodeIsOfType($node, Account::class);
-        $class_state = $node->active ? '.is-active' : '.is-disabled';
-        $selector = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID.$class_state.' span', $node->id);
+    protected function generateObject(bool $isInitObjectActive): BaseModel {
+        $disabled_stamp = ($isInitObjectActive ? null : now());
+        /** @var Account */
+        return Account::factory()->create([
+            'institution_id'=>Institution::all()->random()->id,
+            Account::DELETED_AT=>$disabled_stamp
+        ]);
+    }
+
+    protected function interactWithObjectListItem(Browser $section, BaseModel $object, bool $is_fresh_load=true) {
+        $this->assertObjectIsOfType($object, Account::class);
+        $class_state = $object->active ? '.is-active' : '.is-disabled';
+        $selector = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID.$class_state.' span', $object->id);
         $section
             ->assertVisible($selector)
             ->click($selector);
@@ -286,18 +295,18 @@ class SettingsAccountsTest extends SettingsBase {
         $section->pause($this->toggleButtonTransitionTimeInMilliseconds());
     }
 
-    protected function interactWithFormElement(Browser $section, string $selector, BaseModel $node=null) {
-        if (is_null($node)) {
-            $node = new Account();
+    protected function interactWithFormElement(Browser $section, string $selector, BaseModel $object=null) {
+        if (is_null($object)) {
+            $object = new Account();
         }
-        $this->assertNodeIsOfType($node, Account::class);
+        $this->assertObjectIsOfType($object, Account::class);
 
         switch($selector) {
             case self::$SELECTOR_SETTINGS_FORM_INPUT_NAME:
-                $accounts = $this->getAllNodes();
+                $accounts = $this->getAllObjects();
                 do {
                     $name = $this->faker->word();
-                } while ($node->name == $name || $accounts->contains('name', $name));
+                } while ($object->name == $name || $accounts->contains('name', $name));
                 $section
                     ->clear($selector)
                     ->type($selector, $name);
@@ -305,7 +314,7 @@ class SettingsAccountsTest extends SettingsBase {
             case self::$SELECTOR_SETTINGS_FORM_SELECT_INSTITUTION:
                 do {
                     $institution = Institution::get()->random();
-                } while ($node->institution_id == $institution->id);
+                } while ($object->institution_id == $institution->id);
                 $section
                     ->waitUntilMissing(self::$SELECTOR_SETTINGS_FORM_LOADING_INSTITUTION, self::$WAIT_SECONDS)
                     ->select($selector, $institution->id);
@@ -313,7 +322,7 @@ class SettingsAccountsTest extends SettingsBase {
             case self::$TEMPLATE_SELECTOR_SETTINGS_FORM_RADIO_CURRENCY_INPUT:
                 do {
                     $currency = CurrencyHelper::fetchCurrencies()->random();
-                } while ($node->currency == $currency->code);
+                } while ($object->currency == $currency->code);
                 $selector_currency = sprintf($selector, $currency->label);
                 $section
                     ->click($selector_currency.'+span')
@@ -322,7 +331,7 @@ class SettingsAccountsTest extends SettingsBase {
             case self::$SELECTOR_SETTINGS_FORM_INPUT_TOTAL:
                 do {
                     $total = $this->faker->randomFloat(2);
-                } while ($node->total == $total);
+                } while ($object->total == $total);
                 $section
                     ->clear($selector)
                     ->type($selector, $total);

@@ -119,7 +119,7 @@ abstract class SettingsBase extends DuskTestCase {
      *
      * test 3/20
      */
-    public function testNodesListedUnderFormAreVisible() {
+    public function testObjectListItemsListedUnderFormAreVisible() {
         $this->browse(function(Browser $browser) {
             $browser->visit(new SettingsPage());
             $this->navigateToSettingsSectionOnSettingsPage($browser);
@@ -127,7 +127,7 @@ abstract class SettingsBase extends DuskTestCase {
                 $this->assertSettingsSectionDisplayed($settings_display);
                 $settings_display->within(static::$SELECTOR_SETTINGS_DISPLAY_SECTION, function(Browser $section) {
                     $section->waitUntilMissing(static::$SELECTOR_SETTINGS_LOADING_NODES, self::$WAIT_SECONDS);
-                    $this->assertNodesVisible($section);
+                    $this->assertObjectListItemsVisible($section);
                 });
             });
         });
@@ -169,14 +169,14 @@ abstract class SettingsBase extends DuskTestCase {
                 $settings_display->within(static::$SELECTOR_SETTINGS_DISPLAY_SECTION, function(Browser $section) {
                     $section->waitUntilMissing(static::$SELECTOR_SETTINGS_LOADING_NODES, self::$WAIT_SECONDS);
 
-                    $node = $this->getNode();
-                    $this->interactWithNode($section, $node);
+                    $node = $this->getObject();
+                    $this->interactWithObjectListItem($section, $node);
                     $this->assertFormWithExistingData($section, $node);
 
                     $this->clickClearButton($section);
                     $this->assertFormDefaults($section);
 
-                    $this->interactWithNode($section, $node, false);
+                    $this->interactWithObjectListItem($section, $node, false);
                     $this->assertFormWithExistingData($section, $node);
                 });
             });
@@ -195,7 +195,7 @@ abstract class SettingsBase extends DuskTestCase {
             $browser->within(self::$SELECTOR_SETTINGS_DISPLAY, function(Browser $settings_display) {
                 $this->assertSettingsSectionDisplayed($settings_display);
                 $settings_display->within(static::$SELECTOR_SETTINGS_DISPLAY_SECTION, function(Browser $section) {
-                    $nodes = $this->getAllNodes();
+                    $nodes = $this->getAllObjects();
                     $this->fillForm($section);
 
                     $this->assertSaveButtonEnabled($section);
@@ -209,8 +209,8 @@ abstract class SettingsBase extends DuskTestCase {
 
                     $this->assertFormDefaults($section);
 
-                    $new_node =$this->getAllNodes()->diff($nodes)->first();
-                    $this->interactWithNode($section, $new_node);
+                    $new_node =$this->getAllObjects()->diff($nodes)->first();
+                    $this->interactWithObjectListItem($section, $new_node);
                     $section->elsewhere(self::$SELECTOR_PRIMARY_DIV, function(Browser $body) {
                         $this->waitForLoadingToStop($body);
                     });
@@ -236,8 +236,8 @@ abstract class SettingsBase extends DuskTestCase {
                     $this->assertFormDefaults($section);
                     $section->waitUntilMissing(static::$SELECTOR_SETTINGS_LOADING_NODES, self::$WAIT_SECONDS);
 
-                    $node = $this->getNode();
-                    $this->interactWithNode($section, $node);
+                    $node = $this->getObject();
+                    $this->interactWithObjectListItem($section, $node);
                     $this->assertFormWithExistingData($section, $node);
 
                     $this->interactWithFormElement($section, $form_element, $node);
@@ -252,8 +252,8 @@ abstract class SettingsBase extends DuskTestCase {
                     });
                     $this->assertFormDefaults($section);
 
-                    $node = $this->getNode($node->id);    // get updated data
-                    $this->interactWithNode($section, $node);
+                    $node = $this->getObject($node->id);    // get updated data
+                    $this->interactWithObjectListItem($section, $node);
                     $this->assertFormWithExistingData($section, $node);
                 });
             });
@@ -332,19 +332,21 @@ abstract class SettingsBase extends DuskTestCase {
 
     abstract protected function assertFormDefaultsFull(Browser $section);
 
-    abstract protected function assertFormWithExistingData(Browser $section, BaseModel $node);
+    abstract protected function assertFormWithExistingData(Browser $section, BaseModel $object);
 
-    abstract protected function assertNodesVisible(Browser $section);
+    abstract protected function assertObjectListItemsVisible(Browser $section);
 
     abstract protected function fillForm(Browser $section);
 
-    abstract protected function getNode(int $id=null): BaseModel;
+    abstract protected function generateObject(bool $isInitObjectActive): BaseModel;
 
-    abstract protected function getAllNodes(): Collection;
+    abstract protected function getObject(int $id=null): BaseModel;
 
-    abstract protected function interactWithNode(Browser $section, BaseModel $node, bool $is_fresh_load=true);
+    abstract protected function getAllObjects(): Collection;
 
-    abstract protected function interactWithFormElement(Browser $section, string $selector, BaseModel $node=null);
+    abstract protected function interactWithFormElement(Browser $section, string $selector, BaseModel $object=null);
+
+    abstract protected function interactWithObjectListItem(Browser $section, BaseModel $object, bool $is_fresh_load=true);
 
     abstract public function providerDisablingOrRestoringAccount(): array;
 
@@ -380,18 +382,19 @@ abstract class SettingsBase extends DuskTestCase {
         }
     }
 
-    protected function assertSettingsSectionDisplayed(Browser $settings_display) {
-        $settings_display
-            ->assertMissing(self::$SELECTOR_SETTINGS_DISPLAY_SECTION_DEFAULT)
-            ->assertVisible(static::$SELECTOR_SETTINGS_DISPLAY_SECTION);
-    }
-
     protected function assertActiveStateToggleActive(Browser $settings_display, $toggle_selector) {
         $this->assertToggleButtonState($settings_display, $toggle_selector, 'Active', $this->tailwindColors->blue(600));
     }
 
     protected function assertActiveStateToggleInactive(Browser $settings_display, $toggle_selector) {
         $this->assertToggleButtonState($settings_display, $toggle_selector, 'Inactive', $this->tailwindColors->gray(400));
+    }
+
+    protected function assertObjectIsOfType($object, string $type) {
+        $this->assertTrue(
+            get_class($object) === $type,
+            sprintf("object of type [%s] was incorrectly provided", get_class($object))
+        );
     }
 
     protected function assertSaveButtonDefault(Browser $section) {
@@ -413,16 +416,34 @@ abstract class SettingsBase extends DuskTestCase {
         $this->assertEmpty($save_button_state, "Save button appears to NOT be enabled");
     }
 
-    protected function assertNodeIsOfType($node, string $type) {
-        $this->assertTrue(
-            get_class($node) === $type,
-            sprintf("node of type [%s] was incorrectly provided", get_class($node))
-        );
+    protected function assertSettingsSectionDisplayed(Browser $settings_display) {
+        $settings_display
+            ->assertMissing(self::$SELECTOR_SETTINGS_DISPLAY_SECTION_DEFAULT)
+            ->assertVisible(static::$SELECTOR_SETTINGS_DISPLAY_SECTION);
     }
 
     // ------------ ------------ ------------
     // ------------ utilities    ------------
     // ------------ ------------ ------------
+
+    private function clickSaveButton(Browser $section) {
+        $section
+            ->scrollIntoView(self::$SELECTOR_SETTINGS_HEADER)
+            ->click(static::$SELECTOR_SETTINGS_FORM_BUTTON_SAVE);
+    }
+
+    private function clickClearButton(Browser $browser) {
+        $browser
+            ->scrollIntoView(self::$SELECTOR_SETTINGS_HEADER)
+            ->click(static::$SELECTOR_SETTINGS_FORM_BUTTON_CLEAR)
+            ->pause($this->toggleButtonTransitionTimeInMilliseconds());   // wait for toggle button transition to complete;
+    }
+
+    protected function convertDateToECMA262Format(string $date): string {
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toString
+        // ECMA-262 datetime format
+        return Carbon::create($date)->format('D M d Y H:i:s \G\M\TO');
+    }
 
     protected function initSettingsColors() {
         $this->color_button_save = $this->tailwindColors->green(500);
@@ -440,25 +461,6 @@ abstract class SettingsBase extends DuskTestCase {
                     ->assertVisible(self::$SELECTOR_SETTINGS_NAV_ACTIVE)
                     ->assertSeeIn(self::$SELECTOR_SETTINGS_NAV_ACTIVE, static::$LABEL_SETTINGS_NAV_ELEMENT);
             });
-    }
-
-    protected function clickSaveButton(Browser $section) {
-        $section
-            ->scrollIntoView(self::$SELECTOR_SETTINGS_HEADER)
-            ->click(static::$SELECTOR_SETTINGS_FORM_BUTTON_SAVE);
-    }
-
-    private function clickClearButton(Browser $browser) {
-        $browser
-            ->scrollIntoView(self::$SELECTOR_SETTINGS_HEADER)
-            ->click(static::$SELECTOR_SETTINGS_FORM_BUTTON_CLEAR)
-            ->pause($this->toggleButtonTransitionTimeInMilliseconds());   // wait for toggle button transition to complete;
-    }
-
-    protected function convertDateToECMA262Format(string $date): string {
-        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toString
-        // ECMA-262 datetime format
-        return Carbon::create($date)->format('D M d Y H:i:s \G\M\TO');
     }
 
 }

@@ -62,17 +62,17 @@ class SettingsTagsTest extends SettingsBase {
         $this->assertSaveButtonDefault($section);
     }
 
-    protected function assertFormWithExistingData(Browser $section, BaseModel $node) {
-        $this->assertNodeIsOfType($node, Tag::class);
+    protected function assertFormWithExistingData(Browser $section, BaseModel $object) {
+        $this->assertObjectIsOfType($object, Tag::class);
 
         $section
             ->scrollIntoView(self::$SELECTOR_SETTINGS_HEADER)
-            ->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, $node->name);
+            ->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, $object->name);
         $this->assertSaveButtonDisabled($section);
     }
 
-    protected function assertNodesVisible(Browser $section) {
-        $tags = $this->getAllNodes();
+    protected function assertObjectListItemsVisible(Browser $section) {
+        $tags = $this->getAllObjects();
         $this->assertCount($tags->count(), $section->elements('hr~div span.tag'));
         foreach ($tags as $tag) {
             $selector_tag_id = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID, $tag->id);
@@ -87,35 +87,35 @@ class SettingsTagsTest extends SettingsBase {
         $section->assertInputValueIsNot(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, '');
     }
 
-    protected function getNode(int $id=null): BaseModel {
+    protected function getObject(int $id=null): BaseModel {
         return Tag::get()->random();
     }
 
-    protected function getAllNodes(): Collection {
+    protected function getAllObjects(): Collection {
         return Tag::all();
     }
 
-    protected function interactWithNode(Browser $section, BaseModel $node, bool $is_fresh_load=true) {
-        $this->assertNodeIsOfType($node, Tag::class);
+    protected function interactWithObjectListItem(Browser $section, BaseModel $object, bool $is_fresh_load=true) {
+        $this->assertObjectIsOfType($object, Tag::class);
 
-        $selector = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID, $node->id);
+        $selector = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID, $object->id);
         $section
             ->assertVisible($selector)
             ->click($selector);
     }
 
-    protected function interactWithFormElement(Browser $section, string $selector, BaseModel $node=null) {
-        if (is_null($node)) {
-            $node = new Tag();
+    protected function interactWithFormElement(Browser $section, string $selector, BaseModel $object=null) {
+        if (is_null($object)) {
+            $object = new Tag();
         }
-        $this->assertNodeIsOfType($node, Tag::class);
+        $this->assertObjectIsOfType($object, Tag::class);
 
         switch ($selector) {
             case self::$SELECTOR_SETTINGS_FORM_INPUT_NAME:
-                $tags = $this->getAllNodes();
+                $tags = $this->getAllObjects();
                 do {
                     $name = $this->faker->word();
-                } while ($node->name == $name || $tags->contains('name', $name));
+                } while ($object->name == $name || $tags->contains('name', $name));
                 $section
                     ->clear($selector)
                     ->type($selector, $this->faker->word());

@@ -132,19 +132,19 @@ class SettingsAccountTypesTest extends SettingsBase {
         $this->assertSaveButtonDefault($section);
     }
 
-    protected function assertFormWithExistingData(Browser $section, BaseModel $node) {
-        $this->assertNodeIsOfType($node, AccountType::class);
+    protected function assertFormWithExistingData(Browser $section, BaseModel $object) {
+        $this->assertObjectIsOfType($object, AccountType::class);
 
         $section
             ->scrollIntoView(self::$SELECTOR_SETTINGS_HEADER)
 
-            ->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, $node->name)
+            ->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, $object->name)
             ->waitUntilMissing(self::$SELECTOR_SETTINGS_FORM_LOADING_TYPE, self::$WAIT_SECONDS)
-            ->assertSelected(self::$SELECTOR_SETTINGS_FORM_SELECT_TYPE, $node->type)
-            ->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_LAST_DIGITS, $node->last_digits)
+            ->assertSelected(self::$SELECTOR_SETTINGS_FORM_SELECT_TYPE, $object->type)
+            ->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_LAST_DIGITS, $object->last_digits)
             ->waitUntilMissing(self::$SELECTOR_SETTINGS_FORM_LOADING_ACCOUNT, self::$WAIT_SECONDS)
-            ->assertSelected(self::$SELECTOR_SETTINGS_FORM_SELECT_ACCOUNT, $node->account_id);
-        if ($node->disabled) {
+            ->assertSelected(self::$SELECTOR_SETTINGS_FORM_SELECT_ACCOUNT, $object->account_id);
+        if ($object->disabled) {
             $this->assertActiveStateToggleInactive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
         } else {
             $this->assertActiveStateToggleActive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
@@ -152,20 +152,20 @@ class SettingsAccountTypesTest extends SettingsBase {
 
         $section
             ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_LABEL_CREATED, self::$LABEL_SETTINGS_LABEL_CREATED)
-            ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_CREATED, $this->convertDateToECMA262Format($node->create_stamp))
+            ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_CREATED, $this->convertDateToECMA262Format($object->create_stamp))
             ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_LABEL_MODIFIED, self::$LABEL_SETTINGS_LABEL_MODIFIED)
-            ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_MODIFIED, $this->convertDateToECMA262Format($node->modified_stamp))
+            ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_MODIFIED, $this->convertDateToECMA262Format($object->modified_stamp))
             ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_LABEL_DISABLED, self::$LABEL_SETTINGS_LABEL_DISABLED);
-        if (is_null($node->disabled_stamp)) {
+        if (is_null($object->disabled_stamp)) {
             $section->assertMissing(self::$SELECTOR_SETTINGS_FORM_DISABLED);
         } else {
-            $section->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_DISABLED, $this->convertDateToECMA262Format($node->disabled_stamp));
+            $section->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_DISABLED, $this->convertDateToECMA262Format($object->disabled_stamp));
         }
 
         $this->assertSaveButtonDisabled($section);
     }
 
-    protected function assertNodesVisible(Browser $section) {
+    protected function assertObjectListItemsVisible(Browser $section) {
         $account_types = AccountType::all();
         $this->assertCount($account_types->count(), $section->elements('hr~ul li'));
         foreach ($account_types as $account_type) {
@@ -210,19 +210,19 @@ class SettingsAccountTypesTest extends SettingsBase {
         }
     }
 
-    protected function getNode(int $id=null): BaseModel {
+    protected function getObject(int $id=null): BaseModel {
         return AccountType::get()->random();
     }
 
-    protected function getAllNodes(): Collection {
+    protected function getAllObjects(): Collection {
         return AccountType::all();
     }
 
-    protected function interactWithNode(Browser $section, BaseModel $node, bool $is_fresh_load=true) {
-        $this->assertNodeIsOfType($node, AccountType::class);
+    protected function interactWithObjectListItem(Browser $section, BaseModel $object, bool $is_fresh_load=true) {
+        $this->assertObjectIsOfType($object, AccountType::class);
 
-        $class_state = $node->disabled ? '.is-disabled' : '.is-active';
-        $selector_account_type_id = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID.$class_state, $node->id);
+        $class_state = $object->disabled ? '.is-disabled' : '.is-active';
+        $selector_account_type_id = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID.$class_state, $object->id);
         $section
             ->assertVisible($selector_account_type_id)
             ->click($selector_account_type_id.' span');
@@ -233,18 +233,18 @@ class SettingsAccountTypesTest extends SettingsBase {
         $section->pause($this->toggleButtonTransitionTimeInMilliseconds());
     }
 
-    protected function interactWithFormElement(Browser $section, string $selector, BaseModel $node=null) {
-        if (is_null($node)) {
-            $node = new AccountType();
+    protected function interactWithFormElement(Browser $section, string $selector, BaseModel $object=null) {
+        if (is_null($object)) {
+            $object = new AccountType();
         }
-        $this->assertNodeIsOfType($node, AccountType::class);
+        $this->assertObjectIsOfType($object, AccountType::class);
 
         switch($selector) {
             case self::$SELECTOR_SETTINGS_FORM_INPUT_NAME:
-                $account_types = $this->getAllNodes();
+                $account_types = $this->getAllObjects();
                 do {
                     $name = $this->faker->word();
-                } while ($node->name == $name || $account_types->contains('name', $name));
+                } while ($object->name == $name || $account_types->contains('name', $name));
                 $section
                     ->clear($selector)
                     ->type($selector, $this->faker->word());
@@ -252,13 +252,13 @@ class SettingsAccountTypesTest extends SettingsBase {
             case self::$SELECTOR_SETTINGS_FORM_SELECT_TYPE:
                 do {
                     $type = collect(AccountType::getEnumValues())->random();
-                } while ($node->type == $type);
+                } while ($object->type == $type);
                 $section->select($selector, $type);
                 break;
             case self::$SELECTOR_SETTINGS_FORM_INPUT_LAST_DIGITS:
                 do {
                     $last_digits = $this->faker->numerify("####");
-                } while ($node->last_digits == $last_digits);
+                } while ($object->last_digits == $last_digits);
                 $section
                     ->clear($selector)
                     ->type($selector, $last_digits);
@@ -266,7 +266,7 @@ class SettingsAccountTypesTest extends SettingsBase {
             case self::$SELECTOR_SETTINGS_FORM_SELECT_ACCOUNT:
                 do {
                     $account = Account::get()->random();
-                } while ($node->account_id == $account->id);
+                } while ($object->account_id == $account->id);
                 $section->select($selector, $account->id);
                 break;
             case self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE:
