@@ -17,11 +17,11 @@ class AccountTotalSanityCheckTest extends TestCase {
     use TruncateDatabaseTables;
     use WithFaker;
 
-    private $_command = 'sanity-check:account-total';
+    private string $_command = 'sanity-check:account-total';
     private $_screen_only_notification_options = ['--notify-screen'=>true, '--dont-notify-discord'=>true];
 
-    private static $TEMPLATE_CHECKING_ACCOUNT_OK = "Checking account ID:%d\n\tOK";
-    private static $TEMPLATE_ACCOUNT_NOT_FOUND = "Account %d not found";
+    private static string $TEMPLATE_CHECKING_ACCOUNT_OK = "Checking account ID:%d\n\tOK";
+    private static string $TEMPLATE_ACCOUNT_NOT_FOUND = "Account %d not found";
 
     public function setUp(): void {
         parent::setUp();
@@ -64,7 +64,7 @@ class AccountTotalSanityCheckTest extends TestCase {
     }
 
     public function testSanityCheckIndividualAccountIdOutputtingToScreenAndWithoutNotifyingDiscord() {
-        $this->seedDatabaseAndMaybeTruncateTable('entries');
+        $this->seedDatabaseAndMaybeTruncateTable(Entry::getTableName());
 
         $accounts = Account::whereNull(Account::DELETED_AT); // only active accounts
         $accounts->update(['total'=>0]);
@@ -84,7 +84,7 @@ class AccountTotalSanityCheckTest extends TestCase {
     }
 
     public function testSanityCheckIndividualAccountIdNotFoundOutputtingToScreenAndWithoutNotifyingDiscord() {
-        $this->seedDatabaseAndMaybeTruncateTable('accounts');
+        $this->seedDatabaseAndMaybeTruncateTable(Account::getTableName());
 
         $account_id = $this->faker->randomDigitNotZero();
         Artisan::call($this->_command, array_merge(['accountId'=>$account_id], $this->_screen_only_notification_options));
@@ -102,7 +102,7 @@ class AccountTotalSanityCheckTest extends TestCase {
     }
 
     public function testSanityCheckAccountsNotFoundOutputtingToScreenAndWithoutNotifyingDiscord() {
-        $this->seedDatabaseAndMaybeTruncateTable('accounts');
+        $this->seedDatabaseAndMaybeTruncateTable(Account::getTableName());
 
         Artisan::call($this->_command, $this->_screen_only_notification_options);
         $result_as_text = trim(Artisan::output());

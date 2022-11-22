@@ -61,7 +61,7 @@ class AccountTotalSanityCheck extends Command {
             $account_id = $this->argument(self::ARG_ACCOUNT_ID);
             if (!is_null($account_id)) {
                 try {
-                    $account = Account::findOfFail($account_id);
+                    $account = Account::withTrashed()->findOrFail($account_id);
                     $sanity_check_object = $this->retrieveExpectedAccountTotalData($account);
                     $this->notifySanityCheck($sanity_check_object);
                 } catch (\Exception $e) {
