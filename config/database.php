@@ -1,5 +1,6 @@
 <?php
 
+use App\Helpers\TimestampType;
 use Illuminate\Support\Str;
 
 return [
@@ -104,6 +105,22 @@ return [
     */
 
     'migrations' => 'migrations',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Modify table columns with timestamps
+    |--------------------------------------------------------------------------
+    |
+    | Allows renaming timestamp columns, but also removes timestamp precision.
+    | See https://laravel.com/docs/8.x/migrations#prerequisites for details
+    |
+    */
+
+    'dbal' => [
+        'types' => [
+            'timestamp' => TimestampType::class,
+        ],
+    ],
 
     /*
     |--------------------------------------------------------------------------
