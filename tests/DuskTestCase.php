@@ -7,6 +7,8 @@ use App\Traits\EntryFilterKeys;
 use App\Traits\Tests\LogTestName;
 use App\Traits\Tests\OutputTestInfo;
 use App\Traits\Tests\StorageTestFiles;
+use Illuminate\Support\Facades\Storage;
+use Laravel\Dusk\Browser;
 use Laravel\Dusk\TestCase as BaseTestCase;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
@@ -71,6 +73,10 @@ abstract class DuskTestCase extends BaseTestCase {
     protected function setUp(): void {
         $this->outputTestName();
         parent::setUp();
+
+        Browser::$storeScreenshotsAt = Storage::disk('tests')->path('dusk/screenshots');
+        Browser::$storeConsoleLogAt = Storage::disk('tests')->path('dusk/console');
+        Browser::$storeSourceAt =  Storage::disk('tests')->path('dusk/source');
     }
 
     protected function tearDown(): void {
