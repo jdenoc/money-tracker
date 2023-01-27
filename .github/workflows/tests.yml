@@ -71,9 +71,8 @@ jobs:
           echo ".docker/logs/database/*.log" >> $GITHUB_OUTPUT
           echo "database/snapshots/*.sql" >> $GITHUB_OUTPUT
           echo "storage/tests/downloads/*.csv" >> $GITHUB_OUTPUT
-          echo "tests/Browser/console/*.log" >> $GITHUB_OUTPUT
-          echo "tests/Browser/screenshots/" >> $GITHUB_OUTPUT
-          echo "!tests/Browser/screenshots/.gitignore" >> $GITHUB_OUTPUT
+          echo "storage/tests/dusk/console/*.log" >> $GITHUB_OUTPUT
+          echo "storage/tests/dusk/screenshots/*.png" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Generate image tag [composer]
