@@ -16,6 +16,10 @@ class Account extends BaseModel {
     const UPDATED_AT = 'modified_stamp';
 
     protected $table = 'accounts';
+    protected $attributes = [
+        'currency'=>'USD',
+        'total'=>0,
+    ];
     protected $fillable = [
         'name', 'institution_id' ,'total'
     ];
