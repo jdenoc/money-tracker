@@ -322,22 +322,26 @@ class StatsSummaryTest extends StatsBase {
      * @return array
      */
     private function getTop10IncomeExpenses($entries): array {
-        $top_income_entries = $entries->where('expense', 0)->sortByDesc($this->sortCallable())->values();
-        $top_expense_entries = $entries->where('expense', 1)->sortByDesc($this->sortCallable())->values();
+        $limit = 10;
+        $top_income_entries = $entries->where('expense', 0)->sortByDesc($this->sortCallable())->take($limit)->values();
+        $top_expense_entries = $entries->where('expense', 1)->sortByDesc($this->sortCallable())->take($limit)->values();
 
         $top_entries = [];
-        for ($i=0; $i<10; $i++) {
+        $empty_top_entry = ['memo'=>'', 'entry_value'=>'', 'entry_date'=>''];
+        for ($i=0; $i<$limit; $i++) {
             if (empty($top_income_entries->get($i)) && empty($top_expense_entries->get($i))) {
                 break;
             }
 
+            $top_income = !empty($top_income_entries->get($i)) ? $top_income_entries->get($i)->toArray() : $empty_top_entry;
+            $top_expense = !empty($top_expense_entries->get($i)) ? $top_expense_entries->get($i)->toArray() : $empty_top_entry;
             $top_entries[$i+1] = [
-                'income_memo'=>!empty($top_income_entries->get($i)) ? $top_income_entries->get($i)['memo'] : '',
-                'income_value'=>!empty($top_income_entries->get($i)) ? $top_income_entries->get($i)['entry_value'] : '',
-                'income_date'=>!empty($top_income_entries->get($i)) ? $top_income_entries->get($i)['entry_date'] : '',
-                'expense_memo'=>!empty($top_expense_entries->get($i)) ? $top_expense_entries->get($i)['memo'] : '',
-                'expense_value'=>!empty($top_expense_entries->get($i)) ? $top_expense_entries->get($i)['entry_value'] : '',
-                'expense_date'=>!empty($top_expense_entries->get($i)) ? $top_expense_entries->get($i)['entry_date'] : ''
+                'income_memo'=>$top_income['memo'],
+                'income_value'=>$top_income['entry_value'],
+                'income_date'=>$top_income['entry_date'],
+                'expense_memo'=>$top_expense['memo'],
+                'expense_value'=>$top_expense['entry_value'],
+                'expense_date'=>$top_expense['entry_date'],
             ];
         }
         return $top_entries;
@@ -370,12 +374,10 @@ class StatsSummaryTest extends StatsBase {
     /**
      * @link https://laracasts.com/discuss/channels/laravel/collections-passing-a-class-method-name-not-a-closure-to-the-map-method?page=1#reply=456138
      * @link https://stackoverflow.com/a/25451441/4152012
-     *
-     * @return string
      */
     private function sortCallable() {
         return static function($entry) {
-            return sprintf("%010s %s %d", $entry['entry_value'], $entry['entry_date'], $entry['id']);
+            return sprintf("%010.2f %s %05d", $entry['entry_value'], $entry['entry_date'], $entry['id']);
         };
     }
 
