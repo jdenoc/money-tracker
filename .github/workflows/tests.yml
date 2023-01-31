@@ -207,39 +207,39 @@ jobs:
 
       - uses: ./.github/actions/app-run
       - name: unit tests - DELETE API endpoints
-        run: .docker/cmd/artisan.sh test --testsuite api-delete
+        run: .docker/cmd/artisan.sh test -v --testsuite api-delete
 
       - uses: ./.github/actions/app-run
       - name: unit tests - GET API endpoints
-        run: .docker/cmd/artisan.sh test --testsuite api-get
+        run: .docker/cmd/artisan.sh test -v --testsuite api-get
 
       - uses: ./.github/actions/app-run
       - name: unit tests - PATCH API endpoints
-        run: .docker/cmd/artisan.sh test --testsuite api-patch
+        run: .docker/cmd/artisan.sh test -v --testsuite api-patch
 
       - uses: ./.github/actions/app-run
       - name: unit tests - POST API endpoints
-        run: .docker/cmd/artisan.sh test --testsuite api-post
+        run: .docker/cmd/artisan.sh test -v --testsuite api-post
 
       - uses: ./.github/actions/app-run
       - name: unit tests - PUT API endpoints
-        run: .docker/cmd/artisan.sh test --testsuite api-put
+        run: .docker/cmd/artisan.sh test -v --testsuite api-put
 
       - uses: ./.github/actions/app-run
         with:
           is-cacheless: true  # artisan app:version testing doesn't work well when configs have been cached
       - name: unit tests - console
-        run: .docker/cmd/artisan.sh test --testsuite console
+        run: .docker/cmd/artisan.sh test -v --testsuite console
 
       - uses: ./.github/actions/app-run
         with:
           is-cacheless: true  # testing the /export endpoint doesn't work well when configs have been cached
       - name: unit tests - web
-        run: .docker/cmd/artisan.sh test --testsuite web
+        run: .docker/cmd/artisan.sh test -v --testsuite web
 
       - uses: ./.github/actions/app-run
       - name: unit tests - unit (generic)
-        run: .docker/cmd/artisan.sh test --testsuite unit
+        run: .docker/cmd/artisan.sh test -v --testsuite unit
 
       - name: Failure docker inspection
         uses: ./.github/actions/failure-docker-inspect
