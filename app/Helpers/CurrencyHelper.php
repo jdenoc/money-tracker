@@ -8,10 +8,7 @@ use Illuminate\Support\Facades\Storage;
 
 class CurrencyHelper {
 
-    /**
-     * @var string
-     */
-    private static $CURRENCY_FILE_PATH = "json/currency.json";
+    private static string $CURRENCY_FILE_PATH = "json/currency.json";
 
     /**
      * @var Collection|null
@@ -20,7 +17,6 @@ class CurrencyHelper {
 
     /**
      * @return Collection
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public static function fetchCurrencies() {
         $currency_json = Storage::get(self::$CURRENCY_FILE_PATH);
@@ -59,9 +55,8 @@ class CurrencyHelper {
 
     /**
      * This returns a Currency object containing default values outlined in resources/js/currency.js
-     * @return Currency
      */
-    public static function getCurrencyDefaults() {
+    public static function getCurrencyDefaults(): Currency {
         return new Currency([
             "label"=>"dollarUs",
             "code"=>"USD",

@@ -6,6 +6,7 @@ use App\Models\Account;
 use App\Models\Institution;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Validation\Rules\In;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 
@@ -24,12 +25,12 @@ class GetInstitutionTest extends TestCase {
         // THEN
         $response->assertStatus(HttpStatus::HTTP_NOT_FOUND);
         $response_body_as_array = $response->json();
-        $this->assertTrue(is_array($response_body_as_array));
         $this->assertEmpty($response_body_as_array);
     }
 
     public function testGetInstitutionWithoutAccounts() {
         // GIVEN
+        /** @var Institution $generated_institution */
         $generated_institution = Institution::factory()->create();
 
         // WHEN
@@ -38,21 +39,20 @@ class GetInstitutionTest extends TestCase {
         // THEN
         $response->assertStatus(HttpStatus::HTTP_OK);
         $response_body_as_array = $response->json();
-        $this->assertTrue(is_array($response_body_as_array));
         $this->assertNotEmpty($response_body_as_array);
 
-        $this->assertInstitutionNodesExist($response_body_as_array);
-        $this->assertInstitutionNodesValuesExcludingRelationshipsOK($generated_institution, $response_body_as_array);
+        $this->assertInstitutionNode($response_body_as_array, $generated_institution);
         $this->assertEmpty($response_body_as_array['accounts']);
     }
 
     public function testGetInstitution() {
         // GIVEN
         $generated_account_count = $this->faker->randomDigitNotZero();
+        /** @var Institution $generated_institution */
         $generated_institution = Institution::factory()->create();
-        $generated_accounts = Account::factory()->count($generated_account_count)->create(['institution_id'=>$generated_institution->id]);
+        $generated_accounts = Account::factory()->count($generated_account_count)->for($generated_institution)->create();
         // These nodes are not in the response output. Let's hide them from the object collection.
-        $generated_accounts->makeHidden(['institution_id', 'create_stamp', 'modified_stamp', 'disabled_stamp']);
+        $generated_accounts->makeHidden(['institution_id', Account::CREATED_AT, Account::UPDATED_AT, 'disabled_stamp']);
 
         // WHEN
         $response = $this->get(sprintf($this->_base_uri, $generated_institution->id));
@@ -60,11 +60,9 @@ class GetInstitutionTest extends TestCase {
         // THEN
         $response->assertStatus(HttpStatus::HTTP_OK);
         $response_body_as_array = $response->json();
-        $this->assertTrue(is_array($response_body_as_array));
         $this->assertNotEmpty($response_body_as_array);
 
-        $this->assertInstitutionNodesExist($response_body_as_array);
-        $this->assertInstitutionNodesValuesExcludingRelationshipsOK($generated_institution, $response_body_as_array);
+        $this->assertInstitutionNode($response_body_as_array, $generated_institution);
         $this->assertNotEmpty($response_body_as_array['accounts']);
         $this->assertCount($generated_account_count, $response_body_as_array['accounts']);
         foreach ($response_body_as_array['accounts'] as $institution_account_in_response) {
@@ -72,41 +70,34 @@ class GetInstitutionTest extends TestCase {
         }
     }
 
-    public function assertInstitutionNodesExist($institute_in_response) {
-        $this->assertArrayHasKey('id', $institute_in_response);
-        unset($institute_in_response['id']);
-        $this->assertArrayHasKey('name', $institute_in_response);
-        unset($institute_in_response['name']);
-        $this->assertArrayHasKey('active', $institute_in_response);
-        unset($institute_in_response['active']);
-        $this->assertArrayHasKey('create_stamp', $institute_in_response);
-        unset($institute_in_response['create_stamp']);
-        $this->assertArrayHasKey('modified_stamp', $institute_in_response);
-        unset($institute_in_response['modified_stamp']);
-        $this->assertArrayHasKey('accounts', $institute_in_response);
-        unset($institute_in_response['accounts']);
-        $this->assertEmpty($institute_in_response);
-    }
+    public function assertInstitutionNode(array $institute_in_response, Institution $generated_institution) {
+        $expeceted_elements = ['id', 'name', 'active', Institution::CREATED_AT, Institution::UPDATED_AT, 'accounts'];
+        $this->assertEqualsCanonicalizing($expeceted_elements, array_keys($institute_in_response));
 
-    public function assertInstitutionNodesValuesExcludingRelationshipsOK($generated_institution, $response_body_as_array) {
-        $failure_message = 'generated institution:'.json_encode($generated_institution)."\nresponse institution:".json_encode($response_body_as_array);
-        $this->assertEquals($generated_institution->id, $response_body_as_array['id'], $failure_message);
-        $this->assertEquals($generated_institution->name, $response_body_as_array['name'], $failure_message);
-        $this->assertEquals($generated_institution->active, $response_body_as_array['active'], $failure_message);
-        $this->assertDateFormat($response_body_as_array['create_stamp'], Carbon::ATOM, $failure_message."\nfor these value to equal, PHP & MySQL timestamps must be the same");
-        $this->assertDateFormat($response_body_as_array['modified_stamp'], Carbon::ATOM, $failure_message."\nfor these value to equal, PHP & MySQL timestamps must be the same");
-        $this->assertTrue(is_array($response_body_as_array['accounts']), $failure_message);
+        $failure_message = 'generated institution:'.json_encode($generated_institution)."\nresponse institution:".json_encode($institute_in_response);
+        foreach ($expeceted_elements as $element) {
+            switch ($element) {
+                case Institution::CREATED_AT:
+                case Institution::UPDATED_AT:
+                    $this->assertDateFormat($institute_in_response[$element], Carbon::ATOM, $failure_message."\nfor these value to equal, PHP & MySQL timestamps must be the same");
+                    break;
+                case 'accounts':
+                    $this->assertIsArray($institute_in_response[$element], $failure_message);
+                    break;
+                default:
+                    $this->assertEquals($generated_institution->$element, $institute_in_response[$element]);
+                    break;
+            }
+        }
     }
 
     public function assertInstitutionAccountNodesOK($institution_account_in_response, $generated_accounts) {
-        $generated_accounts_as_array = $generated_accounts->toArray();
-        $error_msg = "account in response:".json_encode($institution_account_in_response)."\ngenerated accounts:".json_encode($generated_accounts_as_array);
+        $expected_elements = ['id', 'name', 'disabled', 'total', 'currency'];
+        $this->assertEqualsCanonicalizing($expected_elements, array_keys($institution_account_in_response));
 
-        $this->assertArrayHasKey('id', $institution_account_in_response, $error_msg);
-        $this->assertArrayHasKey('name', $institution_account_in_response, $error_msg);
-        $this->assertArrayHasKey('disabled', $institution_account_in_response, $error_msg);
-        $this->assertArrayHasKey('total', $institution_account_in_response, $error_msg);
-        $this->assertTrue(in_array($institution_account_in_response, $generated_accounts_as_array), $error_msg);
+        $generated_account = $generated_accounts->where('id', $institution_account_in_response['id'])->first();
+        $this->assertNotEmpty($generated_account);
+        $this->assertEquals($generated_account->toArray(), $institution_account_in_response);
     }
 
 }

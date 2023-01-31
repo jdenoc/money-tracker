@@ -91,6 +91,19 @@ class PostAccountTest extends TestCase {
         $this->assertFailedPostResponse($response, HttpStatus::HTTP_BAD_REQUEST, self::$ERROR_MSG_INVALID_INSTITUTION);
     }
 
+    public function testCreateAccountWithInvalidCurrencyCode() {
+        // GIVEN
+        $account_data = $this->generateDummyAccountData();
+        $account_data = $this->setValidInstitutionId($account_data);
+        $account_data['currency'] = 'XXX'; // XXX is an invalid currency code and not listed in the ISO 4217 standard
+
+        // WHEN
+        $response = $this->json('POST', $this->_base_uri, $account_data);
+
+        // THEN
+        $this->assertFailedPostResponse($response, HttpStatus::HTTP_BAD_REQUEST, self::$ERROR_MSG_INVALID_CURRENCY);
+    }
+
     public function testCreateAccount() {
         // GIVEN
         $account_data = $this->generateDummyAccountData();

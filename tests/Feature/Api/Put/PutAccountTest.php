@@ -21,8 +21,11 @@ class PutAccountTest extends TestCase {
     public function setUp(): void {
         parent::setUp();
 
-        $institution = Institution::factory()->create(['active'=>true]);
-        Account::factory()->count(10)->create(['disabled'=>false, 'institution_id'=>$institution->id]);
+        Account::factory()
+            ->count(10)
+            ->state(['disabled'=>false])
+            ->for(Institution::factory()->state(['active'=>true]))
+            ->create();
     }
 
     public function testUpdateAccountWithoutData() {
@@ -52,6 +55,19 @@ class PutAccountTest extends TestCase {
 
         // THEN
         $this->assertFailedPostResponse($response, HttpStatus::HTTP_BAD_REQUEST, self::$ERROR_MSG_INVALID_INSTITUTION);
+    }
+
+    public function testUpdateAccountWithInvalidCurrencyCode() {
+        // GIVEN
+        $account = $this->getRandomActiveExistingAccount();
+        $account_data = $account->toArray();
+        $account_data['currency'] = 'XXX'; // XXX is an invalid currency code and not listed in the ISO 4217 standard
+
+        // WHEN
+        $response = $this->json(self::METHOD, sprintf($this->_base_uri, $account->id), $account_data);
+
+        // THEN
+        $this->assertFailedPostResponse($response, HttpStatus::HTTP_BAD_REQUEST, self::$ERROR_MSG_INVALID_CURRENCY);
     }
 
     public function testUpdateAccountThatDoesNotExist() {

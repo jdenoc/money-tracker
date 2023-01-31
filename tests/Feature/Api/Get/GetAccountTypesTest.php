@@ -20,19 +20,14 @@ class GetAccountTypesTest extends TestCase {
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_NOT_FOUND);
-        $this->assertTrue(is_array($response->json()));
+        $this->assertIsArray($response->json());
         $this->assertEmpty($response->json());
     }
 
     public function testGetAccountTypes() {
         // GIVEN
         $account_type_count = $this->faker->randomDigitNotZero();
-        $generated_account_types = [];
-        for ($i=0; $i<$account_type_count; $i++) {
-            $generated_account_type = AccountType::factory()->create(['disabled'=>$this->faker->boolean()]);
-            $generated_account_types[$generated_account_type->id] = $generated_account_type;
-            unset($generated_account_type);
-        }
+        $generated_account_types = AccountType::factory()->count($account_type_count)->create(['disabled'=>function() { return $this->faker->boolean(); }]);
 
         // WHEN
         $response = $this->get($this->_uri);
@@ -40,24 +35,17 @@ class GetAccountTypesTest extends TestCase {
         // THEN
         $response->assertStatus(HttpStatus::HTTP_OK);
         $response_as_array = $response->json();
-        $this->assertTrue(is_array($response_as_array));
         $this->assertNotEmpty($response_as_array);
+
         $this->assertArrayHasKey('count', $response_as_array);
         $this->assertEquals($account_type_count, $response_as_array['count']);
         unset($response_as_array['count']);
-        foreach ($response_as_array as $account_type_in_response) {
-            $this->assertArrayHasKey('id', $account_type_in_response);
-            $this->assertArrayHasKey('type', $account_type_in_response);
-            $this->assertArrayHasKey('last_digits', $account_type_in_response);
-            $this->assertArrayHasKey('name', $account_type_in_response);
-            $this->assertArrayHasKey('account_id', $account_type_in_response);
-            $this->assertArrayHasKey('disabled', $account_type_in_response);
-            $this->assertArrayHasKey('create_stamp', $account_type_in_response);
-            $this->assertArrayHasKey('modified_stamp', $account_type_in_response);
-            $this->assertArrayHasKey('disabled_stamp', $account_type_in_response);
 
-            $this->assertNotEmpty($generated_account_types[$account_type_in_response['id']]);
-            $generated_account_type = $generated_account_types[$account_type_in_response['id']];
+        $expected_elements = ['id', 'type', 'last_digits', 'name', 'account_id', 'disabled', AccountType::CREATED_AT, AccountType::UPDATED_AT, 'disabled_stamp'];
+        foreach ($response_as_array as $account_type_in_response) {
+            $this->assertEqualsCanonicalizing($expected_elements, array_keys($account_type_in_response));
+            $generated_account_type = $generated_account_types->where('id', $account_type_in_response['id'])->first();
+            $this->assertNotEmpty($generated_account_type);
             $this->assertEquals($generated_account_type->toArray(), $account_type_in_response);
         }
     }

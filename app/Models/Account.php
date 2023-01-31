@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Carbon\Carbon;
 use Mostafaznv\LaraCache\CacheEntity;
@@ -23,7 +24,6 @@ class Account extends BaseModel {
     ];
     protected $casts = [
         'disabled'=>'boolean',
-        'total'=>'float'
     ];
     protected $dates = [
         'disabled_stamp'
@@ -37,11 +37,20 @@ class Account extends BaseModel {
     ];
 
     public function institution() {
-        $this->belongsTo('App\Modals\Institution', 'institution_id');
+        return $this->belongsTo(Institution::class, 'institution_id');
     }
 
     public function account_types() {
         return $this->hasMany('App\Models\AccountType', 'account_id');
+    }
+
+    public function getTotalAttribute($value) {
+        return Money::ofMinor($value, $this->currency)->getAmount()->toFloat();
+    }
+
+    public function setTotalAttribute($value) {
+        $entry_value = Money::of($value, $this->currency);
+        $this->attributes['total'] = $entry_value->getMinorAmount()->toInt();
     }
 
     public function save(array $options = []) {
@@ -51,9 +60,14 @@ class Account extends BaseModel {
         return parent::save($options);
     }
 
-    public function update_total($value) {
-        $this->total += $value;
+    public function addToTotal(Money $value) {
+        $account_total = Money::ofMinor($this->attributes['total'], $this->currency);
+        $this->total = $account_total->plus($value)->getAmount()->toFloat();
         $this->save();
+    }
+
+    public function subtractFromTotal(Money $value) {
+        $this->addToTotal($value->multipliedBy(-1));
     }
 
     public static function find_account_with_types($account_id) {

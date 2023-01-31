@@ -6,6 +6,7 @@ use App\Helpers\CurrencyHelper;
 use App\Models\Account;
 use App\Models\AccountType;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Collection;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
@@ -17,10 +18,11 @@ class GetAccountTest extends TestCase {
     public function testGetAccountData() {
         // GIVEN
         $account_type_count = $this->faker->randomDigitNotZero();
+        /** @var Account $generated_account */
         $generated_account = Account::factory()->create();
-        $generated_account_types = AccountType::factory()->count($account_type_count)->create(['account_id'=>$generated_account->id]);
+        $generated_account_types = AccountType::factory()->count($account_type_count)->for($generated_account)->create();
         // These nodes are not in the response output. Let's hide them from the object collection
-        $generated_account_types->makeHidden(['account_id', 'last_updated']);
+        $generated_account_types->makeHidden(['account_id', 'last_updated', AccountType::CREATED_AT, AccountType::UPDATED_AT, 'disabled_stamp']);
 
         // WHEN
         $response = $this->get(sprintf($this->_base_uri, $generated_account->id));
@@ -35,13 +37,14 @@ class GetAccountTest extends TestCase {
     public function testGetAccountDataWhenAnAccountTypesRecordIsDisabled() {
         // GIVEN
         $account_type_count = $this->faker->randomDigitNotZero();
+        /** @var Account $generated_account */
         $generated_account = Account::factory()->create();
-        $generated_account_types = AccountType::factory()->count($account_type_count)->create(['account_id'=>$generated_account->id]);
-        $generated_disabled_account_type = AccountType::factory()->create(['account_id'=>$generated_account->id, 'disabled'=>true]);
+        $generated_account_types = AccountType::factory()->count($account_type_count)->for($generated_account)->create();
+        $generated_disabled_account_type = AccountType::factory()->for($generated_account)->create(['disabled'=>true]);
         $account_type_count++;
         $generated_account_types->push($generated_disabled_account_type);
         // These nodes are not in the response output. Let's hide them from the object collection
-        $generated_account_types->makeHidden(['account_id', 'last_updated']);
+        $generated_account_types->makeHidden(['account_id', 'last_updated', AccountType::CREATED_AT, AccountType::UPDATED_AT, 'disabled_stamp']);
 
         // WHEN
         $response = $this->get(sprintf($this->_base_uri, $generated_account->id));
@@ -55,6 +58,7 @@ class GetAccountTest extends TestCase {
 
     public function testGetAccountDataWhenNoAccountTypeRecordsExist() {
         // GIVEN
+        /** @var Account $generated_account */
         $generated_account = Account::factory()->create();
 
         // WHEN
@@ -68,8 +72,9 @@ class GetAccountTest extends TestCase {
     public function testGetAccountDataWhenOnlyDisabledAccountTypeRecordsExist() {
         // GIVEN
         $account_type_count = $this->faker->randomDigitNotZero();
+        /** @var Account $generated_account */
         $generated_account = Account::factory()->create();
-        AccountType::factory()->count($account_type_count)->create(['account_id'=>$generated_account->id, 'disabled'=>true]);
+        AccountType::factory()->count($account_type_count)->for($generated_account)->create(['disabled'=>true]);
 
         // WHEN
         $response = $this->get(sprintf($this->_base_uri, $generated_account->id));
@@ -98,84 +103,52 @@ class GetAccountTest extends TestCase {
      * @param int $account_type_count
      */
     private function assertAccountDetailsOK(array $response_as_array, $generated_account, int $account_type_count) {
-        $element = 'id';
-        $this->assertArrayHasKey($element, $response_as_array);
-        $this->assertEquals($response_as_array[$element], $generated_account->id);
-        unset($response_as_array[$element]);
-
-        $element = 'name';
-        $this->assertArrayHasKey($element, $response_as_array);
-        $this->assertEquals($response_as_array[$element], $generated_account->name);
-        unset($response_as_array[$element]);
-
-        $element = 'institution_id';
-        $this->assertArrayHasKey($element, $response_as_array);
-        $this->assertEquals($response_as_array[$element], $generated_account->institution_id);
-        unset($response_as_array[$element]);
-
-        $element = 'disabled';
-        $this->assertArrayHasKey($element, $response_as_array);
-        $this->assertTrue(is_bool($response_as_array[$element]));
-        $this->assertEquals($response_as_array[$element], $generated_account->disabled);
-        // Can't unset the 'disabled' element until the end
-
-        $element = 'total';
-        $this->assertArrayHasKey($element, $response_as_array);
-        $this->assertEquals($response_as_array[$element], $generated_account->total);
-        unset($response_as_array[$element]);
-
-        $element = 'currency';
-        $this->assertArrayHasKey($element, $response_as_array);
-        $this->assertEquals(3, strlen($response_as_array[$element]));
-        $this->assertTrue(in_array($response_as_array[$element], CurrencyHelper::getCodesAsArray()));
-        $this->assertEquals($response_as_array[$element], $generated_account->currency);
-        unset($response_as_array[$element]);
-
-        $element = 'account_types';
-        $this->assertArrayHasKey($element, $response_as_array);
-        $this->assertTrue(is_array($response_as_array[$element]));
-        $this->assertCount($account_type_count, $response_as_array[$element]);
-        unset($response_as_array[$element]);
-
-        $element = 'create_stamp';
-        $this->assertArrayHasKey($element, $response_as_array);
-        $this->assertDateFormat($response_as_array[$element], DATE_ATOM, $response_as_array[$element]." not in correct format");
-        unset($response_as_array[$element]);
-
-        $element = 'modified_stamp';
-        $this->assertArrayHasKey($element, $response_as_array);
-        $this->assertDateFormat($response_as_array[$element], DATE_ATOM, $response_as_array[$element]." not in correct format");
-        unset($response_as_array[$element]);
-
-        $element = 'disabled_stamp';
-        $this->assertArrayHasKey($element, $response_as_array);
-        if ($response_as_array['disabled']) {
-            $this->assertDateFormat($response_as_array[$element], DATE_ATOM, $response_as_array[$element]." not in correct format");
-        } else {
-            $this->assertNull($response_as_array[$element]);
+        $expected_elements = ['id', 'name', 'institution_id', 'disabled', 'total', 'currency', 'account_types', Account::CREATED_AT, Account::UPDATED_AT, 'disabled_stamp'];
+        $this->assertEqualsCanonicalizing($expected_elements, array_keys($response_as_array));
+        foreach ($expected_elements as $expected_element) {
+            switch ($expected_element) {
+                case 'currency':
+                    $this->assertEquals(3, strlen($response_as_array[$expected_element]));
+                    $this->assertTrue(in_array($response_as_array[$expected_element], CurrencyHelper::getCodesAsArray()));
+                    $this->assertEquals($generated_account->$expected_element, $response_as_array[$expected_element]);
+                    break;
+                case 'account_types':
+                    $this->assertIsArray($response_as_array[$expected_element]);
+                    $this->assertCount($account_type_count, $response_as_array[$expected_element]);
+                    break;
+                case Account::CREATED_AT:
+                case Account::UPDATED_AT:
+                    $this->assertDateFormat($response_as_array[$expected_element], DATE_ATOM, $response_as_array[$expected_element]." not in correct format");
+                    break;
+                case 'disabled_stamp':
+                    if ($response_as_array['disabled']) {
+                        $this->assertDateFormat($response_as_array[$expected_element], DATE_ATOM, $response_as_array[$expected_element]." not in correct format");
+                    } else {
+                        $this->assertNull($response_as_array[$expected_element]);
+                    }
+                    break;
+                case 'disabled':
+                    $this->assertIsBool($response_as_array[$expected_element]);
+                    $this->assertEquals($generated_account->$expected_element, $response_as_array[$expected_element]);
+                    break;
+                default:
+                    $this->assertEquals($generated_account->$expected_element, $response_as_array[$expected_element]);
+                    break;
+            }
         }
-        unset($response_as_array['disabled'], $response_as_array[$element]);
-
-        $this->assertEmpty($response_as_array, "Unknown nodes found in JSON:".json_encode($response_as_array));
     }
 
     /**
      * @param array $account_types_in_response
-     * @param AccountType $generated_account_types
+     * @param Collection $generated_account_types
      */
     private function assertAccountTypesOK($account_types_in_response, $generated_account_types) {
-        $generated_account_types_as_array = $generated_account_types->toArray();
+        $expected_elements = ['id', 'type', 'name', 'last_digits', 'disabled'];
         foreach ($account_types_in_response as $account_type_in_response) {
-            $error_msg = "Factory generate account in JSON: ".json_encode($generated_account_types_as_array)."\nResponse Body component:".json_encode($account_type_in_response);
-            $this->assertArrayHasKey('id', $account_type_in_response, $error_msg);
-            $this->assertArrayHasKey('type', $account_type_in_response, $error_msg);
-            $this->assertArrayHasKey('name', $account_type_in_response, $error_msg);
-            $this->assertArrayHasKey('last_digits', $account_type_in_response, $error_msg);
-            $this->assertArrayHasKey('disabled', $account_type_in_response, $error_msg);
-            $this->assertArrayHasKey('create_stamp', $account_type_in_response, $error_msg);
-            $this->assertArrayHasKey('modified_stamp', $account_type_in_response, $error_msg);
-            $this->assertArrayHasKey('disabled_stamp', $account_type_in_response, $error_msg);
-            $this->assertTrue(in_array($account_type_in_response, $generated_account_types_as_array), $error_msg);
+            $this->assertEqualsCanonicalizing($expected_elements, array_keys($account_type_in_response));
+            $generated_account_type = $generated_account_types->where('id', $account_type_in_response['id'])->first();
+            $this->assertNotEmpty($generated_account_type);
+            $this->assertEquals($generated_account_type->toArray(), $account_type_in_response);
         }
     }
 
