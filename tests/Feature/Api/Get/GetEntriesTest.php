@@ -21,13 +21,13 @@ class GetEntriesTest extends ListEntriesBase {
         // THEN
         $response->assertStatus(HttpStatus::HTTP_NOT_FOUND);
         $response_body_as_array = $response->json();
-        $this->assertTrue(is_array($response_body_as_array));
+        $this->assertIsArray($response_body_as_array);
         $this->assertEmpty($response_body_as_array);
     }
 
     public function testGetEntries() {
         // GIVEN
-        $generated_account_type = AccountType::factory()->create(['account_id'=>$this->_generated_account->id]);
+        $generated_account_type = AccountType::factory()->for($this->_generated_account)->create();
 
         $generate_entry_count = $this->faker->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE);
         $generated_entries = $this->batch_generate_entries($generate_entry_count, $generated_account_type->id, [], true);
@@ -41,7 +41,7 @@ class GetEntriesTest extends ListEntriesBase {
         if ($generate_entry_count < 1) {
             // if we only generate entries that have been marked "disabled"
             // then we should create at least one entry is NOT marked "disabled
-            $generated_entry = $this->generate_entry_record($generated_account_type->id, false, []);
+            $generated_entry = $this->batch_generate_entries(1, $generated_account_type->id)->first();
             $generated_entries->push($generated_entry);
             $generate_entry_count = 1;
         }
@@ -52,7 +52,6 @@ class GetEntriesTest extends ListEntriesBase {
         // THEN
         $this->assertResponseStatus($response, HttpStatus::HTTP_OK);
         $response_body_as_array = $response->json();
-        $this->assertTrue(is_array($response_body_as_array));
         $this->assertArrayHasKey('count', $response_body_as_array);
         $this->assertEquals($generate_entry_count, $response_body_as_array['count']);
         unset($response_body_as_array['count']);
@@ -63,7 +62,7 @@ class GetEntriesTest extends ListEntriesBase {
     public function testGetEntriesByPage() {
         $page_limit = 3;
         // GIVEN
-        $generated_account_type = AccountType::factory()->create(['account_id' => $this->_generated_account->id]);
+        $generated_account_type = AccountType::factory()->for($this->_generated_account)->create();
         $generate_entry_count = $this->faker->numberBetween(($page_limit-1)*self::$MAX_ENTRIES_IN_RESPONSE+1, $page_limit*self::$MAX_ENTRIES_IN_RESPONSE);
         $generated_entries = $this->batch_generate_entries($generate_entry_count, $generated_account_type->id);
 
@@ -94,33 +93,34 @@ class GetEntriesTest extends ListEntriesBase {
     }
 
     public function providerLargeDataSets(): array {
-        return [
-            '200 entry records'=>[200],
-            '500 entry records'=>[500],
-            '1000 entry records'=>[1000],
-            '2000 entry records'=>[2000],
-            '5000 entry records'=>[5000],
-            '10000 entry records'=>[10000],
-            '15000 entry records'=>[15000],
-            '20000 entry records'=>[20000],
-            '25000 entry records'=>[25000],
-        ];
+        $counts = [200, 500, 1000, 2000, 5000, 10000, 20000, 25000];
+        $data_sets = [];
+        foreach ($counts as $c) {
+            $data_sets[$c.' entry records'] = [$c];
+        }
+        return $data_sets;
     }
 
     /**
      * @dataProvider providerLargeDataSets
-     * @param int $entry_count
      */
     public function testLargeDataSets(int $entry_count) {
         // GIVEN
         $table = with(new Entry())->getTable();
         /** @var AccountType $generated_account_type */
-        $generated_account_type = AccountType::factory()->create(['account_id'=>$this->_generated_account->id]);
-        /** @var Entry $generated_entries */
-        $generated_entries = Entry::factory()->count(self::$MAX_ENTRIES_IN_RESPONSE)->make(['account_type_id'=>$generated_account_type->id]);
+        $generated_account_type = AccountType::factory()->for($this->_generated_account)->create();
+        $generated_entries = Entry::factory()
+            ->count(self::$MAX_ENTRIES_IN_RESPONSE)
+            ->for($generated_account_type)
+            ->state(['disabled'=>false])
+            ->make()
+            ->map(function(Entry $entry) {
+                $entry->makeHidden('account_type', 'accountType');
+                return $entry;
+            })->toArray();
         // generating entries in batches and using database insert methods because it's faster
         for ($i=0; $i<($entry_count/self::$MAX_ENTRIES_IN_RESPONSE); $i++) {
-            DB::table($table)->insert($generated_entries->toArray());
+            DB::table($table)->insert($generated_entries);
         }
 
         // WHEN

@@ -25,8 +25,8 @@ class PutEntryTest extends TestCase {
         parent::setUp();
         // GIVEN - for all tests
         $this->_generated_account = Account::factory()->create();
-        $this->_generated_account_type = AccountType::factory()->create(['account_id'=>$this->_generated_account->id]);
-        $this->_generated_entry = Entry::factory()->create(['account_type_id'=>$this->_generated_account_type->id]);
+        $this->_generated_account_type = AccountType::factory()->for($this->_generated_account)->create();
+        $this->_generated_entry = Entry::factory()->for($this->_generated_account_type)->create();
     }
 
     public function testUpdateEntryWithoutProvidingData() {
@@ -46,12 +46,10 @@ class PutEntryTest extends TestCase {
     public function testUpdateEntryButNewAccountTypeDoesNotExist() {
         // GIVEN - see setUp()
 
-        $entry_data = Entry::factory()->make();
+        $entry_data = Entry::factory()->for($this->_generated_account_type)->make();
         $entry_data = $entry_data->toArray();
         // make sure account_type_id value that does not exist
-        while ($entry_data['account_type_id'] == $this->_generated_account_type->id) {
-            $entry_data['account_type_id'] = $this->faker->randomDigitNotZero();
-        }
+        $entry_data['account_type_id'] = $this->faker->randomDigitNotZero();
 
         // WHEN
         $response = $this->json('PUT', $this->_base_uri.$this->_generated_entry->id, $entry_data);
@@ -70,7 +68,7 @@ class PutEntryTest extends TestCase {
             // with the pre-generated entry
             $entry_id = $this->faker->randomNumber();
         } while ($entry_id == $this->_generated_entry->id);
-        $entry_data = Entry::factory()->make(['account_type_id'=>$this->_generated_account_type->id]);
+        $entry_data = Entry::factory()->for($this->_generated_account_type)->make();
         $entry_data = $entry_data->toArray();
 
         // WHEN
@@ -85,7 +83,7 @@ class PutEntryTest extends TestCase {
 
     public function testUpdateEntryAndConfirmAccountTotalUpdated() {
         // GIVEN - see setUp()
-        $entry_data = Entry::factory()->make();
+        $entry_data = Entry::factory()->for($this->_generated_account_type)->make();
         $entry_data = [
             'entry_value'=>$entry_data->entry_value
         ];
@@ -127,14 +125,14 @@ class PutEntryTest extends TestCase {
         $this->assertEquals(
             $original_total-$original_entry_value+$new_entry_value,
             $updated_total,
-            "original total:".$original_total."\nOriginal entry value:".$original_entry_value."\nNew entry value:".$new_entry_value."\nNew total:".$updated_total
+            "total | original:$original_total | update:$updated_total\nentry value | original:$original_entry_value | updated:$new_entry_value"
         );
     }
 
     public function testUpdateEntryAndChangeAccountTypeCausingAccountTotalsToUpdate() {
         // GIVEN - see setUp()
         $generated_account2 = Account::factory()->create();
-        $generated_account_type2 = AccountType::factory()->create(['account_id'=>$generated_account2->id]);
+        $generated_account_type2 = AccountType::factory()->for($generated_account2)->create();
         $entry_data = $this->_generated_entry->toArray();
         $entry_data['account_type_id'] = $generated_account_type2->id;
 

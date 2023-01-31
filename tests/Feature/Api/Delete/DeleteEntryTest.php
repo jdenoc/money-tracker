@@ -17,9 +17,12 @@ class DeleteEntryTest extends TestCase {
 
     public function testMarkingEntryDeleted() {
         // GIVEN
-        $generated_account = Account::factory()->create();
-        $generated_account_type = AccountType::factory()->create(['account_id'=>$generated_account->id]);
-        $entry = Entry::factory()->create(['account_type_id'=>$generated_account_type->id]);
+        $entry = Entry::factory()
+            ->for(
+                AccountType::factory()
+                    ->for(Account::factory())
+            )
+            ->create();
 
         // WHEN
         $get_response1 = $this->get($this->_base_uri.$entry->id);

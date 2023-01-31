@@ -21,7 +21,7 @@ class GetInstitutionsTest extends TestCase {
         // THEN
         $response->assertStatus(HttpStatus::HTTP_NOT_FOUND);
         $response_body_as_array = $response->json();
-        $this->assertTrue(is_array($response_body_as_array));
+        $this->assertIsArray($response_body_as_array);
         $this->assertEmpty($response_body_as_array);
     }
 
@@ -39,14 +39,11 @@ class GetInstitutionsTest extends TestCase {
     public function testGetInstitutions(bool $all_active) {
         // GIVEN
         $institutions_count = $this->faker->randomDigitNotZero();
-        $generated_institutions = [];
-        for ($i=0; $i<$institutions_count; $i++) {
-            $active_flag = $this->faker->boolean(($all_active ? 100 : 50));
-            $generated_institution = Institution::factory()->create(['active'=>$active_flag]);
-            $generated_institution->makeHidden(['create_stamp', 'modified_stamp']);
-            $generated_institutions[$generated_institution->id] = $generated_institution;
-            unset($generated_institution, $active_flag);
-        }
+        $active_flag = $this->faker->boolean(($all_active ? 100 : 50));
+        $generated_institutions = Institution::factory()
+            ->count($institutions_count)
+            ->create(['active'=>function() use ($active_flag) { return $active_flag; }]);
+        $generated_institutions->makeHidden(['create_stamp', 'modified_stamp']);
 
         // WHEN
         $response = $this->get($this->_base_uri);
@@ -54,27 +51,20 @@ class GetInstitutionsTest extends TestCase {
         // THEN
         $response->assertStatus(HttpStatus::HTTP_OK);
         $response_body_as_array = $response->json();
-        $this->assertTrue(is_array($response_body_as_array));
+
         $this->assertNotEmpty($response_body_as_array);
         $this->assertArrayHasKey('count', $response_body_as_array);
         $this->assertEquals($institutions_count, $response_body_as_array['count']);
         unset($response_body_as_array['count']);
         $this->assertCount($institutions_count, $response_body_as_array);
-        foreach ($response_body_as_array as $institution_in_response) {
-            $this->assertArrayHasKey('id', $institution_in_response);
-            $this->assertArrayHasKey('name', $institution_in_response);
-            $this->assertArrayHasKey('active', $institution_in_response);
 
-            $this->assertNotEmpty($generated_institutions[$institution_in_response['id']]);
-            $generated_institution = $generated_institutions[$institution_in_response['id']];
-            // factory doesn't set timestamps, so we don't need to make sure they are NOT present
+        $expected_elements = ['id', 'name', 'active'];
+        foreach ($response_body_as_array as $institution_in_response) {
+            $this->assertEqualsCanonicalizing($expected_elements, array_keys($institution_in_response));
+
+            $generated_institution = $generated_institutions->where('id', $institution_in_response['id'])->first();
+            $this->assertNotEmpty($generated_institution);
             $this->assertEquals($generated_institution->toArray(), $institution_in_response);
-            unset(
-                $institution_in_response['id'],
-                $institution_in_response['name'],
-                $institution_in_response['active']
-            );
-            $this->assertEmpty($institution_in_response);
         }
     }
 

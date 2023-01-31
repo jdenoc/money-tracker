@@ -21,8 +21,11 @@ class PostAccountTypeTest extends TestCase {
 
     public function setUp(): void {
         parent::setUp();
-        $institution = Institution::factory()->create(['active'=>true]);
-        Account::factory()->count(3)->create(['disabled'=>false, 'institution_id'=>$institution->id]);
+        Account::factory()
+            ->count(3)
+            ->state(['disabled'=>false])
+            ->for(Institution::factory()->state(['active'=>true]))
+            ->create();
     }
 
     public function testCreateAccountTypeWithoutData() {
