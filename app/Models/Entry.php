@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Jobs\AdjustAccountTotal;
 use App\Traits\EntryFilterKeys;
+use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Facades\DB;
 
 class Entry extends BaseModel {
     use EntryFilterKeys;
@@ -29,7 +32,7 @@ class Entry extends BaseModel {
     protected $casts = [
         'expense'=>'boolean',
         'confirm'=>'boolean',
-        'disabled'=>'boolean'
+        'disabled'=>'boolean',
     ];
     protected $dates = [
         'disabled_stamp'
@@ -47,8 +50,18 @@ class Entry extends BaseModel {
     /**
      * entries.account_type_id = account_types.id
      */
+    public function accountType() {
+        return $this->belongsTo(AccountType::class, 'account_type_id');
+    }
+
+    /**
+     * @deprecated
+     *
+     * alias for accountType
+     * needed to support legacy implementations
+     */
     public function account_type() {
-        return $this->belongsTo('App\Models\AccountType', 'account_type_id');
+        return $this->accountType();
     }
 
     /**
@@ -66,22 +79,37 @@ class Entry extends BaseModel {
         return $this->hasMany('App\Models\Attachment');
     }
 
+    public function getEntryValueAttribute($value) {
+        return Money::ofMinor($value, $this->currency)->getAmount()->toFloat();
+    }
+
+    public function setEntryValueAttribute($value) {
+        $entry_value = Money::of($value, $this->currency);
+        $this->attributes['entry_value'] = $entry_value->getMinorAmount()->toInt();
+    }
+
+    public function getCurrencyAttribute() {
+        return $this->accountType ? ($this->accountType->account ? $this->accountType->account->currency : Currency::DEFAULT_CURRENCY_CODE) : Currency::DEFAULT_CURRENCY_CODE;
+    }
+
     public function save(array $options = []) {
         if ($this->exists) {
             // if the entry already exists
             // remove that original value from the total of originally associated account
-            $actual_entry_value = ($this->getOriginal('expense') ? -1 : 1)*$this->getOriginal('entry_value');
             $original_account_type_id = $this->getOriginal('account_type_id');
             $original_account_type = AccountType::find($original_account_type_id);
-            $original_account_type->account()->first()->update_total(-1*$actual_entry_value);
+            $original_entry_value = Money::ofMinor($this->getRawOriginal('entry_value'), $original_account_type->account->currency)
+                ->multipliedBy($this->getOriginal('expense') ? -1 : 1);
+            AdjustAccountTotal::dispatch($original_account_type->account->id, $original_entry_value, false);
         }
 
         $saved_entry = parent::save($options);
 
         if (!$this->disabled) {
             // add new entry value to account total
-            $actual_entry_value = (($this->expense) ? -1 : 1) * $this->entry_value;
-            $this->account_type()->first()->account()->first()->update_total($actual_entry_value);
+            $actual_entry_value = Money::ofMinor($this->attributes['entry_value'], $this->accountType->account->currency)
+                ->multipliedBy(($this->expense) ? -1 : 1);
+            AdjustAccountTotal::dispatch($this->accountType->account->id, $actual_entry_value, true);
         }
         return $saved_entry;
     }
@@ -90,12 +118,6 @@ class Entry extends BaseModel {
         $this->disabled = true;
         $this->disabled_stamp = new Carbon();
         $this->save();
-    }
-
-    public static function get_entry_with_tags_and_attachments($entry_id) {
-        return Entry::with(['tags', 'attachments'])
-            ->where('id', $entry_id)
-            ->first();
     }
 
     /**
@@ -123,7 +145,7 @@ class Entry extends BaseModel {
         $entries_query = self::build_entry_query($filters);
         // due to the risk of failure with potentially adding GROUP BY to the query
         // we're going to use the generated query as a subquery and count from that
-        return \DB::table($entries_query->select('entries.id'))->count();
+        return DB::table($entries_query->select('entries.id'))->count();
     }
 
     /**
@@ -147,13 +169,13 @@ class Entry extends BaseModel {
                     $entries_query->where('entries.entry_date', '>=', $filter_constraint);
                     break;
                 case self::$FILTER_KEY_MIN_VALUE:
-                    $entries_query->where('entries.entry_value', '>=', $filter_constraint);
+                    $entries_query->where('entries.entry_value', '>=', Money::of($filter_constraint, Currency::DEFAULT_CURRENCY_CODE)->getMinorAmount()->toInt());
                     break;
                 case self::$FILTER_KEY_END_DATE:
                     $entries_query->where('entries.entry_date', '<=', $filter_constraint);
                     break;
                 case self::$FILTER_KEY_MAX_VALUE:
-                    $entries_query->where('entries.entry_value', '<=', $filter_constraint);
+                    $entries_query->where('entries.entry_value', '<=', Money::of($filter_constraint, Currency::DEFAULT_CURRENCY_CODE)->getMinorAmount()->toInt());
                     break;
                 case self::$FILTER_KEY_ACCOUNT_TYPE:
                     $entries_query->where('entries.account_type_id', $filter_constraint);

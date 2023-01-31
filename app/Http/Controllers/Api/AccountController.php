@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Account;
+use App\Models\AccountType;
 use App\Models\Institution;
 use App\Traits\AccountResponseKeys;
+use Brick\Money\ISOCurrencyProvider;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 
@@ -45,6 +47,9 @@ class AccountController extends Controller {
         } else {
             $account->account_types->makeHidden([
                 'account_id',    // We already know what account this is. We don't need to re-show it.
+                AccountType::CREATED_AT,
+                AccountType::UPDATED_AT,
+                'disabled_stamp',
             ]);
             return response($account, HttpStatus::HTTP_OK);
         }
@@ -69,11 +74,6 @@ class AccountController extends Controller {
         return $this->modify_account($request, $account_id);
     }
 
-    /**
-     * @param Request $request
-     * @param int|null $account_id
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
     public function modify_account(Request $request, int $account_id=null) {
         $request_body = $request->getContent();
         $account_data = json_decode($request_body, true);
@@ -95,6 +95,13 @@ class AccountController extends Controller {
                     HttpStatus::HTTP_BAD_REQUEST
                 );
             }
+        }
+
+        if (isset($account_data['currency']) && !in_array($account_data['currency'], ISOCurrencyProvider::getInstance()->getAvailableCurrencies())) {
+            return response(
+                [self::$RESPONSE_KEY_ERROR=>self::$ERROR_MSG_INVALID_CURRENCY, self::$RESPONSE_KEY_ID=>self::$ERROR_ID],
+                HttpStatus::HTTP_BAD_REQUEST
+            );
         }
 
         if (is_null($account_id)) {
@@ -125,6 +132,7 @@ class AccountController extends Controller {
             }
         }
 
+        ksort($account_data);   // currency needs to be set prior to entry_value
         foreach ($account_data as $account_datum_property=>$account_datum_value) {
             if (in_array($account_datum_property, $required_properties)) {
                 $account_to_modify->{$account_datum_property} = $account_datum_value;

@@ -17,7 +17,7 @@ class GetAccountsTest extends TestCase {
         $account_count = $this->faker->randomDigitNotZero();
         $generated_accounts = Account::factory()->count($account_count)->create();
         // These nodes are not in the response output. Let's hide them from the object collection.
-        $generated_accounts->makeHidden(['disabled_stamp']);
+        $generated_accounts->makeHidden([Account::UPDATED_AT, Account::CREATED_AT, 'disabled_stamp']);
 
         // WHEN
         $response = $this->get($this->_uri);
@@ -25,32 +25,17 @@ class GetAccountsTest extends TestCase {
         // THEN
         $response->assertStatus(Response::HTTP_OK);
         $response_body_as_array = $response->json();
-        $this->assertTrue(is_array($response_body_as_array));
+
         $this->assertArrayHasKey('count', $response_body_as_array);
         $this->assertEquals($account_count, $response_body_as_array['count']);
         unset($response_body_as_array['count']);
+
+        $expected_array_keys = ['id', 'name', 'institution_id', 'disabled', 'total', 'currency'];
         foreach ($response_body_as_array as $account_in_response) {
-            $this->assertArrayHasKey('id', $account_in_response);
-            unset($account_in_response['id']);
-            $this->assertArrayHasKey('name', $account_in_response);
-            unset($account_in_response['name']);
-            $this->assertArrayHasKey('institution_id', $account_in_response);
-            unset($account_in_response['institution_id']);
-            $this->assertArrayHasKey('disabled', $account_in_response);
-            unset($account_in_response['disabled']);
-            $this->assertArrayHasKey('total', $account_in_response);
-            unset($account_in_response['total']);
-            $this->assertArrayHasKey('currency', $account_in_response);
-            unset($account_in_response['currency']);
-            $this->assertEmpty($account_in_response, "Unknown nodes found in JSON response:".json_encode($account_in_response));
-        }
-        foreach ($generated_accounts as $generated_account) {
-            $generated_account_as_array = $generated_account->toArray();
-            unset($generated_account_as_array["modified_stamp"],$generated_account_as_array["create_stamp"]);
-            $this->assertTrue(
-                in_array($generated_account_as_array, $response_body_as_array),
-                "Factory generate account in JSON: ".$generated_account->toJson()."\nResponse Body:".$response->getContent()
-            );
+            $this->assertEqualsCanonicalizing($expected_array_keys, array_keys($account_in_response));
+            $generated_account = $generated_accounts->where('id', $account_in_response['id'])->first();
+            $this->assertNotEmpty($generated_account);
+            $this->assertEquals($generated_account->toArray(), $account_in_response);
         }
     }
 
@@ -63,7 +48,7 @@ class GetAccountsTest extends TestCase {
         // THEN
         $response->assertStatus(Response::HTTP_NOT_FOUND);
         $response_body_as_array = $response->json();
-        $this->assertTrue(is_array($response_body_as_array));
+        $this->assertIsArray($response_body_as_array);
         $this->assertEmpty($response_body_as_array);
     }
 

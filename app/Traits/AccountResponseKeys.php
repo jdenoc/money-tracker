@@ -13,6 +13,7 @@ trait AccountResponseKeys {
     private static $ERROR_MSG_MISSING_PROPERTY = 'Missing data: %s';
     private static $ERROR_MSG_DOES_NOT_EXIST = 'Account does not exist';
     private static $ERROR_MSG_INVALID_INSTITUTION = 'Instition provided does not exist';
+    private static $ERROR_MSG_INVALID_CURRENCY = 'Currency code provided is invalid. See ISO 4217 standard.';
 
     protected function fillMissingPropertyErrorMessage($missing_properties): string {
         return sprintf(self::$ERROR_MSG_MISSING_PROPERTY, json_encode($missing_properties));

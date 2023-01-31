@@ -30,15 +30,18 @@ class EntryController extends Controller {
      * @return Response
      */
     public function get_entry(int $entry_id): Response {
-        $entry = Entry::get_entry_with_tags_and_attachments($entry_id);
-        if (is_null($entry) || empty($entry) || $entry->disabled == 1) {
+        $entry = Entry::with(['tags', 'attachments'])
+            ->where('id', $entry_id)
+            ->first();
+
+        if (empty($entry) || $entry->disabled == 1) {
             return response([], HttpStatus::HTTP_NOT_FOUND);
         } else {
             // we're not going to show disabled entries,
             // so why bother telling someone that something that isn't disabled
-            $entry->makeHidden(['disabled', 'disabled_stamp']);
+            $entry->makeHidden(['disabled', 'disabled_stamp', 'accountType']);
             $entry->tags->makeHidden('pivot');  // this is an artifact left over from the relationship logic
-            $entry->attachments->makeHidden('entry_id');    // we already know the attachment is associated with this entry, no need to repeat that
+            $entry->attachments->makeHidden('entry_id');  // we already know the attachment is associated with this entry, no need to repeat that
             return response($entry, HttpStatus::HTTP_OK);
         }
     }
@@ -428,12 +431,15 @@ class EntryController extends Controller {
         if (is_null($entries_collection) || $entries_collection->isEmpty()) {
             return response([], HttpStatus::HTTP_NOT_FOUND);
         } else {
-            foreach ($entries_collection as $entry) {
+            $entries_collection->transform(function(Entry $entry) {
                 $entry->has_attachments = $entry->has_attachments();
-                $entry->tags = ($entry->has_tags()) ? $entry->get_tag_ids() : [];
+                $entry->tags = $entry->get_tag_ids();
                 $entry->is_transfer = !is_null($entry->transfer_entry_id);
                 unset($entry->transfer_entry_id);
-            }
+                $entry->makeHidden(['accountType']);
+                return $entry;
+            });
+
             $entries_collection = $entries_collection->values();   // the use of values() here allows us to ignore the original keys of the collection after a sort
             $entries_collection->put('count', Entry::count_non_disabled_entries($filters));
             return response($entries_collection, HttpStatus::HTTP_OK);

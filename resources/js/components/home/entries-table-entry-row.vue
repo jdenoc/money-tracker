@@ -23,10 +23,10 @@
     <td class="row-entry-memo align-top px-1 py-1 " v-text="memo"></td>
     <td class="text-right align-top py-1" v-bind:class="{'row-entry-value': !expense}">
       <span v-if="expense"></span>
-      <span v-else>{{value}}</span>
+      <span v-else>{{entryValue}}</span>
     </td>
     <td class="text-right align-top py-1 " v-bind:class="{'row-entry-value': expense}">
-      <span v-if="expense">{{value}}</span>
+      <span v-if="expense">{{entryValue}}</span>
       <span v-else></span>
     </td>
     <td class="row-entry-account-type align-top px-2 py-1 " v-text="accountTypeName"></td>
@@ -57,7 +57,7 @@ export default {
     id: {type: Number, required: true},
     date: {type: String},
     accountTypeId: {type: Number},
-    value: {type: String},
+    value: {type: Number},
     memo: {type: String},
     expense: {type: Boolean},
     confirm: {type: Boolean},
@@ -69,6 +69,9 @@ export default {
   computed: {
     accountTypeName: function(){
       return new AccountTypes().getNameById(this.accountTypeId);
+    },
+    entryValue: function(){
+      return this.value.toFixed(2);
     },
     isFutureEntry: function(){
       let timezoneOffset = new Date().getTimezoneOffset()*this.millisecondsPerMinute;
