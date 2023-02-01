@@ -480,7 +480,6 @@ class FilterModalTest extends DuskTestCase {
         });
     }
 
-
     public function providerFlippingCompanionSwitches(): array {
         return [
             "flip income with expense"=>[$this->_selector_modal_filter_field_switch_income, $this->_selector_modal_filter_field_switch_expense],                              // test 1/20

@@ -281,7 +281,6 @@ class StatsDistributionTest extends StatsBase {
         });
     }
 
-
     /**
      * @param Collection $entries
      * @param Collection $tags
