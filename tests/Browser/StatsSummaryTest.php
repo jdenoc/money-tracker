@@ -329,12 +329,12 @@ class StatsSummaryTest extends StatsBase {
         $top_entries = [];
         $empty_top_entry = ['memo'=>'', 'entry_value'=>'', 'entry_date'=>''];
         for ($i=0; $i<$limit; $i++) {
-            if (empty($top_income_entries->get($i)) && empty($top_expense_entries->get($i))) {
+            $top_income = $top_income_entries->get($i) ?: $empty_top_entry;
+            $top_expense = $top_expense_entries->get($i) ?: $empty_top_entry;
+            if ($top_expense == $empty_top_entry && $top_income == $empty_top_entry) {
                 break;
             }
 
-            $top_income = !empty($top_income_entries->get($i)) ? $top_income_entries->get($i)->toArray() : $empty_top_entry;
-            $top_expense = !empty($top_expense_entries->get($i)) ? $top_expense_entries->get($i)->toArray() : $empty_top_entry;
             $top_entries[$i+1] = [
                 'income_memo'=>$top_income['memo'],
                 'income_value'=>$top_income['entry_value'],
