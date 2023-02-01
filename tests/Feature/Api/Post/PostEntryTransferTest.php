@@ -158,7 +158,7 @@ class PostEntryTransferTest extends TestCase {
         $this->assertFailedPostResponse($response->json(), self::$ERROR_MSG_SAVE_TRANSFER_BOTH_EXTERNAL);
     }
 
-    public function providerCreateEntryTransfer() {
+    public function providerCreateEntryTransfer(): array {
         // We need to initialise the application to allow us to potentially populate the database
         $this->initialiseApplication();
 
