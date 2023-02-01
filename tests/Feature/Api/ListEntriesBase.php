@@ -10,7 +10,6 @@ use App\Traits\EntryFilterKeys;
 use App\Traits\MaxEntryResponseValue;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Tests\TestCase;
 
@@ -165,17 +164,23 @@ class ListEntriesBase extends TestCase {
             $generated_entry = $generated_entries->where('id', $entry_in_response['id'])->first();
             $failure_msg = "generated entries:".json_encode($generated_entry)."\nresponse entry:".json_encode($entry_in_response);
             $this->assertNotEmpty($generated_entry, $failure_msg);
-            $this->assertDateFormat($entry_in_response[Entry::CREATED_AT], Carbon::ATOM, $failure_msg);
-            $this->assertDatetimeWithinOneSecond($generated_entry->{Entry::CREATED_AT}, $entry_in_response[Entry::CREATED_AT], $failure_msg);
-            $this->assertDateFormat($entry_in_response[Entry::UPDATED_AT], Carbon::ATOM, $failure_msg);
-            $this->assertDatetimeWithinOneSecond($generated_entry->{Entry::UPDATED_AT}, $entry_in_response[Entry::UPDATED_AT], $failure_msg);
-            $this->assertEquals(Arr::sort($generated_entry->tags), Arr::sort($entry_in_response['tags']), $failure_msg);
 
             $generated_entry_as_array = $generated_entry->toArray();
-            $elements_to_unset = [Entry::CREATED_AT, Entry::UPDATED_AT, 'tags'];
-            foreach ($elements_to_unset as $element_to_unset) {
-                unset($generated_entry_as_array[$element_to_unset], $entry_in_response[$element_to_unset]);
+            $elements_to_pre_check = [Entry::CREATED_AT, Entry::UPDATED_AT, 'tags'];
+            foreach ($elements_to_pre_check as $element) {
+                switch($element) {
+                    case Entry::CREATED_AT:
+                    case Entry::UPDATED_AT:
+                        $this->assertDateFormat($entry_in_response[$element], Carbon::ATOM, $failure_msg);
+                        $this->assertDatetimeWithinOneSecond($generated_entry_as_array[$element], $entry_in_response[$element], $failure_msg);
+                        break;
+                    case 'tags':
+                        $this->assertEqualsCanonicalizing($generated_entry_as_array[$element], $entry_in_response[$element], $failure_msg);
+                        break;
+                }
+                unset($generated_entry_as_array[$element], $entry_in_response[$element]);
             }
+            // compare the reset of the response
             $this->assertEquals($generated_entry_as_array, $entry_in_response, $failure_msg);
 
             // testing sort order
