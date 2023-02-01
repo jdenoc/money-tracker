@@ -117,7 +117,7 @@ jobs:
 
       - name: Load composer docker image
         run: docker load -i ${{ needs.pre-build.outputs.cache-path-docker }}/${{ needs.pre-build.outputs.image-tag-composer }}.tar.gz
-        if: steps.cache-docker-image.outputs.cache-hit != 'true'
+        if: steps.cache-docker-image.outputs.cache-hit == 'true'
 
       - name: "Cache: Composer packages"
         id: cache-composer
