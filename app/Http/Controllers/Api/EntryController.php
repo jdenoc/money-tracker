@@ -360,7 +360,7 @@ class EntryController extends Controller {
                             $transfer_entry->expense = 0;
                         }
                     } else {
-                        continue;
+                        continue;  // skip to next property
                     }
                 }
                 $transfer_entry->$property = $value;
