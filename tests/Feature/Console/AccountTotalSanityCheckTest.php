@@ -51,8 +51,8 @@ class AccountTotalSanityCheckTest extends TestCase {
         $accounts = Account::factory()->count(3)->create(['disabled'=>true, 'total'=>0]);
         $account_types = collect();
         foreach ($accounts as $account) {
-            $account_type = AccountType::factory()->create(['account_id'=>$account->id, 'disabled'=>0]);
-            Entry::factory()->count(2)->create(['account_type_id'=>$account_type->id, 'disabled'=>0]);
+            $account_type = AccountType::factory()->for($account)->create(['disabled'=>0]);
+            Entry::factory()->count(2)->for($account_type)->create(['disabled'=>0]);
             $account_types->push($account_type);
         }
 
@@ -109,10 +109,7 @@ class AccountTotalSanityCheckTest extends TestCase {
         $this->assertStringContainsString("No accounts found", $result_as_text);
     }
 
-    /**
-     * @param string|null $table_to_truncate
-     */
-    private function seedDatabaseAndMaybeTruncateTable($table_to_truncate = null) {
+    private function seedDatabaseAndMaybeTruncateTable(?string $table_to_truncate = null) {
         Artisan::call("db:seed", ['--class'=>'UiSampleDatabaseSeeder']);
         if (!is_null($table_to_truncate)) {
             DB::table($table_to_truncate)->truncate();

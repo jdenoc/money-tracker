@@ -2,15 +2,24 @@
 
 namespace App\Models;
 
+use Brick\Money\Money;
+
 class AccountTotalSanityCheck {
 
-    private $actual;
-    private $expected;
-    private $account_id;
-    private $account_name;
+    private int $account_id;
+    private string $account_name;
+    private Money $actual;
+    private Money $expected;
+
+    private array $acceptible_parameters = [
+        'account_id',
+        'account_name',
+        'actual',
+        'expected',
+    ];
 
     public function diff() {
-        return abs(round($this->actual - $this->expected, 2));
+        return $this->expected->minus($this->actual)->abs();
     }
 
     /**
@@ -20,16 +29,16 @@ class AccountTotalSanityCheck {
      */
     public function toArray() {
         return [
-            'actual'=>$this->actual,
-            'expected'=>$this->expected,
-            'diff'=>$this->diff(),
             'account_id'=>$this->account_id,
             'account_name'=>$this->account_name,
+            'actual'=>$this->actual,
+            'diff'=>$this->diff(),
+            'expected'=>$this->expected,
         ];
     }
 
     public function __get($name) {
-        if (array_key_exists($name, $this->toArray()) && $name !== 'diff') {
+        if (in_array($name, $this->acceptible_parameters)) {
             return $this->{$name};
         } else {
             return null;
@@ -37,7 +46,7 @@ class AccountTotalSanityCheck {
     }
 
     public function __set($name, $value) {
-        if (array_key_exists($name, $this->toArray()) && $name !== 'diff') {
+        if (in_array($name, $this->acceptible_parameters)) {
             $this->{$name} = $value;
         }
     }
