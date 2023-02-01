@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Jobs\AdjustAccountTotal;
+use App\Jobs\AdjustAccountTotalUsingAccountType;
 use App\Traits\EntryFilterKeys;
 use Brick\Money\Money;
 use Carbon\Carbon;
@@ -97,19 +97,19 @@ class Entry extends BaseModel {
             // if the entry already exists
             // remove that original value from the total of originally associated account
             $original_account_type_id = $this->getOriginal('account_type_id');
-            $original_account_type = AccountType::find($original_account_type_id);
-            $original_entry_value = Money::ofMinor($this->getRawOriginal('entry_value'), $original_account_type->account->currency)
-                ->multipliedBy($this->getOriginal('expense') ? -1 : 1);
-            AdjustAccountTotal::dispatch($original_account_type->account->id, $original_entry_value, false);
+            $original_raw_entry_value = $this->getRawOriginal('entry_value');
+            $original_is_expense = $this->getOriginal('expense');
+            AdjustAccountTotalUsingAccountType::dispatch($original_account_type_id, $original_raw_entry_value, $original_is_expense, false);
         }
 
         $saved_entry = parent::save($options);
 
         if (!$this->disabled) {
             // add new entry value to account total
-            $actual_entry_value = Money::ofMinor($this->attributes['entry_value'], $this->accountType->account->currency)
-                ->multipliedBy(($this->expense) ? -1 : 1);
-            AdjustAccountTotal::dispatch($this->accountType->account->id, $actual_entry_value, true);
+            $current_account_type_id = $this->account_type_id;
+            $currenct_raw_entry_value = $this->attributes['entry_value'];
+            $current_is_expense = $this->expense;
+            AdjustAccountTotalUsingAccountType::dispatch($current_account_type_id, $currenct_raw_entry_value, $current_is_expense, true);
         }
         return $saved_entry;
     }
