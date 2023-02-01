@@ -59,7 +59,7 @@ class FilterModalTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group filter-modal-1
-     * test 1/25
+     * test 1/20
      */
     public function testModalHeaderHasCorrectElements() {
         $this->browse(function(Browser $browser) {
@@ -79,7 +79,7 @@ class FilterModalTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group filter-modal-1
-     * test 2/25
+     * test 2/20
      */
     public function testModalBodyHasCorrectElements() {
         $accounts = $this->getApiAccounts();
@@ -202,7 +202,7 @@ class FilterModalTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group filter-modal-1
-     * test 3/25
+     * test 3/20
      */
     public function testModalFooterHasCorrectElements() {
         $this->browse(function(Browser $browser) {
@@ -226,7 +226,7 @@ class FilterModalTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group filter-modal-1
-     * test 4/25
+     * test 4/20
      */
     public function testModalHasTheCorrectNumberOfInputs() {
         $filter_modal_field_selectors = $this->filterModalInputs();
@@ -247,7 +247,7 @@ class FilterModalTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group filter-modal-1
-     * test 5/25
+     * test 5/20
      */
     public function testCloseTransferModalWithXButtonInHeader() {
         $this->browse(function(Browser $browser) {
@@ -266,7 +266,7 @@ class FilterModalTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group filter-modal-1
-     * test 6/25
+     * test 6/20
      */
     public function testCloseTransferModalWithCancelButtonInFooter() {
         $this->browse(function(Browser $browser) {
@@ -285,7 +285,7 @@ class FilterModalTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group filter-modal-1
-     * test 7/25
+     * test 7/20
      */
     public function testCloseFilterModalWithHotkey() {
         $this->markTestIncomplete("hotkey functionality needs work");
@@ -302,10 +302,10 @@ class FilterModalTest extends DuskTestCase {
     public function providerFlipAccountAndAccountTypeSwitch(): array {
         return [
             // [account.disabled, account-type.disabled]
-            ['account'=>false, 'account-type'=>true],   // test 8/25
-            ['account'=>false, 'account-type'=>false],  // test 9/25
-            ['account'=>true, 'account-type'=>false],   // test 10/25
-            ['account'=>true, 'account-type'=>true],    // test 11/25
+            ['account'=>false, 'account-type'=>true],   // test 8/20
+            ['account'=>false, 'account-type'=>false],  // test 9/20
+            ['account'=>true, 'account-type'=>false],   // test 10/20
+            ['account'=>true, 'account-type'=>true],    // test 11/20
         ];
     }
 
@@ -317,7 +317,7 @@ class FilterModalTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group filter-modal-1
-     * test (see provider)/25
+     * test (see provider)/20
      */
     public function testFlipAccountAndAccountTypeSwitch(bool $has_disabled_account, bool $has_disabled_account_type) {
         DB::table('accounts')->truncate();
@@ -417,12 +417,12 @@ class FilterModalTest extends DuskTestCase {
 
     public function providerFlipSwitch(): array {
         return [
-            "flip income"=>[$this->_selector_modal_filter_field_switch_income],                 // test 12/25
-            "flip expense"=>[$this->_selector_modal_filter_field_switch_expense],               // test 13/25
-            "flip has-attachment"=>[$this->_selector_modal_filter_field_switch_has_attachment], // test 14/25
-            "flip no-attachment"=>[$this->_selector_modal_filter_field_switch_no_attachment],   // test 15/25
-            "flip transfer"=>[$this->_selector_modal_filter_field_switch_transfer],             // test 16/25
-            "flip not confirmed"=>[$this->_selector_modal_filter_field_switch_unconfirmed]      // test 17/25
+            "flip income"=>[$this->_selector_modal_filter_field_switch_income],                 // test 12/20
+            "flip expense"=>[$this->_selector_modal_filter_field_switch_expense],               // test 13/20
+            "flip has-attachment"=>[$this->_selector_modal_filter_field_switch_has_attachment], // test 14/20
+            "flip no-attachment"=>[$this->_selector_modal_filter_field_switch_no_attachment],   // test 15/20
+            "flip transfer"=>[$this->_selector_modal_filter_field_switch_transfer],             // test 16/20
+            "flip not confirmed"=>[$this->_selector_modal_filter_field_switch_unconfirmed]      // test 17/20
         ];
     }
 
@@ -433,7 +433,7 @@ class FilterModalTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group filter-modal-1
-     * test (see provider)/25
+     * test (see provider)/20
      */
     public function testFlipSwitch(string $switch_selector) {
         $this->browse(function(Browser $browser) use ($switch_selector) {
@@ -449,12 +449,44 @@ class FilterModalTest extends DuskTestCase {
         });
     }
 
+    public function providerRangeValueConvertsIntoDecimalOfTwoPlaces(): array {
+        return [
+            'Min Range'=>[$this->_selector_modal_filter_field_min_value], // test 18/20
+            'Max Range'=>[$this->_selector_modal_filter_field_max_value], // test 19/20
+        ];
+    }
+
+    /**
+     * @dataProvider providerRangeValueConvertsIntoDecimalOfTwoPlaces
+     * @param $field_selector
+     *
+     * @throws Throwable
+     *
+     * @group filter-modal-1
+     * test (see provider)/20
+     */
+    public function testRangeValueConvertsIntoDecimalOfTwoPlaces($field_selector) {
+        $this->browse(function(Browser $browser) use ($field_selector) {
+            $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
+            $this->openFilterModal($browser);
+            $browser
+                ->within($this->_selector_modal_filter.' '.$this->_selector_modal_body, function(Browser $modal) use ($field_selector) {
+                    $modal
+                        ->type($field_selector, "rh48r7th72.9ewd3dadh1")
+                        ->click(sprintf('label[for="%s"]', ltrim($field_selector, '#')))
+                        ->assertInputValue($field_selector, "48772.93");
+                });
+        });
+    }
+
+
     public function providerFlippingCompanionSwitches(): array {
         return [
-            "flip income with expense"=>[$this->_selector_modal_filter_field_switch_income, $this->_selector_modal_filter_field_switch_expense],                              // test 18/25
-            "flip expense with income"=>[$this->_selector_modal_filter_field_switch_expense, $this->_selector_modal_filter_field_switch_income],                              // test 19/25
-            "flip has-attachment with no-attachment"=>[$this->_selector_modal_filter_field_switch_has_attachment, $this->_selector_modal_filter_field_switch_no_attachment],  // test 20/25
-            "flip no-attachment with has-attachment"=>[$this->_selector_modal_filter_field_switch_no_attachment, $this->_selector_modal_filter_field_switch_has_attachment]   // test 21/25
+            "flip income with expense"=>[$this->_selector_modal_filter_field_switch_income, $this->_selector_modal_filter_field_switch_expense],                              // test 1/20
+            "flip expense with income"=>[$this->_selector_modal_filter_field_switch_expense, $this->_selector_modal_filter_field_switch_income],                              // test 2/20
+            "flip has-attachment with no-attachment"=>[$this->_selector_modal_filter_field_switch_has_attachment, $this->_selector_modal_filter_field_switch_no_attachment],  // test 3/20
+            "flip no-attachment with has-attachment"=>[$this->_selector_modal_filter_field_switch_no_attachment, $this->_selector_modal_filter_field_switch_has_attachment]   // test 4/20
         ];
     }
 
@@ -465,8 +497,8 @@ class FilterModalTest extends DuskTestCase {
      *
      * @throws Throwable
      *
-     * @group filter-modal-1
-     * test (see provider)/25
+     * @group filter-modal-2
+     * test (see provider)/20
      */
     public function testFlippingCompanionSwitches(string $init_switch_selector, string $companion_switch_selector) {
         $this->browse(function(Browser $browser) use ($init_switch_selector, $companion_switch_selector) {
@@ -489,42 +521,11 @@ class FilterModalTest extends DuskTestCase {
         });
     }
 
-    public function providerRangeValueConvertsIntoDecimalOfTwoPlaces(): array {
-        return [
-            'Min Range'=>[$this->_selector_modal_filter_field_min_value], // test 22/25
-            'Max Range'=>[$this->_selector_modal_filter_field_max_value], // test 23/25
-        ];
-    }
-
-    /**
-     * @dataProvider providerRangeValueConvertsIntoDecimalOfTwoPlaces
-     * @param $field_selector
-     *
-     * @throws Throwable
-     *
-     * @group filter-modal-1
-     * test (see provider)/25
-     */
-    public function testRangeValueConvertsIntoDecimalOfTwoPlaces($field_selector) {
-        $this->browse(function(Browser $browser) use ($field_selector) {
-            $browser->visit(new HomePage());
-            $this->waitForLoadingToStop($browser);
-            $this->openFilterModal($browser);
-            $browser
-                ->within($this->_selector_modal_filter.' '.$this->_selector_modal_body, function(Browser $modal) use ($field_selector) {
-                    $modal
-                        ->type($field_selector, "rh48r7th72.9ewd3dadh1")
-                        ->click(sprintf('label[for="%s"]', ltrim($field_selector, '#')))
-                        ->assertInputValue($field_selector, "48772.93");
-                });
-        });
-    }
-
     /**
      * @throws Throwable
      *
-     * @group filter-modal-1
-     * test 24/25
+     * @group filter-modal-2
+     * test 5/20
      */
     public function testResetFields() {
         $this->browse(function(Browser $browser) {
@@ -599,8 +600,55 @@ class FilterModalTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws Throwable
+     *
+     * @group filter-modal-2
+     * test 6/20
+     */
+    public function testClickFilterButtonToUpdateInstitutionsPanelActive() {
+        $this->browse(function(Browser $browser) {
+            $filter_value = [];
+            $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
+            $this->openFilterModal($browser);
+            $browser
+                // modify all (or at least most) fields
+                ->within($this->_selector_modal_filter.' '.$this->_selector_modal_body, function(Browser $modal) use (&$filter_value) {
+                    $accounts = $this->getApiAccounts();
+                    $filter_value = collect($accounts)->where('disabled', 0)->random();
+                    $this->selectAccountOrAccountTypeValue($modal, $filter_value['id']);
+                })
+
+                ->within($this->_selector_modal_filter.' '.$this->_selector_modal_foot, function($modal) {
+                    $modal->click($this->_selector_modal_filter_btn_filter);
+                });
+            $this->waitForLoadingToStop($browser);
+            $browser
+                ->assertMissing($this->_selector_modal_filter)
+
+                ->within($this->_selector_panel_institutions, function(Browser $panel) use ($filter_value) {
+                    // TODO: confirm "Overview (filtered)" is visible
+                    // "overview" is NOT active
+                    $overview_classes = $panel->attribute($this->_selector_panel_institutions_overview, 'class');
+                    $this->assertStringNotContainsString($this->_class_is_active, $overview_classes);
+
+                    $panel
+                        ->click("#institution-".$filter_value['institution_id'].' div')
+                        ->pause(self::$WAIT_TWO_FIFTHS_OF_A_SECOND_IN_MILLISECONDS);
+
+                    $account_classes = $panel->attribute('#account-'.$filter_value['id'], 'class');
+                    $this->assertStringContainsString($this->_class_is_active, $account_classes);
+
+                    $selector = '#account-'.$filter_value['id'].' '.$this->_selector_panel_institutions_accounts_account_name;
+                    $account_name = $panel->text($selector);
+                    $this->assertEquals($filter_value['name'], $account_name, "Could not find value at selector:".$panel->resolver->format($selector));
+                });
+        });
+    }
+
     public function providerClickFilterButtonToFilterResults(): array {
-        return $this->filterModalInputs();  // test (?)/25
+        return $this->filterModalInputs();  // test (7 - 18)/20
     }
 
     /**
@@ -610,7 +658,7 @@ class FilterModalTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group filter-modal-2
-     * test (see provider)/25
+     * test (see provider)/20
      */
     public function testClickFilterButtonToFilterResults($filter_param) {
         $this->browse(function(Browser $browser) use ($filter_param) {
@@ -718,53 +766,6 @@ class FilterModalTest extends DuskTestCase {
                                 throw new InvalidArgumentException("Unknown filter parameter provided:".$filter_param);
                         }
                     }
-                });
-        });
-    }
-
-    /**
-     * @throws Throwable
-     *
-     * @group filter-modal-2
-     * test 13/25
-     */
-    public function testClickFilterButtonToUpdateInstitutionsPanelActive() {
-        $this->browse(function(Browser $browser) {
-            $filter_value = [];
-            $browser->visit(new HomePage());
-            $this->waitForLoadingToStop($browser);
-            $this->openFilterModal($browser);
-            $browser
-                // modify all (or at least most) fields
-                ->within($this->_selector_modal_filter.' '.$this->_selector_modal_body, function(Browser $modal) use (&$filter_value) {
-                    $accounts = $this->getApiAccounts();
-                    $filter_value = collect($accounts)->where('disabled', 0)->random();
-                    $this->selectAccountOrAccountTypeValue($modal, $filter_value['id']);
-                })
-
-                ->within($this->_selector_modal_filter.' '.$this->_selector_modal_foot, function($modal) {
-                    $modal->click($this->_selector_modal_filter_btn_filter);
-                });
-            $this->waitForLoadingToStop($browser);
-            $browser
-                ->assertMissing($this->_selector_modal_filter)
-
-                ->within($this->_selector_panel_institutions, function(Browser $panel) use ($filter_value) {
-                    // TODO: confirm "Overview (filtered)" is visible
-                    // "overview" is NOT active
-                    $overview_classes = $panel->attribute($this->_selector_panel_institutions_overview, 'class');
-                    $this->assertStringNotContainsString($this->_class_is_active, $overview_classes);
-
-                    $panel
-                        ->click("#institution-".$filter_value['institution_id'].' div')
-                        ->pause(self::$WAIT_TWO_FIFTHS_OF_A_SECOND_IN_MILLISECONDS);
-
-                    $account_classes = $panel->attribute('#account-'.$filter_value['id'], 'class');
-                    $this->assertStringContainsString($this->_class_is_active, $account_classes);
-
-                    $selector = '#account-'.$filter_value['id'].' '.$this->_selector_panel_institutions_accounts_account_name;
-                    $account_name = $panel->text($selector);
-                    $this->assertEquals($filter_value['name'], $account_name, "Could not find value at selector:".$panel->resolver->format($selector));
                 });
         });
     }

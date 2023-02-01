@@ -54,11 +54,11 @@ class SettingsAccountTypesTest extends SettingsBase {
 
     public function providerSaveExistingSettingNode(): array {
         return [
-            'name'=>[self::$SELECTOR_SETTINGS_FORM_INPUT_NAME],
-            'type'=>[self::$SELECTOR_SETTINGS_FORM_SELECT_TYPE],
-            'last_digits'=>[self::$SELECTOR_SETTINGS_FORM_INPUT_LAST_DIGITS],
-            'account'=>[self::$SELECTOR_SETTINGS_FORM_SELECT_ACCOUNT],
-            'active'=>[self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE],
+            'name'=>[self::$SELECTOR_SETTINGS_FORM_INPUT_NAME],                 // test 7/20
+            'type'=>[self::$SELECTOR_SETTINGS_FORM_SELECT_TYPE],                // test 8/20
+            'last_digits'=>[self::$SELECTOR_SETTINGS_FORM_INPUT_LAST_DIGITS],   // test 9/20
+            'account'=>[self::$SELECTOR_SETTINGS_FORM_SELECT_ACCOUNT],          // test 10/20
+            'active'=>[self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE],            // test 11/20
         ];
     }
 

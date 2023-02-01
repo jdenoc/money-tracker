@@ -78,7 +78,7 @@ class NotificationsTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group notifications-1
-     * test 1/25
+     * test 1/20
      */
     public function testNoNotificationOnFetch200() {
         $this->browse(function(Browser $browser) {
@@ -93,7 +93,7 @@ class NotificationsTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group notifications-1
-     * test 2/25
+     * test 2/20
      */
     public function testNotificationFetchAccounts404() {
         // FORCE 404 from `GET /api/accounts`
@@ -110,7 +110,7 @@ class NotificationsTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group notifications-1
-     * test 3/25
+     * test 3/20
      */
     public function testNotificationFetchAccounts500() {
         $table = Account::getTableName();
@@ -131,7 +131,7 @@ class NotificationsTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group notifications-1
-     * test 4/25
+     * test 4/20
      */
     public function testNotificationFetchAccountTypes404() {
         // FORCE 404 from `GET /api/account-types`
@@ -148,7 +148,7 @@ class NotificationsTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group notifications-1
-     * test 5/25
+     * test 5/20
      */
     public function testNotificationFetchAccountTypes500() {
         $table = AccountType::getTableName();
@@ -169,7 +169,7 @@ class NotificationsTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group notifications-1
-     * test 6/25
+     * test 6/20
      */
     public function testNotificationDeleteAttachment404() {
         $this->browse(function(Browser $browser) {
@@ -201,7 +201,7 @@ class NotificationsTest extends DuskTestCase {
      * @throws Throwable
      *
      * @groups notifications-1
-     * test 7/25
+     * test 7/20
      */
     public function testNotificationDeleteAttachment500() {
         $table = Attachment::getTableName();
@@ -244,7 +244,7 @@ class NotificationsTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group notifications-1
-     * test 8/25
+     * test 8/20
      */
     public function testNotificationFetchEntries404() {
         // FORCE 404 from `GET /api/entries`
@@ -261,7 +261,7 @@ class NotificationsTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group notifications-1
-     * test 9/25
+     * test 9/20
      */
     public function testNotificationFetchEntries500() {
         $table = Entry::getTableName();
@@ -282,7 +282,7 @@ class NotificationsTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group notifications-1
-     * test 10/25
+     * test 10/20
      */
     public function testNotificationSaveNewEntry400() {
         // TODO: finish writing me...
@@ -307,7 +307,7 @@ class NotificationsTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group notifications-1
-     * test 11/25
+     * test 11/20
      */
     public function testNotificationSaveNewEntry500() {
         $table = Entry::getTableName();
@@ -352,7 +352,7 @@ class NotificationsTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group notifications-1
-     * test 12/25
+     * test 12/20
      */
     public function testNotificationFetchEntry404() {
         $entries = collect($this->removeCountFromApiResponse($this->getApiEntries()));
@@ -374,7 +374,7 @@ class NotificationsTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group notifications-1
-     * test 13/25
+     * test 13/20
      */
     public function testNotificationFetchEntry500() {
         $table = Entry::getTableName();
@@ -396,7 +396,7 @@ class NotificationsTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group notifications-1
-     * test (see provider)/25
+     * test 14/20
      */
     public function testNotificationSaveExistingEntry404() {
         $entries_collection = collect($this->removeCountFromApiResponse($this->getApiEntries()));
@@ -426,7 +426,7 @@ class NotificationsTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group notifications-1
-     * test 16/25
+     * test 15/20
      */
     public function testNotificationSaveExistingEntry500() {
         $this->markTestSkipped("previous implementation no longer works due to refactoring of EntryController");
@@ -468,7 +468,7 @@ class NotificationsTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group notifications-1
-     * test 17/25
+     * test 16/20
      */
     public function testNotificationDeleteEntry200() {
         $this->browse(function(Browser $browser) {
@@ -487,7 +487,7 @@ class NotificationsTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group notifications-1
-     * test 18/25
+     * test 17/20
      */
     public function testNotificationDeleteEntry404() {
         $this->browse(function(Browser $browser) {
@@ -515,7 +515,7 @@ class NotificationsTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group notifications-1
-     * test 20/25
+     * test 18/20
      */
     public function testNotificationDeleteEntry500() {
         $table = Entry::getTableName();
@@ -544,7 +544,7 @@ class NotificationsTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group notifications-1
-     * test 20/25
+     * test 19/20
      */
     public function testNotificationFetchInstitutions404() {
         // FORCE 404 from `GET /api/institutions`
@@ -561,7 +561,7 @@ class NotificationsTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group notifications-1
-     * test 21/25
+     * test 20/20
      */
     public function testNotificationFetchInstitutions500() {
         $table = Institution::getTableName();
@@ -581,8 +581,8 @@ class NotificationsTest extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * @group notifications-1
-     * test 22/25
+     * @group notifications-2
+     * test 1/20
      */
     public function testNotificationFetchTags404() {
         // FORCE 404 from `GET /api/tags`
@@ -599,7 +599,7 @@ class NotificationsTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group notifications-1
-     * test 23/25
+     * test 2/20
      */
     public function testNotificationFetchTags500() {
         $table = Tag::getTableName();

@@ -25,6 +25,12 @@ class HealthPageTest extends DuskTestCase {
         $this->artisan('health:check');
     }
 
+    /**
+     * @throws \Throwable
+     *
+     * @group demo-2
+     * test 1/20
+     */
     public function testHealthEndpoint() {
         $this->browse(function(Browser $browser) {
             $browser->visit('/health')

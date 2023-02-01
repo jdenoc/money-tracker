@@ -70,7 +70,7 @@ class SettingsBase extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * test 1/25
+     * test 1/20
      */
     public function testDefaultSettingsPageState() {
         $this->browse(function(Browser $browser) {
@@ -95,7 +95,7 @@ class SettingsBase extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * test 2/25
+     * test 2/20
      */
     public function testNavigateToSpecificSettingsAndAssertForm() {
         $this->browse(function(Browser $browser) {
@@ -114,7 +114,7 @@ class SettingsBase extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * test 3/25
+     * test 3/20
      */
     public function testNodesListedUnderFormAreVisible() {
         $this->browse(function(Browser $browser) {
@@ -133,7 +133,7 @@ class SettingsBase extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * test 4/25
+     * test 4/20
      */
     public function testFormFieldInteractionAndClearButtonFunctionality() {
         $this->browse(function(Browser $browser) {
@@ -155,7 +155,7 @@ class SettingsBase extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * test 5/25
+     * test 5/20
      */
     public function testClickExistingNodeWillDisplayDataInFormThenClearFormAndReclickSameNode() {
         $this->browse(function(Browser $browser) {
@@ -183,7 +183,7 @@ class SettingsBase extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * test 6/25
+     * test 6/20
      */
     public function testSaveNewSettingNode() {
         $this->browse(function(Browser $browser) {
@@ -225,7 +225,7 @@ class SettingsBase extends DuskTestCase {
      * @dataProvider providerSaveExistingSettingNode
      * @throws Throwable
      *
-     * test ?/25
+     * test ?/20
      */
     public function testSaveExistingSettingNode(string $form_element) {
         $this->browse(function(Browser $browser) use ($form_element) {

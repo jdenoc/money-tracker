@@ -69,11 +69,11 @@ class SettingsAccountsTest extends SettingsBase {
 
     public function providerSaveExistingSettingNode(): array {
         return [
-            'name'=>[self::$SELECTOR_SETTINGS_FORM_INPUT_NAME],
-            'institution'=>[self::$SELECTOR_SETTINGS_FORM_SELECT_INSTITUTION],
-            'currency'=>[self::$TEMPLATE_SELECTOR_SETTINGS_FORM_RADIO_CURRENCY_INPUT],
-            'total'=>[self::$SELECTOR_SETTINGS_FORM_INPUT_TOTAL],
-            'active'=>[self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE],
+            'name'=>[self::$SELECTOR_SETTINGS_FORM_INPUT_NAME],                         // test 7/20
+            'institution'=>[self::$SELECTOR_SETTINGS_FORM_SELECT_INSTITUTION],          // test 8/20
+            'currency'=>[self::$TEMPLATE_SELECTOR_SETTINGS_FORM_RADIO_CURRENCY_INPUT],  // test 9/20
+            'total'=>[self::$SELECTOR_SETTINGS_FORM_INPUT_TOTAL],                       // test 10/20
+            'active'=>[self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE],                    // test 11/20
         ];
     }
 
