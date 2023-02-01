@@ -100,8 +100,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     public function providerUnconfirmedEntry(): array {
         return [
-            'Expense'=>[true],  // test 1/25
-            'Income'=>[false],  // test 2/25
+            'Expense'=>[true],  // test 1/20
+            'Income'=>[false],  // test 2/20
         ];
     }
 
@@ -112,7 +112,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group entry-modal-1
-     * test (see provider)/25
+     * test (see provider)/20
      */
     public function testClickingOnEntryTableEditButtonOfUnconfirmedEntry(bool $is_expense) {
         $this->browse(function(Browser $browser) use ($is_expense) {
@@ -160,8 +160,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     public function providerConfirmedEntry(): array {
         return [
-            "Expense"=>[true],  // test 3/25
-            "Income"=>[false],  // test 4/25
+            "Expense"=>[true],  // test 3/20
+            "Income"=>[false],  // test 4/20
         ];
     }
 
@@ -172,7 +172,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group entry-modal-1
-     * test (see provider)/25
+     * test (see provider)/20
      */
     public function testClickingOnEntryTableEditButtonOfConfirmedEntry(bool $is_expense) {
         $this->browse(function(Browser $browser) use ($is_expense) {
@@ -234,7 +234,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group entry-modal-1
-     * test 5/25
+     * test 5/20
      */
     public function testClickingOnEntryTableEditButtonOfConfirmedEntryThenUnlock() {
         $this->browse(function(Browser $browser) {
@@ -282,7 +282,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group entry-modal-1
-     * test 6/25
+     * test 6/20
      */
     public function testClickingOnEntryTableEditButtonOfEntryWithAttachments() {
         $this->browse(function(Browser $browser) {
@@ -303,9 +303,9 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     public function providerEntryWithTags(): array {
         // [$data_entry_selector, $data_is_tags_input_visible]
         return [
-            // test 7/25
+            // test 7/20
             "Confirmed"=>[$this->randomConfirmedEntrySelector().$this->_class_has_tags, false],
-            // test 8/25
+            // test 8/20
             "Unconfirmed"=>[$this->randomUnconfirmedEntrySelector().$this->_class_has_tags, true],
         ];
     }
@@ -318,7 +318,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group entry-modal-1
-     * test (see provider)/25
+     * test (see provider)/20
      */
     public function testClickingOnEntryTableEditButtonOfEntryWithTags(string $data_entry_selector, bool $data_is_tags_input_visible) {
         $this->browse(function(Browser $browser) use ($data_entry_selector, $data_is_tags_input_visible) {
@@ -351,7 +351,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group entry-modal-1
-     * test 9/25
+     * test 9/20
      */
     public function testOpenAttachment() {
         $this->browse(function(Browser $browser) {
@@ -386,7 +386,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group entry-modal-1
-     * test 10/25
+     * test 10/20
      */
     public function testDeleteAttachmentFromExistingEntry() {
         $this->browse(function(Browser $browser) {
@@ -428,7 +428,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group entry-modal-1
-     * test 11/25
+     * test 11/20
      */
     public function testUpdateExistingEntryDate() {
         $this->browse(function(Browser $browser) {
@@ -477,7 +477,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group entry-modal-1
-     * test 12/25
+     * test 12/20
      */
     public function testUpdateExistingEntryAccountType() {
         $account_types = $this->getApiAccountTypes();
@@ -515,8 +515,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     public function providerUpdateEntry(): array {
         return [
-            'entry_value'=>[$this->_selector_modal_entry_field_value, 0.01],                                    // test 13/25
-            'memo'=>[$this->_selector_modal_entry_field_memo, "hfrsighesiugbeusigbweuisgbeisugsebuibseiugbg"],  // test 14/25
+            'entry_value'=>[$this->_selector_modal_entry_field_value, 0.01],                                    // test 13/20
+            'memo'=>[$this->_selector_modal_entry_field_memo, "hfrsighesiugbeusigbweuisgbeisugsebuibseiugbg"],  // test 14/20
         ];
     }
 
@@ -528,7 +528,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group entry-modal-1
-     * test (see provider)/25
+     * test (see provider)/20
      */
     public function testUpdateExistingEntryValue(string $field_selector, $new_value) {
         $this->browse(function(Browser $browser) use ($field_selector, $new_value) {
@@ -560,8 +560,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     public function providerOpenExistingEntryInModalThenChangeConfirmSwitch(): array {
         return [
-            'unconfirmed->confirmed'=>[false],  // test 15/25
-            'confirmed->unconfirmed'=>[true]    // test 16/25
+            'unconfirmed->confirmed'=>[false],  // test 15/20
+            'confirmed->unconfirmed'=>[true]    // test 16/20
         ];
     }
 
@@ -572,7 +572,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group entry-modal-1
-     * test (see provider)/25
+     * test (see provider)/20
      */
     public function testOpenExistingEntryInModalThenChangeConfirmSwitch(bool $selector_bool) {
         $entry_selector = $this->randomEntrySelector(['confirm'=>$selector_bool]);
@@ -620,8 +620,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     public function providerOpenExistingEntryInModalThenChangeExpenseIncomeSwitch(): array {
         return [
-            'expense->income'=>[true],  // test 17/25
-            'income->expense'=>[false], // test 18/25
+            'expense->income'=>[true],  // test 17/20
+            'income->expense'=>[false], // test 18/20
         ];
     }
 
@@ -632,7 +632,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group entry-modal-1
-     * test (see provider)/25
+     * test (see provider)/20
      */
     public function testOpenExistingEntryInModalThenChangeExpenseIncomeSwitch(bool $selector_bool) {
         $entry_selector = $this->randomEntrySelector(['expense'=>$selector_bool, 'confirm'=>false]);
@@ -666,7 +666,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group entry-modal-1
-     * test 19/25
+     * test 19/20
      */
     public function testExistingTransferEntryHasEntryButton() {
         $this->browse(function(Browser $browser) {
@@ -755,7 +755,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group entry-modal-1
-     * test 20/25
+     * test 20/20
      */
     public function testExistingExternalTransferEntryHasButtonButIsDisabled() {
         $this->browse(function(Browser $browser) {
@@ -794,8 +794,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * @group entry-modal-1
-     * test 21/25
+     * @group entry-modal-2
+     * test 1/20
      */
     public function testDeleteTagsFromExistingEntry() {
         // catch/create potentially missed database entries
@@ -839,8 +839,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * @group entry-modal-1
-     * test 22/25
+     * @group entry-modal-2
+     * test 2/20
      */
     public function testUpdateTagsInExistingEntry() {
         // make sure there is at least one tag that doesn't belong to an entry
@@ -895,8 +895,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * @group entry-modal-1
-     * test 23/25
+     * @group entry-modal-2
+     * test 3/20
      */
     public function testUploadAttachmentToExistingEntryWithoutSaving() {
         $this->browse(function(Browser $browser) {
@@ -923,8 +923,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * @group entry-modal-1
-     * test 24/25
+     * @group entry-modal-2
+     * test 4/20
      */
     public function testOpenExistingEntryInModalThenCloseModalAndOpenNewEntryModal() {
         $this->browse(function(Browser $browser) {
@@ -1003,15 +1003,15 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         $post_max_size=$this->convertPhpIniFileSizeToBytes(ini_get(self::INI_POSTMAXSIZE));
 
         return [
-            self::INI_UPLOADMAXFILESIZE.'+1'=>[  // test 1/25
+            self::INI_UPLOADMAXFILESIZE.'+1'=>[  // test 5/20
                 $upload_max_filesize+1,
                 'The file "%s" exceeds your upload_max_filesize ini directive'   // this text is lifted from vendor/symfony/http-foundation/File/UploadedFile.php#266
             ],
-            self::INI_POSTMAXSIZE=>[          // test 2/25
+            self::INI_POSTMAXSIZE=>[          // test 6/20
                 $post_max_size,
                 'The uploaded file exceeds your post_max_size ini directive.'   // this text is lifted from app/Exceptions/Handler.php#61
             ],
-            self::INI_POSTMAXSIZE.'+1'=>[        // test 3/25
+            self::INI_POSTMAXSIZE.'+1'=>[        // test 7/20
                 $post_max_size+1,
                 'The uploaded file exceeds your post_max_size ini directive.'   // this text is lifted from app/Exceptions/Handler.php#61
             ]
@@ -1024,8 +1024,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @param string $error_message
      *
      * @throws Throwable
-     * @group entry-modal-3
-     * test (see provider)/25
+     * @group entry-modal-2
+     * test (see provider)/20
      */
     public function testAttemptToAddAnAttachmentTooLargeToAnExistingEntry(int $max_upload_filesize, string $error_message) {
         $dummy_filename = $this->getTestDummyFilename();
@@ -1058,10 +1058,10 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     public function providerOpeningAnExistingEntryDoesNotResetEntryTableValues(): array {
         return [
-            'unconfirmed income'=>['is_expense'=>false, 'is_confirmed'=>false], // test 4/25
-            'unconfirmed expense'=>['is_expense'=>true, 'is_confirmed'=>false], // test 5/25
-            'confirmed income'=>['is_expense'=>false, 'is_confirmed'=>true],    // test 6/25
-            'confirmed expense'=>['is_expense'=>true, 'is_confirmed'=>true],    // test 7/25
+            'unconfirmed income'=>['is_expense'=>false, 'is_confirmed'=>false], // test 8/20
+            'unconfirmed expense'=>['is_expense'=>true, 'is_confirmed'=>false], // test 9/20
+            'confirmed income'=>['is_expense'=>false, 'is_confirmed'=>true],    // test 10/20
+            'confirmed expense'=>['is_expense'=>true, 'is_confirmed'=>true],    // test 11/20
         ];
     }
 
@@ -1071,8 +1071,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @param bool $is_confirmed
      * @throws Throwable
      *
-     * @group entry-modal-3
-     * test (see provider)/25
+     * @group entry-modal-2
+     * test (see provider)/20
      */
     public function testOpeningAnExistingEntryDoesNotResetEntryTableValues(bool $is_expense, bool $is_confirmed) {
         // GIVEN
@@ -1139,8 +1139,8 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @return void
      * @throws Throwable
      *
-     * @group entry-modal-3
-     * test 8/25
+     * @group entry-modal-2
+     * test 12/20
      */
     public function testMarkingEntryUnconfirmedAfterUnlockingMakesLockButtonDisappear() {
         $this->browse(function(Browser $browser) {
@@ -1163,23 +1163,25 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         });
     }
 
-    public function providerOpenExistingConfirmedEntryUnlockingChangingValuesAndRelockingResetsValues() {
+    public function providerOpenExistingConfirmedEntryUnlockingChangingValuesAndRelockingResetsValues(): array {
         return [
-            'date'=>[$this->_selector_modal_entry_field_date],                    // test 9/25
-            'value'=>[$this->_selector_modal_entry_field_value],                  // test 10/25
-            'account-type'=>[$this->_selector_modal_entry_field_account_type],    // test 11/25
-            'memo'=>[$this->_selector_modal_entry_field_memo],                    // test 12/25
-            'expense'=>[$this->_selector_modal_entry_field_expense],              // test 13/25
-            'tags'=>[$this->_selector_modal_entry_tags_locked],                   // test 14/25
+            'date'=>[$this->_selector_modal_entry_field_date],                    // test 13/20
+            'value'=>[$this->_selector_modal_entry_field_value],                  // test 14/20
+            'account-type'=>[$this->_selector_modal_entry_field_account_type],    // test 15/20
+            'memo'=>[$this->_selector_modal_entry_field_memo],                    // test 16/20
+            'expense'=>[$this->_selector_modal_entry_field_expense],              // test 17/20
+            'tags'=>[$this->_selector_modal_entry_tags_locked],                   // test 18/20
         ];
     }
 
     /**
      * @dataProvider providerOpenExistingConfirmedEntryUnlockingChangingValuesAndRelockingResetsValues
      * @param string $modal_input_selector
-     *
      * @return void
      * @throws Throwable
+     *
+     * @group entry-modal-2
+     * test (see provider)/20
      */
     public function testOpenExistingConfirmedEntryUnlockingChangingValuesAndRelockingResetsValues(string $modal_input_selector) {
         if ($modal_input_selector === $this->_selector_modal_entry_tags_locked) {

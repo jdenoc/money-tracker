@@ -22,6 +22,9 @@ class ATest extends DuskTestCase {
      * A basic browser test to make sure selenium integration works
      *
      * @throws \Throwable
+     *
+     * @group demo-1
+     * test 1/20
      */
     public function testBasicExample() {
         $this->browse(function(Browser $browser) {
@@ -34,9 +37,9 @@ class ATest extends DuskTestCase {
     public function providerTitleIsCorrect(): array {
         return [
             // [$url, $title]
-            'home'=>['/', "Money Tracker | HOME"],
-            'stats'=>['/stats', "Money Tracker | STATS"],
-            'settings'=>['/settings', 'Money Tracker | Settings'],
+            'home'=>['/', "Money Tracker | HOME"],                  // test 2/20
+            'stats'=>['/stats', "Money Tracker | STATS"],           // test 3/20
+            'settings'=>['/settings', 'Money Tracker | Settings'],  // test 4/20
         ];
     }
 
@@ -45,6 +48,9 @@ class ATest extends DuskTestCase {
      * @param string $url
      * @param string $title
      * @throws \Throwable
+     *
+     * @group demo-1
+     * test ?/20
      */
     public function testTitleAndFaviconAreCorrectAndPresent(string $url, string $title) {
         $favicon_file_paths = [

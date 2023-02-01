@@ -57,7 +57,7 @@ class TransferModalTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group transfer-modal-1
-     * test 1/25
+     * test 1/20
      */
     public function testTransferModalNotVisibleByDefault() {
         $this->browse(function(Browser $browser) {
@@ -71,7 +71,7 @@ class TransferModalTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group transfer-modal-1
-     * test 2/25
+     * test 2/20
      */
     public function testOpenTransferModalFromNavbarElement() {
         $this->browse(function(Browser $browser) {
@@ -86,7 +86,7 @@ class TransferModalTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group transfer-modal-1
-     * test 3/25
+     * test 3/20
      */
     public function testModalHeaderHasCorrectElements() {
         $this->browse(function(Browser $browser) {
@@ -106,7 +106,7 @@ class TransferModalTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group transfer-modal-1
-     * test 4/25
+     * test 4/20
      */
     public function testModalBodyHasCorrectElements() {
         $this->browse(function(Browser $browser) {
@@ -157,7 +157,7 @@ class TransferModalTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group transfer-modal-1
-     * test 5/25
+     * test 5/20
      */
     public function testModalFooterHasCorrectElements() {
         $this->browse(function(Browser $browser) {
@@ -180,7 +180,7 @@ class TransferModalTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group transfer-modal-1
-     * test 6/25
+     * test 6/20
      */
     public function testCloseTransferModalWithXButtonInHeader() {
         $this->browse(function(Browser $browser) {
@@ -199,7 +199,7 @@ class TransferModalTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group transfer-modal-1
-     * test 7/25
+     * test 7/20
      */
     public function testCloseTransferModalWithCancelButtonInFooter() {
         $this->browse(function(Browser $browser) {
@@ -218,7 +218,7 @@ class TransferModalTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group transfer-modal-1
-     * test 8/25
+     * test 8/20
      */
     public function testCloseTransferModalWithHotkey() {
         $this->markTestIncomplete("hotkey functionality requires further work");
@@ -236,7 +236,7 @@ class TransferModalTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group transfer-modal-1
-     * test 9/25
+     * test 9/20
      */
     public function testTransferValueConvertsIntoDecimalOfTwoPlaces() {
         $this->browse(function(Browser $browser) {
@@ -257,7 +257,7 @@ class TransferModalTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group transfer-modal-1
-     * test 10/25
+     * test 10/20
      */
     public function testFillFieldsToEnabledSaveButton() {
         $all_account_types = $this->getApiAccountTypes();
@@ -362,10 +362,10 @@ class TransferModalTest extends DuskTestCase {
     public function providerSelectingDisabledTransferAccountTypeMetaDataIsGrey(): array {
         // [$transfer_field, $account_type_method]
         return [
-            [self::$METHOD_TO, self::$METHOD_ACCOUNT],          // test 11/25
-            [self::$METHOD_TO, self::$METHOD_ACCOUNT_TYPE],     // test 12/25
-            [self::$METHOD_FROM, self::$METHOD_ACCOUNT],        // test 13/25
-            [self::$METHOD_FROM, self::$METHOD_ACCOUNT_TYPE],   // test 14/25
+            [self::$METHOD_TO, self::$METHOD_ACCOUNT],          // test 11/20
+            [self::$METHOD_TO, self::$METHOD_ACCOUNT_TYPE],     // test 12/20
+            [self::$METHOD_FROM, self::$METHOD_ACCOUNT],        // test 13/20
+            [self::$METHOD_FROM, self::$METHOD_ACCOUNT_TYPE],   // test 14/20
         ];
     }
 
@@ -377,7 +377,7 @@ class TransferModalTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group transfer-modal-1
-     * test (see provider)/25
+     * test (see provider)/20
      */
     public function testSelectingDisabledTransferAccountTypeMetaDataIsGrey(string $transfer_field, string $account_type_method) {
         $account_types = AccountType::all();
@@ -427,10 +427,10 @@ class TransferModalTest extends DuskTestCase {
     public function providerResetTransferModalFields(): array {
         return [
             // [$has_tags, $has_attachments]
-            'standard fields'=>[false, false],                           // test 15/25
-            'standard fields \w rawTagsData'=>[true, false],             // test 16/25
-            'standard fields \w attachments'=>[false, true],             // test 17/25
-            'standard fields \w rawTagsData & attachments'=>[true, true] // test 18/25
+            'standard fields'=>[false, false],                           // test 15/20
+            'standard fields \w rawTagsData'=>[true, false],             // test 16/20
+            'standard fields \w attachments'=>[false, true],             // test 17/20
+            'standard fields \w rawTagsData & attachments'=>[true, true] // test 18/20
         ];
     }
 
@@ -442,7 +442,7 @@ class TransferModalTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group transfer-modal-1
-     * test (see provider)/25
+     * test (see provider)/20
      */
     public function testResetTransferModalFields($has_tags, $has_attachments) {
         $all_account_types = $this->getApiAccountTypes();
@@ -518,18 +518,18 @@ class TransferModalTest extends DuskTestCase {
     public function providerSaveTransferEntry(): array {
         return [
             // [$is_to_account_external, $is_from_account_external, $has_tags, $has_attachments]
-            'TO account is external'                                   => [true,  false, false, false],    // test 1/25
-            'FROM account is external'                                 => [false, true,  false, false],    // test 2/25
-            'neither account is external'                              => [false, false, false, false],    // test 3/25
-            'TO account is external w\ rawTagsData'                    => [true,  false, true,  false],    // test 4/25
-            'FROM account is external w\ rawTagsData'                  => [false, true,  true,  false],    // test 5/25
-            'neither account is external w\ rawTagsData'               => [false, false, true,  false],    // test 6/25
-            'TO account is external w\ attachments'                    => [true,  false, false, true],     // test 7/25
-            'FROM account is external w\ attachments'                  => [false, true,  false, true],     // test 8/25
-            'neither account is external w\ attachments'               => [false, false, false, true],     // test 9/25
-            'TO account is external w\ rawTagsData & attachments'      => [true,  false, true,  true],     // test 10/25
-            'FROM account is external w\ rawTagsData & attachments'    => [false, true,  true,  true],     // test 11/25
-            'neither account is external w\ rawTagsData & attachments' => [false, false, true,  true],     // test 12/25
+            'TO account is external'                                   => [true,  false, false, false],    // test 1/20
+            'FROM account is external'                                 => [false, true,  false, false],    // test 2/20
+            'neither account is external'                              => [false, false, false, false],    // test 3/20
+            'TO account is external w\ rawTagsData'                    => [true,  false, true,  false],    // test 4/20
+            'FROM account is external w\ rawTagsData'                  => [false, true,  true,  false],    // test 5/20
+            'neither account is external w\ rawTagsData'               => [false, false, true,  false],    // test 6/20
+            'TO account is external w\ attachments'                    => [true,  false, false, true],     // test 7/20
+            'FROM account is external w\ attachments'                  => [false, true,  false, true],     // test 8/20
+            'neither account is external w\ attachments'               => [false, false, false, true],     // test 9/20
+            'TO account is external w\ rawTagsData & attachments'      => [true,  false, true,  true],     // test 10/20
+            'FROM account is external w\ rawTagsData & attachments'    => [false, true,  true,  true],     // test 11/20
+            'neither account is external w\ rawTagsData & attachments' => [false, false, true,  true],     // test 12/20
         ];
     }
 
@@ -543,7 +543,7 @@ class TransferModalTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group transfer-modal-2
-     * test (see provider)/25
+     * test (see provider)/20
      */
     public function testSaveTransferEntry(bool $is_to_account_external, bool $is_from_account_external, bool $has_tags, bool $has_attachments) {
         $this->browse(function(Browser $browser) use ($is_to_account_external, $is_from_account_external, $has_tags, $has_attachments) {
@@ -655,7 +655,7 @@ class TransferModalTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group transfer-modal-2
-     * test 13/25
+     * test 13/20
      */
     public function testOpeningMoreThanOneTransferEntryPairPerSession() {
         // GIVEN:

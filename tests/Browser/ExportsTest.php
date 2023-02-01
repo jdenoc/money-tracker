@@ -49,7 +49,7 @@ class ExportsTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group filter-modal-export-1
-     * test 1/25
+     * test 1/20
      */
     public function testExportButtonNotVisibleByDefault() {
         $this->browse(function(Browser $browser) {
@@ -64,7 +64,7 @@ class ExportsTest extends DuskTestCase {
     }
 
     public function providerExportButtonVisibleAfterFilterSetAndNotVisibleWhenCleared(): array {
-        return $this->filterModalInputs();    // test (?)/25
+        return $this->filterModalInputs();    // test (2 - 13)/20
     }
 
     /**
@@ -73,7 +73,7 @@ class ExportsTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group filter-modal-export-1
-     * test (see provider)/25
+     * test (see provider)/20
      */
     public function testExportButtonVisibleAfterFilterSetAndNotVisibleWhenCleared(string $filter_input_selector) {
         $this->browse(function(Browser $browser) use ($filter_input_selector) {
@@ -99,7 +99,7 @@ class ExportsTest extends DuskTestCase {
     public function providerPerformExport(): array {
         $filter_options = $this->filterModalInputs();
         unset($filter_options['Unconfirmed']);  // export does not include information indicating if an entry has been confirmed
-        return $filter_options;    // test (?)/25
+        return $filter_options;    // test (1 - 11)/20
     }
 
     /**
@@ -109,7 +109,7 @@ class ExportsTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group filter-modal-export-2
-     * test (see provider)/25
+     * test (see provider)/20
      */
     public function testPerformExport(string $filter_input_selector) {
         $this->browse(function(Browser $browser) use ($filter_input_selector) {

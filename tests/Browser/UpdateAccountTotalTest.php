@@ -59,8 +59,8 @@ class UpdateAccountTotalTest extends DuskTestCase {
 
     public function providerUpdateAccountTotalWithNewEntry(): array {
         return [
-            'expense'=>[true],   // test 1/25
-            'income'=>[false]    // test 2/25
+            'expense'=>[true],   // test 1/20
+            'income'=>[false]    // test 2/20
         ];
     }
 
@@ -70,8 +70,8 @@ class UpdateAccountTotalTest extends DuskTestCase {
      *
      * @throws Throwable
      *
-     * @group navigation-4
-     * test (see provider)/25
+     * @group navigation-5
+     * test (see provider)/20
      */
     public function testUpdateAccountTotalWithNewEntry(bool $is_entry_expense) {
         $this->browse(function(Browser $browser) use ($is_entry_expense) {
@@ -113,8 +113,8 @@ class UpdateAccountTotalTest extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * @group navigation-4
-     * test 3/25
+     * @group navigation-5
+     * test 3/20
      */
     public function testUpdateAccountTotalWithExistingEntryByTogglingIncomeExpense() {
         $this->browse(function(Browser $browser) {
@@ -153,8 +153,8 @@ class UpdateAccountTotalTest extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * @group navigation-4
-     * test 4/25
+     * @group navigation-5
+     * test 4/20
      */
     public function testUpdateAccountTotalWithExistingEntryByChangingValue() {
         $this->browse(function(Browser $browser) {
@@ -191,8 +191,8 @@ class UpdateAccountTotalTest extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * @group navigation-4
-     * test 5/25
+     * @group navigation-5
+     * test 5/20
      */
     public function testOpenExistingEntryAndDeleteIt() {
         $this->browse(function(Browser $browser) {
@@ -225,9 +225,9 @@ class UpdateAccountTotalTest extends DuskTestCase {
     public function providerUpdateAccountTotalsWithNewTransferEntries(): array {
         return [
             // [$is_from_account_external, $is_to_account_external]
-            'neither account is external'=>[false, false],  // test 6/25
-            '"to" account is external'=>[false, true],      // test 7/25
-            '"from" account is external'=>[true, false]     // test 8/25
+            'neither account is external'=>[false, false],  // test 6/20
+            '"to" account is external'=>[false, true],      // test 7/20
+            '"from" account is external'=>[true, false]     // test 8/20
             // there will NEVER be a [true, true] option. there can not be two "external" accounts
         ];
     }
@@ -239,8 +239,8 @@ class UpdateAccountTotalTest extends DuskTestCase {
      *
      * @throws Throwable
      *
-     * @group navigation-4
-     * test (see provider)/25
+     * @group navigation-5
+     * test (see provider)/20
      */
     public function testUpdateAccountTotalsWithNewTransferEntries(bool $is_from_account_external, bool $is_to_account_external) {
         $account = [];
