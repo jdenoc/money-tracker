@@ -4,6 +4,8 @@ namespace App\Console\Commands;
 
 use App\Models\Account;
 use App\Models\AccountTotalSanityCheck as SanityCheckAlertObject;
+use App\Models\Currency;
+use Brick\Money\Money;
 use Eklundkristoffer\DiscordWebhook\DiscordClient;
 use Eklundkristoffer\DiscordWebhook\DiscordContentObject;
 use Illuminate\Console\Command;
@@ -51,8 +53,8 @@ class AccountTotalSanityCheck extends Command {
             $sanity_check_object = new SanityCheckAlertObject();
             $sanity_check_object->account_id = 0;
             $sanity_check_object->account_name = 'Forced Failure';
-            $sanity_check_object->actual = 0;
-            $sanity_check_object->expected = 1;
+            $sanity_check_object->actual = Money::of(0, Currency::DEFAULT_CURRENCY_CODE);
+            $sanity_check_object->expected = Money::of(1, Currency::DEFAULT_CURRENCY_CODE);
 
             $this->notifySanityCheck($sanity_check_object);
         } else {
@@ -89,10 +91,8 @@ class AccountTotalSanityCheck extends Command {
 
     /**
      * make MySQL calls to retrieve data and perform account total sanity check
-     * @param Account $account
-     * @return SanityCheckAlertObject
      */
-    private function retrieveExpectedAccountTotalData($account) {
+    private function retrieveExpectedAccountTotalData(Account $account): SanityCheckAlertObject {
         $sanity_check_query = DB::table('entries')
             ->select(DB::raw("IFNULL( SUM( IF( entries.expense=1, -1*entries.entry_value, entries.entry_value ) ), 0 ) as actual"))
             ->join('account_types', function($join) use ($account) {
@@ -114,10 +114,10 @@ class AccountTotalSanityCheck extends Command {
          */
 
         $this->notifyInternally("Checking account ID:".$account->id, self::LOG_LEVEL_DEBUG);
-        $sanity_check_result = $sanity_check_query->get();
+        $sanity_check_result = $sanity_check_query->first();
         $sanity_check_object = new SanityCheckAlertObject();
-        $sanity_check_object->actual = $sanity_check_result[0]->actual;
-        $sanity_check_object->expected = $account->total;
+        $sanity_check_object->actual = Money::ofMinor($sanity_check_result->actual, $account->currency);
+        $sanity_check_object->expected = Money::of($account->total, $account->currency);
         $sanity_check_object->account_id = $account->id;
         $sanity_check_object->account_name = $account->name;
         return $sanity_check_object;
@@ -128,7 +128,7 @@ class AccountTotalSanityCheck extends Command {
      * @param SanityCheckAlertObject $sanity_check_object
      */
     private function notifySanityCheck($sanity_check_object) {
-        if ($sanity_check_object->diff() > 0) {
+        if ($sanity_check_object->diff()->isGreaterThan(0)) {
             $this->notifyInternally("Sanity check has failed", self::LOG_LEVEL_EMERGENCY);
             $this->notifyInternally($sanity_check_object, self::LOG_LEVEL_EMERGENCY);
             $webhook_data = new DiscordContentObject();
