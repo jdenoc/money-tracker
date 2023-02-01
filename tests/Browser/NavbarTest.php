@@ -36,9 +36,9 @@ class NavbarTest extends DuskTestCase {
 
     public function providerNavbarLogoVisible(): array {
         return [
-            'home'=>['home'],           // test 1/25
-            'stats'=>['stats'],         // test 2/25
-            'settings'=>['settings'],   // test 3/25
+            'home'=>['home'],           // test 1/20
+            'stats'=>['stats'],         // test 2/20
+            'settings'=>['settings'],   // test 3/20
         ];
     }
 
@@ -48,7 +48,7 @@ class NavbarTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group navigation-2
-     * test ?/25
+     * test ?/20
      */
     public function testNavbarLogoVisible(string $page_name) {
         $pageObject = $this->getDuskPageObject($page_name);
@@ -61,9 +61,9 @@ class NavbarTest extends DuskTestCase {
 
     public function providerNavbarAddEntryButton(): array {
         return [
-            'home'=>['home', true],             // test 4/25
-            'stats'=>['stats', false],          // test 5/25
-            'settings'=>['settings', false],    // test 6/25
+            'home'=>['home', true],             // test 4/20
+            'stats'=>['stats', false],          // test 5/20
+            'settings'=>['settings', false],    // test 6/20
         ];
     }
 
@@ -74,7 +74,7 @@ class NavbarTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group navigation-2
-     * test ?/25
+     * test ?/20
      */
     public function testNavbarAddEntryButton(string $page_name, bool $exists) {
         $pageObject = $this->getDuskPageObject($page_name);
@@ -97,9 +97,9 @@ class NavbarTest extends DuskTestCase {
 
     public function providerNavbarAddTransferButton(): array {
         return [
-            'home'=>['home', true],             // test 7/25
-            'stats'=>['stats', false],          // test 8/25
-            'settings'=>['settings', false],    // test 9/25
+            'home'=>['home', true],             // test 7/20
+            'stats'=>['stats', false],          // test 8/20
+            'settings'=>['settings', false],    // test 9/20
         ];
     }
 
@@ -110,7 +110,7 @@ class NavbarTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group navigation-2
-     * test ?/25
+     * test ?/20
      */
     public function testNavbarAddTransferButton(string $page_name, bool $exists) {
         $pageObject = $this->getDuskPageObject($page_name);
@@ -133,9 +133,9 @@ class NavbarTest extends DuskTestCase {
 
     public function providerNavbarFilterButtonExists(): array {
         return [
-            'home'=>['home', true],             // test 10/25
-            'stats'=>['stats', false],          // test 11/25
-            'settings'=>['settings', false],    // test 12/25
+            'home'=>['home', true],             // test 10/20
+            'stats'=>['stats', false],          // test 11/20
+            'settings'=>['settings', false],    // test 12/20
         ];
     }
 
@@ -146,7 +146,7 @@ class NavbarTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group navigation-2
-     * test ?/25
+     * test ?/20
      */
     public function testNavbarFilterButtonExists(string $page_name, bool $exists) {
         $pageObject = $this->getDuskPageObject($page_name);
@@ -169,9 +169,9 @@ class NavbarTest extends DuskTestCase {
 
     public function providerNavbarClickProfileImage(): array {
         return [
-            'home'=>['home'],           // test 13/25
-            'stats'=>['stats'],         // test 14/25
-            'settings'=>['settings'],   // test 15/25
+            'home'=>['home'],           // test 13/20
+            'stats'=>['stats'],         // test 14/20
+            'settings'=>['settings'],   // test 15/20
         ];
     }
 
@@ -181,7 +181,7 @@ class NavbarTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group navigation-2
-     * test ?/25
+     * test ?/20
      */
     public function testNavbarClickProfileImage(string $page_name) {
         $pageObject = $this->getDuskPageObject($page_name);
@@ -223,19 +223,19 @@ class NavbarTest extends DuskTestCase {
 
     public function providerNavbarSmScreenElementsNotVisibleByDefault(): array {
         return [
-            'home'=>['home'],           // test 16/25
-            'stats'=>['stats'],         // test 17/25
-            'settings'=>['settings'],   // test 18/25
+            'home'=>['home'],           // test 16/20
+            'stats'=>['stats'],         // test 17/20
+            'settings'=>['settings'],   // test 18/20
         ];
     }
 
     /**
-     * @dataProvider providerNavbarClickProfileImage
+     * @dataProvider providerNavbarSmScreenElementsNotVisibleByDefault
      * @param string $page_name
      * @throws Throwable
      *
      * @group navigation-2
-     * test ?/25
+     * test ?/20
      */
     public function testNavbarSmScreenElementsNotVisibleByDefault(string $page_name) {
         $pageObject = $this->getDuskPageObject($page_name);
@@ -252,9 +252,9 @@ class NavbarTest extends DuskTestCase {
 
     public function providerNavbarMdScreenElementsNotVisibleForSmScreenSize(): array {
         return [
-            'home'=>['home'],           // test 19/25
-            'stats'=>['stats'],         // test 20/25
-            'settings'=>['settings'],   // test 21/25
+            'home'=>['home'],           // test 1/20
+            'stats'=>['stats'],         // test 2/20
+            'settings'=>['settings'],   // test 3/20
         ];
     }
 
@@ -263,8 +263,8 @@ class NavbarTest extends DuskTestCase {
      * @param string $page_name
      * @throws Throwable
      *
-     * @group navigation-2
-     * test ?/25
+     * @group navigation-3
+     * test ?/20
      */
     public function testNavbarMdScreenElementsNotVisibleForSmScreenSize(string $page_name) {
         $pageObject = $this->getDuskPageObject($page_name);
@@ -289,9 +289,9 @@ class NavbarTest extends DuskTestCase {
 
     public function providerNavberSmScreenBurgerMenu(): array {
         return [
-            'home'=>['home'],           // test 22/25
-            'stats'=>['stats'],         // test 23/25
-            'settings'=>['settings'],   // test 24/25
+            'home'=>['home'],           // test 4/20
+            'stats'=>['stats'],         // test 5/20
+            'settings'=>['settings'],   // test 6/20
         ];
     }
 
@@ -300,8 +300,8 @@ class NavbarTest extends DuskTestCase {
      * @param string $page_name
      * @throws Throwable
      *
-     * @group navigation-2
-     * test ?/25
+     * @group navigation-3
+     * test ?/20
      */
     public function testNavberSmScreenBurgerMenu(string $page_name) {
         $pageObject = $this->getDuskPageObject($page_name);
@@ -348,9 +348,9 @@ class NavbarTest extends DuskTestCase {
 
     public function providerNavberSmScreenSidebar(): array {
         return [
-            'home'=>['home'],           // test 25/25
-            'stats'=>['stats'],         // test 26/25
-            'settings'=>['settings'],   // test 27/25
+            'home'=>['home'],           // test 7/20
+            'stats'=>['stats'],         // test 8/20
+            'settings'=>['settings'],   // test 9/20
         ];
     }
 
@@ -359,7 +359,7 @@ class NavbarTest extends DuskTestCase {
      * @param string $page_name
      * @throws Throwable
      *
-     * @group navigation-2
+     * @group navigation-3
      * test ?/25
      */
     public function testNavberSmScreenSidebar(string $page_name) {

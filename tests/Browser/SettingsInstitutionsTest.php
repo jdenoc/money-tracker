@@ -40,8 +40,8 @@ class SettingsInstitutionsTest extends SettingsBase {
 
     public function providerSaveExistingSettingNode(): array {
         return [
-            'name'=>[self::$SELECTOR_SETTINGS_FORM_INPUT_NAME],
-            'active'=>[self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE],
+            'name'=>[self::$SELECTOR_SETTINGS_FORM_INPUT_NAME],         // test 7/20
+            'active'=>[self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE],    // test 8/20
         ];
     }
 

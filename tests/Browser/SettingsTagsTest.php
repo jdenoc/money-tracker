@@ -33,7 +33,7 @@ class SettingsTagsTest extends SettingsBase {
 
     public function providerSaveExistingSettingNode(): array {
         return [
-            'tag'=>[self::$SELECTOR_SETTINGS_FORM_INPUT_NAME]
+            'tag'=>[self::$SELECTOR_SETTINGS_FORM_INPUT_NAME]   // test 7/20
         ];
     }
 

@@ -59,8 +59,8 @@ class EntryModalNewEntryTest extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * @group entry-modal-2
-     * test 1/25
+     * @group entry-modal-3
+     * test 1/20
      */
     public function testEntryModalIsNotVisibleByDefault() {
         $this->browse(function(Browser $browser) {
@@ -73,8 +73,8 @@ class EntryModalNewEntryTest extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * @group entry-modal-2
-     * test 2/25
+     * @group entry-modal-3
+     * test 2/20
      */
     public function testEntryModalIsVisibleWhenNavbarElementIsClicked() {
         $this->browse(function(Browser $browser) {
@@ -89,8 +89,8 @@ class EntryModalNewEntryTest extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * @group entry-modal-2
-     * test 3/25
+     * @group entry-modal-3
+     * test 3/20
      */
     public function testModalHeaderHasCorrectElements() {
         $this->browse(function(Browser $browser) {
@@ -110,8 +110,8 @@ class EntryModalNewEntryTest extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * @group entry-modal-2
-     * test 4/25
+     * @group entry-modal-3
+     * test 4/20
      */
     public function testCloseEntryModalWithXInModalHead() {
         $this->browse(function(Browser $browser) {
@@ -129,8 +129,8 @@ class EntryModalNewEntryTest extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * @group entry-modal-2
-     * test 5/25
+     * @group entry-modal-3
+     * test 5/20
      */
     public function testConfirmedButtonActivatesWhenClicked() {
         $this->browse(function(Browser $browser) {
@@ -149,8 +149,8 @@ class EntryModalNewEntryTest extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * @group entry-modal-2
-     * test 6/25
+     * @group entry-modal-3
+     * test 6/20
      */
     public function testModalBodyHasCorrectElements() {
         $this->browse(function(Browser $browser) {
@@ -203,8 +203,8 @@ class EntryModalNewEntryTest extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * @group entry-modal-2
-     * test 7/25
+     * @group entry-modal-3
+     * test 7/20
      */
     public function testModalFooterHasCorrectElements() {
         $this->browse(function(Browser $browser) {
@@ -230,8 +230,8 @@ class EntryModalNewEntryTest extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * @group entry-modal-2
-     * test 8/25
+     * @group entry-modal-3
+     * test 8/20
      */
     public function testCloseEntryModalWithCancelButton() {
         $this->browse(function(Browser $browser) {
@@ -249,8 +249,8 @@ class EntryModalNewEntryTest extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * @group entry-modal-2
-     * test 9/25
+     * @group entry-modal-3
+     * test 9/20
      */
     public function testCloseEntryModalWithHotkey() {
         $this->markTestIncomplete("hotkey functionality incomplete");
@@ -267,8 +267,8 @@ class EntryModalNewEntryTest extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * @group entry-modal-2
-     * test 10/25
+     * @group entry-modal-3
+     * test 10/20
      */
     public function testEntryValueConvertsIntoDecimalOfTwoPlaces() {
         $this->browse(function(Browser $browser) {
@@ -288,8 +288,8 @@ class EntryModalNewEntryTest extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * @group entry-modal-2
-     * test 11/25
+     * @group entry-modal-3
+     * test 11/20
      */
     public function testSelectingAccountTypeDisplaysAccountTypeMetaData() {
         $account_types = $this->getApiAccountTypes();
@@ -329,8 +329,8 @@ class EntryModalNewEntryTest extends DuskTestCase {
     public function providerSelectingDisabledAccountTypeMetaDataIsGrey(): array {
         // [$account_type_method]
         return [
-            [$this->method_account],        // test 12/25
-            [$this->method_account_type]    // test 13/25
+            [$this->method_account],        // test 12/20
+            [$this->method_account_type]    // test 13/20
         ];
     }
 
@@ -340,8 +340,8 @@ class EntryModalNewEntryTest extends DuskTestCase {
      *
      * @throws Throwable
      *
-     * @group entry-modal-2
-     * test (see provider)/25
+     * @group entry-modal-3
+     * test (see provider)/20
      */
     public function testSelectingDisabledAccountTypeMetaDataIsGrey(string $account_type_method) {
         $account_types = AccountType::all();
@@ -379,8 +379,8 @@ class EntryModalNewEntryTest extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * @group entry-modal-2
-     * test 14/25
+     * @group entry-modal-3
+     * test 14/20
      */
     public function testSelectingAccountTypeChangesCurrency() {
         // this test relies on a consistent database to test with
@@ -420,8 +420,8 @@ class EntryModalNewEntryTest extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * @group entry-modal-2
-     * test 15/25
+     * @group entry-modal-3
+     * test 15/20
      */
     public function testClickingExpenseIncomeSwitch() {
         $this->browse(function(Browser $browser) {
@@ -440,8 +440,8 @@ class EntryModalNewEntryTest extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * @group entry-modal-2
-     * test 16/25
+     * @group entry-modal-3
+     * test 16/20
      */
     public function testFillFieldsToEnabledSaveButton() {
         $account_types = $this->getApiAccountTypes();
@@ -495,8 +495,8 @@ class EntryModalNewEntryTest extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * @group entry-modal-2
-     * test 17/25
+     * @group entry-modal-3
+     * test 17/20
      */
     public function testUploadAttachmentToNewEntry() {
         $this->browse(function(Browser $browser) {
@@ -515,8 +515,8 @@ class EntryModalNewEntryTest extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * @group entry-modal-2
-     * test 18/25
+     * @group entry-modal-3
+     * test 18/20
      */
     public function testUploadAttachmentAndAttachmentIsNotPresentAfterClosingAndReopeningModal() {
         $this->browse(function(Browser $browser) {
@@ -543,8 +543,8 @@ class EntryModalNewEntryTest extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * @group entry-modal-2
-     * test 19/25
+     * @group entry-modal-3
+     * test 19/20
      */
     public function testTagsInputAutoComplete() {
         // select tag at random and input the first few characters into the tags-input field
@@ -563,10 +563,50 @@ class EntryModalNewEntryTest extends DuskTestCase {
         });
     }
 
+    /**
+     * @throws Throwable
+     *
+     * @group entry-modal-3
+     * test 20/20
+     */
+    public function testCreateConfirmedEntry() {
+        $account_types = $this->getApiAccountTypes();
+        $account_type = $account_types[array_rand($account_types, 1)];
+
+        $this->browse(function(Browser $browser) use ($account_type) {
+            $memo_field = "Test entry - confirmed";
+            $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
+            $this->openNewEntryModal($browser);
+            $browser
+                ->within($this->_selector_modal_entry.' '.$this->_selector_modal_head, function(Browser $modal_head) {
+                    $this->interactWithConfirmButton($modal_head);
+                })
+                ->within($this->_selector_modal_entry.' '.$this->_selector_modal_body, function($modal_body) use ($account_type, $memo_field) {
+                    $this->waitUntilSelectLoadingIsMissing($modal_body, $this->_selector_modal_entry_field_account_type);
+                    $modal_body
+                        ->type($this->_selector_modal_entry_field_value, "9.99")
+                        ->select($this->_selector_modal_entry_field_account_type, $account_type['id'])
+                        ->type($this->_selector_modal_entry_field_memo, $memo_field);
+                })
+                ->within($this->_selector_modal_entry.' '.$this->_selector_modal_foot, function($modal_foot) {
+                    $modal_foot->click($this->_selector_modal_entry_btn_save);
+                });
+            $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_SUCCESS, $this->_label_notification_new_entry_created);
+            $this->dismissNotification($browser);
+            $this->waitForLoadingToStop($browser);
+            $browser
+                ->assertMissing($this->_selector_modal_entry)
+                ->with($this->_selector_table.' '.$this->_selector_table_confirmed_expense, function($table_row) use ($memo_field) {
+                    $table_row->assertSee($memo_field);
+                });
+        });
+    }
+
     public function providerCreateEntryWithMinimumRequirements(): array {
         return [
-            'expense'=>[true],  // 20/25
-            'income'=>[false]   // 21/25
+            'expense'=>[true],  // 1/20
+            'income'=>[false]   // 2/20
         ];
     }
 
@@ -575,8 +615,8 @@ class EntryModalNewEntryTest extends DuskTestCase {
      * @param bool $is_expense
      * @throws Throwable
      *
-     * @group entry-modal-2
-     * test (see provider)/25
+     * @group entry-modal-4
+     * test (see provider)/20
      */
     public function testCreateEntryWithMinimumRequirements(bool $is_expense) {
         $account_types = $this->getApiAccountTypes();
@@ -615,53 +655,13 @@ class EntryModalNewEntryTest extends DuskTestCase {
         });
     }
 
-    /**
-     * @throws Throwable
-     *
-     * @group entry-modal-2
-     * test 22/25
-     */
-    public function testCreateConfirmedEntry() {
-        $account_types = $this->getApiAccountTypes();
-        $account_type = $account_types[array_rand($account_types, 1)];
-
-        $this->browse(function(Browser $browser) use ($account_type) {
-            $memo_field = "Test entry - confirmed";
-            $browser->visit(new HomePage());
-            $this->waitForLoadingToStop($browser);
-            $this->openNewEntryModal($browser);
-            $browser
-                ->within($this->_selector_modal_entry.' '.$this->_selector_modal_head, function(Browser $modal_head) {
-                    $this->interactWithConfirmButton($modal_head);
-                })
-                ->within($this->_selector_modal_entry.' '.$this->_selector_modal_body, function($modal_body) use ($account_type, $memo_field) {
-                    $this->waitUntilSelectLoadingIsMissing($modal_body, $this->_selector_modal_entry_field_account_type);
-                    $modal_body
-                        ->type($this->_selector_modal_entry_field_value, "9.99")
-                        ->select($this->_selector_modal_entry_field_account_type, $account_type['id'])
-                        ->type($this->_selector_modal_entry_field_memo, $memo_field);
-                })
-                ->within($this->_selector_modal_entry.' '.$this->_selector_modal_foot, function($modal_foot) {
-                    $modal_foot->click($this->_selector_modal_entry_btn_save);
-                });
-            $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_SUCCESS, $this->_label_notification_new_entry_created);
-            $this->dismissNotification($browser);
-            $this->waitForLoadingToStop($browser);
-            $browser
-                ->assertMissing($this->_selector_modal_entry)
-                ->with($this->_selector_table.' '.$this->_selector_table_confirmed_expense, function($table_row) use ($memo_field) {
-                    $table_row->assertSee($memo_field);
-                });
-        });
-    }
-
     public function providerCreateGenericEntry(): array {
         return [
             // [$has_tags, $has_attachments]
-            [false, false], // test 23/25
-            [true, false],  // test 24/25
-            [false, true],  // test 25/25
-            [true, true]    // test 26/25
+            [false, false], // test 3/20
+            [true, false],  // test 4/20
+            [false, true],  // test 5/20
+            [true, true]    // test 6/20
         ];
     }
 
@@ -672,8 +672,8 @@ class EntryModalNewEntryTest extends DuskTestCase {
      *
      * @throws Throwable
      *
-     * @group entry-modal-2
-     * test (see provider)/25
+     * @group entry-modal-4
+     * test (see provider)/20
      */
     public function testCreateGenericEntry(bool $has_tags, bool $has_attachments) {
         $account_types = $this->getApiAccountTypes();

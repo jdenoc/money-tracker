@@ -32,7 +32,7 @@ class InstitutionsPanelTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group navigation-1
-     * test 1/25
+     * test 1/20
      */
     public function testOverviewOptionIsVisibleAndActiveByDefault() {
         $this->browse(function(Browser $browser) {
@@ -55,7 +55,7 @@ class InstitutionsPanelTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group navigation-1
-     * test 2/25
+     * test 2/20
      */
     public function testActiveInstitutionsAreVisibleWithAccountsAndClickingOnAnAccountFiltersEntries() {
         $institutions_collection = $this->getInstitutionsCollection();
@@ -106,7 +106,7 @@ class InstitutionsPanelTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group navigation-1
-     * test 3/25
+     * test 3/20
      */
     public function testDisabledAccountsElementNotVisibleIfNoDisabledAccountsExist() {
         $institutions_collection = $this->getInstitutionsCollection(false);
@@ -125,7 +125,7 @@ class InstitutionsPanelTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group navigation-1
-     * test 4/25
+     * test 4/20
      */
     public function testDisabledAccountsAreVisibleAndClickingOnADisabledAccountFiltersEntries() {
         $institutions_collection = $this->getInstitutionsCollection(false);
@@ -165,13 +165,13 @@ class InstitutionsPanelTest extends DuskTestCase {
 
     public function providerAccountTotalValueIsTwoDecimalPlaces(): array {
         return [
-            ["0.12"],   // test 5/25
-            ["0.10"],   // test 6/25
-            ["0.01"],   // test 7/25
-            ["0.00"],   // test 8/25
-            ["-0.01"],  // test 9/25
-            ["-0.10"],  // test 10/25
-            ["-0.12"]   // test 11/25
+            ["0.12"],   // test 5/20
+            ["0.10"],   // test 6/20
+            ["0.01"],   // test 7/20
+            ["0.00"],   // test 8/20
+            ["-0.01"],  // test 9/20
+            ["-0.10"],  // test 10/20
+            ["-0.12"]   // test 11/20
         ];
     }
 
@@ -182,7 +182,7 @@ class InstitutionsPanelTest extends DuskTestCase {
      * @throws Throwable
      *
      * @group navigation-1
-     * test (see provider)/25
+     * test (see provider)/20
      */
     public function testAccountTotalValueIsTwoDecimalPlaces(string $test_total) {
         DB::table('institutions')->truncate();

@@ -62,8 +62,8 @@ class PaginationTest extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * @group navigation-3
-     * test 1/25
+     * @group navigation-4
+     * test 1/20
      */
     public function testPaginationButtonsNotVisibleIfEntryCountLessThanPageMax() {
         Entry::factory()->count(self::$ENTRY_COUNT_ONE)->create($this->entryOverrideAttributes());
@@ -82,8 +82,8 @@ class PaginationTest extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * @group navigation-3
-     * test 2/25
+     * @group navigation-4
+     * test 2/20
      */
     public function testNextPaginationButtonVisibleIfEntryCountGreaterThanPageMax() {
         Entry::factory()->count(self::$ENTRY_COUNT_TWO)->create($this->entryOverrideAttributes());
@@ -102,8 +102,8 @@ class PaginationTest extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * @group navigation-3
-     * test 3/25
+     * @group navigation-4
+     * test 3/20
      */
     public function testPreviousPaginationButtonsVisiblePagedToNextPage() {
         Entry::factory()->count(self::$ENTRY_COUNT_THREE)->create($this->entryOverrideAttributes());
@@ -135,8 +135,8 @@ class PaginationTest extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * @group navigation-3
-     * test 4/25
+     * @group navigation-4
+     * test 4/20
      */
     public function testClickPreviousPaginationButtonToViewFirstPageOfEntries() {
         Entry::factory()->count(self::$ENTRY_COUNT_TWO)->create($this->entryOverrideAttributes());
@@ -160,8 +160,8 @@ class PaginationTest extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * @group navigation-3
-     * test 5/25
+     * @group navigation-4
+     * test 5/20
      */
     public function testPaginationWithEntryCreationUsingEntryModal() {
         Entry::factory()->count(self::$ENTRY_COUNT_TWO)->create($this->entryOverrideAttributes());
@@ -205,8 +205,8 @@ class PaginationTest extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * @group navigation-3
-     * test 6/25
+     * @group navigation-4
+     * test 6/20
      */
     public function testPaginationWithEntryCreationUsingTransferModal() {
         Entry::factory()->count(self::$ENTRY_COUNT_TWO)->create($this->entryOverrideAttributes());
@@ -253,8 +253,8 @@ class PaginationTest extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * @group navigation-3
-     * test 7/25
+     * @group navigation-4
+     * test 7/20
      */
     public function testNextButtonNotVisibleWhenNoEntriesProvidedByFilter() {
         Entry::factory()->count(self::$ENTRY_COUNT_TWO)->create($this->entryOverrideAttributes());
