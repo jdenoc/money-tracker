@@ -10,6 +10,7 @@ use App\Traits\EntryFilterKeys;
 use App\Traits\MaxEntryResponseValue;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Tests\TestCase;
 
@@ -160,6 +161,7 @@ class ListEntriesBase extends TestCase {
                 'entry ID:'.$entry_in_response['id']."\ndisabled entries:".json_encode($generated_disabled_entries)."\nresponse entries:".json_encode($entries_in_response)
             );
 
+            /** @var Entry $generated_entry */
             $generated_entry = $generated_entries->where('id', $entry_in_response['id'])->first();
             $failure_msg = "generated entries:".json_encode($generated_entry)."\nresponse entry:".json_encode($entry_in_response);
             $this->assertNotEmpty($generated_entry, $failure_msg);
@@ -167,12 +169,13 @@ class ListEntriesBase extends TestCase {
             $this->assertDatetimeWithinOneSecond($generated_entry->{Entry::CREATED_AT}, $entry_in_response[Entry::CREATED_AT], $failure_msg);
             $this->assertDateFormat($entry_in_response[Entry::UPDATED_AT], Carbon::ATOM, $failure_msg);
             $this->assertDatetimeWithinOneSecond($generated_entry->{Entry::UPDATED_AT}, $entry_in_response[Entry::UPDATED_AT], $failure_msg);
+            $this->assertEquals(Arr::sort($generated_entry->tags), Arr::sort($entry_in_response['tags']), $failure_msg);
 
             $generated_entry_as_array = $generated_entry->toArray();
-            unset(
-                $generated_entry_as_array[Entry::CREATED_AT], $generated_entry_as_array[Entry::UPDATED_AT],
-                $entry_in_response[Entry::CREATED_AT], $entry_in_response[Entry::UPDATED_AT],
-            );
+            $elements_to_unset = [Entry::CREATED_AT, Entry::UPDATED_AT, 'tags'];
+            foreach ($elements_to_unset as $element_to_unset) {
+                unset($generated_entry_as_array[$element_to_unset], $entry_in_response[$element_to_unset]);
+            }
             $this->assertEquals($generated_entry_as_array, $entry_in_response, $failure_msg);
 
             // testing sort order
