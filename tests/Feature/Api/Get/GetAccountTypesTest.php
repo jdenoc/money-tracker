@@ -3,6 +3,7 @@
 namespace Tests\Feature\Api\Get;
 
 use App\Models\AccountType;
+use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Foundation\Testing\WithFaker;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
@@ -27,7 +28,12 @@ class GetAccountTypesTest extends TestCase {
     public function testGetAccountTypes() {
         // GIVEN
         $account_type_count = $this->faker->randomDigitNotZero();
-        $generated_account_types = AccountType::factory()->count($account_type_count)->create(['disabled'=>function() { return $this->faker->boolean(); }]);
+        $generated_account_types = AccountType::factory()
+            ->count($account_type_count)
+            ->state(new Sequence(function() {
+                return [AccountType::DELETED_AT=>($this->faker->boolean() ? null : now())];
+            }))
+            ->create();
 
         // WHEN
         $response = $this->get($this->_uri);
@@ -41,7 +47,7 @@ class GetAccountTypesTest extends TestCase {
         $this->assertEquals($account_type_count, $response_as_array['count']);
         unset($response_as_array['count']);
 
-        $expected_elements = ['id', 'type', 'last_digits', 'name', 'account_id', 'disabled', AccountType::CREATED_AT, AccountType::UPDATED_AT, 'disabled_stamp'];
+        $expected_elements = ['id', 'type', 'last_digits', 'name', 'account_id', 'active', AccountType::CREATED_AT, AccountType::UPDATED_AT, AccountType::DELETED_AT];
         foreach ($response_as_array as $account_type_in_response) {
             $this->assertEqualsCanonicalizing($expected_elements, array_keys($account_type_in_response));
             $generated_account_type = $generated_account_types->where('id', $account_type_in_response['id'])->first();

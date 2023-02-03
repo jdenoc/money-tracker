@@ -47,11 +47,11 @@ class GetAccountTypeTest extends TestCase {
      * @param AccountType $generated_account_type
      */
     private function assertAccountTypeDetailsOK(array $response_as_array, $generated_account_type) {
-        $expected_elements = ['id', 'name', 'account_id', 'disabled', 'type', 'last_digits', AccountType::CREATED_AT, AccountType::UPDATED_AT, 'disabled_stamp'];
+        $expected_elements = ['id', 'name', 'account_id', 'active', 'type', 'last_digits', AccountType::CREATED_AT, AccountType::UPDATED_AT, AccountType::DELETED_AT];
         $this->assertEqualsCanonicalizing($expected_elements, array_keys($response_as_array));
         foreach ($expected_elements as $element) {
             switch($element) {
-                case 'disabled':
+                case 'active':
                     $this->assertIsBool($response_as_array[$element]);
                     $this->assertEquals($generated_account_type->$element, $response_as_array[$element]);
                     break;
@@ -59,12 +59,12 @@ class GetAccountTypeTest extends TestCase {
                 case AccountType::UPDATED_AT:
                     $this->assertDateFormat($response_as_array[$element], DATE_ATOM, $response_as_array[$element]." not in correct format");
                     break;
-                case 'disabled_stamp':
+                case AccountType::DELETED_AT:
                     $this->assertArrayHasKey($element, $response_as_array);
-                    if ($response_as_array['disabled']) {
-                        $this->assertDateFormat($response_as_array[$element], DATE_ATOM, $response_as_array[$element]." not in correct format");
-                    } else {
+                    if ($response_as_array['active']) {
                         $this->assertNull($response_as_array[$element]);
+                    } else {
+                        $this->assertDateFormat($response_as_array[$element], DATE_ATOM, $response_as_array[$element]." not in correct format");
                     }
                     break;
                 default:

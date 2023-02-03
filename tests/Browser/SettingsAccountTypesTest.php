@@ -33,7 +33,7 @@ class SettingsAccountTypesTest extends SettingsBase {
     private static string $SELECTOR_SETTINGS_FORM_LOADING_ACCOUNT = "div:nth-child(8) span.loading";
     private static string $SELECTOR_SETTINGS_FORM_SELECT_ACCOUNT = "div:nth-child(8) select#settings-account-type-account";
     private static string $SELECTOR_SETTINGS_FORM_LABEL_ACTIVE = "label[for='settings-account-type-disabled']:nth-child(9)";
-    private static string $SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE = "div:nth-child(10) #settings-account-type-disabled";
+    protected static string $SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE = "div:nth-child(10) #settings-account-type-disabled";
     private static string $SELECTOR_SETTINGS_FORM_LABEL_CREATED = "div:nth-child(11)";
     private static string $SELECTOR_SETTINGS_FORM_CREATED = "div:nth-child(12)";
     private static string $SELECTOR_SETTINGS_FORM_LABEL_MODIFIED = "div:nth-child(13)";
@@ -218,6 +218,10 @@ class SettingsAccountTypesTest extends SettingsBase {
         return AccountType::all();
     }
 
+    protected function generateObject(bool $isInitObjectActive): BaseModel {
+        // TODO: Implement generateObject() method.
+    }
+
     protected function interactWithObjectListItem(Browser $section, BaseModel $object, bool $is_fresh_load=true) {
         $this->assertObjectIsOfType($object, AccountType::class);
 
@@ -275,6 +279,10 @@ class SettingsAccountTypesTest extends SettingsBase {
             default:
                 throw new \UnexpectedValueException(sprintf("Unexpected form element [%s] provided", $selector));
         }
+    }
+
+    public function providerDisablingOrRestoringAccount(): array {
+        // TODO: Implement providerDisablingOrRestoringAccount() method.
     }
 
 }

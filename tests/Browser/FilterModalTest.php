@@ -12,6 +12,7 @@ use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
 use App\Traits\Tests\Dusk\TagsInput as DuskTraitTagsInput;
 use App\Traits\Tests\WithTailwindColors;
 use Facebook\WebDriver\WebDriverBy;
+use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
@@ -320,8 +321,8 @@ class FilterModalTest extends DuskTestCase {
      * test (see provider)/20
      */
     public function testFlipAccountAndAccountTypeSwitch(bool $has_disabled_account, bool $has_disabled_account_type) {
-        DB::table('accounts')->truncate();
-        DB::table('account_types')->truncate();
+        DB::table(Account::getTableName())->truncate();
+        DB::table(AccountType::getTableName())->truncate();
 
         $institutions = $this->getApiInstitutions();
         $institution_id = collect($institutions)->pluck('id')->random(1)->first();
@@ -332,9 +333,10 @@ class FilterModalTest extends DuskTestCase {
         }
         $accounts = $this->getApiAccounts();
 
-        AccountType::factory()->count(3)->create(['disabled'=>0, 'account_id'=>collect($accounts)->pluck('id')->random(1)->first()]);
+        $random_account_id = new Sequence(function() use ($accounts) { return collect($accounts)->random()->id; });
+        AccountType::factory()->count(3)->state($random_account_id)->create([AccountType::DELETED_AT=>null]);
         if ($has_disabled_account_type) {
-            AccountType::factory()->count(1)->create(['disabled'=>1, 'account_id'=>collect($accounts)->pluck('id')->random(1)->first()]);
+            AccountType::factory()->count(1)->state($random_account_id)->create([AccountType::DELETED_AT=>now()]);
         }
         $account_types = $this->getApiAccountTypes();
 

@@ -4,7 +4,9 @@ namespace App\Console\Commands;
 
 use App\Models\Account;
 use App\Models\AccountTotalSanityCheck as SanityCheckAlertObject;
+use App\Models\AccountType;
 use App\Models\Currency;
+use App\Models\Entry;
 use Brick\Money\Money;
 use Eklundkristoffer\DiscordWebhook\DiscordClient;
 use Eklundkristoffer\DiscordWebhook\DiscordContentObject;
@@ -93,14 +95,14 @@ class AccountTotalSanityCheck extends Command {
      * make MySQL calls to retrieve data and perform account total sanity check
      */
     private function retrieveExpectedAccountTotalData(Account $account): SanityCheckAlertObject {
-        $sanity_check_query = DB::table('entries')
-            ->select(DB::raw("IFNULL( SUM( IF( entries.expense=1, -1*entries.entry_value, entries.entry_value ) ), 0 ) as actual"))
-            ->join('account_types', function($join) use ($account) {
-                $join->on('entries.account_type_id', '=', 'account_types.id')
-                    ->where('account_types.account_id', $account->id);
+        $sanity_check_query = DB::table(Entry::getTableName())
+            ->select(DB::raw("IFNULL( SUM( IF( ".Entry::getTableName().".expense=1, -1*".Entry::getTableName().".entry_value, ".Entry::getTableName().".entry_value ) ), 0 ) as actual"))
+            ->join(AccountType::getTableName(), function($join) use ($account) {
+                $join->on(Entry::getTableName().'.account_type_id', '=', AccountType::getTableName().'.id')
+                    ->where(AccountType::getTableName().'.account_id', $account->id);
             })
-            ->where('entries.disabled', '0')
-            ->orderBy(DB::raw('entries.entry_date desc, entries.id'), 'desc');
+            ->where(Entry::getTableName().'.disabled', '0')
+            ->orderBy(DB::raw(Entry::getTableName().'.entry_date desc, '.Entry::getTableName().'.id'), 'desc');
         /**
          * The above stuff is translated into MySQL here:
             SELECT

@@ -31,9 +31,12 @@ class PutAccountTypeTest extends TestCase {
         AccountType::factory()
             ->count(5)
             ->state(new Sequence(function() use ($accounts) {
-                return ['account_id'=>$accounts->random()->id];
+                return [
+                    'account_id'=>$accounts->random()->id,
+                    AccountType::DELETED_AT=>null
+                ];
             }))
-            ->create(['disabled'=>false]);
+            ->create();
     }
 
     public function testUpdateAccountTypeWithoutData() {

@@ -95,6 +95,10 @@ class SettingsTagsTest extends SettingsBase {
         return Tag::all();
     }
 
+    protected function generateObject(bool $isInitObjectActive): BaseModel {
+        // TODO: Implement generateObject() method.
+    }
+
     protected function interactWithObjectListItem(Browser $section, BaseModel $object, bool $is_fresh_load=true) {
         $this->assertObjectIsOfType($object, Tag::class);
 
@@ -123,6 +127,10 @@ class SettingsTagsTest extends SettingsBase {
             default:
                 throw new \UnexpectedValueException(sprintf("Unexpected form element [%s] provided", $selector));
         }
+    }
+
+    public function providerDisablingOrRestoringAccount(): array {
+        // TODO: Implement providerDisablingOrRestoringAccount() method.
     }
 
 }

@@ -30,10 +30,7 @@ class DeleteAttachmentTest extends TestCase {
     public function testDeleteAttachment() {
         // GIVEN
         $generated_entry = Entry::factory()
-            ->for(
-                AccountType::factory()
-                    ->for(Account::factory())
-            )
+            ->for(AccountType::factory()->for(Account::factory()))
             ->create();
         $generated_attachment = Attachment::factory()->for($generated_entry)->create();
 

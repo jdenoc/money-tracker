@@ -22,7 +22,7 @@ class GetAccountTest extends TestCase {
         $generated_account = Account::factory()->create();
         $generated_account_types = AccountType::factory()->count($account_type_count)->for($generated_account)->create();
         // These nodes are not in the response output. Let's hide them from the object collection
-        $generated_account_types->makeHidden(['account_id', 'last_updated', AccountType::CREATED_AT, AccountType::UPDATED_AT, 'disabled_stamp']);
+        $generated_account_types->makeHidden(['account_id', 'last_updated', AccountType::CREATED_AT, AccountType::UPDATED_AT, AccountType::DELETED_AT]);
 
         // WHEN
         $response = $this->get(sprintf($this->_base_uri, $generated_account->id));
@@ -40,11 +40,11 @@ class GetAccountTest extends TestCase {
         /** @var Account $generated_account */
         $generated_account = Account::factory()->create();
         $generated_account_types = AccountType::factory()->count($account_type_count)->for($generated_account)->create();
-        $generated_disabled_account_type = AccountType::factory()->for($generated_account)->create(['disabled'=>true]);
+        $generated_disabled_account_type = AccountType::factory()->for($generated_account)->create([AccountType::DELETED_AT=>now()]);
         $account_type_count++;
         $generated_account_types->push($generated_disabled_account_type);
         // These nodes are not in the response output. Let's hide them from the object collection
-        $generated_account_types->makeHidden(['account_id', 'last_updated', AccountType::CREATED_AT, AccountType::UPDATED_AT, 'disabled_stamp']);
+        $generated_account_types->makeHidden(['account_id', 'last_updated', AccountType::CREATED_AT, AccountType::UPDATED_AT, AccountType::DELETED_AT]);
 
         // WHEN
         $response = $this->get(sprintf($this->_base_uri, $generated_account->id));
@@ -74,7 +74,7 @@ class GetAccountTest extends TestCase {
         $account_type_count = $this->faker->randomDigitNotZero();
         /** @var Account $generated_account */
         $generated_account = Account::factory()->create();
-        AccountType::factory()->count($account_type_count)->for($generated_account)->create(['disabled'=>true]);
+        AccountType::factory()->count($account_type_count)->for($generated_account)->create([AccountType::DELETED_AT=>now()]);
 
         // WHEN
         $response = $this->get(sprintf($this->_base_uri, $generated_account->id));
@@ -103,7 +103,7 @@ class GetAccountTest extends TestCase {
      * @param int $account_type_count
      */
     private function assertAccountDetailsOK(array $response_as_array, $generated_account, int $account_type_count) {
-        $expected_elements = ['id', 'name', 'institution_id', 'active', 'total', 'currency', 'account_types', Account::CREATED_AT, Account::UPDATED_AT, 'disabled_stamp'];
+        $expected_elements = ['id', 'name', 'institution_id', 'active', 'total', 'currency', 'account_types', Account::CREATED_AT, Account::UPDATED_AT, Account::DELETED_AT];
         $this->assertEqualsCanonicalizing($expected_elements, array_keys($response_as_array));
         foreach ($expected_elements as $expected_element) {
             switch ($expected_element) {

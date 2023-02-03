@@ -73,12 +73,11 @@ class AccountController extends Controller {
     public function disableAccount(int $accountId): Response {
         try {
             $account_to_disable = Account::findOrFail($accountId);
+            $account_to_disable->delete();
+            return response('', HttpStatus::HTTP_NO_CONTENT);
         } catch (\Exception $e) {
             return response('', HttpStatus::HTTP_NOT_FOUND);
         }
-
-        $account_to_disable->delete();
-        return response('', HttpStatus::HTTP_NO_CONTENT);
     }
 
     /**

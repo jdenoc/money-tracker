@@ -18,10 +18,7 @@ class DeleteEntryTest extends TestCase {
     public function testMarkingEntryDeleted() {
         // GIVEN
         $entry = Entry::factory()
-            ->for(
-                AccountType::factory()
-                    ->for(Account::factory())
-            )
+            ->for(AccountType::factory()->for(Account::factory()))
             ->create();
 
         // WHEN

@@ -34,7 +34,7 @@ class DeleteAccountTypeTest extends TestCase {
     public function testDisablingAccountType() {
         // GIVEN
         $generated_account = Account::factory()->create();
-        $generated_account_type = AccountType::factory()->for($generated_account)->create(['disabled'=>false, 'disabled_stamp'=>null]);
+        $generated_account_type = AccountType::factory()->for($generated_account)->create([AccountType::DELETED_AT=>null]);
         $account_uri = sprintf(self::PLACEHOLDER_URI_ACCOUNT, $generated_account->id);
         $account_type_uri = sprintf(self::PLACEHOLDER_URI_ACCOUNT_TYPE, $generated_account_type->id);
 
@@ -50,8 +50,8 @@ class DeleteAccountTypeTest extends TestCase {
         $account_type_response1_as_array = $account_type_response1->json();
         $error_msg = "Content: ".$account_type_response1->getContent();
         $this->assertNotEmpty($account_type_response1_as_array, $error_msg);
-        $this->assertArrayHasKey('disabled', $account_type_response1_as_array, $error_msg);
-        $this->assertFalse($account_type_response1_as_array['disabled'], $error_msg);
+        $this->assertArrayHasKey('active', $account_type_response1_as_array, $error_msg);
+        $this->assertTrue($account_type_response1_as_array['active'], $error_msg);
         $this->assertArrayHasKey('disabled_stamp', $account_type_response1_as_array, $error_msg);
         $this->assertNull($account_type_response1_as_array['disabled_stamp'], $error_msg);
 
@@ -59,13 +59,13 @@ class DeleteAccountTypeTest extends TestCase {
         $error_msg = "Content: ".$account_response1->getContent();
         $this->assertNotEmpty($account_response1_as_array, $error_msg);
         $this->assertArrayHasKey('account_types', $account_response1_as_array, $error_msg);
-        $this->assertTrue(is_array($account_response1_as_array['account_types']), $error_msg);
+        $this->assertIsArray($account_response1_as_array['account_types'], $error_msg);
         $this->assertNotEmpty($account_response1_as_array['account_types'], $error_msg);
         $this->assertCount(1, $account_response1_as_array['account_types'], "We only created 1 account_type, why has this happened\n".$error_msg);
         foreach ($account_response1_as_array['account_types'] as $account_type_in_response) {
-            $this->assertTrue(is_array($account_type_in_response), $error_msg);
-            $this->assertArrayHasKey('disabled', $account_type_in_response, $error_msg);
-            $this->assertFalse($account_type_in_response['disabled'], $error_msg);
+            $this->assertIsArray($account_type_in_response, $error_msg);
+            $this->assertArrayHasKey('active', $account_type_in_response, $error_msg);
+            $this->assertTrue($account_type_in_response['active'], $error_msg);
         }
 
         // disable account-type
@@ -88,8 +88,8 @@ class DeleteAccountTypeTest extends TestCase {
         $account_type_response2_as_array = $account_type_response2->json();
         $error_msg = "Content: ".$account_type_response2->getContent();
         $this->assertNotEmpty($account_type_response2_as_array, $error_msg);
-        $this->assertArrayHasKey('disabled', $account_type_response2_as_array, $error_msg);
-        $this->assertTrue($account_type_response2_as_array['disabled'], $error_msg);
+        $this->assertArrayHasKey('active', $account_type_response2_as_array, $error_msg);
+        $this->assertFalse($account_type_response2_as_array['active'], $error_msg);
         $this->assertArrayHasKey('disabled_stamp', $account_type_response2_as_array, $error_msg);
         $this->assertNotNull($account_type_response2_as_array['disabled_stamp'], $error_msg);
         $this->assertDatetimeWithinOneSecond(now()->toAtomString(), $account_type_response2_as_array['disabled_stamp'], $error_msg);
@@ -103,8 +103,8 @@ class DeleteAccountTypeTest extends TestCase {
         $this->assertCount(1, $account_response2_as_array['account_types'], "We only created 1 account_type, why has this happened\n".$error_msg);
         foreach ($account_response2_as_array['account_types'] as $account_type_in_response) {
             $this->assertTrue(is_array($account_type_in_response), $error_msg);
-            $this->assertArrayHasKey('disabled', $account_type_in_response, $error_msg);
-            $this->assertTrue($account_type_in_response['disabled'], $error_msg);
+            $this->assertArrayHasKey('active', $account_type_in_response, $error_msg);
+            $this->assertFalse($account_type_in_response['active'], $error_msg);
         }
     }
 

@@ -124,9 +124,7 @@ class PostEntryTransferTest extends TestCase {
      */
     public function testCreatingEntryTransferWithInvalidAccountType($transfer_data, $override_account_type_id) {
         // GIVEN - $transfer_data
-        $account_type = AccountType::factory()
-            ->for(Account::factory())
-            ->create();
+        $account_type = AccountType::factory()->for(Account::factory())->create();
         if ($override_account_type_id[self::FLAG_OVERRIDE_TO]) {
             $transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE] = $account_type->id;
         }

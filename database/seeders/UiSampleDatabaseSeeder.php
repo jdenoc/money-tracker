@@ -70,16 +70,14 @@ class UiSampleDatabaseSeeder extends Seeder {
         // ***** ACCOUNT-TYPES *****
         $account_types = collect();
         foreach ($accounts->pluck('id') as $account_id) {
-            $account_types = $this->addAccountTypeToCollection($account_types, ['account_id'=>$account_id, 'disabled'=>false]);
+            $account_types = $this->addAccountTypeToCollection($account_types, ['account_id'=>$account_id, 'disabled_stamp'=>null]);
         }
         $account_types = $this->addAccountTypeToCollection($account_types, [
             'account_id'=>$accounts->where('active', true)->pluck('id')->random(),
-            'disabled'=>true,
             'disabled_stamp'=>now()
         ]);
         $account_types = $this->addAccountTypeToCollection($account_types, [
             'account_id'=>$accounts->where('active', false)->pluck('id')->random(),
-            'disabled'=>true,
             'disabled_stamp'=>now()
         ]);
 
@@ -94,8 +92,16 @@ class UiSampleDatabaseSeeder extends Seeder {
                 'entry_date'=>now()->subDays(rand(0, 1.25*self::YEAR_IN_DAYS))
             ]);
         }
-        $entries = $this->addEntryToCollection($entries, ['account_type_id'=>$account_types->pluck('id')->random(), 'disabled'=>false, 'entry_date'=>now()]);
-        $entries = $this->addEntryToCollection($entries, ['account_type_id'=>$account_types->pluck('id')->random(), 'disabled'=>true, 'disabled_stamp'=>now()]);
+        $entries = $this->addEntryToCollection($entries, [
+            'account_type_id'=>$account_types->pluck('id')->random(),
+            'disabled'=>false,
+            'entry_date'=>now()
+        ]);
+        $entries = $this->addEntryToCollection($entries, [
+            'account_type_id'=>$account_types->pluck('id')->random(),
+            'disabled'=>true,
+            'disabled_stamp'=>now()
+        ]);
         $this->command->line(self::CLI_OUTPUT_PREFIX."Entries seeded [".$entries->count()."]");
 
         foreach ($entries as $entry) {

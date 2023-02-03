@@ -97,12 +97,12 @@ class EntryController extends Controller {
      * @return Response
      */
     public function delete_entry(int $entry_id): Response {
-        $entry = Entry::find($entry_id);
-        if (empty($entry)) {
-            return response('', HttpStatus::HTTP_NOT_FOUND);
-        } else {
+        try {
+            $entry = Entry::findOrFail($entry_id);
             $entry->disable();
             return response('', HttpStatus::HTTP_NO_CONTENT);
+        } catch (\Exception $e) {
+            return response('', HttpStatus::HTTP_NOT_FOUND);
         }
     }
 

@@ -75,7 +75,7 @@ class GetEntriesTest extends ListEntriesBase {
             $response->assertStatus(HttpStatus::HTTP_OK);
             $response_body_as_array = $response->json();
 
-            $this->assertTrue(is_array($response_body_as_array));
+            $this->assertIsArray($response_body_as_array);
             $this->assertArrayHasKey('count', $response_body_as_array);
             $this->assertEquals($generate_entry_count, $response_body_as_array['count']);
             unset($response_body_as_array['count']);
