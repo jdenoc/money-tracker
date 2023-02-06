@@ -219,7 +219,6 @@ export default {
   },
   data: function(){
     return {
-      canShowDisabledAccountAndAccountTypes: false,
       currencyObject: new Currency(),
       filterData: {},
       isVisible: false,

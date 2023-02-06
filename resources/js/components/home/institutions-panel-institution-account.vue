@@ -52,8 +52,8 @@ export default {
       let accountTypes = new Accounts().getAccountTypes(this.id);
       let tooltipList = "";
       accountTypes.filter(function(accountType){
-        return Object.prototype.hasOwnProperty.call(accountType, 'disabled')
-          && !accountType.disabled;
+        return Object.prototype.hasOwnProperty.call(accountType, 'active')
+          && accountType.active;
       }).forEach(function(accountType){
         tooltipList += "&bull; "+accountType.name+" ("+accountType.last_digits+")<br/>"
       });

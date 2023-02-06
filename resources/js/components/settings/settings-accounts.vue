@@ -190,15 +190,6 @@ export default {
     }
   },
   methods: {
-    afterSaveDisplayNotificationIfNeeded(notification){
-      // show a notification if needed
-      if(!_.isEmpty(notification)){
-        this.$eventHub.broadcast(
-          this.$eventHub.EVENT_NOTIFICATION,
-          {type: notification.type, message: notification.message}
-        );
-      }
-    },
     afterSaveResetFormAndHideLoading(){
       this.setFormDefaults();
       this.fetchAccounts().finally(function(){

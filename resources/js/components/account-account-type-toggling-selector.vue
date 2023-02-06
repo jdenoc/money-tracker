@@ -49,10 +49,10 @@
           <option value="" selected>[ ALL ]</option>
           <option
               v-for="accountOrAccountType in listProcessedAccountOrAccountTypes"
-              v-show="!accountOrAccountType.disabled || canShowDisabledAccountAndAccountTypes"
+              v-show="accountOrAccountType.active || canShowDisabledAccountAndAccountTypes"
               v-bind:key="accountOrAccountType.id"
               v-bind:value="accountOrAccountType.id"
-              v-bind:class="{'disabled-option has-text-grey-light' : accountOrAccountType.disabled}"
+              v-bind:class="{'disabled-option has-text-grey-light' : !accountOrAccountType.active}"
               v-text="accountOrAccountType.name"
           ></option>
         </select>
@@ -112,7 +112,7 @@ export default {
       return !_.isEmpty(this.listAccountOrAccountTypes)
         && this.listAccountOrAccountTypes
           .filter(function(accountOrAccountTypeObject){
-            return accountOrAccountTypeObject.disabled
+            return !accountOrAccountTypeObject.active
           }).length > 0;
     },
 
@@ -161,7 +161,7 @@ export default {
     processListOfObjects: function(listOfObjects, canShowDisabled=true){
       if(!canShowDisabled){
         listOfObjects = listOfObjects.filter(function(object){
-          return !object.disabled;
+          return object.active;
         });
       }
       return _.orderBy(listOfObjects, 'name');

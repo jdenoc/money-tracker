@@ -93,7 +93,7 @@
                 v-bind:key="accountType.id"
                 v-bind:value="accountType.id"
                 v-text="accountType.name"
-                v-show="!accountType.disabled"
+                v-show="accountType.active"
             ></option>
           </select>
 
@@ -532,7 +532,7 @@ export default {
       this.accountTypeMeta.accountName = account.name;
       let accountType = this.accountTypesObject.find(this.entryData.account_type_id);
       this.accountTypeMeta.lastDigits = accountType.last_digits;
-      this.accountTypeMeta.isEnabled = !accountType.disabled && !account.disabled;
+      this.accountTypeMeta.isEnabled = accountType.active && account.active;
 
       this.accountTypeMeta.currencyHtml = this.currencyObject.getHtmlFromCode(account.currency);
     },

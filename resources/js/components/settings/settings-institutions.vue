@@ -113,15 +113,6 @@ export default {
     }
   },
   methods: {
-    afterSaveDisplayNotificationIfNeeded(notification) {
-      // show a notification if needed
-      if(!_.isEmpty(notification)){
-        this.$eventHub.broadcast(
-          this.$eventHub.EVENT_NOTIFICATION,
-          notification
-        );
-      }
-    },
     afterSaveResetFormAndHideLoading(){
       this.setFormDefaults();
       this.institutionsObject.fetch().finally(function(){

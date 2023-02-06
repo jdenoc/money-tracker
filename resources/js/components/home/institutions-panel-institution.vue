@@ -53,7 +53,7 @@ export default {
     activeAccountsInInstitution: function(){
       return _.sortBy(
         this.accountsInInstitution.filter(function(account){
-          return !account.disabled;
+          return account.active;
         }), 'name'
       );
     }
