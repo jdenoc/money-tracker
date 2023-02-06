@@ -334,9 +334,9 @@ class FilterModalTest extends DuskTestCase {
         $accounts = $this->getApiAccounts();
 
         $random_account = new Sequence(function() use ($accounts) { return ['account_id'=>collect($accounts)->random()->id]; });
-        AccountType::factory()->count(3)->state($random_account)->create([AccountType::DELETED_AT=>null]);
+        AccountType::factory()->count(3)->state($random_account)->create();
         if ($has_disabled_account_type) {
-            AccountType::factory()->count(1)->state($random_account)->create([AccountType::DELETED_AT=>now()]);
+            AccountType::factory()->count(1)->state($random_account)->disabled()->create();
         }
         $account_types = $this->getApiAccountTypes();
 

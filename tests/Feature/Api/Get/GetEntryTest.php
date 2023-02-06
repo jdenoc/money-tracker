@@ -62,6 +62,7 @@ class GetEntryTest extends TestCase {
 
     public function testGetEntryDataWithRelatedTransferEntry() {
         // GIVEN
+        /** @var AccountType $generated_account_type */
         $generated_account_type = AccountType::factory()->for(Account::factory())->create();
         /** @var Entry $generated_transfer_entry */
         $generated_transfer_entry = Entry::factory()->for($generated_account_type)->create();

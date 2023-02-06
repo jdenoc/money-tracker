@@ -32,7 +32,6 @@ class PutAccountTypeTest extends TestCase {
             ->state(new Sequence(function() use ($accounts) {
                 return [
                     'account_id'=>$accounts->random()->id,
-                    AccountType::DELETED_AT=>null
                 ];
             }))
             ->create();

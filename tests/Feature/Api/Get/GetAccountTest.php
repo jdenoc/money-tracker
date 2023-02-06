@@ -40,7 +40,7 @@ class GetAccountTest extends TestCase {
         /** @var Account $generated_account */
         $generated_account = Account::factory()->create();
         $generated_account_types = AccountType::factory()->count($account_type_count)->for($generated_account)->create();
-        $generated_disabled_account_type = AccountType::factory()->for($generated_account)->create([AccountType::DELETED_AT=>now()]);
+        $generated_disabled_account_type = AccountType::factory()->for($generated_account)->disabled()->create();
         $account_type_count++;
         $generated_account_types->push($generated_disabled_account_type);
         // These nodes are not in the response output. Let's hide them from the object collection
@@ -74,7 +74,7 @@ class GetAccountTest extends TestCase {
         $account_type_count = $this->faker->randomDigitNotZero();
         /** @var Account $generated_account */
         $generated_account = Account::factory()->create();
-        AccountType::factory()->count($account_type_count)->for($generated_account)->create([AccountType::DELETED_AT=>now()]);
+        AccountType::factory()->count($account_type_count)->for($generated_account)->disabled()->create();
 
         // WHEN
         $response = $this->get(sprintf($this->_base_uri, $generated_account->id));

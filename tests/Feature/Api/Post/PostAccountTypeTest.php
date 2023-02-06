@@ -129,7 +129,7 @@ class PostAccountTypeTest extends TestCase {
     }
 
     private function generateDummyAccountTypeData(): array {
-        return AccountType::factory()->make([AccountType::DELETED_AT=>null])->toArray();
+        return AccountType::factory()->make()->toArray();
     }
 
     private function assertFailedPostResponse(TestResponse $response, $expected_response_status, $expected_error_message) {

@@ -18,8 +18,19 @@ class AccountTypeFactory extends Factory {
             'name'=>$this->faker->word().' '.$account_type,
             'account_id'=>$this->faker->randomNumber(FactoryConstants::MAX_RAND_ID_LENGTH, true),
             'create_stamp'=>$this->faker->date(FactoryConstants::DATE_FORMAT),
-            'disabled_stamp'=>$this->faker->boolean() ? $this->faker->date(FactoryConstants::DATE_FORMAT) : null,
+            'disabled_stamp'=>null,
         ];
+    }
+
+    /**
+     * Indicate that an account-type is "disabled"
+     */
+    public function disabled(): Factory {
+        return $this->state(function() {
+            return [
+                'disabled_stamp'=>$this->faker->date(FactoryConstants::DATE_FORMAT)
+            ];
+        });
     }
 
 }

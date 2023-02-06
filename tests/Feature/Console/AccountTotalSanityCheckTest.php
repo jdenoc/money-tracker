@@ -51,7 +51,7 @@ class AccountTotalSanityCheckTest extends TestCase {
         $accounts = Account::factory()->count(3)->disabled()->create(['total'=>0]);
         $account_types = collect();
         foreach ($accounts as $account) {
-            $account_type = AccountType::factory()->for($account)->create([AccountType::DELETED_AT=>null]);
+            $account_type = AccountType::factory()->for($account)->create();
             Entry::factory()->count(2)->for($account_type)->create(['disabled'=>0]);
             $account_types->push($account_type);
         }

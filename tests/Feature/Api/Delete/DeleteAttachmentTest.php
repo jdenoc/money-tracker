@@ -42,9 +42,9 @@ class DeleteAttachmentTest extends TestCase {
         // THEN
         $get_response1->assertStatus(Response::HTTP_OK);
         $get_response1_as_array = $get_response1->json();
-        $this->assertTrue(is_array($get_response1_as_array));
+        $this->assertIsArray($get_response1_as_array);
         $this->assertArrayHasKey('attachments', $get_response1_as_array);
-        $this->assertTrue(is_array($get_response1_as_array['attachments']));
+        $this->assertIsArray($get_response1_as_array['attachments']);
         $attachment_exists = false;
         foreach ($get_response1_as_array['attachments'] as $attachment_in_response) {
             $this->assertArrayHasKey('uuid', $attachment_in_response);
@@ -60,9 +60,9 @@ class DeleteAttachmentTest extends TestCase {
 
         $get_response2->assertStatus(Response::HTTP_OK);
         $get_response2_as_array = $get_response2->json();
-        $this->assertTrue(is_array($get_response2_as_array));
+        $this->assertIsArray($get_response2_as_array);
         $this->assertArrayHasKey('attachments', $get_response2_as_array);
-        $this->assertTrue(is_array($get_response2_as_array['attachments']));
+        $this->assertIsArray($get_response2_as_array['attachments']);
         $attachment_exists = false;
         foreach ($get_response2_as_array['attachments'] as $attachment_in_response) {
             $this->assertArrayHasKey('uuid', $attachment_in_response);
