@@ -6,7 +6,7 @@ use App\Models\Account;
 use App\Models\AccountType;
 use App\Models\Entry;
 use App\Traits\Tests\TruncateDatabaseTables;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use App\Traits\Tests\DatabaseMigrations;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -25,12 +25,8 @@ class AccountTotalSanityCheckTest extends TestCase {
 
     public function setUp(): void {
         parent::setUp();
+        $this->migrate();
         $this->withoutMockingConsoleOutput();
-    }
-
-    public function tearDown(): void {
-        $this->truncateDatabaseTables(['migrations']);
-        parent::tearDown();
     }
 
     /**
@@ -64,7 +60,7 @@ class AccountTotalSanityCheckTest extends TestCase {
     }
 
     public function testSanityCheckIndividualAccountIdOutputtingToScreenAndWithoutNotifyingDiscord() {
-        $this->seedDatabaseAndMaybeTruncateTable(Entry::getTableName());
+        DB::table(Entry::getTableName())->truncate();
 
         $accounts = Account::whereNull(Account::DELETED_AT); // only active accounts
         $accounts->update(['total'=>0]);
@@ -84,7 +80,7 @@ class AccountTotalSanityCheckTest extends TestCase {
     }
 
     public function testSanityCheckIndividualAccountIdNotFoundOutputtingToScreenAndWithoutNotifyingDiscord() {
-        $this->seedDatabaseAndMaybeTruncateTable(Account::getTableName());
+        DB::table(Account::getTableName())->truncate();
 
         $account_id = $this->faker->randomDigitNotZero();
         Artisan::call($this->_command, array_merge(['accountId'=>$account_id], $this->_screen_only_notification_options));
@@ -93,8 +89,6 @@ class AccountTotalSanityCheckTest extends TestCase {
     }
 
     public function testSanityCheckIndividualAccountIdZeroNotFoundOutputtingToScreenAndWithoutNotifyingDiscord() {
-        $this->seedDatabaseAndMaybeTruncateTable();
-
         $account_id = 0;
         Artisan::call($this->_command, array_merge(['accountId'=>$account_id], $this->_screen_only_notification_options));
         $result_as_text = trim(Artisan::output());
@@ -102,18 +96,11 @@ class AccountTotalSanityCheckTest extends TestCase {
     }
 
     public function testSanityCheckAccountsNotFoundOutputtingToScreenAndWithoutNotifyingDiscord() {
-        $this->seedDatabaseAndMaybeTruncateTable(Account::getTableName());
+        DB::table(Account::getTableName())->truncate();
 
         Artisan::call($this->_command, $this->_screen_only_notification_options);
         $result_as_text = trim(Artisan::output());
         $this->assertStringContainsString("No accounts found", $result_as_text);
-    }
-
-    private function seedDatabaseAndMaybeTruncateTable(?string $table_to_truncate = null) {
-        Artisan::call("db:seed", ['--class'=>'UiSampleDatabaseSeeder']);
-        if (!is_null($table_to_truncate)) {
-            DB::table($table_to_truncate)->truncate();
-        }
     }
 
 }
