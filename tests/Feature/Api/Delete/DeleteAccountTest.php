@@ -30,7 +30,7 @@ class DeleteAccountTest extends TestCase {
 
     public function testDisablingAccountThatIsAlreadyDisabled() {
         // GIVEN
-        $generated_account = Account::factory()->create([Account::DELETED_AT=>now()]);
+        $generated_account = Account::factory()->disabled()->create();
 
         // WHEN
         $response = $this->delete(sprintf(self::PLACEHOLDER_URI_ACCOUNT, $generated_account->id));
@@ -43,7 +43,7 @@ class DeleteAccountTest extends TestCase {
 
     public function testDisablingAccount() {
         // GIVEN
-        $generated_account = Account::factory()->create([Account::DELETED_AT=>null]);
+        $generated_account = Account::factory()->create();
         $account_uri = sprintf(self::PLACEHOLDER_URI_ACCOUNT, $generated_account->id);
 
         // confirm account is NOT disabled

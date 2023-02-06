@@ -271,11 +271,10 @@ class SettingsAccountsTest extends SettingsBase {
     }
 
     protected function generateObject(bool $isInitObjectActive): BaseModel {
-        $disabled_stamp = ($isInitObjectActive ? null : now());
         /** @var Account */
         return Account::factory()->create([
             'institution_id'=>Institution::all()->random()->id,
-            Account::DELETED_AT=>$disabled_stamp
+            Account::DELETED_AT=>($isInitObjectActive ? null : now())
         ]);
     }
 

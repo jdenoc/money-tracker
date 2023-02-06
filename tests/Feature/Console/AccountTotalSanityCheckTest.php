@@ -48,7 +48,7 @@ class AccountTotalSanityCheckTest extends TestCase {
     }
 
     public function testSanityCheckOutputtingToScreenAndWithoutNotifyingDiscord() {
-        $accounts = Account::factory()->count(3)->create([Account::DELETED_AT=>now(), 'total'=>0]);
+        $accounts = Account::factory()->count(3)->disabled()->create(['total'=>0]);
         $account_types = collect();
         foreach ($accounts as $account) {
             $account_type = AccountType::factory()->for($account)->create([AccountType::DELETED_AT=>null]);

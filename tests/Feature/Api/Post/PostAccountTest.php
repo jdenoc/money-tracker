@@ -122,7 +122,7 @@ class PostAccountTest extends TestCase {
     }
 
     private function generateDummyAccountData(): array {
-        $account_data = Account::factory()->make([Account::DELETED_AT=>null]);
+        $account_data = Account::factory()->make();
         return [
             'name'=>$account_data->name,
             'institution_id'=>$account_data->institution_id,

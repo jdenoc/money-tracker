@@ -28,7 +28,7 @@ class PatchAccountTest extends TestCase {
     public function testRestoringUndeletedAccount() {
         // GIVEN
         $generated_institution = Institution::factory()->create();
-        $generated_account = Account::factory()->create(['institution_id'=>$generated_institution->id, Account::DELETED_AT=>null]);
+        $generated_account = Account::factory()->for($generated_institution)->create();
 
         // WHEN
         $response = $this->patch(sprintf(self::PLACEHOLDER_URI_ACCOUNT, $generated_account->id));
@@ -41,7 +41,7 @@ class PatchAccountTest extends TestCase {
     public function testRestoringAccount() {
         // GIVEN
         $generated_institution = Institution::factory()->create();
-        $generated_account = Account::factory()->create(['institution_id'=>$generated_institution->id, Account::DELETED_AT=>now()]);
+        $generated_account = Account::factory()->for($generated_institution)->disabled()->create();
         $account_uri = sprintf(self::PLACEHOLDER_URI_ACCOUNT, $generated_account->id);
 
         // WHEN

@@ -25,7 +25,6 @@ class PutAccountTypeTest extends TestCase {
 
         $accounts = Account::factory()
             ->count(3)
-            ->state([Account::DELETED_AT=>null])
             ->for(Institution::factory())
             ->create();
         AccountType::factory()

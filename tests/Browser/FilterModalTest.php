@@ -327,16 +327,16 @@ class FilterModalTest extends DuskTestCase {
         $institutions = $this->getApiInstitutions();
         $institution_id = collect($institutions)->pluck('id')->random(1)->first();
 
-        Account::factory()->count(3)->create([Account::DELETED_AT=>null, 'institution_id'=>$institution_id]);
+        Account::factory()->count(3)->create(['institution_id'=>$institution_id]);
         if ($has_disabled_account) {
-            Account::factory()->count(1)->create([Account::DELETED_AT=>now(), 'institution_id'=>$institution_id]);
+            Account::factory()->count(1)->disabled()->create(['institution_id'=>$institution_id]);
         }
         $accounts = $this->getApiAccounts();
 
-        $random_account_id = new Sequence(function() use ($accounts) { return collect($accounts)->random()->id; });
-        AccountType::factory()->count(3)->state($random_account_id)->create([AccountType::DELETED_AT=>null]);
+        $random_account = new Sequence(function() use ($accounts) { return ['account_id'=>collect($accounts)->random()->id]; });
+        AccountType::factory()->count(3)->state($random_account)->create([AccountType::DELETED_AT=>null]);
         if ($has_disabled_account_type) {
-            AccountType::factory()->count(1)->state($random_account_id)->create([AccountType::DELETED_AT=>now()]);
+            AccountType::factory()->count(1)->state($random_account)->create([AccountType::DELETED_AT=>now()]);
         }
         $account_types = $this->getApiAccountTypes();
 

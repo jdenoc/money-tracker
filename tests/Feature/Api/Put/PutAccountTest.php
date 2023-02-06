@@ -23,7 +23,6 @@ class PutAccountTest extends TestCase {
 
         Account::factory()
             ->count(10)
-            ->state([Account::DELETED_AT=>null])
             ->for(Institution::factory())
             ->create();
     }
