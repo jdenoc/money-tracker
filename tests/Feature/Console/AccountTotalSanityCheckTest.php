@@ -62,17 +62,22 @@ class AccountTotalSanityCheckTest extends TestCase {
     public function testSanityCheckIndividualAccountIdOutputtingToScreenAndWithoutNotifyingDiscord() {
         DB::table(Entry::getTableName())->truncate();
 
-        $accounts = Account::whereNull(Account::DELETED_AT); // only active accounts
-        $accounts->update(['total'=>0]);
-        $account = $accounts->get()->random();
-        $account_type = AccountType::where(['account_id'=>$account->id, 'disabled'=>0])->get()->random();
-        $entries = Entry::factory()->count(10)->create(['account_type_id'=>$account_type->id, 'disabled'=>0]);
+        $accounts = Account::all(); // only active accounts
+        $accounts->each(function(Account $account) {
+            $account->total = 0;
+            $account->save();
+        });
+        $account = $accounts->random();
 
-        $new_total = $entries->where('disabled', 0)
-            ->sum(function($entry) {
+        $account_type = AccountType::all()->where('account_id', $account->id)->random();    // only active account-types
+        $entries = Entry::factory()->count(10)->for($account_type)->create(['disabled'=>false]);
+        $new_account_total = $entries
+            ->where('disabled', false)
+            ->sum(function(Entry $entry) {
                 return ($entry['expense'] ? -1 : 1) * $entry['entry_value'];
             });
-        $account->update(['total'=>$new_total]);
+        $account->total = $new_account_total;
+        $account->save();
 
         Artisan::call($this->_command, array_merge(['accountId'=>$account->id], $this->_screen_only_notification_options));
         $result_as_text = trim(Artisan::output());

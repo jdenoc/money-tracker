@@ -151,7 +151,7 @@ class PutAccountTypeTest extends TestCase {
     }
 
     private function getRandomActiveExistingAccountType() {
-        return AccountType::where('disabled', false)->get()->random();
+        return AccountType::whereNull(AccountType::DELETED_AT)->get()->random();
     }
 
     private function generateAccountTypeData() {

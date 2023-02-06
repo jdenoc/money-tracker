@@ -29,7 +29,7 @@ class PatchInstitutionTest extends TestCase {
 
     public function testRestoreInstitutionThatIsAlreadyActive() {
         // GIVEN
-        $institution = Institution::factory()->disabled()->create();
+        $institution = Institution::factory()->create();
 
         // WHEN
         $response = $this->patch(sprintf(self::PLACEHOLDER_URI_INSTITUTION, $institution->id));
@@ -41,7 +41,7 @@ class PatchInstitutionTest extends TestCase {
 
     public function testRestoreInstitution() {
         // GIVEN
-        $institution = Institution::factory()->create();
+        $institution = Institution::factory()->disabled()->create();
 
         // WHEN
         $response = $this->patch(sprintf(self::PLACEHOLDER_URI_INSTITUTION, $institution->id));
