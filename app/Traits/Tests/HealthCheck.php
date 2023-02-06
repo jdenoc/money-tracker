@@ -15,6 +15,7 @@ trait HealthCheck {
         "Database Migrations",
         "Debug Mode",
         "Environment",
+        "Optimized App",
         "Schedule",
         "Used Disk Space",
     ];
