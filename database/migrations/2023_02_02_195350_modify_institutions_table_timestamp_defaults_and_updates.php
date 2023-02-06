@@ -15,6 +15,11 @@ class ModifyInstitutionsTableTimestampDefaultsAndUpdates extends Migration {
      * Run the migrations.
      */
     public function up() {
+        // make sure create_stamp has a value
+        DB::table(self::$TABLE)
+            ->whereNull(self::$COLUMN_TIMESTAMP_CREATE)
+            ->update([self::$COLUMN_TIMESTAMP_CREATE=>DB::raw(self::$COLUMN_TIMESTAMP_MODIFY)]);
+
         Schema::table(self::$TABLE, function(Blueprint $table) {
             $table->timestamp(self::$COLUMN_TIMESTAMP_CREATE)
                 ->nullable(false)

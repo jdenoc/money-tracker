@@ -18,7 +18,7 @@ class UpdateAccountTypesTimestampDefaultsAndUpdates extends Migration {
         // make sure create_stamp has a value
         DB::table(self::TABLE)
             ->whereNull(self::COLUMN_TIMESTAMP_CREATE)
-            ->update([self::COLUMN_TIMESTAMP_CREATE=>DB::raw('modified_stamp')]);
+            ->update([self::COLUMN_TIMESTAMP_CREATE=>DB::raw(self::COLUMN_TIMESTAMP_MODIFY)]);
 
         // alter the create_stamp column default
         Schema::table(self::TABLE, function(Blueprint $table) {

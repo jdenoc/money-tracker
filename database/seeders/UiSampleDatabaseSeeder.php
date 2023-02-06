@@ -49,56 +49,55 @@ class UiSampleDatabaseSeeder extends Seeder {
 
         // ***** INSTITUTIONS *****
         $institutions = Institution::factory()->count(self::COUNT_INSTITUTION)->create();
-        $institution_ids = $institutions->pluck('id')->toArray();
         $this->command->line(self::CLI_OUTPUT_PREFIX."Institutions seeded [".$institutions->count()."]");
 
         // ***** ACCOUNTS *****
         $accounts = collect();
-        foreach ($institution_ids as $institution_id) {
-            $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$institution_id, Account::DELETED_AT=>null]);
+        foreach ($institutions as $institution) {
+            $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$institution->id]);
         }
         $accounts = $this->addAccountToCollection($accounts, [
-            'institution_id'=>$this->faker->randomElement($institution_ids),
+            'institution_id'=>$institutions->random()->id,
             Account::DELETED_AT=>now()
         ]);
         $currencies = CurrencyHelper::fetchCurrencies();
         foreach ($currencies as $currency) {
-            $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$this->faker->randomElement($institution_ids), 'currency'=>$currency->code]);
+            $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$institutions->random()->id, 'currency'=>$currency->code]);
         }
         $this->command->line(self::CLI_OUTPUT_PREFIX."Accounts seeded [".$accounts->count()."]");
 
         // ***** ACCOUNT-TYPES *****
         $account_types = collect();
-        foreach ($accounts->pluck('id') as $account_id) {
-            $account_types = $this->addAccountTypeToCollection($account_types, ['account_id'=>$account_id, 'disabled_stamp'=>null]);
+        foreach ($accounts as $account) {
+            $account_types = $this->addAccountTypeToCollection($account_types, ['account_id'=>$account->id]);
         }
         $account_types = $this->addAccountTypeToCollection($account_types, [
-            'account_id'=>$accounts->where('active', true)->pluck('id')->random(),
-            'disabled_stamp'=>now()
+            'account_id'=>$accounts->where('active', true)->random()->id,
+            AccountType::DELETED_AT=>now(),
         ]);
         $account_types = $this->addAccountTypeToCollection($account_types, [
-            'account_id'=>$accounts->where('active', false)->pluck('id')->random(),
-            'disabled_stamp'=>now()
+            'account_id'=>$accounts->where('active', false)->random()->id,
+            AccountType::DELETED_AT=>now(),
         ]);
 
         $this->command->line(self::CLI_OUTPUT_PREFIX."Account-types seeded [".$account_types->count()."]");
 
         // ***** ENTRIES *****
         $entries = collect();
-        foreach ($account_types->pluck('id') as $account_type_id) {
+        foreach ($account_types as $account_type) {
             $entries = $this->addEntryToCollection($entries, [
-                'account_type_id'=>$account_type_id,
+                'account_type_id'=>$account_type->id,
                 'disabled'=>false,
                 'entry_date'=>now()->subDays(rand(0, 1.25*self::YEAR_IN_DAYS))
             ]);
         }
         $entries = $this->addEntryToCollection($entries, [
-            'account_type_id'=>$account_types->pluck('id')->random(),
+            'account_type_id'=>$account_types->random()->id,
             'disabled'=>false,
             'entry_date'=>now()
         ]);
         $entries = $this->addEntryToCollection($entries, [
-            'account_type_id'=>$account_types->pluck('id')->random(),
+            'account_type_id'=>$account_types->random()->id,
             'disabled'=>true,
             'disabled_stamp'=>now()
         ]);
