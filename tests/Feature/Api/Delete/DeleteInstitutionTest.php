@@ -29,7 +29,7 @@ class DeleteInstitutionTest extends TestCase {
 
     public function testDisableInstitutionThatIsAlreadyDisabled() {
         // GIVEN
-        $institution = Institution::factory()->create([Institution::DELETED_AT=>now()]);
+        $institution = Institution::factory()->disabled()->create();
 
         // WHEN
         $response = $this->delete(sprintf(self::PLACEHOLDER_URI_INSTITUTION, $institution->id));
@@ -41,7 +41,7 @@ class DeleteInstitutionTest extends TestCase {
 
     public function testDisableInstitution() {
         // GIVEN
-        $institution = Institution::factory()->create([Institution::DELETED_AT=>null]);
+        $institution = Institution::factory()->create();
 
         // WHEN
         $response = $this->delete(sprintf(self::PLACEHOLDER_URI_INSTITUTION, $institution->id));

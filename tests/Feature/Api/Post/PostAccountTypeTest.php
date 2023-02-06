@@ -23,8 +23,7 @@ class PostAccountTypeTest extends TestCase {
         parent::setUp();
         Account::factory()
             ->count(3)
-            ->state([Institution::DELETED_AT=>null])
-            ->for(Institution::factory()->state([Institution::DELETED_AT=>null]))
+            ->for(Institution::factory())
             ->create();
     }
 

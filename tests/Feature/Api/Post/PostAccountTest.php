@@ -18,7 +18,7 @@ class PostAccountTest extends TestCase {
 
     public function setUp(): void {
         parent::setUp();
-        Institution::factory()->count(3)->create([Institution::DELETED_AT=>null]);
+        Institution::factory()->count(3)->create();
     }
 
     public function testCreateAccountWithoutData() {

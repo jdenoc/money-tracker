@@ -42,7 +42,8 @@ class GetInstitutionsTest extends TestCase {
         $disabled_stamp = function() use ($all_active) { return $this->faker->boolean(($all_active ? 100 : 50)) ? null : now(); };
         $generated_institutions = Institution::factory()
             ->count($institutions_count)
-            ->create([Institution::DELETED_AT=>$disabled_stamp]);
+            ->state([Institution::DELETED_AT=>$disabled_stamp])
+            ->create();
         $generated_institutions->makeHidden([Institution::CREATED_AT, Institution::UPDATED_AT, Institution::DELETED_AT]);
 
         // WHEN

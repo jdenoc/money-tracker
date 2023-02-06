@@ -48,7 +48,7 @@ class UiSampleDatabaseSeeder extends Seeder {
         $this->command->line(self::CLI_OUTPUT_PREFIX."Tags seeded [".$tags->count()."]");
 
         // ***** INSTITUTIONS *****
-        $institutions = Institution::factory()->count(self::COUNT_INSTITUTION)->create([Institution::DELETED_AT=>null]);
+        $institutions = Institution::factory()->count(self::COUNT_INSTITUTION)->create();
         $institution_ids = $institutions->pluck('id')->toArray();
         $this->command->line(self::CLI_OUTPUT_PREFIX."Institutions seeded [".$institutions->count()."]");
 

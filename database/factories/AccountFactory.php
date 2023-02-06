@@ -16,8 +16,19 @@ class AccountFactory extends Factory {
             'institution_id'=>$this->faker->randomNumber(FactoryConstants::MAX_RAND_ID_LENGTH, true),
             'currency'=>$this->faker->currencyCode(),
             'total'=>$this->faker->randomFloat(FactoryConstants::CURRENCY_MAX_DECIMAL, -1000, 1000),   // -1000.00 < total < 1000.00
-            'disabled_stamp'=>$this->faker->boolean() ? $this->faker->date(FactoryConstants::DATE_FORMAT) : null
+            'disabled_stamp'=>null
         ];
+    }
+
+    /**
+     * Indicate that an account is "disabled"
+     */
+    public function disabled(): Factory {
+        return $this->state(function() {
+            return [
+                'disabled_stamp'=>$this->faker->date(FactoryConstants::DATE_FORMAT)
+            ];
+        });
     }
 
 }
