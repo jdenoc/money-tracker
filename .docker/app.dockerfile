@@ -26,7 +26,7 @@ RUN echo 'LogFormat "%t [apache] %H %m %U %q | status:%>s" docker_log' > /etc/ap
 RUN a2enmod rewrite
 
 # setup vhost
-COPY .docker/money-tracker.vhost.conf /etc/apache2/sites-available/000-default.conf
+COPY .docker/conf/money-tracker.vhost.conf /etc/apache2/sites-available/000-default.conf
 
 # setup web directory
 ENV WORK_DIR /var/www/money-tracker
