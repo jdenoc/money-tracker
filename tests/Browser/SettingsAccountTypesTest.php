@@ -51,6 +51,8 @@ class SettingsAccountTypesTest extends SettingsBase {
     private static string $LABEL_SETTINGS_FORM_ACCOUNT = 'Account:';
     protected static string $LABEL_SETTINGS_NOTIFICATION_NEW = 'New Account-type created';
     protected static string $LABEL_SETTINGS_NOTIFICATION_UPDATE = 'Account-type updated';
+    protected static string $LABEL_SETTINGS_NOTIFICAITON_RESTORE = 'Account has been reactivated';
+    protected static string $LABEL_SETTINGS_NOTIFICAITON_DELETE = 'Account was disabled';
 
     public function providerSaveExistingSettingNode(): array {
         return [

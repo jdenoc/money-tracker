@@ -37,6 +37,8 @@ class SettingsInstitutionsTest extends SettingsBase {
 
     protected static string $LABEL_SETTINGS_NOTIFICATION_NEW = 'New Institution created';
     protected static string $LABEL_SETTINGS_NOTIFICATION_UPDATE = 'Institution updated';
+    protected static string $LABEL_SETTINGS_NOTIFICAITON_RESTORE = 'Institution has been enabled';
+    protected static string $LABEL_SETTINGS_NOTIFICAITON_DELETE = 'Institution has been disabled';
 
     public function providerDisablingOrRestoringAccount(): array {
         return [
