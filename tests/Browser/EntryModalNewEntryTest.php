@@ -344,13 +344,13 @@ class EntryModalNewEntryTest extends DuskTestCase {
      * test (see provider)/20
      */
     public function testSelectingDisabledAccountTypeMetaDataIsGrey(string $account_type_method) {
-        $account_types = AccountType::all();
+        $account_types = AccountType::withTrashed()->get();
         $disabled_account_type = [];
         if ($account_type_method == $this->method_account) {
             $disabled_account = Account::onlyTrashed()->get()->random();
             $disabled_account_type = $account_types->where('account_id', $disabled_account['id'])->random();
         } elseif ($account_type_method == $this->method_account_type) {
-            $disabled_account_type = $account_types->where('disabled', true)->random();
+            $disabled_account_type = $account_types->where('active', false)->random();
         } else {
             $this->fail("Unknown account-type method provided");
         }

@@ -49,7 +49,7 @@ class UpdateAccountTotalTest extends DuskTestCase {
 
         $account_types = $this->getApiAccountTypes();
         $account_types_collection = collect($account_types);
-        $this->_account_type_id = $account_types_collection->where('disabled', false)->where('account_id', $account['id'])->pluck('id')->random();
+        $this->_account_type_id = $account_types_collection->where('active', true)->where('account_id', $account['id'])->pluck('id')->random();
 
         // make sure that at least 1 entry exists for the test
         Entry::factory()->count(1)->create(['entry_date'=>date("Y-m-d"), 'disabled'=>0, 'confirm'=>0, 'account_type_id'=>$this->_account_type_id]);
@@ -252,7 +252,7 @@ class UpdateAccountTotalTest extends DuskTestCase {
                 $account_types = $this->getApiAccountTypes();
                 $account_types_collection = collect($account_types);
                 $account_type = $account_types_collection
-                    ->where('disabled', false)
+                    ->where('active', true)
                     ->where('account_id', '!=', $account['from']['id'])
                     ->random();
                 $account['to'] = $this->getAccount($account_type['account_id']);

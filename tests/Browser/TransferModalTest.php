@@ -380,13 +380,13 @@ class TransferModalTest extends DuskTestCase {
      * test (see provider)/20
      */
     public function testSelectingDisabledTransferAccountTypeMetaDataIsGrey(string $transfer_field, string $account_type_method) {
-        $account_types = AccountType::all();
+        $account_types = AccountType::withTrashed()->all();
         $disabled_account_type = [];
         if ($account_type_method == self::$METHOD_ACCOUNT) {
             $disabled_account = Account::onlyTrashed()->get()->random();
             $disabled_account_type = $account_types->where('account_id', $disabled_account['id'])->random();
         } elseif ($account_type_method == self::$METHOD_ACCOUNT_TYPE) {
-            $disabled_account_type = $account_types->where('disabled', true)->random();
+            $disabled_account_type = $account_types->where('active', false)->random();
         } else {
             $this->fail("Unknown account-type method provided");
         }
@@ -659,8 +659,8 @@ class TransferModalTest extends DuskTestCase {
      */
     public function testOpeningMoreThanOneTransferEntryPairPerSession() {
         // GIVEN:
-        $account_type_id1 = AccountType::where('disabled', true)->get()->random();
-        $account_type_id2 = AccountType::where('disabled', true)->whereNotIn('id', [$account_type_id1->id])->get()->random();
+        $account_type_id1 = AccountType::where('active', false)->get()->random();
+        $account_type_id2 = AccountType::where('active', false)->where('id', '!=', $account_type_id1->id)->get()->random();
         $default_entry_data = ['disabled'=>false, 'entry_date'=>date('Y-m-d'), 'expense'=>true, 'entry_value'=>$this->faker->randomFloat(2)];
         $entry_data_income = ['account_type_id'=>$account_type_id2->id, 'entry_date'=>date("Y-m-d", strtotime("-18 months")), 'expense'=>false];
 

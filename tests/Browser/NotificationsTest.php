@@ -314,7 +314,7 @@ class NotificationsTest extends DuskTestCase {
         $recreate_table_query = $this->getTableRecreationQuery($table);
 
         $account_types = collect($this->getApiAccountTypes());
-        $account_type = $account_types->where('disabled', false)->random();
+        $account_type = $account_types->where('active', true)->random();
 
         $this->browse(function(Browser $browser) use ($account_type, $table) {
             $browser->visit(new HomePage());
