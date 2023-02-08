@@ -146,10 +146,10 @@ class SettingsAccountTypesTest extends SettingsBase {
             ->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_LAST_DIGITS, $object->last_digits)
             ->waitUntilMissing(self::$SELECTOR_SETTINGS_FORM_LOADING_ACCOUNT, self::$WAIT_SECONDS)
             ->assertSelected(self::$SELECTOR_SETTINGS_FORM_SELECT_ACCOUNT, $object->account_id);
-        if ($object->disabled) {
-            $this->assertActiveStateToggleInactive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
-        } else {
+        if ($object->active) {
             $this->assertActiveStateToggleActive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
+        } else {
+            $this->assertActiveStateToggleInactive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
         }
 
         $section
@@ -178,12 +178,12 @@ class SettingsAccountTypesTest extends SettingsBase {
             $class_is_disabled = 'is-disabled';
             $class_is_active = 'is-active';
             $account_type_node_classes = $section->attribute($selector_account_type_id, 'class');
-            if ($account_type->disabled) {
-                $this->assertStringContainsString($class_is_disabled, $account_type_node_classes);
-                $this->assertStringNotContainsString($class_is_active, $account_type_node_classes);
-            } else {
+            if ($account_type->active) {
                 $this->assertStringContainsString($class_is_active, $account_type_node_classes);
                 $this->assertStringNotContainsString($class_is_disabled, $account_type_node_classes);
+            } else {
+                $this->assertStringContainsString($class_is_disabled, $account_type_node_classes);
+                $this->assertStringNotContainsString($class_is_active, $account_type_node_classes);
             }
         }
     }
@@ -227,7 +227,7 @@ class SettingsAccountTypesTest extends SettingsBase {
     protected function interactWithObjectListItem(Browser $section, BaseModel $object, bool $is_fresh_load=true) {
         $this->assertObjectIsOfType($object, AccountType::class);
 
-        $class_state = $object->disabled ? '.is-disabled' : '.is-active';
+        $class_state = $object->active ? '.is-active' : '.is-disabled';
         $selector_account_type_id = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID.$class_state, $object->id);
         $section
             ->assertVisible($selector_account_type_id)

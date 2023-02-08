@@ -8,6 +8,7 @@ use App\Models\Attachment;
 use App\Models\Entry;
 use App\Models\Tag;
 use App\Traits\EntryResponseKeys;
+use Brick\Money\Money;
 use Illuminate\Foundation\Testing\WithFaker;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
@@ -116,9 +117,10 @@ class PostEntryTest extends TestCase {
         $this->assertResponseStatus($get_account_response1, HttpStatus::HTTP_OK);
         $get_account_response1_as_array = $get_account_response1->json();
         $this->assertArrayHasKey('total', $get_account_response1_as_array);
-        $original_account_total = $get_account_response1_as_array['total'];
+        $this->assertArrayHasKey('currency', $get_account_response1_as_array);
+        $original_account_total = Money::of($get_account_response1_as_array['total'], $get_account_response1_as_array['currency']);
         $this->assertArrayHasKey('account_types', $get_account_response1_as_array);
-        $this->assertTrue(is_array($get_account_response1_as_array['account_types']));
+        $this->assertIsArray($get_account_response1_as_array['account_types']);
         $this->assertNotEmpty($get_account_response1_as_array['account_types']);
 
         // WHEN
@@ -136,13 +138,9 @@ class PostEntryTest extends TestCase {
         // THEN
         $this->assertResponseStatus($get_entry_response, HttpStatus::HTTP_OK);
         $get_entry_response_as_array = $get_entry_response->json();
-        $this->assertEquals($generated_entry_data['entry_date'], $get_entry_response_as_array['entry_date']);
-        $this->assertEquals($generated_entry_data['entry_value'], $get_entry_response_as_array['entry_value']);
-        $this->assertEquals($generated_entry_data['memo'], $get_entry_response_as_array['memo']);
-        $this->assertEquals($generated_entry_data['expense'], $get_entry_response_as_array['expense']);
-        $this->assertEquals($generated_entry_data['confirm'], $get_entry_response_as_array['confirm']);
-        $this->assertEquals($generated_entry_data['account_type_id'], $get_entry_response_as_array['account_type_id']);
-        $this->assertNull($get_entry_response_as_array['transfer_entry_id']);
+        $failure_message = "Response does not match generated data.\n\$generated_entry_data:".print_r($generated_entry_data, true)."\nResponse:".$get_entry_response->getContent();
+        $this->assertEntryBaseProperties($generated_entry_data, $get_entry_response_as_array, $failure_message);
+        $this->assertNull($get_entry_response_as_array['transfer_entry_id'], $failure_message);
 
         // WHEN
         $get_account_response2 = $this->get('/api/account/'.$generated_account->id);
@@ -150,10 +148,12 @@ class PostEntryTest extends TestCase {
         $this->assertResponseStatus($get_account_response2, HttpStatus::HTTP_OK);
         $get_account_response2_as_array = $get_account_response2->json();
         $this->assertArrayHasKey('total', $get_account_response2_as_array);
-        $new_account_total = $get_account_response2_as_array['total'];
+        $this->assertArrayHasKey('currency', $get_account_response2_as_array);
+        $new_account_total = Money::of($get_account_response2_as_array['total'], $get_account_response2_as_array['currency']);
 
-        $entry_value = (($generated_entry_data['expense']) ? -1 : 1)*$generated_entry_data['entry_value'];
-        $this->assertEquals($original_account_total+$entry_value, $new_account_total);
+        $entry_value = Money::of($generated_entry_data['entry_value'], $generated_account->currency)
+            ->multipliedBy($generated_entry_data['expense'] ? -1 : 1);
+        $this->assertTrue($original_account_total->plus($entry_value)->isEqualTo($new_account_total));
     }
 
     public function testCreateEntryWithTagsButOneTagDoesNotExist() {
@@ -187,16 +187,11 @@ class PostEntryTest extends TestCase {
         $this->assertResponseStatus($get_response, HttpStatus::HTTP_OK);
         $get_response_as_array = $get_response->json();
         $failure_message = "Response does not match generated data.\n\$generated_entry_data:".print_r($generated_entry_data, true)."\nResponse:".$get_response->getContent();
-        $this->assertEquals($generated_entry_data['entry_date'], $get_response_as_array['entry_date'], $failure_message);
-        $this->assertEquals($generated_entry_data['entry_value'], $get_response_as_array['entry_value'], $failure_message);
-        $this->assertEquals($generated_entry_data['memo'], $get_response_as_array['memo'], $failure_message);
-        $this->assertEquals($generated_entry_data['expense'], $get_response_as_array['expense'], $failure_message);
-        $this->assertEquals($generated_entry_data['confirm'], $get_response_as_array['confirm'], $failure_message);
-        $this->assertEquals($generated_entry_data['account_type_id'], $get_response_as_array['account_type_id'], $failure_message);
+        $this->assertEntryBaseProperties($generated_entry_data, $get_response_as_array, $failure_message);
         $this->assertNull($get_response_as_array['transfer_entry_id'], $failure_message);
-        $this->assertTrue(is_array($get_response_as_array['tags']), $failure_message);
+        $this->assertIsArray($get_response_as_array['tags'], $failure_message);
         $this->assertNotEmpty($get_response_as_array['tags'], $failure_message);
-        $this->assertFalse(in_array($non_existent_tag_id, $get_response_as_array['tags']), $failure_message);
+        $this->assertNotContains($non_existent_tag_id, $get_response_as_array['tags'], $failure_message);
         foreach ($get_response_as_array['tags'] as $entry_tag) {
             $this->assertContains(
                 $entry_tag['id'],
@@ -237,16 +232,12 @@ class PostEntryTest extends TestCase {
         // THEN
         $this->assertResponseStatus($get_response, HttpStatus::HTTP_OK);
         $get_response_as_array = $get_response->json();
-        $this->assertEquals($generated_entry_data['entry_date'], $get_response_as_array['entry_date']);
-        $this->assertEquals($generated_entry_data['entry_value'], $get_response_as_array['entry_value']);
-        $this->assertEquals($generated_entry_data['memo'], $get_response_as_array['memo']);
-        $this->assertEquals($generated_entry_data['expense'], $get_response_as_array['expense']);
-        $this->assertEquals($generated_entry_data['confirm'], $get_response_as_array['confirm']);
-        $this->assertEquals($generated_entry_data['account_type_id'], $get_response_as_array['account_type_id']);
-        $this->assertNull($get_response_as_array['transfer_entry_id']);
-        $this->assertArrayHasKey('attachments', $get_response_as_array);
-        $this->assertTrue(is_array($get_response_as_array['attachments']));
-        $this->assertNotEmpty($get_response_as_array['attachments']);
+        $failure_message = "Response does not match generated data.\n\$generated_entry_data:".print_r($generated_entry_data, true)."\nResponse:".$get_response->getContent();
+        $this->assertEntryBaseProperties($generated_entry_data, $get_response_as_array, $failure_message);
+        $this->assertNull($get_response_as_array['transfer_entry_id'], $failure_message);
+        $this->assertArrayHasKey('attachments', $get_response_as_array, $failure_message);
+        $this->assertIsArray($get_response_as_array['attachments'], $failure_message);
+        $this->assertNotEmpty($get_response_as_array['attachments'], $failure_message);
         foreach ($get_response_as_array['attachments'] as $attachment) {
             $attachment_data = [
                 'uuid'=>$attachment['uuid'],
@@ -282,12 +273,7 @@ class PostEntryTest extends TestCase {
         $this->assertResponseStatus($get_response, HttpStatus::HTTP_OK);
         $get_response_as_array = $get_response->json();
         $failure_message = "Response does not match generated data.\n\$generated_entry_data:".print_r($generated_entry_data, true)."\nResponse:".$get_response->getContent();
-        $this->assertEquals($generated_entry_data['entry_date'], $get_response_as_array['entry_date'], $failure_message);
-        $this->assertEquals($generated_entry_data['entry_value'], $get_response_as_array['entry_value'], $failure_message);
-        $this->assertEquals($generated_entry_data['memo'], $get_response_as_array['memo'], $failure_message);
-        $this->assertEquals($generated_entry_data['expense'], $get_response_as_array['expense'], $failure_message);
-        $this->assertEquals($generated_entry_data['confirm'], $get_response_as_array['confirm'], $failure_message);
-        $this->assertEquals($generated_entry_data['account_type_id'], $get_response_as_array['account_type_id'], $failure_message);
+        $this->assertEntryBaseProperties($generated_entry_data, $get_response_as_array, $failure_message);
         $this->assertNotNull($get_response_as_array['transfer_entry_id'], $failure_message);
         $this->assertEquals($generated_entry_data['transfer_entry_id'], $get_response_as_array['transfer_entry_id'], $failure_message);
     }
@@ -304,9 +290,6 @@ class PostEntryTest extends TestCase {
         ];
     }
 
-    /**
-     * @param array $response_as_array
-     */
     private function assertPostResponseHasCorrectKeys(array $response_as_array) {
         $failure_message = "POST Response is ".json_encode($response_as_array);
         $this->assertArrayHasKey(self::$RESPONSE_SAVE_KEY_ID, $response_as_array, $failure_message);
@@ -322,6 +305,13 @@ class PostEntryTest extends TestCase {
         $this->assertEquals(self::$ERROR_ENTRY_ID, $response_as_array[self::$RESPONSE_SAVE_KEY_ID], $failure_message);
         $this->assertNotEmpty($response_as_array[self::$RESPONSE_SAVE_KEY_ERROR], $failure_message);
         $this->assertStringContainsString($response_error_msg, $response_as_array[self::$RESPONSE_SAVE_KEY_ERROR], $failure_message);
+    }
+
+    private function assertEntryBaseProperties(array $generated_entry_data, array $entry_response, string $failure_message) {
+        $base_properties = ['entry_date', 'entry_value', 'memo', 'expense', 'confirm', 'account_type_id'];
+        foreach ($base_properties as $property) {
+            $this->assertEquals($entry_response[$property], $generated_entry_data[$property], $failure_message);
+        }
     }
 
 }

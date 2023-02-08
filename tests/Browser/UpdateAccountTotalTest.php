@@ -9,6 +9,7 @@ use App\Traits\Tests\Dusk\EntryModal as DustTraitEntryModal;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
 use App\Traits\Tests\WaitTimes;
+//use Brick\Money\Money;
 use Faker\Factory as FakerFactory;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
@@ -365,7 +366,7 @@ class UpdateAccountTotalTest extends DuskTestCase {
      * @param bool $is_institution_id
      * @return array
      */
-    private function getAccount(int $id, bool $is_institution_id=false) {
+    private function getAccount(int $id, bool $is_institution_id=false): array {
         $accounts = $this->getApiAccounts();
         $accounts_collection = collect($accounts);
         if ($is_institution_id) {

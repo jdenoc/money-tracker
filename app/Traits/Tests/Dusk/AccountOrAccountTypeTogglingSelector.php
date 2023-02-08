@@ -97,12 +97,12 @@ trait AccountOrAccountTypeTogglingSelector {
                     ->assertSelectHasOption(self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT, "")
                     ->assertSelectHasOptions(
                         self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT,
-                        collect($accounts)->where('disabled', false)->pluck('id')->toArray()
+                        collect($accounts)->where('active', true)->pluck('id')->toArray()
                     );
 
                 // disable checkbox
                 $component->assertMissing($this->getCheckboxShowDisabledAccountOrAccountType($this->_account_or_account_type_toggling_selector_id_label));
-                if (collect($accounts)->where('disabled', true)->count() > 0) {
+                if (collect($accounts)->where('active', false)->count() > 0) {
                     $component->assertVisible($this->getLabelSelectorLabelShowDisabledAccountsOrAccountTypes());
                 } else {
                     $component->assertMissing($this->getLabelSelectorLabelShowDisabledAccountsOrAccountTypes());
@@ -167,7 +167,7 @@ trait AccountOrAccountTypeTogglingSelector {
         $browser->within($this->getAccountOrAccountTypeTogglingSelectorComponentId($this->_account_or_account_type_toggling_selector_id_label), function(Browser $component) use ($accounts_or_account_types) {
             if (!$this->_disable_checkbox_checked) {
                 $this->assertSelectOptionsClassOfAccountOrAccountTypeAreNotDisabled($component);
-                $option_values = collect($accounts_or_account_types)->where('disabled', false)->pluck('id')->toArray();
+                $option_values = collect($accounts_or_account_types)->where('active', true)->pluck('id')->toArray();
             } else {
                 $option_values = collect($accounts_or_account_types)->pluck('id')->toArray();
             }

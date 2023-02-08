@@ -40,11 +40,11 @@ class GetAccountTest extends TestCase {
         /** @var Account $generated_account */
         $generated_account = Account::factory()->create();
         $generated_account_types = AccountType::factory()->count($account_type_count)->for($generated_account)->create();
-        $generated_disabled_account_type = AccountType::factory()->for($generated_account)->disabled()->create();
-        $account_type_count++;
-        $generated_account_types->push($generated_disabled_account_type);
         // These nodes are not in the response output. Let's hide them from the object collection
         $generated_account_types->makeHidden(['account_id', 'last_updated', AccountType::CREATED_AT, AccountType::UPDATED_AT, AccountType::DELETED_AT]);
+        // Don't need to include this account-type in the $generated_account_types collection
+        // as disabled account-types don't show up in the GET /api/account call
+        AccountType::factory()->for($generated_account)->disabled()->create();
 
         // WHEN
         $response = $this->get(sprintf($this->_base_uri, $generated_account->id));
@@ -71,17 +71,17 @@ class GetAccountTest extends TestCase {
 
     public function testGetAccountDataWhenOnlyDisabledAccountTypeRecordsExist() {
         // GIVEN
-        $account_type_count = $this->faker->randomDigitNotZero();
+        $disabled_account_type_count = $this->faker->randomDigitNotZero();
         /** @var Account $generated_account */
         $generated_account = Account::factory()->create();
-        AccountType::factory()->count($account_type_count)->for($generated_account)->disabled()->create();
+        AccountType::factory()->count($disabled_account_type_count)->for($generated_account)->disabled()->create();
 
         // WHEN
         $response = $this->get(sprintf($this->_base_uri, $generated_account->id));
 
         // THEN
         $response->assertStatus(Response::HTTP_OK);
-        $this->assertAccountDetailsOK($response->json(), $generated_account, $account_type_count);
+        $this->assertAccountDetailsOK($response->json(), $generated_account, 0);
     }
 
     public function testGetAccountDataWhenNoAccountDataExists() {

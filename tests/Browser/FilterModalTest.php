@@ -363,7 +363,7 @@ class FilterModalTest extends DuskTestCase {
                     $this->assertValueFieldCurrency($modal, $this->_selector_modal_filter_field_max_value, $this->_default_currency_character);
 
                     // select an account and confirm the name in the select changes
-                    $account_to_select = collect($accounts)->where('disabled', 0)->random();
+                    $account_to_select = collect($accounts)->where('active', true)->random();
                     $this->selectAccountOrAccountTypeValue($modal, $account_to_select['id']);
                     $modal->assertSeeIn(self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT, $account_to_select['name']);
 
@@ -617,7 +617,7 @@ class FilterModalTest extends DuskTestCase {
                 // modify all (or at least most) fields
                 ->within($this->_selector_modal_filter.' '.$this->_selector_modal_body, function(Browser $modal) use (&$filter_value) {
                     $accounts = $this->getApiAccounts();
-                    $filter_value = collect($accounts)->where('disabled', 0)->random();
+                    $filter_value = collect($accounts)->where('active', true)->random();
                     $this->selectAccountOrAccountTypeValue($modal, $filter_value['id']);
                 })
 

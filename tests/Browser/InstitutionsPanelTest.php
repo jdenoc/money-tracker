@@ -87,7 +87,7 @@ class InstitutionsPanelTest extends DuskTestCase {
                                 ->assertVisible($this->_selector_panel_institutions_accounts);
 
                             $institution_accounts_collection = $accounts_collection
-                                ->where('disabled', false)
+                                ->where('active', true)
                                 ->where('institution_id', $active_institution['id'])
                                 ->sortBy('name');
                             foreach ($institution_accounts_collection as $institution_account) {
@@ -131,7 +131,7 @@ class InstitutionsPanelTest extends DuskTestCase {
     public function testDisabledAccountsAreVisibleAndClickingOnADisabledAccountFiltersEntries() {
         $institutions_collection = $this->getInstitutionsCollection(false);
         $accounts_collection = $this->getAccountsCollection($institutions_collection);
-        $disabled_accounts_collection = $accounts_collection->where('disabled', true);
+        $disabled_accounts_collection = $accounts_collection->where('active', false);
         $account_types_collection = $this->getAccountTypesCollection();
 
         $this->browse(function(Browser $browser) use ($disabled_accounts_collection, $account_types_collection) {
@@ -263,10 +263,10 @@ class InstitutionsPanelTest extends DuskTestCase {
             $account_types_tooltip_text = $account_node->text('#'.$account_node_tooltip_id);
             foreach ($account_types_collection as $account_account_type) {
                 $account_type_record_tooltip_text = $account_account_type['name']." (".$account_account_type['last_digits'].")";
-                if ($account_account_type['disabled']) {
-                    $this->assertStringNotContainsString($account_type_record_tooltip_text, $account_types_tooltip_text);
-                } else {
+                if ($account_account_type['active']) {
                     $this->assertStringContainsString($account_type_record_tooltip_text, $account_types_tooltip_text);
+                } else {
+                    $this->assertStringNotContainsString($account_type_record_tooltip_text, $account_types_tooltip_text);
                 }
             }
         } else {
@@ -304,7 +304,7 @@ class InstitutionsPanelTest extends DuskTestCase {
                 $row_entry_account_type = $table_row
                     ->findElement(WebDriverBy::cssSelector($this->_selector_table_row_account_type))
                     ->getText();
-                $this->assertContains($row_entry_account_type, $account_types_collection->where('disabled', false)->pluck('name')->all());
+                $this->assertContains($row_entry_account_type, $account_types_collection->where('active', true)->pluck('name')->all());
             }
         });
     }

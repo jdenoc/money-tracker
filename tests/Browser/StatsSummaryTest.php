@@ -6,6 +6,7 @@ use App\Traits\Tests\Dusk\AccountOrAccountTypeTogglingSelector as DuskTraitAccou
 use App\Traits\Tests\Dusk\BatchFilterEntries as DuskTraitBatchFilterEntries;
 use App\Traits\Tests\Dusk\StatsDateRange as DuskTraitStatsDateRange;
 use App\Traits\Tests\Dusk\StatsSidePanel as DuskTraitStatsSidePanel;
+use Brick\Money\Money;
 use Facebook\WebDriver\Remote\RemoteWebElement;
 use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Support\Collection;
@@ -27,9 +28,9 @@ class StatsSummaryTest extends StatsBase {
     use DuskTraitStatsDateRange;
     use DuskTraitStatsSidePanel;
 
-    private static $LABEL_GENERATE_TABLE_BUTTON = "Generate Tables";
-    private static $LABEL_TABLE_NAME_TOTAL = 'Total Income/Expenses';
-    private static $LABEL_TABLE_NAME_TOP = 'Top 10 income/expense entries';
+    private static string $LABEL_GENERATE_TABLE_BUTTON = "Generate Tables";
+    private static string $LABEL_TABLE_NAME_TOTAL = 'Total Income/Expenses';
+    private static string $LABEL_TABLE_NAME_TOP = 'Top 10 income/expense entries';
 
     public function __construct($name = null, array $data = [], $dataName = '') {
         parent::__construct($name, $data, $dataName);
@@ -167,10 +168,10 @@ class StatsSummaryTest extends StatsBase {
                     if ($is_switch_toggled) {
                         // switch to account-types
                         $this->toggleAccountOrAccountTypeSwitch($form);
-                        $account_or_account_type_id = ($is_random_selector_value) ? $account_types->where('disabled', $are_disabled_select_options_available)->pluck('id')->random() : '';
+                        $account_or_account_type_id = ($is_random_selector_value) ? $account_types->where('active', !$are_disabled_select_options_available)->random()->id : '';
                     } else {
                         // stay with accounts
-                        $account_or_account_type_id = ($is_random_selector_value) ? $accounts->where('disabled', $are_disabled_select_options_available)->pluck('id')->random() : '';
+                        $account_or_account_type_id = ($is_random_selector_value) ? $accounts->where('active', !$are_disabled_select_options_available)->random()->id : '';
                     }
                     $this->selectAccountOrAccountTypeValue($form, $account_or_account_type_id);
                     $filter_data = $this->generateFilterArrayElementAccountOrAccountypeId($filter_data, $is_switch_toggled, $account_or_account_type_id);
@@ -219,8 +220,8 @@ class StatsSummaryTest extends StatsBase {
                             $table->assertSeeIn($selector_table_label, self::$LABEL_TABLE_NAME_TOTAL);
                             $table_rows = $table->elements($selector_table_body_rows);
                             $this->assertGreaterThanOrEqual(1, count($table_rows));
-                            $this->assertGreaterThanOrEqual(1, count($totals));
-                            $this->assertSameSize($totals, $table_rows, "'".self::$LABEL_TABLE_NAME_TOTAL."' table row count does not match expected totals: ".print_r($totals, true));
+                            $this->assertGreaterThanOrEqual(1, $totals->undot()->count());
+                            $this->assertSameSize($totals->undot(), $table_rows, "'".self::$LABEL_TABLE_NAME_TOTAL."' table row count does not match expected totals:".$totals->undot()->toJson());
 
                             $selector_cell_total_income = 'td:nth-child(1) span:nth-child(2)';
                             $selector_cell_total_expense = 'td:nth-child(2) span:nth-child(2)';
@@ -229,9 +230,16 @@ class StatsSummaryTest extends StatsBase {
                                 //  income | expense | currency
                                 $currency_cell_text = $table_row->findElement(WebDriverBy::cssSelector($selector_cell_total_currency))->getText();
                                 $income_cell_text = $table_row->findElement(WebDriverBy::cssSelector($selector_cell_total_income))->getText();
-                                $this->assertEquals($totals[$currency_cell_text]['income'], $income_cell_text);
                                 $expense_cell_text = $table_row->findElement(WebDriverBy::cssSelector($selector_cell_total_expense))->getText();
-                                $this->assertEquals($totals[$currency_cell_text]['expense'], $expense_cell_text);
+                                $failure_message_postfix = "\n".$income_cell_text.' | '.$expense_cell_text.' | '.$currency_cell_text;
+                                $this->assertTrue(
+                                    $totals->get($currency_cell_text.'.income')->isEqualTo($income_cell_text),
+                                    "Failing ".$totals->get($currency_cell_text.'.income').'=='.$income_cell_text.$failure_message_postfix
+                                );
+                                $this->assertTrue(
+                                    $totals->get($currency_cell_text.'.expense')->isEqualTo($expense_cell_text),
+                                    "Failing ".$totals->get($currency_cell_text.'.expense').'=='.$expense_cell_text.$failure_message_postfix
+                                );
                             }
                         })
                         ->assertVisible($selector_table_top_10_income_expense)
@@ -283,18 +291,12 @@ class StatsSummaryTest extends StatsBase {
         });
     }
 
-    /**
-     * @param Collection $entries
-     * @param Collection $accounts
-     * @param Collection $account_types
-     * @return array
-     */
-    private function getTotalIncomeExpenses($entries, $accounts, $account_types): array {
-        $totals = [];
+    private function getTotalIncomeExpenses(Collection $entries, Collection $accounts, Collection $account_types): Collection {
+        $totals = collect();
         $currencies = $accounts->unique('currency')->pluck('currency')->all();
         foreach ($currencies as $currency) {
-            $totals[$currency]['income'] = 0;
-            $totals[$currency]['expense'] = 0;
+            $totals->put($currency.'.income', Money::of(0, $currency));
+            $totals->put($currency.'.expense', Money::of(0, $currency));
         }
 
         foreach ($entries as $entry) {
@@ -305,23 +307,29 @@ class StatsSummaryTest extends StatsBase {
             } else {
                 $income_expense = 'income';
             }
-            $totals[$account['currency']][$income_expense] += $entry['entry_value'];
+            $total_key = $account['currency'].'.'.$income_expense;
+            /** @var Money $total */
+            $updated_total = $totals->get($total_key);
+            $totals->put(
+                $total_key,
+                $updated_total->plus(Money::of($entry['entry_value'], $account['currency']))
+            );
         }
 
         // purge any 0 values
-        foreach ($totals as $currency=>$total) {
-            if ($total['income'] === 0 && $total['expense'] === 0) {
-                unset($totals[$currency]);
-            }
-        }
-        return $totals;
+        return $totals->undot()
+            ->reject(function(array $total) {
+                return $total['income']->isZero() && $total['expense']->isZero();
+            })
+            ->mapWithKeys(function($total, string $key) {
+                return [
+                    $key.'.income'=>$total['income'],
+                    $key.'.expense'=>$total['expense'],
+                ];
+            });
     }
 
-    /**
-     * @param Collection $entries
-     * @return array
-     */
-    private function getTop10IncomeExpenses($entries): array {
+    private function getTop10IncomeExpenses(Collection $entries): array {
         $limit = 10;
         $top_income_entries = $entries->where('expense', 0)->sortByDesc($this->sortCallable())->take($limit)->values();
         $top_expense_entries = $entries->where('expense', 1)->sortByDesc($this->sortCallable())->take($limit)->values();
