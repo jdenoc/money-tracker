@@ -128,11 +128,12 @@ class EntryController extends Controller {
     }
 
     /**
-     * @param Request $request
-     * @param int|false $update_id
+     * @param Request  $request
+     * @param int|null $updateId
+     *
      * @return Response
      */
-    private function modify_entry(Request $request, $update_id=false): Response {
+    private function modify_entry(Request $request, ?int $updateId=null): Response {
         $request_body = $request->getContent();
         $entry_data = json_decode($request_body, true);
 
@@ -144,7 +145,7 @@ class EntryController extends Controller {
             );
         }
 
-        if ($update_id === false) {
+        if (is_null($updateId)) {
             $successful_http_status_code = HttpStatus::HTTP_CREATED;
             $required_fields = Entry::get_fields_required_for_creation();
 
@@ -164,7 +165,7 @@ class EntryController extends Controller {
 
             try {
                 // check to make sure entry exists. if it doesn't then we can't update it
-                $entry_being_modified = Entry::findOrFail($update_id);
+                $entry_being_modified = Entry::findOrFail($updateId);
             } catch (\Exception $exception) {
                 return response(
                     [self::$RESPONSE_SAVE_KEY_ID=>self::$ERROR_ENTRY_ID, self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_DOES_NOT_EXIST],
@@ -175,8 +176,9 @@ class EntryController extends Controller {
 
         // check validity of account_type_id value
         if (isset($entry_data['account_type_id'])) {
-            $account_type = AccountType::find($entry_data['account_type_id']);
-            if (empty($account_type)) {
+            try {
+                AccountType::withTrashed()->findOrFail($entry_data['account_type_id']);
+            } catch (\Exception $e) {
                 return response(
                     [self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE, self::$RESPONSE_SAVE_KEY_ID=>self::$ERROR_ENTRY_ID],
                     HttpStatus::HTTP_BAD_REQUEST
