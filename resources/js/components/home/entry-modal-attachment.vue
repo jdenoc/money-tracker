@@ -1,6 +1,6 @@
 <template>
   <div class="existing-attachment flex justify-between p-2 mb-2 rounded border-t border-gray-100 shadow-md">
-    <div class="attachment-name p-2" v-text="name"></div>
+    <div class="attachment-name p-2 truncate" v-text="name" v-tooltip="tooltipContent"></div>
     <div class="flex">
       <button class="view-attachment inline-flex justify-center rounded-md border border-gray-300 bg-white px-3 py-2 mr-1.5 opacity-75 hover:opacity-100"
           v-on:click="viewEntryAttachment"
@@ -37,6 +37,16 @@ export default {
     return {
       attachmentObject: new Attachment(),
       entryObject: new Entry(),
+    }
+  },
+  computed: {
+    tooltipContent: function(){
+      return {
+        content: this.name,
+        html: true,
+        placement: 'bottom',
+        classes: 'text-xs font-semibold bg-black py-1.5 px-1 rounded rounded-lg text-white tooltip',
+      }
     }
   },
   methods: {
