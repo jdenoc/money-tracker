@@ -243,7 +243,12 @@ class Entry extends BaseModel {
      * @return bool
      */
     public function has_attachments(): bool {
-        return $this->attachments()->count() > 0;
+        try {
+            return $this->attachments()->count() > 0;
+        } catch (\Exception $e) {
+            error_log($e);
+            return false;
+        }
     }
 
     public function has_tags(): bool {
@@ -259,7 +264,12 @@ class Entry extends BaseModel {
      * @return array
      */
     public function get_tag_ids(): array {
-        $collection_of_tags = $this->tags()->getResults();
+        try {
+            $collection_of_tags = $this->tags()->getResults();
+        } catch (\Exception $e) {
+            error_log($e);
+            return [];
+        }
         if (is_null($collection_of_tags) || $collection_of_tags->isEmpty()) {
             return [];
         } else {

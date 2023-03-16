@@ -621,7 +621,7 @@ class NotificationsTest extends DuskTestCase {
      * @return string
      */
     private function getTableRecreationQuery(string $table_name): string {
-        $create_query = DB::select("SHOW CREATE TABLE ".$table_name);
+        $create_query = DB::select(sprintf("SHOW CREATE TABLE %s", $table_name));
         return $create_query[0]->{"Create Table"};
     }
 
