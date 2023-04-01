@@ -33,18 +33,18 @@ Money Tracker is a web portal dedicated to help record and manage income & expen
 ---
 
 ## Requirements
-- NodeJS 16
+- NodeJS 18
   ```bash
   # confirm installation and version of NodeJS
   node -v
   
   # confirm installation and version of npm
   npm --version
-  # should be 8
+  # should be 9.5
   
   # confirm installation and version of npx
   npx --version
-  # should be 8
+  # should be 9.5
   ```
 - PHP 8.0
   ```bash
