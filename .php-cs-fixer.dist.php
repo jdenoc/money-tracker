@@ -22,10 +22,6 @@ return $config
     ->setRules([
         '@PSR12' => true,
         'array_syntax' => ['syntax' => 'short'],
-        'braces'=>[
-            'allow_single_line_closure'=>true,
-            'position_after_functions_and_oop_constructs'=>'same',
-        ],
         'class_definition'=>[
             'inline_constructor_arguments' => true,
             'space_before_parenthesis'=>false,
@@ -45,6 +41,9 @@ return $config
         'magic_constant_casing'=>true,
         'method_argument_space'=>[
             'on_multiline'=>'ignore'
+        ],
+        'new_with_braces'=>[
+            'anonymous_class'=>false
         ],
         'no_blank_lines_after_class_opening'=>false,
         'no_extra_blank_lines'=>[
