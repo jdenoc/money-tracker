@@ -70,7 +70,7 @@ Money Tracker is a web portal dedicated to help record and manage income & expen
   - PDO Mysql PHP Extension
   - Tokenizer PHP Extension
   - XML PHP Extension
-- Composer 2.1
+- Composer 2.2
   ```bash
   # confirm installation and version of PHP
   composer --version
