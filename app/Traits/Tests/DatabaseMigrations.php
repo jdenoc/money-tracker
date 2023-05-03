@@ -45,7 +45,7 @@ trait DatabaseMigrations {
     }
 
     public static function cleanup() {
-//        Artisan::call('snapshot:delete', ['name'=>self::$SNAPSHOT_NAME]);     // TODO: figure out how to make this work
+        // Artisan::call('snapshot:delete', ['name'=>self::$SNAPSHOT_NAME]);     // TODO: figure out how to make this work
         self::$SNAPSHOT_NAME = '';
         self::$FRESH_RUN = true;
         self::$DUMP_READY = false;

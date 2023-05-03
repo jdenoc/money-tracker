@@ -22,7 +22,7 @@ class SettingsPage extends Page {
      * @return void
      */
     public function assert(Browser $browser) {
-//        $browser->assertPathIs($this->url());
+        // $browser->assertPathIs($this->url());
     }
 
     /**
@@ -32,7 +32,7 @@ class SettingsPage extends Page {
      */
     public function elements() {
         return [
-//            '@element' => '#selector',
+            // '@element' => '#selector',
         ];
     }
 
