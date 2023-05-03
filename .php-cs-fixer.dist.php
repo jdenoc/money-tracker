@@ -3,7 +3,7 @@
 $finder = PhpCsFixer\Finder::create()
     ->files()
     ->in(__DIR__)
-    ->notPath('_ide_helper.php')
+    ->notPath('_ide_helper.php')    // excludes this file from analysis
     ->exclude('bootstrap/cache')
     ->exclude('database/snapshots')
     ->exclude('docs')
