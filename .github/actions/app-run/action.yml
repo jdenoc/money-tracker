@@ -13,7 +13,7 @@ runs:
       run: |
         # start containers
         docker-compose up -d --force-recreate
-        
+
         # wait until health status determined
         i=0
         while [[
@@ -27,7 +27,7 @@ runs:
             echo "$(docker container ls --filter "status=running" --filter "health=healthy" -q | wc -l) healthy container(s)"
           fi
         done
-        
+
         # check if any containers are unhealthy
         unhealthy_count=$(docker container ls --filter "status=running" --filter "health=unhealthy" -q | wc -l)
         if [[ $unhealthy_count -eq 0 ]]; then
@@ -43,16 +43,16 @@ runs:
 
     - name: general application setup
       run: |
-        .docker/cmd/artisan.sh optimize:clear
-        .docker/cmd/artisan.sh key:generate
-        .docker/cmd/artisan.sh app:version $(git describe --always)
-        .docker/cmd/artisan.sh optimize
-        .docker/cmd/artisan.sh view:cache
+        .docker/scripts/artisan.sh optimize:clear
+        .docker/scripts/artisan.sh key:generate
+        .docker/scripts/artisan.sh app:version $(git describe --always)
+        .docker/scripts/artisan.sh optimize
+        .docker/scripts/artisan.sh view:cache
       shell: bash
 
     - if: ${{ inputs.is-cacheless != 'false' }}
       name: clear cache and create alternative .env file
       run: |
-        .docker/cmd/artisan.sh config:clear
+        .docker/scripts/artisan.sh config:clear
         docker-compose exec -T --user www-data application cp .env.docker .env.testing
       shell: bash

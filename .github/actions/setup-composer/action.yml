@@ -12,14 +12,14 @@ runs:
   using: composite
   steps:
     - id: composer-github-token
-      run: .docker/cmd/composer.sh config github-oauth.github.com ${{ inputs.github-token }}
+      run: .docker/scripts/composer.sh config github-oauth.github.com ${{ inputs.github-token }}
       shell: bash
     - id: composer-php-version
-      run: .docker/cmd/composer.sh config platform.php ${{ inputs.php-version }}
+      run: .docker/scripts/composer.sh config platform.php ${{ inputs.php-version }}
       shell: bash
     - id: composer-validate
-      run: .docker/cmd/composer.sh validate
+      run: .docker/scripts/composer.sh validate
       shell: bash
     - id: composer-install
-      run: .docker/cmd/composer.sh install --no-interaction --optimize-autoloader --prefer-dist
+      run: .docker/scripts/composer.sh install --no-interaction --optimize-autoloader --prefer-dist
       shell: bash

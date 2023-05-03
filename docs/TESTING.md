@@ -10,9 +10,9 @@ This project has been set up to use [Github-Actions](https://github.com/jdenoc/m
 Once the docker environment is setup ([instructions here](SETUP-DOCKER.md)) and already running, performing the following commands should run the tests we want:
 ```bash
 # Run PhpUnit tests
-.docker/cmd/artisan.sh test
+.docker/scripts/artisan.sh test
 # Run Laravel Dusk tests
-.docker/cmd/artisan.sh dusk --stop-on-failure
+.docker/scripts/artisan.sh dusk --stop-on-failure
 ```
 
 ---
