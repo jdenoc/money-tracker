@@ -4,5 +4,5 @@ description: Load npm dependancies
 runs:
   using: composite
   steps:
-    - run: .docker/cmd/npm.sh ci
+    - run: .docker/scripts/npm.sh ci
       shell: bash

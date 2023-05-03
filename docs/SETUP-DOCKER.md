@@ -13,20 +13,20 @@ cd money-tracker/
 
 ### Run composer install
 ```bash
-.docker/cmd/composer.sh install
+.docker/scripts/composer.sh install
 ```
 
 <small>***OPTIONAL***</small>:
 If you're working with PhpStorm, be sure to run the following command:
 ```bash
-.docker/cmd/composer.sh run-script ide-helper
+.docker/scripts/composer.sh run-script ide-helper
 ```
 This will generate Laravel Facades that PhpStorm can use.
 
 ### Run npm install
 ```bash
-.docker/cmd/npm.sh ci
-.docker/cmd/npm.sh run build:dev
+.docker/scripts/npm.sh ci
+.docker/scripts/npm.sh run build:dev
 ```
 
 ### Bring "_UP_" application container(s)
@@ -45,36 +45,36 @@ DISABLE_XDEBUG=true docker-compose up -d
 ### Set application key
 composer doesn't write to the correct .env file during setup so we need to generate the `APP_KEY` value again
 ```bash
-.docker/cmd/artisan.sh key:generate
+.docker/scripts/artisan.sh key:generate
 ```
 
 ### Set application version
 _**Note:** you can replace_ `git describe --always` _with any value you want_
 ```bash
-.docker/cmd/artisan.sh app:version `git describe --always`
+.docker/scripts/artisan.sh app:version $(git describe --always)
 ```
 
 ### Setup database/clear existing database and re-initialise it as empty
 ```bash
-.docker/cmd/artisan.sh migrate:fresh
+.docker/scripts/artisan.sh migrate:fresh
 ```
 
 ### Load dummy data into database
 ```bash
-.docker/cmd/artisan.sh migrate:fresh --seeder=UiSampleDatabaseSeeder
+.docker/scripts/artisan.sh migrate:fresh --seeder=UiSampleDatabaseSeeder
 ```
 
 ### Load database backup
 If you have a database dump/backup file, you can load it with this command:
 ```bash
-.docker/cmd/mysql.sh < /path/to/file.sql
+.docker/scripts/mysql.sh < /path/to/file.sql
 ```
 
 Alternatively, you may wish to load the dump/backup sql files by copying the mysql dump file into the `database/snapshots/` directory and running the `snapshot:load` command.
 For example:
 ```bash
 cp /path/to/file.sql database/snapshots/dump-file.sql
-.docker/cmd/artisan.sh snapshot:load dump-file
+.docker/scripts/artisan.sh snapshot:load dump-file
 ```
 
 ### Tear-down

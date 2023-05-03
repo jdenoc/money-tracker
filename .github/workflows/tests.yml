@@ -57,8 +57,8 @@ jobs:
         id: cache-path-vue
         run: |
           echo "value<<EOF" >> $GITHUB_OUTPUT
-          echo "public/dist" >> $GITHUB_OUTPUT 
-          echo "public/mix-manifest.json" >> $GITHUB_OUTPUT 
+          echo "public/dist" >> $GITHUB_OUTPUT
+          echo "public/mix-manifest.json" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Generate failure content paths for artifact upload
@@ -157,15 +157,15 @@ jobs:
 
       - name: "Linter: PHP"
         id: linter-php
-        run: .docker/cmd/composer.sh run-script lint:php
+        run: .docker/scripts/composer.sh run-script lint:php
 
       - name: "Linter: JS"
         id: linter-js
-        run: .docker/cmd/npm.sh run lint:js
+        run: .docker/scripts/npm.sh run lint:js
 
       - name: "Linter: Style"
         id: linter-style
-        run: .docker/cmd/npm.sh run lint:style
+        run: .docker/scripts/npm.sh run lint:style
 
   tests-unit:
     needs:
@@ -207,39 +207,39 @@ jobs:
 
       - uses: ./.github/actions/app-run
       - name: unit tests - DELETE API endpoints
-        run: .docker/cmd/artisan.sh test -v --testsuite api-delete
+        run: .docker/scripts/artisan.sh test -v --testsuite api-delete
 
       - uses: ./.github/actions/app-run
       - name: unit tests - GET API endpoints
-        run: .docker/cmd/artisan.sh test -v --testsuite api-get
+        run: .docker/scripts/artisan.sh test -v --testsuite api-get
 
       - uses: ./.github/actions/app-run
       - name: unit tests - PATCH API endpoints
-        run: .docker/cmd/artisan.sh test -v --testsuite api-patch
+        run: .docker/scripts/artisan.sh test -v --testsuite api-patch
 
       - uses: ./.github/actions/app-run
       - name: unit tests - POST API endpoints
-        run: .docker/cmd/artisan.sh test -v --testsuite api-post
+        run: .docker/scripts/artisan.sh test -v --testsuite api-post
 
       - uses: ./.github/actions/app-run
       - name: unit tests - PUT API endpoints
-        run: .docker/cmd/artisan.sh test -v --testsuite api-put
+        run: .docker/scripts/artisan.sh test -v --testsuite api-put
 
       - uses: ./.github/actions/app-run
         with:
           is-cacheless: true  # artisan app:version testing doesn't work well when configs have been cached
       - name: unit tests - console
-        run: .docker/cmd/artisan.sh test -v --testsuite console
+        run: .docker/scripts/artisan.sh test -v --testsuite console
 
       - uses: ./.github/actions/app-run
         with:
           is-cacheless: true  # testing the /export endpoint doesn't work well when configs have been cached
       - name: unit tests - web
-        run: .docker/cmd/artisan.sh test -v --testsuite web
+        run: .docker/scripts/artisan.sh test -v --testsuite web
 
       - uses: ./.github/actions/app-run
       - name: unit tests - unit (generic)
-        run: .docker/cmd/artisan.sh test -v --testsuite unit
+        run: .docker/scripts/artisan.sh test -v --testsuite unit
 
       - name: Failure docker inspection
         uses: ./.github/actions/failure-docker-inspect
@@ -301,10 +301,10 @@ jobs:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
 
       - uses: ./.github/actions/app-run
-      - run: .docker/cmd/artisan.sh dusk --group demo-1 --stop-on-failure
+      - run: .docker/scripts/artisan.sh dusk --group demo-1 --stop-on-failure
 
       - uses: ./.github/actions/app-run
-      - run: .docker/cmd/artisan.sh dusk --group demo-2 --stop-on-failure
+      - run: .docker/scripts/artisan.sh dusk --group demo-2 --stop-on-failure
 
       - name: Failure docker inspection
         uses: ./.github/actions/failure-docker-inspect
@@ -366,10 +366,10 @@ jobs:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
 
       - uses: ./.github/actions/app-run
-      - run: .docker/cmd/artisan.sh dusk --group notifications-1 --stop-on-failure
+      - run: .docker/scripts/artisan.sh dusk --group notifications-1 --stop-on-failure
 
       - uses: ./.github/actions/app-run
-      - run: .docker/cmd/artisan.sh dusk --group notifications-2 --stop-on-failure
+      - run: .docker/scripts/artisan.sh dusk --group notifications-2 --stop-on-failure
 
       - name: Failure docker inspection
         uses: ./.github/actions/failure-docker-inspect
@@ -431,19 +431,19 @@ jobs:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
 
       - uses: ./.github/actions/app-run
-      - run: .docker/cmd/artisan.sh dusk --group navigation-1 --stop-on-failure
+      - run: .docker/scripts/artisan.sh dusk --group navigation-1 --stop-on-failure
 
       - uses: ./.github/actions/app-run
-      - run: .docker/cmd/artisan.sh dusk --group navigation-2 --stop-on-failure
+      - run: .docker/scripts/artisan.sh dusk --group navigation-2 --stop-on-failure
 
       - uses: ./.github/actions/app-run
-      - run: .docker/cmd/artisan.sh dusk --group navigation-3 --stop-on-failure
+      - run: .docker/scripts/artisan.sh dusk --group navigation-3 --stop-on-failure
 
       - uses: ./.github/actions/app-run
-      - run: .docker/cmd/artisan.sh dusk --group navigation-4 --stop-on-failure
+      - run: .docker/scripts/artisan.sh dusk --group navigation-4 --stop-on-failure
 
       - uses: ./.github/actions/app-run
-      - run: .docker/cmd/artisan.sh dusk --group navigation-5 --stop-on-failure
+      - run: .docker/scripts/artisan.sh dusk --group navigation-5 --stop-on-failure
 
       - name: Failure docker inspection
         uses: ./.github/actions/failure-docker-inspect
@@ -505,16 +505,16 @@ jobs:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
 
       - uses: ./.github/actions/app-run
-      - run: .docker/cmd/artisan.sh dusk --group entry-modal-1 --stop-on-failure
+      - run: .docker/scripts/artisan.sh dusk --group entry-modal-1 --stop-on-failure
 
       - uses: ./.github/actions/app-run
-      - run: .docker/cmd/artisan.sh dusk --group entry-modal-2 --stop-on-failure
+      - run: .docker/scripts/artisan.sh dusk --group entry-modal-2 --stop-on-failure
 
       - uses: ./.github/actions/app-run
-      - run: .docker/cmd/artisan.sh dusk --group entry-modal-3 --stop-on-failure
+      - run: .docker/scripts/artisan.sh dusk --group entry-modal-3 --stop-on-failure
 
       - uses: ./.github/actions/app-run
-      - run: .docker/cmd/artisan.sh dusk --group entry-modal-4 --stop-on-failure
+      - run: .docker/scripts/artisan.sh dusk --group entry-modal-4 --stop-on-failure
 
       - name: Failure docker inspection
         uses: ./.github/actions/failure-docker-inspect
@@ -576,10 +576,10 @@ jobs:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
 
       - uses: ./.github/actions/app-run
-      - run: .docker/cmd/artisan.sh dusk --group transfer-modal-1 --stop-on-failure
+      - run: .docker/scripts/artisan.sh dusk --group transfer-modal-1 --stop-on-failure
 
       - uses: ./.github/actions/app-run
-      - run: .docker/cmd/artisan.sh dusk --group transfer-modal-2 --stop-on-failure
+      - run: .docker/scripts/artisan.sh dusk --group transfer-modal-2 --stop-on-failure
 
       - name: Failure docker inspection
         uses: ./.github/actions/failure-docker-inspect
@@ -641,16 +641,16 @@ jobs:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
 
       - uses: ./.github/actions/app-run
-      - run: .docker/cmd/artisan.sh dusk --group filter-modal-1 --stop-on-failure
+      - run: .docker/scripts/artisan.sh dusk --group filter-modal-1 --stop-on-failure
 
       - uses: ./.github/actions/app-run
-      - run: .docker/cmd/artisan.sh dusk --group filter-modal-2 --stop-on-failure
+      - run: .docker/scripts/artisan.sh dusk --group filter-modal-2 --stop-on-failure
 
       - uses: ./.github/actions/app-run
-      - run: .docker/cmd/artisan.sh dusk --group filter-modal-export-1 --stop-on-failure
+      - run: .docker/scripts/artisan.sh dusk --group filter-modal-export-1 --stop-on-failure
 
       - uses: ./.github/actions/app-run
-      - run: .docker/cmd/artisan.sh dusk --group filter-modal-export-2 --stop-on-failure
+      - run: .docker/scripts/artisan.sh dusk --group filter-modal-export-2 --stop-on-failure
 
       - name: Failure docker inspection
         uses: ./.github/actions/failure-docker-inspect
@@ -712,22 +712,22 @@ jobs:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
 
       - uses: ./.github/actions/app-run
-      - run: .docker/cmd/artisan.sh dusk --group stats-summary --stop-on-failure
+      - run: .docker/scripts/artisan.sh dusk --group stats-summary --stop-on-failure
 
       - uses: ./.github/actions/app-run
-      - run: .docker/cmd/artisan.sh dusk --group stats-trending --stop-on-failure
+      - run: .docker/scripts/artisan.sh dusk --group stats-trending --stop-on-failure
 
       - uses: ./.github/actions/app-run
-      - run: .docker/cmd/artisan.sh dusk --group stats-distribution-1 --stop-on-failure
+      - run: .docker/scripts/artisan.sh dusk --group stats-distribution-1 --stop-on-failure
 
       - uses: ./.github/actions/app-run
-      - run: .docker/cmd/artisan.sh dusk --group stats-distribution-2 --stop-on-failure
+      - run: .docker/scripts/artisan.sh dusk --group stats-distribution-2 --stop-on-failure
 
       - uses: ./.github/actions/app-run
-      - run: .docker/cmd/artisan.sh dusk --group stats-tags-1 --stop-on-failure
+      - run: .docker/scripts/artisan.sh dusk --group stats-tags-1 --stop-on-failure
 
       - uses: ./.github/actions/app-run
-      - run: .docker/cmd/artisan.sh dusk --group stats-tags-2 --stop-on-failure
+      - run: .docker/scripts/artisan.sh dusk --group stats-tags-2 --stop-on-failure
 
       - name: Failure docker inspection
         uses: ./.github/actions/failure-docker-inspect
@@ -789,16 +789,16 @@ jobs:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
 
       - uses: ./.github/actions/app-run
-      - run: .docker/cmd/artisan.sh dusk --group settings-institutions --stop-on-failure
+      - run: .docker/scripts/artisan.sh dusk --group settings-institutions --stop-on-failure
 
       - uses: ./.github/actions/app-run
-      - run: .docker/cmd/artisan.sh dusk --group settings-accounts --stop-on-failure
+      - run: .docker/scripts/artisan.sh dusk --group settings-accounts --stop-on-failure
 
       - uses: ./.github/actions/app-run
-      - run: .docker/cmd/artisan.sh dusk --group settings-account-types --stop-on-failure
+      - run: .docker/scripts/artisan.sh dusk --group settings-account-types --stop-on-failure
 
       - uses: ./.github/actions/app-run
-      - run: .docker/cmd/artisan.sh dusk --group settings-tags --stop-on-failure
+      - run: .docker/scripts/artisan.sh dusk --group settings-tags --stop-on-failure
 
       - name: Failure docker inspection
         uses: ./.github/actions/failure-docker-inspect
