@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/github/license/jdenoc/laravel-app-version?style=flat-square)](LICENSE)
 
 ## About
-Money Tracker is a web portal dedicated to help record and manage income & expenses, built on the [Laravel framework](https://laravel.com/docs/8.x).
+Money Tracker is a web portal dedicated to help record and manage income & expenses, built on the [Laravel framework](https://laravel.com/docs/9.x).
 
 ## Topics
 - [Requirements](#requirements)
@@ -40,11 +40,11 @@ Money Tracker is a web portal dedicated to help record and manage income & expen
   
   # confirm installation and version of npm
   npm --version
-  # should be 9.5
+  # should be 9.x
   
   # confirm installation and version of npx
   npx --version
-  # should be 9.5
+  # should be 9.x
   ```
 - PHP 8.0
   ```bash
@@ -79,15 +79,20 @@ Money Tracker is a web portal dedicated to help record and manage income & expen
 ---
 
 ## Other Documentation
-- [Laravel](https://laravel.com/docs/8.x/)
+- [Laravel](https://laravel.com/docs/9.x/)
+  - [Dusk](https://laravel.com/docs/9.x/dusk)
+- [Spatie](https://spatie.be/open-source?search=&sort=-downloads)
+  - [laravel-db-snapshots](https://github.com/spatie/laravel-db-snapshots)
+  - [laravel-health](https://github.com/spatie/laravel-health)
+  - [laravel-ignition](https://github.com/spatie/laravel-ignition)
+  - [laravel-schedule-monitor](https://github.com/spatie/laravel-schedule-monitor)
 - [VueJS](https://vuejs.org/v2/guide/)
 - [TailwindCSS](https://tailwindcss.com/)
 - [ChartJs](https://www.chartjs.org/)
 - [Docker](https://docs.docker.com/)
 - [Composer](https://getcomposer.org/doc/)
-- [npm](https://docs.npmjs.com/cli/v6)
+- [npm](https://docs.npmjs.com/cli/v9)
 - [PhpUnit](https://phpunit.readthedocs.io/en/9.5/)
-- [Laravel Dusk](https://laravel.com/docs/8.x/dusk)
 - [GitHub Actions](https://docs.github.com/en/actions)
 - [git](https://git-scm.com/doc)
 - [F.A.Q.](docs/FAQ.md)
