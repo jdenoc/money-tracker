@@ -292,11 +292,11 @@ class NotificationsTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openNewEntryModal($browser);
             // TODO: fill in minimum required fields
-//                    'account_type_id',
-//                    'entry_date',
-//                    'entry_value',
-//                    'expense',
-//                    'memo'
+            //        'account_type_id',
+            //        'entry_date',
+            //        'entry_value',
+            //        'expense',
+            //        'memo'
             // TODO: click the save button in the modal footer
             // TODO: FORCE 400 from `POST /api/entry`
             // TODO: FORCE this response: {error: "Forced failure"}
@@ -430,38 +430,38 @@ class NotificationsTest extends DuskTestCase {
      */
     public function testNotificationSaveExistingEntry500() {
         $this->markTestSkipped("previous implementation no longer works due to refactoring of EntryController");
-//        $table = Entry::getTableName();
-//        $recreate_table_query = $this->getTableRecreationQuery($table);
-//
-//        $entries = collect($this->removeCountFromApiResponse($this->getApiEntries()));
-//        $entry_id = $entries->where('confirm', 0)->pluck('id')->random();
-//
-//        $this->browse(function (Browser $browser) use ($entry_id, $table){
-//            $browser->visit(new HomePage());
-//            $this->waitForLoadingToStop($browser);
-//            $browser
-//                ->openExistingEntryModal(sprintf(self::$PLACEHOLDER_SELECTOR_EXISTING_ENTRY_ROW, $entry_id))
-//                ->within($this->_selector_modal_body, function(Browser $modal){
-//                    // We have tests for other fields so lets just update the easiest to update
-//                    $old_value = floatval($modal->inputValue($this->_selector_modal_entry_field_value));
-//                    $modal
-//                        ->clear($this->_selector_modal_entry_field_value)
-//                        ->type($this->_selector_modal_entry_field_value, $old_value+10);
-//                    $old_memo = $modal->inputValue($this->_selector_modal_entry_field_memo);
-//                    $modal
-//                        ->clear($this->_selector_modal_entry_field_memo)
-//                        ->type($this->_selector_modal_entry_field_memo, $old_memo.' [UPDATE]');
-//                })
-//                ->within($this->_selector_modal_foot, function(Browser $modal_foot) use ($table){
-//                    // FORCE 500 from `GET /api/entry/{entry_id}`
-//                    $this->dropTable($table);
-//
-//                    $modal_foot->click($this->_selector_modal_entry_btn_save);
-//                });
-//            $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_ERROR, sprintf("An error occurred while attempting to update entry [%s]", $entry_id));
-//        });
-//
-//        DB::statement($recreate_table_query);
+        //$table = Entry::getTableName();
+        //$recreate_table_query = $this->getTableRecreationQuery($table);
+        //
+        //$entries = collect($this->removeCountFromApiResponse($this->getApiEntries()));
+        //$entry_id = $entries->where('confirm', 0)->pluck('id')->random();
+        //
+        //$this->browse(function (Browser $browser) use ($entry_id, $table){
+        //    $browser->visit(new HomePage());
+        //    $this->waitForLoadingToStop($browser);
+        //    $browser
+        //        ->openExistingEntryModal(sprintf(self::$PLACEHOLDER_SELECTOR_EXISTING_ENTRY_ROW, $entry_id))
+        //        ->within($this->_selector_modal_body, function(Browser $modal){
+        //            // We have tests for other fields so lets just update the easiest to update
+        //            $old_value = floatval($modal->inputValue($this->_selector_modal_entry_field_value));
+        //            $modal
+        //               ->clear($this->_selector_modal_entry_field_value)
+        //                ->type($this->_selector_modal_entry_field_value, $old_value+10);
+        //            $old_memo = $modal->inputValue($this->_selector_modal_entry_field_memo);
+        //            $modal
+        //                ->clear($this->_selector_modal_entry_field_memo)
+        //                ->type($this->_selector_modal_entry_field_memo, $old_memo.' [UPDATE]');
+        //        })
+        //       ->within($this->_selector_modal_foot, function(Browser $modal_foot) use ($table){
+        //            // FORCE 500 from `GET /api/entry/{entry_id}`
+        //            $this->dropTable($table);
+        //
+        //            $modal_foot->click($this->_selector_modal_entry_btn_save);
+        //        });
+        //    $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_ERROR, sprintf("An error occurred while attempting to update entry [%s]", $entry_id));
+        //});
+        //
+        //DB::statement($recreate_table_query);
     }
 
     /**
