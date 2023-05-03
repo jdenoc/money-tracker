@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-IMAGE_TAG=composer-local
+IMAGE_TAG=composer:money-tracker
 if [[ $(docker image ls -q $IMAGE_TAG | wc -l) -eq 0 ]]; then
   DOCKERFILE_PATH=$(dirname $(realpath $0))/../composer.dockerfile
   CONTEXT_PATH=$(dirname $(realpath $0))/../../
