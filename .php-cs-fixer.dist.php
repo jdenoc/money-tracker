@@ -13,8 +13,6 @@ $finder = PhpCsFixer\Finder::create()
     ->exclude('resources/js')
     ->exclude('resources/sass')
     ->exclude('storage')
-    ->exclude('tests/Browser/console')
-    ->exclude('tests/Browser/screenshots')
     ->exclude('vendor')
 ;
 
