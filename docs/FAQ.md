@@ -53,3 +53,12 @@ Sometime you will be alerted that you can't clear the cache. This is usually a p
         ```bash
         rm -rf storage/framework/cache/data
         ```
+
+---
+
+### Docker
+
+View docker container healthcheck logs
+```bash
+docker inspect --format "{{json .State.Health }}" <container name> | jq
+```
