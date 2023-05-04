@@ -15,9 +15,7 @@ export const tailwindColorsMixin = {
   methods: {
     randomColor: function(colorName){
       if(!colorName){
-        let colorNames = this.tailwindColorNames;
-        let colorNameIndex = _.random(0, colorNames.length-1, false);
-        colorName = colorNames[colorNameIndex];
+        colorName = this.randomColorName();
       }
       let color = this.tailwindColors[colorName];
 
@@ -29,6 +27,11 @@ export const tailwindColorsMixin = {
         return color[colorStrengths[colorStrengthIndex]];
       }
     },
+    randomColorName: function(){
+      let colorNames = this.tailwindColorNames;
+      let colorNameIndex = _.random(0, colorNames.length-1, false);
+      return colorNames[colorNameIndex];
+    }
   }
 
 }
