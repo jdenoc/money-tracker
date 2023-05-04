@@ -4,8 +4,8 @@ namespace Tests\Feature\Api\Get;
 
 use App\Http\Controllers\Api\VersionController;
 use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
+use Tests\TestCase;
 
 class VersionControllerTest extends TestCase {
     use WithFaker;
@@ -32,7 +32,8 @@ class VersionControllerTest extends TestCase {
     }
 
     public function testGetVersionButItHasNotBeenSet() {
-        // GIVEN - version should NOT be set by default
+        // GIVEN
+        config([VersionController::CONFIG_VERSION=>'']);
 
         // WHEN
         $get_response = $this->get($this->_base_uri);
