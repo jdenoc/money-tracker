@@ -9,6 +9,7 @@
 <script>
 import Spinner from 'vue-spinner-component/src/Spinner.vue';
 import {tailwindColorsMixin} from "../mixins/tailwind-colors-mixin";
+import _ from "lodash";
 
 export default {
   name: "loading-modal",
@@ -23,6 +24,15 @@ export default {
     };
   },
   computed: {
+    invalidColorNames: function(){
+      return [
+        'inherit',
+        'current',
+        'transparent',
+        'gray',
+        'white',
+      ];
+    },
     loaderProperties: function(){
       return {
         depth: 5,
@@ -33,16 +43,23 @@ export default {
     },
   },
   methods: {
+    getRandomValidColorName: function(){
+      let colorName = null
+      do {
+        colorName = this.randomColorName();
+      } while (_.includes(this.invalidColorNames, colorName))
+      return colorName;
+    },
+    setRandomColor: function(){
+      this.loadingColor = this.randomColor(this.getRandomValidColorName());
+    },
     showLoading: function(){
-      this.generateRandomColor();
+      this.setRandomColor();
       this.isLoading = true;
     },
     stopLoading: function(){
       this.isLoading = false;
     },
-    generateRandomColor: function(){
-      this.loadingColor = this.randomColor();
-    }
   },
   created: function(){
     this.$eventHub.listen(this.$eventHub.EVENT_LOADING_SHOW, this.showLoading);
