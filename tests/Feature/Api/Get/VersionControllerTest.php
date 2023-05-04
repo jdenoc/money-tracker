@@ -12,6 +12,12 @@ class VersionControllerTest extends TestCase {
 
     private string $_base_uri = '/api/version';
 
+    /**
+     * override the RefreshDatabase trait method to prevent the use of said trait in THIS test suite
+     */
+    public function refreshTestDatabase(): void {
+    }
+
     public function testGetVersion() {
         // GIVEN
         $test_version = $this->faker->randomDigit().'.'.$this->faker->randomDigit().'.'.$this->faker->randomDigit().'-test-'.substr($this->faker->sha1(), 0, 7);
@@ -23,6 +29,17 @@ class VersionControllerTest extends TestCase {
         // THEN
         $this->assertResponseStatus($get_response, HttpStatus::HTTP_OK);
         $this->assertEquals($test_version, $get_response->getContent());
+    }
+
+    public function testGetVersionButItHasNotBeenSet() {
+        // GIVEN - version should NOT be set by default
+
+        // WHEN
+        $get_response = $this->get($this->_base_uri);
+
+        // THEN
+        $this->assertResponseStatus($get_response, HttpStatus::HTTP_NO_CONTENT);
+        $this->assertEmpty($get_response->getContent());
     }
 
 }
