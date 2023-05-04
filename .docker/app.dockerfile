@@ -105,7 +105,7 @@ RUN cp $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini
 RUN echo "expose_php = Off" > $PHP_INI_DIR/conf.d/php-expose_php.ini
 RUN echo "allow_url_fopen = Off" > $PHP_INI_DIR/conf.d/php-allow_url_fopen.ini
 # set php error logging
-RUN PHP_ERROR_LOG=$PHP_LOG_DIR/php_errors.log \
+RUN PHP_ERROR_LOG=$PHP_LOG_DIR/errors.log \
   && touch $PHP_ERROR_LOG \
   && chgrp $APACHE_RUN_GROUP $PHP_ERROR_LOG \
   && chmod g+w $PHP_ERROR_LOG
@@ -116,9 +116,5 @@ RUN echo 'date.timezone = "UTC"' > $PHP_INI_DIR/conf.d/php-date.timezone.ini
 # health-check
 COPY .docker/healthcheck/app-health-check.sh /usr/local/bin/app-health-check
 RUN chmod +x /usr/local/bin/app-health-check
-RUN HEALTHCHECK_LOG=$PHP_LOG_DIR/healthcheck.log \
-  && touch $HEALTHCHECK_LOG \
-  && chgrp $APACHE_RUN_GROUP $HEALTHCHECK_LOG \
-  && chmod g+w $HEALTHCHECK_LOG
 HEALTHCHECK --timeout=5s --retries=10 \
   CMD app-health-check
