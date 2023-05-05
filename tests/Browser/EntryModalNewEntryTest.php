@@ -253,13 +253,13 @@ class EntryModalNewEntryTest extends DuskTestCase {
      * test 9/20
      */
     public function testCloseEntryModalWithHotkey() {
-        $this->markTestIncomplete("hotkey functionality incomplete");
         $this->browse(function(Browser $browser) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $this->openNewEntryModal($browser);
             $browser
-                ->keys('', "{control}", "{escape}") // ["{control}", "{escape}"] didn't work
+                ->assertVisible($this->_selector_modal_entry)
+                ->keys('', "{escape}")
                 ->assertMissing($this->_selector_modal_entry);
         });
     }
