@@ -11,8 +11,7 @@
     <institutions-panel></institutions-panel>
     <div class="ml-80">
         <entries-table></entries-table>
-        {{--            <div v-hotkey="keymap">--}}
-        <div>
+        <div v-hotkey="keymap">
             <!-- modal components -->
             <entry-modal></entry-modal>
             <transfer-modal></transfer-modal>
