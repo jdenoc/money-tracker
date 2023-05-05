@@ -295,17 +295,34 @@ class FilterModalTest extends DuskTestCase {
             $this->openFilterModal($browser);
             $browser
                 ->keys('', "{control}", "{escape}") // ["{control}", "{escape}"] didn't work
-                ->assertMissing($this->_selector_modal_transfer);
+                ->assertMissing($this->_selector_modal_filter);
+        });
+    }
+
+    /**
+     * @throws Throwable
+     *
+     * @group filter-modal-1
+     * test 8/20
+     */
+    public function testOpenFilterModalWithHotkey() {
+        $this->browse(function(Browser $browser) {
+            $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
+            $browser
+                ->assertMissing($this->_selector_modal_filter)
+                ->keys('', "{control}", "k")
+                ->assertVisible($this->_selector_modal_filter);
         });
     }
 
     public function providerFlipAccountAndAccountTypeSwitch(): array {
         return [
             // [account.disabled, account-type.disabled]
-            ['account'=>false, 'account-type'=>true],   // test 8/20
-            ['account'=>false, 'account-type'=>false],  // test 9/20
-            ['account'=>true, 'account-type'=>false],   // test 10/20
-            ['account'=>true, 'account-type'=>true],    // test 11/20
+            ['account'=>false, 'account-type'=>true],   // test 9/20
+            ['account'=>false, 'account-type'=>false],  // test 10/20
+            ['account'=>true, 'account-type'=>false],   // test 11/20
+            ['account'=>true, 'account-type'=>true],    // test 12/20
         ];
     }
 
@@ -417,12 +434,12 @@ class FilterModalTest extends DuskTestCase {
 
     public function providerFlipSwitch(): array {
         return [
-            "flip income"=>[$this->_selector_modal_filter_field_switch_income],                 // test 12/20
-            "flip expense"=>[$this->_selector_modal_filter_field_switch_expense],               // test 13/20
-            "flip has-attachment"=>[$this->_selector_modal_filter_field_switch_has_attachment], // test 14/20
-            "flip no-attachment"=>[$this->_selector_modal_filter_field_switch_no_attachment],   // test 15/20
-            "flip transfer"=>[$this->_selector_modal_filter_field_switch_transfer],             // test 16/20
-            "flip not confirmed"=>[$this->_selector_modal_filter_field_switch_unconfirmed]      // test 17/20
+            "flip income"=>[$this->_selector_modal_filter_field_switch_income],                 // test 13/20
+            "flip expense"=>[$this->_selector_modal_filter_field_switch_expense],               // test 14/20
+            "flip has-attachment"=>[$this->_selector_modal_filter_field_switch_has_attachment], // test 15/20
+            "flip no-attachment"=>[$this->_selector_modal_filter_field_switch_no_attachment],   // test 16/20
+            "flip transfer"=>[$this->_selector_modal_filter_field_switch_transfer],             // test 17/20
+            "flip not confirmed"=>[$this->_selector_modal_filter_field_switch_unconfirmed]      // test 18/20
         ];
     }
 
@@ -451,8 +468,8 @@ class FilterModalTest extends DuskTestCase {
 
     public function providerRangeValueConvertsIntoDecimalOfTwoPlaces(): array {
         return [
-            'Min Range'=>[$this->_selector_modal_filter_field_min_value], // test 18/20
-            'Max Range'=>[$this->_selector_modal_filter_field_max_value], // test 19/20
+            'Min Range'=>[$this->_selector_modal_filter_field_min_value], // test 19/20
+            'Max Range'=>[$this->_selector_modal_filter_field_max_value], // test 20/20
         ];
     }
 

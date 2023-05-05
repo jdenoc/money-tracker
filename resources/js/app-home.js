@@ -44,8 +44,15 @@ new Vue({
   },
   store: Store,
   computed:{
+    searchHotkey: function(){
+      return this.detectOs() === 'Mac OS' ? 'command+k' : 'ctrl+k';
+    },
+
     keymap: function(){
       return {
+        [this.searchHotkey]: function(){  // open filter-modal
+          this.$eventHub.broadcast(this.$eventHub.EVENT_FILTER_MODAL_OPEN);
+        }.bind(this),
         // FIXME: hotkey already used for something else on windows
         'ctrl+esc': function(){ // close modal
           switch(Store.getters.currentModal){
@@ -69,6 +76,13 @@ new Vue({
     },
   },
   methods: {
+    detectOs: function(){
+      const platform = navigator.platform;
+      if (platform.indexOf('Win') !== -1) return 'Windows';
+      if (platform.indexOf('Mac') !== -1) return 'Mac OS';
+      if (platform.indexOf('Linux') !== -1) return 'Linux';
+      return 'Unknown';
+    },
     displayNotification: function(notification){
       this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, notification);
     },
