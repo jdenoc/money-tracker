@@ -53,23 +53,19 @@ new Vue({
         [this.searchHotkey]: function(){  // open filter-modal
           this.$eventHub.broadcast(this.$eventHub.EVENT_FILTER_MODAL_OPEN);
         }.bind(this),
-        // FIXME: hotkey already used for something else on windows
-        'ctrl+esc': function(){ // close modal
+        'esc': function(){ // close modal
           switch(Store.getters.currentModal){
             case Store.getters.STORE_MODAL_ENTRY:
-              console.debug('entry:ctrl+esc');
               this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_MODAL_CLOSE);
               break;
             case Store.getters.STORE_MODAL_TRANSFER:
-              console.debug('transfer:ctrl+esc');
               this.$eventHub.broadcast(this.$eventHub.EVENT_TRANSFER_MODAL_CLOSE);
               break;
             case Store.getters.STORE_MODAL_FILTER:
-              console.debug('filter:ctrl+esc');
               this.$eventHub.broadcast(this.$eventHub.EVENT_FILTER_MODAL_CLOSE);
               break;
             default:
-              console.debug("ctrl+esc");
+              // do nothing
           }
         }.bind(this)
       };

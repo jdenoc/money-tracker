@@ -221,13 +221,13 @@ class TransferModalTest extends DuskTestCase {
      * test 8/20
      */
     public function testCloseTransferModalWithHotkey() {
-        $this->markTestIncomplete("hotkey functionality requires further work");
         $this->browse(function(Browser $browser) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $this->openTransferModal($browser);
             $browser
-                ->keys('', "{control}", "{escape}") // ["{control}", "{escape}"] didn't work
+                ->assertMissing($this->_selector_modal_transfer)
+                ->keys('', "{escape}")
                 ->assertMissing($this->_selector_modal_transfer);
         });
     }
