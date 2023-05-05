@@ -32,7 +32,7 @@
     "stylelint-config-standard-scss": "^6.1.0",
     "tailwindcss": "^3.0.23",
     "toastr": "2.1.4",
-    "v-hotkey": "0.3.0",
+    "v-hotkey": "^0.9.0",
     "v-tooltip": "2.0.0-rc.33",
     "vue": "^2.5.17",
     "vue-chartjs": "^3.5.0",
@@ -42,6 +42,6 @@
     "vue-template-compiler": "^2.6.11",
     "vue-toggles": "^1.1.4",
     "vue2-dropzone": "3.6.0",
-    "vuex": "3.0.1"
+    "vuex": "^3.6.2"
   }
 }
