@@ -288,13 +288,13 @@ class FilterModalTest extends DuskTestCase {
      * test 7/20
      */
     public function testCloseFilterModalWithHotkey() {
-        $this->markTestIncomplete("hotkey functionality needs work");
         $this->browse(function(Browser $browser) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $this->openFilterModal($browser);
             $browser
-                ->keys('', "{control}", "{escape}") // ["{control}", "{escape}"] didn't work
+                ->assertVisible($this->_selector_modal_filter)
+                ->keys('', "{escape}")
                 ->assertMissing($this->_selector_modal_filter);
         });
     }
