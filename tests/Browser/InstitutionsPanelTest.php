@@ -5,6 +5,7 @@ namespace Tests\Browser;
 use App\Models\Account;
 use App\Models\Institution;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
+use App\Traits\Tests\Dusk\Tooltip as DuskTraitTooltip;
 use App\Traits\Tests\WaitTimes;
 use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Support\Collection;
@@ -27,6 +28,7 @@ class InstitutionsPanelTest extends DuskTestCase {
     use WaitTimes;
     use HomePageSelectors;
     use DuskTraitLoading;
+    use DuskTraitTooltip;
 
     /**
      * @throws Throwable
@@ -251,28 +253,21 @@ class InstitutionsPanelTest extends DuskTestCase {
         $this->assertAccountNodeName($account_node, $account_name);
 
         // hover over account element
-        $account_node->mouseover('');
+        $this->interactWithElementToTriggerTooltip($account_node, '');
 
         if ($has_tooltip) {
             // account-types tooltip appears to right
-            $account_node_tooltip_id = $account_node->attribute('', 'aria-describedby');    // get the tooltip element id
-            $account_node
-                ->pause(self::$WAIT_HALF_SECOND_IN_MILLISECONDS)
-                ->assertVisible('#'.$account_node_tooltip_id);
-            $account_types_tooltip_text = $account_node->text('#'.$account_node_tooltip_id);
+            $this->assertTooltipVisibleByTriggerElement($account_node, '');
             foreach ($account_types_collection as $account_account_type) {
                 $account_type_record_tooltip_text = $account_account_type['name']." (".$account_account_type['last_digits'].")";
                 if ($account_account_type['disabled']) {
-                    $this->assertStringNotContainsString($account_type_record_tooltip_text, $account_types_tooltip_text);
+                    $this->assertStringNotInTooltipContentsByTriggerElement($account_node, $account_type_record_tooltip_text, '');
                 } else {
-                    $this->assertStringContainsString($account_type_record_tooltip_text, $account_types_tooltip_text);
+                    $this->assertStringInTooltipContentsByTriggerElement($account_node, $account_type_record_tooltip_text, '');
                 }
             }
         } else {
-            $account_css_prefix = $account_node->resolver->prefix;
-            $account_node->resolver->prefix = '';
-            $account_node->assertMissing('body .tooltip');
-            $account_node->resolver->prefix = $account_css_prefix;
+            $this->assertTooltipMissing($account_node);
         }
     }
 

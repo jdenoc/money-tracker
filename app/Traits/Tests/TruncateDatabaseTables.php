@@ -9,7 +9,7 @@ trait TruncateDatabaseTables {
     /**
      * Truncates all database tables related to this connection, except for the "migrations" table
      * @link http://stackoverflow.com/a/18910102/4152012
-     * Allow truncating tables with forenign keys
+     * Allow truncating tables with foreign keys
      * @link https://stackoverflow.com/a/5452798/4152012
      */
     private function truncateDatabaseTables(array $ignore_tables=[]) {
