@@ -226,7 +226,7 @@ class TransferModalTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openTransferModal($browser);
             $browser
-                ->assertMissing($this->_selector_modal_transfer)
+                ->assertVisible($this->_selector_modal_transfer)
                 ->keys('', "{escape}")
                 ->assertMissing($this->_selector_modal_transfer);
         });

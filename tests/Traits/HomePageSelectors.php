@@ -27,7 +27,7 @@ trait HomePageSelectors {
     private $_selector_panel_institutions_closed_accounts = "#closed-accounts";
 
     // transfer-modal
-    private $_selector_modal_transfer = "@transfer-modal";  // see Browser\Pages\HomePage.php
+    private $_selector_modal_transfer = "@transfer-modal";  // see Browser/Pages/HomePage.php
     private $_selector_modal_transfer_field_date = "input#transfer-date";
     private $_selector_modal_transfer_field_value = "input#transfer-value";
     private $_selector_modal_transfer_field_from = "select#from-account-type";
