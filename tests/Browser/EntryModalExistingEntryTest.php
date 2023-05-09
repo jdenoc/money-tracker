@@ -1274,7 +1274,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      *
      * @group entry-modal-2
      */
-    public function testLongAttachmentNameIsTruncatedAndHoveringOverAttachmentNameShowsTooltip(){
+    public function testLongAttachmentNameIsTruncatedAndHoveringOverAttachmentNameShowsTooltip() {
         $account_type_id = AccountType::all()->pluck('id')->random();
         $entry = Entry::factory()->create([
             'entry_date'=>Carbon::today()->format('Y-m-d'),
