@@ -14,6 +14,7 @@ use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
 use App\Traits\Tests\Dusk\Notification as DuskTraitNotification;
 use App\Traits\Tests\Dusk\TagsInput as DuskTraitTagsInput;
 use App\Traits\Tests\Dusk\ToggleButton as DuskTraitToggleButton;
+use App\Traits\Tests\Dusk\Tooltip as DuskTraitTooltip;
 use App\Traits\Tests\WaitTimes;
 use App\Traits\Tests\WithTailwindColors;
 use Carbon\Carbon;
@@ -46,6 +47,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     use DuskTraitNotification;
     use DuskTraitTagsInput;
     use DuskTraitToggleButton;
+    use DuskTraitTooltip;
     use EntryTransferKeys;
     use HomePageSelectors;
     use WaitTimes;
@@ -1263,6 +1265,52 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                             }
                             $this->assertCountOfLockedTagsInEntryModal($modal_body, count($entry_data['tags']));
                         });
+                });
+        });
+    }
+
+    /**
+     * @throws Throwable
+     *
+     * @group entry-modal-2
+     */
+    public function testLongAttachmentNameIsTruncatedAndHoveringOverAttachmentNameShowsTooltip(){
+        $account_type_id = AccountType::all()->pluck('id')->random();
+        $entry = Entry::factory()->create([
+            'entry_date'=>Carbon::today()->format('Y-m-d'),
+            'account_type_id'=>$account_type_id,
+            'confirm'=>false
+        ]);
+        $attachment_name = 'this-is-a-super-long-attachment-name-that-should-be-truncated.txt';
+        Attachment::factory()->create([
+            'name'=>$attachment_name,
+            'entry_id'=>$entry->id
+        ]);
+
+        $this->browse(function(Browser $browser) use ($entry, $attachment_name) {
+            $browser->visit(new HomePage());
+            $this->waitForLoadingToStop($browser);
+
+            $browser
+                ->openExistingEntryModal(sprintf(self::$PLACEHOLDER_SELECTOR_EXISTING_ENTRY_ROW, $entry->id))
+                ->within($this->_selector_modal_entry, function(Browser $entry_modal) use ($attachment_name) {
+                    // confirm there is exactly one attachment
+                    $entry_modal->assertVisible($this->_selector_modal_entry_existing_attachments);
+                    $elements = $entry_modal->driver->findElements(WebDriverBy::className($this->_class_existing_attachment));
+                    $this->assertCount(1, $elements);
+
+                    // confirm attachment name is truncated
+                    $attachment_name_element = '.'.$this->_class_existing_attachment.' .attachment-name';
+                    $is_attachment_name_truncated = $entry_modal->script(
+                        // if the offsetWidth < scrollWidth; then the string has been truncated in some fashion
+                        "return document.querySelector('$attachment_name_element').offsetWidth < document.querySelector('$attachment_name_element').scrollWidth;"
+                    )[0];
+                    $this->assertTrue($is_attachment_name_truncated);
+
+                    // confirm tooltip is visible after hover and contains full attachment name
+                    $this->assertTooltipMissing($entry_modal);
+                    $this->interactWithElementToTriggerTooltip($entry_modal, $attachment_name_element);
+                    $this->assertStringInTooltipContentsByTriggerElement($entry_modal, $attachment_name, $attachment_name_element);
                 });
         });
     }
