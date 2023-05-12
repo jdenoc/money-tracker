@@ -44,7 +44,7 @@ trait Notification {
         }
 
         $browser
-            ->waitFor(self::$SELECTOR_NOTIFICATION, 1.5*self::$WAIT_SECONDS)
+            ->waitFor(self::$SELECTOR_NOTIFICATION, self::$WAIT_SECONDS_LONG)
             ->mouseover(self::$SELECTOR_NOTIFICATION)
             ->within(self::$SELECTOR_NOTIFICATION, function(Browser $notification) use ($notification_class, $notification_message) {
                 Assert::assertStringContainsString(
