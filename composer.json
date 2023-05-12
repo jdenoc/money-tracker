@@ -30,7 +30,7 @@
     "require-dev": {
         "ext-intl": "*",
         "barryvdh/laravel-ide-helper": "^2.2",
-        "ely/php-code-style": "^0.5",
+        "ely/php-code-style": "0.4",
         "fakerphp/faker": "1.15.0",
         "filp/whoops": "^2.14.3",
         "friendsofphp/php-cs-fixer": "^3.13",
