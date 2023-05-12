@@ -22,4 +22,6 @@ mix-manifest.json
 public/dist
 
 # misc
-.env
+.env*
+!.env.docker
+!.env.example
