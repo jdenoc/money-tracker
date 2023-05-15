@@ -15,7 +15,7 @@ trait DatabaseMigrations {
         if (self::$FRESH_RUN) {
             // init a listener to clean up file
             Event::listen(CreatedSnapshot::class, function(CreatedSnapshot $event) {
-                $snapshot_file_path = $event->snapshot->disk->getDriver()->getAdapter()->getPathPrefix().'/'.$event->snapshot->fileName;
+                $snapshot_file_path = $event->snapshot->disk->path($event->snapshot->fileName);
                 $file_contents = file_get_contents($snapshot_file_path);
                 $file_contents = str_replace(';;', ';', $file_contents);
                 $file_contents = str_replace('DELIMITER ;', "\n", $file_contents);
