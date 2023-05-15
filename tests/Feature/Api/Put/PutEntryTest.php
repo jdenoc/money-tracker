@@ -49,7 +49,7 @@ class PutEntryTest extends TestCase {
         $entry_data = Entry::factory()->for($this->_generated_account_type)->make();
         $entry_data = $entry_data->toArray();
         // make sure account_type_id value that does not exist
-        do{
+        do {
             $entry_data['account_type_id'] = $this->faker->randomDigitNotZero();
         } while($entry_data['account_type_id'] == $this->_generated_account_type->id);
 
