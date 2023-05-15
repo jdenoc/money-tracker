@@ -8,6 +8,7 @@ use App\Models\Attachment;
 use App\Models\Entry;
 use App\Models\Tag;
 use App\Traits\EntryResponseKeys;
+use Brick\Money\Money;
 use Illuminate\Foundation\Testing\WithFaker;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
@@ -45,11 +46,12 @@ class PutEntryTest extends TestCase {
 
     public function testUpdateEntryButNewAccountTypeDoesNotExist() {
         // GIVEN - see setUp()
-
         $entry_data = Entry::factory()->for($this->_generated_account_type)->make();
         $entry_data = $entry_data->toArray();
         // make sure account_type_id value that does not exist
-        $entry_data['account_type_id'] = $this->faker->randomDigitNotZero();
+        do{
+            $entry_data['account_type_id'] = $this->faker->randomDigitNotZero();
+        } while($entry_data['account_type_id'] == $this->_generated_account_type->id);
 
         // WHEN
         $response = $this->json('PUT', $this->_base_uri.$this->_generated_entry->id, $entry_data);
@@ -94,7 +96,7 @@ class PutEntryTest extends TestCase {
         $get_account_response1->assertStatus(HttpStatus::HTTP_OK);
         $get_account_response1_as_array = $get_account_response1->json();
         $this->assertArrayHasKey('total', $get_account_response1_as_array);
-        $original_total = $get_account_response1_as_array['total'];
+        $original_total = Money::of($get_account_response1_as_array['total'], $get_account_response1_as_array['currency']);
 
         // WHEN
         $put_response = $this->json("PUT", $this->_base_uri.$this->_generated_entry->id, $entry_data);
@@ -118,20 +120,25 @@ class PutEntryTest extends TestCase {
         $get_account_response2->assertStatus(HttpStatus::HTTP_OK);
         $get_account_response2_as_array = $get_account_response2->json();
         $this->assertArrayHasKey('total', $get_account_response2_as_array);
-        $updated_total = $get_account_response2_as_array['total'];
+        $updated_total = Money::of($get_account_response2_as_array['total'], $get_account_response2_as_array['currency']);
 
-        $original_entry_value = ($this->_generated_entry->expense ? -1 : 1)*$this->_generated_entry->entry_value;
-        $new_entry_value = ($get_entry_response_as_array['expense'] ? -1 : 1)*$get_entry_response_as_array['entry_value'];
-        $this->assertEquals(
-            $original_total-$original_entry_value+$new_entry_value,
-            $updated_total,
-            "total | original:$original_total | update:$updated_total\nentry value | original:$original_entry_value | updated:$new_entry_value"
+        $original_entry_value = Money::of($this->_generated_entry->entry_value, $this->_generated_account->currency)
+            ->multipliedBy(($this->_generated_entry->expense ? -1 : 1));
+        $new_entry_value = Money::of($get_entry_response_as_array['entry_value'], $this->_generated_account->currency)
+            ->multipliedBy(($get_entry_response_as_array['expense'] ? -1 : 1));
+
+        $this->assertTrue(
+            $original_total
+                ->minus($original_entry_value)
+                ->plus($new_entry_value)
+                ->isEqualTo($updated_total),
+            "total\t\t| original:$original_total | update:$updated_total\nentry value\t| original:$original_entry_value | updated:$new_entry_value"
         );
     }
 
     public function testUpdateEntryAndChangeAccountTypeCausingAccountTotalsToUpdate() {
         // GIVEN - see setUp()
-        $generated_account2 = Account::factory()->create();
+        $generated_account2 = Account::factory()->state(['currency'=>$this->_generated_account->currency])->create();
         $generated_account_type2 = AccountType::factory()->for($generated_account2)->create();
         $entry_data = $this->_generated_entry->toArray();
         $entry_data['account_type_id'] = $generated_account_type2->id;
@@ -142,7 +149,7 @@ class PutEntryTest extends TestCase {
         $get_account1_response1->assertStatus(HttpStatus::HTTP_OK);
         $get_account1_response1_as_array = $get_account1_response1->json();
         $this->assertArrayHasKey('total', $get_account1_response1_as_array);
-        $account1_original_total = $get_account1_response1_as_array['total'];
+        $account1_original_total = Money::of($get_account1_response1_as_array['total'], $get_account1_response1_as_array['currency']);
 
         // WHEN - checking account 2 original total
         $get_account2_response1 = $this->get('/api/account/'.$generated_account2->id);
@@ -150,7 +157,7 @@ class PutEntryTest extends TestCase {
         $get_account2_response1->assertStatus(HttpStatus::HTTP_OK);
         $get_account2_response1_as_array = $get_account2_response1->json();
         $this->assertArrayHasKey('total', $get_account2_response1_as_array);
-        $account2_original_total = $get_account2_response1_as_array['total'];
+        $account2_original_total = Money::of($get_account2_response1_as_array['total'], $get_account2_response1_as_array['currency']);
 
         // WHEN - updated entry.account_type_id
         $update_entry_response = $this->json("PUT", $this->_base_uri.$this->_generated_entry->id, $entry_data);
@@ -174,7 +181,7 @@ class PutEntryTest extends TestCase {
         $get_account1_response2->assertStatus(HttpStatus::HTTP_OK);
         $get_account1_response2_as_array = $get_account1_response2->json();
         $this->assertArrayHasKey('total', $get_account1_response2_as_array);
-        $account1_new_total = $get_account1_response2_as_array['total'];
+        $account1_new_total = Money::of($get_account1_response2_as_array['total'], $get_account1_response2_as_array['currency']);
 
         // WHEN - checking account 2 new total
         $get_account2_response2 = $this->get('/api/account/'.$generated_account2->id);
@@ -182,22 +189,21 @@ class PutEntryTest extends TestCase {
         $get_account2_response2->assertStatus(HttpStatus::HTTP_OK);
         $get_account2_response2_as_array = $get_account2_response2->json();
         $this->assertArrayHasKey('total', $get_account2_response2_as_array);
-        $account2_new_total = $get_account2_response2_as_array['total'];
+        $account2_new_total = Money::of($get_account2_response2_as_array['total'], $get_account2_response2_as_array['currency']);
 
         // confirm account totals have been updated
-        $entry_value = ($this->_generated_entry->expense ? -1 : 1)*$this->_generated_entry->entry_value;
+        $entry_value = Money::of($this->_generated_entry->entry_value, $this->_generated_account->currency)
+            ->multipliedBy(($this->_generated_entry->expense ? -1 : 1));
         $error_message  = "\n - Entry value:".$entry_value;
-        $error_message .= "\n - Original total account1:".$account1_original_total."\n - New total account1:".$account1_new_total;
-        $error_message .= "\n - Original total account2:".$account2_original_total."\n - New total account2:".$account2_new_total;
-        $this->assertEquals(
-            $account1_original_total-$entry_value,
-            $account1_new_total,
+        $error_message .= "\n - [account1] Original total:".$account1_original_total."\n - [account1] New total:".$account1_new_total;
+        $error_message .= "\n - [account2] Original total:".$account2_original_total."\n - [account2] New total:".$account2_new_total;
+        $this->assertTrue(
+            $account1_original_total->minus($entry_value)->isEqualTo($account1_new_total),
             "Account1 total comparison failing".$error_message
         );
-        $this->assertEquals(
-            $account2_original_total+$entry_value,
-            $account2_new_total,
-            "Account2 total comparison failing".$error_message
+        $this->assertTrue(
+            $account2_original_total->plus($entry_value)->isEqualTo($account2_new_total),
+            "Accountt total comparison failing".$error_message
         );
     }
 
@@ -213,7 +219,7 @@ class PutEntryTest extends TestCase {
         $get_account_response1->assertStatus(HttpStatus::HTTP_OK);
         $get_account_response1_as_array = $get_account_response1->json();
         $this->assertArrayHasKey('total', $get_account_response1_as_array);
-        $original_total = $get_account_response1_as_array['total'];
+        $original_total = Money::of($get_account_response1_as_array['total'], $get_account_response1_as_array['currency']);
 
         // WHEN
         $put_response = $this->json("PUT", $this->_base_uri.$this->_generated_entry->id, $entry_data);
@@ -238,13 +244,13 @@ class PutEntryTest extends TestCase {
         $get_account_response2->assertStatus(HttpStatus::HTTP_OK);
         $get_account_response2_as_array = $get_account_response2->json();
         $this->assertArrayHasKey('total', $get_account_response2_as_array);
-        $updated_total = $get_account_response2_as_array['total'];
+        $updated_total = Money::of($get_account_response2_as_array['total'], $get_account_response2_as_array['currency']);
 
-        $original_entry_value = ($this->_generated_entry->expense ? -1 : 1)*$this->_generated_entry->entry_value;
-        $this->assertEquals(
-            $original_total-$original_entry_value,
-            $updated_total,
-            "Original total:".$original_total."\nOriginal entry value:".$original_entry_value."\nNew total:".$updated_total
+        $original_entry_value = Money::of($this->_generated_entry->entry_value, $this->_generated_account->currency)
+            ->multipliedBy(($this->_generated_entry->expense ? -1 : 1));
+        $this->assertTrue(
+            $original_total->minus($original_entry_value)->isEqualTo($updated_total),
+            "Original entry value:".$original_entry_value."\nOriginal total:".$original_total."\nUpdated total:".$updated_total
         );
     }
 
@@ -308,7 +314,7 @@ class PutEntryTest extends TestCase {
         $get_response->assertStatus(HttpStatus::HTTP_OK);
         $get_response_as_array = $get_response->json();
         foreach ($entry_data as $property=>$value) {
-            $this->assertEquals($value, $get_response_as_array[$property], "Entry data:".json_encode($entry_data)."\nGet Request:".$get_response->getContent());
+            $this->assertEquals($value, $get_response_as_array[$property], "Entry data:".json_encode($entry_data)."\nGET Response:".$get_response->getContent());
         }
     }
 
