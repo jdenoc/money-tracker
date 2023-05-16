@@ -8,13 +8,11 @@ use App\Models\Attachment;
 use App\Models\Entry;
 use App\Models\Tag;
 use App\Traits\EntryResponseKeys;
-use Illuminate\Foundation\Testing\WithFaker;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 
 class PostEntryTest extends TestCase {
     use EntryResponseKeys;
-    use WithFaker;
 
     private string $_base_uri = '/api/entry';
 
@@ -162,7 +160,7 @@ class PostEntryTest extends TestCase {
         $generated_tags = Tag::factory()->count($generate_tag_count)->create();
         $generated_tag_ids = $generated_tags->pluck('id')->toArray();
         do {
-            $non_existent_tag_id = $this->faker->randomNumber();
+            $non_existent_tag_id = fake()->randomNumber();
         } while (in_array($non_existent_tag_id, $generated_tag_ids));
 
         $generated_account_type = AccountType::factory()->for(Account::factory())->create();
@@ -208,7 +206,7 @@ class PostEntryTest extends TestCase {
 
     public function testCreateEntryWithAttachments() {
         // GIVEN
-        $generated_attachments = Attachment::factory()->count($this->faker->randomDigitNotZero())->make();
+        $generated_attachments = Attachment::factory()->count(fake()->randomDigitNotZero())->make();
         $generated_account_type = AccountType::factory()->for(Account::factory())->create();
         $generated_entry_data = $this->generateEntryData();
         $generated_entry_data['account_type_id'] = $generated_account_type->id;

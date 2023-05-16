@@ -7,7 +7,6 @@ use App\Models\AccountType;
 use App\Models\Entry;
 use App\Traits\Tests\TruncateDatabaseTables;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 use Illuminate\Support\Facades\Artisan;
@@ -15,7 +14,6 @@ use Illuminate\Support\Facades\Artisan;
 class AccountTotalSanityCheckTest extends TestCase {
     use DatabaseMigrations;
     use TruncateDatabaseTables;
-    use WithFaker;
 
     private $_command = 'sanity-check:account-total';
     private $_screen_only_notification_options = ['--notify-screen'=>true, '--dont-notify-discord'=>true];
@@ -86,7 +84,7 @@ class AccountTotalSanityCheckTest extends TestCase {
     public function testSanityCheckIndividualAccountIdNotFoundOutputtingToScreenAndWithoutNotifyingDiscord() {
         $this->seedDatabaseAndMaybeTruncateTable('accounts');
 
-        $account_id = $this->faker->randomDigitNotZero();
+        $account_id = fake()->randomDigitNotZero();
         Artisan::call($this->_command, array_merge(['accountId'=>$account_id], $this->_screen_only_notification_options));
         $result_as_text = trim(Artisan::output());
         $this->assertStringContainsString(sprintf(self::$TEMPLATE_ACCOUNT_NOT_FOUND, $account_id), $result_as_text);

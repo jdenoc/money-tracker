@@ -3,18 +3,16 @@
 namespace Tests\Feature\Api\Get;
 
 use App\Models\Account;
-use Illuminate\Foundation\Testing\WithFaker;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
 class GetAccountsTest extends TestCase {
-    use WithFaker;
 
     private string $_uri = '/api/accounts';
 
     public function testGetListOfAccountsWhenTheyAreAvailable() {
         // GIVEN
-        $account_count = $this->faker->randomDigitNotZero();
+        $account_count = fake()->randomDigitNotZero();
         $generated_accounts = Account::factory()->count($account_count)->create();
         // These nodes are not in the response output. Let's hide them from the object collection.
         $generated_accounts->makeHidden([Account::UPDATED_AT, Account::CREATED_AT, 'disabled_stamp']);

@@ -3,12 +3,10 @@
 namespace Tests\Feature\Api\Get;
 
 use App\Models\AccountType;
-use Illuminate\Foundation\Testing\WithFaker;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 
 class GetAccountTypesTest extends TestCase {
-    use WithFaker;
 
     private string $_uri = '/api/account-types';
 
@@ -26,8 +24,8 @@ class GetAccountTypesTest extends TestCase {
 
     public function testGetAccountTypes() {
         // GIVEN
-        $account_type_count = $this->faker->randomDigitNotZero();
-        $generated_account_types = AccountType::factory()->count($account_type_count)->create(['disabled'=>function() { return $this->faker->boolean(); }]);
+        $account_type_count = fake()->randomDigitNotZero();
+        $generated_account_types = AccountType::factory()->count($account_type_count)->create(['disabled'=>function() { return fake()->boolean(); }]);
 
         // WHEN
         $response = $this->get($this->_uri);

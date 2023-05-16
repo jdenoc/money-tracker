@@ -29,7 +29,7 @@ class GetEntriesTest extends ListEntriesBase {
         // GIVEN
         $generated_account_type = AccountType::factory()->for($this->_generated_account)->create();
 
-        $generate_entry_count = $this->faker->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE);
+        $generate_entry_count = fake()->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE);
         $generated_entries = $this->batch_generate_entries($generate_entry_count, $generated_account_type->id, [], true);
         $generated_disabled_entries = $generated_entries->where('disabled', 1);
         if ($generated_disabled_entries->count() > 0) {   // if there are no disabled entries, then there is no need to do any fancy filtering
@@ -63,7 +63,7 @@ class GetEntriesTest extends ListEntriesBase {
         $page_limit = 3;
         // GIVEN
         $generated_account_type = AccountType::factory()->for($this->_generated_account)->create();
-        $generate_entry_count = $this->faker->numberBetween(($page_limit-1)*self::$MAX_ENTRIES_IN_RESPONSE+1, $page_limit*self::$MAX_ENTRIES_IN_RESPONSE);
+        $generate_entry_count = fake()->numberBetween(($page_limit-1)*self::$MAX_ENTRIES_IN_RESPONSE+1, $page_limit*self::$MAX_ENTRIES_IN_RESPONSE);
         $generated_entries = $this->batch_generate_entries($generate_entry_count, $generated_account_type->id);
 
         $entries_in_response = [];

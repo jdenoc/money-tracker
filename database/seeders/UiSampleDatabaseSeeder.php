@@ -14,7 +14,6 @@ use App\Traits\MaxEntryResponseValue;
 use App\Traits\Tests\StorageTestFiles as TestStorageTestFilesTrait;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 
@@ -22,7 +21,6 @@ class UiSampleDatabaseSeeder extends Seeder {
     use TestStorageTestFilesTrait;
     use EntryTransferKeys;
     use MaxEntryResponseValue;
-    use WithFaker;
 
     const CLI_OUTPUT_PREFIX = "<info>".__CLASS__.":</info> ";
 
@@ -41,8 +39,6 @@ class UiSampleDatabaseSeeder extends Seeder {
      * Run the database seeders.
      */
     public function run() {
-        $this->setUpFaker();
-
         // ***** TAGS *****
         $tags = Tag::factory()->count(self::COUNT_TAG)->create();
         $tag_ids = $tags->pluck('id')->toArray();
@@ -58,10 +54,10 @@ class UiSampleDatabaseSeeder extends Seeder {
         foreach ($institution_ids as $institution_id) {
             $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$institution_id, 'disabled'=>false]);
         }
-        $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$this->faker->randomElement($institution_ids), 'disabled'=>true]);
+        $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>fake()->randomElement($institution_ids), 'disabled'=>true]);
         $currencies = CurrencyHelper::fetchCurrencies();
         foreach ($currencies as $currency) {
-            $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$this->faker->randomElement($institution_ids), 'currency'=>$currency->code]);
+            $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>fake()->randomElement($institution_ids), 'currency'=>$currency->code]);
         }
         $this->command->line(self::CLI_OUTPUT_PREFIX."Accounts seeded [".$accounts->count()."]");
 
@@ -89,7 +85,7 @@ class UiSampleDatabaseSeeder extends Seeder {
         $this->command->line(self::CLI_OUTPUT_PREFIX."Entries seeded [".$entries->count()."]");
 
         foreach ($entries as $entry) {
-            if ($this->faker->boolean()) {    // randomly assign tags to entries
+            if (fake()->boolean()) {    // randomly assign tags to entries
                 $this->attachTagToEntry($tag_ids, $entry);
             }
         }
@@ -121,7 +117,7 @@ class UiSampleDatabaseSeeder extends Seeder {
             } while ($transfer_from_entry['account_type_id'] == $transfer_to_entry['account_type_id']);
 
             // make transfer entries match each other
-            if ($this->faker->boolean()) {
+            if (fake()->boolean()) {
                 $transfer_from_entry->entry_date = $transfer_to_entry->entry_date;
                 $transfer_from_entry->entry_value = $transfer_to_entry->entry_value;
                 $transfer_from_entry->memo = $transfer_to_entry->memo;
@@ -197,14 +193,14 @@ class UiSampleDatabaseSeeder extends Seeder {
 
     private function addAccountTypeToCollection(Collection $account_type_collection, array $data): Collection {
         $new_account_type_collection = AccountType::factory()
-            ->count($this->faker->numberBetween(self::COUNT_MIN, self::COUNT_ACCOUNT_TYPE))
+            ->count(fake()->numberBetween(self::COUNT_MIN, self::COUNT_ACCOUNT_TYPE))
             ->create($data);
         return $account_type_collection->merge($new_account_type_collection);
     }
 
     private function addEntryToCollection(Collection $entry_collection, array $data): Collection {
         $new_entry_collection = Entry::factory()
-            ->count($this->faker->numberBetween(self::COUNT_MIN, self::COUNT_ENTRY*2))
+            ->count(fake()->numberBetween(self::COUNT_MIN, self::COUNT_ENTRY*2))
             ->create($data);
         return $entry_collection->merge($new_entry_collection);
     }
@@ -218,7 +214,7 @@ class UiSampleDatabaseSeeder extends Seeder {
         if ($attach_all) {
             $entry_tag_ids = $tag_ids;
         } else {
-            $entry_tag_ids = $this->faker->randomElements($tag_ids, $this->faker->numberBetween(self::COUNT_MIN, self::COUNT_TAG/2));
+            $entry_tag_ids = fake()->randomElements($tag_ids, fake()->numberBetween(self::COUNT_MIN, self::COUNT_TAG/2));
         }
         $entry->tags()->syncWithoutDetaching($entry_tag_ids);
     }

@@ -19,7 +19,6 @@ use App\Traits\Tests\WaitTimes;
 use App\Traits\Tests\WithTailwindColors;
 use Carbon\Carbon;
 use Facebook\WebDriver\WebDriverBy;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
@@ -51,7 +50,6 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     use EntryTransferKeys;
     use HomePageSelectors;
     use WaitTimes;
-    use WithFaker;
     use WithTailwindColors;
 
     const INI_POSTMAXSIZE = 'post_max_size';
@@ -496,7 +494,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                 ->within($this->_selector_modal_body, function(Browser $modal_body) use (&$old_value, &$new_value, $account_types) {
                     $old_value = $modal_body->value($this->_selector_modal_entry_field_account_type);
                     do {
-                        $account_type = $this->faker->randomElement($account_types);
+                        $account_type = fake()->randomElement($account_types);
                         $new_value = $account_type['id'];
                     } while ($old_value == $new_value);
                     $modal_body->select($this->_selector_modal_entry_field_account_type, $new_value);
@@ -804,9 +802,9 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         $account_type_id = AccountType::all()->random()->pluck('id')->first();
         $tag_ids = Tag::all()->pluck('id')->toArray();
         $entry = Entry::factory()->create(['entry_date'=>date('Y-m-d'),'expense'=>true, 'confirm'=>false, 'account_type_id'=>$account_type_id]);
-        $entry->tags()->syncWithoutDetaching($this->faker->randomElements($tag_ids, 2));
+        $entry->tags()->syncWithoutDetaching(fake()->randomElements($tag_ids, 2));
         $entry = Entry::factory()->create(['entry_date'=>date('Y-m-d'),'expense'=>false, 'confirm'=>false, 'account_type_id'=>$account_type_id]);
-        $entry->tags()->syncWithoutDetaching($this->faker->randomElements($tag_ids, 2));
+        $entry->tags()->syncWithoutDetaching(fake()->randomElements($tag_ids, 2));
         unset($entry, $tag_ids, $account_type_id);
 
         $this->browse(function(Browser $browser) {
@@ -1188,7 +1186,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     public function testOpenExistingConfirmedEntryUnlockingChangingValuesAndRelockingResetsValues(string $modal_input_selector) {
         if ($modal_input_selector === $this->_selector_modal_entry_tags_locked) {
             // make sure there is at least one tag that doesn't belong to an entry
-            $tag_to_test = $this->faker->word();
+            $tag_to_test = fake()->word();
             Tag::factory()->create(['name'=>$tag_to_test]);
         } else {
             $tag_to_test = null;
@@ -1215,25 +1213,25 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                     $entry_modal->within($this->_selector_modal_body, function(Browser $modal_body) use ($modal_input_selector, $entry_data, $tag_to_test) {
                         switch($modal_input_selector) {
                             case $this->_selector_modal_entry_field_date:
-                                $temp_value = $this->faker->date('Y-m-d');
+                                $temp_value = fake()->date('Y-m-d');
                                 $this->setEntryModalDate($modal_body, $temp_value);
                                 break;
                             case $this->_selector_modal_entry_field_value:
-                                $temp_value = $this->faker->randomFloat(2);
+                                $temp_value = fake()->randomFloat(2);
                                 $this->setEntryModalValue($modal_body, $temp_value);
                                 break;
                             case $this->_selector_modal_entry_field_account_type:
                                 $account_types = $this->getApiAccountTypes();
                                 $this->assertGreaterThan(1, count($account_types), "Account-types available are not suffient for running this test");
                                 do {
-                                    $account_type = $this->faker->randomElement($account_types);
+                                    $account_type = fake()->randomElement($account_types);
                                     $temp_value = $account_type['id'];
                                 } while ($entry_data['account_type_id'] == $temp_value);
 
                                 $this->setEntryModalAccountType($modal_body, $temp_value);
                                 break;
                             case $this->_selector_modal_entry_field_memo:
-                                $temp_value = $this->faker->sentence();
+                                $temp_value = fake()->sentence();
                                 $this->setEntryModalMemo($modal_body, $temp_value);
                                 break;
                             case $this->_selector_modal_entry_field_expense:

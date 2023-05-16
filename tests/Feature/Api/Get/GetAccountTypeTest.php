@@ -5,12 +5,10 @@ namespace Tests\Feature\Api\Get;
 use App\Models\Account;
 use App\Models\AccountType;
 use App\Models\Institution;
-use Illuminate\Foundation\Testing\WithFaker;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
 class GetAccountTypeTest extends TestCase {
-    use WithFaker;
 
     private string $_base_uri = '/api/account-type/%d';
 
@@ -18,7 +16,7 @@ class GetAccountTypeTest extends TestCase {
         // GIVEN - no database records are created
 
         // WHEN
-        $response = $this->get(sprintf($this->_base_uri, $this->faker->randomDigitNotZero()));
+        $response = $this->get(sprintf($this->_base_uri, fake()->randomDigitNotZero()));
 
         // THEN
         $response->assertStatus(Response::HTTP_NOT_FOUND);

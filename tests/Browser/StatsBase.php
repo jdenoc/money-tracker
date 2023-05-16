@@ -11,7 +11,6 @@ use App\Traits\Tests\Dusk\StatsDateRange as DuskTraitStatsDateRange;
 use App\Traits\Tests\Dusk\StatsSidePanel as DuskTraitStatsSidePanel;
 use App\Traits\Tests\Dusk\StatsIncludeTransfersCheckboxButton as DuskTraitStatsIncludeTransfersCheckboxButton;
 use App\Traits\Tests\WithTailwindColors;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Collection;
 use Laravel\Dusk\Browser;
 use Tests\Browser\Pages\StatsPage;
@@ -24,7 +23,6 @@ class StatsBase extends DuskTestCase {
     use DuskTraitStatsIncludeTransfersCheckboxButton;
     use DuskTraitStatsSidePanel;
     use EntryFilterKeys;
-    use WithFaker;
     use WithTailwindColors;
 
     protected static $SELECTOR_STATS_FORM_SUMMARY = "#stats-form-summary";
@@ -104,7 +102,7 @@ class StatsBase extends DuskTestCase {
             $new_entry_data['memo'] = $memo;
         }
 
-        $new_entry_data['entry_date'] = $this->faker
+        $new_entry_data['entry_date'] = fake()
             ->dateTimeBetween($filter_data[self::$FILTER_KEY_START_DATE], $filter_data[self::$FILTER_KEY_END_DATE])
             ->format("Y-m-d");
         if (isset($filter_data[self::$FILTER_KEY_EXPENSE])) {

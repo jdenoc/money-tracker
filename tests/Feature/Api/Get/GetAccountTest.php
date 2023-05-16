@@ -5,19 +5,17 @@ namespace Tests\Feature\Api\Get;
 use App\Helpers\CurrencyHelper;
 use App\Models\Account;
 use App\Models\AccountType;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Collection;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
 class GetAccountTest extends TestCase {
-    use WithFaker;
 
     private string $_base_uri = '/api/account/%d';
 
     public function testGetAccountData() {
         // GIVEN
-        $account_type_count = $this->faker->randomDigitNotZero();
+        $account_type_count = fake()->randomDigitNotZero();
         /** @var Account $generated_account */
         $generated_account = Account::factory()->create();
         $generated_account_types = AccountType::factory()->count($account_type_count)->for($generated_account)->create();
@@ -36,7 +34,7 @@ class GetAccountTest extends TestCase {
 
     public function testGetAccountDataWhenAnAccountTypesRecordIsDisabled() {
         // GIVEN
-        $account_type_count = $this->faker->randomDigitNotZero();
+        $account_type_count = fake()->randomDigitNotZero();
         /** @var Account $generated_account */
         $generated_account = Account::factory()->create();
         $generated_account_types = AccountType::factory()->count($account_type_count)->for($generated_account)->create();
@@ -71,7 +69,7 @@ class GetAccountTest extends TestCase {
 
     public function testGetAccountDataWhenOnlyDisabledAccountTypeRecordsExist() {
         // GIVEN
-        $account_type_count = $this->faker->randomDigitNotZero();
+        $account_type_count = fake()->randomDigitNotZero();
         /** @var Account $generated_account */
         $generated_account = Account::factory()->create();
         AccountType::factory()->count($account_type_count)->for($generated_account)->create(['disabled'=>true]);
@@ -88,7 +86,7 @@ class GetAccountTest extends TestCase {
         // GIVEN - no database records are created
 
         // WHEN
-        $response = $this->get(sprintf($this->_base_uri, $this->faker->randomDigitNotZero()));
+        $response = $this->get(sprintf($this->_base_uri, fake()->randomDigitNotZero()));
 
         // THEN
         $response->assertStatus(Response::HTTP_NOT_FOUND);

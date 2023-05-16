@@ -5,14 +5,12 @@ namespace Tests\Feature\Api\Put;
 use App\Models\Account;
 use App\Models\Institution;
 use App\Traits\AccountResponseKeys;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Testing\TestResponse;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 
 class PutAccountTest extends TestCase {
     use AccountResponseKeys;
-    use WithFaker;
 
     const METHOD = "PUT";
 
@@ -46,7 +44,7 @@ class PutAccountTest extends TestCase {
         $account = $this->getRandomActiveExistingAccount();
         do {
             // there should only be 1 institution in existance
-            $institution_id = $this->faker->randomNumber(1);
+            $institution_id = fake()->randomNumber(1);
         } while ($institution_id == $account->institution_id || in_array($institution_id, $existing_instituion_ids));
         $account->institution_id = $institution_id;
 
@@ -74,7 +72,7 @@ class PutAccountTest extends TestCase {
         // GIVEN
         $existing_account_ids = Account::all()->pluck('id')->toArray();
         do {
-            $account_id = $this->faker->randomNumber(2);
+            $account_id = fake()->randomNumber(2);
         } while (in_array($account_id, $existing_account_ids));
         $account_data = $this->generateAccountData();
         $account_data['institution_id'] = $this->getExistingActiveInstitutionId();

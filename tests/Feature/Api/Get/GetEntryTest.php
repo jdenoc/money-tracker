@@ -8,12 +8,10 @@ use App\Models\Attachment;
 use App\Models\Entry;
 use App\Models\Tag;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\WithFaker;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 
 class GetEntryTest extends TestCase {
-    use WithFaker;
 
     private int $_generate_tag_count;
     private int $_generate_attachment_count;
@@ -22,8 +20,8 @@ class GetEntryTest extends TestCase {
     public function setUp(): void {
         parent::setUp();
 
-        $this->_generate_attachment_count = $this->faker->randomDigitNotZero();
-        $this->_generate_tag_count = $this->faker->randomDigitNotZero();
+        $this->_generate_attachment_count = fake()->randomDigitNotZero();
+        $this->_generate_tag_count = fake()->randomDigitNotZero();
     }
 
     public function testGetEntryWithNoData() {

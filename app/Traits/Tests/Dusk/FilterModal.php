@@ -71,13 +71,13 @@ trait FilterModal {
         switch ($filter_input_selector) {
             case $this->_selector_modal_filter_field_start_date:
             case $this->_selector_modal_filter_field_end_date:
-                $filter_value = ['actual'=>$this->faker->dateTimeBetween('-15 months', '-1 month')->format("Y-m-d")];
+                $filter_value = ['actual'=>fake()->dateTimeBetween('-15 months', '-1 month')->format("Y-m-d")];
                 $browser_date = $this->getDateFromLocale($this->getBrowserLocale($modal), $filter_value['actual']);
                 $filter_value['typed'] = $this->processLocaleDateForTyping($browser_date);
                 $modal->type($filter_input_selector, $filter_value['typed']);
                 break;
             case self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT:
-                $is_account = $this->faker->boolean();
+                $is_account = fake()->boolean();
                 if ($is_account) {
                     // account
                     $filter_values = $this->getApiAccounts();
@@ -114,7 +114,7 @@ trait FilterModal {
                 break;
             case $this->_selector_modal_filter_field_min_value:
             case $this->_selector_modal_filter_field_max_value:
-                $filter_value = $this->faker->randomFloat(2, 0, 100);
+                $filter_value = fake()->randomFloat(2, 0, 100);
                 // need to use type() here otherwise vuejs won't pick up the update
                 $modal->type($filter_input_selector, $filter_value);
                 break;

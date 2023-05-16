@@ -114,11 +114,11 @@ class SettingsTagsTest extends SettingsBase {
             case self::$SELECTOR_SETTINGS_FORM_INPUT_NAME:
                 $tags = $this->getAllNodes();
                 do {
-                    $name = $this->faker->word();
+                    $name = fake()->word();
                 } while ($node->name == $name || $tags->contains('name', $name));
                 $section
                     ->clear($selector)
-                    ->type($selector, $this->faker->word());
+                    ->type($selector, fake()->word());
                 break;
             default:
                 throw new \UnexpectedValueException(sprintf("Unexpected form element [%s] provided", $selector));

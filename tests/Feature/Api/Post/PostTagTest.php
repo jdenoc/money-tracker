@@ -4,12 +4,10 @@ namespace Tests\Feature\Api\Post;
 
 use App\Models\Tag;
 use App\Traits\TagResponseKeys;
-use Illuminate\Foundation\Testing\WithFaker;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 
 class PostTagTest extends TestCase {
-    use WithFaker;
     use TagResponseKeys;
 
     const METHOD = 'POST';

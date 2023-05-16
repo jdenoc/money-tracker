@@ -7,14 +7,12 @@ use App\Models\AccountType;
 use App\Models\Institution;
 use App\Traits\AccountTypeResponseKeys;
 use Illuminate\Database\Eloquent\Factories\Sequence;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Testing\TestResponse;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 
 class PutAccountTypeTest extends TestCase {
     use AccountTypeResponseKeys;
-    use WithFaker;
 
     const METHOD = 'PUT';
 
@@ -53,7 +51,7 @@ class PutAccountTypeTest extends TestCase {
         $existing_account_ids = Account::all()->pluck('id')->toArray();
         $account_type = $this->getRandomActiveExistingAccountType();
         do {
-            $account_id = $this->faker->randomNumber(1);
+            $account_id = fake()->randomNumber(1);
         } while ($account_id == $account_type->institution_id || in_array($account_id, $existing_account_ids));
         $account_type->account_id = $account_id;
 
@@ -69,7 +67,7 @@ class PutAccountTypeTest extends TestCase {
         $account_type = $this->getRandomActiveExistingAccountType();
         $valid_types = AccountType::getEnumValues();
         do {
-            $type = $this->faker->word();
+            $type = fake()->word();
         } while (in_array($type, $valid_types));
         $account_type->type = $type;
 
@@ -84,7 +82,7 @@ class PutAccountTypeTest extends TestCase {
         // GIVEN
         $existing_account_type_ids = AccountType::all()->pluck('id')->toArray();
         do {
-            $account_type_id = $this->faker->randomNumber(2);
+            $account_type_id = fake()->randomNumber(2);
         } while (in_array($account_type_id, $existing_account_type_ids));
         $account_type_data = $this->generateAccountTypeData();
         $account_type_data['account_id'] = $this->getExistingActiveAccountId();
