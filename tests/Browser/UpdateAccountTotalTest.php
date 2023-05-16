@@ -9,6 +9,7 @@ use App\Traits\Tests\Dusk\EntryModal as DustTraitEntryModal;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
 use App\Traits\Tests\WaitTimes;
+use Brick\Money\Money;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Laravel\Dusk\Browser;
@@ -78,7 +79,8 @@ class UpdateAccountTotalTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
 
             // take note of account total
-            $this->assertAccountTotal($browser, $this->_institution_id, $this->_account['id'], $this->_account['total'], true);
+            $account_total = Money::of($this->_account['total'], $this->_account['currency']);
+            $this->assertAccountTotalInBrowser($browser, $this->_institution_id, $this->_account['id'], $account_total, true);
 
             // create a new entry
             $entry_total = 10.00;
@@ -104,8 +106,11 @@ class UpdateAccountTotalTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
 
             // confirm account total updated
-            $new_account_total = $this->_account['total']+($is_entry_expense ? -1 : 1)*$entry_total;
-            $this->assertAccountTotal($browser, $this->_institution_id, $this->_account['id'], $new_account_total);
+            $new_account_total = $account_total->plus(
+                Money::of($entry_total, $this->_account['currency'])
+                    ->multipliedBy(($is_entry_expense ? -1 : 1))
+            );
+            $this->assertAccountTotalInBrowser($browser, $this->_institution_id, $this->_account['id'], $new_account_total);
         });
     }
 
@@ -121,7 +126,8 @@ class UpdateAccountTotalTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
 
             // take note of account total
-            $this->assertAccountTotal($browser, $this->_institution_id, $this->_account['id'], $this->_account['total'], true);
+            $account_total = Money::of($this->_account['total'], $this->_account['currency']);
+            $this->assertAccountTotalInBrowser($browser, $this->_institution_id, $this->_account['id'], $account_total, true);
 
             // update an existing entry
             $entry = $this->getEntry($this->_account_type_id);
@@ -142,10 +148,12 @@ class UpdateAccountTotalTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
 
             // confirm account total updated
-            $new_account_total = $this->_account['total']
-                -(strtolower(trim($switch_text)) == 'expense' ? 1 : -1)*$entry['entry_value']
-                +(strtolower(trim($switch_text)) == 'expense' ? -1 : 1)*$entry['entry_value'];
-            $this->assertAccountTotal($browser, $this->_institution_id, $this->_account['id'], $new_account_total);
+            $is_expense = strtolower(trim($switch_text)) == 'expense';
+            $entry_value = Money::of($entry['entry_value'], $this->_account['currency']);
+            $new_account_total = $account_total
+                ->minus($entry_value->multipliedBy($is_expense ? 1 : -1))   // remove previous value
+                ->plus($entry_value->multipliedBy($is_expense ? -1 : 1));   // add new value
+            $this->assertAccountTotalInBrowser($browser, $this->_institution_id, $this->_account['id'], $new_account_total);
         });
     }
 
@@ -161,7 +169,8 @@ class UpdateAccountTotalTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
 
             // take note of account total
-            $this->assertAccountTotal($browser, $this->_institution_id, $this->_account['id'], $this->_account['total'], true);
+            $account_total = Money::of($this->_account['total'], $this->_account['currency']);
+            $this->assertAccountTotalInBrowser($browser, $this->_institution_id, $this->_account['id'], $account_total, true);
 
             // update an existing entry
             $entry = $this->getEntry($this->_account_type_id);
@@ -180,10 +189,11 @@ class UpdateAccountTotalTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
 
             // confirm account total updated
-            $new_account_total = $this->_account['total']
-                -($entry['expense'] == 1 ? -1 : 1)*$entry['entry_value']
-                +($entry['expense'] == 1 ? -1 : 1)*$new_value;
-            $this->assertAccountTotal($browser, $this->_institution_id, $this->_account['id'], $new_account_total);
+            $expense_multiplier = $entry['expense'] == 1 ? -1 : 1;
+            $new_account_total = $account_total
+                ->minus(Money::of($entry['entry_value'], $this->_account['currency'])->multipliedBy($expense_multiplier))
+                ->plus(Money::of($new_value, $this->_account['currency'])->multipliedBy($expense_multiplier));
+            $this->assertAccountTotalInBrowser($browser, $this->_institution_id, $this->_account['id'], $new_account_total);
         });
     }
 
@@ -199,7 +209,8 @@ class UpdateAccountTotalTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
 
             // take note of account total
-            $this->assertAccountTotal($browser, $this->_institution_id, $this->_account['id'], $this->_account['total'], true);
+            $account_total = Money::of($this->_account['total'], $this->_account['currency']);
+            $this->assertAccountTotalInBrowser($browser, $this->_institution_id, $this->_account['id'], $account_total, true);
 
             // delete an existing entry
             $entry = $this->getEntry($this->_account_type_id);
@@ -216,8 +227,9 @@ class UpdateAccountTotalTest extends DuskTestCase {
             $browser->waitUntilMissing($this->_selector_modal_entry, self::$WAIT_SECONDS);
 
             // confirm account total updated
-            $new_account_total = $this->_account['total'] - ($entry['expense'] == 1 ? -1 : 1)*$entry['entry_value'];
-            $this->assertAccountTotal($browser, $this->_institution_id, $this->_account['id'], $new_account_total);
+            $new_account_total = $account_total
+                ->minus(Money::of($entry['entry_value'], $this->_account['currency'])->multipliedBy(($entry['expense'] == 1 ? -1 : 1)));
+            $this->assertAccountTotalInBrowser($browser, $this->_institution_id, $this->_account['id'], $new_account_total);
         });
     }
 
@@ -275,7 +287,8 @@ class UpdateAccountTotalTest extends DuskTestCase {
 
             // take note of "to" account total
             if (!$is_to_account_external) {
-                $this->assertAccountTotal($browser, $account['to']['institution_id'], $account['to']['id'], $account['to']['total'], true);
+                $account_to_total = Money::of($account['to']['total'], $account['to']['currency']);
+                $this->assertAccountTotalInBrowser($browser, $account['to']['institution_id'], $account['to']['id'], $account_to_total, true);
             }
 
             // take note of the "from" account total
@@ -287,7 +300,8 @@ class UpdateAccountTotalTest extends DuskTestCase {
                 } else {
                     $init_institution = true;
                 }
-                $this->assertAccountTotal($browser, $account['from']['institution_id'], $account['from']['id'], $account['from']['total'], $init_institution);
+                $account_from_total = Money::of($account['from']['total'], $account['from']['currency']);
+                $this->assertAccountTotalInBrowser($browser, $account['from']['institution_id'], $account['from']['id'], $account_from_total, $init_institution);
             }
 
             // generate some test values
@@ -321,26 +335,21 @@ class UpdateAccountTotalTest extends DuskTestCase {
 
             if (!$is_from_account_external) {
                 // considered expense
-                $new_account_total = $account['from']['total']+(-1*$transfer_entry_data['value']);
-                $this->assertAccountTotal($browser, $account['from']['institution_id'], $account['from']['id'], $new_account_total);
+                $new_account_total = $account_from_total
+                    ->plus(Money::of($transfer_entry_data['value'], $account['from']['currency'])->multipliedBy(-1));
+                $this->assertAccountTotalInBrowser($browser, $account['from']['institution_id'], $account['from']['id'], $new_account_total);
             }
             if (!$is_to_account_external) {
                 // considered income
-                $new_account_total = $account['to']['total']+(1*$transfer_entry_data['value']);
-                $this->assertAccountTotal($browser, $account['to']['institution_id'], $account['to']['id'], $new_account_total);
+                $new_account_total = $account_to_total
+                    ->plus(Money::of($transfer_entry_data['value'], $account['to']['currency'])->multipliedBy(1));
+                $this->assertAccountTotalInBrowser($browser, $account['to']['institution_id'], $account['to']['id'], $new_account_total);
             }
         });
     }
 
-    /**
-     * @param Browser $browser
-     * @param int $institution_id
-     * @param int $account_id
-     * @param float $account_total
-     * @param bool $init
-     */
-    private function assertAccountTotal(Browser $browser, int $institution_id, int $account_id, $account_total, bool $init=false) {
-        $browser->within($this->_selector_panel_institutions.' #institution-'.$institution_id, function(Browser $institution_node) use ($init, $account_id, $account_total) {
+    private function assertAccountTotalInBrowser(Browser $browser, int $institution_id, int $account_id, Money $expected_account_total, bool $init=false): void {
+        $browser->within($this->_selector_panel_institutions.' #institution-'.$institution_id, function(Browser $institution_node) use ($init, $account_id, $expected_account_total) {
             // ONLY click on the institution node if this is at start up
             // OTHERWISE the accounts should already be visible
             if ($init) {
@@ -351,9 +360,9 @@ class UpdateAccountTotalTest extends DuskTestCase {
                     ->assertVisible($this->_selector_panel_institutions_accounts);
             }
 
-            $institution_node->within($this->_selector_panel_institutions_accounts.' #account-'.$account_id, function(Browser $account_node) use ($account_total) {
+            $institution_node->within($this->_selector_panel_institutions_accounts.' #account-'.$account_id, function(Browser $account_node) use ($expected_account_total) {
                 $account_node_total = $account_node->text($this->_selector_panel_institutions_accounts_account_total);
-                $this->assertEquals($account_total, $account_node_total);
+                $this->assertTrue($expected_account_total->isEqualTo($account_node_total));
             });
         });
     }
