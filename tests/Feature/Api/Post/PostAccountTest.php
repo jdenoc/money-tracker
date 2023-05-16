@@ -5,14 +5,12 @@ namespace Tests\Feature\Api\Post;
 use App\Models\Account;
 use App\Models\Institution;
 use App\Traits\AccountResponseKeys;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Testing\TestResponse;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 
 class PostAccountTest extends TestCase {
     use AccountResponseKeys;
-    use WithFaker;
 
     private string $_base_uri = '/api/account';
 
@@ -82,7 +80,7 @@ class PostAccountTest extends TestCase {
     public function testCreateAccountWithInvalidInstitutionId() {
         // GIVEN
         $account_data = $this->generateDummyAccountData();
-        $account_data['institution_id'] = $this->faker->numberBetween(-999, 0); // instition_id should ONLY be an int > 0
+        $account_data['institution_id'] = fake()->numberBetween(-999, 0); // instition_id should ONLY be an int > 0
 
         // WHEN
         $response = $this->json('POST', $this->_base_uri, $account_data);

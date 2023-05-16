@@ -129,7 +129,7 @@ class SettingsInstitutionsTest extends SettingsBase {
     protected function fillForm(Browser $section) {
         $this->interactWithFormElement($section, self::$SELECTOR_SETTINGS_FORM_INPUT_NAME);
         $section->assertInputValueIsNot(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, '');
-        $is_institution_active = $this->faker->boolean();
+        $is_institution_active = fake()->boolean();
         if (!$is_institution_active) {
             $this->interactWithFormElement($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
             $this->assertActiveStateToggleInactive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
@@ -176,7 +176,7 @@ class SettingsInstitutionsTest extends SettingsBase {
             case self::$SELECTOR_SETTINGS_FORM_INPUT_NAME:
                 $institutions = $this->getAllNodes();
                 do {
-                    $name = $this->faker->word();
+                    $name = fake()->word();
                 } while ($node->name == $name || $institutions->contains('name', $name));
                 $section->type($selector, $name);
                 break;

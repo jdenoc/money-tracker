@@ -23,7 +23,7 @@ class PostEntriesTest extends ListEntriesBase {
         // it caused the database to populate and in doing so we caused some tests to fail.
         // Said tests failed because they were testing the absence of database values.
         $this->initialiseApplication();
-        return $this->generateFilterTestCases($this->makeFaker());
+        return $this->generateFilterTestCases(fake());
     }
 
     /**
@@ -33,7 +33,7 @@ class PostEntriesTest extends ListEntriesBase {
     public function testPostEntriesThatDoNotExist(array $filter_details) {
         // GIVEN - no entries exist
         AccountType::factory()->for($this->_generated_account)->create();
-        $filter_details = $this->setTestSpecificFilters($this->faker, $filter_details, $this->_generated_account, $this->_generated_tags);
+        $filter_details = $this->setTestSpecificFilters(fake(), $filter_details, $this->_generated_account, $this->_generated_tags);
 
         $this->assertPostEntriesNotFound($filter_details);
     }
@@ -45,10 +45,10 @@ class PostEntriesTest extends ListEntriesBase {
      */
     public function testPostEntries(array $filter_details) {
         // GIVEN
-        $generate_entry_count = $this->faker->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE);
+        $generate_entry_count = fake()->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE);
         /** @var AccountType $generated_account_type */
         $generated_account_type = AccountType::factory()->for($this->_generated_account)->create();
-        $filter_details = $this->setTestSpecificFilters($this->faker, $filter_details, $this->_generated_account, $this->_generated_tags);
+        $filter_details = $this->setTestSpecificFilters(fake(), $filter_details, $this->_generated_account, $this->_generated_tags);
 
         $generated_entries = $this->batch_generate_entries($generate_entry_count, $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details), true);
         $generated_disabled_entries = $generated_entries->where('disabled', 1);
@@ -85,9 +85,9 @@ class PostEntriesTest extends ListEntriesBase {
     public function testPostEntriesByPage(array $filter_details) {
         $page_limit = 3;
         // GIVEN
-        $generate_entry_count = $this->faker->numberBetween(($page_limit-1)*self::$MAX_ENTRIES_IN_RESPONSE+1, $page_limit*self::$MAX_ENTRIES_IN_RESPONSE);
+        $generate_entry_count = fake()->numberBetween(($page_limit-1)*self::$MAX_ENTRIES_IN_RESPONSE+1, $page_limit*self::$MAX_ENTRIES_IN_RESPONSE);
         $generated_account_type = AccountType::factory()->for($this->_generated_account)->create();
-        $filter_details = $this->setTestSpecificFilters($this->faker, $filter_details, $this->_generated_account, $this->_generated_tags);
+        $filter_details = $this->setTestSpecificFilters(fake(), $filter_details, $this->_generated_account, $this->_generated_tags);
         $generated_entries = $this->batch_generate_entries($generate_entry_count, $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
 
         $entries_in_response = [];
@@ -120,10 +120,10 @@ class PostEntriesTest extends ListEntriesBase {
         // GIVEN
         $min_number_of_tags = 2;
         while ($this->_generated_tags->count() < $min_number_of_tags) {
-            $this->_generated_tags = Tag::factory()->count($this->faker->randomDigitNotZero())->create();
+            $this->_generated_tags = Tag::factory()->count(fake()->randomDigitNotZero())->create();
         }
         $tag_ids = $this->_generated_tags->pluck('id')->toArray();
-        $filter_details[self::$FILTER_KEY_TAGS] = $this->faker->randomElements($tag_ids, $this->faker->numberBetween($min_number_of_tags, count($tag_ids)));
+        $filter_details[self::$FILTER_KEY_TAGS] = fake()->randomElements($tag_ids, fake()->numberBetween($min_number_of_tags, count($tag_ids)));
         $generated_account_type = AccountType::factory()->for($this->_generated_account)->create();
         $generated_entries = $this->batch_generate_entries(1, $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
 
@@ -140,9 +140,9 @@ class PostEntriesTest extends ListEntriesBase {
 
     public function testPostEntriesFilterWithStartDateGreaterThanEndDate() {
         // GIVEN
-        $start_date = $this->faker->date();
+        $start_date = fake()->date();
         do {
-            $end_date = $this->faker->date("Y-m-d", $start_date);  // second parameter guarantees $start_date is >= $end_date
+            $end_date = fake()->date("Y-m-d", $start_date);  // second parameter guarantees $start_date is >= $end_date
         } while ($start_date < $end_date);
         $filter_details = [
             self::$FILTER_KEY_START_DATE=>$start_date,
@@ -150,15 +150,15 @@ class PostEntriesTest extends ListEntriesBase {
         ];
 
         $generated_account_type = AccountType::factory()->for($this->_generated_account)->create();
-        $this->batch_generate_entries($this->faker->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE), $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
+        $this->batch_generate_entries(fake()->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE), $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
         $this->assertPostEntriesNotFound($filter_details);
     }
 
     public function testPostEntriesFilterWithEndDateGreaterThanStartDate() {
         // GIVEN
-        $end_date = $this->faker->date();
+        $end_date = fake()->date();
         do {
-            $start_date = $this->faker->date("Y-m-d", $end_date); // second parameter guarantees $start_date is <= $end_date
+            $start_date = fake()->date("Y-m-d", $end_date); // second parameter guarantees $start_date is <= $end_date
         } while ($start_date > $end_date);
         $filter_details = [
             self::$FILTER_KEY_START_DATE=>$start_date,
@@ -166,7 +166,7 @@ class PostEntriesTest extends ListEntriesBase {
         ];
 
         $generated_account_type = AccountType::factory()->for($this->_generated_account)->create();
-        $generated_entries_count = $this->faker->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE);
+        $generated_entries_count = fake()->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE);
         $generated_entries = $this->batch_generate_entries($generated_entries_count, $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
 
         // WHEN
@@ -182,9 +182,9 @@ class PostEntriesTest extends ListEntriesBase {
 
     public function testPostEntriesFilterWithMinValueGreaterThanMaxValue() {
         // GIVEN
-        $min_value = $this->faker->randomFloat(2, 0, 50);
+        $min_value = fake()->randomFloat(2, 0, 50);
         do {
-            $max_value = $this->faker->randomFloat(2, 0, $min_value);
+            $max_value = fake()->randomFloat(2, 0, $min_value);
         } while ($min_value < $max_value);
         $filter_details = [
             self::$FILTER_KEY_MIN_VALUE=>$min_value,
@@ -192,15 +192,15 @@ class PostEntriesTest extends ListEntriesBase {
         ];
 
         $generated_account_type = AccountType::factory()->for($this->_generated_account)->create();
-        $this->batch_generate_entries($this->faker->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE), $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
+        $this->batch_generate_entries(fake()->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE), $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
         $this->assertPostEntriesNotFound($filter_details);
     }
 
     public function testPostEntriesFilterWithMaxValueGreaterThanMinValue() {
         // GIVEN
-        $max_value = $this->faker->randomFloat(2, 0, 50);
+        $max_value = fake()->randomFloat(2, 0, 50);
         do {
-            $min_value = $this->faker->randomFloat(2, 0, $max_value);
+            $min_value = fake()->randomFloat(2, 0, $max_value);
         } while ($min_value > $max_value);
         $filter_details = [
             self::$FILTER_KEY_MIN_VALUE=>$min_value,
@@ -208,7 +208,7 @@ class PostEntriesTest extends ListEntriesBase {
         ];
 
         $generated_account_type = AccountType::factory()->for($this->_generated_account)->create();
-        $generated_entries_count = $this->faker->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE);
+        $generated_entries_count = fake()->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE);
         $generated_entries = $this->batch_generate_entries($generated_entries_count, $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
 
         // WHEN
@@ -224,14 +224,14 @@ class PostEntriesTest extends ListEntriesBase {
 
     public function testPostEntriesFilterSort() {
         // GIVEN
-        $generate_entry_count = $this->faker->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE);
+        $generate_entry_count = fake()->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE);
         $generated_account_type = AccountType::factory()->for($this->_generated_account)->create();
         $generated_entries = $this->batch_generate_entries($generate_entry_count, $generated_account_type->id, []);
         // how we intend to sort
         $sort_options = Entry::get_fields_required_for_creation();
         unset($sort_options['memo']);   // can't and don't intend to sort by entry memo
-        $filter_details[self::$FILTER_KEY_SORT][self::$FILTER_KEY_SORT_PARAMETER] = $this->faker->randomElement($sort_options);
-        $filter_details[self::$FILTER_KEY_SORT][self::$FILTER_KEY_SORT_DIRECTION] = $this->faker->randomElement([Entry::SORT_DIRECTION_ASC, Entry::SORT_DIRECTION_DESC]);
+        $filter_details[self::$FILTER_KEY_SORT][self::$FILTER_KEY_SORT_PARAMETER] = fake()->randomElement($sort_options);
+        $filter_details[self::$FILTER_KEY_SORT][self::$FILTER_KEY_SORT_DIRECTION] = fake()->randomElement([Entry::SORT_DIRECTION_ASC, Entry::SORT_DIRECTION_DESC]);
 
         // WHEN
         $response = $this->json("POST", $this->_uri, $filter_details);

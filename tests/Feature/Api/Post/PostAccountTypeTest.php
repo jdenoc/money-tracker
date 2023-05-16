@@ -6,14 +6,12 @@ use App\Models\Account;
 use App\Models\AccountType;
 use App\Models\Institution;
 use App\Traits\AccountTypeResponseKeys;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Testing\TestResponse;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 
 class PostAccountTypeTest extends TestCase {
     use AccountTypeResponseKeys;
-    use WithFaker;
 
     const METHOD = 'POST';
 
@@ -90,7 +88,7 @@ class PostAccountTypeTest extends TestCase {
     public function testCreateAccountWithInvalidAccountId() {
         // GIVEN
         $account_type_data = $this->generateDummyAccountTypeData();
-        $account_type_data['account_id'] = $this->faker->numberBetween(-999, 0); // account_id should ONLY be an int > 0
+        $account_type_data['account_id'] = fake()->numberBetween(-999, 0); // account_id should ONLY be an int > 0
 
         // WHEN
         $response = $this->json(self::METHOD, $this->_base_uri, $account_type_data);
@@ -103,7 +101,7 @@ class PostAccountTypeTest extends TestCase {
         // GIVEN
         $account_type_data = $this->generateDummyAccountTypeData();
         $account_type_data['account_id'] = Account::where('disabled', false)->get()->random()->id;
-        $account_type_data['type'] = $this->faker->word();
+        $account_type_data['type'] = fake()->word();
 
         // WHEN
         $response = $this->json(self::METHOD, $this->_base_uri, $account_type_data);

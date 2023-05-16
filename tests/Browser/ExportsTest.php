@@ -8,7 +8,6 @@ use App\Traits\Tests\Dusk\FilterModal as DuskTraitFilterModal;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
 use App\Traits\Tests\Dusk\Notification as DuskTraitNotification;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Dusk\Browser;
@@ -30,7 +29,6 @@ class ExportsTest extends DuskTestCase {
     use DuskTraitNotification;
     use ExportsHelper;
     use HomePageSelectors;
-    use WithFaker;
 
     private static string $SELECTOR_EXPORT_BTN = '#filter-export-btn';
 

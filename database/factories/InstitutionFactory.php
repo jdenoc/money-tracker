@@ -8,8 +8,8 @@ class InstitutionFactory extends Factory {
 
     public function definition(): array {
         return [
-            'name'=>$this->faker->company(),
-            'active'=>$this->faker->boolean()
+            'name'=>fake()->company(),
+            'active'=>fake()->boolean()
         ];
     }
 

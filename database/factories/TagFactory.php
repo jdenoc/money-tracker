@@ -8,9 +8,9 @@ use Jdenoc\Faker\TailwindColors\Provider as TailwindColorsProvider;
 class TagFactory extends Factory {
 
     public function definition(): array {
-        $this->faker->addProvider(new TailwindColorsProvider($this->faker));
+        fake()->addProvider(new TailwindColorsProvider(fake()));
         return [
-            'name'=>$this->faker->unique()->tailwindColorName(),
+            'name'=>fake()->unique()->tailwindColorName(),
         ];
     }
 

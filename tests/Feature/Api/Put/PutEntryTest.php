@@ -50,7 +50,7 @@ class PutEntryTest extends TestCase {
         $entry_data = $entry_data->toArray();
         // make sure account_type_id value that does not exist
         do {
-            $entry_data['account_type_id'] = $this->faker->randomDigitNotZero();
+            $entry_data['account_type_id'] = fake()->randomDigitNotZero();
         } while($entry_data['account_type_id'] == $this->_generated_account_type->id);
 
         // WHEN
@@ -68,7 +68,7 @@ class PutEntryTest extends TestCase {
         do {
             // make sure randomly generated entry ID isn't associated
             // with the pre-generated entry
-            $entry_id = $this->faker->randomNumber();
+            $entry_id = fake()->randomNumber();
         } while ($entry_id == $this->_generated_entry->id);
         $entry_data = Entry::factory()->for($this->_generated_account_type)->make();
         $entry_data = $entry_data->toArray();
@@ -320,7 +320,7 @@ class PutEntryTest extends TestCase {
 
     public function testUpdateEntryToHaveTransferEntryCounterpart() {
         // GIVEN - see setup()
-        $entry_data = ['transfer_entry_id'=>$this->faker->randomDigitNotZero()];
+        $entry_data = ['transfer_entry_id'=>fake()->randomDigitNotZero()];
 
         // WHEN
         $get_response = $this->get($this->_base_uri.$this->_generated_entry->id);
@@ -346,11 +346,11 @@ class PutEntryTest extends TestCase {
 
     public function testUpdateEntryWithTagThatDoesNotExist() {
         // GIVEN - see setUp()
-        $generate_tag_count = $this->faker->numberBetween(2, 5);
+        $generate_tag_count = fake()->numberBetween(2, 5);
         Tag::factory($generate_tag_count)->create();
         $put_entry_data = ['tags'=>Tag::all()->pluck('id')->toArray()];
         do {
-            $non_existent_tag_id = $this->faker->unique()->randomNumber(3);
+            $non_existent_tag_id = fake()->unique()->randomNumber(3);
         } while (in_array($non_existent_tag_id, $put_entry_data['tags']));
         $put_entry_data['tags'][] = $non_existent_tag_id;
 
@@ -379,16 +379,16 @@ class PutEntryTest extends TestCase {
 
     public function testUpdateEntryWithTagsSoTheyAreNotDuplicated() {
         // GIVEN - see setUp()
-        $generate_tag_count = $this->faker->numberBetween(2, 5);
+        $generate_tag_count = fake()->numberBetween(2, 5);
         $generated_tags = Tag::factory()->count($generate_tag_count)->create();
         $generated_tag_ids = $generated_tags->pluck('pivot.tag_id')->toArray();
-        $attaching_tag_id = $this->faker->randomElement($generated_tag_ids);
+        $attaching_tag_id = fake()->randomElement($generated_tag_ids);
         $this->_generated_entry->tags()->attach($attaching_tag_id);
         $put_entry_data = ['tags'=>[$attaching_tag_id]];
         $put_entry_data['tags'] = array_merge(
             $put_entry_data['tags'],
             [$attaching_tag_id],
-            $this->faker->randomElements($generated_tag_ids, 2)
+            fake()->randomElements($generated_tag_ids, 2)
         );
 
         // WHEN

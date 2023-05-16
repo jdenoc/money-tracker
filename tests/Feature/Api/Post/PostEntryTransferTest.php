@@ -10,7 +10,6 @@ use App\Models\Tag;
 use App\Traits\EntryResponseKeys;
 use App\Traits\EntryTransferKeys;
 use App\Traits\Tests\StorageTestFiles;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 use Illuminate\Http\Response as HttpStatus;
@@ -19,7 +18,6 @@ class PostEntryTransferTest extends TestCase {
     use EntryTransferKeys;
     use EntryResponseKeys;
     use StorageTestFiles;
-    use WithFaker;
 
     const CALL_METHOD = "POST";
     const FLAG_HAS_TAGS = 'has_tags';
@@ -265,7 +263,7 @@ class PostEntryTransferTest extends TestCase {
         }
 
         if ($flags[self::FLAG_HAS_ATTACHMENTS]) {
-            $generated_attachments = Attachment::factory()->count($this->faker->randomDigitNotZero())->make();
+            $generated_attachments = Attachment::factory()->count(fake()->randomDigitNotZero())->make();
 
             $transfer_data['attachments'] = [];
             foreach ($generated_attachments as $generated_attachment) {
