@@ -6,12 +6,10 @@ use App\Models\Account;
 use App\Models\AccountType;
 use App\Models\Entry;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\WithFaker;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 
 class DeleteEntryTest extends TestCase {
-    use WithFaker;
 
     private string $_base_uri = '/api/entry/';
 
@@ -51,7 +49,7 @@ class DeleteEntryTest extends TestCase {
 
     public function testMarkingEntryDeletedWhenEntryDoesNotExist() {
         // GIVEN
-        $entry_id = $this->faker->randomNumber();
+        $entry_id = fake()->randomNumber();
 
         // WHEN
         $get_response = $this->get($this->_base_uri.$entry_id);

@@ -4,19 +4,17 @@ namespace Tests\Feature\Api\Delete;
 
 use App\Models\Account;
 use App\Models\AccountType;
-use Illuminate\Foundation\Testing\WithFaker;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 
 class DeleteAccountTypeTest extends TestCase {
-    use WithFaker;
 
     private string $_disable_account_type_uri = '/api/account-type/';
     private string $_get_account_uri = '/api/account/';
 
     public function testDisableAccountTypeThatDoesNotExist() {
         // GIVEN - account_type does not exist
-        $account_type_id = $this->faker->randomNumber();
+        $account_type_id = fake()->randomNumber();
 
         // WHEN
         $response = $this->delete($this->_disable_account_type_uri.$account_type_id);

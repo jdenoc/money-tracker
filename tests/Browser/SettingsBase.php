@@ -9,7 +9,6 @@ use App\Traits\Tests\Dusk\ToggleButton as DuskTraitToggleButton;
 use App\Traits\Tests\WaitTimes;
 use App\Traits\Tests\WithTailwindColors;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Database\Eloquent\Collection;
 use Laravel\Dusk\Browser;
 use Tests\Browser\Pages\SettingsPage;
@@ -21,7 +20,6 @@ class SettingsBase extends DuskTestCase {
     use DuskTraitLoading;
     use DuskTraitNotification;
     use WaitTimes;
-    use WithFaker;
     use WithTailwindColors;
 
     protected static string $SELECTOR_PRIMARY_DIV = '#app-settings';

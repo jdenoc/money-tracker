@@ -9,7 +9,6 @@ use App\Traits\Tests\Dusk\EntryModal as DustTraitEntryModal;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
 use App\Traits\Tests\WaitTimes;
-use Faker\Factory as FakerFactory;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Laravel\Dusk\Browser;
@@ -292,10 +291,9 @@ class UpdateAccountTotalTest extends DuskTestCase {
             }
 
             // generate some test values
-            $faker = FakerFactory::create();
             $transfer_entry_data = [
-                'memo'=>"Test transfer - save - ".$faker->uuid,
-                'value'=>$faker->randomFloat(2, 0, 100),
+                'memo'=>"Test transfer - save - ".fake()->uuid,
+                'value'=>fake()->randomFloat(2, 0, 100),
                 'from_account_type_id'=>($account['from']['account_type_id']),
                 'to_account_type_id'=>($account['to']['account_type_id']),
             ];

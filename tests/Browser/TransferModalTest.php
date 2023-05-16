@@ -17,7 +17,6 @@ use App\Traits\Tests\Dusk\Notification as DuskTraitNotification;
 use App\Traits\Tests\Dusk\TagsInput as DuskTraitTagsInput;
 use App\Traits\Tests\WithTailwindColors;
 use Facebook\WebDriver\WebDriverBy;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Laravel\Dusk\Browser;
@@ -46,7 +45,6 @@ class TransferModalTest extends DuskTestCase {
     use EntryTransferKeys;
     use HomePageSelectors;
     use WithTailwindColors;
-    use WithFaker;
 
     private static $METHOD_TO = 'to';
     private static $METHOD_FROM = 'from';
@@ -261,7 +259,7 @@ class TransferModalTest extends DuskTestCase {
      */
     public function testFillFieldsToEnabledSaveButton() {
         $all_account_types = $this->getApiAccountTypes();
-        $account_types = $this->faker->randomElements($all_account_types, 2);
+        $account_types = fake()->randomElements($all_account_types, 2);
 
         $this->browse(function(Browser $browser) use ($account_types) {
             $browser->visit(new HomePage());
@@ -446,7 +444,7 @@ class TransferModalTest extends DuskTestCase {
      */
     public function testResetTransferModalFields($has_tags, $has_attachments) {
         $all_account_types = $this->getApiAccountTypes();
-        $account_types = $this->faker->randomElements($all_account_types, 2);
+        $account_types = fake()->randomElements($all_account_types, 2);
 
         $this->browse(function(Browser $browser) use ($account_types, $has_tags, $has_attachments) {
             $upload_file_path = $has_attachments ? $this->getFullPathOfRandomAttachmentFromTestStorage() : '';
@@ -474,7 +472,7 @@ class TransferModalTest extends DuskTestCase {
                     if ($has_tags) {
                         // select tag at random and input the first character into the tags-input field
                         $tags = $this->getApiTags();
-                        $tag = $this->faker->randomElement($tags);
+                        $tag = fake()->randomElement($tags);
                         $this->fillTagsInputUsingAutocomplete($modal, $tag['name']);
                     }
 
@@ -548,10 +546,10 @@ class TransferModalTest extends DuskTestCase {
     public function testSaveTransferEntry(bool $is_to_account_external, bool $is_from_account_external, bool $has_tags, bool $has_attachments) {
         $this->browse(function(Browser $browser) use ($is_to_account_external, $is_from_account_external, $has_tags, $has_attachments) {
             $all_account_types = $this->getApiAccountTypes();
-            $account_types = $this->faker->randomElements($all_account_types, 2);
+            $account_types = fake()->randomElements($all_account_types, 2);
             if ($has_tags) {
                 $all_tags = $this->getApiTags();
-                $tag = $this->faker->randomElement($all_tags);
+                $tag = fake()->randomElement($all_tags);
                 $tag = $tag['name'];
             } else {
                 $tag = '';
@@ -569,8 +567,8 @@ class TransferModalTest extends DuskTestCase {
             // generate some test values
             $transfer_entry_data = [
                 'date'=>$browser_locale_date_for_typing,
-                'memo'=>"Test transfer - save".($has_tags ? " w/ tags" : '').($has_attachments ? " w/ attachments" : '').' - '.$this->faker->uuid(),
-                'value'=>$this->faker->randomFloat(2, 0, 100),
+                'memo'=>"Test transfer - save".($has_tags ? " w/ tags" : '').($has_attachments ? " w/ attachments" : '').' - '.fake()->uuid(),
+                'value'=>fake()->randomFloat(2, 0, 100),
                 'from_account_type_id'=>($is_from_account_external ? self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID : $account_types[0]['id']),
                 'to_account_type_id'=>($is_to_account_external ? self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID : $account_types[1]['id']),
                 'tag'=>$tag,
@@ -661,7 +659,7 @@ class TransferModalTest extends DuskTestCase {
         // GIVEN:
         $account_type_id1 = AccountType::where('disabled', true)->get()->random();
         $account_type_id2 = AccountType::where('disabled', true)->whereNotIn('id', [$account_type_id1->id])->get()->random();
-        $default_entry_data = ['disabled'=>false, 'entry_date'=>date('Y-m-d'), 'expense'=>true, 'entry_value'=>$this->faker->randomFloat(2)];
+        $default_entry_data = ['disabled'=>false, 'entry_date'=>date('Y-m-d'), 'expense'=>true, 'entry_value'=>fake()->randomFloat(2)];
         $entry_data_income = ['account_type_id'=>$account_type_id2->id, 'entry_date'=>date("Y-m-d", strtotime("-18 months")), 'expense'=>false];
 
         // transfer pair 1

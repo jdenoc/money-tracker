@@ -201,7 +201,7 @@ class SettingsAccountTypesTest extends SettingsBase {
         $this->interactWithFormElement($section, self::$SELECTOR_SETTINGS_FORM_SELECT_ACCOUNT);
         $section->assertNotSelected(self::$SELECTOR_SETTINGS_FORM_SELECT_ACCOUNT, "");
 
-        $is_account_type_active = $this->faker->boolean();
+        $is_account_type_active = fake()->boolean();
         if (!$is_account_type_active) {
             $this->interactWithFormElement($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
             $this->assertActiveStateToggleInactive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
@@ -243,11 +243,11 @@ class SettingsAccountTypesTest extends SettingsBase {
             case self::$SELECTOR_SETTINGS_FORM_INPUT_NAME:
                 $account_types = $this->getAllNodes();
                 do {
-                    $name = $this->faker->word();
+                    $name = fake()->word();
                 } while ($node->name == $name || $account_types->contains('name', $name));
                 $section
                     ->clear($selector)
-                    ->type($selector, $this->faker->word());
+                    ->type($selector, fake()->word());
                 break;
             case self::$SELECTOR_SETTINGS_FORM_SELECT_TYPE:
                 do {
@@ -257,7 +257,7 @@ class SettingsAccountTypesTest extends SettingsBase {
                 break;
             case self::$SELECTOR_SETTINGS_FORM_INPUT_LAST_DIGITS:
                 do {
-                    $last_digits = $this->faker->numerify("####");
+                    $last_digits = fake()->numerify("####");
                 } while ($node->last_digits == $last_digits);
                 $section
                     ->clear($selector)

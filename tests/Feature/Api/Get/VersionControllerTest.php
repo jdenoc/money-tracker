@@ -3,12 +3,10 @@
 namespace Tests\Feature\Api\Get;
 
 use App\Http\Controllers\Api\VersionController;
-use Illuminate\Foundation\Testing\WithFaker;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 
 class VersionControllerTest extends TestCase {
-    use WithFaker;
 
     private string $_base_uri = '/api/version';
 
@@ -20,7 +18,7 @@ class VersionControllerTest extends TestCase {
 
     public function testGetVersion() {
         // GIVEN
-        $test_version = $this->faker->randomDigit().'.'.$this->faker->randomDigit().'.'.$this->faker->randomDigit().'-test-'.substr($this->faker->sha1(), 0, 7);
+        $test_version = fake()->randomDigit().'.'.fake()->randomDigit().'.'.fake()->randomDigit().'-test-'.substr(fake()->sha1(), 0, 7);
         config([VersionController::CONFIG_VERSION=>$test_version]);
 
         // WHEN

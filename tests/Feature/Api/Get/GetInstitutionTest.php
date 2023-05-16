@@ -5,19 +5,16 @@ namespace Tests\Feature\Api\Get;
 use App\Models\Account;
 use App\Models\Institution;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Validation\Rules\In;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 
 class GetInstitutionTest extends TestCase {
-    use WithFaker;
 
     protected string $_base_uri = '/api/institution/%d';
 
     public function testGetInstitutionWhenNoInstitutionExists() {
         // GIVEN - no institution
-        $institution_id = $this->faker->randomDigitNotZero();
+        $institution_id = fake()->randomDigitNotZero();
 
         // WHEN
         $response = $this->get(sprintf($this->_base_uri, $institution_id));
@@ -47,7 +44,7 @@ class GetInstitutionTest extends TestCase {
 
     public function testGetInstitution() {
         // GIVEN
-        $generated_account_count = $this->faker->randomDigitNotZero();
+        $generated_account_count = fake()->randomDigitNotZero();
         /** @var Institution $generated_institution */
         $generated_institution = Institution::factory()->create();
         $generated_accounts = Account::factory()->count($generated_account_count)->for($generated_institution)->create();

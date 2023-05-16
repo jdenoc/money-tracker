@@ -3,12 +3,10 @@
 namespace Tests\Feature\Api\Get;
 
 use App\Models\Institution;
-use Illuminate\Foundation\Testing\WithFaker;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 
 class GetInstitutionsTest extends TestCase {
-    use WithFaker;
 
     protected string $_base_uri = '/api/institutions';
 
@@ -38,8 +36,8 @@ class GetInstitutionsTest extends TestCase {
      */
     public function testGetInstitutions(bool $all_active) {
         // GIVEN
-        $institutions_count = $this->faker->randomDigitNotZero();
-        $active_flag = $this->faker->boolean(($all_active ? 100 : 50));
+        $institutions_count = fake()->randomDigitNotZero();
+        $active_flag = fake()->boolean(($all_active ? 100 : 50));
         $generated_institutions = Institution::factory()
             ->count($institutions_count)
             ->create(['active'=>function() use ($active_flag) { return $active_flag; }]);

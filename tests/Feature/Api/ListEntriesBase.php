@@ -9,14 +9,12 @@ use App\Models\Tag;
 use App\Traits\EntryFilterKeys;
 use App\Traits\MaxEntryResponseValue;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Collection;
 use Tests\TestCase;
 
 class ListEntriesBase extends TestCase {
     use EntryFilterKeys;
     use MaxEntryResponseValue;
-    use WithFaker;
 
     const MIN_TEST_ENTRIES = 4;
 
@@ -35,7 +33,7 @@ class ListEntriesBase extends TestCase {
     public function setUp(): void {
         parent::setUp();
         $this->_generated_account = Account::factory()->create();
-        $this->_generated_tags = Tag::factory()->count($this->faker->randomDigitNotZero())->create();
+        $this->_generated_tags = Tag::factory()->count(fake()->randomDigitNotZero())->create();
     }
 
     /**
@@ -49,7 +47,7 @@ class ListEntriesBase extends TestCase {
      */
     protected function batch_generate_entries(int $totalEntriesToCreate, int $account_type_id, array $filter_details=[], bool $randomly_mark_entries_disabled=false, bool $mark_entries_disabled=false) {
         if ($randomly_mark_entries_disabled) {
-            $entry_disabled = function() { return $this->faker->boolean(); };
+            $entry_disabled = function() { return fake()->boolean(); };
         } else {
             $entry_disabled = $mark_entries_disabled;
         }
@@ -70,7 +68,7 @@ class ListEntriesBase extends TestCase {
                 } elseif (isset($filter_details['has_attachments']) && $filter_details['has_attachments'] === false) {
                     $generate_attachment_count = 0;
                 } else {
-                    $generate_attachment_count = $this->faker->randomDigitNotZero();
+                    $generate_attachment_count = fake()->randomDigitNotZero();
                 }
                 Attachment::factory()->count($generate_attachment_count)->for($entry)->create();
                 $entry->has_attachments = $entry->has_attachments();
@@ -78,7 +76,7 @@ class ListEntriesBase extends TestCase {
                 if (isset($filter_details['tags'])) {
                     $entry->tags()->sync($filter_details['tags']);
                 } else {
-                    $assign_tag_to_entry_count = $this->faker->numberBetween(0, $this->_generated_tags->count());
+                    $assign_tag_to_entry_count = fake()->numberBetween(0, $this->_generated_tags->count());
                     $entry
                         ->tags()
                         ->syncWithoutDetaching($this->_generated_tags->random($assign_tag_to_entry_count)->pluck('id')->toArray());
@@ -128,7 +126,7 @@ class ListEntriesBase extends TestCase {
                     break;
                 case self::$FILTER_KEY_IS_TRANSFER:
                     if ($constraint === true) {
-                        $entry_components['transfer_entry_id'] = $this->faker->randomDigitNotNull;
+                        $entry_components['transfer_entry_id'] = fake()->randomDigitNotNull;
                     } elseif ($constraint === false) {
                         $entry_components['transfer_entry_id'] = null;
                     }

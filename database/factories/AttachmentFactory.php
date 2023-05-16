@@ -9,11 +9,11 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 class AttachmentFactory extends Factory {
 
     public function definition(): array {
-        $this->faker->addProvider(new ProjectFilenameProvider($this->faker));
+        fake()->addProvider(new ProjectFilenameProvider(fake()));
         return [
-            'uuid'=>$this->faker->uuid(),
-            'name'=>$this->faker->filename(),
-            'entry_id'=>$this->faker->randomNumber(FactoryConstants::MAX_RAND_ID_LENGTH, true),
+            'uuid'=>fake()->uuid(),
+            'name'=>fake()->filename(),
+            'entry_id'=>fake()->randomNumber(FactoryConstants::MAX_RAND_ID_LENGTH, true),
             'stamp'=>date(FactoryConstants::DATE_FORMAT)
         ];
     }

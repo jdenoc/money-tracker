@@ -4,14 +4,12 @@ namespace Tests\Feature\Api\Put;
 
 use App\Models\Institution;
 use App\Traits\InstitutionResponseKeys;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Testing\TestResponse;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 
 class PutInstitutionTest extends TestCase {
     use InstitutionResponseKeys;
-    use WithFaker;
 
     const METHOD = 'PUT';
 
@@ -38,7 +36,7 @@ class PutInstitutionTest extends TestCase {
         // GIVEN
         $existing_ids = Institution::all()->pluck('id')->toArray();
         do {
-            $institution_id = $this->faker->randomNumber(2);
+            $institution_id = fake()->randomNumber(2);
         } while (in_array($institution_id, $existing_ids));
         $institution_data = $this->generateInstitutionData();
 

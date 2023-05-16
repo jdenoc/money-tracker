@@ -4,12 +4,10 @@ namespace Tests\Feature\Api\Put;
 
 use App\Models\Tag;
 use App\Traits\TagResponseKeys;
-use Illuminate\Foundation\Testing\WithFaker;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 
 class PutTagTest extends TestCase {
-    use WithFaker;
     use TagResponseKeys;
 
     const METHOD = 'PUT';
@@ -74,7 +72,7 @@ class PutTagTest extends TestCase {
     public function testUpdateTagDoesNotExist() {
         // GIVEN
         do {
-            $tag_id = $this->faker->randomDigit();
+            $tag_id = fake()->randomDigit();
         } while ($tag_id == $this->_generated_tag->id);
         $new_tag_data = Tag::factory()->make()->toArray();
 

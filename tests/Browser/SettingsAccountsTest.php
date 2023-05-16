@@ -241,7 +241,7 @@ class SettingsAccountsTest extends SettingsBase {
             ->assertInputValueIsNot(self::$SELECTOR_SETTINGS_FORM_INPUT_TOTAL, '')
             ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_CURRENCY_TOTAL, CurrencyHelper::convertCurrencyHtmlToCharacter($currency->html));
 
-        $is_account_active = $this->faker->boolean();
+        $is_account_active = fake()->boolean();
         if (!$is_account_active) {
             $this->interactWithFormElement($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
             $this->assertActiveStateToggleInactive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
@@ -288,7 +288,7 @@ class SettingsAccountsTest extends SettingsBase {
             case self::$SELECTOR_SETTINGS_FORM_INPUT_NAME:
                 $accounts = $this->getAllNodes();
                 do {
-                    $name = $this->faker->word();
+                    $name = fake()->word();
                 } while ($node->name == $name || $accounts->contains('name', $name));
                 $section
                     ->clear($selector)
@@ -313,7 +313,7 @@ class SettingsAccountsTest extends SettingsBase {
                 break;
             case self::$SELECTOR_SETTINGS_FORM_INPUT_TOTAL:
                 do {
-                    $total = $this->faker->randomFloat(2);
+                    $total = fake()->randomFloat(2);
                 } while ($node->total == $total);
                 $section
                     ->clear($selector)

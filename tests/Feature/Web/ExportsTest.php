@@ -56,7 +56,7 @@ class ExportsTest extends ListEntriesBase {
     }
 
     public function providerExportPostRequest(): array {
-        return $this->generateFilterTestCases($this->makeFaker(Factory::DEFAULT_LOCALE));   // manually setting local to bypass needing to access configs
+        return $this->generateFilterTestCases(fake(Factory::DEFAULT_LOCALE));   // manually setting local to bypass needing to access configs
     }
 
     /**
@@ -65,9 +65,9 @@ class ExportsTest extends ListEntriesBase {
      */
     public function testExportPostRequest(array $filter) {
         // GIVEN - see provider
-        $total_entries_to_create = $this->faker->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE);
+        $total_entries_to_create = fake()->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE);
         $generated_account_type = AccountType::factory()->create(['account_id'=>$this->_generated_account->id]);
-        $filter = $this->setTestSpecificFilters($this->faker, $filter, $this->_generated_account, $this->_generated_tags);
+        $filter = $this->setTestSpecificFilters(fake(), $filter, $this->_generated_account, $this->_generated_tags);
         $this->batch_generate_entries($total_entries_to_create, $generated_account_type->id, $this->convert_filters_to_entry_components($filter));
 
         $filename = $this->pregenerateExportFilenameAtStartOfSecond();

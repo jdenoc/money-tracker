@@ -12,7 +12,6 @@ use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
 use App\Traits\Tests\Dusk\TagsInput as DuskTraitTagsInput;
 use App\Traits\Tests\WithTailwindColors;
 use Facebook\WebDriver\WebDriverBy;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 use Tests\Browser\Pages\HomePage;
@@ -37,7 +36,6 @@ class FilterModalTest extends DuskTestCase {
     use DuskTraitNavbar;
     use DuskTraitTagsInput;
     use HomePageSelectors;
-    use WithFaker;
     use WithTailwindColors;
 
     private $_default_currency_character;
@@ -414,7 +412,7 @@ class FilterModalTest extends DuskTestCase {
                     $this->assertValueFieldCurrency($modal, $this->_selector_modal_filter_field_max_value, $this->_default_currency_character);
 
                     // select an account and confirm the name in the select changes
-                    $account_type_to_select = $this->faker->randomElement($account_types);
+                    $account_type_to_select = fake()->randomElement($account_types);
                     $this->selectAccountOrAccountTypeValue($modal, $account_type_to_select['id']);
                     $modal->assertSeeIn(self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT, $account_type_to_select['name']);
 
@@ -555,10 +553,10 @@ class FilterModalTest extends DuskTestCase {
                     $start_date = $this->processLocaleDateForTyping($time_from_browser);
 
                     $account_types = $this->getApiAccountTypes();
-                    $account_type = $this->faker->randomElement($account_types);
+                    $account_type = fake()->randomElement($account_types);
 
                     $tags = $this->getApiTags();
-                    $tags_to_select = $this->faker->unique->randomElements($tags, $this->faker->numberBetween(1, count($tags)));
+                    $tags_to_select = fake()->unique->randomElements($tags, fake()->numberBetween(1, count($tags)));
 
                     $companion_switch_set_1 = [$this->_selector_modal_filter_field_switch_expense, $this->_selector_modal_filter_field_switch_income];
                     $companion_switch_set_2 = [$this->_selector_modal_filter_field_switch_has_attachment, $this->_selector_modal_filter_field_switch_no_attachment];
@@ -573,8 +571,8 @@ class FilterModalTest extends DuskTestCase {
                         $this->fillTagsInputUsingAutocomplete($modal, $tag_to_select['name']);
                     }
 
-                    $this->toggleToggleButton($modal, $this->faker->randomElement($companion_switch_set_1));
-                    $this->toggleToggleButton($modal, $this->faker->randomElement($companion_switch_set_2));
+                    $this->toggleToggleButton($modal, fake()->randomElement($companion_switch_set_1));
+                    $this->toggleToggleButton($modal, fake()->randomElement($companion_switch_set_2));
                     $modal
                         ->click($this->_selector_modal_filter_field_switch_transfer)
                         ->click($this->_selector_modal_filter_field_switch_unconfirmed)
