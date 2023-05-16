@@ -6,6 +6,7 @@ use App\Traits\Tests\Dusk\AccountOrAccountTypeTogglingSelector as DuskTraitAccou
 use App\Traits\Tests\Dusk\BatchFilterEntries as DuskTraitBatchFilterEntries;
 use App\Traits\Tests\Dusk\StatsDateRange as DuskTraitStatsDateRange;
 use App\Traits\Tests\Dusk\StatsSidePanel as DuskTraitStatsSidePanel;
+use Brick\Money\Money;
 use Facebook\WebDriver\Remote\RemoteWebElement;
 use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Support\Collection;
@@ -229,9 +230,9 @@ class StatsSummaryTest extends StatsBase {
                                 //  income | expense | currency
                                 $currency_cell_text = $table_row->findElement(WebDriverBy::cssSelector($selector_cell_total_currency))->getText();
                                 $income_cell_text = $table_row->findElement(WebDriverBy::cssSelector($selector_cell_total_income))->getText();
-                                $this->assertEquals($totals[$currency_cell_text]['income'], $income_cell_text);
+                                $this->assertTrue($totals[$currency_cell_text]['income']->isEqualTo($income_cell_text));
                                 $expense_cell_text = $table_row->findElement(WebDriverBy::cssSelector($selector_cell_total_expense))->getText();
-                                $this->assertEquals($totals[$currency_cell_text]['expense'], $expense_cell_text);
+                                $this->assertTrue($totals[$currency_cell_text]['expense']->isEqualTo($expense_cell_text));
                             }
                         })
                         ->assertVisible($selector_table_top_10_income_expense)
@@ -293,8 +294,8 @@ class StatsSummaryTest extends StatsBase {
         $totals = [];
         $currencies = $accounts->unique('currency')->pluck('currency')->all();
         foreach ($currencies as $currency) {
-            $totals[$currency]['income'] = 0;
-            $totals[$currency]['expense'] = 0;
+            $totals[$currency]['income'] = Money::of(0, $currency);
+            $totals[$currency]['expense'] = Money::of(0, $currency);
         }
 
         foreach ($entries as $entry) {
@@ -305,12 +306,12 @@ class StatsSummaryTest extends StatsBase {
             } else {
                 $income_expense = 'income';
             }
-            $totals[$account['currency']][$income_expense] += $entry['entry_value'];
+            $totals[$account['currency']][$income_expense] = $totals[$account['currency']][$income_expense]->plus($entry['entry_value']);
         }
 
         // purge any 0 values
         foreach ($totals as $currency=>$total) {
-            if ($total['income'] === 0 && $total['expense'] === 0) {
+            if ($total['income']->isZero() && $total['expense']->isZero()) {
                 unset($totals[$currency]);
             }
         }
