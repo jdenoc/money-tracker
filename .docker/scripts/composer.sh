@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 
-IMAGE_TAG=composer:money-tracker
-if [[ $(docker image ls -q $IMAGE_TAG | wc -l) -eq 0 ]]; then
-  DOCKERFILE_PATH=$(dirname $(realpath $0))/../composer.dockerfile
-  CONTEXT_PATH=$(dirname $(realpath $0))/../../
-  docker build --rm --file "$DOCKERFILE_PATH" --tag $IMAGE_TAG "$CONTEXT_PATH"
+if [[ $(docker-compose ps application --filter status=running | tail -n+2 | wc -l) -eq 1 ]]; then
+  # container is running
+  docker-compose exec -T application composer "$@"
+else
+  # container NOT running
+  docker-compose run --rm --no-deps -T application composer "$@"
 fi
-
-docker container run --rm -t --volume "$PWD":/app $IMAGE_TAG "$@"

@@ -75,10 +75,6 @@ jobs:
           echo "storage/tests/dusk/screenshots/*.png" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
-      - name: Generate image tag [composer]
-        id: image-tag-composer
-        run: echo "value=composer-local" >> $GITHUB_OUTPUT
-
     outputs:
       cache-key-docker: ${{ steps.cache-key-docker.outputs.value }}
       cache-key-composer: ${{ steps.cache-key-composer.outputs.value }}
@@ -89,7 +85,6 @@ jobs:
       cache-path-npm: ${{ steps.cache-path-npm.outputs.value }}
       cache-path-vue: ${{ steps.cache-path-vue.outputs.value }}
       failure-upload-paths: ${{ steps.failure-artifact-paths.outputs.value }}
-      image-tag-composer: ${{ steps.image-tag-composer.outputs.value }}
 
   build:
     needs:
@@ -113,11 +108,6 @@ jobs:
         if: steps.cache-docker-image.outputs.cache-hit != 'true'
         with:
           image-path: ${{ needs.pre-build.outputs.cache-path-docker }}
-          image-tag-composer: ${{ needs.pre-build.outputs.image-tag-composer }}
-
-      - name: Load composer docker image
-        run: docker load -i ${{ needs.pre-build.outputs.cache-path-docker }}/${{ needs.pre-build.outputs.image-tag-composer }}.tar.gz
-        if: steps.cache-docker-image.outputs.cache-hit == 'true'
 
       - name: "Cache: Composer packages"
         id: cache-composer
