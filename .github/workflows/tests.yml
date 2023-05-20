@@ -170,6 +170,7 @@ jobs:
         id: docker-image-cache
         uses: actions/cache@v3
         with:
+          fail-on-cache-miss: true
           path: ${{ needs.pre-build.outputs.cache-path-docker }}
           key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
@@ -177,6 +178,7 @@ jobs:
         id: composer-cache
         uses: actions/cache@v3
         with:
+          fail-on-cache-miss: true
           path: ${{ needs.pre-build.outputs.cache-path-composer }}
           key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
@@ -184,6 +186,7 @@ jobs:
         id: npm-cache
         uses: actions/cache@v3
         with:
+          fail-on-cache-miss: true
           path: ${{ needs.pre-build.outputs.cache-path-npm }}
           key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
@@ -259,6 +262,7 @@ jobs:
         id: docker-image-cache
         uses: actions/cache@v3
         with:
+          fail-on-cache-miss: true
           path: ${{ needs.pre-build.outputs.cache-path-docker }}
           key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
@@ -266,6 +270,7 @@ jobs:
         id: composer-cache
         uses: actions/cache@v3
         with:
+          fail-on-cache-miss: true
           path: ${{ needs.pre-build.outputs.cache-path-composer }}
           key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
@@ -273,6 +278,7 @@ jobs:
         id: npm-cache
         uses: actions/cache@v3
         with:
+          fail-on-cache-miss: true
           path: ${{ needs.pre-build.outputs.cache-path-npm }}
           key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
@@ -280,6 +286,7 @@ jobs:
         id: vue-cache
         uses: actions/cache@v3
         with:
+          fail-on-cache-miss: true
           path: ${{ needs.pre-build.outputs.cache-path-vue }}
           key: ${{ needs.pre-build.outputs.cache-key-vue }}
 
@@ -324,6 +331,7 @@ jobs:
         id: docker-image-cache
         uses: actions/cache@v3
         with:
+          fail-on-cache-miss: true
           path: ${{ needs.pre-build.outputs.cache-path-docker }}
           key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
@@ -331,6 +339,7 @@ jobs:
         id: composer-cache
         uses: actions/cache@v3
         with:
+          fail-on-cache-miss: true
           path: ${{ needs.pre-build.outputs.cache-path-composer }}
           key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
@@ -338,6 +347,7 @@ jobs:
         id: npm-cache
         uses: actions/cache@v3
         with:
+          fail-on-cache-miss: true
           path: ${{ needs.pre-build.outputs.cache-path-npm }}
           key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
@@ -345,6 +355,7 @@ jobs:
         id: vue-cache
         uses: actions/cache@v3
         with:
+          fail-on-cache-miss: true
           path: ${{ needs.pre-build.outputs.cache-path-vue }}
           key: ${{ needs.pre-build.outputs.cache-key-vue }}
 
@@ -389,6 +400,7 @@ jobs:
         id: docker-image-cache
         uses: actions/cache@v3
         with:
+          fail-on-cache-miss: true
           path: ${{ needs.pre-build.outputs.cache-path-docker }}
           key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
@@ -396,6 +408,7 @@ jobs:
         id: composer-cache
         uses: actions/cache@v3
         with:
+          fail-on-cache-miss: true
           path: ${{ needs.pre-build.outputs.cache-path-composer }}
           key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
@@ -403,6 +416,7 @@ jobs:
         id: npm-cache
         uses: actions/cache@v3
         with:
+          fail-on-cache-miss: true
           path: ${{ needs.pre-build.outputs.cache-path-npm }}
           key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
@@ -410,6 +424,7 @@ jobs:
         id: vue-cache
         uses: actions/cache@v3
         with:
+          fail-on-cache-miss: true
           path: ${{ needs.pre-build.outputs.cache-path-vue }}
           key: ${{ needs.pre-build.outputs.cache-key-vue }}
 
@@ -463,6 +478,7 @@ jobs:
         id: docker-image-cache
         uses: actions/cache@v3
         with:
+          fail-on-cache-miss: true
           path: ${{ needs.pre-build.outputs.cache-path-docker }}
           key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
@@ -470,6 +486,7 @@ jobs:
         id: composer-cache
         uses: actions/cache@v3
         with:
+          fail-on-cache-miss: true
           path: ${{ needs.pre-build.outputs.cache-path-composer }}
           key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
@@ -477,6 +494,7 @@ jobs:
         id: npm-cache
         uses: actions/cache@v3
         with:
+          fail-on-cache-miss: true
           path: ${{ needs.pre-build.outputs.cache-path-npm }}
           key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
@@ -484,6 +502,7 @@ jobs:
         id: vue-cache
         uses: actions/cache@v3
         with:
+          fail-on-cache-miss: true
           path: ${{ needs.pre-build.outputs.cache-path-vue }}
           key: ${{ needs.pre-build.outputs.cache-key-vue }}
 
@@ -534,6 +553,7 @@ jobs:
         id: docker-image-cache
         uses: actions/cache@v3
         with:
+          fail-on-cache-miss: true
           path: ${{ needs.pre-build.outputs.cache-path-docker }}
           key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
@@ -541,6 +561,7 @@ jobs:
         id: composer-cache
         uses: actions/cache@v3
         with:
+          fail-on-cache-miss: true
           path: ${{ needs.pre-build.outputs.cache-path-composer }}
           key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
@@ -548,6 +569,7 @@ jobs:
         id: npm-cache
         uses: actions/cache@v3
         with:
+          fail-on-cache-miss: true
           path: ${{ needs.pre-build.outputs.cache-path-npm }}
           key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
@@ -555,6 +577,7 @@ jobs:
         id: vue-cache
         uses: actions/cache@v3
         with:
+          fail-on-cache-miss: true
           path: ${{ needs.pre-build.outputs.cache-path-vue }}
           key: ${{ needs.pre-build.outputs.cache-key-vue }}
 
@@ -599,6 +622,7 @@ jobs:
         id: docker-image-cache
         uses: actions/cache@v3
         with:
+          fail-on-cache-miss: true
           path: ${{ needs.pre-build.outputs.cache-path-docker }}
           key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
@@ -606,6 +630,7 @@ jobs:
         id: composer-cache
         uses: actions/cache@v3
         with:
+          fail-on-cache-miss: true
           path: ${{ needs.pre-build.outputs.cache-path-composer }}
           key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
@@ -613,6 +638,7 @@ jobs:
         id: npm-cache
         uses: actions/cache@v3
         with:
+          fail-on-cache-miss: true
           path: ${{ needs.pre-build.outputs.cache-path-npm }}
           key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
@@ -620,6 +646,7 @@ jobs:
         id: vue-cache
         uses: actions/cache@v3
         with:
+          fail-on-cache-miss: true
           path: ${{ needs.pre-build.outputs.cache-path-vue }}
           key: ${{ needs.pre-build.outputs.cache-key-vue }}
 
@@ -670,6 +697,7 @@ jobs:
         id: docker-image-cache
         uses: actions/cache@v3
         with:
+          fail-on-cache-miss: true
           path: ${{ needs.pre-build.outputs.cache-path-docker }}
           key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
@@ -677,6 +705,7 @@ jobs:
         id: composer-cache
         uses: actions/cache@v3
         with:
+          fail-on-cache-miss: true
           path: ${{ needs.pre-build.outputs.cache-path-composer }}
           key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
@@ -684,6 +713,7 @@ jobs:
         id: npm-cache
         uses: actions/cache@v3
         with:
+          fail-on-cache-miss: true
           path: ${{ needs.pre-build.outputs.cache-path-npm }}
           key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
@@ -691,6 +721,7 @@ jobs:
         id: vue-cache
         uses: actions/cache@v3
         with:
+          fail-on-cache-miss: true
           path: ${{ needs.pre-build.outputs.cache-path-vue }}
           key: ${{ needs.pre-build.outputs.cache-key-vue }}
 
@@ -747,6 +778,7 @@ jobs:
         id: docker-image-cache
         uses: actions/cache@v3
         with:
+          fail-on-cache-miss: true
           path: ${{ needs.pre-build.outputs.cache-path-docker }}
           key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
@@ -754,6 +786,7 @@ jobs:
         id: composer-cache
         uses: actions/cache@v3
         with:
+          fail-on-cache-miss: true
           path: ${{ needs.pre-build.outputs.cache-path-composer }}
           key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
@@ -761,6 +794,7 @@ jobs:
         id: npm-cache
         uses: actions/cache@v3
         with:
+          fail-on-cache-miss: true
           path: ${{ needs.pre-build.outputs.cache-path-npm }}
           key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
@@ -768,6 +802,7 @@ jobs:
         id: vue-cache
         uses: actions/cache@v3
         with:
+          fail-on-cache-miss: true
           path: ${{ needs.pre-build.outputs.cache-path-vue }}
           key: ${{ needs.pre-build.outputs.cache-key-vue }}
 
