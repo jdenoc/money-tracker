@@ -118,7 +118,7 @@ jobs:
         uses: ./.github/actions/setup-composer
         if: steps.cache-composer.outputs.cache-hit != 'true'
         with:
-          github-token: ${{ github.token }}
+          github-token: ${{ secrets.COMPOSER_AUTH_TOKEN }}
           php-version: "8.0.22"
 
       - name: "Cache: npm packages"
