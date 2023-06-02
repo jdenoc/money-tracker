@@ -115,6 +115,8 @@ RUN echo "error_log = $PHP_ERROR_LOG" > $PHP_INI_DIR/conf.d/php-error_log.ini
 RUN echo 'date.timezone = "UTC"' > $PHP_INI_DIR/conf.d/php-date.timezone.ini
 
 # install composer (LTS)
+ENV COMPOSER_HOME /tmp
+ENV COMPOSER_ALLOW_SUPERUSER 1
 RUN EXPECTED_CHECKSUM=$(curl -s https://composer.github.io/installer.sig) \
   && COMPOSER_SETUP=/opt/composer-setup.php \
   && CHECKSUM_FILE=/opt/composer-setup.checksum \
@@ -128,6 +130,7 @@ RUN EXPECTED_CHECKSUM=$(curl -s https://composer.github.io/installer.sig) \
   fi; \
   php $COMPOSER_SETUP --2.2 --install-dir=/usr/local/bin/ --filename=composer \
   && rm -rf $COMPOSER_SETUP
+ENV COMPOSER_VERSION $(composer --version | awk '{print $3}')
 
 # health-check
 COPY .docker/healthcheck/app-health-check.sh /usr/local/bin/app-health-check
