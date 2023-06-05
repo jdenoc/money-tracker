@@ -54,7 +54,7 @@ RUN apt-get install -y default-mysql-client --no-install-recommends
 RUN docker-php-ext-install pdo_mysql
 
 # install php zip extension
-RUN apt-get install -y libzip-dev unzip --no-install-recommends
+RUN apt-get install -y libzip-dev unzip p7zip-full --no-install-recommends
 RUN docker-php-ext-install zip
 
 # install php gd extension
