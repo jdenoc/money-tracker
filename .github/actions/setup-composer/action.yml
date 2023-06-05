@@ -20,6 +20,9 @@ runs:
     - id: composer-validate
       run: .docker/scripts/composer.sh validate
       shell: bash
+    - id: TEMP-checking-authjson-file-permissions
+      run: docker-compose run --rm --no-deps application ls -lah
+      shell: bash
     - id: composer-install
       run: .docker/scripts/composer.sh install --no-interaction --optimize-autoloader --prefer-dist -vvv
       shell: bash
