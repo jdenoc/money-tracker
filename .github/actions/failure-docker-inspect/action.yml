@@ -6,7 +6,7 @@ runs:
   steps:
     - name: confirm docker containers running
       run: |
-        docker-compose ps --filter status=running
+        docker-compose ps --status=running
         docker container ls --size --no-trunc
       shell: bash
 

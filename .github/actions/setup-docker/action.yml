@@ -5,28 +5,21 @@ inputs:
   image-path:
     description: "Path where docker images are saved"
     required: true
-  image-tag-composer:
-    description: "Name of the docker image for the composer container"
-    required: true
 runs:
   using: composite
   steps:
     - name: build docker images
-      run: |
-        docker-compose build --build-arg DISABLE_XDEBUG=true
-        docker build --file .docker/composer.dockerfile --tag ${{ inputs.image-tag-composer }} .
+      run: docker-compose build --build-arg DISABLE_XDEBUG=true
       shell: bash
 
     - name: save docker images
       run: |
         mkdir -p ${{ inputs.image-path }}
         docker image ls "$(basename $PWD)*" --no-trunc
-        docker image ls "${{ inputs.image-tag-composer }}" --no-trunc
         
         IFS=$'\n'
         for image_name in $(docker image ls "$(basename $PWD)*" --format '{{.Repository}}')
         do
           docker save $image_name | gzip > ${{ inputs.image-path }}/${image_name}.tar.gz
         done
-        docker save ${{ inputs.image-tag-composer }} | gzip > ${{ inputs.image-path }}/${{ inputs.image-tag-composer }}.tar.gz
       shell: bash

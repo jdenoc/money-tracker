@@ -6,11 +6,11 @@ ENV DOCKER_LOG_STDERR /proc/1/fd/2
 # install generic packages & extensions
 RUN apt-get update --fix-missing \
   && apt-get upgrade -y
-RUN apt-get install -y apt-utils curl zlib1g-dev libicu-dev g++ --no-install-recommends
+RUN apt-get install -y apt-utils curl git zlib1g-dev g++ --no-install-recommends
 
 # set default ServerName
-RUN touch /etc/apache2/conf-available/servername.conf \
-  && echo 'ServerName app.money-tracker' > /etc/apache2/conf-available/servername.conf \
+RUN touch $APACHE_CONFDIR/conf-available/servername.conf \
+  && echo 'ServerName app.money-tracker' > $APACHE_CONFDIR/conf-available/servername.conf \
   && a2enconf servername
 
 # modify apache logging
@@ -19,14 +19,14 @@ RUN APACHE_LOG_DIR=/var/log/apache2 \
   && ln -sf $DOCKER_LOG_STDOUT $APACHE_LOG_DIR/access.log \
   && ln -sf $DOCKER_LOG_STDERR $APACHE_LOG_DIR/error.log \
   && ln -sf $DOCKER_LOG_STDOUT $APACHE_LOG_DIR/other_vhosts_access.log
-RUN echo 'LogFormat "%t [apache] %H %m %U %q | status:%>s" docker_log' > /etc/apache2/conf-available/dockerlog.conf \
+RUN echo 'LogFormat "%t [apache] %H %m %U %q | status:%>s" docker_log' > $APACHE_CONFDIR/conf-available/dockerlog.conf \
   && a2enconf dockerlog
 
 # enable mod_rewrite apache module
 RUN a2enmod rewrite
 
 # setup vhost
-COPY .docker/money-tracker.vhost.conf /etc/apache2/sites-available/000-default.conf
+COPY .docker/money-tracker.vhost.conf $APACHE_CONFDIR/sites-available/000-default.conf
 
 # setup web directory
 ENV WORK_DIR /var/www/money-tracker
@@ -38,11 +38,12 @@ RUN mkdir -p $APACHE_DOCUMENT_ROOT \
   && chown -R "$APACHE_RUN_USER:$APACHE_RUN_GROUP" "${APACHE_DOCUMENT_ROOT}"
 
 # create php log directory
-ENV PHP_LOG_DIR=/var/log/php
+ENV PHP_LOG_DIR /var/log/php
 RUN mkdir -p $PHP_LOG_DIR \
   && chown "$APACHE_RUN_USER:$APACHE_RUN_GROUP" "${PHP_LOG_DIR}"
 
 # install php intl extension
+RUN apt-get install -y libicu-dev
 RUN docker-php-ext-install intl
 
 # install php pcntl extension
@@ -53,7 +54,7 @@ RUN apt-get install -y default-mysql-client --no-install-recommends
 RUN docker-php-ext-install pdo_mysql
 
 # install php zip extension
-RUN apt-get install -y libzip-dev --no-install-recommends
+RUN apt-get install -y libzip-dev unzip p7zip-full --no-install-recommends
 RUN docker-php-ext-install zip
 
 # install php gd extension
@@ -103,7 +104,7 @@ RUN echo '#!/usr/bin/env bash\nphp ${WORK_DIR}/artisan "$@"' > /usr/local/bin/ar
 RUN cp $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini
 
 RUN echo "expose_php = Off" > $PHP_INI_DIR/conf.d/php-expose_php.ini
-RUN echo "allow_url_fopen = Off" > $PHP_INI_DIR/conf.d/php-allow_url_fopen.ini
+RUN echo "allow_url_fopen = On" > $PHP_INI_DIR/conf.d/php-allow_url_fopen.ini
 # set php error logging
 RUN PHP_ERROR_LOG=$PHP_LOG_DIR/errors.log \
   && touch $PHP_ERROR_LOG \
@@ -112,6 +113,25 @@ RUN PHP_ERROR_LOG=$PHP_LOG_DIR/errors.log \
 RUN echo "error_log = $PHP_ERROR_LOG" > $PHP_INI_DIR/conf.d/php-error_log.ini
 # set php timezone
 RUN echo 'date.timezone = "UTC"' > $PHP_INI_DIR/conf.d/php-date.timezone.ini
+
+# install composer (LTS)
+ENV COMPOSER_HOME /tmp
+ENV COMPOSER_ALLOW_SUPERUSER 1
+RUN EXPECTED_CHECKSUM=$(curl -s https://composer.github.io/installer.sig) \
+  && COMPOSER_SETUP=/opt/composer-setup.php \
+  && CHECKSUM_FILE=/opt/composer-setup.checksum \
+  && echo "$EXPECTED_CHECKSUM $COMPOSER_SETUP" > $CHECKSUM_FILE \
+  && curl -o $COMPOSER_SETUP https://getcomposer.org/installer \
+  && sha384sum --check $CHECKSUM_FILE; \
+  if [ $? -ne 0 ]; then \
+    echo 'ERROR: Invalid installer checksum' \
+    rm -rf $COMPOSER_SETUP \
+    exit 1; \
+  fi; \
+  php $COMPOSER_SETUP --2.2 --install-dir=/usr/local/bin/ --filename=composer \
+  && rm -rf $COMPOSER_SETUP
+# TODO: set the value of this script in ENV
+#ENV COMPOSER_VERSION $(composer --version | awk '{print $3}')
 
 # health-check
 COPY .docker/healthcheck/app-health-check.sh /usr/local/bin/app-health-check
