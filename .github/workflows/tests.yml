@@ -102,6 +102,7 @@ jobs:
 
       - name: Docker build
         id: build-docker
+        timeout-minutes: 15
         uses: ./.github/actions/setup-docker
         if: steps.cache-docker-image.outputs.cache-hit != 'true'
         with:
@@ -115,6 +116,8 @@ jobs:
           key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
       - name: Composer setup
+        id: build-composer
+        timeout-minutes: 15
         uses: ./.github/actions/setup-composer
         if: steps.cache-composer.outputs.cache-hit != 'true'
         with:
@@ -129,6 +132,8 @@ jobs:
           key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
       - name: npm setup
+        id: build-npm
+        timeout-minutes: 15
         uses: ./.github/actions/setup-npm
         if: steps.cache-npm.outputs.cache-hit != 'true'
 
@@ -140,6 +145,8 @@ jobs:
           key: ${{ needs.pre-build.outputs.cache-key-vue }}
 
       - name: Build Vue
+        id: build-vue
+        timeout-minutes: 15
         uses: ./.github/actions/build-vue
         if: steps.cache-vue.outputs.cache-hit != 'true'
 
