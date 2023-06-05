@@ -124,6 +124,11 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           php-version: "8.0.22"
 
+      - name: Composer diagnose
+        id: diagnose-composer
+        run: .docker/scripts/composer.sh diagnose
+        if: failure()
+
       - name: "Cache: npm packages"
         id: cache-npm
         uses: actions/cache@v3
