@@ -1,6 +1,6 @@
 # .github/actions/setup-composer/action.yml
 name: Composer Setup
-description: Load composer dependancies
+description: Load composer dependencies
 inputs:
   github-token:
     description: 'Github oAuth token'
