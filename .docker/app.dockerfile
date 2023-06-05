@@ -117,7 +117,20 @@ RUN echo 'date.timezone = "UTC"' > $PHP_INI_DIR/conf.d/php-date.timezone.ini
 # install composer (LTS)
 ENV COMPOSER_HOME /tmp
 ENV COMPOSER_ALLOW_SUPERUSER 1
-COPY --from=composer:lts /usr/bin/composer /usr/local/bin/composer
+RUN EXPECTED_CHECKSUM=$(curl -s https://composer.github.io/installer.sig) \
+  && COMPOSER_SETUP=/opt/composer-setup.php \
+  && CHECKSUM_FILE=/opt/composer-setup.checksum \
+  && echo "$EXPECTED_CHECKSUM $COMPOSER_SETUP" > $CHECKSUM_FILE \
+  && curl -o $COMPOSER_SETUP https://getcomposer.org/installer \
+  && sha384sum --check $CHECKSUM_FILE; \
+  if [ $? -ne 0 ]; then \
+    echo 'ERROR: Invalid installer checksum' \
+    rm -rf $COMPOSER_SETUP \
+    exit 1; \
+  fi; \
+  php $COMPOSER_SETUP --2.2 --install-dir=/usr/local/bin/ --filename=composer \
+  && rm -rf $COMPOSER_SETUP
+# TODO: set the value of this script in ENV
 #ENV COMPOSER_VERSION $(composer --version | awk '{print $3}')
 
 # health-check
