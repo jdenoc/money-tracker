@@ -302,20 +302,13 @@ class PostEntryTest extends TestCase {
         ];
     }
 
-    /**
-     * @param array $response_as_array
-     */
-    private function assertPostResponseHasCorrectKeys(array $response_as_array) {
+    private function assertPostResponseHasCorrectKeys(array $response_as_array): void {
         $failure_message = "POST Response is ".json_encode($response_as_array);
         $this->assertArrayHasKey(self::$RESPONSE_SAVE_KEY_ID, $response_as_array, $failure_message);
         $this->assertArrayHasKey(self::$RESPONSE_SAVE_KEY_ERROR, $response_as_array, $failure_message);
     }
 
-    /**
-     * @param array $response_as_array
-     * @param string $response_error_msg
-     */
-    private function assertFailedPostResponse(array $response_as_array, string $response_error_msg) {
+    private function assertFailedPostResponse(array $response_as_array, string $response_error_msg): void {
         $failure_message = "POST Response is ".json_encode($response_as_array);
         $this->assertEquals(self::$ERROR_ENTRY_ID, $response_as_array[self::$RESPONSE_SAVE_KEY_ID], $failure_message);
         $this->assertNotEmpty($response_as_array[self::$RESPONSE_SAVE_KEY_ERROR], $failure_message);
