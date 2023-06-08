@@ -219,6 +219,11 @@ class StatsTrendingTest extends StatsBase {
             $comparison_data = $this->comparisonChartData($income_data, $expense_data);
             $period_totals_data = $this->periodTotalsChartData($comparison_data);
 
+            $income_data = $this->convertMoneyIntoFloat($income_data);
+            $expense_data = $this->convertMoneyIntoFloat($expense_data);
+            $comparison_data = $this->convertMoneyIntoFloat($comparison_data);
+            $period_totals_data = $this->convertMoneyIntoFloat($period_totals_data);
+
             $browser
                 ->assertDontSeeIn(self::$SELECTOR_STATS_RESULTS_TRENDING, self::$LABEL_NO_STATS_DATA)
                 ->within(self::$SELECTOR_STATS_RESULTS_TRENDING, function(Browser $stats_results) use ($include_transfers) {
@@ -255,11 +260,6 @@ class StatsTrendingTest extends StatsBase {
     /**
      * Code in the method is translated from JavaScript located here:
      *  resources/js/components/stats/trending-chart.vue => methods.standardiseData()
-     *
-     * @param Collection $entries
-     * @param bool $is_expense
-     * @return array
-     *
      */
     private function standardiseChartData(Collection $entries, bool $is_expense): array {
         $standardised_chart_data = [];
@@ -280,10 +280,6 @@ class StatsTrendingTest extends StatsBase {
     /**
      * Code in the method is translated from JavaScript located here:
      *  resources/js/components/stats/trending-chart.vue => computed.comparisonData()
-     *
-     * @param array $income_data
-     * @param array $expense_data
-     * @return array
      */
     private function comparisonChartData(array $income_data, array $expense_data): array {
         $comparison_data = [];
@@ -308,9 +304,6 @@ class StatsTrendingTest extends StatsBase {
     /**
      * Code in the method is translated from JavaScript located here:
      *  resources/js/components/stats/trending-chart.vue => computed.periodTotalData
-     *
-     * @param array $comparison_chart_data
-     * @return array
      */
     private function periodTotalsChartData(array $comparison_chart_data): array {
         $period_totals_data = [];
@@ -321,6 +314,16 @@ class StatsTrendingTest extends StatsBase {
             $previous_value = $new_total;
         }
         return $period_totals_data;
+    }
+
+    private function convertMoneyIntoFloat(array $chartData): array {
+        return array_map(
+            function($datum){
+                $datum['y'] = $datum['y']->getAmount()->toFloat();
+                return $datum;
+            },
+            $chartData
+        );
     }
 
 }
