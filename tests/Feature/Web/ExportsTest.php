@@ -78,7 +78,7 @@ class ExportsTest extends ListEntriesBase {
 
         // THEN
         $download_response->assertStatus(HttpStatus::HTTP_OK);
-        $download_response->assertHeader('content-type', 'text/csv');
+        $download_response->assertHeader('content-type', 'text/csv; charset=UTF-8');
         $download_response->assertHeader('content-disposition', sprintf('attachment; filename=%s', $filename));
 
         // We don't need to do any validation on the data from POST /api/entries
