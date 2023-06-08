@@ -31,7 +31,7 @@ class PostAccountTest extends TestCase {
     }
 
     public function providerCreateAccountMissingProperty(): array {
-        // Application must be initialised before factory helpers can be used withi a provider method
+        // Application must be initialised before factory helpers can be used within a provider method
         $this->initialiseApplication();
         $account_data = $this->generateDummyAccountData();
 
@@ -80,7 +80,7 @@ class PostAccountTest extends TestCase {
     public function testCreateAccountWithInvalidInstitutionId() {
         // GIVEN
         $account_data = $this->generateDummyAccountData();
-        $account_data['institution_id'] = fake()->numberBetween(-999, 0); // instition_id should ONLY be an int > 0
+        $account_data['institution_id'] = fake()->numberBetween(-999, 0); // institution_id should ONLY be an int > 0
 
         // WHEN
         $response = $this->json('POST', $this->_base_uri, $account_data);
