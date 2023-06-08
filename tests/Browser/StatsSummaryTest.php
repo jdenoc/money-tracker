@@ -294,8 +294,8 @@ class StatsSummaryTest extends StatsBase {
         $totals = [];
         $currencies = $accounts->unique('currency')->pluck('currency')->all();
         foreach ($currencies as $currency) {
-            $totals[$currency]['income'] = Money::of(0, $currency);
-            $totals[$currency]['expense'] = Money::of(0, $currency);
+            $totals[$currency]['income'] = Money::zero($currency);
+            $totals[$currency]['expense'] = Money::zero($currency);
         }
 
         foreach ($entries as $entry) {
