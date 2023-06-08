@@ -251,10 +251,7 @@ class PostEntriesTest extends ListEntriesBase {
         );
     }
 
-    /**
-     * @param array $filter_details
-     */
-    private function assertPostEntriesNotFound(array $filter_details) {
+    private function assertPostEntriesNotFound(array $filter_details): void {
         // WHEN
         $response = $this->postJson($this->_uri, $filter_details);
 
