@@ -21,10 +21,10 @@ abstract class TestCase extends BaseTestCase {
     public function setUp(): void {
         $this->outputTestName();
         parent::setUp();
+        Cache::flush();
     }
 
     public function tearDown(): void {
-        Cache::flush();
         parent::tearDown();
         $this->incrementTestCount();
     }
