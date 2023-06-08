@@ -24,7 +24,7 @@ class PostAccountTest extends TestCase {
         $account_data = [];
 
         // WHEN
-        $response = $this->json('POST', $this->_base_uri, $account_data);
+        $response = $this->postJson($this->_base_uri, $account_data);
 
         // THEN
         $this->assertFailedPostResponse($response, HttpStatus::HTTP_BAD_REQUEST, self::$ERROR_MSG_NO_DATA);
@@ -71,7 +71,7 @@ class PostAccountTest extends TestCase {
         }
 
         // WHEN
-        $response = $this->json('POST', $this->_base_uri, $account_data);
+        $response = $this->postJson($this->_base_uri, $account_data);
 
         // THEN
         $this->assertFailedPostResponse($response, HttpStatus::HTTP_BAD_REQUEST, $error_message);
@@ -83,7 +83,7 @@ class PostAccountTest extends TestCase {
         $account_data['institution_id'] = fake()->numberBetween(-999, 0); // institution_id should ONLY be an int > 0
 
         // WHEN
-        $response = $this->json('POST', $this->_base_uri, $account_data);
+        $response = $this->postJson($this->_base_uri, $account_data);
 
         // THEN
         $this->assertFailedPostResponse($response, HttpStatus::HTTP_BAD_REQUEST, self::$ERROR_MSG_INVALID_INSTITUTION);
@@ -96,7 +96,7 @@ class PostAccountTest extends TestCase {
         $account_data['currency'] = 'XXX'; // XXX is an invalid currency code and not listed in the ISO 4217 standard
 
         // WHEN
-        $response = $this->json('POST', $this->_base_uri, $account_data);
+        $response = $this->postJson($this->_base_uri, $account_data);
 
         // THEN
         $this->assertFailedPostResponse($response, HttpStatus::HTTP_BAD_REQUEST, self::$ERROR_MSG_INVALID_CURRENCY);
@@ -108,7 +108,7 @@ class PostAccountTest extends TestCase {
         $account_data = $this->setValidInstitutionId($account_data);
 
         // WHEN
-        $response = $this->json("POST", $this->_base_uri, $account_data);
+        $response = $this->postJson($this->_base_uri, $account_data);
 
         // THEN
         $failure_message = "POST Response is ".$response->getContent();
