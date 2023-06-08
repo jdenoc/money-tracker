@@ -2,10 +2,12 @@
 
 namespace Tests\Browser;
 
+use App\Models\Currency;
 use App\Traits\Tests\Dusk\AccountOrAccountTypeTogglingSelector as DuskTraitAccountOrAccountTypeTogglingSelector;
 use App\Traits\Tests\Dusk\BatchFilterEntries as DuskTraitBatchFilterEntries;
 use App\Traits\Tests\Dusk\StatsDateRange as DuskTraitStatsDateRange;
 use App\Traits\Tests\Dusk\StatsSidePanel as DuskTraitStatsSidePanel;
+use Brick\Money\Money;
 use Illuminate\Support\Collection;
 use Laravel\Dusk\Browser;
 use Tests\Browser\Pages\StatsPage;
@@ -266,9 +268,9 @@ class StatsTrendingTest extends StatsBase {
             // condense data points with similar entry_date values
             $key = $entry['entry_date'];
             if (!isset($standardised_chart_data[$key])) {
-                $standardised_chart_data[$key] = ['x'=>$key, 'y'=>0];
+                $standardised_chart_data[$key] = ['x'=>$key, 'y'=>Money::zero(Currency::DEFAULT_CURRENCY_CODE)];
             }
-            $standardised_chart_data[$key]['y'] += $entry['entry_value'];
+            $standardised_chart_data[$key]['y'] = $standardised_chart_data[$key]['y']->plus($entry['entry_value']);
         }
 
         ksort($standardised_chart_data);
@@ -288,16 +290,16 @@ class StatsTrendingTest extends StatsBase {
         foreach ($income_data as $datum) {
             $key = $datum['x'];
             if (!isset($comparison_data[$key])) {
-                $comparison_data[$key] = ['x'=>$key, 'y'=>0];
+                $comparison_data[$key] = ['x'=>$key, 'y'=>Money::zero(Currency::DEFAULT_CURRENCY_CODE)];
             }
-            $comparison_data[$key]['y'] += $datum['y'];
+            $comparison_data[$key]['y'] = $comparison_data[$key]['y']->plus($datum['y']);
         }
         foreach ($expense_data as $datum) {
             $key = $datum['x'];
             if (!isset($comparison_data[$key])) {
-                $comparison_data[$key] = ['x'=>$key, 'y'=>0];
+                $comparison_data[$key] = ['x'=>$key, 'y'=>Money::zero(Currency::DEFAULT_CURRENCY_CODE)];
             }
-            $comparison_data[$key]['y'] -= $datum['y'];
+            $comparison_data[$key]['y'] = $comparison_data[$key]['y']->minus($datum['y']);
         }
         ksort($comparison_data);
         return array_values($comparison_data);
@@ -312,9 +314,9 @@ class StatsTrendingTest extends StatsBase {
      */
     private function periodTotalsChartData(array $comparison_chart_data): array {
         $period_totals_data = [];
-        $previous_value = 0;
+        $previous_value = Money::zero(Currency::DEFAULT_CURRENCY_CODE);
         foreach ($comparison_chart_data as $i=>$chart_datum) {
-            $new_total = $previous_value+$chart_datum['y'];
+            $new_total = $previous_value->plus($chart_datum['y']);
             $period_totals_data[$i] = ['x'=>$chart_datum['x'], 'y'=>$new_total];
             $previous_value = $new_total;
         }
