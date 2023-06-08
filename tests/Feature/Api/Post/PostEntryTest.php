@@ -21,7 +21,7 @@ class PostEntryTest extends TestCase {
         $entry_data = [];
 
         // WHEN
-        $response = $this->json('POST', $this->_base_uri, $entry_data);
+        $response = $this->postJson($this->_base_uri, $entry_data);
 
         // THEN
         $this->assertResponseStatus($response, HttpStatus::HTTP_BAD_REQUEST);
@@ -78,7 +78,7 @@ class PostEntryTest extends TestCase {
         // GIVEN - $entry_data by providerCreateEntryWithMissingData
 
         // WHEN
-        $response = $this->json('POST', $this->_base_uri, $entry_data);
+        $response = $this->postJson($this->_base_uri, $entry_data);
 
         // THEN
         $this->assertResponseStatus($response, HttpStatus::HTTP_BAD_REQUEST);
@@ -92,7 +92,7 @@ class PostEntryTest extends TestCase {
         $entry_data = $this->generateEntryData();
 
         // WHEN
-        $response = $this->json("POST", $this->_base_uri, $entry_data);
+        $response = $this->postJson($this->_base_uri, $entry_data);
 
         // THEN
         $this->assertResponseStatus($response, HttpStatus::HTTP_BAD_REQUEST);
@@ -120,7 +120,7 @@ class PostEntryTest extends TestCase {
         $this->assertNotEmpty($get_account_response1_as_array['account_types']);
 
         // WHEN
-        $post_response = $this->json("POST", $this->_base_uri, $generated_entry_data);
+        $post_response = $this->postJson($this->_base_uri, $generated_entry_data);
         // THEN
         $this->assertResponseStatus($post_response, HttpStatus::HTTP_CREATED);
         $post_response_as_array = $post_response->json();
@@ -170,7 +170,7 @@ class PostEntryTest extends TestCase {
         $generated_entry_data['account_type_id'] = $generated_account_type->id;
 
         // WHEN
-        $post_response = $this->json('POST', $this->_base_uri, $generated_entry_data);
+        $post_response = $this->postJson($this->_base_uri, $generated_entry_data);
         // THEN
         $this->assertResponseStatus($post_response, HttpStatus::HTTP_CREATED);
         $post_response_as_array = $post_response->json();
@@ -219,7 +219,7 @@ class PostEntryTest extends TestCase {
         }
 
         // WHEN
-        $post_response = $this->json("POST", $this->_base_uri, $generated_entry_data);
+        $post_response = $this->postJson($this->_base_uri, $generated_entry_data);
 
         // THEN
         $this->assertResponseStatus($post_response, HttpStatus::HTTP_CREATED);
@@ -263,7 +263,7 @@ class PostEntryTest extends TestCase {
         $generated_entry_data['transfer_entry_id'] = $generated_transfer_entry->id;
 
         // WHEN
-        $post_response = $this->json("POST", $this->_base_uri, $generated_entry_data);
+        $post_response = $this->postJson($this->_base_uri, $generated_entry_data);
 
         // THEN
         $this->assertResponseStatus($post_response, HttpStatus::HTTP_CREATED);

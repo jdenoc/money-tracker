@@ -73,8 +73,8 @@ class ExportsTest extends ListEntriesBase {
         $filename = $this->pregenerateExportFilenameAtStartOfSecond();
 
         // WHEN
-        $download_response = $this->json('POST', self::URI, $filter);
-        $data_response = $this->json('POST', '/api/entries', $filter);
+        $download_response = $this->postJson(self::URI, $filter);
+        $data_response = $this->postJson('/api/entries', $filter);
 
         // THEN
         $download_response->assertStatus(HttpStatus::HTTP_OK);
