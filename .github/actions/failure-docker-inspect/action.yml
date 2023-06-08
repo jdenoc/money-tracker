@@ -23,9 +23,7 @@ runs:
         INSPECT_FILE=.docker/logs/docker-inspect.json
         docker-compose run --rm --no-deps -T --user root application touch $INSPECT_FILE
         docker-compose run --rm --no-deps -T --user root application chmod -R 777 $INSPECT_FILE
-        echo "{" >> $INSPECT_FILE
-        docker inspect $(docker-compose ps -q) >> $INSPECT_FILE
-        echo "}" >> $INSPECT_FILE
+        docker inspect $(docker-compose ps -q) > $INSPECT_FILE
       shell: bash
 
     - name: give all files read access to allow artifact upload
