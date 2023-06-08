@@ -318,7 +318,7 @@ class StatsTrendingTest extends StatsBase {
 
     private function convertMoneyIntoFloat(array $chartData): array {
         return array_map(
-            function($datum){
+            function($datum) {
                 $datum['y'] = $datum['y']->getAmount()->toFloat();
                 return $datum;
             },
