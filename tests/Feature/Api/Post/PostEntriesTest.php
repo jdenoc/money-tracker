@@ -67,7 +67,7 @@ class PostEntriesTest extends ListEntriesBase {
         }
 
         // WHEN
-        $response = $this->json("POST", $this->_uri, $filter_details);
+        $response = $this->postJson($this->_uri, $filter_details);
 
         // THEN
         $this->assertResponseStatus($response, HttpStatus::HTTP_OK, "Filter:".json_encode($filter_details));
@@ -93,7 +93,7 @@ class PostEntriesTest extends ListEntriesBase {
         $entries_in_response = [];
         for ($i=0; $i<$page_limit; $i++) {
             // WHEN
-            $response = $this->json("POST", $this->_uri.'/'.$i, $filter_details);
+            $response = $this->postJson($this->_uri.'/'.$i, $filter_details);
 
             // THEN
             $this->assertResponseStatus($response, HttpStatus::HTTP_OK, "Filter:".json_encode($filter_details));
@@ -128,7 +128,7 @@ class PostEntriesTest extends ListEntriesBase {
         $generated_entries = $this->batch_generate_entries(1, $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
 
         // WHEN
-        $response = $this->json("POST", $this->_uri, $filter_details);
+        $response = $this->postJson($this->_uri, $filter_details);
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_OK);
@@ -170,7 +170,7 @@ class PostEntriesTest extends ListEntriesBase {
         $generated_entries = $this->batch_generate_entries($generated_entries_count, $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
 
         // WHEN
-        $response = $this->json("POST", $this->_uri, $filter_details);
+        $response = $this->postJson($this->_uri, $filter_details);
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_OK);
@@ -212,7 +212,7 @@ class PostEntriesTest extends ListEntriesBase {
         $generated_entries = $this->batch_generate_entries($generated_entries_count, $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
 
         // WHEN
-        $response = $this->json("POST", $this->_uri, $filter_details);
+        $response = $this->postJson($this->_uri, $filter_details);
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_OK);
@@ -234,7 +234,7 @@ class PostEntriesTest extends ListEntriesBase {
         $filter_details[self::$FILTER_KEY_SORT][self::$FILTER_KEY_SORT_DIRECTION] = fake()->randomElement([Entry::SORT_DIRECTION_ASC, Entry::SORT_DIRECTION_DESC]);
 
         // WHEN
-        $response = $this->json("POST", $this->_uri, $filter_details);
+        $response = $this->postJson($this->_uri, $filter_details);
 
         // THEN
         $this->assertResponseStatus($response, HttpStatus::HTTP_OK, "Filter:".json_encode($filter_details));
@@ -256,7 +256,7 @@ class PostEntriesTest extends ListEntriesBase {
      */
     private function assertPostEntriesNotFound(array $filter_details) {
         // WHEN
-        $response = $this->json("POST", $this->_uri, $filter_details);
+        $response = $this->postJson($this->_uri, $filter_details);
 
         // THEN
         $this->assertResponseStatus($response, HttpStatus::HTTP_NOT_FOUND, "Filter:".json_encode($filter_details));

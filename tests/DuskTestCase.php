@@ -161,7 +161,7 @@ abstract class DuskTestCase extends BaseTestCase {
             self::$FILTER_KEY_SORT_DIRECTION=>Entry::DEFAULT_SORT_DIRECTION
         ]];
         $filter_data = array_merge($filter_data, $sort);
-        $entries_response = $this->json('POST', '/api/entries/'.$page_number, $filter_data);
+        $entries_response = $this->postJson('/api/entries/'.$page_number, $filter_data);
         return $entries_response->json();
     }
 
