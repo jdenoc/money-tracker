@@ -19,7 +19,7 @@ class InstitutionController extends Controller {
      * GET /api/institutes
      */
     public function get_institutions(): Response {
-        $institutions = Institution::cache()->get('all');
+        $institutions = Institution::cache()->get(Institution::CACHE_KEY_ALL);
         if (is_null($institutions) || $institutions->isEmpty()) {
             return response([], HttpStatus::HTTP_NOT_FOUND);
         } else {
@@ -29,7 +29,7 @@ class InstitutionController extends Controller {
                 Institution::UPDATED_AT,
             ]);
             $institutions = $institutions->toArray();
-            $institutions['count'] = Institution::cache()->get('count');
+            $institutions['count'] = Institution::cache()->get(Institution::CACHE_KEY_COUNT);
             return response($institutions, HttpStatus::HTTP_OK);
         }
     }
