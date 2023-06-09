@@ -28,7 +28,7 @@ class Kernel extends ConsoleKernel {
         $schedule->command(Commands\AccountTotalSanityCheck::class)->dailyAt("03:17");
         $schedule->command(Commands\ClearTmpUploads::class)->daily();
         $schedule->command(SnapshotCreate::class, [date('Ymd.His.e'), '--compress'])->dailyAt("02:15")
-            ->monitorName("snapshot:create {date} --compress"); // specifically used for scheduler monitoring
+            ->monitorName("snapshot:create {date} --compress"); // specifically used for schedule monitoring
         $schedule->command(SnapshotCleanup::class, ['--keep=30'])->dailyAt("02:45");
         $schedule->command('model:prune', ['--model' => MonitoredScheduledTaskLogItem::class])->dailyAt("01:13")
             ->description("Clear old schedule monitoring logs");
