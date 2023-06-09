@@ -22,7 +22,7 @@ class PutAccountTest extends TestCase {
         Account::factory()
             ->count(10)
             ->state(['disabled'=>false])
-            ->for(Institution::factory()->state(['active'=>true]))
+            ->for(Institution::factory())
             ->create();
     }
 

@@ -188,7 +188,7 @@ class InstitutionsPanelTest extends DuskTestCase {
      */
     public function testAccountTotalValueIsTwoDecimalPlaces(string $test_total) {
         DB::table('institutions')->truncate();
-        $new_institution = Institution::factory()->create(['active'=>true]);
+        $new_institution = Institution::factory()->create();
         $institution_id = $new_institution->id;
         DB::table('accounts')->truncate();
         $new_account = Account::factory()->create(['institution_id'=>$institution_id, 'total'=>$test_total, 'disabled'=>false]);
@@ -313,7 +313,7 @@ class InstitutionsPanelTest extends DuskTestCase {
         $institutions_collection = collect($institutions);
         if ($include_inactive_institutions) {
             if ($institutions_collection->where('active', false)->count() == 0) {
-                $inactive_institution = Institution::factory()->count(1)->create(['active'=>false]);
+                $inactive_institution = Institution::factory()->disabled()->count(1)->create();
                 $institutions_collection->push($inactive_institution);
             }
         } else {
