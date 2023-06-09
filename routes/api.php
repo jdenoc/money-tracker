@@ -28,26 +28,31 @@ use Illuminate\Support\Facades\Route;
 Route::get('version', [VersionController::class, 'get'])
     ->name('version');
 
-// GET /api/institutions
-Route::get('institutions', [InstitutionController::class,'get_institutions'])
-    ->name('institutions');
-// GET /api/institutes
-Route::get('institutes', [InstitutionController::class,'get_institutions'])
-    ->name('institutes');
-// GET /api/institution/{institution_id}
-Route::get('institution/{institution_id}', [InstitutionController::class,'get_institution'])
-    ->name('institution');
-// GET /api/institute/{institution_id}
-Route::get('institute/{institution_id}', [InstitutionController::class,'get_institution'])
-    ->name('institute');
-Route::put('institution/{institution_id}', [InstitutionController::class,'update_institution'])
-    ->name('institution.put');
-Route::put('institute/{institution_id}', [InstitutionController::class,'update_institution'])
-    ->name('institute.put');
-Route::post('institution', [InstitutionController::class,'create_institution'])
-    ->name('institution.post');
-Route::post('institute', [InstitutionController::class,'create_institution'])
-    ->name('institute.post');
+Route::controller(InstitutionController::class)->group(function(){
+    // /api/institutions
+    Route::get('institutions', 'get_institutions')->name('institutions');
+
+    // /api/institution/{?}
+    Route::prefix('institution/')->name('institution.')->group(function() {
+        Route::delete('{institutionId}', 'disableInstitution')->name('delete');
+        Route::get('{institution_id}', 'get_institution')->name('get');
+        Route::patch('{institutionId}', 'restoreInstitution')->name('patch');
+        Route::post('', 'create_institution')->name('post');
+        Route::put('{institution_id}', 'update_institution')->name('put');
+    });
+
+    // /api/institutes
+    Route::get('institutes', 'get_institutions')->name('institutes');
+
+    // /api/institute/{?}
+    Route::prefix('institute/')->name('institute.')->group(function() {
+        Route::delete('{institutionId}', 'disabledInstitution')->name('delete');
+        Route::get('{institution_id}', 'get_institution')->name('get');
+        Route::patch('{institutionId}', 'restoreInstitution')->name('patch');
+        Route::post('', 'create_institution')->name('post');
+        Route::put('{institution_id}', 'update_institution')->name('put');
+    });
+});
 
 // GET /api/tags
 Route::get('tags', [TagController::class, 'get_tags'])

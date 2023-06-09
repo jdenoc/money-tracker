@@ -3,15 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Mostafaznv\LaraCache\CacheEntity;
 use Mostafaznv\LaraCache\Traits\LaraCache;
 
 class Institution extends BaseModel {
     use HasFactory;
     use LaraCache;
+    use SoftDeletes;
 
     const CREATED_AT = 'create_stamp';
     const UPDATED_AT = 'modified_stamp';
+    const DELETED_AT = 'disabled_stamp';
 
     protected $table = 'institutions';
     protected $fillable = [
@@ -20,21 +23,19 @@ class Institution extends BaseModel {
     protected $guarded = [
         'id'
     ];
-    protected $casts = [
-        'active'=>'boolean'
+    protected $appends = [
+        'active'
     ];
     private static $required_fields = [
         'name',
-        'active'
     ];
 
     public function accounts() {
         return $this->hasMany('App\Models\Account', 'institution_id');
     }
 
-    public static function find_institution_with_accounts($institution_id) {
-        $institution = Institution::with('accounts')->where('id', $institution_id);
-        return $institution->first();
+    public function getActiveAttribute() {
+        return is_null($this->{self::DELETED_AT});
     }
 
     public static function getRequiredFieldsForUpdate() {
@@ -50,12 +51,12 @@ class Institution extends BaseModel {
             CacheEntity::make('all')
                 ->forever()
                 ->cache(function() {
-                    return Institution::all();
+                    return Institution::withTrashed()->get();
                 }),
             CacheEntity::make('count')
                 ->forever()
                 ->cache(function() {
-                    return Institution::count();
+                    return Institution::withTrashed()->count();
                 })
         ];
     }
