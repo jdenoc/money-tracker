@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Account;
 use App\Models\Institution;
 use App\Traits\InstitutionResponseKeys;
 use Exception;
@@ -15,14 +16,18 @@ class InstitutionController extends Controller {
 
     /**
      * GET /api/institutions
-     * @return Response
+     * GET /api/institutes
      */
     public function get_institutions(): Response {
         $institutions = Institution::cache()->get('all');
         if (is_null($institutions) || $institutions->isEmpty()) {
             return response([], HttpStatus::HTTP_NOT_FOUND);
         } else {
-            $institutions->makeHidden(['create_stamp', 'modified_stamp']);
+            $institutions->makeHidden([
+                Institution::CREATED_AT,
+                Institution::DELETED_AT,
+                Institution::UPDATED_AT,
+            ]);
             $institutions = $institutions->toArray();
             $institutions['count'] = Institution::cache()->get('count');
             return response($institutions, HttpStatus::HTTP_OK);
@@ -30,28 +35,69 @@ class InstitutionController extends Controller {
     }
 
     /**
-     * @param int $institution_id
-     * @return Response
+     * GET /api/institution/{institution_id}
+     * GET /api/institute/{institution_id}
      */
     public function get_institution(int $institution_id): Response {
-        $institution = Institution::find_institution_with_accounts($institution_id);
-        if (is_null($institution)) {
-            return response([], HttpStatus::HTTP_NOT_FOUND);
-        } else {
+        try {
+            $institution = Institution::withTrashed()
+                ->with(Account::getTableName())
+                ->findOrFail($institution_id);
+
             $institution->accounts->makeHidden([
-                'institution_id',    // We already know what account this is. We don't need to re-show it.
+                'institution_id',    // We already know what institution ID this is. We don't need to re-show it.
                 'create_stamp',
                 'modified_stamp',
                 'disabled_stamp'
             ]);
             return response($institution, HttpStatus::HTTP_OK);
+        } catch (Exception $e) {
+            return response([], HttpStatus::HTTP_NOT_FOUND);
         }
     }
 
+    /**
+     * DELETE /api/institution/{institutionId}
+     * DELETE /api/institute/{institutionId}
+     */
+    public function disableInstitution(int $institutionId): Response {
+        try {
+            $institution_to_disabled = Institution::findOrFail($institutionId);
+        } catch (Exception $e) {
+            return response('', HttpStatus::HTTP_NOT_FOUND);
+        }
+
+        $institution_to_disabled->delete();
+        return response('', HttpStatus::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * PATCH /api/institution/{institutionId}
+     * PATCH /api/institute/{institutionId}
+     */
+    public function restoreInstitution(int $institutionId): Response {
+        try {
+            $institution_to_restore = Institution::onlyTrashed()->findOrFail($institutionId);
+        } catch (Exception $e) {
+            return response('', HttpStatus::HTTP_NOT_FOUND);
+        }
+
+        $institution_to_restore->restore();
+        return response('', HttpStatus::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * POST /api/institution
+     * POST /api/institute
+     */
     public function create_institution(Request $request): Response {
         return $this->modify_institution($request);
     }
 
+    /**
+     * PUT /api/institution/{institutionId}
+     * PUT /api/institute/{institutionId}
+     */
     public function update_institution(Request $request, int $institutionId): Response {
         return $this->modify_institution($request, $institutionId);
     }

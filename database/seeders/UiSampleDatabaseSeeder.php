@@ -45,19 +45,18 @@ class UiSampleDatabaseSeeder extends Seeder {
         $this->command->line(self::CLI_OUTPUT_PREFIX."Tags seeded [".$tags->count()."]");
 
         // ***** INSTITUTIONS *****
-        $institutions = Institution::factory()->count(self::COUNT_INSTITUTION)->create(['active'=>1]);
-        $institution_ids = $institutions->pluck('id')->toArray();
+        $institutions = Institution::factory()->count(self::COUNT_INSTITUTION)->create();
         $this->command->line(self::CLI_OUTPUT_PREFIX."Institutions seeded [".$institutions->count()."]");
 
         // ***** ACCOUNTS *****
         $accounts = collect();
-        foreach ($institution_ids as $institution_id) {
-            $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$institution_id, 'disabled'=>false]);
+        foreach ($institutions as $institution) {
+            $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$institution->id, 'disabled'=>false]);
         }
-        $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>fake()->randomElement($institution_ids), 'disabled'=>true]);
+        $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$institutions->random()->id, 'disabled'=>true]);
         $currencies = CurrencyHelper::fetchCurrencies();
         foreach ($currencies as $currency) {
-            $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>fake()->randomElement($institution_ids), 'currency'=>$currency->code]);
+            $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$institutions->random()->id, 'currency'=>$currency->code]);
         }
         $this->command->line(self::CLI_OUTPUT_PREFIX."Accounts seeded [".$accounts->count()."]");
 
