@@ -28,7 +28,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('version', [VersionController::class, 'get'])
     ->name('version');
 
-Route::controller(InstitutionController::class)->group(function(){
+Route::controller(InstitutionController::class)->group(function() {
     // /api/institutions
     Route::get('institutions', 'get_institutions')->name('institutions');
 
