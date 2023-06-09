@@ -8,6 +8,7 @@ use App\Models\Attachment;
 use App\Models\Entry;
 use App\Models\Tag;
 use App\Traits\EntryResponseKeys;
+use Brick\Money\Money;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 
@@ -114,7 +115,8 @@ class PostEntryTest extends TestCase {
         $this->assertResponseStatus($get_account_response1, HttpStatus::HTTP_OK);
         $get_account_response1_as_array = $get_account_response1->json();
         $this->assertArrayHasKey('total', $get_account_response1_as_array);
-        $original_account_total = $get_account_response1_as_array['total'];
+        $this->assertArrayHasKey('currency', $get_account_response1_as_array);
+        $original_account_total = Money::of($get_account_response1_as_array['total'], $get_account_response1_as_array['currency']);
         $this->assertArrayHasKey('account_types', $get_account_response1_as_array);
         $this->assertTrue(is_array($get_account_response1_as_array['account_types']));
         $this->assertNotEmpty($get_account_response1_as_array['account_types']);
@@ -148,10 +150,12 @@ class PostEntryTest extends TestCase {
         $this->assertResponseStatus($get_account_response2, HttpStatus::HTTP_OK);
         $get_account_response2_as_array = $get_account_response2->json();
         $this->assertArrayHasKey('total', $get_account_response2_as_array);
-        $new_account_total = $get_account_response2_as_array['total'];
+        $this->assertArrayHasKey('currency', $get_account_response2_as_array);
+        $new_account_total = Money::of($get_account_response2_as_array['total'], $get_account_response2_as_array['currency']);
 
-        $entry_value = (($generated_entry_data['expense']) ? -1 : 1)*$generated_entry_data['entry_value'];
-        $this->assertEquals($original_account_total+$entry_value, $new_account_total);
+        $entry_value = Money::of($generated_entry_data['expense'], $generated_account->currency)
+            ->multipliedBy(($generated_entry_data['expense'] ? -1 : 1));
+        $new_account_total->isEqualTo($original_account_total->plus($entry_value));
     }
 
     public function testCreateEntryWithTagsButOneTagDoesNotExist() {
