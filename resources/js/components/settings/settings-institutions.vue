@@ -24,7 +24,7 @@
       <div class="font-medium" v-show="isDataInForm">Disabled:</div>
       <div class="col-span-5 italic text-sm self-center leading-none justify-self-end" v-show="isDataInForm" v-text="makeDateReadable(form.disabledStamp)"></div>
 
-      <button type="button" class="inline-flex justify-center rounded-md border border-gray-300 px-3 py-2 mx-1 mt-6 bg-gray-50 hover:bg-white col-span-3" v-on:click="setFormDefaults()">Clear</button>
+      <button type="button" class="inline-flex justify-center rounded-md border border-gray-300 px-3 py-2 mx-1 mt-6 bg-gray-50 hover:bg-white col-span-3" v-on:click="setFormDefaults">Clear</button>
       <button type="button" class="inline-flex justify-center rounded-md border border-gray-300 px-3 py-2 ml-1 mt-6 text-white bg-green-500 opacity-90 hover:opacity-100 col-span-3 disabled:opacity-50 disabled:cursor-not-allowed"
               v-on:click="save"
               v-bind:disabled="!canSave"
@@ -175,7 +175,6 @@ export default {
       });
       return data;
     },
-
     save: function(){
       this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
 
@@ -194,20 +193,27 @@ export default {
 
       this.institutionObject.setFetchedState = false
       if(this.form.active){
-        let updateInstitution = function(institutionData){
+        let upsertInstitution = function(institutionData){
           this.institutionObject.save(institutionData)
             .then(this.afterSaveDisplayNotificationIfNeeded)
             .finally(this.afterSaveResetFormAndHideLoading);
         }.bind(this);
+
         let existingInstitution = this.institutionObject.find(institutionData['id']);
-        if(existingInstitution.active){
-          updateInstitution(institutionData);
-        }  else {
-          this.institutionObject.enable(institutionData['id'])
-            .then(this.afterSaveDisplayNotificationIfNeeded)
-            .finally(function(){
-              updateInstitution(institutionData)
-            });
+        if(_.isEmpty(existingInstitution)){
+          // new institution record
+          upsertInstitution(institutionData);
+        } else {
+          // existing institution record
+          if(existingInstitution.active){
+            upsertInstitution(institutionData);
+          }  else {
+            this.institutionObject.enable(institutionData['id'])
+              .then(this.afterSaveDisplayNotificationIfNeeded)
+              .finally(function(){
+                upsertInstitution(institutionData)
+              });
+          }
         }
       } else {
         this.institutionObject.disable(institutionData['id'])

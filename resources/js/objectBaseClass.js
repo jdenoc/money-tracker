@@ -28,9 +28,8 @@ export class ObjectBaseClass {
   axiosFailure(error){
     if(error.response){
       switch(error.response.status){
+        case 400:
         case 404:
-          // TODO: fill in stuff here
-          return {};
         case 500:
         default:
           // TODO: fill in stuff here
