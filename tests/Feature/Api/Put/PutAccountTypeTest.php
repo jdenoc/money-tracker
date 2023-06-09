@@ -24,7 +24,7 @@ class PutAccountTypeTest extends TestCase {
         $accounts = Account::factory()
             ->count(3)
             ->state(['disabled' => false])
-            ->for(Institution::factory()->state(['active' => true]))
+            ->for(Institution::factory())
             ->create();
         AccountType::factory()
             ->count(5)

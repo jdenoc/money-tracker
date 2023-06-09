@@ -29,8 +29,10 @@ class SettingsInstitutionsTest extends SettingsBase {
     private static string $SELECTOR_SETTINGS_FORM_CREATED = 'div:nth-child(6)';
     private static string $SELECTOR_SETTINGS_FORM_LABEL_MODIFIED = 'div:nth-child(7)';
     private static string $SELECTOR_SETTINGS_FORM_MODIFIED = 'div:nth-child(8)';
-    protected static string $SELECTOR_SETTINGS_FORM_BUTTON_CLEAR = 'button:nth-child(9)';
-    protected static string $SELECTOR_SETTINGS_FORM_BUTTON_SAVE = 'button:nth-child(10)';
+    private static string $SELECTOR_SETTINGS_FORM_LABEL_DISABLED = 'div:nth-child(9)';
+    private static string $SELECTOR_SETTINGS_FORM_DISABLED = 'div:nth-child(10)';
+    protected static string $SELECTOR_SETTINGS_FORM_BUTTON_CLEAR = 'button:nth-child(11)';
+    protected static string $SELECTOR_SETTINGS_FORM_BUTTON_SAVE = 'button:nth-child(12)';
 
     protected static string $SELECTOR_SETTINGS_LOADING_NODES = '#loading-settings-institutions';
     protected static string $TEMPLATE_SELECTOR_SETTINGS_NODE_ID = '#settings-institution-%d';
@@ -60,6 +62,8 @@ class SettingsInstitutionsTest extends SettingsBase {
             ->assertMissing(self::$SELECTOR_SETTINGS_FORM_CREATED)
             ->assertMissing(self::$SELECTOR_SETTINGS_FORM_LABEL_MODIFIED)
             ->assertMissing(self::$SELECTOR_SETTINGS_FORM_MODIFIED)
+            ->assertMissing(self::$SELECTOR_SETTINGS_FORM_LABEL_DISABLED)
+            ->assertMissing(self::$SELECTOR_SETTINGS_FORM_DISABLED)
 
             ->assertVisible(self::$SELECTOR_SETTINGS_FORM_BUTTON_CLEAR)
             ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_BUTTON_CLEAR, self::$LABEL_SETTINGS_FORM_BUTTON_CLEAR);
@@ -83,7 +87,9 @@ class SettingsInstitutionsTest extends SettingsBase {
             ->assertMissing(self::$SELECTOR_SETTINGS_FORM_LABEL_CREATED)
             ->assertMissing(self::$SELECTOR_SETTINGS_FORM_CREATED)
             ->assertMissing(self::$SELECTOR_SETTINGS_FORM_LABEL_MODIFIED)
-            ->assertMissing(self::$SELECTOR_SETTINGS_FORM_MODIFIED);
+            ->assertMissing(self::$SELECTOR_SETTINGS_FORM_MODIFIED)
+            ->assertMissing(self::$SELECTOR_SETTINGS_FORM_LABEL_DISABLED)
+            ->assertMissing(self::$SELECTOR_SETTINGS_FORM_DISABLED);
         $this->assertSaveButtonDisabled($section);
     }
 
@@ -100,7 +106,13 @@ class SettingsInstitutionsTest extends SettingsBase {
             ->assertVisible(self::$SELECTOR_SETTINGS_FORM_LABEL_CREATED)
             ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_CREATED, $this->convertDateToECMA262Format($node->create_stamp))
             ->assertVisible(self::$SELECTOR_SETTINGS_FORM_LABEL_MODIFIED)
-            ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_MODIFIED, $this->convertDateToECMA262Format($node->modified_stamp));
+            ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_MODIFIED, $this->convertDateToECMA262Format($node->modified_stamp))
+            ->assertVisible(self::$SELECTOR_SETTINGS_FORM_LABEL_DISABLED);
+        if($node->active) {
+            $section->assertMissing(self::$SELECTOR_SETTINGS_FORM_DISABLED);
+        } else {
+            $section->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_DISABLED, $this->convertDateToECMA262Format($node->disabled_stamp));
+        }
 
         $this->assertSaveButtonDisabled($section);
     }
