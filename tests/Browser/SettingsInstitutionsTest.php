@@ -45,7 +45,7 @@ class SettingsInstitutionsTest extends SettingsBase {
         ];
     }
 
-    protected function assertFormDefaultsFull(Browser $section) {
+    protected function assertFormDefaultsFull(Browser $section): void {
         $section
             ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_LABEL_NAME, self::$LABEL_SETTINGS_FORM_INPUT_NAME)
             ->assertVisible(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME)
@@ -72,7 +72,7 @@ class SettingsInstitutionsTest extends SettingsBase {
      *   Active State: "Active"
      *   Save button [disabled]
      */
-    protected function assertFormDefaults(Browser $section) {
+    protected function assertFormDefaults(Browser $section): void {
         $section
             ->scrollIntoView(self::$SELECTOR_SETTINGS_HEADER)
 
@@ -87,7 +87,7 @@ class SettingsInstitutionsTest extends SettingsBase {
         $this->assertSaveButtonDisabled($section);
     }
 
-    protected function assertFormWithExistingData(Browser $section, BaseModel $node) {
+    protected function assertFormWithExistingData(Browser $section, BaseModel $node): void {
         $this->assertNodeIsOfType($node, Institution::class);
         $section->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, $node->name);
         if ($node->active) {
@@ -105,7 +105,7 @@ class SettingsInstitutionsTest extends SettingsBase {
         $this->assertSaveButtonDisabled($section);
     }
 
-    protected function assertNodesVisible(Browser $section) {
+    protected function assertNodesVisible(Browser $section): void {
         $institutions = Institution::all();
         $this->assertCount($institutions->count(), $section->elements('hr~ul li'));
         foreach ($institutions as $institution) {

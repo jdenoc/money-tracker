@@ -42,6 +42,15 @@ export const settingsMixin = {
   },
 
   methods: {
+    afterSaveDisplayNotificationIfNeeded(notification){
+      // show a notification if needed
+      if(!_.isEmpty(notification)){
+        this.$eventHub.broadcast(
+          this.$eventHub.EVENT_NOTIFICATION,
+          {type: notification.type, message: notification.message}
+        );
+      }
+    },
     debugOutput(msg){   // TODO: remove
       console.debug(new Date().getTime()+' '+msg);
     },
@@ -53,7 +62,11 @@ export const settingsMixin = {
       this.form = this.sanitiseData(formData);
     },
     makeDateReadable(isoDateString){
-      return new Date(isoDateString).toString();
+      if(_.isNull(isoDateString)){
+        return isoDateString;
+      } else {
+        return new Date(isoDateString).toString();
+      }
     },
     sanitiseData(formData){
       console.warn("Using a default sanitiseData(). It should be overridden.");

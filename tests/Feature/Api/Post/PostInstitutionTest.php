@@ -50,8 +50,11 @@ class PostInstitutionTest extends TestCase {
      * @param array  $institution_data
      * @param string $error_message
      */
-    public function testCreateAccountWithMissingProperty(array $institution_data, string $error_message) {
+    public function testCreateInstitutionWithMissingProperty(array $institution_data, string $error_message) {
         // GIVEN: see providerCreateInstitutionWithMissingProperty()
+        if (empty($institution_data)) {
+            $this->markTestSkipped('Institution data not provided. Data required to create an institution:'.print_r(Institution::getRequiredFieldsForCreation(), true));
+        }
 
         // WHEN
         $response = $this->json(self::METHOD, $this->_base_uri, $institution_data);
@@ -76,7 +79,7 @@ class PostInstitutionTest extends TestCase {
         $this->assertEmpty($response_as_array[self::$RESPONSE_KEY_ERROR], $failure_message);
     }
 
-    private function assertFailedPostResponse(TestResponse $response, $expected_response_status, $expected_error_message) {
+    private function assertFailedPostResponse(TestResponse $response, $expected_response_status, string $expected_error_message): void {
         $failure_message = self::METHOD." Response is ".$response->getContent();
         $this->assertResponseStatus($response, $expected_response_status, $failure_message);
         $response_as_array = $response->json();
@@ -84,22 +87,21 @@ class PostInstitutionTest extends TestCase {
         $this->assertFailedPostResponseContent($response_as_array, $expected_error_message, $failure_message);
     }
 
-    private function assertPostResponseHasCorrectKeys(array $response_as_array, string $failure_message) {
+    private function assertPostResponseHasCorrectKeys(array $response_as_array, string $failure_message): void {
         $this->assertArrayHasKey(self::$RESPONSE_KEY_ID, $response_as_array, $failure_message);
         $this->assertArrayHasKey(self::$RESPONSE_KEY_ERROR, $response_as_array, $failure_message);
     }
 
-    private function assertFailedPostResponseContent(array $response_as_array, string $expected_error_msg, string $failure_message) {
+    private function assertFailedPostResponseContent(array $response_as_array, string $expected_error_msg, string $failure_message): void {
         $this->assertEquals(self::$ERROR_ID, $response_as_array[self::$RESPONSE_KEY_ID], $failure_message);
         $this->assertNotEmpty($response_as_array[self::$RESPONSE_KEY_ERROR], $failure_message);
         $this->assertStringContainsString($expected_error_msg, $response_as_array[self::$RESPONSE_KEY_ERROR], $failure_message);
     }
 
     private function generateDummyInstitutionData(): array {
-        $institution_data = Institution::factory()->make(['disabled'=>false]);
+        $institution_data = Institution::factory();
         return [
             'name'=>$institution_data->name,
-            'active'=>$institution_data->active
         ];
     }
 
