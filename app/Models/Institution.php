@@ -12,6 +12,9 @@ class Institution extends BaseModel {
     use LaraCache;
     use SoftDeletes;
 
+    const CACHE_KEY_ALL = 'all';
+    const CACHE_KEY_COUNT = 'count';
+
     const CREATED_AT = 'create_stamp';
     const UPDATED_AT = 'modified_stamp';
     const DELETED_AT = 'disabled_stamp';
@@ -48,12 +51,12 @@ class Institution extends BaseModel {
 
     public static function cacheEntities(): array {
         return [
-            CacheEntity::make('all')
+            CacheEntity::make(self::CACHE_KEY_ALL)
                 ->forever()
                 ->cache(function() {
                     return Institution::withTrashed()->get();
                 }),
-            CacheEntity::make('count')
+            CacheEntity::make(self::CACHE_KEY_COUNT)
                 ->forever()
                 ->cache(function() {
                     return Institution::withTrashed()->count();
