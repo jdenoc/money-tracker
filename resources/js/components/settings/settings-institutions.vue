@@ -121,7 +121,12 @@ export default {
     },
     resetFormAfterActiveStateToggle(institutionId){
       // this is called AFTER toggle-state has been updated
-      let institutionData = _.clone(this.institutionObject.find(institutionId));
+      let institutionData = {}
+      if(_.isNull(this.form.id)){
+        institutionData = _.clone(this.defaultFormData)
+      } else {
+        institutionData = _.clone(this.institutionObject.find(institutionId));
+      }
       institutionData.active = this.form.active;
       this.fillForm(institutionData);
     },
