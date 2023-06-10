@@ -33,7 +33,7 @@ class SettingsAccountTypesTest extends SettingsBase {
     private static string $SELECTOR_SETTINGS_FORM_LOADING_ACCOUNT = "div:nth-child(8) span.loading";
     private static string $SELECTOR_SETTINGS_FORM_SELECT_ACCOUNT = "div:nth-child(8) select#settings-account-type-account";
     private static string $SELECTOR_SETTINGS_FORM_LABEL_ACTIVE = "label[for='settings-account-type-disabled']:nth-child(9)";
-    private static string $SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE = "div:nth-child(10) #settings-account-type-disabled";
+    protected static string $SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE = "div:nth-child(10) #settings-account-type-disabled";
     private static string $SELECTOR_SETTINGS_FORM_LABEL_CREATED = "div:nth-child(11)";
     private static string $SELECTOR_SETTINGS_FORM_CREATED = "div:nth-child(12)";
     private static string $SELECTOR_SETTINGS_FORM_LABEL_MODIFIED = "div:nth-child(13)";
@@ -43,7 +43,7 @@ class SettingsAccountTypesTest extends SettingsBase {
     protected static string $SELECTOR_SETTINGS_FORM_BUTTON_CLEAR = 'button:nth-child(17)';
     protected static string $SELECTOR_SETTINGS_FORM_BUTTON_SAVE = 'button:nth-child(18)';
 
-    protected static string $SELECTOR_SETTINGS_LOADING_NODES =  '#loading-settings-account-types';
+    protected static string $SELECTOR_SETTINGS_LOADING_OBJECTS =  '#loading-settings-account-types';
     protected static string $TEMPLATE_SELECTOR_SETTINGS_NODE_ID = '#settings-account-type-%d';
 
     private static string $LABEL_SETTINGS_FORM_TYPE = 'Type:';
@@ -51,6 +51,10 @@ class SettingsAccountTypesTest extends SettingsBase {
     private static string $LABEL_SETTINGS_FORM_ACCOUNT = 'Account:';
     protected static string $LABEL_SETTINGS_NOTIFICATION_NEW = 'New Account-type created';
     protected static string $LABEL_SETTINGS_NOTIFICATION_UPDATE = 'Account-type updated';
+
+    public function providerDisablingOrRestoringAccount(): array {
+        return [];
+    }
 
     public function providerSaveExistingSettingNode(): array {
         return [
@@ -133,7 +137,7 @@ class SettingsAccountTypesTest extends SettingsBase {
     }
 
     protected function assertFormWithExistingData(Browser $section, BaseModel $node) {
-        $this->assertNodeIsOfType($node, AccountType::class);
+        $this->assertObjectIsOfType($node, AccountType::class);
 
         $section
             ->scrollIntoView(self::$SELECTOR_SETTINGS_HEADER)
@@ -210,16 +214,20 @@ class SettingsAccountTypesTest extends SettingsBase {
         }
     }
 
-    protected function getNode(int $id=null): BaseModel {
+    protected function generateObject(bool $isInitObjectActive): BaseModel {
+        return AccountType::factory()->create();
+    }
+
+    protected function getObject(int $id=null): BaseModel {
         return AccountType::get()->random();
     }
 
-    protected function getAllNodes(): Collection {
+    protected function getAllObjects(): Collection {
         return AccountType::all();
     }
 
-    protected function interactWithNode(Browser $section, BaseModel $node, bool $is_fresh_load=true) {
-        $this->assertNodeIsOfType($node, AccountType::class);
+    protected function interactWithObjectListItem(Browser $section, BaseModel $node, bool $is_fresh_load=true) {
+        $this->assertObjectIsOfType($node, AccountType::class);
 
         $class_state = $node->disabled ? '.is-disabled' : '.is-active';
         $selector_account_type_id = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID.$class_state, $node->id);
@@ -237,11 +245,11 @@ class SettingsAccountTypesTest extends SettingsBase {
         if (is_null($node)) {
             $node = new AccountType();
         }
-        $this->assertNodeIsOfType($node, AccountType::class);
+        $this->assertObjectIsOfType($node, AccountType::class);
 
         switch($selector) {
             case self::$SELECTOR_SETTINGS_FORM_INPUT_NAME:
-                $account_types = $this->getAllNodes();
+                $account_types = $this->getAllObjects();
                 do {
                     $name = fake()->word();
                 } while ($node->name == $name || $account_types->contains('name', $name));
