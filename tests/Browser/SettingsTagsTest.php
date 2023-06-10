@@ -25,11 +25,15 @@ class SettingsTagsTest extends SettingsBase {
     protected static string $SELECTOR_SETTINGS_FORM_BUTTON_CLEAR = 'button:nth-child(3)';
     protected static string $SELECTOR_SETTINGS_FORM_BUTTON_SAVE = 'button:nth-child(4)';
 
-    protected static string $SELECTOR_SETTINGS_LOADING_NODES =  '#loading-settings-tags';
+    protected static string $SELECTOR_SETTINGS_LOADING_OBJECTS =  '#loading-settings-tags';
     protected static string $TEMPLATE_SELECTOR_SETTINGS_NODE_ID = 'span#settings-tag-%d';
 
     protected static string $LABEL_SETTINGS_NOTIFICATION_NEW = 'New tag created';
     protected static string $LABEL_SETTINGS_NOTIFICATION_UPDATE = 'Tag updated';
+
+    public function providerDisablingOrRestoringAccount(): array {
+        return [];
+    }
 
     public function providerSaveExistingSettingNode(): array {
         return [
@@ -63,7 +67,7 @@ class SettingsTagsTest extends SettingsBase {
     }
 
     protected function assertFormWithExistingData(Browser $section, BaseModel $node) {
-        $this->assertNodeIsOfType($node, Tag::class);
+        $this->assertObjectIsOfType($node, Tag::class);
 
         $section
             ->scrollIntoView(self::$SELECTOR_SETTINGS_HEADER)
@@ -72,7 +76,7 @@ class SettingsTagsTest extends SettingsBase {
     }
 
     protected function assertNodesVisible(Browser $section) {
-        $tags = $this->getAllNodes();
+        $tags = $this->getAllObjects();
         $this->assertCount($tags->count(), $section->elements('hr~div span.tag'));
         foreach ($tags as $tag) {
             $selector_tag_id = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID, $tag->id);
@@ -87,16 +91,20 @@ class SettingsTagsTest extends SettingsBase {
         $section->assertInputValueIsNot(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, '');
     }
 
-    protected function getNode(int $id=null): BaseModel {
+    protected function generateObject(bool $isInitObjectActive): BaseModel {
+        return Tag::factory()->create();
+    }
+
+    protected function getObject(int $id=null): BaseModel {
         return Tag::get()->random();
     }
 
-    protected function getAllNodes(): Collection {
+    protected function getAllObjects(): Collection {
         return Tag::all();
     }
 
-    protected function interactWithNode(Browser $section, BaseModel $node, bool $is_fresh_load=true) {
-        $this->assertNodeIsOfType($node, Tag::class);
+    protected function interactWithObjectListItem(Browser $section, BaseModel $node, bool $is_fresh_load=true) {
+        $this->assertObjectIsOfType($node, Tag::class);
 
         $selector = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID, $node->id);
         $section
@@ -108,11 +116,11 @@ class SettingsTagsTest extends SettingsBase {
         if (is_null($node)) {
             $node = new Tag();
         }
-        $this->assertNodeIsOfType($node, Tag::class);
+        $this->assertObjectIsOfType($node, Tag::class);
 
         switch ($selector) {
             case self::$SELECTOR_SETTINGS_FORM_INPUT_NAME:
-                $tags = $this->getAllNodes();
+                $tags = $this->getAllObjects();
                 do {
                     $name = fake()->word();
                 } while ($node->name == $name || $tags->contains('name', $name));

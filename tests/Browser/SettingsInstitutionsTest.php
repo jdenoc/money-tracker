@@ -24,7 +24,7 @@ class SettingsInstitutionsTest extends SettingsBase {
     private static string $SELECTOR_SETTINGS_FORM_LABEL_NAME = "label[for='settings-institution-name']:nth-child(1)";
     private static string $SELECTOR_SETTINGS_FORM_INPUT_NAME = 'input#settings-institution-name:nth-child(2)';
     private static string $SELECTOR_SETTINGS_FORM_LABEL_ACTIVE = "label:nth-child(3)";
-    private static string $SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE = 'div:nth-child(4) #settings-institution-active';
+    protected static string $SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE = 'div:nth-child(4) #settings-institution-active';
     private static string $SELECTOR_SETTINGS_FORM_LABEL_CREATED = 'div:nth-child(5)';
     private static string $SELECTOR_SETTINGS_FORM_CREATED = 'div:nth-child(6)';
     private static string $SELECTOR_SETTINGS_FORM_LABEL_MODIFIED = 'div:nth-child(7)';
@@ -34,16 +34,24 @@ class SettingsInstitutionsTest extends SettingsBase {
     protected static string $SELECTOR_SETTINGS_FORM_BUTTON_CLEAR = 'button:nth-child(11)';
     protected static string $SELECTOR_SETTINGS_FORM_BUTTON_SAVE = 'button:nth-child(12)';
 
-    protected static string $SELECTOR_SETTINGS_LOADING_NODES = '#loading-settings-institutions';
+    protected static string $SELECTOR_SETTINGS_LOADING_OBJECTS = '#loading-settings-institutions';
     protected static string $TEMPLATE_SELECTOR_SETTINGS_NODE_ID = '#settings-institution-%d';
 
     protected static string $LABEL_SETTINGS_NOTIFICATION_NEW = 'New Institution created';
     protected static string $LABEL_SETTINGS_NOTIFICATION_UPDATE = 'Institution updated';
+    protected static string $LABEL_SETTINGS_NOTIFICATION_RESTORE = 'Institution has been enabled';
+    protected static string $LABEL_SETTINGS_NOTIFICATION_DELETE = 'Institution has been disabled';
 
     public function providerSaveExistingSettingNode(): array {
         return [
             'name'=>[self::$SELECTOR_SETTINGS_FORM_INPUT_NAME],         // test 7/20
-            'active'=>[self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE],    // test 8/20
+        ];
+    }
+
+    public function providerDisablingOrRestoringAccount(): array {
+        return [
+            'disabling institution'=>['isInitInstitutionActive'=>true],     // test 8/20
+            'restoring institution'=>['isInitInstitutionActive'=>false],    // test 9/20
         ];
     }
 
@@ -94,7 +102,7 @@ class SettingsInstitutionsTest extends SettingsBase {
     }
 
     protected function assertFormWithExistingData(Browser $section, BaseModel $node): void {
-        $this->assertNodeIsOfType($node, Institution::class);
+        $this->assertObjectIsOfType($node, Institution::class);
         $section->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, $node->name);
         if ($node->active) {
             $this->assertActiveStateToggleActive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
@@ -141,16 +149,18 @@ class SettingsInstitutionsTest extends SettingsBase {
     protected function fillForm(Browser $section) {
         $this->interactWithFormElement($section, self::$SELECTOR_SETTINGS_FORM_INPUT_NAME);
         $section->assertInputValueIsNot(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, '');
-        $is_institution_active = fake()->boolean();
-        if (!$is_institution_active) {
-            $this->interactWithFormElement($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
-            $this->assertActiveStateToggleInactive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
-        } else {
-            $this->assertActiveStateToggleActive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
-        }
     }
 
-    protected function getNode(int $id=null): Institution {
+    protected function generateObject(bool $isInitObjectActive): BaseModel {
+        /** @var Institution $institution */
+        $institution = Institution::factory();
+        if(!$isInitObjectActive){
+            $institution->disabled();
+        }
+        return $institution->create();
+    }
+
+    protected function getObject(int $id=null): Institution {
         if (is_null($id)) {
             return Institution::get()->random();
         } else {
@@ -158,12 +168,12 @@ class SettingsInstitutionsTest extends SettingsBase {
         }
     }
 
-    protected function getAllNodes(): Collection {
+    protected function getAllObjects(): Collection {
         return Institution::all();
     }
 
-    protected function interactWithNode(Browser $section, BaseModel $node, bool $is_fresh_load=true) {
-        $this->assertNodeIsOfType($node, Institution::class);
+    protected function interactWithObjectListItem(Browser $section, BaseModel $node, bool $is_fresh_load=true) {
+        $this->assertObjectIsOfType($node, Institution::class);
         $institution_class_state = $node->active ? '.is-active' : '.is-disabled';
         $selector_institution_id = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID.$institution_class_state, $node->id);
         $section
@@ -182,11 +192,11 @@ class SettingsInstitutionsTest extends SettingsBase {
         if (is_null($node)) {
             $node = new Institution();
         }
-        $this->assertNodeIsOfType($node, Institution::class);
+        $this->assertObjectIsOfType($node, Institution::class);
 
         switch($selector) {
             case self::$SELECTOR_SETTINGS_FORM_INPUT_NAME:
-                $institutions = $this->getAllNodes();
+                $institutions = $this->getAllObjects();
                 do {
                     $name = fake()->word();
                 } while ($node->name == $name || $institutions->contains('name', $name));
