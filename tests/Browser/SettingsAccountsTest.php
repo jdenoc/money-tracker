@@ -36,7 +36,7 @@ class SettingsAccountsTest extends SettingsBase {
     private static string $SELECTOR_SETTINGS_FORM_INPUT_TOTAL = 'div:nth-child(8) input#settings-account-total';
     private static string $SELECTOR_SETTINGS_FORM_CURRENCY_TOTAL = 'div:nth-child(8) input#settings-account-total+span';
     private static string $SELECTOR_SETTINGS_FORM_LABEL_ACTIVE = "label[for='settings-account-disabled']:nth-child(9)";
-    private static string $SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE = "div:nth-child(10) #settings-account-disabled";
+    protected static string $SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE = "div:nth-child(10) #settings-account-disabled";
     private static string $SELECTOR_SETTINGS_FORM_LABEL_CREATED = "div:nth-child(11)";
     private static string $SELECTOR_SETTINGS_FORM_CREATED = "div:nth-child(12)";
     private static string $SELECTOR_SETTINGS_FORM_LABEL_MODIFIED = "div:nth-child(13)";
@@ -46,7 +46,7 @@ class SettingsAccountsTest extends SettingsBase {
     protected static string $SELECTOR_SETTINGS_FORM_BUTTON_CLEAR = "button:nth-child(17)";
     protected static string $SELECTOR_SETTINGS_FORM_BUTTON_SAVE = "button:nth-child(18)";
 
-    protected static string $SELECTOR_SETTINGS_LOADING_NODES = "#loading-settings-accounts";
+    protected static string $SELECTOR_SETTINGS_LOADING_OBJECTS = "#loading-settings-accounts";
     protected static string $TEMPLATE_SELECTOR_SETTINGS_NODE_ID = '#settings-account-%d';
 
     protected static string $LABEL_SETTINGS_NOTIFICATION_NEW = 'New account created';
@@ -65,6 +65,10 @@ class SettingsAccountsTest extends SettingsBase {
         parent::initSettingsColors();
         $this->color_currency_active = $this->tailwindColors->blue(600);
         $this->color_currency_inactive = $this->tailwindColors->white();
+    }
+
+    public function providerDisablingOrRestoringAccount(): array {
+        return [];
     }
 
     public function providerSaveExistingSettingNode(): array {
@@ -163,7 +167,7 @@ class SettingsAccountsTest extends SettingsBase {
     }
 
     protected function assertFormWithExistingData(Browser $section, BaseModel $node) {
-        $this->assertNodeIsOfType($node, Account::class);
+        $this->assertObjectIsOfType($node, Account::class);
         $currency = CurrencyHelper::fetchCurrencies()->where('code', $node->currency)->first();
         $section
             ->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, $node->name)
@@ -250,7 +254,11 @@ class SettingsAccountsTest extends SettingsBase {
         }
     }
 
-    protected function getNode(int $id=null): BaseModel {
+    protected function generateObject(bool $isInitObjectActive): BaseModel {
+        return Account::factory()->create();
+    }
+
+    protected function getObject(int $id=null): BaseModel {
         if (!is_null($id)) {
             return Account::find($id);
         } else {
@@ -258,12 +266,12 @@ class SettingsAccountsTest extends SettingsBase {
         }
     }
 
-    protected function getAllNodes(): Collection {
+    protected function getAllObjects(): Collection {
         return Account::all();
     }
 
-    protected function interactWithNode(Browser $section, BaseModel $node, bool $is_fresh_load=true) {
-        $this->assertNodeIsOfType($node, Account::class);
+    protected function interactWithObjectListItem(Browser $section, BaseModel $node, bool $is_fresh_load=true) {
+        $this->assertObjectIsOfType($node, Account::class);
         $class_state = $node->disabled ? '.is-disabled' : '.is-active';
         $selector = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID.$class_state.' span', $node->id);
         $section
@@ -282,11 +290,11 @@ class SettingsAccountsTest extends SettingsBase {
         if (is_null($node)) {
             $node = new Account();
         }
-        $this->assertNodeIsOfType($node, Account::class);
+        $this->assertObjectIsOfType($node, Account::class);
 
         switch($selector) {
             case self::$SELECTOR_SETTINGS_FORM_INPUT_NAME:
-                $accounts = $this->getAllNodes();
+                $accounts = $this->getAllObjects();
                 do {
                     $name = fake()->word();
                 } while ($node->name == $name || $accounts->contains('name', $name));
