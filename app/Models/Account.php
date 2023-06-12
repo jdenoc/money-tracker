@@ -12,6 +12,9 @@ class Account extends BaseModel {
     use HasFactory;
     use LaraCache;
 
+    const CACHE_KEY_ALL = 'all';
+    const CACHE_KEY_COUNT = 'count';
+
     const CREATED_AT = 'create_stamp';
     const UPDATED_AT = 'modified_stamp';
 
@@ -89,10 +92,10 @@ class Account extends BaseModel {
 
     public static function cacheEntities(): array {
         return [
-            CacheEntity::make('all')->forever()->cache(function() {
+            CacheEntity::make(self::CACHE_KEY_ALL)->forever()->cache(function() {
                 return Account::all();
             }),
-            CacheEntity::make('count')->forever()->cache(function() {
+            CacheEntity::make(self::CACHE_KEY_COUNT)->forever()->cache(function() {
                 return Account::count();
             })
         ];
