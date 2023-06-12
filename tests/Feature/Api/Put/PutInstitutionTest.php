@@ -11,8 +11,6 @@ use Tests\TestCase;
 class PutInstitutionTest extends TestCase {
     use InstitutionResponseKeys;
 
-    const METHOD = 'PUT';
-
     private string $_base_uri = '/api/institution/%d';
 
     public function setUp(): void {
@@ -26,7 +24,7 @@ class PutInstitutionTest extends TestCase {
         $institution = $this->getRandomActiveExistingInstitution();
 
         // WHEN
-        $response = $this->json(self::METHOD, sprintf($this->_base_uri, $institution->id), $institution_data);
+        $response = $this->putJson(sprintf($this->_base_uri, $institution->id), $institution_data);
 
         // THEN
         $this->assertFailedPostResponse($response, HttpStatus::HTTP_BAD_REQUEST, self::$ERROR_MSG_NO_DATA);
@@ -41,7 +39,7 @@ class PutInstitutionTest extends TestCase {
         $institution_data = $this->generateInstitutionData();
 
         // WHEN
-        $response = $this->json(self::METHOD, sprintf($this->_base_uri, $institution_id), $institution_data->toArray());
+        $response = $this->putJson(sprintf($this->_base_uri, $institution_id), $institution_data);
 
         // THEN
         $this->assertFailedPostResponse($response, HttpStatus::HTTP_NOT_FOUND, self::$ERROR_MSG_DOES_NOT_EXIST);
@@ -49,12 +47,12 @@ class PutInstitutionTest extends TestCase {
 
     public function providerUpdateInstitutionEachProperty(): array {
         $this->initialiseApplication();
-        $dummy_account_data = $this->generateInstitutionData();
+        $institution_data = $this->generateInstitutionData();
         $required_fields = Institution::getRequiredFieldsForUpdate();
 
         $test_cases = [];
         foreach ($required_fields as $required_field) {
-            $test_cases[$required_field]['data'] = [$required_field=>$dummy_account_data->{$required_field}];
+            $test_cases[$required_field]['data'] = [$required_field=>$institution_data[$required_field]];
         }
         return $test_cases;
     }
@@ -68,10 +66,10 @@ class PutInstitutionTest extends TestCase {
         $institution = $this->getRandomActiveExistingInstitution();
 
         // WHEN
-        $response = $this->json(self::METHOD, sprintf($this->_base_uri, $institution->id), $institution_data);
+        $response = $this->putJson(sprintf($this->_base_uri, $institution->id), $institution_data);
 
         // THEN
-        $failure_message = self::METHOD." Response is ".$response->getContent();
+        $failure_message = "PUT Response is ".$response->getContent();
         $this->assertResponseStatus($response, HttpStatus::HTTP_OK, $failure_message);
         $response_as_array = $response->json();
         $this->assertPostResponseHasCorrectKeys($response_as_array, $failure_message);
@@ -84,10 +82,10 @@ class PutInstitutionTest extends TestCase {
         $institution = $this->getRandomActiveExistingInstitution();
 
         // WHEN
-        $response = $this->json(self::METHOD, sprintf($this->_base_uri, $institution->id), $institution->toArray());
+        $response = $this->putJson(sprintf($this->_base_uri, $institution->id), $institution->toArray());
 
         // THEN
-        $failure_message = self::METHOD." Response is ".$response->getContent();
+        $failure_message = "PUT Response is ".$response->getContent();
         $this->assertResponseStatus($response, HttpStatus::HTTP_OK, $failure_message);
         $response_as_array = $response->json();
         $this->assertPostResponseHasCorrectKeys($response_as_array, $failure_message);
@@ -99,12 +97,15 @@ class PutInstitutionTest extends TestCase {
         return Institution::all()->random();
     }
 
-    private function generateInstitutionData() {
-        return Institution::factory()->make();
+    private function generateInstitutionData(): array {
+        $dummy_institution = Institution::factory()->make();
+        return [
+            'name'=>$dummy_institution->name
+        ];
     }
 
     private function assertFailedPostResponse(TestResponse $response, $expected_response_status, $expected_error_message): void {
-        $failure_message = self::METHOD." Response is ".$response->getContent();
+        $failure_message = "PUT Response is ".$response->getContent();
         $this->assertResponseStatus($response, $expected_response_status, $failure_message);
         $response_as_array = $response->json();
         $this->assertPostResponseHasCorrectKeys($response_as_array, $failure_message);

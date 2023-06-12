@@ -10,8 +10,6 @@ use Tests\TestCase;
 class PutTagTest extends TestCase {
     use TagResponseKeys;
 
-    const METHOD = 'PUT';
-
     private string $_uri = '/api/tag/%d';
     private $_generated_tag;
 
@@ -26,7 +24,7 @@ class PutTagTest extends TestCase {
         $new_tag_data = Tag::factory()->make()->toArray();
 
         // WHEN
-        $response = $this->json(self::METHOD, sprintf($this->_uri, $existing_tag_id), $new_tag_data);
+        $response = $this->putJson(sprintf($this->_uri, $existing_tag_id), $new_tag_data);
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_OK);
@@ -43,7 +41,7 @@ class PutTagTest extends TestCase {
         $new_tag_data = Tag::factory()->make(['name'=>''])->toArray();
 
         // WHEN
-        $response = $this->json(self::METHOD, sprintf($this->_uri, $existing_tag_id), $new_tag_data);
+        $response = $this->putJson(sprintf($this->_uri, $existing_tag_id), $new_tag_data);
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_BAD_REQUEST);
@@ -59,7 +57,7 @@ class PutTagTest extends TestCase {
         $new_tag_data = [];
 
         // WHEN
-        $response = $this->json(self::METHOD, sprintf($this->_uri, $existing_tag_id), $new_tag_data);
+        $response = $this->putJson(sprintf($this->_uri, $existing_tag_id), $new_tag_data);
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_BAD_REQUEST);
@@ -77,7 +75,7 @@ class PutTagTest extends TestCase {
         $new_tag_data = Tag::factory()->make()->toArray();
 
         // WHEN
-        $response = $this->json(self::METHOD, sprintf($this->_uri, $tag_id), $new_tag_data);
+        $response = $this->putJson(sprintf($this->_uri, $tag_id), $new_tag_data);
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_NOT_FOUND);
@@ -92,7 +90,7 @@ class PutTagTest extends TestCase {
         $tag_data = $this->_generated_tag->toArray();
 
         // WHEN
-        $response = $this->json(self::METHOD, sprintf($this->_uri, $tag_data['id']), $tag_data);
+        $response = $this->putJson(sprintf($this->_uri, $tag_data['id']), $tag_data);
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_OK);
@@ -105,8 +103,8 @@ class PutTagTest extends TestCase {
     /**
      * @param array $response_as_array
      */
-    private function assertPutResponseHasCorrectKeys(array $response_as_array) {
-        $failure_message = self::METHOD." Response is ".json_encode($response_as_array);
+    private function assertPutResponseHasCorrectKeys(array $response_as_array): void {
+        $failure_message = "PUT Response is ".json_encode($response_as_array);
         $this->assertArrayHasKey(self::$RESPONSE_KEY_ID, $response_as_array, $failure_message);
         $this->assertArrayHasKey(self::$RESPONSE_KEY_ERROR, $response_as_array, $failure_message);
         $this->assertCount(2, $response_as_array);
