@@ -154,7 +154,7 @@ class SettingsInstitutionsTest extends SettingsBase {
     protected function generateObject(bool $isInitObjectActive): BaseModel {
         /** @var Institution $institution */
         $institution = Institution::factory();
-        if(!$isInitObjectActive){
+        if(!$isInitObjectActive) {
             $institution->disabled();
         }
         return $institution->create();
