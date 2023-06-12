@@ -102,7 +102,7 @@ trait AccountOrAccountTypeTogglingSelector {
 
                 // disable checkbox
                 $component->assertMissing($this->getCheckboxShowDisabledAccountOrAccountType($this->_account_or_account_type_toggling_selector_id_label));
-                if (collect($accounts)->where('disabled', true)->count() > 0) {
+                if (collect($accounts)->where('active', false)->count() > 0) {
                     $component->assertVisible($this->getLabelSelectorLabelShowDisabledAccountsOrAccountTypes());
                 } else {
                     $component->assertMissing($this->getLabelSelectorLabelShowDisabledAccountsOrAccountTypes());
