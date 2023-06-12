@@ -30,6 +30,8 @@ class SettingsTagsTest extends SettingsBase {
 
     protected static string $LABEL_SETTINGS_NOTIFICATION_NEW = 'New tag created';
     protected static string $LABEL_SETTINGS_NOTIFICATION_UPDATE = 'Tag updated';
+    protected static string $LABEL_SETTINGS_NOTIFICATION_RESTORE = 'Tag has been enabled';  // TODO: confirm
+    protected static string $LABEL_SETTINGS_NOTIFICATION_DELETE = 'Tag has been disabled';  // TODO: confirm
 
     public function providerDisablingOrRestoringAccount(): array {
         return [];
