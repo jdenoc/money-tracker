@@ -35,8 +35,8 @@ class SettingsAccountsTest extends SettingsBase {
     private static string $SELECTOR_SETTINGS_FORM_LABEL_TOTAL = "label[for='settings-account-total']:nth-child(7)";
     private static string $SELECTOR_SETTINGS_FORM_INPUT_TOTAL = 'div:nth-child(8) input#settings-account-total';
     private static string $SELECTOR_SETTINGS_FORM_CURRENCY_TOTAL = 'div:nth-child(8) input#settings-account-total+span';
-    private static string $SELECTOR_SETTINGS_FORM_LABEL_ACTIVE = "label[for='settings-account-disabled']:nth-child(9)";
-    protected static string $SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE = "div:nth-child(10) #settings-account-disabled";
+    private static string $SELECTOR_SETTINGS_FORM_LABEL_ACTIVE = "label[for='settings-account-active']:nth-child(9)";
+    protected static string $SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE = "div:nth-child(10) #settings-account-active";
     private static string $SELECTOR_SETTINGS_FORM_LABEL_CREATED = "div:nth-child(11)";
     private static string $SELECTOR_SETTINGS_FORM_CREATED = "div:nth-child(12)";
     private static string $SELECTOR_SETTINGS_FORM_LABEL_MODIFIED = "div:nth-child(13)";
@@ -51,8 +51,8 @@ class SettingsAccountsTest extends SettingsBase {
 
     protected static string $LABEL_SETTINGS_NOTIFICATION_NEW = 'New account created';
     protected static string $LABEL_SETTINGS_NOTIFICATION_UPDATE = 'Account updated';
-    protected static string $LABEL_SETTINGS_NOTIFICATION_RESTORE = 'Account has been enabled';  // TODO: confirm
-    protected static string $LABEL_SETTINGS_NOTIFICATION_DELETE = 'Account has been disabled';  // TODO: confirm
+    protected static string $LABEL_SETTINGS_NOTIFICATION_RESTORE = 'Account has been enabled';
+    protected static string $LABEL_SETTINGS_NOTIFICATION_DELETE = 'Account has been disabled';
 
     private Currency $default_currency;
     private string $color_currency_active;
