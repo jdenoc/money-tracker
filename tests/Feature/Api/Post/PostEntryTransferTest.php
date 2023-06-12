@@ -19,7 +19,6 @@ class PostEntryTransferTest extends TestCase {
     use EntryResponseKeys;
     use StorageTestFiles;
 
-    const CALL_METHOD = "POST";
     const FLAG_HAS_TAGS = 'has_tags';
     const FLAG_HAS_ATTACHMENTS = 'has_attachments';
     const FLAG_OVERRIDE_TO = "override_to_account_type_id";
@@ -32,7 +31,7 @@ class PostEntryTransferTest extends TestCase {
         $entry_data = [];
 
         // WHEN
-        $response = $this->json(self::CALL_METHOD, $this->_base_uri, $entry_data);
+        $response = $this->postJson($this->_base_uri, $entry_data);
 
         // THEN
         $this->assertResponseStatus($response, HttpStatus::HTTP_BAD_REQUEST);
@@ -40,7 +39,7 @@ class PostEntryTransferTest extends TestCase {
         $this->assertFailedPostResponse($response->json(), self::$ERROR_MSG_SAVE_ENTRY_NO_DATA);
     }
 
-    public function providerCreateEntryTransferWithMissingData() {
+    public function providerCreateEntryTransferWithMissingData(): array {
         // We need to initialise the application to allow us to potentially populate the database
         $this->initialiseApplication();
 
@@ -93,7 +92,7 @@ class PostEntryTransferTest extends TestCase {
         }
 
         // WHEN
-        $response = $this->json(self::CALL_METHOD, $this->_base_uri, $transfer_data);
+        $response = $this->postJson($this->_base_uri, $transfer_data);
 
         // THEN
         $this->assertResponseStatus($response, HttpStatus::HTTP_BAD_REQUEST);
@@ -101,7 +100,7 @@ class PostEntryTransferTest extends TestCase {
         $this->assertFailedPostResponse($response->json(), $expected_response_error_msg);
     }
 
-    public function providerCreatingEntryTransferWithInvalidAccountType() {
+    public function providerCreatingEntryTransferWithInvalidAccountType(): array {
         // We need to initialise the application to allow us to potentially populate the database
         $this->initialiseApplication();
 
@@ -133,7 +132,7 @@ class PostEntryTransferTest extends TestCase {
         }
 
         // WHEN
-        $response = $this->json(self::CALL_METHOD, $this->_base_uri, $transfer_data);
+        $response = $this->postJson($this->_base_uri, $transfer_data);
 
         // THEN
         $this->assertResponseStatus($response, HttpStatus::HTTP_BAD_REQUEST);
@@ -148,7 +147,7 @@ class PostEntryTransferTest extends TestCase {
         $transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE] = self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
 
         // WHEN
-        $response = $this->json(self::CALL_METHOD, $this->_base_uri, $transfer_data);
+        $response = $this->postJson($this->_base_uri, $transfer_data);
 
         // THEN
         $this->assertResponseStatus($response, HttpStatus::HTTP_BAD_REQUEST);
@@ -195,7 +194,7 @@ class PostEntryTransferTest extends TestCase {
         }
 
         // WHEN
-        $response = $this->json(self::CALL_METHOD, $this->_base_uri, $transfer_data);
+        $response = $this->postJson($this->_base_uri, $transfer_data);
 
         // THEN
         $this->assertResponseStatus($response, HttpStatus::HTTP_CREATED);
@@ -233,7 +232,7 @@ class PostEntryTransferTest extends TestCase {
 
     public function providerCreateEntryTransferWithTagsAndAttachments(): array {
         return [
-            [[self::FLAG_HAS_TAGS=>false, self::FLAG_HAS_ATTACHMENTS=>false]],    // this is already tested, but for compelitions sake, lets include it
+            [[self::FLAG_HAS_TAGS=>false, self::FLAG_HAS_ATTACHMENTS=>false]],    // this is already tested, but for competition’s sake, lets include it
             [[self::FLAG_HAS_TAGS=>false, self::FLAG_HAS_ATTACHMENTS=>true]],
             [[self::FLAG_HAS_TAGS=>true, self::FLAG_HAS_ATTACHMENTS=>false]],
             [[self::FLAG_HAS_TAGS=>true, self::FLAG_HAS_ATTACHMENTS=>true]],
@@ -279,7 +278,7 @@ class PostEntryTransferTest extends TestCase {
         }
 
         // WHEN
-        $post_response = $this->json(self::CALL_METHOD, $this->_base_uri, $transfer_data);
+        $post_response = $this->postJson($this->_base_uri, $transfer_data);
 
         // THEN
         $this->assertResponseStatus($post_response, HttpStatus::HTTP_CREATED);
@@ -364,7 +363,7 @@ class PostEntryTransferTest extends TestCase {
     /**
      * @param array $response_as_array
      */
-    private function assertPostResponseHasCorrectKeys(array $response_as_array) {
+    private function assertPostResponseHasCorrectKeys(array $response_as_array): void {
         $failure_message = "Response is ".json_encode($response_as_array);
         $this->assertArrayHasKey(self::$RESPONSE_SAVE_KEY_ID, $response_as_array, $failure_message);
         $this->assertArrayHasKey(self::$RESPONSE_SAVE_KEY_ERROR, $response_as_array, $failure_message);
@@ -374,7 +373,7 @@ class PostEntryTransferTest extends TestCase {
      * @param array $response_as_array
      * @param string $response_error_msg
      */
-    private function assertFailedPostResponse(array $response_as_array, string $response_error_msg) {
+    private function assertFailedPostResponse(array $response_as_array, string $response_error_msg): void {
         $failure_message = "Response is ".json_encode($response_as_array);
         $this->assertTrue(is_array($response_as_array[self::$RESPONSE_SAVE_KEY_ID]), $failure_message);
         $this->assertEmpty($response_as_array[self::$RESPONSE_SAVE_KEY_ID], $failure_message);

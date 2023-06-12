@@ -11,8 +11,6 @@ use Tests\TestCase;
 class PostInstitutionTest extends TestCase {
     use InstitutionResponseKeys;
 
-    const METHOD = "POST";
-
     private string $_base_uri = '/api/institution';
 
     public function testCreateInstitutionWithoutData() {
@@ -20,7 +18,7 @@ class PostInstitutionTest extends TestCase {
         $institution_data = [];
 
         // WHEN
-        $response = $this->json(self::METHOD, $this->_base_uri, $institution_data);
+        $response = $this->postJson($this->_base_uri, $institution_data);
 
         // THEN
         $this->assertFailedPostResponse($response, HttpStatus::HTTP_BAD_REQUEST, self::$ERROR_MSG_NO_DATA);
@@ -57,7 +55,7 @@ class PostInstitutionTest extends TestCase {
         }
 
         // WHEN
-        $response = $this->json(self::METHOD, $this->_base_uri, $institution_data);
+        $response = $this->postJson($this->_base_uri, $institution_data);
 
         // THEN
         $this->assertFailedPostResponse($response, HttpStatus::HTTP_BAD_REQUEST, $error_message);
@@ -68,10 +66,10 @@ class PostInstitutionTest extends TestCase {
         $institution_data = $this->generateDummyInstitutionData();
 
         // WHEN
-        $response = $this->json(self::METHOD, $this->_base_uri, $institution_data);
+        $response = $this->postJson($this->_base_uri, $institution_data);
 
         // THEN
-        $failure_message = self::METHOD." Response is ".$response->getContent();
+        $failure_message = "POST Response is ".$response->getContent();
         $this->assertResponseStatus($response, HttpStatus::HTTP_CREATED, $failure_message);
         $response_as_array = $response->json();
         $this->assertPostResponseHasCorrectKeys($response_as_array, $failure_message);
@@ -80,7 +78,7 @@ class PostInstitutionTest extends TestCase {
     }
 
     private function assertFailedPostResponse(TestResponse $response, $expected_response_status, string $expected_error_message): void {
-        $failure_message = self::METHOD." Response is ".$response->getContent();
+        $failure_message = "POST Response is ".$response->getContent();
         $this->assertResponseStatus($response, $expected_response_status, $failure_message);
         $response_as_array = $response->json();
         $this->assertPostResponseHasCorrectKeys($response_as_array, $failure_message);
@@ -99,7 +97,7 @@ class PostInstitutionTest extends TestCase {
     }
 
     private function generateDummyInstitutionData(): array {
-        $institution_data = Institution::factory();
+        $institution_data = Institution::factory()->make();
         return [
             'name'=>$institution_data->name,
         ];
