@@ -88,7 +88,7 @@ class InstitutionsPanelTest extends DuskTestCase {
                                 ->assertVisible($this->_selector_panel_institutions_accounts);
 
                             $institution_accounts_collection = $accounts_collection
-                                ->where('disabled', false)
+                                ->where('active', true)
                                 ->where('institution_id', $active_institution['id'])
                                 ->sortBy('name');
                             foreach ($institution_accounts_collection as $institution_account) {
@@ -114,7 +114,7 @@ class InstitutionsPanelTest extends DuskTestCase {
         $institutions_collection = $this->getInstitutionsCollection(false);
         $institution_id = $institutions_collection->pluck('id')->random(1)->first();
         DB::table('accounts')->truncate();
-        Account::factory()->count(4)->create(['disabled'=>0, 'institution_id'=>$institution_id]);
+        Account::factory()->count(4)->create(['institution_id'=>$institution_id]);
 
         $this->browse(function(Browser $browser) {
             $browser->visit(new HomePage());
@@ -132,7 +132,7 @@ class InstitutionsPanelTest extends DuskTestCase {
     public function testDisabledAccountsAreVisibleAndClickingOnADisabledAccountFiltersEntries() {
         $institutions_collection = $this->getInstitutionsCollection(false);
         $accounts_collection = $this->getAccountsCollection($institutions_collection);
-        $disabled_accounts_collection = $accounts_collection->where('disabled', true);
+        $disabled_accounts_collection = $accounts_collection->where('active', false);
         $account_types_collection = $this->getAccountTypesCollection();
 
         $this->browse(function(Browser $browser) use ($disabled_accounts_collection, $account_types_collection) {
@@ -191,7 +191,7 @@ class InstitutionsPanelTest extends DuskTestCase {
         $new_institution = Institution::factory()->create();
         $institution_id = $new_institution->id;
         DB::table('accounts')->truncate();
-        $new_account = Account::factory()->create(['institution_id'=>$institution_id, 'total'=>$test_total, 'disabled'=>false]);
+        $new_account = Account::factory()->create(['institution_id'=>$institution_id, 'total'=>$test_total]);
         DB::statement("UPDATE account_types SET account_id=:id", ['id'=>$new_account->id]);
         $this->assertEquals($test_total, $new_account->total);
 
@@ -332,12 +332,12 @@ class InstitutionsPanelTest extends DuskTestCase {
         $accounts = $this->getApiAccounts();
         $accounts_collection = collect($accounts);
         if ($include_disabled_accounts) {
-            if ($accounts_collection->where('disabled', true)->count() == 0) {
-                $disabled_account = Account::factory()->count(1)->create(['disabled'=>true, 'institution_id'=>$institutions_collection->random(1)->pluck('id')->first()]);
+            if ($accounts_collection->where('active', false)->count() == 0) {
+                $disabled_account = Account::factory()->count(1)->disabled()->create(['institution_id'=>$institutions_collection->random(1)->pluck('id')->first()]);
                 $accounts_collection->push($disabled_account);
             }
         } else {
-            $accounts_collection = $accounts_collection->where('disabled', false);
+            $accounts_collection = $accounts_collection->where('active', true);
         }
         return $accounts_collection;
     }
