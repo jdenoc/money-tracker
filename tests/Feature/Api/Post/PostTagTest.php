@@ -10,8 +10,6 @@ use Tests\TestCase;
 class PostTagTest extends TestCase {
     use TagResponseKeys;
 
-    const METHOD = 'POST';
-
     private string $_uri = '/api/tag';
 
     public function testCreateTag() {
@@ -19,7 +17,7 @@ class PostTagTest extends TestCase {
         $tag_data = Tag::factory()->make()->toArray();
 
         // WHEN
-        $response = $this->json(self::METHOD, $this->_uri, $tag_data);
+        $response = $this->postJson($this->_uri, $tag_data);
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_CREATED);
@@ -34,7 +32,7 @@ class PostTagTest extends TestCase {
         $tag_data = [];
 
         // WHEN
-        $response = $this->json(self::METHOD, $this->_uri, $tag_data);
+        $response = $this->postJson($this->_uri, $tag_data);
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_BAD_REQUEST);
@@ -49,7 +47,7 @@ class PostTagTest extends TestCase {
         $tag_data = Tag::factory()->make(['name'=>''])->toArray();
 
         // WHEN
-        $response = $this->json(self::METHOD, $this->_uri, $tag_data);
+        $response = $this->postJson($this->_uri, $tag_data);
 
         // THEN
         $response->assertStatus(HttpStatus::HTTP_BAD_REQUEST);
@@ -62,8 +60,8 @@ class PostTagTest extends TestCase {
     /**
      * @param array $response_as_array
      */
-    private function assertPostResponseHasCorrectKeys(array $response_as_array) {
-        $failure_message = self::METHOD." Response is ".json_encode($response_as_array);
+    private function assertPostResponseHasCorrectKeys(array $response_as_array): void {
+        $failure_message = "POST Response is ".json_encode($response_as_array);
         $this->assertArrayHasKey(self::$RESPONSE_KEY_ID, $response_as_array, $failure_message);
         $this->assertArrayHasKey(self::$RESPONSE_KEY_ERROR, $response_as_array, $failure_message);
         $this->assertCount(2, $response_as_array);
