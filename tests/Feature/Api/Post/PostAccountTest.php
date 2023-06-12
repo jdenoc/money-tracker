@@ -120,11 +120,10 @@ class PostAccountTest extends TestCase {
     }
 
     private function generateDummyAccountData(): array {
-        $account_data = Account::factory()->make(['disabled'=>false]);
+        $account_data = Account::factory()->make();
         return [
             'name'=>$account_data->name,
             'institution_id'=>$account_data->institution_id,
-            'disabled'=>$account_data->disabled,
             'total'=>$account_data->total,
             'currency'=>$account_data->currency
         ];

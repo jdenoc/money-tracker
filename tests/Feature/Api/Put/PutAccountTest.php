@@ -19,7 +19,6 @@ class PutAccountTest extends TestCase {
 
         Account::factory()
             ->count(10)
-            ->state(['disabled'=>false])
             ->for(Institution::factory())
             ->create();
     }
@@ -76,7 +75,7 @@ class PutAccountTest extends TestCase {
         $account_data['institution_id'] = $this->getExistingActiveInstitutionId();
 
         // WHEN
-        $response = $this->putJson(sprintf($this->_base_uri, $account_id), $account_data->toArray());
+        $response = $this->putJson(sprintf($this->_base_uri, $account_id), $account_data);
 
         // THEN
         $this->assertFailedPostResponse($response, HttpStatus::HTTP_NOT_FOUND, self::$ERROR_MSG_DOES_NOT_EXIST);
@@ -84,12 +83,12 @@ class PutAccountTest extends TestCase {
 
     public function providerUpdateAccountEachProperty(): array {
         $this->initialiseApplication();
-        $dummy_account_data = $this->generateAccountData();
+        $account_data = $this->generateAccountData();
         $required_fields = Account::getRequiredFieldsForUpdate();
 
         $test_cases = [];
         foreach ($required_fields as $required_field) {
-            $test_cases[$required_field]['data'] = [$required_field=>$dummy_account_data->{$required_field}];
+            $test_cases[$required_field]['data'] = [$required_field=>$account_data[$required_field]];
         }
         return $test_cases;
     }
@@ -134,11 +133,13 @@ class PutAccountTest extends TestCase {
     }
 
     private function getRandomActiveExistingAccount() {
-        return Account::where('disabled', false)->get()->random();
+        return Account::get()->random();
     }
 
-    private function generateAccountData() {
-        return Account::factory()->make();
+    private function generateAccountData(): array {
+        $data = Account::factory()->make()->toArray();
+        unset($data['active'], $data['disabled_stamp']);
+        return $data;
     }
 
     private function getExistingActiveInstitutionId(): int {

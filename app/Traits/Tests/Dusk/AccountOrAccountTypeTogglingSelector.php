@@ -97,7 +97,7 @@ trait AccountOrAccountTypeTogglingSelector {
                     ->assertSelectHasOption(self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT, "")
                     ->assertSelectHasOptions(
                         self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT,
-                        collect($accounts)->where('disabled', false)->pluck('id')->toArray()
+                        collect($accounts)->where('active', true)->pluck('id')->toArray()
                     );
 
                 // disable checkbox

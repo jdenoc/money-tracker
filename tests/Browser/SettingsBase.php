@@ -266,7 +266,7 @@ abstract class SettingsBase extends DuskTestCase {
      */
     public function testDisablingOrRestoringObject(bool $isInitObjectActive) {
         // TODO: remove as soon as other objects have been updated
-        if (!in_array(get_class(), ['SettingsAccountsTest', 'SettingsAccountTypesTest', 'SettingsTagsTest'])) {
+        if (!in_array(get_class(), ['SettingsAccountTypesTest', 'SettingsTagsTest'])) {
             $this->markTestSkipped();
         }
 
