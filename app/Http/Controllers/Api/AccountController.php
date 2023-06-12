@@ -19,7 +19,7 @@ class AccountController extends Controller {
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      */
     public function get_accounts() {
-        $accounts = Account::cache()->get('all');
+        $accounts = Account::cache()->get(Account::CACHE_KEY_ALL);
         if (is_null($accounts) || $accounts->isEmpty()) {
             return response([], HttpStatus::HTTP_NOT_FOUND);
         } else {
@@ -29,7 +29,7 @@ class AccountController extends Controller {
                 'disabled_stamp'
             ]);
             $accounts = $accounts->toArray();
-            $accounts['count'] = Account::cache()->get('count');
+            $accounts['count'] = Account::cache()->get(Account::CACHE_KEY_COUNT);
 
             return response($accounts, HttpStatus::HTTP_OK);
         }
