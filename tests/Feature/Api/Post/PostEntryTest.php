@@ -31,7 +31,7 @@ class PostEntryTest extends TestCase {
         $this->assertFailedPostResponse($response_as_array, self::$ERROR_MSG_SAVE_ENTRY_NO_DATA);
     }
 
-    public function providerCreateEntryWithMissingData() {
+    public function providerCreateEntryWithMissingData(): array {
         // PHPUnit data providers are called before setUp() and setUpBeforeClass() are called.
         // With that piece of information, we need to call setUp() earlier than we normally would so that we can use model factories
         //$this->setUp();
