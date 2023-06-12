@@ -83,7 +83,7 @@ export default {
     },
     inactiveAccounts: function(){
       return this.rawAccountsData.filter(function(account){
-        return account.disabled;
+        return !account.active;
       }).sort(function(a, b){
         if (a.name < b.name)
           return -1;

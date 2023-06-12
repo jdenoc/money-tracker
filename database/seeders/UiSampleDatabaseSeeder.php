@@ -51,9 +51,9 @@ class UiSampleDatabaseSeeder extends Seeder {
         // ***** ACCOUNTS *****
         $accounts = collect();
         foreach ($institutions as $institution) {
-            $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$institution->id, 'disabled'=>false]);
+            $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$institution->id]);
         }
-        $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$institutions->random()->id, 'disabled'=>true]);
+        $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$institutions->random()->id, Account::DELETED_AT=>now()]);
         $currencies = CurrencyHelper::fetchCurrencies();
         foreach ($currencies as $currency) {
             $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$institutions->random()->id, 'currency'=>$currency->code]);
@@ -65,8 +65,8 @@ class UiSampleDatabaseSeeder extends Seeder {
         foreach ($accounts->pluck('id') as $account_id) {
             $account_types = $this->addAccountTypeToCollection($account_types, ['account_id'=>$account_id, 'disabled'=>false]);
         }
-        $account_types = $this->addAccountTypeToCollection($account_types, ['account_id'=>$accounts->where('disabled', false)->pluck('id')->random(), 'disabled'=>true]);
-        $account_types = $this->addAccountTypeToCollection($account_types, ['account_id'=>$accounts->where('disabled', true)->pluck('id')->random(), 'disabled'=>true]);
+        $account_types = $this->addAccountTypeToCollection($account_types, ['account_id'=>$accounts->where('active', true)->pluck('id')->random(), 'disabled'=>true]);
+        $account_types = $this->addAccountTypeToCollection($account_types, ['account_id'=>$accounts->where('active', false)->pluck('id')->random(), 'disabled'=>true]);
         $this->command->line(self::CLI_OUTPUT_PREFIX."Account-types seeded [".$account_types->count()."]");
 
         // ***** ENTRIES *****

@@ -20,7 +20,7 @@ class InstitutionFactory extends Factory {
     public function disabled(): Factory {
         return $this->state(function() {
             return [
-                'disabled_stamp'=>$this->faker->date(FactoryConstants::DATE_FORMAT)
+                'disabled_stamp'=>fake()->date(FactoryConstants::DATE_FORMAT)
             ];
         });
     }

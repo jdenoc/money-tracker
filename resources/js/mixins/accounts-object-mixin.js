@@ -12,6 +12,9 @@ export const accountsObjectMixin = {
     areAccountsAvailable: function(){
       return !_.isEmpty(this.rawAccountsData);
     },
+    listAccounts: function(){
+      return _.orderBy(this.rawAccountsData, ['active', 'name'], ['desc', 'asc']);
+    },
   },
 
   methods: {
