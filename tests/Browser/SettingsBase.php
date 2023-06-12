@@ -27,14 +27,14 @@ abstract class SettingsBase extends DuskTestCase {
     private static string $SELECTOR_SETTINGS_NAV = '#settings-nav';
     private static string $SELECTOR_SETTINGS_NAV_HEADER = '#settings-panel-header';
     private static string $SELECTOR_SETTINGS_NAV_ACTIVE = 'li.settings-nav-option.is-active';
-    protected static string $SELECTOR_SETTINGS_NAV_ELEMENT = '';
-    protected static string $LABEL_SETTINGS_NAV_ELEMENT = '';
+    protected static string $SELECTOR_SETTINGS_NAV_ELEMENT;
+    protected static string $LABEL_SETTINGS_NAV_ELEMENT;
 
     private static string $SELECTOR_SETTINGS_DISPLAY = '#settings-display';
     private static string $SELECTOR_SETTINGS_DISPLAY_SECTION_DEFAULT = 'section#settings-default';
     protected static string $SELECTOR_SETTINGS_HEADER = 'h3';
-    protected static string $SELECTOR_SETTINGS_DISPLAY_SECTION = '';
-    protected static string $LABEL_SETTINGS_SECTION_HEADER = '';
+    protected static string $SELECTOR_SETTINGS_DISPLAY_SECTION;
+    protected static string $LABEL_SETTINGS_SECTION_HEADER;
 
     protected static string $LABEL_SETTINGS_FORM_INPUT_NAME = 'Name:';
     protected static string $LABEL_SETTINGS_FORM_LABEL_ACTIVE = 'Active State:';
@@ -42,19 +42,19 @@ abstract class SettingsBase extends DuskTestCase {
     protected static string $LABEL_SETTINGS_LABEL_MODIFIED = "Modified:";
     protected static string $LABEL_SETTINGS_LABEL_DISABLED = "Disabled:";
 
-    protected static string $SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE = '';
-    protected static string $SELECTOR_SETTINGS_FORM_BUTTON_CLEAR = '';
+    protected static string $SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE;
+    protected static string $SELECTOR_SETTINGS_FORM_BUTTON_CLEAR;
     protected static string $LABEL_SETTINGS_FORM_BUTTON_CLEAR = "Clear";
-    protected static string $SELECTOR_SETTINGS_FORM_BUTTON_SAVE = '';
+    protected static string $SELECTOR_SETTINGS_FORM_BUTTON_SAVE;
     private static string $LABEL_SETTINGS_FORM_BUTTON_SAVE = "Save";
 
-    protected static string $SELECTOR_SETTINGS_LOADING_OBJECTS = '';
-    protected static string $TEMPLATE_SELECTOR_SETTINGS_NODE_ID = '';
+    protected static string $SELECTOR_SETTINGS_LOADING_OBJECTS;
+    protected static string $TEMPLATE_SELECTOR_SETTINGS_NODE_ID;
 
-    protected static string $LABEL_SETTINGS_NOTIFICATION_NEW = '';
-    protected static string $LABEL_SETTINGS_NOTIFICATION_UPDATE = '';
-    protected static string $LABEL_SETTINGS_NOTIFICATION_RESTORE = '';
-    protected static string $LABEL_SETTINGS_NOTIFICATION_DELETE = '';
+    protected static string $LABEL_SETTINGS_NOTIFICATION_NEW;
+    protected static string $LABEL_SETTINGS_NOTIFICATION_UPDATE;
+    protected static string $LABEL_SETTINGS_NOTIFICATION_RESTORE;
+    protected static string $LABEL_SETTINGS_NOTIFICATION_DELETE;
 
     private string $color_button_save;
 
@@ -376,7 +376,7 @@ abstract class SettingsBase extends DuskTestCase {
         ];
 
         foreach ($constants_to_be_set as $constant_name=>$constant_value) {
-            $this->assertNotEmpty($constant_value, sprintf("The constant %s must have a value set", $constant_name));
+            $this->assertNotNull($constant_value, sprintf("The constant %s must have a value set", $constant_name));
         }
     }
 

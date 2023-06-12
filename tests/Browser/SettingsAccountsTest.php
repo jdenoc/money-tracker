@@ -51,6 +51,8 @@ class SettingsAccountsTest extends SettingsBase {
 
     protected static string $LABEL_SETTINGS_NOTIFICATION_NEW = 'New account created';
     protected static string $LABEL_SETTINGS_NOTIFICATION_UPDATE = 'Account updated';
+    protected static string $LABEL_SETTINGS_NOTIFICATION_RESTORE = 'Account has been enabled';  // TODO: confirm
+    protected static string $LABEL_SETTINGS_NOTIFICATION_DELETE = 'Account has been disabled';  // TODO: confirm
 
     private Currency $default_currency;
     private string $color_currency_active;
