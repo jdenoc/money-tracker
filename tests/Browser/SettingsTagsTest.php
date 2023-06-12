@@ -22,6 +22,7 @@ class SettingsTagsTest extends SettingsBase {
     private static string $SELECTOR_SETTINGS_FORM_LABEL_NAME = "label[for='settings-tag-name']:nth-child(1)";
     protected static string $LABEL_SETTINGS_INPUT_NAME = 'Tag:';
     private static string $SELECTOR_SETTINGS_FORM_INPUT_NAME = "input#settings-tag-name:nth-child(2)";
+    protected static string $SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE = ''; // this page doesn't use this element
     protected static string $SELECTOR_SETTINGS_FORM_BUTTON_CLEAR = 'button:nth-child(3)';
     protected static string $SELECTOR_SETTINGS_FORM_BUTTON_SAVE = 'button:nth-child(4)';
 
