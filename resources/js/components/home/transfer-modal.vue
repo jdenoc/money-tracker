@@ -381,7 +381,7 @@ export default {
       this.accountTypeMeta[accountTypeSelect].accountName = account.name;
       let accountType = this.accountTypesObject.find(this.transferData[accountTypeSelect+'_account_type_id']);
       this.accountTypeMeta[accountTypeSelect].lastDigits = accountType.last_digits;
-      this.accountTypeMeta[accountTypeSelect].isEnabled = !account.disabled && !accountType.disabled;
+      this.accountTypeMeta[accountTypeSelect].isEnabled = account.active && !accountType.disabled;
     },
   },
   created: function(){
