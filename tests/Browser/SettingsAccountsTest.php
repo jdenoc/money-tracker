@@ -202,7 +202,7 @@ class SettingsAccountsTest extends SettingsBase {
     }
 
     protected function assertNodesVisible(Browser $section) {
-        $accounts = Account::all();
+        $accounts = Account::withTrashed()->get();
         $this->assertCount($accounts->count(), $section->elements('hr~ul li'));
         foreach ($accounts as $account) {
             $selector_account_id = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID, $account->id);
@@ -212,12 +212,12 @@ class SettingsAccountsTest extends SettingsBase {
             $class_is_disabled = 'is-disabled';
             $class_is_active = 'is-active';
             $account_node_classes = $section->attribute($selector_account_id, 'class');
-            if ($account->disabled) {
-                $this->assertStringContainsString($class_is_disabled, $account_node_classes);
-                $this->assertStringNotContainsString($class_is_active, $account_node_classes);
-            } else {
+            if ($account->active) {
                 $this->assertStringContainsString($class_is_active, $account_node_classes);
                 $this->assertStringNotContainsString($class_is_disabled, $account_node_classes);
+            } else {
+                $this->assertStringContainsString($class_is_disabled, $account_node_classes);
+                $this->assertStringNotContainsString($class_is_active, $account_node_classes);
             }
         }
     }
