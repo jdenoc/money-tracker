@@ -61,7 +61,7 @@ export class Account extends ObjectBaseClass {
   axiosSuccess(response){
     switch(response.config.method.toUpperCase()){
       case 'DELETE':
-        return {type: SnotifyStyle.success, message: "Account was disabled"};
+        return {type: SnotifyStyle.success, message: "Account has been disabled"};
       case 'GET':
         this.assign = this.processSuccessfulResponseData(response.data);
         return {fetched: true, notification: {}};
