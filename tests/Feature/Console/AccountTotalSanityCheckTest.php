@@ -46,7 +46,7 @@ class AccountTotalSanityCheckTest extends TestCase {
     }
 
     public function testSanityCheckOutputtingToScreenAndWithoutNotifyingDiscord() {
-        $accounts = Account::factory()->count(3)->create(['disabled'=>true, 'total'=>0]);
+        $accounts = Account::factory()->count(3)->disabled()->create(['total'=>0]);
         $account_types = collect();
         foreach ($accounts as $account) {
             $account_type = AccountType::factory()->for($account)->create(['disabled'=>0]);
@@ -64,7 +64,7 @@ class AccountTotalSanityCheckTest extends TestCase {
     public function testSanityCheckIndividualAccountIdOutputtingToScreenAndWithoutNotifyingDiscord() {
         $this->seedDatabaseAndMaybeTruncateTable('entries');
 
-        $accounts = Account::where('disabled', 0);
+        $accounts = Account::all();
         $accounts->update(['total'=>0]);
         $account = $accounts->get()->random();
         $account_type = AccountType::where(['account_id'=>$account->id, 'disabled'=>0])->get()->random();

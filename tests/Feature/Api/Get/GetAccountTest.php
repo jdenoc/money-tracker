@@ -100,8 +100,8 @@ class GetAccountTest extends TestCase {
      * @param Account $generated_account
      * @param int $account_type_count
      */
-    private function assertAccountDetailsOK(array $response_as_array, $generated_account, int $account_type_count) {
-        $expected_elements = ['id', 'name', 'institution_id', 'disabled', 'total', 'currency', 'account_types', Account::CREATED_AT, Account::UPDATED_AT, 'disabled_stamp'];
+    private function assertAccountDetailsOK(array $response_as_array, $generated_account, int $account_type_count): void {
+        $expected_elements = ['id', 'name', 'institution_id', 'active', 'total', 'currency', 'account_types', Account::CREATED_AT, Account::UPDATED_AT, Account::DELETED_AT];
         $this->assertEqualsCanonicalizing($expected_elements, array_keys($response_as_array));
         foreach ($expected_elements as $expected_element) {
             switch ($expected_element) {
@@ -118,14 +118,14 @@ class GetAccountTest extends TestCase {
                 case Account::UPDATED_AT:
                     $this->assertDateFormat($response_as_array[$expected_element], DATE_ATOM, $response_as_array[$expected_element]." not in correct format");
                     break;
-                case 'disabled_stamp':
-                    if ($response_as_array['disabled']) {
-                        $this->assertDateFormat($response_as_array[$expected_element], DATE_ATOM, $response_as_array[$expected_element]." not in correct format");
-                    } else {
+                case Account::DELETED_AT:
+                    if ($response_as_array['active']) {
                         $this->assertNull($response_as_array[$expected_element]);
+                    } else {
+                        $this->assertDateFormat($response_as_array[$expected_element], DATE_ATOM, $response_as_array[$expected_element]." not in correct format");
                     }
                     break;
-                case 'disabled':
+                case 'active':
                     $this->assertIsBool($response_as_array[$expected_element]);
                     $this->assertEquals($generated_account->$expected_element, $response_as_array[$expected_element]);
                     break;

@@ -245,10 +245,6 @@ class UpdateAccountTotalTest extends DuskTestCase {
 
     /**
      * @dataProvider providerUpdateAccountTotalsWithNewTransferEntries
-     * @param bool $is_from_account_external
-     * @param bool $is_to_account_external
-     *
-     * @throws Throwable
      *
      * @group navigation-5
      * test (see provider)/20
@@ -267,7 +263,7 @@ class UpdateAccountTotalTest extends DuskTestCase {
                     ->where('account_id', '!=', $account['from']['id'])
                     ->random();
                 $account['to'] = $this->getAccount($account_type['account_id']);
-            } while ($account['to']['disabled']);
+            } while (!$account['to']['active']);
             $account['to']['account_type_id'] = $account_type['id'];
         } elseif ($is_to_account_external) {
             $account['to']['id'] = 0;
@@ -376,7 +372,7 @@ class UpdateAccountTotalTest extends DuskTestCase {
         $accounts = $this->getApiAccounts();
         $accounts_collection = collect($accounts);
         if ($is_institution_id) {
-            return $accounts_collection->where('disabled', false)->where('institution_id', $id)->random();
+            return $accounts_collection->where('active', true)->where('institution_id', $id)->random();
         } else {
             return $accounts_collection->where('id', $id)->first();
         }
