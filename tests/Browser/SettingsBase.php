@@ -354,7 +354,7 @@ abstract class SettingsBase extends DuskTestCase {
     // ------------ asserts      ------------
     // ------------ ------------ ------------
 
-    protected function assertConstantsSet() {
+    protected function assertConstantsSet(): void {
         $constants_to_be_set = [
             'SELECTOR_SETTINGS_NAV_ELEMENT'=>static::$SELECTOR_SETTINGS_NAV_ELEMENT,
             'LABEL_SETTINGS_NAV_ELEMENT'=>static::$LABEL_SETTINGS_NAV_ELEMENT,
