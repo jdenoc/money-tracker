@@ -4,7 +4,7 @@
     <form class="grid grid-cols-6 gap-2">
       <!-- name -->
       <label for="settings-account-name" class="font-medium justify-self-end py-2 col-span-2">Name:</label>
-      <input id="settings-account-name" name="name" type="text" class="rounded text-gray-700 col-span-4" autocomplete="off" v-model="form.name" />
+      <input id="settings-account-name" name="name" type="text" class="rounded text-gray-700 col-span-4" autocomplete="off" v-model="form.name" v-bind:readonly="!form.active" />
 
       <!-- institution -->
       <label for="settings-account-institution" class="font-medium justify-self-end py-2 col-span-2">Institution:</label>
@@ -16,7 +16,7 @@
           </svg>
         </span>
 
-        <select id="settings-account-institution" class="rounded w-full" v-model="form.institutionId">
+        <select id="settings-account-institution" class="rounded w-full" v-model="form.institutionId" v-bind:disabled="!form.active">
           <option value="" selected></option>
           <option
               v-for="institution in listInstitutions"
@@ -59,9 +59,13 @@
       </div>
 
       <!-- Active State -->
-      <label for="settings-account-disabled" class="font-medium justify-self-end py-2 col-span-2">Active State:</label>
+      <label for="settings-account-active" class="font-medium justify-self-end py-2 col-span-2">Active State:</label>
       <div class="col-span-4">
-        <toggle-button v-bind:toggle-state.sync="form.disabled" toggle-id="settings-account-disabled" v-bind="toggleButtonProperties"></toggle-button>
+        <toggle-button v-bind:toggle-state.sync="form.active"
+                       v-bind="toggleButtonProperties"
+                       toggle-id="settings-account-active"
+                       v-on:click.native="resetFormAfterActiveStateToggle(form.id)"
+        ></toggle-button>
       </div>
 
       <div class="font-medium" v-show="isDataInForm">Created:</div>
@@ -99,8 +103,8 @@
           v-bind:id="'settings-account-'+account.id"
           v-bind:class="{
             'border-l-4': form.id===account.id,
-            'text-blue-400 border-blue-400 hover:border-blue-500 is-active': !account.disabled,
-            'text-gray-500 border-gray-500 hover:border-gray-700 is-disabled': account.disabled
+            'text-blue-400 border-blue-400 hover:border-blue-500 is-active': account.active,
+            'text-gray-500 border-gray-500 hover:border-gray-700 is-disabled': !account.active
           }"
       >
         <span
@@ -161,7 +165,7 @@ export default {
         id: null,
         name: '',
         institutionId: "",
-        disabled: false,
+        active: true,
         total: '',
         currency: this.currencyObject.default.code,
         createStamp: '',
@@ -170,9 +174,6 @@ export default {
         // accountTypes: [],
       };
     },
-    listAccounts: function(){
-      return _.orderBy(this.rawAccountsData, ['disabled', 'name'], ['asc', 'asc']);
-    },
     listCurrencies: function(){
       return _.sortBy(this.currencyObject.list(), ['code']);
     },
@@ -180,79 +181,31 @@ export default {
       return _.sortBy(this.rawInstitutionsData, 'name');
     },
     toggleButtonProperties: function(){
-      return _.cloneDeep(this.altDefaultToggleButtonProperties);
+      return _.cloneDeep(this.defaultToggleButtonProperties);
     }
   },
   methods: {
+    afterSaveResetFormAndHideLoading(){
+      this.setFormDefaults();
+      this.fetchAccounts().finally(function(){
+        this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
+      }.bind(this));
+    },
     decimaliseTotal: function(){
       if(!_.isEmpty(this.form.total)){
         this.form.total = this.decimaliseValue(this.form.total);
       }
     },
-    makeDateReadable(isoDateString){
-      if(_.isNull(isoDateString)){
-        return isoDateString;
+    resetFormAfterActiveStateToggle(accountId){
+      // this is called AFTER toggle-state has been updated
+      let accountData = {}
+      if(_.isNull(accountId)){
+        accountData = _.clone(this.defaultFormData)
       } else {
-        return new Date(isoDateString).toString();
+        accountData = _.clone(this.accountObject.find(accountId))
       }
-    },
-    sanitiseData(data){
-      Object.keys(data).forEach(function(k){
-        switch(k){
-          case 'institution_id':
-          case 'create_stamp':
-          case 'modified_stamp':
-          case 'disabled_stamp': {
-            let camelCasedKey = _.camelCase(k);
-            data[camelCasedKey] = data[k];
-            delete data[k];
-            break;
-          }
-          default:
-            // do nothing
-        }
-      }.bind(this));
-      return data;
-    },
-    save: function(){
-      this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
-
-      let accountData = {};
-      Object.keys(this.form).forEach(function(formDatumKey){
-        switch (formDatumKey){
-          case 'id':
-          case 'name':
-          case 'disabled':
-          case 'total':
-          case 'currency':
-            accountData[formDatumKey] = this.form[formDatumKey];
-            break;
-          case 'institutionId':
-            accountData['institution_id'] = this.form[formDatumKey];
-            break;
-          default:
-            // do nothing...
-            break;
-        }
-      }.bind(this));
-
-      this.accountObject.setFetchedState = false
-      this.accountObject.save(accountData)
-        .then(function(notification){
-          // show a notification if needed
-          if(!_.isEmpty(notification)){
-            this.$eventHub.broadcast(
-              this.$eventHub.EVENT_NOTIFICATION,
-              {type: notification.type, message: notification.message}
-            );
-          }
-        }.bind(this))
-        .finally(function(){
-          this.setFormDefaults();
-          this.fetchAccounts().finally(function(){
-            this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
-          }.bind(this));
-        }.bind(this));
+      accountData.active = this.form.active;
+      this.fillForm(accountData);
     },
     retrieveUpToDateAccountData: function(accountId = null){
       if(_.isNumber(accountId)){
@@ -286,6 +239,79 @@ export default {
         }
       } else {
         this.setFormDefaults();
+      }
+    },
+    sanitiseData(originalData){
+      let data = _.clone(originalData);
+      Object.keys(data).forEach(function(k){
+        switch(k){
+          case 'institution_id':
+          case 'create_stamp':
+          case 'modified_stamp':
+          case 'disabled_stamp': {
+            let camelCasedKey = _.camelCase(k);
+            data[camelCasedKey] = data[k];
+            delete data[k];
+            break;
+          }
+          case 'total':
+            data[k] = this.decimaliseValue(data[k]+'');
+            break;
+          default:
+            // do nothing
+        }
+      }.bind(this));
+      return data;
+    },
+    save: function(){
+      this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
+
+      let accountData = {};
+      Object.keys(this.form).forEach(function(formDatumKey){
+        switch (formDatumKey){
+          case 'id':
+          case 'name':
+          case 'total':
+          case 'currency':
+            accountData[formDatumKey] = this.form[formDatumKey];
+            break;
+          case 'institutionId':
+            accountData['institution_id'] = this.form[formDatumKey];
+            break;
+          default:
+            // do nothing...
+            break;
+        }
+      }.bind(this));
+
+      this.accountObject.setFetchedState = false
+      if(this.form.active){
+        let upsertAccount = function(accountData){
+          this.accountObject.save(accountData)
+            .then(this.afterSaveDisplayNotificationIfNeeded)
+            .finally(this.afterSaveResetFormAndHideLoading);
+        }.bind(this);
+
+        let existingAccountData = this.accountObject.find(accountData['id'])
+        if(_.isEmpty(existingAccountData)){
+          // new account record
+          upsertAccount(accountData);
+        } else {
+          // existing account record
+          if(existingAccountData.active){
+            upsertAccount(accountData);
+          } else {
+            this.accountObject.enable(accountData['id'])
+              .then(this.afterSaveDisplayNotificationIfNeeded)
+              .finally(function(){
+                upsertAccount(accountData)
+              });
+          }
+        }
+      } else {
+        this.accountObject.disable(accountData['id'])
+          .then(this.afterSaveDisplayNotificationIfNeeded)
+          .finally(this.afterSaveResetFormAndHideLoading);
       }
     },
   },

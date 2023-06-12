@@ -41,14 +41,16 @@ class InstitutionController extends Controller {
     public function get_institution(int $institution_id): Response {
         try {
             $institution = Institution::withTrashed()
-                ->with(Account::getTableName())
+                ->with(Account::getTableName(), function($account) {
+                    return $account->withTrashed();
+                })
                 ->findOrFail($institution_id);
 
             $institution->accounts->makeHidden([
                 'institution_id',    // We already know what institution ID this is. We don't need to re-show it.
-                'create_stamp',
-                'modified_stamp',
-                'disabled_stamp'
+                Account::CREATED_AT,
+                Account::DELETED_AT,
+                Account::UPDATED_AT,
             ]);
             return response($institution, HttpStatus::HTTP_OK);
         } catch (Exception $e) {

@@ -122,7 +122,7 @@ export default {
     resetFormAfterActiveStateToggle(institutionId){
       // this is called AFTER toggle-state has been updated
       let institutionData = {}
-      if(_.isNull(this.form.id)){
+      if(_.isNull(institutionId)){
         institutionData = _.clone(this.defaultFormData)
       } else {
         institutionData = _.clone(this.institutionObject.find(institutionId));
@@ -139,7 +139,8 @@ export default {
           this.fillForm(institutionData);
           this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
         } else {
-          this.institutionObject.fetch(institutionId)
+          this.institutionObject
+            .fetch(institutionId)
             .then(function(fetchResult){
               if(fetchResult.fetched){
                 let freshlyFetchedInstitutionData = this.institutionsObject.find(institutionId);
@@ -163,7 +164,8 @@ export default {
         this.setFormDefaults();
       }
     },
-    sanitiseData(data){
+    sanitiseData(originalData){
+      let data = _.clone(originalData)
       Object.keys(data).forEach(function(k){
         switch(k){
           case 'create_stamp':

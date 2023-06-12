@@ -22,7 +22,7 @@ class AdjustAccountTotalUsingAccountType implements ShouldQueue {
      */
     public function __construct($accountTypeId, $rawEntryValue, $isExpense, $addToAccount) {
         $account_type = AccountType::find($accountTypeId);
-        $this->account = $account_type->account;
+        $this->account = $account_type->account()->withTrashed()->first();
         $this->rawValue = $rawEntryValue;
         $this->isExpense = $isExpense;
         $this->addToAccount = $addToAccount;
