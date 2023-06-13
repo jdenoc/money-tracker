@@ -12,7 +12,6 @@ use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Support\Collection;
 use Tests\Browser\Pages\StatsPage;
 use Laravel\Dusk\Browser;
-use Throwable;
 
 /**
  * Class StatsSummaryTest
@@ -41,8 +40,6 @@ class StatsSummaryTest extends StatsBase {
     }
 
     /**
-     * @throws Throwable
-     *
      * @group stats-summary-1
      * test 1/20
      */
@@ -57,8 +54,6 @@ class StatsSummaryTest extends StatsBase {
     }
 
     /**
-     * @throws Throwable
-     *
      * @group stats-summary-1
      * test 2/20
      */
@@ -87,8 +82,6 @@ class StatsSummaryTest extends StatsBase {
     }
 
     /**
-     * @throws Throwable
-     *
      * @group stats-summary-1
      * test 3/20
      */
@@ -138,15 +131,6 @@ class StatsSummaryTest extends StatsBase {
 
     /**
      * @dataProvider providerTestGenerateStatsTables
-     *
-     * @param string|null $datepicker_start
-     * @param string|null $datepicker_end
-     * @param bool $is_switch_toggled
-     * @param bool $is_random_selector_value
-     * @param bool $are_disabled_select_options_available
-     * @param bool $include_transfers
-     *
-     * @throws Throwable
      *
      * @group stats-summary-1
      * test (see provider)/20
