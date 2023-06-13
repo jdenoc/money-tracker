@@ -341,15 +341,15 @@ class FilterModalTest extends DuskTestCase {
         $institutions = $this->getApiInstitutions();
         $institution_id = collect($institutions)->pluck('id')->random(1)->first();
 
-        Account::factory()->count(3)->create(['disabled'=>0, 'institution_id'=>$institution_id]);
+        Account::factory()->count(3)->create(['institution_id'=>$institution_id]);
         if ($has_disabled_account) {
-            Account::factory()->count(1)->create(['disabled'=>1, 'institution_id'=>$institution_id]);
+            Account::factory()->count(1)->disabled()->create(['institution_id'=>$institution_id]);
         }
         $accounts = $this->getApiAccounts();
 
-        AccountType::factory()->count(3)->create(['disabled'=>0, 'account_id'=>collect($accounts)->pluck('id')->random(1)->first()]);
+        AccountType::factory()->count(3)->create(['account_id'=>collect($accounts)->pluck('id')->random(1)->first()]);
         if ($has_disabled_account_type) {
-            AccountType::factory()->count(1)->create(['disabled'=>1, 'account_id'=>collect($accounts)->pluck('id')->random(1)->first()]);
+            AccountType::factory()->count(1)->disabled()->create(['account_id'=>collect($accounts)->pluck('id')->random(1)->first()]);
         }
         $account_types = $this->getApiAccountTypes();
 
@@ -376,7 +376,7 @@ class FilterModalTest extends DuskTestCase {
                     $this->assertValueFieldCurrency($modal, $this->_selector_modal_filter_field_max_value, $this->_default_currency_character);
 
                     // select an account and confirm the name in the select changes
-                    $account_to_select = collect($accounts)->where('disabled', 0)->random();
+                    $account_to_select = collect($accounts)->where('active', true)->random();
                     $this->selectAccountOrAccountTypeValue($modal, $account_to_select['id']);
                     $modal->assertSeeIn(self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT, $account_to_select['name']);
 
@@ -425,7 +425,7 @@ class FilterModalTest extends DuskTestCase {
         });
     }
 
-    private function assertValueFieldCurrency(Browser $modal, string $selector, string $currency_symbol) {
+    private function assertValueFieldCurrency(Browser $modal, string $selector, string $currency_symbol): void {
         $value_currency = $modal->text($selector." + span.currency-symbol");
         $this->assertStringContainsString($currency_symbol, $value_currency);
     }
@@ -443,9 +443,6 @@ class FilterModalTest extends DuskTestCase {
 
     /**
      * @dataProvider providerFlipSwitch
-     * @param string $switch_selector
-     *
-     * @throws Throwable
      *
      * @group filter-modal-1
      * test (see provider)/20
@@ -473,9 +470,6 @@ class FilterModalTest extends DuskTestCase {
 
     /**
      * @dataProvider providerRangeValueConvertsIntoDecimalOfTwoPlaces
-     * @param $field_selector
-     *
-     * @throws Throwable
      *
      * @group filter-modal-1
      * test (see provider)/20
@@ -506,10 +500,6 @@ class FilterModalTest extends DuskTestCase {
 
     /**
      * @dataProvider providerFlippingCompanionSwitches
-     * @param string $init_switch_selector
-     * @param string $companion_switch_selector
-     *
-     * @throws Throwable
      *
      * @group filter-modal-2
      * test (see provider)/20
@@ -630,7 +620,7 @@ class FilterModalTest extends DuskTestCase {
                 // modify all (or at least most) fields
                 ->within($this->_selector_modal_filter.' '.$this->_selector_modal_body, function(Browser $modal) use (&$filter_value) {
                     $accounts = $this->getApiAccounts();
-                    $filter_value = collect($accounts)->where('disabled', 0)->random();
+                    $filter_value = collect($accounts)->where('active', true)->random();
                     $this->selectAccountOrAccountTypeValue($modal, $filter_value['id']);
                 })
 

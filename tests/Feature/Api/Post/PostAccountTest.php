@@ -135,7 +135,7 @@ class PostAccountTest extends TestCase {
         return $account_data;
     }
 
-    private function assertFailedPostResponse(TestResponse $response, $expected_response_status, $expected_error_message) {
+    private function assertFailedPostResponse(TestResponse $response, $expected_response_status, $expected_error_message): void {
         $failure_message = "POST Response is ".$response->getContent();
         $this->assertResponseStatus($response, $expected_response_status, $failure_message);
         $response_as_array = $response->json();
@@ -143,12 +143,12 @@ class PostAccountTest extends TestCase {
         $this->assertFailedPostResponseContent($response_as_array, $expected_error_message, $failure_message);
     }
 
-    private function assertPostResponseHasCorrectKeys(array $response_as_array, string $failure_message) {
+    private function assertPostResponseHasCorrectKeys(array $response_as_array, string $failure_message): void {
         $this->assertArrayHasKey(self::$RESPONSE_KEY_ID, $response_as_array, $failure_message);
         $this->assertArrayHasKey(self::$RESPONSE_KEY_ERROR, $response_as_array, $failure_message);
     }
 
-    private function assertFailedPostResponseContent(array $response_as_array, string $expected_error_msg, string $failure_message) {
+    private function assertFailedPostResponseContent(array $response_as_array, string $expected_error_msg, string $failure_message): void {
         $this->assertEquals(self::$ERROR_ID, $response_as_array[self::$RESPONSE_KEY_ID], $failure_message);
         $this->assertNotEmpty($response_as_array[self::$RESPONSE_KEY_ERROR], $failure_message);
         $this->assertStringContainsString($expected_error_msg, $response_as_array[self::$RESPONSE_KEY_ERROR], $failure_message);

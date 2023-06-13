@@ -168,18 +168,18 @@ class SettingsAccountsTest extends SettingsBase {
         $this->assertSaveButtonDefault($section);
     }
 
-    protected function assertFormWithExistingData(Browser $section, BaseModel $node) {
-        $this->assertObjectIsOfType($node, Account::class);
-        $currency = CurrencyHelper::fetchCurrencies()->where('code', $node->currency)->first();
+    protected function assertFormWithExistingData(Browser $section, BaseModel $object) {
+        $this->assertObjectIsOfType($object, Account::class);
+        $currency = CurrencyHelper::fetchCurrencies()->where('code', $object->currency)->first();
         $section
-            ->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, $node->name)
+            ->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, $object->name)
             ->waitUntilMissing(self::$SELECTOR_SETTINGS_FORM_LOADING_INSTITUTION, self::$WAIT_SECONDS)
-            ->assertSelected(self::$SELECTOR_SETTINGS_FORM_SELECT_INSTITUTION, $node->institution_id)
+            ->assertSelected(self::$SELECTOR_SETTINGS_FORM_SELECT_INSTITUTION, $object->institution_id)
             ->assertRadioSelected(sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_FORM_RADIO_CURRENCY_INPUT, $currency->label), $currency->code)
-            ->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_TOTAL, $node->total)
+            ->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_TOTAL, $object->total)
             ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_CURRENCY_TOTAL, CurrencyHelper::convertCurrencyHtmlToCharacter($currency->html));
-        ;
-        if ($node->disabled) {
+
+        if ($object->disabled) {
             $this->assertActiveStateToggleInactive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
         } else {
             $this->assertActiveStateToggleActive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
@@ -187,15 +187,15 @@ class SettingsAccountsTest extends SettingsBase {
 
         $section
             ->assertVisible(self::$SELECTOR_SETTINGS_FORM_LABEL_CREATED)
-            ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_CREATED, $this->convertDateToECMA262Format($node->create_stamp))
+            ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_CREATED, $this->convertDateToECMA262Format($object->create_stamp))
             ->assertVisible(self::$SELECTOR_SETTINGS_FORM_LABEL_MODIFIED)
-            ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_MODIFIED, $this->convertDateToECMA262Format($node->modified_stamp))
+            ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_MODIFIED, $this->convertDateToECMA262Format($object->modified_stamp))
             ->assertVisible(self::$SELECTOR_SETTINGS_FORM_LABEL_DISABLED);
 
-        if (is_null($node->disabled_stamp)) {
+        if (is_null($object->disabled_stamp)) {
             $section->assertMissing(self::$SELECTOR_SETTINGS_FORM_DISABLED);
         } else {
-            $section->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_DISABLED, $this->convertDateToECMA262Format($node->disabled_stamp));
+            $section->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_DISABLED, $this->convertDateToECMA262Format($object->disabled_stamp));
         }
 
         $this->assertSaveButtonDisabled($section);

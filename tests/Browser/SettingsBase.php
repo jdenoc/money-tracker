@@ -167,15 +167,15 @@ abstract class SettingsBase extends DuskTestCase {
                 $settings_display->within(static::$SELECTOR_SETTINGS_DISPLAY_SECTION, function(Browser $section) {
                     $section->waitUntilMissing(static::$SELECTOR_SETTINGS_LOADING_OBJECTS, self::$WAIT_SECONDS);
 
-                    $node = $this->getObject();
-                    $this->interactWithObjectListItem($section, $node);
-                    $this->assertFormWithExistingData($section, $node);
+                    $object = $this->getObject();
+                    $this->interactWithObjectListItem($section, $object);
+                    $this->assertFormWithExistingData($section, $object);
 
                     $this->clickClearButton($section);
                     $this->assertFormDefaults($section);
 
-                    $this->interactWithObjectListItem($section, $node, false);
-                    $this->assertFormWithExistingData($section, $node);
+                    $this->interactWithObjectListItem($section, $object, false);
+                    $this->assertFormWithExistingData($section, $object);
                 });
             });
         });
@@ -330,7 +330,7 @@ abstract class SettingsBase extends DuskTestCase {
 
     abstract protected function assertFormDefaultsFull(Browser $section);
 
-    abstract protected function assertFormWithExistingData(Browser $section, BaseModel $node);
+    abstract protected function assertFormWithExistingData(Browser $section, BaseModel $object);
 
     abstract protected function assertNodesVisible(Browser $section);
 

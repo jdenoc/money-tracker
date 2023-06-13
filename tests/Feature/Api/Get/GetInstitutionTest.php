@@ -49,7 +49,7 @@ class GetInstitutionTest extends TestCase {
         $generated_institution = Institution::factory()->create();
         $generated_accounts = Account::factory()->count($generated_account_count)->for($generated_institution)->create();
         // These nodes are not in the response output. Let's hide them from the object collection.
-        $generated_accounts->makeHidden(['institution_id', Account::CREATED_AT, Account::UPDATED_AT, 'disabled_stamp']);
+        $generated_accounts->makeHidden(['institution_id', Account::CREATED_AT, Account::UPDATED_AT, Account::DELETED_AT]);
 
         // WHEN
         $response = $this->get(sprintf($this->_base_uri, $generated_institution->id));
@@ -67,7 +67,7 @@ class GetInstitutionTest extends TestCase {
         }
     }
 
-    public function assertInstitutionNode(array $institute_in_response, Institution $generated_institution) {
+    public function assertInstitutionNode(array $institute_in_response, Institution $generated_institution): void {
         $expected_elements = ['id', 'name', 'active', Institution::CREATED_AT, Institution::UPDATED_AT, Institution::DELETED_AT, 'accounts'];
         $this->assertEqualsCanonicalizing($expected_elements, array_keys($institute_in_response));
 
@@ -95,8 +95,8 @@ class GetInstitutionTest extends TestCase {
         }
     }
 
-    public function assertInstitutionAccountNodesOK($institution_account_in_response, $generated_accounts) {
-        $expected_elements = ['id', 'name', 'disabled', 'total', 'currency'];
+    public function assertInstitutionAccountNodesOK($institution_account_in_response, $generated_accounts): void {
+        $expected_elements = ['id', 'name', 'active', 'total', 'currency'];
         $this->assertEqualsCanonicalizing($expected_elements, array_keys($institution_account_in_response));
 
         $generated_account = $generated_accounts->where('id', $institution_account_in_response['id'])->first();
