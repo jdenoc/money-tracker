@@ -133,7 +133,7 @@ class PostEntriesTest extends ListEntriesBase {
         // THEN
         $response->assertStatus(HttpStatus::HTTP_OK);
         $response_as_array = $response->json();
-        $this->assertEquals(count($generated_entries), $response_as_array['count']);
+        $this->assertCount($response_as_array['count'], $generated_entries);
         unset($response_as_array['count']);
         $this->runEntryListAssertions(count($generated_entries), $response_as_array, $generated_entries);
     }

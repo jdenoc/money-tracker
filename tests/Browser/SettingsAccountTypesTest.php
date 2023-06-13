@@ -138,19 +138,19 @@ class SettingsAccountTypesTest extends SettingsBase {
         $this->assertSaveButtonDefault($section);
     }
 
-    protected function assertFormWithExistingData(Browser $section, BaseModel $node) {
-        $this->assertObjectIsOfType($node, AccountType::class);
+    protected function assertFormWithExistingData(Browser $section, BaseModel $object) {
+        $this->assertObjectIsOfType($object, AccountType::class);
 
         $section
             ->scrollIntoView(self::$SELECTOR_SETTINGS_HEADER)
 
-            ->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, $node->name)
+            ->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, $object->name)
             ->waitUntilMissing(self::$SELECTOR_SETTINGS_FORM_LOADING_TYPE, self::$WAIT_SECONDS)
-            ->assertSelected(self::$SELECTOR_SETTINGS_FORM_SELECT_TYPE, $node->type)
-            ->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_LAST_DIGITS, $node->last_digits)
+            ->assertSelected(self::$SELECTOR_SETTINGS_FORM_SELECT_TYPE, $object->type)
+            ->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_LAST_DIGITS, $object->last_digits)
             ->waitUntilMissing(self::$SELECTOR_SETTINGS_FORM_LOADING_ACCOUNT, self::$WAIT_SECONDS)
-            ->assertSelected(self::$SELECTOR_SETTINGS_FORM_SELECT_ACCOUNT, $node->account_id);
-        if ($node->disabled) {
+            ->assertSelected(self::$SELECTOR_SETTINGS_FORM_SELECT_ACCOUNT, $object->account_id);
+        if ($object->disabled) {
             $this->assertActiveStateToggleInactive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
         } else {
             $this->assertActiveStateToggleActive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
@@ -158,14 +158,14 @@ class SettingsAccountTypesTest extends SettingsBase {
 
         $section
             ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_LABEL_CREATED, self::$LABEL_SETTINGS_LABEL_CREATED)
-            ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_CREATED, $this->convertDateToECMA262Format($node->create_stamp))
+            ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_CREATED, $this->convertDateToECMA262Format($object->create_stamp))
             ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_LABEL_MODIFIED, self::$LABEL_SETTINGS_LABEL_MODIFIED)
-            ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_MODIFIED, $this->convertDateToECMA262Format($node->modified_stamp))
+            ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_MODIFIED, $this->convertDateToECMA262Format($object->modified_stamp))
             ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_LABEL_DISABLED, self::$LABEL_SETTINGS_LABEL_DISABLED);
-        if (is_null($node->disabled_stamp)) {
+        if (is_null($object->disabled_stamp)) {
             $section->assertMissing(self::$SELECTOR_SETTINGS_FORM_DISABLED);
         } else {
-            $section->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_DISABLED, $this->convertDateToECMA262Format($node->disabled_stamp));
+            $section->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_DISABLED, $this->convertDateToECMA262Format($object->disabled_stamp));
         }
 
         $this->assertSaveButtonDisabled($section);

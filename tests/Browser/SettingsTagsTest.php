@@ -69,12 +69,12 @@ class SettingsTagsTest extends SettingsBase {
         $this->assertSaveButtonDefault($section);
     }
 
-    protected function assertFormWithExistingData(Browser $section, BaseModel $node) {
-        $this->assertObjectIsOfType($node, Tag::class);
+    protected function assertFormWithExistingData(Browser $section, BaseModel $object) {
+        $this->assertObjectIsOfType($object, Tag::class);
 
         $section
             ->scrollIntoView(self::$SELECTOR_SETTINGS_HEADER)
-            ->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, $node->name);
+            ->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, $object->name);
         $this->assertSaveButtonDisabled($section);
     }
 

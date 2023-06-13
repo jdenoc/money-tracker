@@ -101,10 +101,10 @@ class SettingsInstitutionsTest extends SettingsBase {
         $this->assertSaveButtonDisabled($section);
     }
 
-    protected function assertFormWithExistingData(Browser $section, BaseModel $node): void {
-        $this->assertObjectIsOfType($node, Institution::class);
-        $section->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, $node->name);
-        if ($node->active) {
+    protected function assertFormWithExistingData(Browser $section, BaseModel $object): void {
+        $this->assertObjectIsOfType($object, Institution::class);
+        $section->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, $object->name);
+        if ($object->active) {
             $this->assertActiveStateToggleActive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
         } else {
             $this->assertActiveStateToggleInactive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
@@ -112,14 +112,14 @@ class SettingsInstitutionsTest extends SettingsBase {
 
         $section
             ->assertVisible(self::$SELECTOR_SETTINGS_FORM_LABEL_CREATED)
-            ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_CREATED, $this->convertDateToECMA262Format($node->create_stamp))
+            ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_CREATED, $this->convertDateToECMA262Format($object->create_stamp))
             ->assertVisible(self::$SELECTOR_SETTINGS_FORM_LABEL_MODIFIED)
-            ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_MODIFIED, $this->convertDateToECMA262Format($node->modified_stamp))
+            ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_MODIFIED, $this->convertDateToECMA262Format($object->modified_stamp))
             ->assertVisible(self::$SELECTOR_SETTINGS_FORM_LABEL_DISABLED);
-        if($node->active) {
+        if($object->active) {
             $section->assertMissing(self::$SELECTOR_SETTINGS_FORM_DISABLED);
         } else {
-            $section->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_DISABLED, $this->convertDateToECMA262Format($node->disabled_stamp));
+            $section->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_DISABLED, $this->convertDateToECMA262Format($object->disabled_stamp));
         }
 
         $this->assertSaveButtonDisabled($section);

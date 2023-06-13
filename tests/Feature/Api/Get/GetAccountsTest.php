@@ -15,7 +15,7 @@ class GetAccountsTest extends TestCase {
         $account_count = fake()->randomDigitNotZero();
         $generated_accounts = Account::factory()->count($account_count)->create();
         // These nodes are not in the response output. Let's hide them from the object collection.
-        $generated_accounts->makeHidden([Account::UPDATED_AT, Account::CREATED_AT, 'disabled_stamp']);
+        $generated_accounts->makeHidden([Account::UPDATED_AT, Account::CREATED_AT, Account::DELETED_AT]);
 
         // WHEN
         $response = $this->get($this->_uri);
