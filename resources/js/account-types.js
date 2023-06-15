@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import {Accounts} from "./accounts";
 import {ObjectBaseClass} from "./objectBaseClass";
 import {SnotifyStyle} from "vue-snotify";
@@ -76,5 +77,14 @@ export class AccountTypes extends ObjectBaseClass {
     } else {
       return "";  // couldn't find the account_type.name associated with the provided ID
     }
+  }
+
+  get retrieve(){
+    // TODO: remove when account-types.disabled has been removed
+    let accountTypes = _.cloneDeep(super.retrieve)
+    accountTypes.map(function(accountType){
+      return accountType.active = !accountType.disabled
+    })
+    return accountTypes;
   }
 }

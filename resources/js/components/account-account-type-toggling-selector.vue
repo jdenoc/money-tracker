@@ -112,7 +112,7 @@ export default {
       return !_.isEmpty(this.listAccountOrAccountTypes)
         && this.listAccountOrAccountTypes
           .filter(function(accountOrAccountTypeObject){
-            return !accountOrAccountTypeObject.active  // FIXME: this breaks "account-type" displays
+            return !accountOrAccountTypeObject.active
           }).length > 0;
     },
 
@@ -161,7 +161,7 @@ export default {
     processListOfObjects: function(listOfObjects, canShowDisabled=true){
       if(!canShowDisabled){
         listOfObjects = listOfObjects.filter(function(object){
-          return object.active;  // FIXME: this breaks "account-type" displays
+          return object.active;
         });
       }
       return _.orderBy(listOfObjects, 'name');
