@@ -19,7 +19,6 @@ class PostAccountTypeTest extends TestCase {
         parent::setUp();
         Account::factory()
             ->count(3)
-            ->state(['disabled'=>false])
             ->for(Institution::factory())
             ->create();
     }

@@ -54,8 +54,6 @@ class FilterModalTest extends DuskTestCase {
     }
 
     /**
-     * @throws Throwable
-     *
      * @group filter-modal-1
      * test 1/20
      */
@@ -74,8 +72,6 @@ class FilterModalTest extends DuskTestCase {
     }
 
     /**
-     * @throws Throwable
-     *
      * @group filter-modal-1
      * test 2/20
      */
@@ -197,8 +193,6 @@ class FilterModalTest extends DuskTestCase {
     }
 
     /**
-     * @throws Throwable
-     *
      * @group filter-modal-1
      * test 3/20
      */
@@ -221,8 +215,6 @@ class FilterModalTest extends DuskTestCase {
     }
 
     /**
-     * @throws Throwable
-     *
      * @group filter-modal-1
      * test 4/20
      */
@@ -242,8 +234,6 @@ class FilterModalTest extends DuskTestCase {
     }
 
     /**
-     * @throws Throwable
-     *
      * @group filter-modal-1
      * test 5/20
      */
@@ -261,8 +251,6 @@ class FilterModalTest extends DuskTestCase {
     }
 
     /**
-     * @throws Throwable
-     *
      * @group filter-modal-1
      * test 6/20
      */
@@ -280,8 +268,6 @@ class FilterModalTest extends DuskTestCase {
     }
 
     /**
-     * @throws Throwable
-     *
      * @group filter-modal-1
      * test 7/20
      */
@@ -298,8 +284,6 @@ class FilterModalTest extends DuskTestCase {
     }
 
     /**
-     * @throws Throwable
-     *
      * @group filter-modal-1
      * test 8/20
      */
@@ -326,10 +310,6 @@ class FilterModalTest extends DuskTestCase {
 
     /**
      * @dataProvider providerFlipAccountAndAccountTypeSwitch
-     * @param boolean $has_disabled_account
-     * @param boolean $has_disabled_account_type
-     *
-     * @throws Throwable
      *
      * @group filter-modal-1
      * test (see provider)/20
@@ -347,9 +327,9 @@ class FilterModalTest extends DuskTestCase {
         }
         $accounts = $this->getApiAccounts();
 
-        AccountType::factory()->count(3)->create(['account_id'=>collect($accounts)->pluck('id')->random(1)->first()]);
+        AccountType::factory()->count(3)->create(['disabled'=>false, 'account_id'=>collect($accounts)->pluck('id')->random(1)->first()]);
         if ($has_disabled_account_type) {
-            AccountType::factory()->count(1)->disabled()->create(['account_id'=>collect($accounts)->pluck('id')->random(1)->first()]);
+            AccountType::factory()->count(1)->create(['disabled'=>true, 'account_id'=>collect($accounts)->pluck('id')->random(1)->first()]);
         }
         $account_types = $this->getApiAccountTypes();
 
@@ -526,8 +506,6 @@ class FilterModalTest extends DuskTestCase {
     }
 
     /**
-     * @throws Throwable
-     *
      * @group filter-modal-2
      * test 5/20
      */
@@ -605,8 +583,6 @@ class FilterModalTest extends DuskTestCase {
     }
 
     /**
-     * @throws Throwable
-     *
      * @group filter-modal-2
      * test 6/20
      */
