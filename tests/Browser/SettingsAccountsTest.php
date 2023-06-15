@@ -70,16 +70,18 @@ class SettingsAccountsTest extends SettingsBase {
     }
 
     public function providerDisablingOrRestoringAccount(): array {
-        return [];
+        return [
+            'disabling account'=>['isInitAccountActive'=>true],     // test 7/20
+            'restoring account'=>['isInitAccountActive'=>false],    // test 8/20
+        ];
     }
 
     public function providerSaveExistingSettingNode(): array {
         return [
-            'name'=>[self::$SELECTOR_SETTINGS_FORM_INPUT_NAME],                         // test 7/20
-            'institution'=>[self::$SELECTOR_SETTINGS_FORM_SELECT_INSTITUTION],          // test 8/20
-            'currency'=>[self::$TEMPLATE_SELECTOR_SETTINGS_FORM_RADIO_CURRENCY_INPUT],  // test 9/20
-            'total'=>[self::$SELECTOR_SETTINGS_FORM_INPUT_TOTAL],                       // test 10/20
-            'active'=>[self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE],                    // test 11/20
+            'name'=>[self::$SELECTOR_SETTINGS_FORM_INPUT_NAME],                         // test 9/20
+            'institution'=>[self::$SELECTOR_SETTINGS_FORM_SELECT_INSTITUTION],          // test 10/20
+            'currency'=>[self::$TEMPLATE_SELECTOR_SETTINGS_FORM_RADIO_CURRENCY_INPUT],  // test 11/20
+            'total'=>[self::$SELECTOR_SETTINGS_FORM_INPUT_TOTAL],                       // test 12/20
         ];
     }
 
