@@ -13,7 +13,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Laravel\Dusk\Browser;
 use Tests\Browser\Pages\SettingsPage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
-use Throwable;
 
 abstract class SettingsBase extends DuskTestCase {
     use DuskTraitToggleButton;
@@ -69,8 +68,6 @@ abstract class SettingsBase extends DuskTestCase {
     // ------------ ------------ ------------
 
     /**
-     * @throws Throwable
-     *
      * test 1/20
      */
     public function testDefaultSettingsPageState() {
@@ -94,8 +91,6 @@ abstract class SettingsBase extends DuskTestCase {
     }
 
     /**
-     * @throws Throwable
-     *
      * test 2/20
      */
     public function testNavigateToSpecificSettingsAndAssertForm() {
@@ -113,8 +108,6 @@ abstract class SettingsBase extends DuskTestCase {
     }
 
     /**
-     * @throws Throwable
-     *
      * test 3/20
      */
     public function testObjectsListedUnderFormAreVisible() {
@@ -132,8 +125,6 @@ abstract class SettingsBase extends DuskTestCase {
     }
 
     /**
-     * @throws Throwable
-     *
      * test 4/20
      */
     public function testFormFieldInteractionAndClearButtonFunctionality() {
@@ -154,8 +145,6 @@ abstract class SettingsBase extends DuskTestCase {
     }
 
     /**
-     * @throws Throwable
-     *
      * test 5/20
      */
     public function testClickExistingNodeWillDisplayDataInFormThenClearFormAndReclickSameNode() {
@@ -182,8 +171,6 @@ abstract class SettingsBase extends DuskTestCase {
     }
 
     /**
-     * @throws Throwable
-     *
      * test 6/20
      */
     public function testSaveNewSettingObject() {
@@ -193,7 +180,7 @@ abstract class SettingsBase extends DuskTestCase {
             $browser->within(self::$SELECTOR_SETTINGS_DISPLAY, function(Browser $settings_display) {
                 $this->assertSettingsSectionDisplayed($settings_display);
                 $settings_display->within(static::$SELECTOR_SETTINGS_DISPLAY_SECTION, function(Browser $section) {
-                    $nodes = $this->getAllObjects();
+                    $objects = $this->getAllObjects();
                     $this->fillForm($section);
 
                     $this->assertSaveButtonEnabled($section);
@@ -207,12 +194,12 @@ abstract class SettingsBase extends DuskTestCase {
 
                     $this->assertFormDefaults($section);
 
-                    $new_node =$this->getAllObjects()->diff($nodes)->first();
-                    $this->interactWithObjectListItem($section, $new_node);
+                    $new_object =$this->getAllObjects()->diff($objects)->first();
+                    $this->interactWithObjectListItem($section, $new_object);
                     $section->elsewhere(self::$SELECTOR_PRIMARY_DIV, function(Browser $body) {
                         $this->waitForLoadingToStop($body);
                     });
-                    $this->assertFormWithExistingData($section, $new_node);
+                    $this->assertFormWithExistingData($section, $new_object);
                 });
             });
         });
@@ -220,7 +207,6 @@ abstract class SettingsBase extends DuskTestCase {
 
     /**
      * @dataProvider providerSaveExistingSettingNode
-     * @throws Throwable
      *
      * test ?/20
      */
@@ -260,7 +246,6 @@ abstract class SettingsBase extends DuskTestCase {
 
     /**
      * @dataProvider providerDisablingOrRestoringAccount
-     * @throws \Throwable
      *
      * test ?/25
      */
