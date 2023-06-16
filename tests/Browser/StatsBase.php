@@ -15,7 +15,6 @@ use Illuminate\Support\Collection;
 use Laravel\Dusk\Browser;
 use Tests\Browser\Pages\StatsPage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
-use Throwable;
 
 class StatsBase extends DuskTestCase {
     use DuskTraitLoading;
