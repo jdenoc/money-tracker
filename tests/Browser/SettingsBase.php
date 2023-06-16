@@ -220,11 +220,11 @@ abstract class SettingsBase extends DuskTestCase {
                     $this->assertFormDefaults($section);
                     $section->waitUntilMissing(static::$SELECTOR_SETTINGS_LOADING_OBJECTS, self::$WAIT_SECONDS);
 
-                    $node = $this->getObject();
-                    $this->interactWithObjectListItem($section, $node);
-                    $this->assertFormWithExistingData($section, $node);
+                    $object = $this->getObject();
+                    $this->interactWithObjectListItem($section, $object);
+                    $this->assertFormWithExistingData($section, $object);
 
-                    $this->interactWithFormElement($section, $form_element, $node);
+                    $this->interactWithFormElement($section, $form_element, $object);
 
                     $this->assertSaveButtonEnabled($section);
                     $this->clickSaveButton($section);
@@ -236,9 +236,9 @@ abstract class SettingsBase extends DuskTestCase {
                     });
                     $this->assertFormDefaults($section);
 
-                    $node = $this->getObject($node->id);    // get updated data
-                    $this->interactWithObjectListItem($section, $node);
-                    $this->assertFormWithExistingData($section, $node);
+                    $object = $this->getObject($object->id);    // get updated data
+                    $this->interactWithObjectListItem($section, $object);
+                    $this->assertFormWithExistingData($section, $object);
                 });
             });
         });

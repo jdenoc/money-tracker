@@ -153,7 +153,7 @@ class PutAccountTypeTest extends TestCase {
     }
 
     private function getExistingActiveAccountId(): int {
-        return Account::where('disabled', false)->get()->random()->id;
+        return Account::all()->random()->id;
     }
 
     private function assertFailedPostResponse(TestResponse $response, $expected_response_status, $expected_error_message): void {

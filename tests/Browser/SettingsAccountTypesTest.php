@@ -257,7 +257,7 @@ class SettingsAccountTypesTest extends SettingsBase {
                 } while ($node->name == $name || $account_types->contains('name', $name));
                 $section
                     ->clear($selector)
-                    ->type($selector, fake()->word());
+                    ->type($selector, $name);
                 break;
             case self::$SELECTOR_SETTINGS_FORM_SELECT_TYPE:
                 do {

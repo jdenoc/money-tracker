@@ -72,7 +72,7 @@ class PostAccountTypeTest extends TestCase {
     public function testCreateAccountMissingProperty(array $account_type_data, string $error_message) {
         // GIVEN: see providerCreateAccountMissingProperty()
         if (isset($account_type_data['account_id'])) {
-            $account_type_data['account_id'] = Account::where('disabled', false)->get()->random()->id;
+            $account_type_data['account_id'] = Account::all()->random()->id;
         }
 
         // WHEN
@@ -97,7 +97,7 @@ class PostAccountTypeTest extends TestCase {
     public function testCreateAccountWithInvalidType() {
         // GIVEN
         $account_type_data = $this->generateDummyAccountTypeData();
-        $account_type_data['account_id'] = Account::where('disabled', false)->get()->random()->id;
+        $account_type_data['account_id'] = Account::all()->random()->id;
         $account_type_data['type'] = fake()->word();
 
         // WHEN
@@ -110,7 +110,7 @@ class PostAccountTypeTest extends TestCase {
     public function testCreateAccount() {
         // GIVEN
         $account_type_data = $this->generateDummyAccountTypeData();
-        $account_type_data['account_id'] = Account::where('disabled', false)->get()->random()->id;
+        $account_type_data['account_id'] = Account::all()->random()->id;
 
         // WHEN
         $response = $this->postJson($this->_base_uri, $account_type_data);

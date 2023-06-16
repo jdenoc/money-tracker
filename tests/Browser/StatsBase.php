@@ -53,13 +53,6 @@ class StatsBase extends DuskTestCase {
         $this->month_end = date("Y-m-t");
     }
 
-    /**
-     * @param string $side_panel_selector
-     * @param string $stats_form_selector
-     * @param string $stats_results_selector
-     *
-     * @throws Throwable
-     */
     protected function generatingADifferentChartWontCauseSummaryTablesToBecomeVisible(string $side_panel_selector, string $stats_form_selector, string $stats_results_selector) {
         // TODO: rewrite this to accept any stats component; not just redirect to the stats-summary component
         // TODO: wait until all other stats components have been adjusted
@@ -92,9 +85,6 @@ class StatsBase extends DuskTestCase {
     /**
      * Sometimes we select a collection of filter parameters that result in no entries being available.
      * In those situations, we need to make sure that at least one entry does exist.
-     *
-     * @param array $filter_data
-     * @param string $memo
      */
     protected function generateEntryFromFilterData(array $filter_data, string $memo = '') {
         $new_entry_data = ['disabled'=>false];
