@@ -271,7 +271,7 @@ class SettingsAccountsTest extends SettingsBase {
     }
 
     protected function getAllObjects(): Collection {
-        return Account::all();
+        return Account::withTrashed()->get();
     }
 
     protected function interactWithObjectListItem(Browser $section, BaseModel $node, bool $is_fresh_load=true) {
