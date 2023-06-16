@@ -101,7 +101,9 @@ class StatsBase extends DuskTestCase {
         if (!empty($filter_data[self::$FILTER_KEY_ACCOUNT_TYPE])) {
             $new_entry_data['account_type_id'] = $filter_data[self::$FILTER_KEY_ACCOUNT_TYPE];
         } elseif (!empty($filter_data[self::$FILTER_KEY_ACCOUNT])) {
-            $account = Account::with('account_types')->find($filter_data[self::$FILTER_KEY_ACCOUNT]);
+            $account = Account::withTrashed()
+                ->with('account_types')
+                ->findOrFail($filter_data[self::$FILTER_KEY_ACCOUNT]);
             $new_entry_data['account_type_id'] = $account->account_types->first()->id;
         } else {
             // Can't leave the assignment up to RNG in the factory.
