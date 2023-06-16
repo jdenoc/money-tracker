@@ -42,7 +42,6 @@ class ExportsTest extends ListEntriesBase {
 
     /**
      * @dataProvider providerExportRequestMethodNotAllowed
-     * @param string $method
      */
     public function testExportRequestMethodNotAllowed(string $method) {
         // GIVEN - see provider
@@ -61,7 +60,6 @@ class ExportsTest extends ListEntriesBase {
 
     /**
      * @dataProvider providerExportPostRequest
-     * @param array $filter
      */
     public function testExportPostRequest(array $filter) {
         // GIVEN - see provider
