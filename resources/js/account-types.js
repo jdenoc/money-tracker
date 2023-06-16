@@ -37,7 +37,7 @@ export class AccountTypes extends ObjectBaseClass {
 
   get retrieveTypes(){
     this.storeType = this.apiStoreTypes.types;
-    let types = this.retrieve;
+    let types = super.retrieve;
     this.storeType = this.apiStoreTypes.default;
     return types;
   }
