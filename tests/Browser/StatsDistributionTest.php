@@ -229,10 +229,10 @@ class StatsDistributionTest extends StatsBase {
                     if ($is_account_switch_toggled) {
                         // switch to account-types
                         $this->toggleAccountOrAccountTypeSwitch($form);
-                        $account_or_account_type_id = ($is_random_selector_value) ? $account_types->where('disabled', $are_disabled_select_options_available)->pluck('id')->random() : '';
+                        $account_or_account_type_id = ($is_random_selector_value) ? $account_types->where('disabled', $are_disabled_select_options_available)->pluck('id')->random() : null;
                     } else {
                         // stay with accounts
-                        $account_or_account_type_id = ($is_random_selector_value) ? $accounts->where('active', !$are_disabled_select_options_available)->pluck('id')->random() : '';
+                        $account_or_account_type_id = ($is_random_selector_value) ? $accounts->where('active', !$are_disabled_select_options_available)->pluck('id')->random() : null;
                     }
 
                     $this->selectAccountOrAccountTypeValue($form, $account_or_account_type_id);
@@ -314,11 +314,11 @@ class StatsDistributionTest extends StatsBase {
      * So instead for these tests, we'll create a disabled with all the tags
      *
      * @param bool $is_account_type_rather_than_account_toggled
-     * @param int $account_or_account_type_id
+     * @param int|null $account_or_account_type_id
      * @param Collection $account_types
      * @param Collection $tags
      */
-    private function createEntryWithAllTags(bool $is_account_type_rather_than_account_toggled, $account_or_account_type_id, $account_types, $tags) {
+    private function createEntryWithAllTags(bool $is_account_type_rather_than_account_toggled, ?int $account_or_account_type_id, $account_types, $tags) {
         if (!empty($account_or_account_type_id)) {
             if ($is_account_type_rather_than_account_toggled) {
                 $account_type_id = $account_or_account_type_id;

@@ -143,13 +143,9 @@ trait AccountOrAccountTypeTogglingSelector {
         });
     }
 
-    /**
-     * @param Browser $browser
-     * @param string|int $selector_value
-     * @throws Exception
-     */
-    public function selectAccountOrAccountTypeValue(Browser $browser, $selector_value) {
+    public function selectAccountOrAccountTypeValue(Browser $browser, ?int $selector_value) {
         $this->assertAccountOrAccountTypeTogglingSelectorIdLabelBeenSet();
+        $selector_value = $selector_value ?? '';
         $browser->within($this->getAccountOrAccountTypeTogglingSelectorComponentId($this->_account_or_account_type_toggling_selector_id_label), function(Browser $component) use ($selector_value) {
             // make sure accounts have finished loading
             $this->waitUntilSelectLoadingIsMissing($component, self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT);

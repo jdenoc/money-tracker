@@ -169,7 +169,7 @@ class SettingsInstitutionsTest extends SettingsBase {
     }
 
     protected function getAllObjects(): Collection {
-        return Institution::all();
+        return Institution::withTrashed()->get();
     }
 
     protected function interactWithObjectListItem(Browser $section, BaseModel $node, bool $is_fresh_load=true) {
