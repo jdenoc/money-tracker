@@ -11,7 +11,6 @@ use Brick\Money\Money;
 use Illuminate\Support\Collection;
 use Laravel\Dusk\Browser;
 use Tests\Browser\Pages\StatsPage;
-use Throwable;
 
 /**
  * Class StatsTrendingTest
@@ -44,8 +43,6 @@ class StatsTrendingTest extends StatsBase {
     }
 
     /**
-     * @throws Throwable
-     *
      * @group stats-trending-1
      * test 1/20
      */
@@ -61,8 +58,6 @@ class StatsTrendingTest extends StatsBase {
     }
 
     /**
-     * @throws Throwable
-     *
      * @group stats-trending-1
      * test 2/20
      */
@@ -97,8 +92,6 @@ class StatsTrendingTest extends StatsBase {
     }
 
     /**
-     * @throws Throwable
-     *
      * @group stats-trending-1
      * test 3/20
      */
@@ -154,15 +147,6 @@ class StatsTrendingTest extends StatsBase {
     /**
      * @dataProvider providerTestGenerateTrendingChart
      *
-     * @param string|null $datepicker_start
-     * @param string|null $datepicker_end
-     * @param bool $is_switch_toggled
-     * @param bool $is_random_selector_value
-     * @param bool $are_disabled_select_options_available
-     * @param bool $include_transfers
-     *
-     * @throws Throwable
-     *
      * @group stats-trending-1
      * test (see provider)/20
      */
@@ -187,7 +171,7 @@ class StatsTrendingTest extends StatsBase {
                         $account_or_account_type_id = ($is_random_selector_value) ? $account_types->where('disabled', $are_disabled_select_options_available)->pluck('id')->random() : '';
                     } else {
                         // stay with accounts
-                        $account_or_account_type_id = ($is_random_selector_value) ? $accounts->where('disabled', $are_disabled_select_options_available)->pluck('id')->random() : '';
+                        $account_or_account_type_id = ($is_random_selector_value) ? $accounts->where('active', !$are_disabled_select_options_available)->pluck('id')->random() : '';
                     }
 
                     $this->selectAccountOrAccountTypeValue($form, $account_or_account_type_id);
@@ -244,8 +228,6 @@ class StatsTrendingTest extends StatsBase {
     }
 
     /**
-     * @throws Throwable
-     *
      * @group stats-trending-1
      * test 18/20
      */

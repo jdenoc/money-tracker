@@ -149,17 +149,13 @@ class StatsSummaryTest extends StatsBase {
                     if ($are_disabled_select_options_available) {
                         $this->toggleShowDisabledAccountOrAccountTypeCheckbox($form);
                     }
-                    if($is_random_selector_value) {
-                        if ($is_switch_toggled) {
-                            // switch to account-types
-                            $this->toggleAccountOrAccountTypeSwitch($form);
-                            $account_or_account_type_id = $account_types->where('disabled', $are_disabled_select_options_available)->pluck('id')->random();
-                        } else {
-                            // stay with accounts
-                            $account_or_account_type_id = $accounts->where('active', !$are_disabled_select_options_available)->pluck('id')->random();
-                        }
+                    if ($is_switch_toggled) {
+                        // switch to account-types
+                        $this->toggleAccountOrAccountTypeSwitch($form);
+                        $account_or_account_type_id = ($is_random_selector_value) ? $account_types->where('disabled', $are_disabled_select_options_available)->pluck('id')->random() : '';
                     } else {
-                        $account_or_account_type_id = '';
+                        // stay with accounts
+                        $account_or_account_type_id = ($is_random_selector_value) ? $accounts->where('active', !$are_disabled_select_options_available)->pluck('id')->random() : '';
                     }
 
                     $this->selectAccountOrAccountTypeValue($form, $account_or_account_type_id);
