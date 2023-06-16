@@ -149,6 +149,8 @@ class SettingsInstitutionsTest extends SettingsBase {
     protected function fillForm(Browser $section) {
         $this->interactWithFormElement($section, self::$SELECTOR_SETTINGS_FORM_INPUT_NAME);
         $section->assertInputValueIsNot(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, '');
+        // don't interact with the "active" toggle button
+        // doing so would clear the form
     }
 
     protected function generateObject(bool $isInitObjectActive): BaseModel {

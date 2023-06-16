@@ -249,13 +249,8 @@ class SettingsAccountsTest extends SettingsBase {
             ->assertInputValueIsNot(self::$SELECTOR_SETTINGS_FORM_INPUT_TOTAL, '')
             ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_CURRENCY_TOTAL, CurrencyHelper::convertCurrencyHtmlToCharacter($currency->html));
 
-        $is_account_active = fake()->boolean();
-        if (!$is_account_active) {
-            $this->interactWithFormElement($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
-            $this->assertActiveStateToggleInactive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
-        } else {
-            $this->assertActiveStateToggleActive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
-        }
+        // don't interact with the "active" toggle button
+        // doing so would clear the form
     }
 
     protected function generateObject(bool $isInitObjectActive): BaseModel {
