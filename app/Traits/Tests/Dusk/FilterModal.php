@@ -81,12 +81,13 @@ trait FilterModal {
                 if ($is_account) {
                     // account
                     $filter_values = $this->getApiAccounts();
+                    $filter_value = collect($filter_values)->where('active', true)->random();
                 } else {
                     // account-type
                     $this->toggleAccountOrAccountTypeSwitch($modal);
                     $filter_values = $this->getApiAccountTypes();
+                    $filter_value = collect($filter_values)->where('disabled', false)->random();
                 }
-                $filter_value = collect($filter_values)->where('disabled', false)->random();
                 $this->selectAccountOrAccountTypeValue($modal, $filter_value['id']);
 
                 if ($is_account) {

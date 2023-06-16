@@ -22,13 +22,7 @@ trait BatchFilterEntries {
         return $filter_data;
     }
 
-    /**
-     * @param array $filter_data
-     * @param bool $is_account_switch_toggled
-     * @param int|null $account_or_account_type_id
-     * @return mixed
-     */
-    private function generateFilterArrayElementAccountOrAccountypeId(array $filter_data, bool $is_account_switch_toggled, $account_or_account_type_id): array {
+    private function generateFilterArrayElementAccountOrAccountypeId(array $filter_data, bool $is_account_switch_toggled, ?int $account_or_account_type_id): array {
         if (!empty($account_or_account_type_id)) {
             if ($is_account_switch_toggled) {
                 $filter_data[self::$FILTER_KEY_ACCOUNT_TYPE] = $account_or_account_type_id;
@@ -39,12 +33,7 @@ trait BatchFilterEntries {
         return $filter_data;
     }
 
-    /**
-     * @param array $filter_data
-     * @param bool $is_expense
-     * @return array
-     */
-    private function generateFilterArrayElementExpense(array $filter_data, $is_expense): array {
+    private function generateFilterArrayElementExpense(array $filter_data, bool $is_expense): array {
         $filter_data[self::$FILTER_KEY_EXPENSE] = $is_expense;
         return $filter_data;
     }
