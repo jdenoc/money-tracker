@@ -2,7 +2,7 @@ import Vue from 'vue';
 import Store from './store';
 
 import Snotify from 'vue-snotify';
-Vue.use(Snotify, {toast: {timeout: 8000}});    // 8 seconds
+Vue.use(Snotify, {toast: {timeout: 10000}});    // 10 seconds
 
 // import VTooltip from 'v-tooltip';
 // Vue.use(VTooltip);
