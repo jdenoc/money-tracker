@@ -12,17 +12,25 @@ class AccountTypeFactory extends Factory {
         $bank_account_number = fake()->bankAccountNumber();
         $account_types = AccountType::getEnumValues();
         $account_type = $account_types[array_rand($account_types)];
-        $disabled = fake()->boolean();
         return [
             'type'=>$account_type,
             'last_digits'=>substr($bank_account_number, strlen($bank_account_number)-5, 4),
             'name'=>fake()->word().' '.$account_type,
             'account_id'=>fake()->randomNumber(FactoryConstants::MAX_RAND_ID_LENGTH, true),
-            'disabled'=>$disabled,
             'create_stamp'=>fake()->date(FactoryConstants::DATE_FORMAT),
-            'modified_stamp'=>fake()->date(FactoryConstants::DATE_FORMAT),
-            'disabled_stamp'=>$disabled ? fake()->date(FactoryConstants::DATE_FORMAT) : null,
+            'disabled_stamp'=>null,
         ];
+    }
+
+    /**
+     * Indicate that an account-type is "disabled"
+     */
+    public function disabled(): Factory {
+        return $this->state(function() {
+            return [
+                'disabled_stamp'=>fake()->date(FactoryConstants::DATE_FORMAT)
+            ];
+        });
     }
 
 }

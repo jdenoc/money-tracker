@@ -206,7 +206,7 @@ abstract class SettingsBase extends DuskTestCase {
     }
 
     /**
-     * @dataProvider providerSaveExistingSettingNode
+     * @dataProvider providerSaveExistingSettingObject
      *
      * test ?/20
      */
@@ -245,13 +245,13 @@ abstract class SettingsBase extends DuskTestCase {
     }
 
     /**
-     * @dataProvider providerDisablingOrRestoringAccount
+     * @dataProvider providerDisablingOrRestoringObject
      *
      * test ?/25
      */
     public function testDisablingOrRestoringObject(bool $isInitObjectActive) {
         // TODO: remove as soon as other objects have been updated
-        if (!in_array(get_class(), ['SettingsAccountTypesTest', 'SettingsTagsTest'])) {
+        if (in_array(get_class(), ['SettingsTagsTest'])) {
             $this->markTestSkipped();
         }
 
@@ -327,13 +327,13 @@ abstract class SettingsBase extends DuskTestCase {
 
     abstract protected function getAllObjects(): Collection;
 
-    abstract protected function interactWithObjectListItem(Browser $section, BaseModel $node, bool $is_fresh_load=true);
+    abstract protected function interactWithObjectListItem(Browser $section, BaseModel $object, bool $is_fresh_load=true): void;
 
-    abstract protected function interactWithFormElement(Browser $section, string $selector, BaseModel $node=null);
+    abstract protected function interactWithFormElement(Browser $section, string $selector, ?BaseModel $object=null): void;
 
-    abstract public function providerDisablingOrRestoringAccount(): array;
+    abstract public function providerDisablingOrRestoringObject(): array;
 
-    abstract public function providerSaveExistingSettingNode(): array;
+    abstract public function providerSaveExistingSettingObject(): array;
 
     // ------------ ------------ ------------
     // ------------ asserts      ------------

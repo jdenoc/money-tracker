@@ -21,7 +21,7 @@ class DeleteAccountTypeTest extends TestCase {
 
         // THEN
         // confirm there are no database records
-        $account_type_collection = AccountType::all();
+        $account_type_collection = AccountType::withTrashed()->all();
         $this->assertTrue($account_type_collection->isEmpty(), $account_type_collection->toJson());
 
         // confirm we got the right response
@@ -32,7 +32,7 @@ class DeleteAccountTypeTest extends TestCase {
     public function testDisabledAccountType() {
         // GIVEN
         $generated_account = Account::factory()->create();
-        $generated_account_type = AccountType::factory()->for($generated_account)->create(['disabled'=>false]);
+        $generated_account_type = AccountType::factory()->for($generated_account)->create();
 
         // WHEN
         $account_response1 = $this->get($this->_get_account_uri.$generated_account->id);    // make this call to confirm account type is NOT disabled

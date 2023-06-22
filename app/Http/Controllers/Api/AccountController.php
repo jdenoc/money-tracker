@@ -10,6 +10,7 @@ use App\Traits\AccountResponseKeys;
 use Brick\Money\ISOCurrencyProvider;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use PHPUnit\Exception;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 
 class AccountController extends Controller {
@@ -40,12 +41,12 @@ class AccountController extends Controller {
      */
     public function get_account(int $account_id): Response {
         try {
-            $account = Account::withTrashed()->with('account_types')->findOrFail($account_id);
+            $account = Account::withTrashed()->with(AccountType::getTableName())->findOrFail($account_id);
             $account->account_types->makeHidden([
                 'account_id',    // We already know what account this is. We don't need to re-show it.
                 AccountType::CREATED_AT,
+                AccountType::DELETED_AT,
                 AccountType::UPDATED_AT,
-                'disabled_stamp',
             ]);
             return response($account, HttpStatus::HTTP_OK);
         } catch (\Exception $e) {
@@ -65,6 +66,7 @@ class AccountController extends Controller {
      */
     public function disableAccount(int $accountId): Response {
         try {
+            // must be an active account
             $account_to_disable = Account::findOrFail($accountId);
             $account_to_disable->delete();
             return response('', HttpStatus::HTTP_NO_CONTENT);
@@ -78,7 +80,8 @@ class AccountController extends Controller {
      */
     public function reactivateAccount(int $accountId): Response {
         try {
-            $account_to_reactivate = Account::onlyTrashed()->where('id', $accountId)->firstOrFail();
+            // must be a disabled account
+            $account_to_reactivate = Account::onlyTrashed()->findOrFail($accountId);
         } catch (\Exception $e) {
             return response('', HttpStatus::HTTP_NOT_FOUND);
         }
@@ -94,7 +97,7 @@ class AccountController extends Controller {
         return $this->modify_account($request, $account_id);
     }
 
-    public function modify_account(Request $request, int $account_id=null): Response {
+    public function modify_account(Request $request, ?int $account_id=null): Response {
         $request_body = $request->getContent();
         $account_data = json_decode($request_body, true);
 
@@ -108,8 +111,9 @@ class AccountController extends Controller {
 
         // check validity of institution_id value
         if (isset($account_data['institution_id'])) {
-            $institution = Institution::find($account_data['institution_id']);
-            if (empty($institution)) {
+            try {
+                Institution::findOrFail($account_data['institution_id']);
+            } catch (Exception $e) {
                 return response(
                     [self::$RESPONSE_KEY_ERROR=>self::$ERROR_MSG_INVALID_INSTITUTION, self::$RESPONSE_KEY_ID=>self::$ERROR_ID],
                     HttpStatus::HTTP_BAD_REQUEST

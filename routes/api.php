@@ -78,24 +78,22 @@ Route::post('tag', [TagController::class, 'createTag'])
 Route::put('tag/{tag_id}', [TagController::class, 'updateTag'])
     ->name('tag.put');
 
-// GET /api/account-types
-Route::get('account-types', [AccountTypeController::class, 'list_account_types'])
-    ->name('account_types.get');
-// GET /api/account-types/types
-Route::get('account-types/types', [AccountTypeController::class, 'list_account_type_types'])
-    ->name('account-type.types.get');
-// GET /api/account-type/{account_type_id}
-Route::get('account-type/{account_type_id}', [AccountTypeController::class, 'get_account_type'])
-    ->name('account_type.get');
-// DELETE /api/account-type/{account_type_id}
-Route::delete('account-type/{account_type_id}', [AccountTypeController::class, 'disable_account_type'])
-    ->name('account_type.delete');
-// POST /api/account-type
-Route::post('account-type', [AccountTypeController::class, 'create_account_type'])
-    ->name('account_type.post');
-// PUT /api/account-type/{account_type_id}
-Route::put('account-type/{account_type_id}', [AccountTypeController::class, 'update_account_type'])
-    ->name('account_type.put');
+Route::controller(AccountTypeController::class)->group(function() {
+    // /api/account-types/{?}
+    Route::prefix('account-types/')->name('account_types.')->group(function() {
+        Route::get('', 'list_account_types')->name('get');
+        Route::get('types', 'list_account_type_types')->name('types.get');
+    });
+
+    // /api/account-type/{?}
+    Route::prefix('account-type/')->name('account_type.')->group(function() {
+        Route::delete('{account_type_id}', 'disable_account_type')->name('delete');
+        Route::get('{account_type_id}', 'get_account_type')->name('get');
+        Route::patch('{account_type_id}', 'enable_account_type')->name('patch');
+        Route::post('', 'create_account_type')->name('post');
+        Route::put('{account_type_id}', 'update_account_type')->name('put');
+    });
+});
 
 // GET /api/entries
 Route::get('entries', [EntryController::class, 'get_paged_entries'])
