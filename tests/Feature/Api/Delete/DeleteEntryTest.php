@@ -58,7 +58,7 @@ class DeleteEntryTest extends TestCase {
         // THEN
         $this->assertResponseStatus($get_response, HttpStatus::HTTP_NOT_FOUND);
         $this->assertResponseStatus($delete_response, HttpStatus::HTTP_NOT_FOUND);
-        $this->assertTrue(is_array($get_response->json()));
+        $this->assertIsArray($get_response->json());
         $this->assertEmpty($get_response->json());
         $this->assertEmpty($delete_response->getContent());
     }
