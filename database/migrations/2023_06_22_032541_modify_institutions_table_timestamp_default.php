@@ -1,10 +1,11 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration {
 
-    private const TABLE = 'account_types';
+    private const TABLE = 'institutions';
     private const COLUMN_TIMESTAMP_CREATE = 'create_stamp';
     private const COLUMN_TIMESTAMP_MODIFY = 'modified_stamp';
 
