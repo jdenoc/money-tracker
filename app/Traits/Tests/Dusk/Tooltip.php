@@ -9,25 +9,25 @@ trait Tooltip {
     private static string $SELECTOR_TOOLTIP = '.tooltip';
     private static string $TEMPLATE_SELECTOR_TOOLTIP_ID = '.tooltip#%s';
 
-    protected function assertTooltipMissing(Browser $browser) {
+    protected function assertTooltipMissing(Browser $browser): void {
         $browser->elsewhere('', function(Browser $body) {
             $body->assertMissing(self::$SELECTOR_TOOLTIP);
         });
     }
 
-    protected function assertTooltipVisible(Browser $browser, string $tooltipId=null) {
+    protected function assertTooltipVisible(Browser $browser, ?string $tooltipId=null): void {
         $tooltip_selector = $this->getTooltipElementSelector($tooltipId);
         $browser->elsewhere('', function(Browser $body) use ($tooltip_selector) {
             $body->assertVisible($tooltip_selector);
         });
     }
 
-    protected function assertTooltipVisibleByTriggerElement(Browser $browser, string $triggerElementSelector) {
+    protected function assertTooltipVisibleByTriggerElement(Browser $browser, string $triggerElementSelector): void {
         $tooltip_id = $this->getTooltipIdFromTriggerElement($browser, $triggerElementSelector);
         $this->assertTooltipVisible($browser, $tooltip_id);
     }
 
-    protected function assertStringInTooltipContents(Browser $browser, string $expectedStringInTooltipContents, string $tooltipId=null) {
+    protected function assertStringInTooltipContents(Browser $browser, string $expectedStringInTooltipContents, ?string $tooltipId=null): void {
         $tooltip_selector = $this->getTooltipElementSelector($tooltipId);
         $browser->elsewhere('', function(Browser $body) use ($tooltip_selector, $expectedStringInTooltipContents) {
             $body
@@ -36,12 +36,12 @@ trait Tooltip {
         });
     }
 
-    protected function assertStringInTooltipContentsByTriggerElement(Browser $browser, string $expectedStringInTooltipContents, string $triggerElementSelector) {
+    protected function assertStringInTooltipContentsByTriggerElement(Browser $browser, string $expectedStringInTooltipContents, string $triggerElementSelector): void {
         $tooltip_id = $this->getTooltipIdFromTriggerElement($browser, $triggerElementSelector);
         $this->assertStringInTooltipContents($browser, $expectedStringInTooltipContents, $tooltip_id);
     }
 
-    protected function assertStringNotInTooltipContents(Browser $browser, string $expectedStringNotInTooltipContents, string $tooltipId=null) {
+    protected function assertStringNotInTooltipContents(Browser $browser, string $expectedStringNotInTooltipContents, ?string $tooltipId=null): void {
         $tooltip_selector = $this->getTooltipElementSelector($tooltipId);
         $browser->elsewhere('', function(Browser $body) use ($tooltip_selector, $expectedStringNotInTooltipContents) {
             $body
@@ -50,7 +50,7 @@ trait Tooltip {
         });
     }
 
-    protected function assertStringNotInTooltipContentsByTriggerElement(Browser $browser, string $expectedStringNotInTooltipContents, string $triggerElementSelector) {
+    protected function assertStringNotInTooltipContentsByTriggerElement(Browser $browser, string $expectedStringNotInTooltipContents, string $triggerElementSelector): void {
         $tooltip_id = $this->getTooltipIdFromTriggerElement($browser, $triggerElementSelector);
         $this->assertStringNotInTooltipContents($browser, $expectedStringNotInTooltipContents, $tooltip_id);
     }
@@ -63,7 +63,7 @@ trait Tooltip {
         return $browser->element($triggerElementSelector)->getAttribute('aria-describedby');
     }
 
-    private function getTooltipElementSelector(string $tooltipId=null): string {
+    private function getTooltipElementSelector(?string $tooltipId=null): string {
         return is_null($tooltipId) ? self::$SELECTOR_TOOLTIP : sprintf(self::$TEMPLATE_SELECTOR_TOOLTIP_ID, $tooltipId);
     }
 

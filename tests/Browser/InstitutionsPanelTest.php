@@ -260,10 +260,10 @@ class InstitutionsPanelTest extends DuskTestCase {
             $this->assertTooltipVisibleByTriggerElement($account_node, '');
             foreach ($account_types_collection as $account_account_type) {
                 $account_type_record_tooltip_text = $account_account_type['name']." (".$account_account_type['last_digits'].")";
-                if ($account_account_type['disabled']) {
-                    $this->assertStringNotInTooltipContentsByTriggerElement($account_node, $account_type_record_tooltip_text, '');
-                } else {
+                if ($account_account_type['active']) {
                     $this->assertStringInTooltipContentsByTriggerElement($account_node, $account_type_record_tooltip_text, '');
+                } else {
+                    $this->assertStringNotInTooltipContentsByTriggerElement($account_node, $account_type_record_tooltip_text, '');
                 }
             }
         } else {
