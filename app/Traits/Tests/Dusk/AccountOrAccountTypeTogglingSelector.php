@@ -163,7 +163,7 @@ trait AccountOrAccountTypeTogglingSelector {
         $browser->within($this->getAccountOrAccountTypeTogglingSelectorComponentId($this->_account_or_account_type_toggling_selector_id_label), function(Browser $component) use ($accounts_or_account_types) {
             if (!$this->_disable_checkbox_checked) {
                 $this->assertSelectOptionsClassOfAccountOrAccountTypeAreNotDisabled($component);
-                $option_values = collect($accounts_or_account_types)->where('disabled', false)->pluck('id')->toArray();
+                $option_values = collect($accounts_or_account_types)->where('active', true)->pluck('id')->toArray();
             } else {
                 $option_values = collect($accounts_or_account_types)->pluck('id')->toArray();
             }
