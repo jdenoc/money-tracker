@@ -11,6 +11,7 @@ use Spatie\Health\Checks\Checks\DatabaseCheck;
 use Spatie\Health\Checks\Checks\DatabaseConnectionCountCheck;
 use Spatie\Health\Checks\Checks\DebugModeCheck;
 use Spatie\Health\Checks\Checks\EnvironmentCheck;
+use Spatie\Health\Checks\Checks\OptimizedAppCheck;
 use Spatie\Health\Checks\Checks\ScheduleCheck;
 use Spatie\Health\Checks\Checks\UsedDiskSpaceCheck;
 use Spatie\Health\Facades\Health;
@@ -27,13 +28,14 @@ class HealthServiceProvider extends ServiceProvider {
             CacheCheck::new()
                 ->name('Cache:file')
                 ->driver('file'),
-            DatabaseCheck::new(),
+            DatabaseCheck::new(),   // check if connection is OK
             DatabaseConnectionCountCheck::new()
                 ->warnWhenMoreConnectionsThan(30)
                 ->failWhenMoreConnectionsThan(50),
             DatabaseMigrationsCheck::new(),
             DebugModeCheck::new(),
             EnvironmentCheck::new(),
+            OptimizedAppCheck::new(),
             ScheduleCheck::new(),
             UsedDiskSpaceCheck::new()
                 ->failWhenUsedSpaceIsAbovePercentage(85),
