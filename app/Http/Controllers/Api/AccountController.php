@@ -10,7 +10,6 @@ use App\Traits\AccountResponseKeys;
 use Brick\Money\ISOCurrencyProvider;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use PHPUnit\Exception;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 
 class AccountController extends Controller {
@@ -113,7 +112,7 @@ class AccountController extends Controller {
         if (isset($account_data['institution_id'])) {
             try {
                 Institution::findOrFail($account_data['institution_id']);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 return response(
                     [self::$RESPONSE_KEY_ERROR=>self::$ERROR_MSG_INVALID_INSTITUTION, self::$RESPONSE_KEY_ID=>self::$ERROR_ID],
                     HttpStatus::HTTP_BAD_REQUEST
