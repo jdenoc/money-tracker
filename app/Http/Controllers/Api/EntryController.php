@@ -15,7 +15,6 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use OutOfRangeException;
-use PHPUnit\Exception;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 
@@ -99,7 +98,7 @@ class EntryController extends Controller {
             $entry = Entry::findOrFail($entry_id);
             $entry->disable();
             return response('', HttpStatus::HTTP_NO_CONTENT);
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             return response('', HttpStatus::HTTP_NOT_FOUND);
         }
     }
@@ -158,7 +157,7 @@ class EntryController extends Controller {
             try {
                 // check to make sure entry exists. if it doesn't then we can't update it
                 $entry_being_modified = Entry::findOrFail($updateId);
-            } catch (\Exception $exception) {
+            } catch (\Exception $e) {
                 return response(
                     [self::$RESPONSE_SAVE_KEY_ID=>self::$ERROR_ENTRY_ID, self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_DOES_NOT_EXIST],
                     HttpStatus::HTTP_NOT_FOUND
@@ -390,10 +389,6 @@ class EntryController extends Controller {
         }
     }
 
-    /**
-     * @param Entry $entry
-     * @param array $entry_attachments
-     */
     private function attach_attachments_to_entry(Entry $entry, array $entry_attachments) {
         foreach ($entry_attachments as $attachment_data) {
             if (!is_array($attachment_data)) {
@@ -412,13 +407,6 @@ class EntryController extends Controller {
         }
     }
 
-    /**
-     * @param array $filters
-     * @param int $page_number
-     * @param string $sort_by
-     * @param string $sort_direction
-     * @return Response
-     */
     private function provide_paged_entries_response(array $filters, int $page_number=0, string $sort_by=Entry::DEFAULT_SORT_PARAMETER, string $sort_direction=Entry::DEFAULT_SORT_DIRECTION): Response {
         $entries_collection = Entry::get_collection_of_non_disabled_entries(
             $filters,
