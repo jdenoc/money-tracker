@@ -28,7 +28,7 @@ class PutAccountTypeTest extends TestCase {
             ->state(new Sequence(function() use ($accounts) {
                 return ['account_id'=>$accounts->random()->id];
             }))
-            ->create(['disabled'=>false]);
+            ->create();
     }
 
     public function testUpdateAccountTypeWithoutData() {
@@ -145,7 +145,7 @@ class PutAccountTypeTest extends TestCase {
     }
 
     private function getRandomActiveExistingAccountType() {
-        return AccountType::where('disabled', false)->get()->random();
+        return AccountType::get()->random();
     }
 
     private function generateAccountTypeData() {

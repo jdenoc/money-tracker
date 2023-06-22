@@ -4,7 +4,7 @@
     <form class="grid grid-cols-6 gap-2">
       <!-- name -->
       <label for="settings-account-type-name" class="font-medium justify-self-end py-2 col-span-2">Name:</label>
-      <input id="settings-account-type-name" name="name" type="text" class="rounded text-gray-700 col-span-4" v-model="form.name" autocomplete="off" />
+      <input id="settings-account-type-name" name="name" type="text" class="rounded text-gray-700 col-span-4" v-model="form.name" autocomplete="off" v-bind:readonly="!form.active" />
 
       <!-- type -->
       <label for="settings-account-type-type" class="font-medium justify-self-end py-2 col-span-2">Type:</label>
@@ -16,7 +16,7 @@
           </svg>
         </span>
 
-        <select id="settings-account-type-type" class="rounded w-full" v-model="form.type">
+        <select id="settings-account-type-type" class="rounded w-full" v-model="form.type" v-bind:disabled="!form.active">
           <option value="" selected></option>
           <option
               v-for="type in listAccountTypeTypes"
@@ -32,6 +32,7 @@
       <input id="settings-account-type-last-digits" name="last_digits" type="text" class="rounded text-gray-700 col-span-4" maxlength="4" autocomplete="off"
              v-model="form.lastDigits"
              v-on:change="lastDigitsToNumber"
+             v-bind:readonly="!form.active"
       />
 
       <!-- account -->
@@ -44,22 +45,26 @@
           </svg>
         </span>
 
-        <select id="settings-account-type-account" class="rounded w-full" v-model="form.accountId">
+        <select id="settings-account-type-account" class="rounded w-full" v-model="form.accountId" v-bind:disabled="!form.active">
           <option value="" selected></option>
           <option
               v-for="account in listAccounts"
               v-bind:key="account.id"
               v-bind:value="account.id"
               v-text="account.name"
-              v-show="!account.disabled"
+              v-show="account.active"
           ></option>
         </select>
       </div>
 
       <!-- Active State -->
-      <label for="settings-account-type-disabled" class="font-medium justify-self-end py-2 col-span-2">Active State:</label>
+      <label for="settings-account-type-active" class="font-medium justify-self-end py-2 col-span-2">Active State:</label>
       <div class="col-span-4">
-        <toggle-button v-bind:toggle-state.sync="form.disabled" toggle-id="settings-account-type-disabled" v-bind="toggleButtonProperties"></toggle-button>
+        <toggle-button v-bind:toggle-state.sync="form.active"
+                       v-bind="toggleButtonProperties"
+                       toggle-id="settings-account-type-active"
+                       v-on:click.native="resetFormAfterActiveStateToggle(form.id)"
+        ></toggle-button>
       </div>
 
       <div class="font-medium" v-show="isDataInForm">Created:</div>
@@ -81,9 +86,9 @@
         </svg>
         Save
       </button>
-  </form>
+    </form>
 
-  <hr class="my-6"/>
+    <hr class="my-6"/>
 
     <spinner v-if="!areAccountTypeTypesAvailable" id="loading-settings-account-types"></spinner>
 
@@ -95,8 +100,8 @@
           v-bind:id="'settings-account-type-'+accountType.id"
           v-bind:class="{
             'border-l-4': form.id===accountType.id,
-            'text-blue-400 border-blue-400 hover:border-blue-500 is-active': !accountType.disabled,
-            'text-gray-500 border-gray-500 hover:border-gray-700 is-disabled': accountType.disabled
+            'text-blue-400 border-blue-400 hover:border-blue-500 is-active': accountType.active,
+            'text-gray-500 border-gray-500 hover:border-gray-700 is-disabled': !accountType.active
           }"
       >
         <span
@@ -133,6 +138,9 @@ export default {
     accountTypeObject: function(){
       return new AccountType();
     },
+    areAccountTypeTypesAvailable: function(){
+      return !_.isEmpty(this.listAccountTypeTypes);
+    },
     canSave: function(){
       if(!_.isNull(this.form.id)){
         let accountTypeData = this.accountTypesObject.find(this.form.id);
@@ -152,29 +160,57 @@ export default {
         type: '',
         lastDigits: '',
         accountId: '',
-        disabled: false,
+        active: true,
         createStamp: '',
         modifiedStamp: '',
         disabledStamp: '',
       };
     },
-    listAccounts: function(){
-      return _.orderBy(this.rawAccountsData, ['disabled', 'name'], ['asc', 'asc']);
-    },
-    listAccountTypes: function(){
-      return _.orderBy(this.rawAccountTypesData, ['disabled', 'name'], ['asc', 'asc']);
-    },
     listAccountTypeTypes: function(){
       return _.orderBy(this.accountTypesObject.retrieveTypes);
     },
-    areAccountTypeTypesAvailable: function(){
-      return !_.isEmpty(this.listAccountTypeTypes);
-    },
     toggleButtonProperties: function(){
-      return _.cloneDeep(this.altDefaultToggleButtonProperties);
+      return _.cloneDeep(this.defaultToggleButtonProperties);
     }
   },
   methods: {
+    afterSaveResetFormAndHideLoading(){
+      this.setFormDefaults();
+      this.accountTypesObject.fetch().finally(function(){
+        this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
+      }.bind(this));
+    },
+    lastDigitsToNumber(){
+      if(!_.isEmpty(this.form.lastDigits)){
+        this.form.lastDigits = this.form.lastDigits.replace(/[^0-9]/g, '');
+      } else {
+        this.form.lastDigits = '';
+      }
+    },
+    makeDateReadable(isoDateString){
+      if(_.isNull(isoDateString)){
+        return isoDateString;
+      } else {
+        return new Date(isoDateString).toString();
+      }
+    },
+    sanitiseData(data){
+      Object.keys(data).forEach(function(k){
+        switch(k){
+          case 'account_id':
+          case 'last_digits':
+          case 'create_stamp':
+          case 'modified_stamp':
+          case 'disabled_stamp':
+            data[_.camelCase(k)] = data[k];
+            delete data[k];
+            break;
+          default:
+          // do nothing
+        }
+      });
+      return data;
+    },
     save: function(){
       this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
 
@@ -183,7 +219,6 @@ export default {
         switch (formDatumKey){
           case 'id':
           case 'name':
-          case 'disabled':
           case 'type':
             accountTypeData[formDatumKey] = this.form[formDatumKey];
             break;
@@ -198,36 +233,40 @@ export default {
       }.bind(this));
 
       this.accountTypeObject.setFetchedState = false
-      this.accountTypeObject.save(accountTypeData)
-        .then(function(notification){
-          // show a notification if needed
-          if(!_.isEmpty(notification)){
-            this.$eventHub.broadcast(
-              this.$eventHub.EVENT_NOTIFICATION,
-              {type: notification.type, message: notification.message}
-            );
-          }
-        }.bind(this))
-        .finally(function(){
-          this.setFormDefaults();
-          this.accountTypesObject.fetch().finally(function(){
-            this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
-          }.bind(this));
-        }.bind(this));
-    },
-    makeDateReadable(isoDateString){
-      if(_.isNull(isoDateString)){
-        return isoDateString;
+      if(this.form.active){
+        let updateAccountType = function(){
+          this.accountTypeObject
+            .save(accountTypeData)
+            .then(this.afterSaveDisplayNotificationIfNeeded)
+            .finally(this.afterSaveResetFormAndHideLoading);
+        }.bind(this);
+
+        let existingAccountTypeData = this.accountTypeObject.find(accountTypeData['id']);
+        if(existingAccountTypeData.active){
+          updateAccountType(accountTypeData);
+        } else {
+          this.accountTypeObject.enable(accountTypeData['id'])
+            .then(this.afterSaveDisplayNotificationIfNeeded)
+            .finally(function(){
+              updateAccountType(accountTypeData);
+            });
+        }
       } else {
-        return new Date(isoDateString).toString();
+        this.accountTypeObject.disable(accountTypeData['id'])
+          .then(this.afterSaveDisplayNotificationIfNeeded)
+          .finally(this.afterSaveResetFormAndHideLoading);
       }
     },
-    lastDigitsToNumber(){
-      if(!_.isEmpty(this.form.lastDigits)){
-        this.form.lastDigits = this.form.lastDigits.replace(/[^0-9]/g, '');
+    resetFormAfterActiveStateToggle(accountTypeId){
+      // this is called AFTER toggle-state has been updated
+      let accountTypeData = {}
+      if(_.isNull(accountTypeId)){
+        accountTypeData = _.clone(this.defaultFormData)
       } else {
-        this.form.lastDigits = '';
+        accountTypeData = _.clone(this.accountTypeObject.find(accountTypeId))
       }
+      accountTypeData.active = this.form.active;
+      this.fillForm(accountTypeData);
     },
     retrieveUpToDateAccountTypeData: function(accountTypeId){
       if(_.isNumber(accountTypeId)){
@@ -259,23 +298,6 @@ export default {
       } else {
         this.setFormDefaults();
       }
-    },
-    sanitiseData(data){
-      Object.keys(data).forEach(function(k){
-        switch(k){
-          case 'account_id':
-          case 'last_digits':
-          case 'create_stamp':
-          case 'modified_stamp':
-          case 'disabled_stamp':
-            data[_.camelCase(k)] = data[k];
-            delete data[k];
-            break;
-          default:
-            // do nothing
-        }
-      });
-      return data;
     },
   },
   mounted: function() {

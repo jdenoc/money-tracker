@@ -20,7 +20,7 @@ class GetAccountTest extends TestCase {
         $generated_account = Account::factory()->create();
         $generated_account_types = AccountType::factory()->count($account_type_count)->for($generated_account)->create();
         // These nodes are not in the response output. Let's hide them from the object collection
-        $generated_account_types->makeHidden(['account_id', 'last_updated', AccountType::CREATED_AT, AccountType::UPDATED_AT, 'disabled_stamp']);
+        $generated_account_types->makeHidden(['account_id', AccountType::CREATED_AT, AccountType::UPDATED_AT, AccountType::DELETED_AT]);
 
         // WHEN
         $response = $this->get(sprintf($this->_base_uri, $generated_account->id));
@@ -38,11 +38,11 @@ class GetAccountTest extends TestCase {
         /** @var Account $generated_account */
         $generated_account = Account::factory()->create();
         $generated_account_types = AccountType::factory()->count($account_type_count)->for($generated_account)->create();
-        $generated_disabled_account_type = AccountType::factory()->for($generated_account)->create(['disabled'=>true]);
+        $generated_disabled_account_type = AccountType::factory()->for($generated_account)->disabled()->create();
         $account_type_count++;
         $generated_account_types->push($generated_disabled_account_type);
         // These nodes are not in the response output. Let's hide them from the object collection
-        $generated_account_types->makeHidden(['account_id', 'last_updated', AccountType::CREATED_AT, AccountType::UPDATED_AT, 'disabled_stamp']);
+        $generated_account_types->makeHidden(['account_id', AccountType::CREATED_AT, AccountType::UPDATED_AT, AccountType::DELETED_AT]);
 
         // WHEN
         $response = $this->get(sprintf($this->_base_uri, $generated_account->id));
@@ -72,7 +72,7 @@ class GetAccountTest extends TestCase {
         $account_type_count = fake()->randomDigitNotZero();
         /** @var Account $generated_account */
         $generated_account = Account::factory()->create();
-        AccountType::factory()->count($account_type_count)->for($generated_account)->create(['disabled'=>true]);
+        AccountType::factory()->count($account_type_count)->for($generated_account)->disabled()->create();
 
         // WHEN
         $response = $this->get(sprintf($this->_base_uri, $generated_account->id));

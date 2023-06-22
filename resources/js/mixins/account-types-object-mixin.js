@@ -15,5 +15,8 @@ export const accountTypesObjectMixin = {
     areAccountTypesAvailable: function(){
       return !_.isEmpty(this.rawAccountTypesData);
     },
+    listAccountTypes: function(){
+      return _.orderBy(this.rawAccountTypesData, ['active', 'name'], ['desc', 'asc']);
+    },
   }
 };

@@ -51,7 +51,7 @@ class SettingsAccountsTest extends SettingsBase {
 
     protected static string $LABEL_SETTINGS_NOTIFICATION_NEW = 'New account created';
     protected static string $LABEL_SETTINGS_NOTIFICATION_UPDATE = 'Account updated';
-    protected static string $LABEL_SETTINGS_NOTIFICATION_RESTORE = 'Account has been enabled';
+    protected static string $LABEL_SETTINGS_NOTIFICATION_RESTORE = 'Account has been reactivated';
     protected static string $LABEL_SETTINGS_NOTIFICATION_DELETE = 'Account has been disabled';
 
     private Currency $default_currency;
@@ -69,14 +69,14 @@ class SettingsAccountsTest extends SettingsBase {
         $this->color_currency_inactive = $this->tailwindColors->white();
     }
 
-    public function providerDisablingOrRestoringAccount(): array {
+    public function providerDisablingOrRestoringObject(): array {
         return [
             'disabling account'=>['isInitAccountActive'=>true],     // test 7/20
             'restoring account'=>['isInitAccountActive'=>false],    // test 8/20
         ];
     }
 
-    public function providerSaveExistingSettingNode(): array {
+    public function providerSaveExistingSettingObject(): array {
         return [
             'name'=>[self::$SELECTOR_SETTINGS_FORM_INPUT_NAME],                         // test 9/20
             'institution'=>[self::$SELECTOR_SETTINGS_FORM_SELECT_INSTITUTION],          // test 10/20
@@ -181,10 +181,10 @@ class SettingsAccountsTest extends SettingsBase {
             ->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_TOTAL, $object->total)
             ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_CURRENCY_TOTAL, CurrencyHelper::convertCurrencyHtmlToCharacter($currency->html));
 
-        if ($object->disabled) {
-            $this->assertActiveStateToggleInactive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
-        } else {
+        if ($object->active) {
             $this->assertActiveStateToggleActive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
+        } else {
+            $this->assertActiveStateToggleInactive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
         }
 
         $section
@@ -253,15 +253,21 @@ class SettingsAccountsTest extends SettingsBase {
         // doing so would clear the form
     }
 
-    protected function generateObject(bool $isInitObjectActive): BaseModel {
-        return Account::factory()->create();
+    protected function generateObject(bool $isInitObjectActive): Account {
+        $institution = Institution::get()->random();
+        $account = Account::factory()->for($institution);
+        if(!$isInitObjectActive) {
+            return $account->disabled()->create();
+        } else {
+            return $account->create();
+        }
     }
 
-    protected function getObject(int $id=null): BaseModel {
-        if (!is_null($id)) {
-            return Account::find($id);
-        } else {
+    protected function getObject(?int $id=null): Account {
+        if (is_null($id)) {
             return Account::get()->random();
+        } else {
+            return Account::withTrashed()->find($id);
         }
     }
 
@@ -269,10 +275,10 @@ class SettingsAccountsTest extends SettingsBase {
         return Account::withTrashed()->get();
     }
 
-    protected function interactWithObjectListItem(Browser $section, BaseModel $node, bool $is_fresh_load=true) {
-        $this->assertObjectIsOfType($node, Account::class);
-        $class_state = $node->disabled ? '.is-disabled' : '.is-active';
-        $selector = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID.$class_state.' span', $node->id);
+    protected function interactWithObjectListItem(Browser $section, BaseModel $object, bool $is_fresh_load=true): void {
+        $this->assertObjectIsOfType($object, Account::class);
+        $class_state = $object->active ? '.is-active' : '.is-disabled';
+        $selector = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID.$class_state.' span', $object->id);
         $section
             ->assertVisible($selector)
             ->click($selector);
@@ -285,18 +291,18 @@ class SettingsAccountsTest extends SettingsBase {
         $section->pause($this->toggleButtonTransitionTimeInMilliseconds());
     }
 
-    protected function interactWithFormElement(Browser $section, string $selector, BaseModel $node=null) {
-        if (is_null($node)) {
-            $node = new Account();
+    protected function interactWithFormElement(Browser $section, string $selector, ?BaseModel $object=null): void {
+        if (is_null($object)) {
+            $object = new Account();
         }
-        $this->assertObjectIsOfType($node, Account::class);
+        $this->assertObjectIsOfType($object, Account::class);
 
         switch($selector) {
             case self::$SELECTOR_SETTINGS_FORM_INPUT_NAME:
                 $accounts = $this->getAllObjects();
                 do {
                     $name = fake()->word();
-                } while ($node->name == $name || $accounts->contains('name', $name));
+                } while ($object->name == $name || $accounts->contains('name', $name));
                 $section
                     ->clear($selector)
                     ->type($selector, $name);
@@ -304,7 +310,7 @@ class SettingsAccountsTest extends SettingsBase {
             case self::$SELECTOR_SETTINGS_FORM_SELECT_INSTITUTION:
                 do {
                     $institution = Institution::get()->random();
-                } while ($node->institution_id == $institution->id);
+                } while ($object->institution_id == $institution->id);
                 $section
                     ->waitUntilMissing(self::$SELECTOR_SETTINGS_FORM_LOADING_INSTITUTION, self::$WAIT_SECONDS)
                     ->select($selector, $institution->id);
@@ -312,7 +318,7 @@ class SettingsAccountsTest extends SettingsBase {
             case self::$TEMPLATE_SELECTOR_SETTINGS_FORM_RADIO_CURRENCY_INPUT:
                 do {
                     $currency = CurrencyHelper::fetchCurrencies()->random();
-                } while ($node->currency == $currency->code);
+                } while ($object->currency == $currency->code);
                 $selector_currency = sprintf($selector, $currency->label);
                 $section
                     ->click($selector_currency.'+span')
@@ -321,7 +327,7 @@ class SettingsAccountsTest extends SettingsBase {
             case self::$SELECTOR_SETTINGS_FORM_INPUT_TOTAL:
                 do {
                     $total = fake()->randomFloat(2);
-                } while ($node->total == $total);
+                } while ($object->total == $total);
                 $section
                     ->clear($selector)
                     ->type($selector, $total);

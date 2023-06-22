@@ -32,8 +32,8 @@ class SettingsAccountTypesTest extends SettingsBase {
     private static string $SELECTOR_SETTINGS_FORM_LABEL_ACCOUNT = "label[for='settings-account-type-account']:nth-child(7)";
     private static string $SELECTOR_SETTINGS_FORM_LOADING_ACCOUNT = "div:nth-child(8) span.loading";
     private static string $SELECTOR_SETTINGS_FORM_SELECT_ACCOUNT = "div:nth-child(8) select#settings-account-type-account";
-    private static string $SELECTOR_SETTINGS_FORM_LABEL_ACTIVE = "label[for='settings-account-type-disabled']:nth-child(9)";
-    protected static string $SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE = "div:nth-child(10) #settings-account-type-disabled";
+    private static string $SELECTOR_SETTINGS_FORM_LABEL_ACTIVE = "label[for='settings-account-type-active']:nth-child(9)";
+    protected static string $SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE = "div:nth-child(10) #settings-account-type-active";
     private static string $SELECTOR_SETTINGS_FORM_LABEL_CREATED = "div:nth-child(11)";
     private static string $SELECTOR_SETTINGS_FORM_CREATED = "div:nth-child(12)";
     private static string $SELECTOR_SETTINGS_FORM_LABEL_MODIFIED = "div:nth-child(13)";
@@ -51,20 +51,22 @@ class SettingsAccountTypesTest extends SettingsBase {
     private static string $LABEL_SETTINGS_FORM_ACCOUNT = 'Account:';
     protected static string $LABEL_SETTINGS_NOTIFICATION_NEW = 'New Account-type created';
     protected static string $LABEL_SETTINGS_NOTIFICATION_UPDATE = 'Account-type updated';
-    protected static string $LABEL_SETTINGS_NOTIFICATION_RESTORE = "Account-type has been enabled";     // TODO: confirm
-    protected static string $LABEL_SETTINGS_NOTIFICATION_DELETE = "Account-type has been disabled";     // TODO: confirm
+    protected static string $LABEL_SETTINGS_NOTIFICATION_RESTORE = "Account-type has been reactivated";
+    protected static string $LABEL_SETTINGS_NOTIFICATION_DELETE = "Account-type has been disabled";
 
-    public function providerDisablingOrRestoringAccount(): array {
-        return [];
+    public function providerDisablingOrRestoringObject(): array {
+        return [
+            'disabling account-type'=>['isInitAccountTypeActive'=>true],     // test 7/20
+            'restoring account-type'=>['isInitAccountTypeActive'=>false],    // test 8/20
+        ];
     }
 
-    public function providerSaveExistingSettingNode(): array {
+    public function providerSaveExistingSettingObject(): array {
         return [
             'name'=>[self::$SELECTOR_SETTINGS_FORM_INPUT_NAME],                 // test 7/20
             'type'=>[self::$SELECTOR_SETTINGS_FORM_SELECT_TYPE],                // test 8/20
             'last_digits'=>[self::$SELECTOR_SETTINGS_FORM_INPUT_LAST_DIGITS],   // test 9/20
             'account'=>[self::$SELECTOR_SETTINGS_FORM_SELECT_ACCOUNT],          // test 10/20
-            'active'=>[self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE],            // test 11/20
         ];
     }
 
@@ -150,10 +152,10 @@ class SettingsAccountTypesTest extends SettingsBase {
             ->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_LAST_DIGITS, $object->last_digits)
             ->waitUntilMissing(self::$SELECTOR_SETTINGS_FORM_LOADING_ACCOUNT, self::$WAIT_SECONDS)
             ->assertSelected(self::$SELECTOR_SETTINGS_FORM_SELECT_ACCOUNT, $object->account_id);
-        if ($object->disabled) {
-            $this->assertActiveStateToggleInactive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
-        } else {
+        if ($object->active) {
             $this->assertActiveStateToggleActive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
+        } else {
+            $this->assertActiveStateToggleInactive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
         }
 
         $section
@@ -172,7 +174,7 @@ class SettingsAccountTypesTest extends SettingsBase {
     }
 
     protected function assertNodesVisible(Browser $section) {
-        $account_types = AccountType::all();
+        $account_types = AccountType::withTrashed()->get();
         $this->assertCount($account_types->count(), $section->elements('hr~ul li'));
         foreach ($account_types as $account_type) {
             $selector_account_type_id = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID, $account_type->id);
@@ -182,12 +184,12 @@ class SettingsAccountTypesTest extends SettingsBase {
             $class_is_disabled = 'is-disabled';
             $class_is_active = 'is-active';
             $account_type_node_classes = $section->attribute($selector_account_type_id, 'class');
-            if ($account_type->disabled) {
-                $this->assertStringContainsString($class_is_disabled, $account_type_node_classes);
-                $this->assertStringNotContainsString($class_is_active, $account_type_node_classes);
-            } else {
+            if ($account_type->active) {
                 $this->assertStringContainsString($class_is_active, $account_type_node_classes);
                 $this->assertStringNotContainsString($class_is_disabled, $account_type_node_classes);
+            } else {
+                $this->assertStringContainsString($class_is_disabled, $account_type_node_classes);
+                $this->assertStringNotContainsString($class_is_active, $account_type_node_classes);
             }
         }
     }
@@ -207,32 +209,37 @@ class SettingsAccountTypesTest extends SettingsBase {
         $this->interactWithFormElement($section, self::$SELECTOR_SETTINGS_FORM_SELECT_ACCOUNT);
         $section->assertNotSelected(self::$SELECTOR_SETTINGS_FORM_SELECT_ACCOUNT, "");
 
-        $is_account_type_active = fake()->boolean();
-        if (!$is_account_type_active) {
-            $this->interactWithFormElement($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
-            $this->assertActiveStateToggleInactive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
+        // don't interact with the "active" toggle button
+        // doing so would clear the form
+    }
+
+    protected function generateObject(bool $isInitObjectActive): AccountType {
+        $account = Account::get()->random();
+        $account_type = AccountType::factory()->for($account);
+        if(!$isInitObjectActive) {
+            return $account_type->disabled()->create();
         } else {
-            $this->assertActiveStateToggleActive($section, self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE);
+            return $account_type->create();
         }
     }
 
-    protected function generateObject(bool $isInitObjectActive): BaseModel {
-        return AccountType::factory()->create();
-    }
-
-    protected function getObject(int $id=null): BaseModel {
-        return AccountType::get()->random();
+    protected function getObject(?int $id=null): AccountType {
+        if(is_null($id)) {
+            return AccountType::get()->random();
+        } else {
+            return AccountType::withTrashed()->find($id);
+        }
     }
 
     protected function getAllObjects(): Collection {
-        return AccountType::all();
+        return AccountType::withTrashed()->get();
     }
 
-    protected function interactWithObjectListItem(Browser $section, BaseModel $node, bool $is_fresh_load=true) {
-        $this->assertObjectIsOfType($node, AccountType::class);
+    protected function interactWithObjectListItem(Browser $section, BaseModel $object, bool $is_fresh_load=true): void {
+        $this->assertObjectIsOfType($object, AccountType::class);
 
-        $class_state = $node->disabled ? '.is-disabled' : '.is-active';
-        $selector_account_type_id = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID.$class_state, $node->id);
+        $class_state = $object->active ? '.is-active' : '.is-disabled';
+        $selector_account_type_id = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID.$class_state, $object->id);
         $section
             ->assertVisible($selector_account_type_id)
             ->click($selector_account_type_id.' span');
@@ -243,18 +250,18 @@ class SettingsAccountTypesTest extends SettingsBase {
         $section->pause($this->toggleButtonTransitionTimeInMilliseconds());
     }
 
-    protected function interactWithFormElement(Browser $section, string $selector, BaseModel $node=null) {
-        if (is_null($node)) {
-            $node = new AccountType();
+    protected function interactWithFormElement(Browser $section, string $selector, ?BaseModel $object=null): void {
+        if (is_null($object)) {
+            $object = new AccountType();
         }
-        $this->assertObjectIsOfType($node, AccountType::class);
+        $this->assertObjectIsOfType($object, AccountType::class);
 
         switch($selector) {
             case self::$SELECTOR_SETTINGS_FORM_INPUT_NAME:
                 $account_types = $this->getAllObjects();
                 do {
                     $name = fake()->word();
-                } while ($node->name == $name || $account_types->contains('name', $name));
+                } while ($object->name == $name || $account_types->contains('name', $name));
                 $section
                     ->clear($selector)
                     ->type($selector, $name);
@@ -262,13 +269,13 @@ class SettingsAccountTypesTest extends SettingsBase {
             case self::$SELECTOR_SETTINGS_FORM_SELECT_TYPE:
                 do {
                     $type = collect(AccountType::getEnumValues())->random();
-                } while ($node->type == $type);
+                } while ($object->type == $type);
                 $section->select($selector, $type);
                 break;
             case self::$SELECTOR_SETTINGS_FORM_INPUT_LAST_DIGITS:
                 do {
                     $last_digits = fake()->numerify("####");
-                } while ($node->last_digits == $last_digits);
+                } while ($object->last_digits == $last_digits);
                 $section
                     ->clear($selector)
                     ->type($selector, $last_digits);
@@ -276,7 +283,7 @@ class SettingsAccountTypesTest extends SettingsBase {
             case self::$SELECTOR_SETTINGS_FORM_SELECT_ACCOUNT:
                 do {
                     $account = Account::get()->random();
-                } while ($node->account_id == $account->id);
+                } while ($object->account_id == $account->id);
                 $section->select($selector, $account->id);
                 break;
             case self::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE:

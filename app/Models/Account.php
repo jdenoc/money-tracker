@@ -50,6 +50,7 @@ class Account extends BaseModel {
     }
 
     public function account_types() {
+        // for backwards compatability
         return $this->accountTypes();
     }
 
@@ -86,12 +87,16 @@ class Account extends BaseModel {
 
     public static function cacheEntities(): array {
         return [
-            CacheEntity::make(self::CACHE_KEY_ALL)->forever()->cache(function() {
-                return Account::withTrashed()->get();
-            }),
-            CacheEntity::make(self::CACHE_KEY_COUNT)->forever()->cache(function() {
-                return Account::withTrashed()->count();
-            })
+            CacheEntity::make(self::CACHE_KEY_ALL)
+                ->forever()
+                ->cache(function() {
+                    return Account::withTrashed()->get();
+                }),
+            CacheEntity::make(self::CACHE_KEY_COUNT)
+                ->forever()
+                ->cache(function() {
+                    return Account::withTrashed()->count();
+                })
         ];
     }
 

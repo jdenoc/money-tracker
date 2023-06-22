@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import {Accounts} from "./accounts";
 import {ObjectBaseClass} from "./objectBaseClass";
 import {SnotifyStyle} from "vue-snotify";
@@ -79,12 +78,4 @@ export class AccountTypes extends ObjectBaseClass {
     }
   }
 
-  get retrieve(){
-    // TODO: remove when account-types.disabled has been removed
-    let accountTypes = _.cloneDeep(super.retrieve)
-    accountTypes.map(function(accountType){
-      return accountType.active = !accountType.disabled
-    })
-    return accountTypes;
-  }
 }

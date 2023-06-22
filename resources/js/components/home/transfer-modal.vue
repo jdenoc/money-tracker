@@ -101,7 +101,7 @@
                 v-bind:key="accountType.id"
                 v-bind:value="accountType.id"
                 v-text="accountType.name"
-                v-show="!accountType.disabled"
+                v-show="accountType.active"
             ></option>
             <option v-bind:value="accountTypeMeta.externalAccountTypeId">[External account]</option>
           </select>
@@ -381,7 +381,7 @@ export default {
       this.accountTypeMeta[accountTypeSelect].accountName = account.name;
       let accountType = this.accountTypesObject.find(this.transferData[accountTypeSelect+'_account_type_id']);
       this.accountTypeMeta[accountTypeSelect].lastDigits = accountType.last_digits;
-      this.accountTypeMeta[accountTypeSelect].isEnabled = account.active && !accountType.disabled;
+      this.accountTypeMeta[accountTypeSelect].isEnabled = account.active && accountType.active;
     },
   },
   created: function(){

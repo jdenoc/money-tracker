@@ -48,17 +48,19 @@ export class AccountType extends ObjectBaseClass {
 
   axiosSuccess(response){
     switch(response.config.method.toUpperCase()){
+      case "DELETE":
+        return {type: SnotifyStyle.success, message: "Account-type has been disabled"};
       case 'GET':
         this.assign = this.processSuccessfulResponseData(response.data);
         return {fetched: true, notification: {}};
+      case 'PATCH':
+        return {type: SnotifyStyle.success, message: "Account-type has been reactivated"};
       case "POST":
         return {type: SnotifyStyle.success, message: "New Account-type created"};
       case "PUT":
         return {type: SnotifyStyle.success, message: "Account-type updated"};
-      // case "DELETE":
-      //   return {deleted: true, notification: {type: SnotifyStyle.success, message: "Account was deleted"}}
       default:
-        // do nothing
+        return {};
     }
   }
 
@@ -83,6 +85,18 @@ export class AccountType extends ObjectBaseClass {
         .then(this.axiosSuccess)
         .catch(this.axiosFailure);
     }
+  }
+
+  disable(accountTypeId){
+    return Axios.delete(this.uri+accountTypeId)
+      .then(this.axiosSuccess)
+      .catch(this.axiosFailure);
+  }
+
+  enable(accountTypeId){
+    return Axios.patch(this.uri+accountTypeId)
+      .then(this.axiosSuccess)
+      .catch(this.axiosFailure);
   }
 
   // axiosFailure(error){
