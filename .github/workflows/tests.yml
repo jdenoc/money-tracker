@@ -740,7 +740,7 @@ jobs:
         uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e-stats-summary
+          name: ${{ github.sha }}-e2e-stats
           path: ${{ needs.pre-build.outputs.failure-upload-paths }}
           retention-days: 10
 
