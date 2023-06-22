@@ -195,16 +195,6 @@ class StatsTagsTest extends StatsBase {
     /**
      * @dataProvider providerTestGenerateTagsChart
      *
-     * @param string|null $datepicker_start
-     * @param string|null $datepicker_end
-     * @param bool $is_switch_toggled
-     * @param bool $is_random_selector_value
-     * @param bool $are_disabled_select_options_available
-     * @param int $tag_count
-     * @param bool $include_transfers
-     *
-     * @throws Throwable
-     *
      * @group stats-tags-2
      * test (see provider)/20
      */
@@ -229,7 +219,7 @@ class StatsTagsTest extends StatsBase {
                     if ($is_switch_toggled) {
                         // switch to account-types
                         $this->toggleAccountOrAccountTypeSwitch($form);
-                        $account_or_account_type_id = $is_random_selector_value ? $account_types->where('disabled', $are_disabled_select_options_available)->pluck('id')->random() : null;
+                        $account_or_account_type_id = $is_random_selector_value ? $account_types->where('active', !$are_disabled_select_options_available)->pluck('id')->random() : null;
                     } else {
                         // stay with accounts
                         $account_or_account_type_id = $is_random_selector_value ? $accounts->where('active', !$are_disabled_select_options_available)->pluck('id')->random() : null;
