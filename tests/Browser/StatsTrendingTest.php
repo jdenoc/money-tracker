@@ -168,7 +168,7 @@ class StatsTrendingTest extends StatsBase {
                     if ($is_switch_toggled) {
                         // switch to account-types
                         $this->toggleAccountOrAccountTypeSwitch($form);
-                        $account_or_account_type_id = ($is_random_selector_value) ? $account_types->where('disabled', $are_disabled_select_options_available)->pluck('id')->random() : null;
+                        $account_or_account_type_id = ($is_random_selector_value) ? $account_types->where('active', !$are_disabled_select_options_available)->pluck('id')->random() : null;
                     } else {
                         // stay with accounts
                         $account_or_account_type_id = ($is_random_selector_value) ? $accounts->where('active', !$are_disabled_select_options_available)->pluck('id')->random() : null;
@@ -177,15 +177,15 @@ class StatsTrendingTest extends StatsBase {
                     $this->selectAccountOrAccountTypeValue($form, $account_or_account_type_id);
                     $filter_data = $this->generateFilterArrayElementAccountOrAccountypeId($filter_data, $is_switch_toggled, $account_or_account_type_id);
 
-                    if (!is_null($datepicker_start)) {
-                        $this->setDateRangeDate($form, 'start', $datepicker_start);
-                    } else {
+                    if (is_null($datepicker_start)) {
                         $datepicker_start = $this->month_start;
-                    }
-                    if (!is_null($datepicker_end)) {
-                        $this->setDateRangeDate($form, 'end', $datepicker_end);
                     } else {
+                        $this->setDateRangeDate($form, 'start', $datepicker_start);
+                    }
+                    if (is_null($datepicker_end)) {
                         $datepicker_end = $this->month_end;
+                    } else {
+                        $this->setDateRangeDate($form, 'end', $datepicker_end);
                     }
 
                     $filter_data = $this->generateFilterArrayElementDatepicker($filter_data, $datepicker_start, $datepicker_end);
