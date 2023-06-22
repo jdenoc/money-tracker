@@ -3,51 +3,50 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Carbon\Carbon;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Mostafaznv\LaraCache\CacheEntity;
 use Mostafaznv\LaraCache\Traits\LaraCache;
 
 class AccountType extends BaseModel {
     use HasFactory;
     use LaraCache;
+    use SoftDeletes;
+
+    const CACHE_KEY_ALL = 'all';
+    const CACHE_KEY_COUNT = 'count';
+    const CACHE_KEY_TYPES = 'types';
 
     const CREATED_AT = 'create_stamp';
     const UPDATED_AT = 'modified_stamp';
+    const DELETED_AT = 'disabled_stamp';
 
     protected $table = 'account_types';
     protected $fillable = [
-        'type', 'last_digits', 'name', 'account_id', 'disabled'
+        'type', 'last_digits', 'name', 'account_id'
     ];
     protected $guarded = [
         'id', 'modified_stamp'
     ];
-    protected $casts = [
-        'disabled'=>'boolean'
-    ];
-    protected $dates = [
-        'disabled_stamp'
+    protected $appends = [
+        'active'
     ];
     private static $required_fields = [
         'name',
         'account_id',
-        'disabled',
         'type',
         'last_digits',
     ];
 
     public function account() {
-        return $this->belongsTo('App\Models\Account', 'account_id');
+        return $this->belongsTo(Account::class, 'account_id');
     }
 
     public function entries() {
-        return $this->hasMany('App\Models\Entry', 'account_type_id');
+        return $this->hasMany(Entry::class, 'account_type_id');
     }
 
-    public function save(array $options = []) {
-        if (!$this->getOriginal('disabled') && $this->disabled) {
-            $this->disabled_stamp = new Carbon();
-        }
-        return parent::save($options);
+    public function getActiveAttribute() {
+        return is_null($this->{self::DELETED_AT});
     }
 
     public static function getEnumValues() {
@@ -64,15 +63,21 @@ class AccountType extends BaseModel {
 
     public static function cacheEntities(): array {
         return [
-            CacheEntity::make('all')->forever()->cache(function() {
-                return AccountType::all();
-            }),
-            CacheEntity::make('count')->forever()->cache(function() {
-                return AccountType::count();
-            }),
-            CacheEntity::make('types')->forever()->cache(function() {
-                return AccountType::getEnumValues();
-            })
+            CacheEntity::make(self::CACHE_KEY_ALL)
+                ->forever()
+                ->cache(function() {
+                    return AccountType::withTrashed()->get();
+                }),
+            CacheEntity::make(self::CACHE_KEY_COUNT)
+                ->forever()
+                ->cache(function() {
+                    return AccountType::withTrashed()->count();
+                }),
+            CacheEntity::make(self::CACHE_KEY_TYPES)
+                ->forever()
+                ->cache(function() {
+                    return AccountType::getEnumValues();
+                })
         ];
     }
 

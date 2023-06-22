@@ -53,7 +53,7 @@ export default {
       let tooltipList = "";
       accountTypes.filter(function(accountType){
         return Object.prototype.hasOwnProperty.call(accountType, 'disabled')
-          && !accountType.disabled;
+          && accountType.active;
       }).forEach(function(accountType){
         tooltipList += "&bull; "+accountType.name+" ("+accountType.last_digits+")<br/>"
       });

@@ -49,7 +49,7 @@ class AccountTotalSanityCheckTest extends TestCase {
         $accounts = Account::factory()->count(3)->create(['total'=>0]);
         $account_types = collect();
         foreach ($accounts as $account) {
-            $account_type = AccountType::factory()->for($account)->create(['disabled'=>0]);
+            $account_type = AccountType::factory()->for($account)->create();
             Entry::factory()->count(2)->for($account_type)->create(['disabled'=>0]);
             $account_types->push($account_type);
         }
@@ -67,7 +67,7 @@ class AccountTotalSanityCheckTest extends TestCase {
 
         $account = Account::get()->random();
         $account->update(['total'=>0]);
-        $account_type = AccountType::where(['account_id'=>$account->id, 'disabled'=>0])->get()->random();
+        $account_type = AccountType::where(['account_id'=>$account->id])->get()->random();
         $entries = Entry::factory()->for($account_type)->count(10)->create(['disabled'=>0]);
 
         $new_total = $entries->where('disabled', 0)

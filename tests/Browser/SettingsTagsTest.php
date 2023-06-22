@@ -34,11 +34,11 @@ class SettingsTagsTest extends SettingsBase {
     protected static string $LABEL_SETTINGS_NOTIFICATION_RESTORE = 'Tag has been enabled';  // TODO: confirm
     protected static string $LABEL_SETTINGS_NOTIFICATION_DELETE = 'Tag has been disabled';  // TODO: confirm
 
-    public function providerDisablingOrRestoringAccount(): array {
+    public function providerDisablingOrRestoringObject(): array {
         return [];
     }
 
-    public function providerSaveExistingSettingNode(): array {
+    public function providerSaveExistingSettingObject(): array {
         return [
             'tag'=>[self::$SELECTOR_SETTINGS_FORM_INPUT_NAME]   // test 7/20
         ];
@@ -106,27 +106,27 @@ class SettingsTagsTest extends SettingsBase {
         return Tag::all();
     }
 
-    protected function interactWithObjectListItem(Browser $section, BaseModel $node, bool $is_fresh_load=true) {
-        $this->assertObjectIsOfType($node, Tag::class);
+    protected function interactWithObjectListItem(Browser $section, BaseModel $object, bool $is_fresh_load=true): void {
+        $this->assertObjectIsOfType($object, Tag::class);
 
-        $selector = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID, $node->id);
+        $selector = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID, $object->id);
         $section
             ->assertVisible($selector)
             ->click($selector);
     }
 
-    protected function interactWithFormElement(Browser $section, string $selector, BaseModel $node=null) {
-        if (is_null($node)) {
-            $node = new Tag();
+    protected function interactWithFormElement(Browser $section, string $selector, ?BaseModel $object=null): void {
+        if (is_null($object)) {
+            $object = new Tag();
         }
-        $this->assertObjectIsOfType($node, Tag::class);
+        $this->assertObjectIsOfType($object, Tag::class);
 
         switch ($selector) {
             case self::$SELECTOR_SETTINGS_FORM_INPUT_NAME:
                 $tags = $this->getAllObjects();
                 do {
                     $name = fake()->word();
-                } while ($node->name == $name || $tags->contains('name', $name));
+                } while ($object->name == $name || $tags->contains('name', $name));
                 $section
                     ->clear($selector)
                     ->type($selector, fake()->word());

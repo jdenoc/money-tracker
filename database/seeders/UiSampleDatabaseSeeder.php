@@ -53,7 +53,7 @@ class UiSampleDatabaseSeeder extends Seeder {
         foreach ($institutions as $institution) {
             $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$institution->id]);
         }
-        $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$institutions->random()->id, Account::DELETED_AT=>now()]);
+        $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$institutions->random()->id, Account::DELETED_AT=>now()]);  // disabled account
         $currencies = CurrencyHelper::fetchCurrencies();
         foreach ($currencies as $currency) {
             $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$institutions->random()->id, 'currency'=>$currency->code]);
@@ -63,10 +63,11 @@ class UiSampleDatabaseSeeder extends Seeder {
         // ***** ACCOUNT-TYPES *****
         $account_types = collect();
         foreach ($accounts->pluck('id') as $account_id) {
-            $account_types = $this->addAccountTypeToCollection($account_types, ['account_id'=>$account_id, 'disabled'=>false]);
+            $account_types = $this->addAccountTypeToCollection($account_types, ['account_id'=>$account_id]);
         }
-        $account_types = $this->addAccountTypeToCollection($account_types, ['account_id'=>$accounts->where('active', true)->pluck('id')->random(), 'disabled'=>true]);
-        $account_types = $this->addAccountTypeToCollection($account_types, ['account_id'=>$accounts->where('active', false)->pluck('id')->random(), 'disabled'=>true]);
+        // disabled account-types
+        $account_types = $this->addAccountTypeToCollection($account_types, ['account_id'=>$accounts->where('active', true)->pluck('id')->random(), AccountType::DELETED_AT=>now()]);
+        $account_types = $this->addAccountTypeToCollection($account_types, ['account_id'=>$accounts->where('active', false)->pluck('id')->random(), AccountType::DELETED_AT=>now()]);
         $this->command->line(self::CLI_OUTPUT_PREFIX."Account-types seeded [".$account_types->count()."]");
 
         // ***** ENTRIES *****

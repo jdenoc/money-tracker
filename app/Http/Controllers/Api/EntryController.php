@@ -15,6 +15,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use OutOfRangeException;
+use PHPUnit\Exception;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 
@@ -30,19 +31,20 @@ class EntryController extends Controller {
      * @return Response
      */
     public function get_entry(int $entry_id): Response {
-        $entry = Entry::with(['tags', 'attachments'])
-            ->where('id', $entry_id)
-            ->first();
+        try {
+            $entry = Entry::with(['tags', 'attachments'])->findOrFail($entry_id);
+            if($entry->disabled) {
+                return response([], HttpStatus::HTTP_NOT_FOUND);
+            }
 
-        if (empty($entry) || $entry->disabled == 1) {
-            return response([], HttpStatus::HTTP_NOT_FOUND);
-        } else {
             // we're not going to show disabled entries,
             // so why bother telling someone that something that isn't disabled
             $entry->makeHidden(['disabled', 'disabled_stamp', 'accountType']);
             $entry->tags->makeHidden('pivot');  // this is an artifact left over from the relationship logic
             $entry->attachments->makeHidden('entry_id');  // we already know the attachment is associated with this entry, no need to repeat that
             return response($entry, HttpStatus::HTTP_OK);
+        } catch (\Exception $e) {
+            return response([], HttpStatus::HTTP_NOT_FOUND);
         }
     }
 
@@ -57,11 +59,8 @@ class EntryController extends Controller {
 
     /**
      * POST /api/entries/{page}
-     * @param int $page_number
-     * @param Request $request
-     * @return Response
      */
-    public function filter_paged_entries(Request $request, $page_number = 0): Response {
+    public function filter_paged_entries(Request $request, int $page_number = 0): Response {
         $post_body = $request->getContent();
         $filter_data = json_decode($post_body, true);
 
@@ -96,12 +95,12 @@ class EntryController extends Controller {
      * @return Response
      */
     public function delete_entry(int $entry_id): Response {
-        $entry = Entry::find($entry_id);
-        if (empty($entry)) {
-            return response('', HttpStatus::HTTP_NOT_FOUND);
-        } else {
+        try {
+            $entry = Entry::findOrFail($entry_id);
             $entry->disable();
             return response('', HttpStatus::HTTP_NO_CONTENT);
+        } catch(Exception $e) {
+            return response('', HttpStatus::HTTP_NOT_FOUND);
         }
     }
 
@@ -126,12 +125,7 @@ class EntryController extends Controller {
         return $this->modify_entry($request, $entry_id);
     }
 
-    /**
-     * @param Request $request
-     * @param int|false $update_id
-     * @return Response
-     */
-    private function modify_entry(Request $request, $update_id=false): Response {
+    private function modify_entry(Request $request, ?int $updateId=null): Response {
         $request_body = $request->getContent();
         $entry_data = json_decode($request_body, true);
 
@@ -143,7 +137,7 @@ class EntryController extends Controller {
             );
         }
 
-        if ($update_id === false) {
+        if (is_null($updateId)) {
             $successful_http_status_code = HttpStatus::HTTP_CREATED;
             $required_fields = Entry::get_fields_required_for_creation();
 
@@ -163,7 +157,7 @@ class EntryController extends Controller {
 
             try {
                 // check to make sure entry exists. if it doesn't then we can't update it
-                $entry_being_modified = Entry::findOrFail($update_id);
+                $entry_being_modified = Entry::findOrFail($updateId);
             } catch (\Exception $exception) {
                 return response(
                     [self::$RESPONSE_SAVE_KEY_ID=>self::$ERROR_ENTRY_ID, self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_DOES_NOT_EXIST],
@@ -174,8 +168,7 @@ class EntryController extends Controller {
 
         // check validity of account_type_id value
         if (isset($entry_data['account_type_id'])) {
-            $account_type = AccountType::find($entry_data['account_type_id']);
-            if (empty($account_type)) {
+            if(!$this->checkAccountTypeExists($entry_data['account_type_id'])) {
                 return response(
                     [self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE, self::$RESPONSE_SAVE_KEY_ID=>self::$ERROR_ENTRY_ID],
                     HttpStatus::HTTP_BAD_REQUEST
@@ -342,9 +335,7 @@ class EntryController extends Controller {
      * @throws OutOfRangeException
      */
     private function initTransferEntry($transfer_data, string $transfer_side, $required_transfer_fields, $transfer_specific_fields, $transfer_entry_tags): Entry {
-        // check validity of account_type_id value
-        $account_type = AccountType::find($transfer_data[$transfer_side]);
-        if (empty($account_type)) {
+        if(!$this->checkAccountTypeExists($transfer_data[$transfer_side])) {
             throw new OutOfRangeException(self::$ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE);
         }
 
@@ -371,6 +362,15 @@ class EntryController extends Controller {
         $this->update_entry_tags($transfer_entry, $transfer_entry_tags);
 
         return $transfer_entry;
+    }
+
+    private function checkAccountTypeExists(int $accountTypeId): bool {
+        try {
+            AccountType::withTrashed()->findOrFail($accountTypeId);
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
     /**
