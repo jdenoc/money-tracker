@@ -40,7 +40,7 @@ class PutAccountTest extends TestCase {
         $existing_institution_ids = Institution::all()->pluck('id')->toArray();
         $account = $this->getRandomActiveExistingAccount();
         do {
-            // there should only be 1 institution in existance
+            // there should only be 1 institution in existence
             $institution_id = fake()->randomNumber(1);
         } while ($institution_id == $account->institution_id || in_array($institution_id, $existing_institution_ids));
         $account->institution_id = $institution_id;

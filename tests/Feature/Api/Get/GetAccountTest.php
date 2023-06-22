@@ -39,7 +39,6 @@ class GetAccountTest extends TestCase {
         $generated_account = Account::factory()->create();
         $generated_account_types = AccountType::factory()->count($account_type_count)->for($generated_account)->create();
         $generated_disabled_account_type = AccountType::factory()->for($generated_account)->disabled()->create();
-        $account_type_count++;
         $generated_account_types->push($generated_disabled_account_type);
         // These nodes are not in the response output. Let's hide them from the object collection
         $generated_account_types->makeHidden(['account_id', AccountType::CREATED_AT, AccountType::UPDATED_AT, AccountType::DELETED_AT]);
@@ -79,7 +78,7 @@ class GetAccountTest extends TestCase {
 
         // THEN
         $response->assertStatus(Response::HTTP_OK);
-        $this->assertAccountDetailsOK($response->json(), $generated_account, $account_type_count);
+        $this->assertAccountDetailsOK($response->json(), $generated_account, 0);
     }
 
     public function testGetAccountDataWhenNoAccountDataExists() {
@@ -140,8 +139,8 @@ class GetAccountTest extends TestCase {
      * @param array $account_types_in_response
      * @param Collection $generated_account_types
      */
-    private function assertAccountTypesOK($account_types_in_response, $generated_account_types) {
-        $expected_elements = ['id', 'type', 'name', 'last_digits', 'disabled'];
+    private function assertAccountTypesOK($account_types_in_response, $generated_account_types): void {
+        $expected_elements = ['id', 'type', 'name', 'last_digits', 'active'];
         foreach ($account_types_in_response as $account_type_in_response) {
             $this->assertEqualsCanonicalizing($expected_elements, array_keys($account_type_in_response));
             $generated_account_type = $generated_account_types->where('id', $account_type_in_response['id'])->first();
