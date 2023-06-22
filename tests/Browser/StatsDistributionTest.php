@@ -210,7 +210,7 @@ class StatsDistributionTest extends StatsBase {
                     if ($is_account_switch_toggled) {
                         // switch to account-types
                         $this->toggleAccountOrAccountTypeSwitch($form);
-                        $account_or_account_type_id = ($is_random_selector_value) ? $account_types->where('disabled', $are_disabled_select_options_available)->pluck('id')->random() : null;
+                        $account_or_account_type_id = ($is_random_selector_value) ? $account_types->where('active', !$are_disabled_select_options_available)->pluck('id')->random() : null;
                     } else {
                         // stay with accounts
                         $account_or_account_type_id = ($is_random_selector_value) ? $accounts->where('active', !$are_disabled_select_options_available)->pluck('id')->random() : null;
@@ -220,21 +220,24 @@ class StatsDistributionTest extends StatsBase {
                     $filter_data = $this->generateFilterArrayElementAccountOrAccountypeId($filter_data, $is_account_switch_toggled, $account_or_account_type_id);
 
                     if ($is_expense_switch_toggled) {
-                        // expense/income - switch
+                        // expense/income - switch toggled
                         $this->toggleToggleButton($form, self::$SELECTOR_STATS_FORM_TOGGLE_EXPENSEINCOME);
                         $this->assertToggleButtonState($form, self::$SELECTOR_STATS_FORM_TOGGLE_EXPENSEINCOME, self::$LABEL_FORM_TOGGLE_EXPENSEINCOME_INCOME, $this->_color_switch_default);
+                    } else {
+                        // expense/income - switch default
+                        $this->assertToggleButtonState($form, self::$SELECTOR_STATS_FORM_TOGGLE_EXPENSEINCOME, self::$LABEL_FORM_TOGGLE_EXPENSEINCOME_DEFAULT, $this->_color_switch_default);
                     }
                     $filter_data = $this->generateFilterArrayElementExpense($filter_data, !$is_expense_switch_toggled);
 
-                    if (!is_null($datepicker_start)) {
-                        $this->setDateRangeDate($form, 'start', $datepicker_start);
-                    } else {
+                    if (is_null($datepicker_start)) {
                         $datepicker_start = $this->month_start;
-                    }
-                    if (!is_null($datepicker_end)) {
-                        $this->setDateRangeDate($form, 'end', $datepicker_end);
                     } else {
+                        $this->setDateRangeDate($form, 'start', $datepicker_start);
+                    }
+                    if (is_null($datepicker_end)) {
                         $datepicker_end = $this->month_end;
+                    } else {
+                        $this->setDateRangeDate($form, 'end', $datepicker_end);
                     }
 
                     $filter_data = $this->generateFilterArrayElementDatepicker($filter_data, $datepicker_start, $datepicker_end);
@@ -299,7 +302,7 @@ class StatsDistributionTest extends StatsBase {
      * @param Collection $account_types
      * @param Collection $tags
      */
-    private function createEntryWithAllTags(bool $is_account_type_rather_than_account_toggled, ?int $account_or_account_type_id, $account_types, $tags) {
+    private function createEntryWithAllTags(bool $is_account_type_rather_than_account_toggled, ?int $account_or_account_type_id, $account_types, $tags): void {
         if (!empty($account_or_account_type_id)) {
             if ($is_account_type_rather_than_account_toggled) {
                 $account_type_id = $account_or_account_type_id;
