@@ -112,7 +112,6 @@ class GetEntriesTest extends ListEntriesBase {
         $generated_entries = Entry::factory()
             ->count(self::$MAX_ENTRIES_IN_RESPONSE)
             ->for($generated_account_type)
-            ->state(['disabled'=>false])
             ->make()
             ->map(function(Entry $entry) {
                 $entry->makeHidden('account_type', 'accountType');

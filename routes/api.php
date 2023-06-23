@@ -95,34 +95,24 @@ Route::controller(AccountTypeController::class)->group(function() {
     });
 });
 
-// GET /api/entries
-Route::get('entries', [EntryController::class, 'get_paged_entries'])
-    ->name('entries.get');
-// GET /api/entries/{page}
-Route::get('entries/{page}', [EntryController::class, 'get_paged_entries'])
-    ->name('entries.get.paged');
-// POST /api/entries
-Route::post('entries', [EntryController::class, 'filter_paged_entries'])
-    ->name('entries.post');
-// POST /api/entries/{page}
-Route::post('entries/{page}', [EntryController::class, 'filter_paged_entries'])
-    ->name('entries.post.paged');
+Route::controller(EntryController::class)->group(function() {
+    // /api/entries/{?}
+    Route::prefix('entries')->name('entries.')->group(function() {
+        Route::get('', 'get_paged_entries')->name('get');
+        Route::get('{page}', 'get_paged_entries')->name('get.page');
+        Route::post('', 'filter_paged_entries')->name('post');
+        Route::post('{page}', 'filter_paged_entries')->name('post.page');
+    });
 
-// POST /api/entry
-Route::post('entry', [EntryController::class, 'create_entry'])
-    ->name('entry.post');
-// GET /api/entry/{entry_id}
-Route::get('entry/{entry_id}', [EntryController::class, 'get_entry'])
-    ->name('entry.get');
-// PUT /api/entry/{entry_id}
-Route::put('entry/{entry_id}', [EntryController::class, 'update_entry'])
-    ->name('entry.put');
-// DELETE /api/entry/{entry_id}
-Route::delete('entry/{entry_id}', [EntryController::class, 'delete_entry'])
-    ->name('entry.delete');
-// POST /api/entry/transfer
-Route::post('entry/transfer', [EntryController::class, 'create_transfer_entries'])
-    ->name('entry.transfer');
+    // /api/entry/{?}
+    Route::prefix('entry')->name('entry.')->group(function() {
+        Route::delete('{entry_id}', 'delete_entry')->name('delete');
+        Route::get('{entry_id}', 'get_entry')->name('get');
+        Route::post('', 'create_entry')->name('post');
+        Route::post('transfer', 'create_transfer_entries')->name('post.transfer');
+        Route::put('{entry_id}', 'update_entry')->name('put');
+    });
+});
 
 // DELETE /api/attachment/{uuid}
 Route::delete('attachment/{uuid}', [AttachmentController::class, 'delete_attachment'])

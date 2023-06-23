@@ -27,7 +27,7 @@ class Attachment extends BaseModel {
     public $timestamps = false;
 
     public function entry() {
-        return $this->belongsTo('App\Models\Entry');
+        return $this->belongsTo(Entry::class);
     }
 
     /**

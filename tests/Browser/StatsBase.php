@@ -86,7 +86,6 @@ class StatsBase extends DuskTestCase {
      * In those situations, we need to make sure that at least one entry does exist.
      */
     protected function generateEntryFromFilterData(array $filter_data, string $memo = '') {
-        $new_entry_data = ['disabled'=>false];
         if (!empty($memo)) {
             $new_entry_data['memo'] = $memo;
         }

@@ -305,7 +305,7 @@ class PaginationTest extends DuskTestCase {
 
     private function entryOverrideAttributes(): array {
         $account_type_id = collect($this->_account_types)->pluck('id')->random(1)->first();
-        return ['disabled'=>0, 'account_type_id'=>$account_type_id];
+        return ['account_type_id'=>$account_type_id];
     }
 
     private function clickNextButton(Browser $browser) {
