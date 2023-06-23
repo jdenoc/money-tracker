@@ -16,10 +16,7 @@ class DeleteEntryTest extends TestCase {
     public function testMarkingEntryDeleted() {
         // GIVEN
         $entry = Entry::factory()
-            ->for(
-                AccountType::factory()
-                    ->for(Account::factory())
-            )
+            ->for(AccountType::factory()->for(Account::factory()))
             ->create();
 
         // WHEN
@@ -33,18 +30,17 @@ class DeleteEntryTest extends TestCase {
         $this->assertResponseStatus($get_response2, HttpStatus::HTTP_NOT_FOUND);
 
         $this->assertEmpty($delete_response->getContent());
-        $this->assertTrue(is_array($get_response2->json()));
+        $this->assertIsArray($get_response2->json());
         $this->assertEmpty($get_response2->json());
 
         // confirm disabled_stamp and modified_stamp have been updated
-        $newly_disabled_entry = Entry::find($entry->id);
-        $this->assertTrue($newly_disabled_entry->disabled);
-        $this->assertNotEmpty($newly_disabled_entry->disabled_stamp);
-        $this->assertDateFormat($newly_disabled_entry->disabled_stamp, Carbon::ATOM, $newly_disabled_entry->disabled_stamp. "does not match format ".Carbon::ATOM);
-        $this->assertNotEmpty($entry->modified_stamp);
-        $this->assertNotEmpty($newly_disabled_entry->modified_stamp);
-        $this->assertDateFormat($newly_disabled_entry->modified_stamp, Carbon::ATOM, $newly_disabled_entry->modfied_stamp. "does not match format ".Carbon::ATOM);
-        $this->assertNotEquals($entry->modified_stamp, $newly_disabled_entry->modfied_stamp);
+        $newly_disabled_entry = Entry::withTrashed()->find($entry->id);
+        $this->assertNotNull($newly_disabled_entry->{Entry::DELETED_AT}, Entry::DELETED_AT.' value is unexpected ['.$newly_disabled_entry->{Entry::DELETED_AT}.']');
+        $this->assertDateFormat($newly_disabled_entry->{Entry::DELETED_AT}, Carbon::ATOM, $newly_disabled_entry->{Entry::DELETED_AT}. "does not match format ".Carbon::ATOM);
+        $this->assertNotEmpty($entry->{Entry::UPDATED_AT}, Entry::UPDATED_AT.' value is empty ['.$newly_disabled_entry->{Entry::UPDATED_AT}.']');
+        $this->assertNotEmpty($newly_disabled_entry->{Entry::UPDATED_AT}, Entry::UPDATED_AT.' value is empty ['.$newly_disabled_entry->{Entry::UPDATED_AT}.']');
+        $this->assertDateFormat($newly_disabled_entry->{Entry::UPDATED_AT}, Carbon::ATOM, $newly_disabled_entry->{Entry::UPDATED_AT}. "does not match format ".Carbon::ATOM);
+        $this->assertNotEquals($entry->{Entry::UPDATED_AT}, $newly_disabled_entry->{Entry::UPDATED_AT});
     }
 
     public function testMarkingEntryDeletedWhenEntryDoesNotExist() {
