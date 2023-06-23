@@ -9,9 +9,8 @@ RUN apt-get update --fix-missing \
 RUN apt-get install -y apt-utils curl zlib1g-dev libicu-dev g++ --no-install-recommends
 
 # set default ServerName
-RUN touch /etc/apache2/conf-available/servername.conf \
-  && echo 'ServerName app.money-tracker' > /etc/apache2/conf-available/servername.conf \
-  && a2enconf servername
+COPY .docker/conf/apache2-servername.conf /etc/apache2/conf-available/servername.conf
+RUN a2enconf servername
 
 # modify apache logging
 RUN APACHE_LOG_DIR=/var/log/apache2 \
@@ -19,14 +18,14 @@ RUN APACHE_LOG_DIR=/var/log/apache2 \
   && ln -sf $DOCKER_LOG_STDOUT $APACHE_LOG_DIR/access.log \
   && ln -sf $DOCKER_LOG_STDERR $APACHE_LOG_DIR/error.log \
   && ln -sf $DOCKER_LOG_STDOUT $APACHE_LOG_DIR/other_vhosts_access.log
-RUN echo 'LogFormat "%t [apache] %H %m %U %q | status:%>s" docker_log' > /etc/apache2/conf-available/dockerlog.conf \
-  && a2enconf dockerlog
+COPY .docker/conf/apache2-dockerlog.conf /etc/apache2/conf-available/dockerlog.conf
+RUN a2enconf dockerlog
 
 # enable mod_rewrite apache module
 RUN a2enmod rewrite
 
 # setup vhost
-COPY .docker/money-tracker.vhost.conf /etc/apache2/sites-available/000-default.conf
+COPY .docker/conf/money-tracker.vhost.conf /etc/apache2/sites-available/000-default.conf
 
 # setup web directory
 ENV WORK_DIR /var/www/money-tracker
@@ -101,17 +100,10 @@ RUN echo '#!/usr/bin/env bash\nphp ${WORK_DIR}/artisan "$@"' > /usr/local/bin/ar
 
 # select a php.ini config file; we use php.ini-development as it has "display_errors = On"
 RUN cp $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini
-
-RUN echo "expose_php = Off" > $PHP_INI_DIR/conf.d/php-expose_php.ini
-RUN echo "allow_url_fopen = Off" > $PHP_INI_DIR/conf.d/php-allow_url_fopen.ini
-# set php error logging
-RUN PHP_ERROR_LOG=$PHP_LOG_DIR/errors.log \
-  && touch $PHP_ERROR_LOG \
-  && chgrp $APACHE_RUN_GROUP $PHP_ERROR_LOG \
-  && chmod g+w $PHP_ERROR_LOG
-RUN echo "error_log = $PHP_ERROR_LOG" > $PHP_INI_DIR/conf.d/php-error_log.ini
-# set php timezone
-RUN echo 'date.timezone = "UTC"' > $PHP_INI_DIR/conf.d/php-date.timezone.ini
+COPY .docker/conf/php-allow_url_fopen.ini $PHP_INI_DIR/conf.d/php-allow_url_fopen.ini
+COPY .docker/conf/php-date_timezone.ini $PHP_INI_DIR/conf.d/php-date.timezone.ini
+COPY .docker/conf/php-error_log.ini $PHP_INI_DIR/conf.d/php-error_log.ini
+COPY .docker/conf/php-expose_php.ini $PHP_INI_DIR/conf.d/php-expose_php.ini
 
 # health-check
 COPY .docker/healthcheck/app-health-check.sh /usr/local/bin/app-health-check
