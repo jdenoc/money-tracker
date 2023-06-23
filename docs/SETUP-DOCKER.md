@@ -2,7 +2,7 @@
 ## Docker Environment Setup
 
 ### Host machine prep
-Add `127.0.0.1  money-tracker.docker` to the host machines host file.
+Add `127.0.0.1  money-tracker.test` to the host machines host file.
 Host file locations can be found [here](https://en.wikipedia.org/wiki/Hosts_(file)#Location_in_the_file_system).
 
 ### Clone repo
