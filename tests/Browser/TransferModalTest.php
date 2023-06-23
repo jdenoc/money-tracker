@@ -660,7 +660,7 @@ class TransferModalTest extends DuskTestCase {
         // disabled account-types
         $account_type_id1 = AccountType::onlyTrashed()->get()->random();
         $account_type_id2 = AccountType::onlyTrashed()->whereNotIn('id', [$account_type_id1->id])->get()->random();
-        $default_entry_data = ['disabled'=>false, 'entry_date'=>date('Y-m-d'), 'expense'=>true, 'entry_value'=>fake()->randomFloat(2)];
+        $default_entry_data = ['entry_date'=>date('Y-m-d'), 'expense'=>true, 'entry_value'=>fake()->randomFloat(2)];
         $entry_data_income = ['account_type_id'=>$account_type_id2->id, 'entry_date'=>date("Y-m-d", strtotime("-18 months")), 'expense'=>false];
 
         // transfer pair 1

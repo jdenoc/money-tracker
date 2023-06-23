@@ -267,7 +267,6 @@ class PutEntryTest extends TestCase {
         $this->setUpFaker();
 
         $required_entry_fields = Entry::get_fields_required_for_update();
-        unset($required_entry_fields[array_search('disabled', $required_entry_fields)]);
         unset($required_entry_fields[array_search('entry_value', $required_entry_fields)]);
         unset($required_entry_fields[array_search('account_type_id', $required_entry_fields)]);
         $required_entry_fields = array_values($required_entry_fields);  // do this to reset array index after unset

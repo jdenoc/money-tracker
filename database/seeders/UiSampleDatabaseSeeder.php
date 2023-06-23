@@ -76,12 +76,11 @@ class UiSampleDatabaseSeeder extends Seeder {
         foreach ($account_types->pluck('id') as $account_type_id) {
             $entries = $this->addEntryToCollection($entries, [
                 'account_type_id'=>$account_type_id,
-                'disabled'=>false,
                 'entry_date'=>$entry_date_generator->now()->subDays(rand(0, 1.25*self::YEAR_IN_DAYS))
             ]);
         }
-        $entries = $this->addEntryToCollection($entries, ['account_type_id'=>$account_types->pluck('id')->random(), 'disabled'=>false, 'entry_date'=>$entry_date_generator->now()]);
-        $entries = $this->addEntryToCollection($entries, ['account_type_id'=>$account_types->pluck('id')->random(), 'disabled'=>true, 'disabled_stamp'=>$entry_date_generator->now()]);
+        $entries = $this->addEntryToCollection($entries, ['account_type_id'=>$account_types->pluck('id')->random(), 'entry_date'=>$entry_date_generator->now()]);
+        $entries = $this->addEntryToCollection($entries, ['account_type_id'=>$account_types->pluck('id')->random(), Entry::DELETED_AT=>$entry_date_generator->now()]);
         $this->command->line(self::CLI_OUTPUT_PREFIX."Entries seeded [".$entries->count()."]");
 
         foreach ($entries as $entry) {
