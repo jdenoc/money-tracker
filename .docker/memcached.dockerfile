@@ -1,4 +1,4 @@
-FROM memcached:1.6
+FROM memcached:1.6.18
 
 USER root
 RUN apt-get update \
