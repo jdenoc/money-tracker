@@ -26,19 +26,14 @@ class EntryController extends Controller {
 
     /**
      * GET /api/entry/{entry_id}
-     * @param int $entry_id
-     * @return Response
      */
     public function get_entry(int $entry_id): Response {
         try {
             $entry = Entry::with(['tags', 'attachments'])->findOrFail($entry_id);
-            if($entry->disabled) {
-                return response([], HttpStatus::HTTP_NOT_FOUND);
-            }
 
             // we're not going to show disabled entries,
             // so why bother telling someone that something that isn't disabled
-            $entry->makeHidden(['disabled', 'disabled_stamp', 'accountType']);
+            $entry->makeHidden(['accountType']);
             $entry->tags->makeHidden('pivot');  // this is an artifact left over from the relationship logic
             $entry->attachments->makeHidden('entry_id');  // we already know the attachment is associated with this entry, no need to repeat that
             return response($entry, HttpStatus::HTTP_OK);
@@ -49,8 +44,6 @@ class EntryController extends Controller {
 
     /**
      * GET /api/entries/{page}
-     * @param int $page_number
-     * @return Response
      */
     public function get_paged_entries(int $page_number = 0): Response {
         return $this->provide_paged_entries_response([], $page_number);
@@ -90,13 +83,11 @@ class EntryController extends Controller {
 
     /**
      * DELETE /api/entry/{entry_id}
-     * @param int $entry_id
-     * @return Response
      */
     public function delete_entry(int $entry_id): Response {
         try {
             $entry = Entry::findOrFail($entry_id);
-            $entry->disable();
+            $entry->delete();
             return response('', HttpStatus::HTTP_NO_CONTENT);
         } catch(\Exception $e) {
             return response('', HttpStatus::HTTP_NOT_FOUND);
@@ -105,9 +96,6 @@ class EntryController extends Controller {
 
     /**
      * POST /api/entry
-     *
-     * @param Request $request
-     * @return Response
      */
     public function create_entry(Request $request): Response {
         return $this->modify_entry($request);
@@ -115,10 +103,6 @@ class EntryController extends Controller {
 
     /**
      * PUT /api/entry/{entry_id}
-     *
-     * @param int $entry_id
-     * @param Request $request
-     * @return Response
      */
     public function update_entry(int $entry_id, Request $request): Response {
         return $this->modify_entry($request, $entry_id);
@@ -408,7 +392,7 @@ class EntryController extends Controller {
     }
 
     private function provide_paged_entries_response(array $filters, int $page_number=0, string $sort_by=Entry::DEFAULT_SORT_PARAMETER, string $sort_direction=Entry::DEFAULT_SORT_DIRECTION): Response {
-        $entries_collection = Entry::get_collection_of_non_disabled_entries(
+        $entries_collection = Entry::get_collection_of_entries(
             $filters,
             self::$MAX_ENTRIES_IN_RESPONSE,
             self::$MAX_ENTRIES_IN_RESPONSE*$page_number,
@@ -429,7 +413,7 @@ class EntryController extends Controller {
             });
 
             $entries_collection = $entries_collection->values();   // the use of values() here allows us to ignore the original keys of the collection after a sort
-            $entries_collection->put('count', Entry::count_non_disabled_entries($filters));
+            $entries_collection->put('count', Entry::count_collection_of_entries($filters));
             return response($entries_collection, HttpStatus::HTTP_OK);
         }
     }

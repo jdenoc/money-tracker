@@ -5,17 +5,19 @@ namespace App\Models;
 use App\Jobs\AdjustAccountTotalUsingAccountType;
 use App\Traits\EntryFilterKeys;
 use Brick\Money\Money;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 
 class Entry extends BaseModel {
     use EntryFilterKeys;
     use HasFactory;
+    use SoftDeletes;
 
     const CREATED_AT = 'create_stamp';
     const UPDATED_AT = 'modified_stamp';
+    const DELETED_AT = 'disabled_stamp';
 
     const DEFAULT_SORT_PARAMETER = 'id';
     const DEFAULT_SORT_DIRECTION = 'desc';
@@ -24,7 +26,7 @@ class Entry extends BaseModel {
 
     protected $table = 'entries';
     protected $fillable = [
-        'entry_date', 'account_type_id', 'entry_value', 'memo', 'expense', 'confirm', 'disabled', 'disabled_stamp', 'transfer_entry_id'
+        'entry_date', 'account_type_id', 'entry_value', 'memo', 'expense', 'confirm', 'transfer_entry_id'
     ];
     protected $guarded = [
         'id', 'create_stamp', 'modified_stamp'
@@ -32,15 +34,10 @@ class Entry extends BaseModel {
     protected $casts = [
         'expense'=>'boolean',
         'confirm'=>'boolean',
-        'disabled'=>'boolean',
-    ];
-    protected $dates = [
-        'disabled_stamp'
     ];
     private static $required_entry_fields = [
         'account_type_id',
         'confirm',
-        'disabled',
         'entry_date',
         'entry_value',
         'expense',
@@ -69,14 +66,14 @@ class Entry extends BaseModel {
      * entry_tags.tag_id = tags.id
      */
     public function tags() {
-        return $this->belongsToMany('App\Models\Tag', 'entry_tags', 'entry_id', 'tag_id');
+        return $this->belongsToMany(Tag::class, 'entry_tags', 'entry_id', 'tag_id');
     }
 
     /**
      * attachments.entry_id = entries.id
      */
     public function attachments() {
-        return $this->hasMany('App\Models\Attachment');
+        return $this->hasMany(Attachment::class);
     }
 
     public function getEntryValueAttribute($value) {
@@ -92,32 +89,36 @@ class Entry extends BaseModel {
         return $this->accountType ? ($this->accountType->account ? $this->accountType->account->currency : Currency::DEFAULT_CURRENCY_CODE) : Currency::DEFAULT_CURRENCY_CODE;
     }
 
+    public function delete() {
+        $this->removeEntryValueFromAccountTotal();
+        return parent::delete();
+    }
+
     public function save(array $options = []) {
         if ($this->exists) {
             // if the entry already exists
             // remove that original value from the total of originally associated account
-            $original_account_type_id = $this->getOriginal('account_type_id');
-            $original_raw_entry_value = $this->getRawOriginal('entry_value');
-            $original_is_expense = $this->getOriginal('expense');
-            AdjustAccountTotalUsingAccountType::dispatch($original_account_type_id, $original_raw_entry_value, $original_is_expense, false);
+            $this->removeEntryValueFromAccountTotal();
         }
 
         $saved_entry = parent::save($options);
+        $this->addEntryValueToAccountTotal();
 
-        if (!$this->disabled) {
-            // add new entry value to account total
-            $current_account_type_id = $this->account_type_id;
-            $currenct_raw_entry_value = $this->attributes['entry_value'];
-            $current_is_expense = $this->expense;
-            AdjustAccountTotalUsingAccountType::dispatch($current_account_type_id, $currenct_raw_entry_value, $current_is_expense, true);
-        }
         return $saved_entry;
     }
 
-    public function disable() {
-        $this->disabled = true;
-        $this->disabled_stamp = new Carbon();
-        $this->save();
+    private function addEntryValueToAccountTotal() {
+        $current_account_type_id = $this->account_type_id;
+        $current_raw_entry_value = $this->attributes['entry_value'];
+        $current_is_expense = $this->expense;
+        AdjustAccountTotalUsingAccountType::dispatch($current_account_type_id, $current_raw_entry_value, $current_is_expense, true);
+    }
+
+    private function removeEntryValueFromAccountTotal() {
+        $original_account_type_id = $this->getOriginal('account_type_id');
+        $original_raw_entry_value = $this->getRawOriginal('entry_value');
+        $original_is_expense = $this->getOriginal('expense');
+        AdjustAccountTotalUsingAccountType::dispatch($original_account_type_id, $original_raw_entry_value, $original_is_expense, false);
     }
 
     /**
@@ -128,7 +129,7 @@ class Entry extends BaseModel {
      * @param string $sort_direction
      * @return \Illuminate\Support\Collection
      */
-    public static function get_collection_of_non_disabled_entries(array $filters = [], int $limit=10, int $offset=0, string $sort_by=self::DEFAULT_SORT_PARAMETER, string $sort_direction=self::DEFAULT_SORT_DIRECTION) {
+    public static function get_collection_of_entries(array $filters = [], int $limit=10, int $offset=0, string $sort_by=self::DEFAULT_SORT_PARAMETER, string $sort_direction=self::DEFAULT_SORT_DIRECTION) {
         $entries_query = self::build_entry_query($filters);
         // this makes sure that the correct ID is present if a JOIN is required
         $entries_query->distinct()->select("entries.*");
@@ -141,10 +142,10 @@ class Entry extends BaseModel {
      * @param array $filters
      * @return int
      */
-    public static function count_non_disabled_entries(array $filters = []): int {
+    public static function count_collection_of_entries(array $filters = []): int {
         $entries_query = self::build_entry_query($filters);
         // due to the risk of failure with potentially adding GROUP BY to the query
-        // we're going to use the generated query as a subquery and count from that
+        // we're going to use the generated query as a sub-query and count from that
         return DB::table($entries_query->select('entries.id'))->count();
     }
 
@@ -153,7 +154,7 @@ class Entry extends BaseModel {
      * @return mixed
      */
     private static function build_entry_query(array $filters) {
-        $entries_query = Entry::where('entries.disabled', 0);
+        $entries_query = Entry::whereNull('entries.'.self::DELETED_AT);
         return self::filter_entry_collection($entries_query, $filters);
     }
 
@@ -239,9 +240,6 @@ class Entry extends BaseModel {
         return $entries_query;
     }
 
-    /**
-     * @return bool
-     */
     public function has_attachments(): bool {
         try {
             return $this->attachments()->count() > 0;
@@ -260,9 +258,6 @@ class Entry extends BaseModel {
         }
     }
 
-    /**
-     * @return array
-     */
     public function get_tag_ids(): array {
         try {
             $collection_of_tags = $this->tags()->getResults();
@@ -278,11 +273,7 @@ class Entry extends BaseModel {
     }
 
     public static function get_fields_required_for_creation(): array {
-        $fields = self::$required_entry_fields;
-        unset($fields[array_search('disabled', $fields)]);
-        // using array_values here to reset the array index
-        // after we unset the "disabled" element
-        return array_values($fields);
+        return self::$required_entry_fields;
     }
 
     public static function get_fields_required_for_update(): array {

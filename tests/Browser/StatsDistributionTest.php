@@ -313,7 +313,7 @@ class StatsDistributionTest extends StatsBase {
             $account_type_id = $account_types->pluck('id')->random();
         }
 
-        $disabled_entry = Entry::factory()->create(['memo'=>$this->getName().' - ALL tags', 'account_type_id'=>$account_type_id, 'disabled'=>false, 'entry_date'=>date('Y-m-d', strtotime('-1 day'))]);
+        $disabled_entry = Entry::factory()->create(['memo'=>$this->getName().' - ALL tags', 'account_type_id'=>$account_type_id, 'entry_date'=>date('Y-m-d', strtotime('-1 day'))]);
         foreach ($tags->pluck('id')->all() as $tag_id) {
             $disabled_entry->tags()->attach($tag_id);
         }

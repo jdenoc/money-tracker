@@ -56,8 +56,8 @@ class EntriesExport implements FromCollection, WithHeadings, WithMapping, WithCo
     * @return \Illuminate\Support\Collection
     */
     public function collection() {
-        $total_count = Entry::count_non_disabled_entries($this->filterData);
-        return Entry::get_collection_of_non_disabled_entries($this->filterData, $total_count);
+        $total_count = Entry::count_collection_of_entries($this->filterData);
+        return Entry::get_collection_of_entries($this->filterData, $total_count);
     }
 
     public function getCsvSettings(): array {

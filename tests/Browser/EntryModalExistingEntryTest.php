@@ -1081,7 +1081,6 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         $entry = Entry::factory()->create([
             'entry_date'=>Carbon::tomorrow()->format('Y-m-d'),
             'account_type_id'=>$account_type_id,
-            'disabled'=>false,
             'transfer_entry_id'=>0,
             'expense'=>$is_expense,
             'confirm'=>$is_confirmed

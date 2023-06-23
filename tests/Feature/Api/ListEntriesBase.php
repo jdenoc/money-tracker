@@ -9,6 +9,7 @@ use App\Models\Tag;
 use App\Traits\EntryFilterKeys;
 use App\Traits\MaxEntryResponseValue;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Support\Collection;
 use Tests\TestCase;
 
@@ -51,14 +52,14 @@ class ListEntriesBase extends TestCase {
         } else {
             $entry_disabled = $mark_entries_disabled;
         }
-        $disabled_stamp = function($entry_disabled) { return ($entry_disabled ? null : now()); };
-        $entry_data = array_merge(
-            ['account_type_id'=>$account_type_id, 'disabled'=>$entry_disabled, 'disabled_stamp'=>$disabled_stamp],
-            $filter_details
-        );
+        $disabled_stamp = function() use ($entry_disabled) { return ($entry_disabled ? null : now()); };
+        $entry_data = array_merge(['account_type_id'=>$account_type_id], $filter_details);
         unset($entry_data['tags'], $entry_data['has_attachments']);
 
-        $generated_entries = Entry::factory()->count($totalEntriesToCreate)->state($entry_data)->create();
+        $generated_entries = Entry::factory()->count($totalEntriesToCreate)
+            ->state($entry_data)
+            ->state(new Sequence($disabled_stamp))
+            ->create();
         $generated_entries->transform(function(Entry $entry) use ($filter_details) {
             if (!$entry->disabled) {  // no sense cluttering up the database with test data for something that isn't supposed to appear anyway
                 $entry->is_transfer = !is_null($entry->transfer_entry_id);
@@ -148,7 +149,7 @@ class ListEntriesBase extends TestCase {
         $this->assertcount($generate_entry_count, $entries_in_response);
 
         $previous_entry_in_response = null;
-        $expected_elements = ['id', 'entry_date', 'entry_value', 'memo', 'account_type_id', 'expense', 'confirm', 'disabled', Entry::CREATED_AT, Entry::UPDATED_AT, 'disabled_stamp', 'has_attachments', 'tags', 'is_transfer'];
+        $expected_elements = ['id', 'entry_date', 'entry_value', 'memo', 'account_type_id', 'expense', 'confirm', Entry::CREATED_AT, Entry::UPDATED_AT, Entry::DELETED_AT, 'has_attachments', 'tags', 'is_transfer'];
         foreach ($entries_in_response as $entry_in_response) {
             $this->assertEqualsCanonicalizing($expected_elements, array_keys($entry_in_response));
 

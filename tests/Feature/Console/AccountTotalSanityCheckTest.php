@@ -50,7 +50,7 @@ class AccountTotalSanityCheckTest extends TestCase {
         $account_types = collect();
         foreach ($accounts as $account) {
             $account_type = AccountType::factory()->for($account)->create();
-            Entry::factory()->count(2)->for($account_type)->create(['disabled'=>0]);
+            Entry::factory()->count(2)->for($account_type)->create();
             $account_types->push($account_type);
         }
 
@@ -68,9 +68,9 @@ class AccountTotalSanityCheckTest extends TestCase {
         $account = Account::get()->random();
         $account->update(['total'=>0]);
         $account_type = AccountType::where(['account_id'=>$account->id])->get()->random();
-        $entries = Entry::factory()->for($account_type)->count(10)->create(['disabled'=>0]);
+        $entries = Entry::factory()->for($account_type)->count(10)->create();
 
-        $new_total = $entries->where('disabled', 0)
+        $new_total = $entries->whereNull(Entry::DELETED_AT)
             ->sum(function($entry) {
                 return ($entry['expense'] ? -1 : 1) * $entry['entry_value'];
             });

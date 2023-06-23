@@ -49,8 +49,13 @@ class Account extends BaseModel {
         return $this->hasMany(AccountType::class, 'account_id');
     }
 
+    /**
+     * @deprecated
+     *
+     * alias for accountTypes
+     * needed to support legacy implementations
+     */
     public function account_types() {
-        // for backwards compatability
         return $this->accountTypes();
     }
 

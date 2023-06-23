@@ -81,12 +81,11 @@ class AccountController extends Controller {
         try {
             // must be a disabled account
             $account_to_reactivate = Account::onlyTrashed()->findOrFail($accountId);
+            $account_to_reactivate->restore();
+            return response('', HttpStatus::HTTP_NO_CONTENT);
         } catch (\Exception $e) {
             return response('', HttpStatus::HTTP_NOT_FOUND);
         }
-
-        $account_to_reactivate->restore();
-        return response('', HttpStatus::HTTP_NO_CONTENT);
     }
 
     /**

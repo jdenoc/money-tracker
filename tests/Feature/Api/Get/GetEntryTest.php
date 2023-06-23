@@ -140,7 +140,8 @@ class GetEntryTest extends TestCase {
         /** @var Entry $generated_entry */
         $generated_entry = Entry::factory()
             ->for(AccountType::factory()->for(Account::factory()))
-            ->create(['disabled'=>true]);
+            ->disabled()
+            ->create();
 
         // WHEN
         $response = $this->get(sprintf($this->_base_uri, $generated_entry->id));
@@ -164,7 +165,7 @@ class GetEntryTest extends TestCase {
     }
 
     private function assertEntryNodeExcludingRelationships($entry_from_response, Entry $generated_entry) {
-        $expected_elements = ['id', 'entry_date', 'entry_value', 'memo', 'expense', 'confirm', 'account_type_id', 'transfer_entry_id', Entry::CREATED_AT, Entry::UPDATED_AT, 'tags', 'attachments'];
+        $expected_elements = ['id', 'entry_date', 'entry_value', 'memo', 'expense', 'confirm', 'account_type_id', 'transfer_entry_id', Entry::CREATED_AT, Entry::UPDATED_AT, Entry::DELETED_AT, 'tags', 'attachments'];
         $this->assertEqualsCanonicalizing($expected_elements, array_keys($entry_from_response));
 
         $failure_message = 'generated entry:'.json_encode($generated_entry)."\nresponse entry:".json_encode($entry_from_response);
