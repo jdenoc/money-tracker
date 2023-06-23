@@ -77,7 +77,7 @@ jobs:
 
       - name: Generate image tag [composer]
         id: image-tag-composer
-        run: echo "value=composer-local" >> $GITHUB_OUTPUT
+        run: echo "value=composer:money-tracker" >> $GITHUB_OUTPUT
 
     outputs:
       cache-key-docker: ${{ steps.cache-key-docker.outputs.value }}
