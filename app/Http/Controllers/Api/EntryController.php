@@ -29,7 +29,7 @@ class EntryController extends Controller {
      */
     public function get_entry(int $entry_id): Response {
         try {
-            $entry = Entry::with(['tags', 'attachments'])->findOrFail($entry_id);
+            $entry = Entry::withTrashed()->with(['tags', 'attachments'])->findOrFail($entry_id);
 
             // we're not going to show disabled entries,
             // so why bother telling someone that something that isn't disabled
