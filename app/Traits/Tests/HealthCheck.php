@@ -16,6 +16,7 @@ trait HealthCheck {
         "Debug Mode",
         "Environment",
         "Schedule",
+        "Optimized App",
         "Used Disk Space",
     ];
 
