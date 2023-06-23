@@ -49,7 +49,6 @@
 <script lang="js">
 import {AccountTypes} from "../../account-types";
 import {Tags} from "../../tags";
-// import _ from "lodash";
 
 export default {
   name: "entries-table-entry-row",
@@ -61,7 +60,6 @@ export default {
     memo: {type: String},
     expense: {type: Boolean},
     confirm: {type: Boolean},
-    disabled: {type: Boolean, default: false},
     hasAttachments: {type: Boolean, default: false},
     isTransfer: {type: Boolean, default: false},
     tagIds: {type: Array, default: function(){ return []; }}

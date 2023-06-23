@@ -104,7 +104,6 @@ export default {
         memo: entry.memo,
         expense: entry.expense,
         confirm: entry.confirm,
-        disabled: entry.disabled,
         hasAttachments: hasAttachments,
         isTransfer: isTransfer,
         tagIds: entry.tags
