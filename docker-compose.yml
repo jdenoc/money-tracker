@@ -21,7 +21,7 @@ services:
       - database
       - cache
     dns_search:
-      - money-tracker.docker
+      - money-tracker.test
     networks:
       - net.money-tracker
 
@@ -68,7 +68,7 @@ services:
     depends_on:
       - application
     links:
-      - application:money-tracker.docker
+      - application:money-tracker.test
     networks:
       - net.money-tracker
 
