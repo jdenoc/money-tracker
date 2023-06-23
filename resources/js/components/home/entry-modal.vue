@@ -518,7 +518,7 @@ export default {
       if(this.isLocked){
         this.unlockModal();
       } else {
-        this.entryData = this.entryObject.find(this.entryData.id);
+        this.entryData = _.clone(this.entryObject.find(this.entryData.id));
         this.lockModal();
       }
     },
