@@ -46,7 +46,7 @@ class DeleteEntryTest extends TestCase {
         $this->assertNotEmpty($newly_disabled_entry->{Entry::UPDATED_AT}, Entry::UPDATED_AT.' value is empty ['.$newly_disabled_entry->{Entry::UPDATED_AT}.']');
         $this->assertDateFormat($newly_disabled_entry->{Entry::UPDATED_AT}, Carbon::ATOM, $newly_disabled_entry->{Entry::UPDATED_AT}. "does not match format ".Carbon::ATOM);
         $this->assertNotEmpty($entry->{Entry::UPDATED_AT}, Entry::UPDATED_AT.' value is empty ['.$newly_disabled_entry->{Entry::UPDATED_AT}.']');
-        $this->assertNotEquals($entry->{Entry::UPDATED_AT}, $newly_disabled_entry->{Entry::UPDATED_AT});
+        $this->assertNotEquals($get_response1[Entry::UPDATED_AT], $get_response2[Entry::UPDATED_AT]);
     }
 
     public function testMarkingPreviouslyDeletedEntryToBeDeleted() {

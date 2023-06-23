@@ -81,19 +81,20 @@ trait FilterModal {
                 if ($is_account) {
                     // account
                     $filter_values = $this->getApiAccounts();
-                    $filter_value = collect($filter_values)->where('active', true)->random();
                 } else {
                     // account-type
                     $this->toggleAccountOrAccountTypeSwitch($modal);
                     $filter_values = $this->getApiAccountTypes();
-                    $filter_value = collect($filter_values)->where('disabled', false)->random();
                 }
+                $filter_value = collect($filter_values)->where('active', true)->random();
                 $this->selectAccountOrAccountTypeValue($modal, $filter_value['id']);
 
                 if ($is_account) {
+                    // account
                     $account = Account::with('account_types')->find($filter_value['id']);
                     $filter_value = $account->account_types->pluck('name')->toArray();
                 } else {
+                    // account-type
                     $filter_value = $filter_value['name'];
                 }
                 break;
