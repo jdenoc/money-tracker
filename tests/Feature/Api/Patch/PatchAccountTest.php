@@ -4,18 +4,16 @@ namespace Tests\Feature\Api\Patch;
 
 use App\Models\Account;
 use App\Models\Institution;
-use Illuminate\Foundation\Testing\WithFaker;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 
 class PatchAccountTest extends TestCase {
-    use WithFaker;
 
     private const PLACEHOLDER_URI_ACCOUNT = '/api/account/%d';
 
     public function testRestoringAccountThatDoesNotExist() {
         // GIVEN - no account exists
-        $account_id = $this->faker->randomNumber();
+        $account_id = fake()->randomNumber();
 
         // WHEN
         $response = $this->patch(sprintf(self::PLACEHOLDER_URI_ACCOUNT, $account_id));
@@ -27,8 +25,7 @@ class PatchAccountTest extends TestCase {
 
     public function testRestoringUndeletedAccount() {
         // GIVEN
-        $generated_institution = Institution::factory()->create();
-        $generated_account = Account::factory()->for($generated_institution)->create();
+        $generated_account = Account::factory()->for(Institution::factory())->create();
 
         // WHEN
         $response = $this->patch(sprintf(self::PLACEHOLDER_URI_ACCOUNT, $generated_account->id));
