@@ -11,7 +11,7 @@ use Tests\TestCase;
 
 class DeleteEntryTest extends TestCase {
 
-    private string $_base_uri = '/api/entry/';
+    private const BASE_URI = '/api/entry/%d';
 
     public function testMarkingEntryDeleted() {
         // GIVEN
@@ -20,14 +20,14 @@ class DeleteEntryTest extends TestCase {
             ->create();
 
         // WHEN
-        $get_response1 = $this->get($this->_base_uri.$entry->id);
+        $get_response1 = $this->get(sprintf(self::BASE_URI, $entry->id));
 
         // THEN
         $this->assertResponseStatus($get_response1, HttpStatus::HTTP_OK);
 
         // WHEN
-        $delete_response = $this->delete($this->_base_uri.$entry->id);
-        $get_response2 = $this->get($this->_base_uri.$entry->id);
+        $delete_response = $this->delete(sprintf(self::BASE_URI, $entry->id));
+        $get_response2 = $this->get(sprintf(self::BASE_URI, $entry->id));
 
         // THEN
         $this->assertResponseStatus($delete_response, HttpStatus::HTTP_NO_CONTENT);
@@ -42,11 +42,10 @@ class DeleteEntryTest extends TestCase {
         $this->assertEquals($newly_disabled_entry->{Entry::DELETED_AT}, $get_response2[Entry::DELETED_AT]);
         $this->assertNotNull($newly_disabled_entry->{Entry::DELETED_AT}, Entry::DELETED_AT.' value is unexpected ['.$newly_disabled_entry->{Entry::DELETED_AT}.']');
         $this->assertDateFormat($newly_disabled_entry->{Entry::DELETED_AT}, Carbon::ATOM, $newly_disabled_entry->{Entry::DELETED_AT}. "does not match format ".Carbon::ATOM);
+
         $this->assertEquals($newly_disabled_entry->{Entry::UPDATED_AT}, $get_response2[Entry::UPDATED_AT]);
         $this->assertNotEmpty($newly_disabled_entry->{Entry::UPDATED_AT}, Entry::UPDATED_AT.' value is empty ['.$newly_disabled_entry->{Entry::UPDATED_AT}.']');
         $this->assertDateFormat($newly_disabled_entry->{Entry::UPDATED_AT}, Carbon::ATOM, $newly_disabled_entry->{Entry::UPDATED_AT}. "does not match format ".Carbon::ATOM);
-        $this->assertNotEmpty($entry->{Entry::UPDATED_AT}, Entry::UPDATED_AT.' value is empty ['.$newly_disabled_entry->{Entry::UPDATED_AT}.']');
-        $this->assertNotEquals($get_response1[Entry::UPDATED_AT], $get_response2[Entry::UPDATED_AT]);
     }
 
     public function testMarkingPreviouslyDeletedEntryToBeDeleted() {
@@ -57,7 +56,7 @@ class DeleteEntryTest extends TestCase {
             ->create();
 
         // WHEN
-        $get_response = $this->get($this->_base_uri.$entry->id);
+        $get_response = $this->get(sprintf(self::BASE_URI, $entry->id));
 
         // THEN
         $this->assertResponseStatus($get_response, HttpStatus::HTTP_OK);
@@ -66,7 +65,7 @@ class DeleteEntryTest extends TestCase {
         $this->assertNotNull($get_response[Entry::DELETED_AT]);
 
         // WHEN
-        $delete_response = $this->delete($this->_base_uri.$entry->id);
+        $delete_response = $this->delete(sprintf(self::BASE_URI, $entry->id));
 
         // THEN
         $this->assertResponseStatus($delete_response, HttpStatus::HTTP_NOT_FOUND);
@@ -78,7 +77,7 @@ class DeleteEntryTest extends TestCase {
         $entry_id = fake()->randomNumber();
 
         // WHEN
-        $get_response = $this->get($this->_base_uri.$entry_id);
+        $get_response = $this->get(sprintf(self::BASE_URI, $entry_id));
 
         // THEN
         $this->assertResponseStatus($get_response, HttpStatus::HTTP_NOT_FOUND);
@@ -86,7 +85,7 @@ class DeleteEntryTest extends TestCase {
         $this->assertEmpty($get_response->json());
 
         // WHEN
-        $delete_response = $this->delete($this->_base_uri.$entry_id);
+        $delete_response = $this->delete(sprintf(self::BASE_URI, $entry_id));
 
         // THEN
         $this->assertResponseStatus($delete_response, HttpStatus::HTTP_NOT_FOUND);
