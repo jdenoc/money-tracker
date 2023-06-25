@@ -164,7 +164,7 @@ class GetEntryTest extends TestCase {
         return $generated_tags->toArray();
     }
 
-    private function assertEntryNodeExcludingRelationships($entry_from_response, Entry $generated_entry) {
+    private function assertEntryNodeExcludingRelationships($entry_from_response, Entry $generated_entry): void {
         $expected_elements = ['id', 'entry_date', 'entry_value', 'memo', 'expense', 'confirm', 'account_type_id', 'transfer_entry_id', Entry::CREATED_AT, Entry::UPDATED_AT, Entry::DELETED_AT, 'tags', 'attachments'];
         $this->assertEqualsCanonicalizing($expected_elements, array_keys($entry_from_response));
 
@@ -175,6 +175,12 @@ class GetEntryTest extends TestCase {
                 case Entry::UPDATED_AT:
                     $this->assertDateFormat($entry_from_response[$element], Carbon::ATOM, $failure_message."\nfor these value to equal, PHP & MySQL timestamps must be the same");
                     $this->assertDatetimeWithinOneSecond($generated_entry->$element, $entry_from_response[$element], $failure_message."\nfor these value to equal, PHP & MySQL timestamps must be the same");
+                    break;
+                case Entry::DELETED_AT:
+                    if(!is_null($entry_from_response[$element])) {
+                        $this->assertDateFormat($entry_from_response[$element], Carbon::ATOM, $failure_message."\nfor these value to equal, PHP & MySQL timestamps must be the same");
+                        $this->assertDatetimeWithinOneSecond($generated_entry->$element, $entry_from_response[$element], $failure_message."\nfor these value to equal, PHP & MySQL timestamps must be the same");
+                    }
                     break;
                 case 'tags':
                 case 'attachments':
@@ -187,7 +193,7 @@ class GetEntryTest extends TestCase {
         }
     }
 
-    private function assertEntryTagsNodeOK($entry_tags_node, array $generated_tags_as_array) {
+    private function assertEntryTagsNodeOK($entry_tags_node, array $generated_tags_as_array): void {
         $this->assertCount($this->_generate_tag_count, $entry_tags_node);
         $expected_elements = ['id', 'name'];
         foreach ($entry_tags_node as $tag_in_response) {
@@ -199,7 +205,7 @@ class GetEntryTest extends TestCase {
         }
     }
 
-    private function assertEntryAttachmentsNodeOK($entry_attachments_node, array $generated_attachments_as_array) {
+    private function assertEntryAttachmentsNodeOK($entry_attachments_node, array $generated_attachments_as_array): void {
         $this->assertCount($this->_generate_attachment_count, $entry_attachments_node);
         $expected_elements = ['uuid', 'name', 'stamp'];
         foreach ($entry_attachments_node as $attachment_in_response) {

@@ -47,21 +47,26 @@ class ListEntriesBase extends TestCase {
      * @return Collection
      */
     protected function batch_generate_entries(int $totalEntriesToCreate, int $account_type_id, array $filter_details=[], bool $randomly_mark_entries_disabled=false, bool $mark_entries_disabled=false) {
-        if ($randomly_mark_entries_disabled) {
-            $entry_disabled = function() { return fake()->boolean(); };
-        } else {
-            $entry_disabled = $mark_entries_disabled;
-        }
-        $disabled_stamp = function() use ($entry_disabled) { return ($entry_disabled ? null : now()); };
         $entry_data = array_merge(['account_type_id'=>$account_type_id], $filter_details);
         unset($entry_data['tags'], $entry_data['has_attachments']);
 
         $generated_entries = Entry::factory()->count($totalEntriesToCreate)
             ->state($entry_data)
-            ->state(new Sequence($disabled_stamp))
+            ->state(new Sequence(function() use ($randomly_mark_entries_disabled, $mark_entries_disabled) {
+                return [Entry::DELETED_AT => function() use ($randomly_mark_entries_disabled, $mark_entries_disabled) {
+                    if ($randomly_mark_entries_disabled) {
+                        $entry_disabled = function() { return fake()->boolean(); };
+                    } else {
+                        $entry_disabled = $mark_entries_disabled;
+                    }
+
+                    return $entry_disabled ? now() : null;
+                }];
+            }))
             ->create();
+
         $generated_entries->transform(function(Entry $entry) use ($filter_details) {
-            if (!$entry->disabled) {  // no sense cluttering up the database with test data for something that isn't supposed to appear anyway
+            if (is_null($entry->{Entry::DELETED_AT})) {  // no sense cluttering up the database with test data for something that isn't supposed to appear anyway
                 $entry->is_transfer = !is_null($entry->transfer_entry_id);
 
                 if (isset($filter_details['has_attachments']) && $filter_details['has_attachments'] === true) {
