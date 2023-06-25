@@ -63,10 +63,11 @@ class AccountTotalSanityCheck extends Command {
             $account_id = $this->argument(self::ARG_ACCOUNT_ID);
             if (!is_null($account_id)) {
                 try {
+                    /** @var Account $account */
                     $account = Account::withTrashed()->findOrFail($account_id);
                     $sanity_check_object = $this->retrieveExpectedAccountTotalData($account);
                     $this->notifySanityCheck($sanity_check_object);
-                } catch (\Exception $e) {
+                } catch (\Exception) {
                     $this->notifyInternally(sprintf("Account %d not found", $account_id), self::LOG_LEVEL_WARNING);
                 }
             } elseif (!is_null($account_id) && (int)$account_id === 0) { // without the is_null check, we would just convert null to 0 in this check, which would be true
@@ -101,7 +102,7 @@ class AccountTotalSanityCheck extends Command {
                 $join->on(Entry::getTableName().'.account_type_id', '=', AccountType::getTableName().'.id')
                     ->where(AccountType::getTableName().'.account_id', $account->id);
             })
-            ->where(Entry::getTableName().'.disabled', '0')
+            ->whereNull(Entry::getTableName().'.'.Entry::DELETED_AT)
             ->orderBy(DB::raw(Entry::getTableName().'.entry_date desc, '.Entry::getTableName().'.id'), 'desc');
         /**
          * The above stuff is translated into MySQL here:
@@ -111,7 +112,7 @@ class AccountTotalSanityCheck extends Command {
             INNER JOIN account_types
               ON entries.account_type_id = account_types.id
               AND account_types.account_id = $account->id
-            WHERE entries.disabled = 0
+            WHERE entries.disabled_stamp IS NULL
             ORDER BY entries.entry_date DESC, entries.id DESC
          */
 
