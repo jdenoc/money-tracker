@@ -31,10 +31,9 @@ class GetEntriesTest extends ListEntriesBase {
 
         $generate_entry_count = fake()->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE);
         $generated_entries = $this->batch_generate_entries($generate_entry_count, $generated_account_type->id, [], true);
-        $generated_disabled_entries = $generated_entries->where('disabled', 1);
+        $generated_disabled_entries = $generated_entries->whereNotNull(Entry::DELETED_AT);
         if ($generated_disabled_entries->count() > 0) {   // if there are no disabled entries, then there is no need to do any fancy filtering
-            $generated_entries = $generated_entries->sortByDesc('disabled') // sorting so disabled entries are at the start of the collection
-                ->splice($generated_disabled_entries->count()-1);
+            $generated_entries = $generated_entries->whereNull(Entry::DELETED_AT);
             $generate_entry_count -= $generated_disabled_entries->count();
         }
 
