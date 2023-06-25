@@ -51,10 +51,9 @@ class PostEntriesTest extends ListEntriesBase {
         $filter_details = $this->setTestSpecificFilters(fake(), $filter_details, $this->_generated_account, $this->_generated_tags);
 
         $generated_entries = $this->batch_generate_entries($generate_entry_count, $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details), true);
-        $generated_disabled_entries = $generated_entries->where('disabled', 1);
+        $generated_disabled_entries = $generated_entries->whereNotNull(Entry::DELETED_AT);
         if ($generated_disabled_entries->count() > 0) {   // if there are no disabled entries, then there is no need to do any fancy filtering
-            $generated_entries = $generated_entries->sortByDesc('disabled') // sorting so disabled entries are at the start of the collection
-                ->splice($generated_disabled_entries->count()-1);
+            $generated_entries = $generated_entries->whereNull(Entry::DELETED_AT);
             $generate_entry_count -= $generated_disabled_entries->count();
         }
 

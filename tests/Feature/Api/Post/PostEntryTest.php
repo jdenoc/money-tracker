@@ -118,7 +118,7 @@ class PostEntryTest extends TestCase {
         $this->assertArrayHasKey('currency', $get_account_response1_as_array);
         $original_account_total = Money::of($get_account_response1_as_array['total'], $get_account_response1_as_array['currency']);
         $this->assertArrayHasKey('account_types', $get_account_response1_as_array);
-        $this->assertTrue(is_array($get_account_response1_as_array['account_types']));
+        $this->assertIsArray($get_account_response1_as_array['account_types']);
         $this->assertNotEmpty($get_account_response1_as_array['account_types']);
 
         // WHEN
