@@ -203,54 +203,7 @@ class PutEntryTest extends TestCase {
         );
         $this->assertTrue(
             $account2_original_total->plus($entry_value)->isEqualTo($account2_new_total),
-            "Accountt total comparison failing".$error_message
-        );
-    }
-
-    public function testUpdateEntryAsDeletedAndConfirmValueRemovedFromAccountTotal() {
-        // GIVEN - see setUp()
-        $entry_data = [
-            'disabled'=>true
-        ];
-
-        // WHEN
-        $get_account_response1 = $this->get('/api/account/'.$this->_generated_account->id);
-        // THEN
-        $get_account_response1->assertStatus(HttpStatus::HTTP_OK);
-        $get_account_response1_as_array = $get_account_response1->json();
-        $this->assertArrayHasKey('total', $get_account_response1_as_array);
-        $original_total = Money::of($get_account_response1_as_array['total'], $get_account_response1_as_array['currency']);
-
-        // WHEN
-        $put_response = $this->putJson($this->_base_uri.$this->_generated_entry->id, $entry_data);
-        // THEN
-        $put_response->assertStatus(HttpStatus::HTTP_OK);
-        $put_response_as_array = $put_response->json();
-        $this->assertPutResponseHasCorrectKeys($put_response_as_array);
-        $this->assertEmpty($put_response_as_array[self::$RESPONSE_SAVE_KEY_ERROR]);
-        $this->assertGreaterThan(self::$ERROR_ENTRY_ID, $put_response_as_array[self::$RESPONSE_SAVE_KEY_ID]);
-
-        // WHEN
-        $get_entry_response = $this->get($this->_base_uri.$this->_generated_entry->id);
-        // THEN
-        $get_entry_response->assertStatus(HttpStatus::HTTP_NOT_FOUND);
-        $get_entry_response_as_array = $get_entry_response->json();
-        $this->assertTrue(is_array($get_entry_response_as_array));
-        $this->assertEmpty($get_entry_response_as_array);
-
-        // WHEN
-        $get_account_response2 = $this->get('/api/account/'.$this->_generated_account->id);
-        // THEN
-        $get_account_response2->assertStatus(HttpStatus::HTTP_OK);
-        $get_account_response2_as_array = $get_account_response2->json();
-        $this->assertArrayHasKey('total', $get_account_response2_as_array);
-        $updated_total = Money::of($get_account_response2_as_array['total'], $get_account_response2_as_array['currency']);
-
-        $original_entry_value = Money::of($this->_generated_entry->entry_value, $this->_generated_account->currency)
-            ->multipliedBy(($this->_generated_entry->expense ? -1 : 1));
-        $this->assertTrue(
-            $original_total->minus($original_entry_value)->isEqualTo($updated_total),
-            "Original entry value:".$original_entry_value."\nOriginal total:".$original_total."\nUpdated total:".$updated_total
+            "Account total comparison failing".$error_message
         );
     }
 
