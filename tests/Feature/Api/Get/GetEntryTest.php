@@ -147,9 +147,10 @@ class GetEntryTest extends TestCase {
         $response = $this->get(sprintf($this->_base_uri, $generated_entry->id));
 
         // THEN
-        $response->assertStatus(HttpStatus::HTTP_NOT_FOUND);
+        $response->assertStatus(HttpStatus::HTTP_OK);
         $response_body_as_array = $response->json();
-        $this->assertEmpty($response_body_as_array);
+        $this->assertNotEmpty($response_body_as_array);
+        $this->assertNotNull($response_body_as_array[Entry::DELETED_AT]);
     }
 
     private function generateAttachmentsAndOutputAsArray(int $generated_entry_id): array {
