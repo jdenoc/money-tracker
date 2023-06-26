@@ -4,6 +4,9 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex);
 
+/**
+ * @deprecated
+ */
 export default new Vuex.Store({
   strict: true,
 

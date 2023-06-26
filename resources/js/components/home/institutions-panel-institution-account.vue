@@ -16,9 +16,10 @@
 </template>
 
 <script lang="js">
-import {Accounts} from "../../accounts";
 import {Currency} from '../../currency';
-import Store from '../../store';
+// stores
+import {useAccountTypesStore} from "../../stores/accountTypes";
+import {usePaginationStore} from "../../stores/pagination";
 
 export default {
   name: "institutions-panel-institution-account",
@@ -33,11 +34,12 @@ export default {
     }
   },
   data: function(){
-    return {
-      currencyObject: new Currency()
-    }
+    return {}
   },
   computed: {
+    accountTypesStore: function(){
+      return useAccountTypesStore();
+    },
     accountCurrencyHtml: function(){
       return this.currencyObject.getHtmlFromCode(this.accountCurrency);
     },
@@ -49,18 +51,21 @@ export default {
       }
     },
     accountTypeTooltipList: function(){
-      let accountTypes = new Accounts().getAccountTypes(this.id);
       let tooltipList = "";
-      accountTypes.filter(function(accountType){
-        return Object.prototype.hasOwnProperty.call(accountType, 'active')
-          && accountType.active;
-      }).forEach(function(accountType){
-        tooltipList += "&bull; "+accountType.name+" ("+accountType.last_digits+")<br/>"
-      });
+      this.accountTypesStore.listActive
+        .filter(function(accountType){
+          return accountType.account_id === this.id;
+        }.bind(this))
+        .forEach(function(accountType){
+          tooltipList += "&bull; "+accountType.name+" ("+accountType.last_digits+")<br/>"
+        });
       return tooltipList.trim();
     },
+    currencyObject: function(){
+      return new Currency();
+    },
     isAccountFilterActive: function(){
-      let currentFilter = Store.getters.currentFilter;
+      let currentFilter = usePaginationStore().currentFilter;
       return Object.keys(currentFilter).length === 1
         && Object.prototype.hasOwnProperty.call(currentFilter, 'account')
         && currentFilter.account === this.id;

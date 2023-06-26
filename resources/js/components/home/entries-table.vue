@@ -28,7 +28,7 @@
       </thead>
       <tbody>
       <entries-table-entry-row
-          v-for="entry in listOfEntries"
+          v-for="entry in entriesStore.collection"
           v-bind:key="entry.id"
           v-bind="generateEntryRowOptions(entry)"
       ></entries-table-entry-row>
@@ -50,36 +50,37 @@
 
 <script lang="js">
 import _ from 'lodash';
-import {Entries} from '../../entries';
+// components
 import EntriesTableEntryRow from "./entries-table-entry-row";
-import Store from '../../store';
+// stores
+import {useEntriesStore} from "../../stores/entries";
+import {usePaginationStore} from "../../stores/pagination";
 
 export default {
   name: "entries-table",
   components: {EntriesTableEntryRow},
   data: function(){
-    return {
-      entries: new Entries(),
-    }
+    return { }
   },
   computed: {
     currentFilter: function(){
-      return Store.getters.currentFilter;
+      return usePaginationStore().currentFilter;
     },
-    currentPage: function(){
-      return Store.getters.currentPage;
+    currentPage: function() {
+      return usePaginationStore().currentPage;
+    },
+    entriesStore: function(){
+      return useEntriesStore();
     },
     entryCountMax: function(){
       return 50;
     },
     isNextButtonVisible: function(){
-      return this.entries.count > this.entryCountMax && this.entryCountMax*(this.currentPage+1) < this.entries.count
+      return this.entriesStore.totalCount > this.entryCountMax
+        && this.entryCountMax*(this.currentPage+1) < this.entriesStore.totalCount
     },
     isPrevButtonVisible: function(){
       return this.currentPage !== 0 && !_.isNull(this.currentPage);
-    },
-    listOfEntries: function(){
-      return this.entries.retrieve;
     },
   },
   methods: {
@@ -127,10 +128,10 @@ export default {
     },
     setPageNumber: function(newPageNumber){
       this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
-      Store.dispatch('currentPage', newPageNumber);
+      usePaginationStore().currentPage = newPageNumber;
     },
     updateEntriesTable: function(pageNumber, filterParameters){
-      return this.entries.fetch(pageNumber, filterParameters)
+      return this.entriesStore.fetch(pageNumber, filterParameters)
         .then(function(notification){
           this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, notification);
         }.bind(this))
@@ -145,7 +146,7 @@ export default {
       if(!_.isObject(payload)){
         this.setPageNumber(payload);
       } else {
-        Store.dispatch('currentFilter', payload.filterParameters);
+        usePaginationStore().currentFilter = payload.filterParameters;
         this.setPageNumber(payload.pageNumber);
       }
       this.updateEntriesTable(this.currentPage, this.currentFilter)
