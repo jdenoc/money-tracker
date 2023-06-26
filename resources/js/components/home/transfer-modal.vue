@@ -45,7 +45,7 @@
         <!-- account-type (from) -->
         <label for="from-account-type" class="font-medium justify-self-end py-1">From:</label>
         <div class="col-span-3 relative text-gray-700">
-          <span class="loading absolute inset-y-3 left-2" v-show="!areAccountTypesAvailable">
+          <span class="loading absolute inset-y-3 left-2" v-show="!accountTypesStore.isSet">
             <svg class="animate-spin mr-3 h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -58,11 +58,11 @@
           >
             <option></option>
             <option
-                v-for="accountType in listAccountTypes"
+                v-for="accountType in accountTypesStore.list"
                 v-bind:key="accountType.id"
                 v-bind:value="accountType.id"
                 v-text="accountType.name"
-                v-show="!accountType.disabled"
+                v-show="accountType.active"
             ></option>
             <option v-bind:value="accountTypeMeta.externalAccountTypeId">[External account]</option>
           </select>
@@ -84,7 +84,7 @@
         <!-- account-type (to) -->
         <label for="to-account-type" class="font-medium justify-self-end py-1">To:</label>
         <div class="col-span-3 relative text-gray-700">
-          <span class="loading absolute inset-y-3 left-2" v-show="!areAccountTypesAvailable">
+          <span class="loading absolute inset-y-3 left-2" v-show="!accountTypesStore.isSet">
             <svg class="animate-spin mr-3 h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -97,7 +97,7 @@
           >
             <option></option>
             <option
-                v-for="accountType in listAccountTypes"
+                v-for="accountType in accountTypesStore.list"
                 v-bind:key="accountType.id"
                 v-bind:value="accountType.id"
                 v-text="accountType.name"
@@ -129,7 +129,7 @@
         <!-- tags -->
         <label class="font-medium justify-self-end py-1">Tags:</label>
         <div class="col-span-3 relative">
-          <span class="loading absolute inset-y-2 right-0 z-10" v-show="!areTagsSet">
+          <span class="loading absolute inset-y-2 right-0 z-10" v-show="!tagsStore.isSet">
             <svg class="animate-spin mr-3 h-5 w-5 text-blue-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -137,7 +137,7 @@
           </span>
           <tags-input
               tagsInputName="transfer-tags"
-              v-bind:existingTags="listTags"
+              v-bind:existingTags="tagsStore.list"
               v-bind:selected-tags.sync="transferData.tags"
           ></tags-input>
         </div>
@@ -170,20 +170,23 @@
 <script lang="js">
 // utilities
 import _ from 'lodash';
-import Store from '../../store';
 // mixins
-import {accountTypesObjectMixin} from "../../mixins/account-types-object-mixin";
 import {decimaliseInputMixin} from "../../mixins/decimalise-input-mixin";
-import {tagsObjectMixin} from "../../mixins/tags-object-mixin";
 // objects
 import {Entry} from "../../entry";
 // components
-import TagsInput from "../tags-input";
 import FileDragNDrop from "../file-drag-n-drop";
+import TagsInput from "../tags-input";
+// stores
+import {useTagsStore} from "../../stores/tags";
+import {useAccountsStore} from "../../stores/accounts";
+import {useAccountTypesStore} from "../../stores/accountTypes";
+import {useModalStore} from "../../stores/modal";
+import {usePaginationStore} from "../../stores/pagination";
 
 export default {
   name: "transfer-modal",
-  mixins: [accountTypesObjectMixin, decimaliseInputMixin, tagsObjectMixin],
+  mixins: [decimaliseInputMixin],
   components: {
     FileDragNDrop,
     TagsInput,
@@ -193,16 +196,8 @@ export default {
       entryObject: new Entry(),
 
       accountTypeMeta: {
-        from: {
-          accountName: "",
-          lastDigits: "",
-          isEnabled: true
-        },
-        to: {
-          accountName: "",
-          lastDigits: "",
-          isEnabled: true
-        },
+        from: {}, // this gets filled with values from accountTypeMetaDefaults
+        to: {}, // this gets filled with values from accountTypeMetaDefaults
         externalAccountTypeId: 0
       },
 
@@ -212,6 +207,9 @@ export default {
     }
   },
   computed: {
+    accountsStore(){
+      return useAccountsStore();
+    },
     accountTypeMetaDefaults: function(){
       return {
         accountName: "",
@@ -219,8 +217,8 @@ export default {
         isEnabled: true
       }
     },
-    areAccountTypesSet: function(){
-      return this.listAccountTypes.length > 0;
+    accountTypesStore(){
+      return useAccountTypesStore();
     },
     canSave: function(){
       if(isNaN(Date.parse(this.transferData.date))){
@@ -257,9 +255,6 @@ export default {
           +(today.getMonth()<9?'0':'')+(today.getMonth()+1)+'-'	// months in JavaScript start from 0=January
           +(today.getDate()<10?'0':'')+today.getDate();
     },
-    currentPage: function(){
-      return Store.getters.currentPage;
-    },
     defaultData: function(){
       return {
         attachments: [],
@@ -283,9 +278,9 @@ export default {
     isAccountToEnabled: function(){
       return this.accountTypeMeta.to.isEnabled;
     },
-    listAccountTypes: function(){
-      return _.orderBy(this.rawAccountTypesData, 'name');
-    },
+    tagsStore: function(){
+      return useTagsStore();
+    }
   },
   methods: {
     canShowAccountTypeMeta: function(accountTypeId){
@@ -293,7 +288,7 @@ export default {
       return this.hasValidAccountTypeBeenSelected(accountTypeId) && accountTypeId !== this.accountTypeMeta.externalAccountTypeId;
     },
     closeModal: function(){
-      this.setModalState(Store.getters.STORE_MODAL_NONE);
+      useModalStore().activeModal = useModalStore().MODAL_NONE;
       this.isVisible = false;
       this.resetData();
       this.updateAccountTypeMeta('from');
@@ -304,7 +299,7 @@ export default {
       return !isNaN(accountTypeId) || accountTypeId === this.accountTypeMeta.externalAccountTypeId;
     },
     openModal: function(){
-      this.setModalState(Store.getters.STORE_MODAL_TRANSFER);
+      useModalStore().activeModal = useModalStore().MODAL_TRANSFER;
       this.isVisible = true;
       this.resetData();
       this.updateAccountTypeMeta('from');
@@ -362,12 +357,9 @@ export default {
           );
         }
         this.$eventHub.broadcast(this.$eventHub.EVENT_ACCOUNT_UPDATE);
-        this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, this.currentPage);
+        this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, usePaginationStore().currentPage);
         this.closeModal();
       }.bind(this));
-    },
-    setModalState: function(modal){
-      Store.dispatch('currentModal', modal);
     },
     resetData: function(){
       this.$eventHub.broadcast(this.$eventHub.EVENT_FILE_DROP_UPDATE, {modal: 'transfer-modal', task: 'enable'});
@@ -377,9 +369,9 @@ export default {
       this.accountTypeMeta.to = _.cloneDeep(this.accountTypeMetaDefaults);
     },
     updateAccountTypeMeta: function(accountTypeSelect){
-      let account = this.accountTypesObject.getAccount(this.transferData[accountTypeSelect+'_account_type_id']);
+      let accountType = this.accountTypesStore.find(this.transferData[accountTypeSelect+'_account_type_id']);
+      let account = this.accountsStore.find(accountType.account_id)
       this.accountTypeMeta[accountTypeSelect].accountName = account.name;
-      let accountType = this.accountTypesObject.find(this.transferData[accountTypeSelect+'_account_type_id']);
       this.accountTypeMeta[accountTypeSelect].lastDigits = accountType.last_digits;
       this.accountTypeMeta[accountTypeSelect].isEnabled = account.active && accountType.active;
     },

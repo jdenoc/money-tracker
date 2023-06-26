@@ -27,9 +27,10 @@
 </template>
 
 <script lang="js">
-import _ from 'lodash';
-import {Accounts} from '../../accounts';
+// components
 import InstitutionsPanelInstitutionAccount from "./institutions-panel-institution-account";
+// stores
+import {useAccountsStore} from "../../stores/accounts";
 
 export default {
   name: "institutions-panel-institution",
@@ -41,21 +42,16 @@ export default {
   data: function(){
     return {
       isOpen: false,
-      accountsObject: new Accounts(),
     };
   },
   computed: {
-    accountsInInstitution: function(){
-      return this.accountsObject.retrieve.filter(function(account){
-        return account.institution_id === this.id;
-      }.bind(this));
+    accountsStore: function(){
+      return useAccountsStore();
     },
     activeAccountsInInstitution: function(){
-      return _.sortBy(
-        this.accountsInInstitution.filter(function(account){
-          return account.active;
-        }), 'name'
-      );
+      return this.accountsStore.listActive.filter(function(account){
+        return account.institution_id === this.id;
+      }.bind(this));
     }
   },
   methods:{

@@ -75,7 +75,7 @@
         <!-- account-type -->
         <label for="entry-account-type" class="font-medium justify-self-end py-1">Account Type:</label>
         <div class="col-span-3 relative text-gray-700">
-          <span class="loading absolute inset-y-3 left-2" v-show="!areAccountTypesAvailable">
+          <span class="loading absolute inset-y-3 left-2" v-show="!accountTypesStore.isSet">
             <svg class="animate-spin mr-3 h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -89,7 +89,7 @@
           >
             <option></option>
             <option
-                v-for="accountType in listAccountTypes"
+                v-for="accountType in accountTypesStore.list"
                 v-bind:key="accountType.id"
                 v-bind:value="accountType.id"
                 v-text="accountType.name"
@@ -129,7 +129,7 @@
         <!-- tags -->
         <label class="font-medium justify-self-end py-1">Tags:</label>
         <div class="col-span-3 relative">
-          <span class="loading absolute inset-y-2 right-0 z-10" v-show="!areTagsSet">
+          <span class="loading absolute inset-y-2 right-0 z-10" v-show="!tagsStore.isSet">
             <svg class="animate-spin mr-3 h-5 w-5 text-blue-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -138,7 +138,7 @@
           <tags-input
               v-show="!isLocked"
               tagsInputName="entry-tags"
-              v-bind:existingTags="listTags"
+              v-bind:existingTags="tagsStore.list"
               v-bind:selected-tags.sync="entryData.tags"
           ></tags-input>
 
@@ -219,25 +219,28 @@
 <script lang="js">
 // utilities
 import _ from 'lodash';
-import Store from '../../store';
 // objects
 import {Currency} from '../../currency';
 import {Entry} from "../../entry";
 // mixins
-import {accountsObjectMixin} from "../../mixins/accounts-object-mixin";
-import {accountTypesObjectMixin} from "../../mixins/account-types-object-mixin";
 import {decimaliseInputMixin} from "../../mixins/decimalise-input-mixin";
-import {tagsObjectMixin} from "../../mixins/tags-object-mixin";
 import {tailwindColorsMixin} from "../../mixins/tailwind-colors-mixin";
 // components
 import FileDragNDrop from "./../file-drag-n-drop";
 import EntryModalAttachment from "./entry-modal-attachment";
 import ToggleButton from './../toggle-button';
 import TagsInput from "./../tags-input";
+// stores
+import {useAccountsStore} from "../../stores/accounts";
+import {useAccountTypesStore} from "../../stores/accountTypes";
+import {useEntriesStore} from "../../stores/entries";
+import {useModalStore} from "../../stores/modal";
+import {usePaginationStore} from "../../stores/pagination";
+import {useTagsStore} from "../../stores/tags";
 
 export default {
   name: "entry-modal",
-  mixins: [accountsObjectMixin, accountTypesObjectMixin, decimaliseInputMixin, tagsObjectMixin, tailwindColorsMixin],
+  mixins: [decimaliseInputMixin, tailwindColorsMixin],
   components: {
     EntryModalAttachment,
     FileDragNDrop,
@@ -246,16 +249,9 @@ export default {
   },
   data: function(){
     return {
-      accountTypeMeta: {
-        accountName: "",
-        currencyHtml: "&#36;",
-        lastDigits: "",
-        isEnabled: true
-      },
+      accountTypeMeta: {}, // this gets filled with values from defaultAccountTypMeta
 
-      currencyObject: new Currency(),
-
-      entryData: {}, // this gets filled with values from defaultData
+      entryData: {}, // this gets filled with values from defaultEntryData
 
       entryObject: new Entry(),
 
@@ -265,6 +261,12 @@ export default {
     }
   },
   computed: {
+    accountsStore: function(){
+      return useAccountsStore()
+    },
+    accountTypesStore: function(){
+      return useAccountTypesStore()
+    },
     canSave: function(){
       if(isNaN(Date.parse(this.entryData.entry_date))){
         return false;
@@ -291,10 +293,18 @@ export default {
         +(today.getMonth()<9?'0':'')+(today.getMonth()+1)+'-'	// months in JavaScript start from 0=January
         +(today.getDate()<10?'0':'')+today.getDate();
     },
-    currentPage: function(){
-      return Store.getters.currentPage;
+    currencyObject: function(){
+      return new Currency()
     },
-    defaultData: function(){
+    defaultAccountTypeMeta: function(){
+      return {
+        accountName: "",
+        currencyHtml: "&#36;",
+        lastDigits: "",
+        isEnabled: true
+      }
+    },
+    defaultEntryData: function(){
       return {
         id: null,
         entry_date: this.currentDate,
@@ -312,6 +322,10 @@ export default {
       let currentTags = typeof this.entryData.tags == 'undefined' ? [] : this.entryData.tags;
       return currentTags.map(function(tag){ return tag.name; });
     },
+    entriesStore: function(){
+      // TODO: do something where this replaces the Entry object
+      return useEntriesStore();
+    },
     hasAccountTypeBeenSelected: function(){
       return this.entryData.account_type_id !== '';
     },
@@ -327,11 +341,11 @@ export default {
     isTransfer: function(){
       return _.isNumber(this.entryData.transfer_entry_id);
     },
-    listAccountTypes: function(){
-      return _.orderBy(this.rawAccountTypesData, 'name');
-    },
     orderedAttachments: function(){
       return _.orderBy(this.entryData.attachments, 'name');
+    },
+    tagsStore: function(){
+      return useTagsStore()
     },
     toggleButtonProperties: function(){
       return {
@@ -352,17 +366,16 @@ export default {
       // allow accounts data to be once again fetched
       this.$eventHub.broadcast(this.$eventHub.EVENT_ACCOUNT_UPDATE);
       // update entries table
-      this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, this.currentPage);
+      this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, usePaginationStore().currentPage);
       // don't need to broadcast an event to hide the loading modal here
       // already taken care of at the end of the entry-table update event process
     },
     closeModal: function(){
-      this.setModalState(Store.getters.STORE_MODAL_NONE);
+      useModalStore().activeModal = useModalStore().MODAL_NONE
       this.isDeletable = false;
       this.isVisible = false;
       this.resetEntryData();
       this.unlockModal();
-      this.updateAccountTypeMeta();
     },
     deleteEntry: function(){
       this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
@@ -388,7 +401,7 @@ export default {
       this.$eventHub.broadcast(this.$eventHub.EVENT_FILE_DROP_UPDATE, {modal: 'entry-modal', task: 'disable'});
     },
     openModal: function(entryData = {}){
-      this.setModalState(Store.getters.STORE_MODAL_ENTRY);
+      useModalStore().activeModal = useModalStore().MODAL_ENTRY;
       if(!_.isEmpty(entryData)){
         this.entryData = _.clone(entryData);
         this.entryData.confirm ? this.lockModal() : this.unlockModal();
@@ -439,7 +452,8 @@ export default {
     },
     resetEntryData: function(){
       this.$eventHub.broadcast(this.$eventHub.EVENT_FILE_DROP_UPDATE, {modal: 'entry-modal', task: 'clear'});
-      this.entryData = _.cloneDeep(this.defaultData);
+      this.entryData = _.cloneDeep(this.defaultEntryData);
+      this.accountTypeMeta = _.cloneDeep(this.defaultAccountTypeMeta);
       this.unlockModal();
     },
     saveEntry: function(){
@@ -511,9 +525,6 @@ export default {
         }.bind(this))
         .finally(this.closeModal.bind(this));
     },
-    setModalState: function(modal){
-      Store.dispatch('currentModal', modal);
-    },
     toggleLockState: function(){
       if(this.isLocked){
         this.unlockModal();
@@ -528,9 +539,9 @@ export default {
       this.updateAccountTypeMeta();
     },
     updateAccountTypeMeta: function(){
-      let account = this.accountTypesObject.getAccount(this.entryData.account_type_id);
+      let accountType = this.accountTypesStore.find(this.entryData.account_type_id);
+      let account = this.accountsStore.find(accountType.account_id)
       this.accountTypeMeta.accountName = account.name;
-      let accountType = this.accountTypesObject.find(this.entryData.account_type_id);
       this.accountTypeMeta.lastDigits = accountType.last_digits;
       this.accountTypeMeta.isEnabled = accountType.active && account.active;
 

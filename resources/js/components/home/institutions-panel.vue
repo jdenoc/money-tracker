@@ -13,7 +13,7 @@
       </li>
 
       <institutions-panel-institution
-          v-for="institution in activeInstitutions"
+          v-for="institution in institutionsStore.listActive"
           v-bind:key="institution.id"
           v-bind:id="institution.id"
           v-bind:name="institution.name"
@@ -25,7 +25,7 @@
               v-show="isClosedAccountsAccordionOpen"
           >
             <institutions-panel-institution-account
-                v-for="account in inactiveAccounts"
+                v-for="account in accountsStore.listInactive"
                 v-bind:key="account.id"
                 v-bind:id="account.id"
                 v-bind:name="account.name"
@@ -50,11 +50,13 @@
 </template>
 
 <script lang="js">
-import {Institutions} from '../../institutions';
+// components
 import InstitutionsPanelInstitution from "./institutions-panel-institution";
 import InstitutionsPanelInstitutionAccount from './institutions-panel-institution-account';
-import Store from '../../store';
-import {accountsObjectMixin} from "../../mixins/accounts-object-mixin";
+// stores
+import {useAccountsStore} from "../../stores/accounts";
+import {useInstitutionsStore} from "../../stores/institutions";
+import {usePaginationStore} from "../../stores/pagination";
 
 export default {
   name: "institutions-panel",
@@ -62,41 +64,23 @@ export default {
     InstitutionsPanelInstitution,
     InstitutionsPanelInstitutionAccount
   },
-  mixins: [accountsObjectMixin],
   data: function(){
     return {
-      institutionsObject: new Institutions(),
       isClosedAccountsAccordionOpen: false,
     }
   },
   computed:{
-    activeInstitutions: function(){
-      return this.institutionsObject.retrieve.filter(function(institution){
-        return institution.active;
-      }).sort(function(a, b){
-        if (a.name < b.name)
-          return -1;
-        if (a.name > b.name)
-          return 1;
-        return 0;
-      });
+    institutionsStore: function(){
+      return useInstitutionsStore();
     },
-    inactiveAccounts: function(){
-      return this.rawAccountsData.filter(function(account){
-        return !account.active;
-      }).sort(function(a, b){
-        if (a.name < b.name)
-          return -1;
-        if (a.name > b.name)
-          return 1;
-        return 0;
-      });
+    accountsStore: function(){
+      return useAccountsStore();
     },
     inactiveAccountsExist: function(){
-      return Object.keys(this.inactiveAccounts).length !== 0;
+      return this.accountsStore.listInactive.length !== 0;
     },
     isOverviewFilterActive: function(){
-      let currentFilter = Store.getters.currentFilter;
+      let currentFilter = usePaginationStore().currentFilter;
       return Object.keys(currentFilter).length === 0;
     },
   },
@@ -108,8 +92,7 @@ export default {
       this.isClosedAccountsAccordionOpen = !this.isClosedAccountsAccordionOpen;
     },
     updateAccountRecords: function(){
-      this.accountsObject.setFetchedState = false;
-      this.accountsObject.fetch().then(function(notification){
+      this.accountsStore.fetch().then(function(notification){
         this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, notification);
       }.bind(this));
     }
