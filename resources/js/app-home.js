@@ -1,5 +1,8 @@
 import Vue from 'vue';
-import Store from './store';
+
+import { createPinia, PiniaVuePlugin } from 'pinia';
+Vue.use(PiniaVuePlugin);
+const pinia = createPinia();
 
 import Snotify from 'vue-snotify';
 Vue.use(Snotify, {toast: {timeout: 8000}});    // 8 seconds
@@ -23,11 +26,12 @@ import LoadingModal from './components/loading-modal';
 import NavBar from './components/nav-bar';
 import NotificationItem from './components/notification-item';
 import TransferModal from './components/home/transfer-modal';
-// objects
-import { AccountTypes } from './account-types';
-import { Institutions } from './institutions';
-import { Tags } from './tags';
-import { Version } from './version';
+// stores
+import {useAccountTypesStore} from "./stores/accountTypes";
+import {useInstitutionsStore} from "./stores/institutions";
+import {useModalStore} from "./stores/modal";
+import {useTagsStore} from "./stores/tags";
+import {useVersionStore} from "./stores/version";
 
 new Vue({
   el: "#app-home",
@@ -42,7 +46,7 @@ new Vue({
     Notification: NotificationItem,
     TransferModal
   },
-  store: Store,
+  pinia,
   computed:{
     searchHotkey: function(){
       return this.detectOs() === 'Mac OS' ? 'command+k' : 'ctrl+k';
@@ -54,14 +58,14 @@ new Vue({
           this.$eventHub.broadcast(this.$eventHub.EVENT_FILTER_MODAL_OPEN);
         }.bind(this),
         'esc': function(){ // close modal
-          switch(Store.getters.currentModal){
-            case Store.getters.STORE_MODAL_ENTRY:
+          switch (useModalStore().activeModal){
+            case useModalStore().MODAL_ENTRY:
               this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_MODAL_CLOSE);
               break;
-            case Store.getters.STORE_MODAL_TRANSFER:
+            case useModalStore().MODAL_TRANSFER:
               this.$eventHub.broadcast(this.$eventHub.EVENT_TRANSFER_MODAL_CLOSE);
               break;
-            case Store.getters.STORE_MODAL_FILTER:
+            case useModalStore().MODAL_FILTER:
               this.$eventHub.broadcast(this.$eventHub.EVENT_FILTER_MODAL_CLOSE);
               break;
             default:
@@ -88,18 +92,17 @@ new Vue({
 
     this.$eventHub.broadcast(this.$eventHub.EVENT_ACCOUNT_UPDATE);
 
-    let version = new Version();
-    version.fetch();
+    useVersionStore().fetch();
 
-    let accountTypes = new AccountTypes();
-    accountTypes.fetch().then(this.displayNotification.bind(this));
+    useAccountTypesStore().fetch()
+      .then(this.displayNotification.bind(this));
 
     this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, 0);
 
-    let institutions = new Institutions();
-    institutions.fetch().then(this.displayNotification.bind(this));
+    useInstitutionsStore().fetch()
+      .then(this.displayNotification.bind(this));
 
-    let tags = new Tags();
-    tags.fetch().then(this.displayNotification.bind(this));
+    useTagsStore().fetch()
+      .then(this.displayNotification.bind(this));
   }
 });

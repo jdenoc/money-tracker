@@ -174,8 +174,7 @@
 </template>
 
 <script lang="js">
-import {Version} from '../version';
-import _ from 'lodash';
+import {useVersionStore} from "../stores/version";
 
 export default {
   name: "nav-bar",
@@ -186,13 +185,12 @@ export default {
     return {
       isMobileSidebarVisible: false,
       navbarOverflowButtonClicked: false,
-      version: new Version(),
     }
   },
   computed: {
     appVersion: function(){
-      let appVersion = this.version.retrieve;
-      return _.isEmpty(appVersion) ? this.defaultAppVersion : appVersion;
+      let appVersion = useVersionStore();
+      return appVersion.isSet ? appVersion.version : this.defaultAppVersion;
     },
     defaultAppVersion: function(){
       return 'x.y.z';

@@ -47,7 +47,7 @@
         <!--Tags-->
         <label class="text-sm font-medium justify-self-end py-1 my-0.5">Tags:</label>
         <div class="col-span-3 relative">
-          <span class="loading absolute inset-y-2 right-0 z-10" v-show="!areTagsSet">
+          <span class="loading absolute inset-y-2 right-0 z-10" v-show="!tagsStore.isSet">
             <svg class="animate-spin mr-3 h-5 w-5 text-blue-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -56,7 +56,7 @@
           <tags-input
               class="filter-modal-element"
               tagsInputName="filter-tags"
-              v-bind:existing-tags="listTags"
+              v-bind:existing-tags="tagsStore.list"
               v-bind:selected-tags.sync="filterData.tags"
           ></tags-input>
         </div>
@@ -195,12 +195,8 @@
 import _ from 'lodash';
 import {SnotifyStyle} from "vue-snotify";
 import axios from "axios";
-import Store from '../../store';
 // mixins
-import {accountsObjectMixin} from "../../mixins/accounts-object-mixin";
-import {accountTypesObjectMixin} from "../../mixins/account-types-object-mixin";
 import {decimaliseInputMixin} from "../../mixins/decimalise-input-mixin";
-import {tagsObjectMixin} from "../../mixins/tags-object-mixin";
 import {tailwindColorsMixin} from "../../mixins/tailwind-colors-mixin";
 // objects
 import {Currency} from "../../currency";
@@ -208,10 +204,15 @@ import {Currency} from "../../currency";
 import AccountAccountTypeTogglingSelector from "../account-account-type-toggling-selector";
 import TagsInput from '../tags-input';
 import ToggleButton from '../toggle-button';
+// stores
+import {useAccountsStore} from "../../stores/accounts";
+import {useAccountTypesStore} from "../../stores/accountTypes";
+import {useModalStore} from "../../stores/modal";
+import {useTagsStore} from "../../stores/tags";
 
 export default {
   name: "filter-modal",
-  mixins: [accountsObjectMixin, accountTypesObjectMixin, decimaliseInputMixin, tagsObjectMixin, tailwindColorsMixin],
+  mixins: [decimaliseInputMixin, tailwindColorsMixin],
   components: {
     AccountAccountTypeTogglingSelector,
     TagsInput,
@@ -233,15 +234,22 @@ export default {
       }
     },
     accountCurrencyHtml(){
-      let account = null;
+      let account = {};
       if(this.filterData.accountOrAccountTypeSelected === this.accountAccountTypeToggleValues.account){
-        account = this.accountsObject.find(this.filterData.accountOrAccountTypeId);
+        account = this.accountsStore.find(this.filterData.accountOrAccountTypeId)
       } else if(this.filterData.accountOrAccountTypeSelected === this.accountAccountTypeToggleValues.accountType){
-        account = this.accountTypesObject.getAccount(this.filterData.accountOrAccountTypeId);
+        let accountType = this.accountTypesStore.find(this.filterData.accountOrAccountTypeId)
+        account = this.accountsStore.find(accountType.account_id)
       }
 
-      let currencyCode = _.isNull(account) ? '' : account.currency;
+      let currencyCode = _.isEmpty(account) ? '' : account.currency;
       return this.currencyObject.getHtmlFromCode(currencyCode);
+    },
+    accountsStore(){
+      return useAccountsStore();
+    },
+    accountTypesStore(){
+      return useAccountTypesStore();
     },
     defaultData: function(){
       return {
@@ -259,9 +267,6 @@ export default {
         tags: [],
         unconfirmed: false,
       }
-    },
-    listTags: function(){
-      return this.processListOfObjects(this.rawTagsData);
     },
     toggleButtonProperties: function(){
       return {
@@ -283,11 +288,14 @@ export default {
       delete defaultData.tags;
       return !_.isEqual(filterData, defaultData)
         || (_.isArray(this.filterData.tags) && !_.isEmpty(this.filterData.tags));
+    },
+    tagsStore(){
+      return useTagsStore();
     }
   },
   methods: {
     closeModal: function(){
-      this.setModalState(Store.getters.STORE_MODAL_NONE);
+      useModalStore().activeModal = useModalStore().MODAL_NONE;
       this.isVisible = false;
     },
     decimaliseFilterValue: function(valueField){
@@ -331,7 +339,7 @@ export default {
       this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, {pageNumber: 0, filterParameters: filterDataParameters});
     },
     openModal: function(){
-      this.setModalState(Store.getters.STORE_MODAL_FILTER);
+      useModalStore().activeModal = useModalStore().MODAL_FILTER;
       this.isVisible = true;
     },
     processFilterParameters: function(){
@@ -397,9 +405,6 @@ export default {
     },
     resetFields: function(){
       this.filterData = _.cloneDeep(this.defaultData);
-    },
-    setModalState: function(modal){
-      Store.dispatch('currentModal', modal);
     },
   },
   created: function(){

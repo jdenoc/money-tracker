@@ -47,8 +47,10 @@
 </template>
 
 <script lang="js">
-import {AccountTypes} from "../../account-types";
-import {Tags} from "../../tags";
+import _ from 'lodash';
+// stores
+import {useAccountTypesStore} from "../../stores/accountTypes";
+import {useTagsStore} from "../../stores/tags";
 
 export default {
   name: "entries-table-entry-row",
@@ -65,8 +67,12 @@ export default {
     tagIds: {type: Array, default: function(){ return []; }}
   },
   computed: {
+    accountTypesStore: function(){
+      return useAccountTypesStore()
+    },
     accountTypeName: function(){
-      return new AccountTypes().getNameById(this.accountTypeId);
+      let accountType = this.accountTypesStore.find(this.accountTypeId);
+      return _.isEmpty(accountType) ? '' : accountType.name;
     },
     entryValue: function(){
       return this.value.toFixed(2);
@@ -77,20 +83,15 @@ export default {
     },
     millisecondsPerMinute: function(){
       return 60000;
-    }
+    },
+    tagsStore: function(){
+      return useTagsStore();
+    },
   },
   methods: {
     getTagName: function(tagId){
-      return new Tags().getNameById(tagId);
-      // if(_.isNumber(tag)) {
-      //   return new Tags().getNameById(tag);
-      // } else if(_.isObject(tag) && tag.name){
-      //   return tag.name;
-      // } else {
-      //   // no idea what this is...
-      //   console.warn('invalid tag provided while displaying tags in entry-table:'+JSON.stringify(tag));
-      //   return '';
-      // }
+      let tag = this.tagsStore.find(tagId);
+      return _.isEmpty(tag) ? '' : tag.name;
     },
     openEditEntryModal: function(entryId){
       this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_MODAL_OPEN, entryId);

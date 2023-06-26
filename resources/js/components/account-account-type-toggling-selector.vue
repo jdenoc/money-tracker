@@ -49,10 +49,10 @@
           <option value="" selected>[ ALL ]</option>
           <option
               v-for="accountOrAccountType in listProcessedAccountOrAccountTypes"
-              v-show="!accountOrAccountType.disabled || canShowDisabledAccountAndAccountTypes"
+              v-show="accountOrAccountType.active || canShowDisabledAccountAndAccountTypes"
               v-bind:key="accountOrAccountType.id"
               v-bind:value="accountOrAccountType.id"
-              v-bind:class="{'disabled-option has-text-grey-light' : accountOrAccountType.disabled}"
+              v-bind:class="{'disabled-option has-text-grey-light' : !accountOrAccountType.active}"
               v-text="accountOrAccountType.name"
           ></option>
         </select>
@@ -63,10 +63,11 @@
 
 <script lang="js">
 import _ from "lodash";
-import {accountsObjectMixin} from "../mixins/accounts-object-mixin";
-import {accountTypesObjectMixin} from "../mixins/account-types-object-mixin";
 import {tailwindColorsMixin} from "../mixins/tailwind-colors-mixin";
 import ToggleButton from "./toggle-button";
+// stores
+import {useAccountsStore} from "../stores/accounts";
+import {useAccountTypesStore} from "../stores/accountTypes";
 
 const EMIT_UPDATE_TOGGLE = 'update:accountOrAccountTypeToggled';
 const EMIT_UPDATE_SELECT = 'update:accountOrAccountTypeId';
@@ -76,7 +77,7 @@ export default {
   components: {
     ToggleButton
   },
-  mixins: [accountsObjectMixin, accountTypesObjectMixin, tailwindColorsMixin],
+  mixins: [tailwindColorsMixin],
   props: {
     id: {type: String, required: true},
     accountOrAccountTypeToggled: {type: Boolean, default: true},
@@ -105,8 +106,14 @@ export default {
     },
   },
   computed: {
+    accountsStore(){
+      return useAccountsStore();
+    },
+    accountTypesStore(){
+      return useAccountTypesStore();
+    },
     areAccountsAndAccountTypesSet: function(){
-      return this.areAccountTypesAvailable && this.areAccountsAvailable;
+      return this.accountTypesStore.isSet && this.accountsStore.isSet
     },
     areDisabledAccountsOrAccountTypesPresent: function(){
       return !_.isEmpty(this.listAccountOrAccountTypes)
@@ -125,15 +132,14 @@ export default {
     getIdForToggleSwitch: function(){
       return 'toggle-account-and-account-types-for-'+this.id;
     },
-
     listProcessedAccountOrAccountTypes: function(){
       return this.processListOfObjects(this.listAccountOrAccountTypes, this.canShowDisabledAccountAndAccountTypes);
     },
     listAccountOrAccountTypes: function(){
       if(this.accountOrAccountTypeToggledFromProps === this.selectedToggleSwitch.account){
-        return this.rawAccountsData;
+        return this.accountsStore.collection;
       } else if(this.accountOrAccountTypeToggledFromProps === this.selectedToggleSwitch.accountType){
-        return this.rawAccountTypesData;
+        return this.accountTypesStore.collection;
       } else {
         return [];
       }

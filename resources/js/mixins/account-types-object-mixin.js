@@ -4,11 +4,14 @@ import {AccountTypes} from "../account-types";
 export const accountTypesObjectMixin = {
   data: function(){
     return {
-      accountTypesObject: new AccountTypes()
+
     }
   },
 
   computed: {
+    accountTypesObject: function(){
+      return new AccountTypes();
+    },
     rawAccountTypesData: function(){
       return this.accountTypesObject.retrieve;
     },
