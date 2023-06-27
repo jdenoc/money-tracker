@@ -9,7 +9,7 @@
       <!-- institution -->
       <label for="settings-account-institution" class="font-medium justify-self-end py-2 col-span-2">Institution:</label>
       <div class="relative text-gray-700 col-span-4">
-        <span class="loading absolute inset-y-3 left-2" v-show="!areInstitutionsAvailable">
+        <span class="loading absolute inset-y-3 left-2" v-show="!institutionsStore.isSet">
           <svg class="animate-spin mr-3 h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -19,7 +19,7 @@
         <select id="settings-account-institution" class="rounded w-full" v-model="form.institutionId" v-bind:disabled="!form.active">
           <option value="" selected></option>
           <option
-              v-for="institution in listInstitutions"
+              v-for="institution in institutionsStore.list"
               v-bind:key="institution.id"
               v-bind:value="institution.id"
               v-text="institution.name"
@@ -93,12 +93,12 @@
 
     <hr class="my-6"/>
 
-    <spinner v-if="!areAccountsAvailable" id="loading-settings-accounts"></spinner>
+    <spinner v-if="!accountsStore.isSet" id="loading-settings-accounts"></spinner>
 
     <ul class="mt-4 mr-8 mb-2 ml-2 text-sm" v-else>
       <li
           class="list-none p-4 mb-2 border "
-          v-for="account in listAccounts"
+          v-for="account in accountsStore.list"
           v-bind:key="account.id"
           v-bind:id="'settings-account-'+account.id"
           v-bind:class="{
@@ -123,13 +123,14 @@ import _ from "lodash";
 import {Account} from "../../account";
 import {Currency} from "../../currency";
 // mixins
-import {accountsObjectMixin} from '../../mixins/accounts-object-mixin';
-import {institutionsObjectMixin} from "../../mixins/institutions-object-mixin";
 import {decimaliseInputMixin} from "../../mixins/decimalise-input-mixin";
 import {settingsMixin} from "../../mixins/settings-mixin";
 // components
 import Spinner from 'vue-spinner-component/src/Spinner.vue';
 import ToggleButton from "../toggle-button";
+// stores
+import {useAccountsStore} from "../../stores/accounts";
+import {useInstitutionsStore} from "../../stores/institutions";
 
 export default {
   name: "settings-accounts",
@@ -137,13 +138,16 @@ export default {
     ToggleButton,
     Spinner
   },
-  mixins: [accountsObjectMixin, decimaliseInputMixin, institutionsObjectMixin, settingsMixin],
+  mixins: [decimaliseInputMixin, settingsMixin],
   data: function(){
     return { }
   },
   computed: {
     accountObject: function(){
       return new Account();
+    },
+    accountsStore(){
+      return useAccountsStore();
     },
     canSave: function(){
       if(!_.isNull(this.form.id)){
@@ -174,11 +178,11 @@ export default {
         // accountTypes: [],
       };
     },
+    institutionsStore(){
+      return useInstitutionsStore();
+    },
     listCurrencies: function(){
       return _.sortBy(this.currencyObject.list(), ['code']);
-    },
-    listInstitutions: function(){
-      return _.sortBy(this.rawInstitutionsData, 'name');
     },
     toggleButtonProperties: function(){
       return _.cloneDeep(this.defaultToggleButtonProperties);
@@ -187,9 +191,10 @@ export default {
   methods: {
     afterSaveResetFormAndHideLoading(){
       this.setFormDefaults();
-      this.fetchAccounts().finally(function(){
-        this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
-      }.bind(this));
+      this.accountsStore.fetch()
+        .finally(function(){
+          this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
+        }.bind(this));
     },
     decimaliseTotal: function(){
       if(!_.isEmpty(this.form.total)){
@@ -211,11 +216,11 @@ export default {
       if(_.isNumber(accountId)){
         this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
 
-        let accountData = this.accountObject.find(accountId);
-        if(this.accountObject.isDataUpToDate(accountData)){
-          this.fillForm(accountData);
-          this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
-        } else {
+        // let accountData = this.accountObject.find(accountId);
+        // if(this.accountObject.isDataUpToDate(accountData)){
+        //   this.fillForm(accountData);
+        //   this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
+        // } else {
           this.accountObject
             .fetch(accountId)
             .then(function(fetchResult){
@@ -236,7 +241,7 @@ export default {
             .finally(function(){
               this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
             }.bind(this));
-        }
+        // }
       } else {
         this.setFormDefaults();
       }
