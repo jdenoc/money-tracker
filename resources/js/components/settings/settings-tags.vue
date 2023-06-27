@@ -20,11 +20,11 @@
 
     <hr class="my-6"/>
 
-    <spinner v-if="!areTagsSet" id="loading-settings-tags"></spinner>
+    <spinner v-if="!tagsStore.isSet" id="loading-settings-tags"></spinner>
 
     <div class="tags flex flex-wrap gap-y-1 gap-x-1.5" v-else>
       <span class="tag rounded-2xl px-2 py-1.5 text-base cursor-pointer border border-gray-300"
-            v-for="tag in listTags"
+            v-for="tag in tagsStore.list"
             v-bind:key="tag.id"
             v-bind:id="'settings-tag-'+tag.id"
             v-text="tag.name"
@@ -45,15 +45,16 @@
 import Spinner from "vue-spinner-component/src/Spinner.vue";
 // mixins
 import {settingsMixin} from "../../mixins/settings-mixin";
-import {tagsObjectMixin} from "../../mixins/tags-object-mixin";
 // utilities
 import _ from "lodash";
 // objects
 import {Tag} from "../../tag";
+// stores
+import {useTagsStore} from "../../stores/tags";
 
 export default {
   name: "settings-tags",
-  mixins: [settingsMixin, tagsObjectMixin],
+  mixins: [settingsMixin],
   components: {
     Spinner
   },
@@ -63,7 +64,7 @@ export default {
   computed: {
     canSave: function(){
       if(!_.isNull(this.form.id)){
-        let tagData = this.tagsObject.find(this.form.id);
+        let tagData = this.tagsStore.find(this.form.id);
         return !_.isEqual(tagData, this.form);
       } else {
         return !_.isEmpty(this.form.name);
@@ -77,7 +78,10 @@ export default {
     },
     tagObject: function(){
       return new Tag();
-    }
+    },
+    tagsStore(){
+      return useTagsStore();
+    },
   },
   methods: {
     fillForm: function(tagData){
@@ -99,7 +103,7 @@ export default {
         }
       }.bind(this));
 
-      this.tagsObject.setFetchedState = false
+      // this.tagsObject.setFetchedState = false
       this.tagObject.save(tagData)
         .then(function(notification){
           // show a notification if needed
@@ -112,7 +116,7 @@ export default {
         }.bind(this))
         .finally(function(){
           this.setFormDefaults();
-          this.tagsObject.fetch().finally(function(){
+          this.tagsStore.fetch().finally(function(){
             this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
           }.bind(this));
         }.bind(this));

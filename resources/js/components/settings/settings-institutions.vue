@@ -38,12 +38,12 @@
 
     <hr class="my-6"/>
 
-    <spinner v-if="!areInstitutionsAvailable" id="loading-settings-institutions"></spinner>
+    <spinner v-if="!institutionsStore.isSet" id="loading-settings-institutions"></spinner>
 
     <ul class="mt-4 mr-8 mb-2 ml-2 text-sm" v-else>
       <li
           class="list-none p-4 mb-2 border"
-          v-for="institution in listInstitutions"
+          v-for="institution in institutionsStore.list"
           v-bind:key="institution.id"
           v-bind:id="'settings-institution-'+institution.id"
           v-bind:class="{
@@ -66,17 +66,18 @@
 // utilities
 import _ from "lodash";
 // objects
-import {Institution} from "../../institution";
+import {Institution} from "../../institution";  // TODO: figure out how to integrate this into stores
 // mixins
-import {institutionsObjectMixin} from "../../mixins/institutions-object-mixin";
 import {settingsMixin} from "../../mixins/settings-mixin";
 // components
 import Spinner from 'vue-spinner-component/src/Spinner.vue';
 import ToggleButton from "../toggle-button";
+// stores
+import {useInstitutionsStore} from "../../stores/institutions";
 
 export default {
   name: "settings-institutions",
-  mixins: [institutionsObjectMixin, settingsMixin],
+  mixins: [settingsMixin],
   components: {
     Spinner,
     ToggleButton,
@@ -87,7 +88,7 @@ export default {
   computed: {
     canSave: function(){
       if(!_.isNull(this.form.id)){
-        let institutionData = this.institutionsObject.find(this.form.id);
+        let institutionData = this.institutionsStore.find(this.form.id);
         institutionData = this.sanitiseData(institutionData);
         return !_.isEqual(institutionData, this.form);
       } else {
@@ -108,6 +109,9 @@ export default {
     institutionObject: function(){
       return new Institution();
     },
+    institutionsStore(){
+      return useInstitutionsStore();
+    },
     toggleButtonProperties: function(){
       return _.cloneDeep(this.defaultToggleButtonProperties);
     }
@@ -115,7 +119,7 @@ export default {
   methods: {
     afterSaveResetFormAndHideLoading(){
       this.setFormDefaults();
-      this.institutionsObject.fetch().finally(function(){
+      this.institutionsStore.fetch().finally(function(){
         this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
       }.bind(this));
     },
@@ -134,16 +138,16 @@ export default {
       if(_.isNumber(institutionId)){
         this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
 
-        let institutionData = this.institutionsObject.find(institutionId);
-        if(this.institutionsObject.isDataUpToDate(institutionData)){
-          this.fillForm(institutionData);
-          this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
-        } else {
+        // let institutionData = this.institutionsStore.find(institutionId);
+        // if(this.institutionsObject.isDataUpToDate(institutionData)){
+        //   this.fillForm(institutionData);
+        //   this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
+        // } else {
           this.institutionObject
             .fetch(institutionId)
             .then(function(fetchResult){
               if(fetchResult.fetched){
-                let freshlyFetchedInstitutionData = this.institutionsObject.find(institutionId);
+                let freshlyFetchedInstitutionData = this.institutionObject.find(institutionId);
                 this.fillForm(freshlyFetchedInstitutionData);
               } else {
                 this.setFormDefaults();
@@ -159,7 +163,7 @@ export default {
             .finally(function(){
               this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
             }.bind(this));
-        }
+        // }
       } else {
         this.setFormDefaults();
       }

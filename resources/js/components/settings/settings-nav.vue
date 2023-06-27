@@ -69,13 +69,6 @@ export default {
       this.makeSettingsVisible(settingsName);
       this.$eventHub.broadcast(this.$eventHub.EVENT_SETTINGS_NAV_CHANGE, settingsName);
     }
-  },
-  mounted: function(){
-    // // check which chart is supposed to be visible, then broadcast which chart should be visible
-    // let visibleChart = Object.keys(this.isVisibleChart).filter(function(chartName){
-    //   return this.isVisibleChart[chartName] === true
-    // }.bind(this))[0];
-    // this['show'+visibleChart.charAt(0).toUpperCase()+visibleChart.slice(1)+'Chart']();
   }
 }
 </script>
