@@ -1,5 +1,8 @@
 import Vue from 'vue';
-import Store from './store';
+
+import { createPinia, PiniaVuePlugin } from 'pinia';
+Vue.use(PiniaVuePlugin);
+const pinia = createPinia();
 
 import Snotify from 'vue-snotify';
 Vue.use(Snotify, {toast: {timeout: 10000}});    // 10 seconds
@@ -16,12 +19,12 @@ import NavBar from './components/nav-bar';
 import NotificationItem from './components/notification-item';
 import SettingsDisplay from "../js/components/settings/settings-display";
 import SettingsNav from "../js/components/settings/settings-nav";
-// objects
-import {Accounts} from "./accounts";
-import {AccountTypes} from "./account-types";
-import {Institutions} from "./institutions";
-import {Tags} from "./tags";
-import {Version} from './version';
+// stores
+import {useAccountsStore} from "./stores/accounts";
+import {useAccountTypesStore} from "./stores/accountTypes";
+import {useInstitutionsStore} from "./stores/institutions";
+import {useTagsStore} from "./stores/tags";
+import {useVersionStore} from "./stores/version";
 
 new Vue({
   el: "#app-settings",
@@ -32,7 +35,7 @@ new Vue({
     SettingsDisplay,
     SettingsNav,
   },
-  store: Store,
+  pinia,
   computed:{ },
   methods: {
     displayNotification: function(notification){
@@ -40,19 +43,18 @@ new Vue({
     },
   },
   mounted: function(){
-    let institutions = new Institutions();
-    institutions.fetch().then(this.displayNotification.bind(this));
+    useInstitutionsStore().fetch()
+      .then(this.displayNotification.bind(this));
 
-    let accounts = new Accounts();
-    accounts.fetch().then(this.displayNotification.bind(this));
+    useAccountsStore().fetch()
+      .then(this.displayNotification.bind(this));
 
-    let accountTypes = new AccountTypes();
-    accountTypes.fetch().then(this.displayNotification.bind(this));
+    useAccountTypesStore().fetch()
+      .then(this.displayNotification.bind(this));
 
-    let tags = new Tags();
-    tags.fetch().then(this.displayNotification.bind(this));
+    useTagsStore().fetch()
+      .then(this.displayNotification.bind(this));
 
-    let version = new Version();
-    version.fetch();
+    useVersionStore().fetch();
   }
 });

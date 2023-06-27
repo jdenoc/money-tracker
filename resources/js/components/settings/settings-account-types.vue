@@ -9,7 +9,7 @@
       <!-- type -->
       <label for="settings-account-type-type" class="font-medium justify-self-end py-2 col-span-2">Type:</label>
       <div class="relative text-gray-700 col-span-4">
-        <span class="loading absolute inset-y-3 left-2" v-show="!areAccountTypeTypesAvailable">
+        <span class="loading absolute inset-y-3 left-2" v-show="!accountTypeTypesStore.isSet">
           <svg class="animate-spin mr-3 h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -19,7 +19,7 @@
         <select id="settings-account-type-type" class="rounded w-full" v-model="form.type" v-bind:disabled="!form.active">
           <option value="" selected></option>
           <option
-              v-for="type in listAccountTypeTypes"
+              v-for="type in accountTypeTypesStore.list"
               v-bind:key="type"
               v-bind:value="type"
               v-text="type"
@@ -38,7 +38,7 @@
       <!-- account -->
       <label for="settings-account-type-account" class="font-medium justify-self-end py-2 col-span-2">Account:</label>
       <div class="relative text-gray-700 col-span-4">
-        <span class="loading absolute inset-y-3 left-2" v-show="!areAccountsAvailable">
+        <span class="loading absolute inset-y-3 left-2" v-show="!accountsStore.isSet">
           <svg class="animate-spin mr-3 h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -48,7 +48,7 @@
         <select id="settings-account-type-account" class="rounded w-full" v-model="form.accountId" v-bind:disabled="!form.active">
           <option value="" selected></option>
           <option
-              v-for="account in listAccounts"
+              v-for="account in accountsStore.list"
               v-bind:key="account.id"
               v-bind:value="account.id"
               v-text="account.name"
@@ -90,12 +90,12 @@
 
     <hr class="my-6"/>
 
-    <spinner v-if="!areAccountTypeTypesAvailable" id="loading-settings-account-types"></spinner>
+    <spinner v-if="!accountTypeTypesStore.isSet" id="loading-settings-account-types"></spinner>
 
     <ul class="mt-4 mr-8 mb-2 ml-2 text-sm" v-else>
       <li
           class="list-none p-4 mb-2 border "
-          v-for="accountType in listAccountTypes"
+          v-for="accountType in accountTypesStore.list"
           v-bind:key="accountType.id"
           v-bind:id="'settings-account-type-'+accountType.id"
           v-bind:class="{
@@ -118,32 +118,40 @@
 // utilities
 import _ from "lodash";
 // mixins
-import {accountsObjectMixin} from "../../mixins/accounts-object-mixin";
-import {accountTypesObjectMixin} from "../../mixins/account-types-object-mixin";
 import {settingsMixin} from "../../mixins/settings-mixin";
 // components
 import Spinner from 'vue-spinner-component/src/Spinner.vue';
 import ToggleButton from '../toggle-button';
 // objects
 import {AccountType} from "../../account-type";
+// stores
+import {useAccountsStore} from "../../stores/accounts";
+import {useAccountTypesStore} from "../../stores/accountTypes";
+import {useAccountTypeTypesStore} from "../../stores/accountTypeTypes";
 
 export default {
   name: "settings-account-types",
   components: {Spinner, ToggleButton},
-  mixins: [settingsMixin, accountTypesObjectMixin, accountsObjectMixin],
+  mixins: [settingsMixin],
   data: function(){
     return { }
   },
   computed: {
+    accountsStore(){
+      return useAccountsStore();
+    },
     accountTypeObject: function(){
       return new AccountType();
     },
-    areAccountTypeTypesAvailable: function(){
-      return !_.isEmpty(this.listAccountTypeTypes);
+    accountTypesStore(){
+      return useAccountTypesStore();
+    },
+    accountTypeTypesStore(){
+      return useAccountTypeTypesStore();
     },
     canSave: function(){
       if(!_.isNull(this.form.id)){
-        let accountTypeData = this.accountTypesObject.find(this.form.id);
+        let accountTypeData = this.accountTypesStore.find(this.form.id);
         accountTypeData = this.sanitiseData(accountTypeData);
         return !_.isEqual(accountTypeData, this.form);
       } else {
@@ -166,9 +174,6 @@ export default {
         disabledStamp: '',
       };
     },
-    listAccountTypeTypes: function(){
-      return _.orderBy(this.accountTypesObject.retrieveTypes);
-    },
     toggleButtonProperties: function(){
       return _.cloneDeep(this.defaultToggleButtonProperties);
     }
@@ -176,7 +181,7 @@ export default {
   methods: {
     afterSaveResetFormAndHideLoading(){
       this.setFormDefaults();
-      this.accountTypesObject.fetch().finally(function(){
+      this.accountTypesStore.fetch().finally(function(){
         this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
       }.bind(this));
     },
@@ -272,18 +277,20 @@ export default {
       if(_.isNumber(accountTypeId)){
         this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
 
-        let accountTypeData = this.accountTypesObject.find(accountTypeId);
-        if(this.accountTypesObject.isDataUpToDate(accountTypeData)){
-          this.fillForm(accountTypeData);
-          this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
-        } else {
+        // let accountTypeData = this.accountTypesStore.find(accountTypeId);
+        // if(this.accountTypesObject.isDataUpToDate(accountTypeData)){
+        //   this.fillForm(accountTypeData);
+        //   this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
+        // } else {
           this.accountTypeObject.fetch(accountTypeId)
             .then(function(fetchResult){
-              let freshlyFetchedAccountData = {};
               if(fetchResult.fetched){
-                freshlyFetchedAccountData = this.accountTypesObject.find(accountTypeId);
+                let freshlyFetchedAccountData = this.accountTypeObject.find(accountTypeId);
+                this.fillForm(freshlyFetchedAccountData);
+              } else {
+                this.setFormDefaults();
               }
-              this.fillForm(freshlyFetchedAccountData);
+
               if(!_.isEmpty(fetchResult.notification)){
                 this.$eventHub.broadcast(
                   this.$eventHub.EVENT_NOTIFICATION,
@@ -294,7 +301,7 @@ export default {
             .finally(function(){
               this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
             }.bind(this));
-        }
+        // }
       } else {
         this.setFormDefaults();
       }
@@ -302,7 +309,7 @@ export default {
   },
   mounted: function() {
     this.setFormDefaults();
-    this.accountTypesObject.fetchTypes();
+    useAccountTypeTypesStore().fetch();
   }
 }
 </script>
