@@ -10,7 +10,7 @@
         "ext-json": "*",
         "ext-pdo": "*",
         "beyondcode/laravel-favicon": "^1.2",
-        "doctrine/dbal": "2.13.2",
+        "doctrine/dbal": "2.13.9",
         "eklundkristoffer/laravel-discord-webhook": "dev-master",
         "fakerphp/faker": "1.15.0",
         "fideloper/proxy": "^4.0",
