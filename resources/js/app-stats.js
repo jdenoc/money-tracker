@@ -1,5 +1,8 @@
 import Vue from 'vue';
-import Store from './store';
+
+import { createPinia, PiniaVuePlugin } from 'pinia';
+Vue.use(PiniaVuePlugin);
+const pinia = createPinia();
 
 import Snotify from 'vue-snotify';
 Vue.use(Snotify, {toast: {timeout: 8000}});    // 8 seconds
@@ -16,11 +19,11 @@ import NavBar from './components/nav-bar';
 import NotificationItem from './components/notification-item';
 import StatsDisplay from "./components/stats/stats-display";
 import StatsNav from "./components/stats/stats-nav";
-// objects
-import {Accounts} from "./accounts";
-import {AccountTypes} from "./account-types";
-import {Tags} from "./tags";
-import {Version} from './version';
+// stores
+import {useVersionStore} from "./stores/version";
+import {useAccountsStore} from "./stores/accounts";
+import {useAccountTypesStore} from "./stores/accountTypes";
+import {useTagsStore} from "./stores/tags";
 
 new Vue({
   el: "#app-stats",
@@ -31,7 +34,7 @@ new Vue({
     StatsDisplay,
     StatsNav
   },
-  store: Store,
+  pinia,
   computed:{ },
   methods: {
     displayNotification: function(notification){
@@ -39,16 +42,15 @@ new Vue({
     },
   },
   mounted: function(){
-    let accounts = new Accounts();
-    accounts.fetch().then(this.displayNotification.bind(this));
+    useAccountsStore().fetch()
+      .then(this.displayNotification.bind(this));
 
-    let accountTypes = new AccountTypes();
-    accountTypes.fetch().then(this.displayNotification.bind(this));
+    useAccountTypesStore().fetch()
+      .then(this.displayNotification.bind(this));
 
-    let tags = new Tags();
-    tags.fetch().then(this.displayNotification.bind(this));
+    useTagsStore().fetch()
+      .then(this.displayNotification.bind(this));
 
-    let version = new Version();
-    version.fetch();
+    useVersionStore().fetch();
   }
 });

@@ -30,7 +30,7 @@
 
         <hr class="my-8"/>
 
-        <section v-if="areEntriesAvailable && dataLoaded" class="stats-results-distribution pt-2">
+        <section v-if="entriesStore.isSet && dataLoaded" class="stats-results-distribution pt-2">
             <include-transfers-checkbox
                 chart-name="distribution"
                 v-bind:include-transfers="includeTransfers"
@@ -58,14 +58,16 @@ import IncludeTransfersCheckbox from "./include-transfers-checkbox";
 import PieChart from './chart-defaults/pie-chart';
 import ToggleButton from "../toggle-button";
 // mixins
-import {entriesObjectMixin} from "../../mixins/entries-object-mixin";
+import {batchEntriesMixin} from "../../mixins/batch-entries-mixin";
 import {statsChartMixin} from "../../mixins/stats-chart-mixin";
-import {tagsObjectMixin} from "../../mixins/tags-object-mixin";
 import {tailwindColorsMixin} from "../../mixins/tailwind-colors-mixin";
+// stores
+import {useEntriesStore} from "../../stores/entries";
+import {useTagsStore} from "../../stores/tags";
 
 export default {
   name: "distribution-chart",
-  mixins: [entriesObjectMixin, statsChartMixin, tagsObjectMixin, tailwindColorsMixin],
+  mixins: [batchEntriesMixin, statsChartMixin, tailwindColorsMixin],
   components: {IncludeTransfersCheckbox, AccountAccountTypeTogglingSelector, DateRange, PieChart, ToggleButton},
   data: function(){
     return {
@@ -99,6 +101,9 @@ export default {
         },
       }
     },
+    entriesStore: function(){
+      return useEntriesStore();
+    },
     standardiseData: function(){
       let standardisedChartData = [];
 
@@ -109,8 +114,8 @@ export default {
           if(tempDatum.tags.length === 0){
             tempDatum.tags.push(0);
           }
-          tempDatum.tags.forEach(function(tag){
-            let key = (tag === 0) ? 'untagged' : this.tagsObject.getNameById(tag);
+          tempDatum.tags.forEach(function(tagId){
+            let key = (tagId === 0) ? 'untagged' : this.tagsStore.find(tagId).name;
             if(!Object.prototype.hasOwnProperty.call(standardisedChartData, key)){
               standardisedChartData[key] = {x: key, y: 0}
             }
@@ -120,6 +125,9 @@ export default {
         }.bind(this), Object.create(null));
 
       return _.sortBy(Object.values(standardisedChartData), function(o){ return o.x;});
+    },
+    tagsStore: function(){
+      return useTagsStore();
     },
     toggleButtonProperties: function(){
       return {
