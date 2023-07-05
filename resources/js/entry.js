@@ -55,8 +55,8 @@ export class Entry {
   axiosSuccess(response){
     switch(response.config.method.toUpperCase()){
       case 'GET':
-        let entryData = response.data;
-        if(!_.isEmpty(entryData)){
+        if(!_.isEmpty(response.data)){
+          let entryData = response.data;
           entryData.fetchStamp = new Date().getTime();
 
           let entryIndex = useEntriesStore().collection.findIndex(function(entry){
@@ -90,8 +90,8 @@ export class Entry {
       .delete(
         this.uri.replace('{entryId}', entryId),
         {validateStatus: function(status){
-            return status === 204;
-          }}
+          return status === 204;
+        }}
       )
       .then(this.axiosSuccess)
       .catch(this.axiosFailure);
