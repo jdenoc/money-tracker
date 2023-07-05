@@ -1,29 +1,21 @@
-import _ from 'lodash';
-import {Entries} from "../entries";
+import {useEntriesStore} from "../stores/entries";
 
-export const entriesObjectMixin = {
+export const batchEntriesMixin = {
   data: function(){
     return {
-      dataLoaded: false,
-      entriesObject: new Entries(),
+      batchedEntriesLoaded: false,
       largeBatchEntryData: [],
     }
   },
 
   computed: {
     MAX_ENTRY_COUNT: function(){ return 50; },
-    rawEntriesData: function(){
-      return this.entriesObject.retrieve;
-    },
-    areEntriesAvailable: function(){
-      return !_.isEmpty(this.rawEntriesData);
-    },
   },
 
   methods: {
     fetchData: function(filterParameters){
-      this.dataLoaded = false;
-      this.entriesObject
+      this.batchedEntriesLoaded = false;
+      useEntriesStore()
         .fetch(0, filterParameters)
         .then(function(notification){
           this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, notification);
@@ -32,28 +24,28 @@ export const entriesObjectMixin = {
     },
     multiPageDataFetch: function(filterParameters={}){
       // reset for a new request
-      this.dataLoaded = false;
+      this.batchedEntriesLoaded = false;
       this.largeBatchEntryData = [];
 
       // init data from page 0
       this.chainBatchRequest(0, filterParameters);
     },
     dataHasBeenFetched: function(){
-      this.dataLoaded = true;
+      this.batchedEntriesLoaded = true;
       this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
     },
     chainBatchRequest: function(fetchCount, filterParameters, totalPageCount=null){
-      this.entriesObject
+      useEntriesStore()
         .fetch(fetchCount, filterParameters)
         .then(function(notification){
           // fire off a notification if needed
           this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, notification);
 
-          this.largeBatchEntryData = this.largeBatchEntryData.concat(this.rawEntriesData);
+          this.largeBatchEntryData = this.largeBatchEntryData.concat(useEntriesStore().collection);
 
           fetchCount++;
           if(totalPageCount == null){
-            totalPageCount = Math.ceil(this.entriesObject.count/this.MAX_ENTRY_COUNT);
+            totalPageCount = Math.ceil(useEntriesStore().totalCount/this.MAX_ENTRY_COUNT);
           }
 
           if(fetchCount < totalPageCount){

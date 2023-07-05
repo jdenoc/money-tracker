@@ -1,49 +1,26 @@
-import { ObjectBaseClass } from './objectBaseClass';
 import { SnotifyStyle } from 'vue-snotify';
-import Store from './store';
 import Axios from "axios";
 import _ from "lodash";
+import {useAccountTypesStore} from "./stores/accountTypes";
 
-export class AccountType extends ObjectBaseClass {
+export class AccountType {
 
   constructor(){
-    super();
-    this.storeType = Store.getters.STORE_TYPE_ACCOUNT_TYPES;
-    this.uri = '/api/account-type/';
+    this.uri = '/api/account-type/{accountTypeId}';
     // this.fetched = false;
   }
 
-  set assign(newValue){
-    if(!_.isEmpty(newValue)){
-      let accountTypes = this.retrieve;
-      let accountTypeIndex = accountTypes.findIndex(function(accountType){
-        return accountType.id === newValue.id;
-      });
-      if(accountTypeIndex !== -1){
-        accountTypes[accountTypeIndex] = newValue;
-      } else {
-        accountTypes[accountTypes.length] = newValue; // entries.length will always be an index above the current highest index
+  axiosFailure(error){
+    if(error.response){
+      switch(error.response.status){
+        case 404:
+          this.assign = [];
+          return {type: SnotifyStyle.info, message: "No account-type currently available"};
+        case 500:
+        default:
+          return {type: SnotifyStyle.error, message: "An error occurred while attempting to retrieve account-type"};
       }
-      super.assign = accountTypes;
     }
-  }
-
-  fetch(accountTypeId){
-    return Axios.get(this.uri+accountTypeId)
-      .then(this.axiosSuccess.bind(this)) // NOTE: _DO NOT_ remove the ".bind(this)". Will not work without.
-      .catch(this.axiosFailure);
-  }
-
-  processSuccessfulResponseData(responseData){
-    if(!_.isEmpty(responseData)){
-      responseData = this.updateAccountTypeFetchStamp(responseData)
-    }
-    return responseData;
-  }
-
-  updateAccountTypeFetchStamp(accountTypeData){
-    accountTypeData.fetchStamp = new Date().getTime();
-    return accountTypeData;
   }
 
   axiosSuccess(response){
@@ -51,7 +28,19 @@ export class AccountType extends ObjectBaseClass {
       case "DELETE":
         return {type: SnotifyStyle.success, message: "Account-type has been disabled"};
       case 'GET':
-        this.assign = this.processSuccessfulResponseData(response.data);
+        let accountTypeData = _.clone(response.data)
+        if(!_.isEmpty(accountTypeData)){
+          accountTypeData.fetchStamp = new Date().getTime();
+          let accountTypeIndex = useAccountTypesStore().collection.findIndex(function(accountType){
+            return accountType.id === accountTypeData.id;
+          })
+          if(accountTypeIndex === -1){
+            // .length will always be an index above the current highest index
+            useAccountTypesStore().collection[useAccountTypesStore().collection.length] = accountTypeData;
+          } else {
+            useAccountTypesStore().collection[accountTypeIndex] = accountTypeData;
+          }
+        }
         return {fetched: true, notification: {}};
       case 'PATCH':
         return {type: SnotifyStyle.success, message: "Account-type has been reactivated"};
@@ -62,6 +51,24 @@ export class AccountType extends ObjectBaseClass {
       default:
         return {};
     }
+  }
+
+  disable(accountTypeId){
+    return Axios.delete(this.uri.replace('{accountTypeId}', accountTypeId))
+      .then(this.axiosSuccess)
+      .catch(this.axiosFailure);
+  }
+
+  enable(accountTypeId){
+    return Axios.patch(this.uri.replace('{accountTypeId}', accountTypeId))
+      .then(this.axiosSuccess)
+      .catch(this.axiosFailure);
+  }
+
+  fetch(accountTypeId){
+    return Axios.get(this.uri.replace('{accountTypeId}', accountTypeId))
+      .then(this.axiosSuccess)
+      .catch(this.axiosFailure);
   }
 
   save(accountTypeData){
@@ -79,37 +86,12 @@ export class AccountType extends ObjectBaseClass {
           this.uri.replace(/\/$/, ''),
           accountTypeData,
           {validateStatus:function(status){
-            return status === 201
-          }}
+              return status === 201
+            }}
         )
         .then(this.axiosSuccess)
         .catch(this.axiosFailure);
     }
   }
-
-  disable(accountTypeId){
-    return Axios.delete(this.uri+accountTypeId)
-      .then(this.axiosSuccess)
-      .catch(this.axiosFailure);
-  }
-
-  enable(accountTypeId){
-    return Axios.patch(this.uri+accountTypeId)
-      .then(this.axiosSuccess)
-      .catch(this.axiosFailure);
-  }
-
-  // axiosFailure(error){
-  //     if(error.response){
-  //         switch(error.response.status){
-  //             case 404:
-  //                 this.assign = [];
-  //                 return {type: SnotifyStyle.info, message: "No account-type currently available"};
-  //             case 500:
-  //             default:
-  //                 return {type: SnotifyStyle.error, message: "An error occurred while attempting to retrieve account-type"};
-  //         }
-  //     }
-  // }
 
 }

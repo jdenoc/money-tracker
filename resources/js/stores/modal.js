@@ -5,7 +5,7 @@ export const useModalStore = defineStore('modal', {
 
   state: function() {
     return {
-      activeModal: null,
+      activeModal: '',
     }
   },
 
@@ -17,13 +17,13 @@ export const useModalStore = defineStore('modal', {
       return 'modal-filter';
     },
     MODAL_NONE: function(){
-      return null;
+      return '';
     },
     MODAL_TRANSFER(){
       return 'modal-transfer';
     },
     isSet(state) {
-      return !_.isNull(state.activeModal)
+      return !_.isEmpty(state.activeModal)
     },
   },
 

@@ -1,102 +1,13 @@
-import { ObjectBaseClass } from './objectBaseClass';
 import { SnotifyStyle } from 'vue-snotify';
-import Store from './store';
 import Axios from "axios";
 import _ from "lodash";
+import {useAccountsStore} from "./stores/accounts";
 
-export class Account extends ObjectBaseClass {
+export class Account {
 
   constructor(){
-    super();
-    this.storeType = Store.getters.STORE_TYPE_ACCOUNTS;
-    this.uri = '/api/account/';
+    this.uri = '/api/account/{accountId}';
     // this.fetched = false;
-  }
-
-  set assign(newValue){
-    if(!_.isEmpty(newValue)){
-      let accounts = this.retrieve;
-      let accountIndex = accounts.findIndex(function(account){
-        return account.id === newValue.id;
-      });
-      if(accountIndex !== -1){
-        accounts[accountIndex] = newValue;
-      } else {
-        accounts[accounts.length] = newValue; // entries.length will always be an index above the current highest index
-      }
-      super.assign = accounts;
-    }
-  }
-
-  disable(accountId){
-    return Axios.delete(this.uri+accountId)
-      .then(this.axiosSuccess)
-      .catch(this.axiosFailure);
-  }
-
-  enable(accountId){
-    return Axios.patch(this.uri+accountId)
-      .then(this.axiosSuccess)
-      .catch(this.axiosFailure);
-  }
-
-  fetch(accountId){
-    return Axios.get(this.uri+accountId)
-      .then(this.axiosSuccess.bind(this)) // NOTE: _DO NOT_ remove the ".bind(this)". Will not work without.
-      .catch(this.axiosFailure);
-  }
-
-  processSuccessfulResponseData(responseData){
-    if(!_.isEmpty(responseData)){
-      responseData = this.updateAccountFetchStamp(responseData)
-    }
-    return responseData;
-  }
-
-  updateAccountFetchStamp(accountData){
-    accountData.fetchStamp = new Date().getTime();
-    return accountData;
-  }
-
-  axiosSuccess(response){
-    switch(response.config.method.toUpperCase()){
-      case 'DELETE':
-        return {type: SnotifyStyle.success, message: "Account has been disabled"};
-      case 'GET':
-        this.assign = this.processSuccessfulResponseData(response.data);
-        return {fetched: true, notification: {}};
-      case 'PATCH':
-        return {type: SnotifyStyle.success, message: "Account has been reactivated"};
-      case "POST":
-        return {type: SnotifyStyle.success, message: "New account created"};
-      case "PUT":
-        return {type: SnotifyStyle.success, message: "Account updated"};
-      default:
-        return {};
-    }
-  }
-
-  save(accountData){
-    let accountId = parseInt(accountData.id);
-    delete accountData.id;
-    if(_.isNumber(accountId) && !isNaN(accountId)){
-      // update account
-      return Axios.put(this.uri+accountId, accountData)
-        .then(this.axiosSuccess)
-        .catch(this.axiosFailure);
-    } else {
-      // new account
-      return Axios
-        .post(
-          this.uri.replace(/\/$/, ''),
-          accountData,
-          {validateStatus:function(status){
-            return status === 201
-          }}
-        )
-        .then(this.axiosSuccess)
-        .catch(this.axiosFailure);
-    }
   }
 
   axiosFailure(error){
@@ -116,20 +27,76 @@ export class Account extends ObjectBaseClass {
     }
   }
 
-  // getInstitution(accountId){
-  //     accountId = parseInt(accountId);
-  //     let account = this.find(accountId);
-  //     if(account.hasOwnProperty('institution_id')){
-  //         return new Institutions().find(account.institution_id);
-  //     } else {
-  //         return {};  // couldn't find the account_type associated with the provided ID
-  //     }
-  // }
+  axiosSuccess(response){
+    switch(response.config.method.toUpperCase()){
+      case 'DELETE':
+        return {type: SnotifyStyle.success, message: "Account has been disabled"};
+      case 'GET':
+        let accountData = _.clone(response.data);
+        if(!_.isEmpty(accountData)){
+          accountData.fetchStamp = new Date().getTime();
 
-  // getAccountTypes(accountId){
-  //     accountId = parseInt(accountId);
-  //     return new AccountTypes().retrieve.filter(function(accountType){
-  //         return accountType.hasOwnProperty('account_id') && accountId === accountType.account_id;
-  //     });
-  // }
+          let accountIndex = useAccountsStore().collection.findIndex(function(account){
+            return account.id === accountData.id;
+          });
+          if(accountIndex === -1){
+            // .length will always be an index above the current highest index
+            useAccountsStore().collection[useAccountsStore().collection.length] = accountData;
+          } else {
+            useAccountsStore().collection[accountIndex] = accountData;
+          }
+        }
+        return {fetched: true, notification: {}};
+      case 'PATCH':
+        return {type: SnotifyStyle.success, message: "Account has been reactivated"};
+      case "POST":
+        return {type: SnotifyStyle.success, message: "New account created"};
+      case "PUT":
+        return {type: SnotifyStyle.success, message: "Account updated"};
+      default:
+        return {};
+    }
+  }
+
+  disable(accountId){
+    return Axios.delete(this.uri.replace('{accountId}', accountId))
+      .then(this.axiosSuccess)
+      .catch(this.axiosFailure);
+  }
+
+  enable(accountId){
+    return Axios.patch(this.uri.replace('{accountId}', accountId))
+      .then(this.axiosSuccess)
+      .catch(this.axiosFailure);
+  }
+
+  fetch(accountId){
+    return Axios.get(this.uri.replace('{accountId}', accountId))
+      .then(this.axiosSuccess)
+      .catch(this.axiosFailure);
+  }
+
+  save(accountData){
+    let accountId = parseInt(accountData.id);
+    delete accountData.id;
+    if(_.isNumber(accountId) && !isNaN(accountId)){
+      // update account
+      return Axios.put(this.uri.replace('{accountId}', accountId), accountData)
+        .then(this.axiosSuccess)
+        .catch(this.axiosFailure);
+    } else {
+      // new account
+      return Axios
+        .post(
+          this.uri.replace('/{accountId}', ''),
+          accountData,
+          {validateStatus:function(status){
+            return status === 201
+          }}
+        )
+        .then(this.axiosSuccess)
+        .catch(this.axiosFailure);
+    }
+  }
+
 }

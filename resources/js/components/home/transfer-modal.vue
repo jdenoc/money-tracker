@@ -193,8 +193,6 @@ export default {
   },
   data: function(){
     return {
-      entryObject: new Entry(),
-
       accountTypeMeta: {
         from: {}, // this gets filled with values from accountTypeMetaDefaults
         to: {}, // this gets filled with values from accountTypeMetaDefaults
@@ -265,6 +263,9 @@ export default {
         to_account_type_id: "",
         value: "",
       }
+    },
+    entryObject: function(){
+      return new Entry();
     },
     hasValidFromAccountTypeBeenSelected: function(){
       return this.hasValidAccountTypeBeenSelected(this.transferData.from_account_type_id);

@@ -253,8 +253,6 @@ export default {
 
       entryData: {}, // this gets filled with values from defaultEntryData
 
-      entryObject: new Entry(),
-
       isDeletable: false,
       isLocked: false,
       isVisible: false,
@@ -323,8 +321,10 @@ export default {
       return currentTags.map(function(tag){ return tag.name; });
     },
     entriesStore: function(){
-      // TODO: do something where this replaces the Entry object
       return useEntriesStore();
+    },
+    entryObject: function(){
+      return new Entry();
     },
     hasAccountTypeBeenSelected: function(){
       return this.entryData.account_type_id !== '';
@@ -421,21 +421,21 @@ export default {
           // entryId was passed as part of an event payload
           entryId = entryId[0];
         }
-        new Promise(function(resolve, reject){
-          let entryData = this.entryObject.find(entryId);
-          if(this.entryObject.isDataUpToDate(entryData)){
-            resolve(entryData);
-          } else {
-            reject(entryId);
-          }
-        }.bind(this))
-          .then(this.openModal)       // resolve
-          .catch(function(entryId){   // reject
+        // new Promise(function(resolve, reject){
+          // let entryData = this.entriesStore.find(entryId);
+          // if(this.entryObject.isDataUpToDate(entryData)){
+          //   resolve(entryData);
+          // } else {
+          //   reject(entryId);
+          // }
+        // }.bind(this))
+        //   .then(this.openModal)       // resolve
+        //   .catch(function(entryId){   // reject
             this.entryObject.fetch(entryId)
               .then(function(fetchResult){
                 let freshlyFetchedEntryData = {};
                 if(fetchResult.fetched){
-                  freshlyFetchedEntryData = this.entryObject.find(entryId);
+                  freshlyFetchedEntryData = this.entriesStore.find(entryId);
                 }
                 this.openModal(freshlyFetchedEntryData);
                 if(!_.isEmpty(fetchResult.notification)){
@@ -445,7 +445,7 @@ export default {
                   );
                 }
               }.bind(this));
-          }.bind(this));
+          // }.bind(this));
       } else {
         this.openModal({});
       }
@@ -529,7 +529,7 @@ export default {
       if(this.isLocked){
         this.unlockModal();
       } else {
-        this.entryData = _.clone(this.entryObject.find(this.entryData.id));
+        this.entryData = _.clone(this.entriesStore.find(this.entryData.id));
         this.lockModal();
       }
     },

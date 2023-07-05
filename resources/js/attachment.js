@@ -1,22 +1,21 @@
-import { Entry } from './entry';
-import { ObjectBaseClass } from './objectBaseClass';
 import { SnotifyStyle } from 'vue-snotify';
 import Axios from "axios";
+import {useEntriesStore} from "./stores/entries";
 
-export class Attachment extends ObjectBaseClass {
+export class Attachment {
 
   constructor(){
-    super();
-    this.uri = '/api/attachment/';
-    this.entryObject = new Entry();
+    this.uri = '/api/attachment/{uuid}';
   }
 
   delete(attachmentUUID, entryId){
-    // this.entryId = entryId;
     return Axios
-      .delete(this.uri+attachmentUUID, {validateStatus: function(status){
-        return status === 204;
-      }})
+      .delete(
+        this.uri.replace('{uuid}', attachmentUUID),
+        {validateStatus: function(status){
+          return status === 204;
+        }}
+      )
       .then(function(response){
         return this.axiosSuccess(response, attachmentUUID, entryId);
       }.bind(this))
@@ -25,12 +24,15 @@ export class Attachment extends ObjectBaseClass {
 
   axiosSuccess(response, attachmentUUID, entryId){
     // remove attachment from store
-    let entry = this.entryObject.find(entryId);
+    let entry = useEntriesStore().find(entryId);
     entry.attachments = entry.attachments.filter(function(attachment){
       return attachment.uuid !== attachmentUUID
     }.bind(this));
-    entry = this.entryObject.updateEntryFetchStamp(entry);
-    this.entryObject.assign = entry;
+    entry.fetchStamp = new Date().getTime();
+    let entryIndex = useEntriesStore().collection.findIndex(function(entryRecord){
+      return entryRecord.id === entry.id
+    })
+    useEntriesStore().collection[entryIndex] = entry;
 
     // inform user of attachment deletion
     entry.notification = {type: SnotifyStyle.info, message: "Attachment has been deleted"};

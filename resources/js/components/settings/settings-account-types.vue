@@ -237,7 +237,7 @@ export default {
         }
       }.bind(this));
 
-      this.accountTypeObject.setFetchedState = false
+      // this.accountTypeObject.setFetchedState = false
       if(this.form.active){
         let updateAccountType = function(){
           this.accountTypeObject
@@ -246,7 +246,7 @@ export default {
             .finally(this.afterSaveResetFormAndHideLoading);
         }.bind(this);
 
-        let existingAccountTypeData = this.accountTypeObject.find(accountTypeData['id']);
+        let existingAccountTypeData = this.accountTypesStore.find(accountTypeData['id']);
         if(existingAccountTypeData.active){
           updateAccountType(accountTypeData);
         } else {
@@ -268,7 +268,7 @@ export default {
       if(_.isNull(accountTypeId)){
         accountTypeData = _.clone(this.defaultFormData)
       } else {
-        accountTypeData = _.clone(this.accountTypeObject.find(accountTypeId))
+        accountTypeData = _.clone(this.accountTypesStore.find(accountTypeId))
       }
       accountTypeData.active = this.form.active;
       this.fillForm(accountTypeData);
@@ -285,7 +285,7 @@ export default {
           this.accountTypeObject.fetch(accountTypeId)
             .then(function(fetchResult){
               if(fetchResult.fetched){
-                let freshlyFetchedAccountData = this.accountTypeObject.find(accountTypeId);
+                let freshlyFetchedAccountData = this.accountTypesStore.find(accountTypeId);
                 this.fillForm(freshlyFetchedAccountData);
               } else {
                 this.setFormDefaults();
