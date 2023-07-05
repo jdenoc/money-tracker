@@ -34,12 +34,15 @@ export default {
     uuid: String,
   },
   data: function(){
-    return {
-      attachmentObject: new Attachment(),
-      entryObject: new Entry(),
-    }
+    return { }
   },
   computed: {
+    attachmentObject: function(){
+      return new Attachment()
+    },
+    entryObject: function(){
+      return new Entry()
+    },
     tooltipContent: function(){
       return {
         content: this.name,
@@ -50,9 +53,6 @@ export default {
     }
   },
   methods: {
-    viewEntryAttachment: function(){
-      window.open("/attachment/"+this.uuid, "_blank");
-    },
     deleteEntryAttachment: function(){
       if(confirm('Are you sure you want to delete attachment: '+this.name)){
         this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
@@ -73,7 +73,10 @@ export default {
           }.bind(this));
       }
     },
-  }
+    viewEntryAttachment: function(){
+      window.open("/attachment/"+this.uuid, "_blank");
+    },
+  },
 }
 </script>
 

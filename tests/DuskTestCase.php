@@ -154,7 +154,7 @@ abstract class DuskTestCase extends BaseTestCase {
      * @return array
      */
     public function getApiEntries(int $page_number=0, array $filter_data=[]): array {
-        // See resources/js/entries.js:16-38
+        // See resources/js/stores/entries.js:22-44
         // See app/Traits/EntryFilterKeys.php:7-22
         $sort = [self::$FILTER_KEY_SORT=>[
             self::$FILTER_KEY_SORT_PARAMETER=>"entry_date",

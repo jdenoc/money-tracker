@@ -13,12 +13,14 @@
         'has-tags': tagIds.length > 0
       }"
   >
-    <td class="align-top py-1 pl-2"><button class="edit-entry-button text-blue-600 py-2 px-2 my-0.5 rounded-md bg-white hover:bg-gray-100" v-on:click="openEditEntryModal(id)">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-0.5" viewBox="0 0 20 20" fill="currentColor">
-        <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
-        <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" />
-      </svg>
-    </button></td>
+    <td class="align-top py-1 pl-2">
+      <button class="edit-entry-button text-blue-600 py-2 px-2 my-0.5 rounded-md bg-white hover:bg-gray-100" v-on:click="openEditEntryModal(id)">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-0.5" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+          <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" />
+        </svg>
+      </button>
+    </td>
     <td class="row-entry-date align-top px-1 py-1 " v-text="date"></td>
     <td class="row-entry-memo align-top px-1 py-1 " v-text="memo"></td>
     <td class="text-right align-top py-1" v-bind:class="{'row-entry-value': !expense}">

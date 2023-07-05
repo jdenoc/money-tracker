@@ -1,28 +1,11 @@
-import { ObjectBaseClass } from './objectBaseClass';
 import { SnotifyStyle } from 'vue-snotify';
-import Store from './store';
 import _ from "lodash";
 import Axios from "axios";
 
-export class Tag extends ObjectBaseClass {
+export class Tag {
 
   constructor(){
-    super();
-    this.storeType = Store.getters.STORE_TYPE_TAGS;
-    this.uri = '/api/tag/';
-  }
-
-  axiosSuccess(response) {
-    switch(response.config.method.toUpperCase()){
-      case "POST":
-        return {type: SnotifyStyle.success, message: "New tag created"};
-      case "PUT":
-        return {type: SnotifyStyle.success, message: "Tag updated"};
-      // case "DELETE":
-      //   return {deleted: true, notification: {type: SnotifyStyle.success, message: "Entry was deleted"}}
-      default:
-        return {};
-    }
+    this.uri = '/api/tag/{tagId}';
   }
 
   axiosFailure(error){
@@ -38,19 +21,32 @@ export class Tag extends ObjectBaseClass {
     }
   }
 
+  axiosSuccess(response) {
+    switch(response.config.method.toUpperCase()){
+      case "POST":
+        return {type: SnotifyStyle.success, message: "New tag created"};
+      case "PUT":
+        return {type: SnotifyStyle.success, message: "Tag updated"};
+      // case "DELETE":
+      //   return {deleted: true, notification: {type: SnotifyStyle.success, message: "Entry was deleted"}}
+      default:
+        return {};
+    }
+  }
+
   save(tagData){
     let tagId = parseInt(tagData.id);
     delete tagData.id;
     if(_.isNumber(tagId) && !isNaN(tagId)){
       // update tag
-      return Axios.put(this.uri+tagId, tagData)
+      return Axios.put(this.uri.replace('{tagId}', tagId), tagData)
         .then(this.axiosSuccess)
         .catch(this.axiosFailure);
     } else {
       // new tag
       return Axios
         .post(
-          this.uri.replace(/\/$/, ''),
+          this.uri.replace('/{tagId}', ''),
           tagData,
           {validateStatus:function(status){
             return status === 201

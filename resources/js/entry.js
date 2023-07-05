@@ -1,93 +1,13 @@
 import _ from 'lodash';
-import { ObjectBaseClass } from './objectBaseClass';
 import { SnotifyStyle } from 'vue-snotify';
 import Axios from "axios";
-import Store from './store';
+import {useEntriesStore} from "./stores/entries";
 
-export class Entry extends ObjectBaseClass {
+export class Entry {
 
   constructor(){
-    super();
-    this.storeType = Store.getters.STORE_TYPE_ENTRIES;
-    this.uri = '/api/entry/';
-    this.fetched = false;
-  }
-
-  fetch(entryId){
-    return Axios.get(this.uri+entryId)
-      .then(this.axiosSuccess.bind(this)) // NOTE: _DO NOT_ remove the ".bind(this)". Will not work without.
-      .catch(this.axiosFailure);
-  }
-
-  save(entryData){
-    let entryId = parseInt(entryData.id);
-    delete entryData.id;
-    if(_.isNumber(entryId) && !isNaN(entryId)){
-      // update entry
-      return Axios.put(this.uri+entryId, entryData)
-        .then(this.axiosSuccess)
-        .catch(this.axiosFailure);
-      // complete: entry.completeEntryUpdate
-    } else {
-      // new entry
-      return Axios
-        .post(this.uri.replace(/\/$/, ''), entryData, {validateStatus:function(status){
-          return status === 201
-        }})
-        .then(this.axiosSuccess)
-        .catch(this.axiosFailure);
-      // complete: entry.completeEntryUpdate
-    }
-  }
-
-  saveTransfer(transferData){
-    return Axios.post(this.uri+'transfer', transferData)
-      .then(this.axiosSuccessTransfer)
-      .catch(this.axiosFailure);
-  }
-
-  delete(entryId){
-    return Axios
-      .delete(this.uri+entryId, {validateStatus: function(status){
-        return status === 204;
-      }})
-      .then(this.axiosSuccess)
-      .catch(this.axiosFailure);
-  }
-
-  set assign(newValue){
-    if(!_.isEmpty(newValue)){
-      let entries = this.retrieve;
-      let entryIndex = entries.findIndex(function(entry){
-        return entry.id === newValue.id;
-      });
-      if(entryIndex !== -1){
-        entries[entryIndex] = newValue;
-      } else {
-        entries[entries.length] = newValue; // entries.length will always be an index above the current highest index
-      }
-      Store.dispatch('setStateOf', {type:this.storeType, value:entries});
-    }
-  }
-
-  axiosSuccess(response){
-    switch(response.config.method.toUpperCase()){
-      case 'GET':
-        this.assign = this.processSuccessfulResponseData(response.data);
-        return {fetched: true, notification: {}};
-      case "POST":
-        return {type: SnotifyStyle.success, message: "New entry created"};
-      case "PUT":
-        return {type: SnotifyStyle.success, message: "Entry updated"};
-      case "DELETE":
-        return {deleted: true, notification: {type: SnotifyStyle.success, message: "Entry was deleted"}}
-      default:
-        return {};
-    }
-  }
-
-  axiosSuccessTransfer(){
-    return {type: SnotifyStyle.success, message: "Transfer entry created"};
+    this.uri = '/api/entry/{entryId}';
+    // this.fetched = false;
   }
 
   axiosFailure(error){
@@ -132,16 +52,84 @@ export class Entry extends ObjectBaseClass {
     }
   }
 
-  processSuccessfulResponseData(responseData){
-    if(!_.isEmpty(responseData)){
-      responseData = this.updateEntryFetchStamp(responseData)
+  axiosSuccess(response){
+    switch(response.config.method.toUpperCase()){
+      case 'GET':
+        let entryData = response.data;
+        if(!_.isEmpty(entryData)){
+          entryData.fetchStamp = new Date().getTime();
+
+          let entryIndex = useEntriesStore().collection.findIndex(function(entry){
+            return entry.id === entryData.id;
+          });
+          if(entryIndex === -1){
+            // .length will always be an index above the current highest index
+            useEntriesStore().collection[useEntriesStore().collection.length] = entryData
+          } else {
+            useEntriesStore().collection[entryIndex] = entryData
+          }
+        }
+        return {fetched: true, notification: {}};
+      case "POST":
+        return {type: SnotifyStyle.success, message: "New entry created"};
+      case "PUT":
+        return {type: SnotifyStyle.success, message: "Entry updated"};
+      case "DELETE":
+        return {deleted: true, notification: {type: SnotifyStyle.success, message: "Entry was deleted"}}
+      default:
+        return {};
     }
-    return responseData;
   }
 
-  updateEntryFetchStamp(entryData){
-    entryData.fetchStamp = new Date().getTime();
-    return entryData;
+  axiosSuccessTransfer(){
+    return {type: SnotifyStyle.success, message: "Transfer entry created"};
+  }
+
+  delete(entryId){
+    return Axios
+      .delete(
+        this.uri.replace('{entryId}', entryId),
+        {validateStatus: function(status){
+            return status === 204;
+          }}
+      )
+      .then(this.axiosSuccess)
+      .catch(this.axiosFailure);
+  }
+
+  fetch(entryId){
+    return Axios.get(this.uri.replace('{entryId}', entryId))
+      .then(this.axiosSuccess)
+      .catch(this.axiosFailure);
+  }
+
+  save(entryData){
+    let entryId = parseInt(entryData.id);
+    delete entryData.id;
+    if(_.isNumber(entryId) && !isNaN(entryId)){
+      // update entry
+      return Axios.put(this.uri.replace('{entryId}', entryId), entryData)
+        .then(this.axiosSuccess)
+        .catch(this.axiosFailure);
+    } else {
+      // new entry
+      return Axios
+        .post(
+          this.uri.replace('/{entryId}', ''),
+          entryData,
+          {validateStatus:function(status){
+            return status === 201
+          }}
+        )
+        .then(this.axiosSuccess)
+        .catch(this.axiosFailure);
+    }
+  }
+
+  saveTransfer(transferData){
+    return Axios.post(this.uri.replace('{entryId}','transfer'), transferData)
+      .then(this.axiosSuccessTransfer)
+      .catch(this.axiosFailure);
   }
 
 }
