@@ -151,7 +151,7 @@ export default {
     },
     canSave: function(){
       if(!_.isNull(this.form.id)){
-        let accountData = this.accountObject.find(this.form.id);
+        let accountData = this.accountsStore.find(this.form.id);
         accountData = this.sanitiseData(accountData);
         return !_.isEqual(accountData, this.form);
       } else {
@@ -207,7 +207,7 @@ export default {
       if(_.isNull(accountId)){
         accountData = _.clone(this.defaultFormData)
       } else {
-        accountData = _.clone(this.accountObject.find(accountId))
+        accountData = _.clone(this.accountsStore.find(accountId))
       }
       accountData.active = this.form.active;
       this.fillForm(accountData);
@@ -216,7 +216,7 @@ export default {
       if(_.isNumber(accountId)){
         this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
 
-        // let accountData = this.accountObject.find(accountId);
+        // let accountData = this.accountsStore.find(accountId);
         // if(this.accountObject.isDataUpToDate(accountData)){
         //   this.fillForm(accountData);
         //   this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
@@ -225,7 +225,7 @@ export default {
             .fetch(accountId)
             .then(function(fetchResult){
               if(fetchResult.fetched){
-                let freshlyFetchedAccountData = this.accountObject.find(accountId);
+                let freshlyFetchedAccountData = this.accountsStore.find(accountId);
                 this.fillForm(freshlyFetchedAccountData);
               } else {
                 this.setFormDefaults();
@@ -289,7 +289,7 @@ export default {
         }
       }.bind(this));
 
-      this.accountObject.setFetchedState = false
+      // this.accountObject.setFetchedState = false
       if(this.form.active){
         let upsertAccount = function(accountData){
           this.accountObject.save(accountData)
@@ -297,7 +297,7 @@ export default {
             .finally(this.afterSaveResetFormAndHideLoading);
         }.bind(this);
 
-        let existingAccountData = this.accountObject.find(accountData['id'])
+        let existingAccountData = this.accountsStore.find(accountData['id'])
         if(_.isEmpty(existingAccountData)){
           // new account record
           upsertAccount(accountData);

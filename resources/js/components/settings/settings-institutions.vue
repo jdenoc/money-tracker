@@ -129,7 +129,7 @@ export default {
       if(_.isNull(institutionId)){
         institutionData = _.clone(this.defaultFormData)
       } else {
-        institutionData = _.clone(this.institutionObject.find(institutionId));
+        institutionData = _.clone(this.institutionsStore.find(institutionId));
       }
       institutionData.active = this.form.active;
       this.fillForm(institutionData);
@@ -147,7 +147,7 @@ export default {
             .fetch(institutionId)
             .then(function(fetchResult){
               if(fetchResult.fetched){
-                let freshlyFetchedInstitutionData = this.institutionObject.find(institutionId);
+                let freshlyFetchedInstitutionData = this.institutionsStore.find(institutionId);
                 this.fillForm(freshlyFetchedInstitutionData);
               } else {
                 this.setFormDefaults();
@@ -202,7 +202,7 @@ export default {
         }
       }.bind(this));
 
-      this.institutionObject.setFetchedState = false
+      // this.institutionObject.setFetchedState = false
       if(this.form.active){
         let upsertInstitution = function(institutionData){
           this.institutionObject.save(institutionData)
@@ -210,7 +210,7 @@ export default {
             .finally(this.afterSaveResetFormAndHideLoading);
         }.bind(this);
 
-        let existingInstitution = this.institutionObject.find(institutionData['id']);
+        let existingInstitution = this.institutionsStore.find(institutionData['id']);
         if(_.isEmpty(existingInstitution)){
           // new institution record
           upsertInstitution(institutionData);

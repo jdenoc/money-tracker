@@ -30,6 +30,7 @@ export const settingsMixin = {
         reverse: true,
       };
     },
+    /** @deprecated **/
     altDefaultToggleButtonProperties(){
       let properties = _.cloneDeep(this.defaultToggleButtonProperties);
       properties.colorChecked = this.tailwindColors.gray[400];
