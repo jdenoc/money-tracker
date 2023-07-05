@@ -143,26 +143,26 @@ export default {
         //   this.fillForm(institutionData);
         //   this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
         // } else {
-          this.institutionObject
-            .fetch(institutionId)
-            .then(function(fetchResult){
-              if(fetchResult.fetched){
-                let freshlyFetchedInstitutionData = this.institutionsStore.find(institutionId);
-                this.fillForm(freshlyFetchedInstitutionData);
-              } else {
-                this.setFormDefaults();
-              }
+        this.institutionObject
+          .fetch(institutionId)
+          .then(function(fetchResult){
+            if(fetchResult.fetched){
+              let freshlyFetchedInstitutionData = this.institutionsStore.find(institutionId);
+              this.fillForm(freshlyFetchedInstitutionData);
+            } else {
+              this.setFormDefaults();
+            }
 
-              if(!_.isEmpty(fetchResult.notification)){
-                this.$eventHub.broadcast(
-                  this.$eventHub.EVENT_NOTIFICATION,
-                  {type: fetchResult.notification.type, message: fetchResult.notification.message}
-                );
-              }
-            }.bind(this))
-            .finally(function(){
-              this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
-            }.bind(this));
+            if(!_.isEmpty(fetchResult.notification)){
+              this.$eventHub.broadcast(
+                this.$eventHub.EVENT_NOTIFICATION,
+                {type: fetchResult.notification.type, message: fetchResult.notification.message}
+              );
+            }
+          }.bind(this))
+          .finally(function(){
+            this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
+          }.bind(this));
         // }
       } else {
         this.setFormDefaults();

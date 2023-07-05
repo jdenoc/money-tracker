@@ -221,26 +221,26 @@ export default {
         //   this.fillForm(accountData);
         //   this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
         // } else {
-          this.accountObject
-            .fetch(accountId)
-            .then(function(fetchResult){
-              if(fetchResult.fetched){
-                let freshlyFetchedAccountData = this.accountsStore.find(accountId);
-                this.fillForm(freshlyFetchedAccountData);
-              } else {
-                this.setFormDefaults();
-              }
+        this.accountObject
+          .fetch(accountId)
+          .then(function(fetchResult){
+            if(fetchResult.fetched){
+              let freshlyFetchedAccountData = this.accountsStore.find(accountId);
+              this.fillForm(freshlyFetchedAccountData);
+            } else {
+              this.setFormDefaults();
+            }
 
-              if(!_.isEmpty(fetchResult.notification)){
-                this.$eventHub.broadcast(
-                  this.$eventHub.EVENT_NOTIFICATION,
-                  {type: fetchResult.notification.type, message: fetchResult.notification.message}
-                );
-              }
-            }.bind(this))
-            .finally(function(){
-              this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
-            }.bind(this));
+            if(!_.isEmpty(fetchResult.notification)){
+              this.$eventHub.broadcast(
+                this.$eventHub.EVENT_NOTIFICATION,
+                {type: fetchResult.notification.type, message: fetchResult.notification.message}
+              );
+            }
+          }.bind(this))
+          .finally(function(){
+            this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_HIDE);
+          }.bind(this));
         // }
       } else {
         this.setFormDefaults();

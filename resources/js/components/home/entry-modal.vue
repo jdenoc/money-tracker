@@ -422,30 +422,30 @@ export default {
           entryId = entryId[0];
         }
         // new Promise(function(resolve, reject){
-          // let entryData = this.entriesStore.find(entryId);
-          // if(this.entryObject.isDataUpToDate(entryData)){
-          //   resolve(entryData);
-          // } else {
-          //   reject(entryId);
-          // }
+        //   let entryData = this.entriesStore.find(entryId);
+        //   if(this.entryObject.isDataUpToDate(entryData)){
+        //     resolve(entryData);
+        //   } else {
+        //     reject(entryId);
+        //   }
         // }.bind(this))
         //   .then(this.openModal)       // resolve
         //   .catch(function(entryId){   // reject
-            this.entryObject.fetch(entryId)
-              .then(function(fetchResult){
-                let freshlyFetchedEntryData = {};
-                if(fetchResult.fetched){
-                  freshlyFetchedEntryData = this.entriesStore.find(entryId);
-                }
-                this.openModal(freshlyFetchedEntryData);
-                if(!_.isEmpty(fetchResult.notification)){
-                  this.$eventHub.broadcast(
-                    this.$eventHub.EVENT_NOTIFICATION,
-                    {type: fetchResult.notification.type, message: fetchResult.notification.message}
-                  );
-                }
-              }.bind(this));
-          // }.bind(this));
+        this.entryObject.fetch(entryId)
+          .then(function(fetchResult){
+            let freshlyFetchedEntryData = {};
+            if(fetchResult.fetched){
+              freshlyFetchedEntryData = this.entriesStore.find(entryId);
+            }
+            this.openModal(freshlyFetchedEntryData);
+            if(!_.isEmpty(fetchResult.notification)){
+              this.$eventHub.broadcast(
+                this.$eventHub.EVENT_NOTIFICATION,
+                {type: fetchResult.notification.type, message: fetchResult.notification.message}
+              );
+            }
+          }.bind(this));
+        // }.bind(this));
       } else {
         this.openModal({});
       }
