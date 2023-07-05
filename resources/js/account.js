@@ -32,8 +32,8 @@ export class Account {
       case 'DELETE':
         return {type: SnotifyStyle.success, message: "Account has been disabled"};
       case 'GET':
-        let accountData = _.clone(response.data);
-        if(!_.isEmpty(accountData)){
+        if(!_.isEmpty(response.data)){
+          let accountData = _.clone(response.data);
           accountData.fetchStamp = new Date().getTime();
 
           let accountIndex = useAccountsStore().collection.findIndex(function(account){

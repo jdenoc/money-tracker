@@ -64,8 +64,8 @@ export class Institution {
       case 'DELETE':
         return {type: SnotifyStyle.success, message: "Institution has been disabled"};
       case 'GET':
-        let institutionData = _.clone(response.data)
-        if(!_.isEmpty(institutionData)){
+        if(!_.isEmpty(response.data)){
+          let institutionData = _.clone(response.data);
           institutionData.fetchStamp = new Date().getTime()
           let institutionIndex = useInstitutionsStore().collection.findIndex(function(institution){
             return institution.id === institutionData.id;

@@ -28,8 +28,8 @@ export class AccountType {
       case "DELETE":
         return {type: SnotifyStyle.success, message: "Account-type has been disabled"};
       case 'GET':
-        let accountTypeData = _.clone(response.data)
-        if(!_.isEmpty(accountTypeData)){
+        if(!_.isEmpty(response.data)){
+          let accountTypeData = _.clone(response.data);
           accountTypeData.fetchStamp = new Date().getTime();
           let accountTypeIndex = useAccountTypesStore().collection.findIndex(function(accountType){
             return accountType.id === accountTypeData.id;
@@ -86,8 +86,8 @@ export class AccountType {
           this.uri.replace(/\/$/, ''),
           accountTypeData,
           {validateStatus:function(status){
-              return status === 201
-            }}
+            return status === 201
+          }}
         )
         .then(this.axiosSuccess)
         .catch(this.axiosFailure);
