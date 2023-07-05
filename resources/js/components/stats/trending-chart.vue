@@ -22,7 +22,7 @@
 
         <hr class="my-8" />
 
-        <section v-if="areEntriesAvailable && dataLoaded" class="stats-results-trending pt-2">
+        <section v-if="entriesStore.isSet && dataLoaded" class="stats-results-trending pt-2">
             <include-transfers-checkbox
                 chart-name="trending"
                 v-bind:include-transfers="includeTransfers"
@@ -49,13 +49,15 @@ import DateRange from "./date-range";
 import IncludeTransfersCheckbox from "./include-transfers-checkbox";
 import LineChart from "./chart-defaults/line-chart";
 // mixins
-import {entriesObjectMixin} from "../../mixins/entries-object-mixin";
+import {batchEntriesMixin} from "../../mixins/batch-entries-mixin";
 import {statsChartMixin} from "../../mixins/stats-chart-mixin";
 import {tailwindColorsMixin} from "../../mixins/tailwind-colors-mixin";
+// stores
+import {useEntriesStore} from "../../stores/entries";
 
 export default {
   name: "trending-chart",
-  mixins: [entriesObjectMixin, statsChartMixin, tailwindColorsMixin],
+  mixins: [batchEntriesMixin, statsChartMixin, tailwindColorsMixin],
   components: {AccountAccountTypeTogglingSelector, DateRange, IncludeTransfersCheckbox, LineChart},
   data: function(){
     return {
@@ -78,6 +80,9 @@ export default {
     }
   },
   computed: {
+    entriesStore: function(){
+      return useEntriesStore();
+    },
     millisecondsPerDay: function(){
       return 1000*3600*24;
     },

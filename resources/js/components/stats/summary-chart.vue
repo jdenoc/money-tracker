@@ -22,7 +22,7 @@
 
         <hr class="my-8"/>
 
-        <section class="stats-results-summary pt-2" v-if="areEntriesAvailable && dataLoaded">
+        <section class="stats-results-summary pt-2" v-if="entriesStore.isSet && dataLoaded">
             <include-transfers-checkbox
                 chart-name="summary"
                 v-bind:include-transfers="includeTransfers"
@@ -90,25 +90,38 @@ import IncludeTransfersCheckbox from "./include-transfers-checkbox";
 import _ from 'lodash';
 import {Currency} from "../../currency";
 // mixins
-import {accountsObjectMixin} from "../../mixins/accounts-object-mixin";
-import {accountTypesObjectMixin} from "../../mixins/account-types-object-mixin";
-import {entriesObjectMixin} from "../../mixins/entries-object-mixin";
+import {batchEntriesMixin} from "../../mixins/batch-entries-mixin";
 import {statsChartMixin} from "../../mixins/stats-chart-mixin";
+// stores
+import {useEntriesStore} from "../../stores/entries";
+import {useAccountsStore} from "../../stores/accounts";
+import {useAccountTypesStore} from "../../stores/accountTypes";
 
 export default {
   name: "summary-chart",
-  mixins: [statsChartMixin, entriesObjectMixin, accountsObjectMixin, accountTypesObjectMixin],
+  mixins: [batchEntriesMixin, statsChartMixin],
   components: {DateRange, IncludeTransfersCheckbox, AccountAccountTypeTogglingSelector},
   data: function(){
     return {
       accountOrAccountTypeId: '',
       accountOrAccountTypeToggle: true,
-      currencyObject: new Currency(),
       endDate: '',
       startDate: '',
     }
   },
   computed: {
+    accountsStore: function(){
+      return useAccountsStore();
+    },
+    accountTypesStore: function(){
+      return useAccountTypesStore();
+    },
+    currencyObject: function(){
+      return new Currency();
+    },
+    entriesStore: function(){
+      return useEntriesStore();
+    },
     top10IncomeAndExpenses: function(){
       let incomeEntries = _.orderBy(
         this.filteredEntries(false),
@@ -138,11 +151,10 @@ export default {
       }
       return topEntries;
     },
-
     totalIncomeOrExpense: function(){
       let total = {};
       // init total
-      this.rawAccountsData
+      this.accountsStore.list
         .forEach(function(account){
           if(total[account.currency] === undefined){
             total[account.currency] = {};
@@ -194,7 +206,8 @@ export default {
     },
 
     getAccountCurrencyFromAccountTypeId: function(accountTypeId){
-      let account = this.accountTypesObject.getAccount(accountTypeId);
+      let accountType = this.accountTypesStore.find(accountTypeId)
+      let account = this.accountsStore.find(accountType.account_id)
       return account.currency;
     },
 

@@ -11,7 +11,7 @@
           <div class="max-w-lg mt-0 mx-4 mb-4 grid-cols-4 gap-y-2 gap-x-4">
             <label class="text-sm font-medium justify-self-end py-1 my-0.5">Tags:</label>
             <div class="col-span-3 relative">
-              <span class="loading absolute inset-y-2 right-0 z-10" v-show="!areTagsSet">
+              <span class="loading absolute inset-y-2 right-0 z-10" v-show="!tagsStore.isSet">
                 <svg class="animate-spin mr-3 h-5 w-5 text-blue-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -19,7 +19,7 @@
               </span>
               <tags-input
                   tagsInputName="stats-tags-chart-tag-input"
-                  v-bind:existing-tags="listTags"
+                  v-bind:existing-tags="tagsStore.list"
                   v-bind:selected-tags.sync="chartTagIds"
               ></tags-input>
             </div>
@@ -39,7 +39,7 @@
 
         <hr class="my-8" />
 
-        <section v-if="areEntriesAvailable && dataLoaded" class="pt-4 stats-results-tags">
+        <section v-if="entriesStore.isSet && dataLoaded" class="pt-4 stats-results-tags">
             <include-transfers-checkbox
                 chart-name="tags"
                 v-bind:include-transfers="includeTransfers"
@@ -67,14 +67,16 @@ import DateRange from './date-range';
 import IncludeTransfersCheckbox from "./include-transfers-checkbox";
 import TagsInput from "../tags-input";
 // mixins
-import {entriesObjectMixin} from "../../mixins/entries-object-mixin";
+import {batchEntriesMixin} from "../../mixins/batch-entries-mixin";
 import {statsChartMixin} from "../../mixins/stats-chart-mixin";
-import {tagsObjectMixin} from "../../mixins/tags-object-mixin";
 import {tailwindColorsMixin} from "../../mixins/tailwind-colors-mixin";
+// stores
+import {useEntriesStore} from "../../stores/entries";
+import {useTagsStore} from "../../stores/tags";
 
 export default {
   name: "tags-chart",
-  mixins: [entriesObjectMixin, statsChartMixin, tagsObjectMixin, tailwindColorsMixin],
+  mixins: [batchEntriesMixin, statsChartMixin, tailwindColorsMixin],
   components: {AccountAccountTypeTogglingSelector, BarChart, DateRange, IncludeTransfersCheckbox, TagsInput},
   data: function(){
     return {
@@ -117,6 +119,9 @@ export default {
         }
       };
     },
+    entriesStore: function(){
+      return useEntriesStore();
+    },
 
     getBulmaCalendar: function(){
       return this.$refs.tagsStatsChartBulmaCalendar;
@@ -132,8 +137,8 @@ export default {
           if(tempDatum.tags.length === 0){
             tempDatum.tags.push(0);
           }
-          tempDatum.tags.forEach(function(tag){
-            let key = (tag === 0) ? 'untagged' : this.tagsObject.getNameById(tag);
+          tempDatum.tags.forEach(function(tagId){
+            let key = (tagId === 0) ? 'untagged' : this.tagsStore.find(tagId).name;
             if(!Object.prototype.hasOwnProperty.call(standardisedChartData, key)){
               standardisedChartData[key] = {x: key, y: 0}
             }
@@ -150,6 +155,9 @@ export default {
         Object.values(standardisedChartData),
         function(o){ return o.x;}
       );
+    },
+    tagsStore: function(){
+      return useTagsStore();
     }
   },
   methods: {
