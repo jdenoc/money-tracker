@@ -8,7 +8,8 @@ export const useEntriesStore = defineStore('entries', {
 
   state: function(){
     return {
-      ...baseState('/api/entries/')
+      ...baseState('/api/entries/'),
+      defaultSortParameters: {parameter: 'entry_date', direction: 'desc'},
     }
   },
 
@@ -36,7 +37,7 @@ export const useEntriesStore = defineStore('entries', {
           requestParameters[parameter] = filterParameters[parameter];
         }
       }
-      requestParameters.sort = this.sort;
+      requestParameters.sort = this.defaultSortParameters;
 
       await axios.post(this.apiUri+pageNumber, requestParameters)
         .then(this.axiosSuccess.bind(this))
