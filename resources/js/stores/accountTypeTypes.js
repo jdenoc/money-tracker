@@ -38,7 +38,6 @@ export const useAccountTypeTypesStore = defineStore('accountTypeTypes', {
     axiosSuccess(response){
       this.collection = response.data;
     },
-
   },
 
 })

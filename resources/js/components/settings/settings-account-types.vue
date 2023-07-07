@@ -239,7 +239,7 @@ export default {
 
       // this.accountTypeObject.setFetchedState = false
       if(this.form.active){
-        let updateAccountType = function(){
+        let upsertAccountType = function(){
           this.accountTypeObject
             .save(accountTypeData)
             .then(this.afterSaveDisplayNotificationIfNeeded)
@@ -247,13 +247,13 @@ export default {
         }.bind(this);
 
         let existingAccountTypeData = this.accountTypesStore.find(accountTypeData['id']);
-        if(existingAccountTypeData.active){
-          updateAccountType(accountTypeData);
+        if(_.isEmpty(existingAccountTypeData) || existingAccountTypeData.active){
+          upsertAccountType(accountTypeData);
         } else {
           this.accountTypeObject.enable(accountTypeData['id'])
             .then(this.afterSaveDisplayNotificationIfNeeded)
             .finally(function(){
-              updateAccountType(accountTypeData);
+              upsertAccountType(accountTypeData);
             });
         }
       } else {
