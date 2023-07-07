@@ -39,7 +39,7 @@ export const useEntriesStore = defineStore('entries', {
       }
       requestParameters.sort = this.defaultSortParameters;
 
-      await axios.post(this.apiUri+pageNumber, requestParameters)
+      return axios.post(this.apiUri+pageNumber, requestParameters)
         .then(this.axiosSuccess.bind(this))
         .catch(this.axiosFailure.bind(this));
     },
@@ -57,7 +57,6 @@ export const useEntriesStore = defineStore('entries', {
         }
       }
     },
-
   }
 
 })

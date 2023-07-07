@@ -56,7 +56,7 @@ export function baseActions() {
     },
 
     async fetch(){
-      await axios.get(this.apiUri)
+      return axios.get(this.apiUri)
         .then(this.axiosSuccess.bind(this))
         .catch(this.axiosFailure.bind(this))
     },
