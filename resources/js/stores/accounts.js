@@ -44,7 +44,6 @@ export const useAccountsStore = defineStore('accounts', {
         }
       }
     },
-
   }
 
 })

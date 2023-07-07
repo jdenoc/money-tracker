@@ -17,7 +17,6 @@ export const useTagsStore = defineStore('tags', {
     list(state){
       return _.sortBy(state.collection, ['name']);
     },
-
   },
 
   actions: {
@@ -35,7 +34,6 @@ export const useTagsStore = defineStore('tags', {
         }
       }
     },
-
   }
 
 })

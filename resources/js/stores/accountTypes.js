@@ -39,7 +39,6 @@ export const useAccountTypesStore = defineStore('accountTypes', {
         }
       }
     },
-
   },
 
 })

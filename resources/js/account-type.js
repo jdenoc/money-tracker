@@ -72,18 +72,18 @@ export class AccountType {
   }
 
   save(accountTypeData){
-    let accountId = parseInt(accountTypeData.id);
+    let accountTypeId = parseInt(accountTypeData.id);
     delete accountTypeData.id;
-    if(_.isNumber(accountId) && !isNaN(accountId)){
+    if(_.isNumber(accountTypeId) && !isNaN(accountTypeId)){
       // update account
-      return Axios.put(this.uri+accountId, accountTypeData)
+      return Axios.put(this.uri.replace('{accountTypeId}', accountTypeId), accountTypeData)
         .then(this.axiosSuccess)
         .catch(this.axiosFailure);
     } else {
       // new account
       return Axios
         .post(
-          this.uri.replace(/\/$/, ''),
+          this.uri.replace('/{accountTypeId}', ''),
           accountTypeData,
           {validateStatus:function(status){
             return status === 201
