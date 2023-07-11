@@ -165,6 +165,7 @@
               v-bind:uuid="entryAttachment.uuid"
               v-bind:name="entryAttachment.name"
               v-bind:entryId="entryData.id"
+              v-bind:isLocked="isLocked"
           ></entry-modal-attachment>
         </div>
       </section>
