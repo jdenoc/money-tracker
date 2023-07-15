@@ -428,7 +428,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @group entry-modal-1
      * test 11/20
      */
-    public function testExistingConfirmedEntryWithAttachmentsHasDeleteAttachmentButtonDisabled(){
+    public function testExistingConfirmedEntryWithAttachmentsHasDeleteAttachmentButtonDisabled() {
         $this->browse(function(Browser $browser) {
             $entry_selector = $this->randomEntrySelector(['confirm'=>true, 'has_attachments'=>true]).$this->_class_has_attachments.$this->_class_is_confirmed;
 
