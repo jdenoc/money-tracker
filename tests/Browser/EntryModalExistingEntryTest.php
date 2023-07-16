@@ -388,9 +388,9 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @group entry-modal-1
      * test 10/20
      */
-    public function testDeleteAttachmentFromExistingEntry() {
+    public function testDeleteAttachmentFromUnconfirmedExistingEntry() {
         $this->browse(function(Browser $browser) {
-            $entry_selector = $this->randomEntrySelector(['has_attachments'=>true]).$this->_class_has_attachments;
+            $entry_selector = $this->randomEntrySelector(['has_attachments'=>true, 'confirm'=>false]).$this->_class_has_attachments;
             // initialising this variable here, then pass it as a reference so that we can update its value.
             $attachment_count = 0;
 
