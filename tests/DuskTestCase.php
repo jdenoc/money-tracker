@@ -167,7 +167,7 @@ abstract class DuskTestCase extends BaseTestCase {
 
     public static function assertContains($needle, iterable $haystack, string $message = ''): void {
         if (empty($message)) {
-            $message = sprintf("Failed asserting that %s contains %s.", json_encode($haystack), $needle);
+            $message = sprintf("Failed asserting that `%s` contains `%s`.", json_encode($haystack), $needle);
         }
         parent::assertContains($needle, $haystack, $message);
     }
