@@ -436,13 +436,12 @@ class EntryModalExistingEntryTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $browser
                 ->openExistingEntryModal($entry_selector)
-                ->within($this->_selector_modal_entry, function(Browser $entry_modal) use (&$attachment_count) {
+                ->within($this->_selector_modal_entry, function(Browser $entry_modal) {
                     $entry_modal->assertVisible($this->_selector_modal_entry_existing_attachments);
 
                     // make sure there are attachments in the modal
                     $attachments = $entry_modal->driver->findElements(WebDriverBy::className($this->_class_existing_attachment));
-                    $attachment_count = count($attachments);
-                    $this->assertGreaterThan($attachment_count, 0);
+                    $this->assertGreaterThan(0, count($attachments));
 
                     $entry_modal->within($this->_selector_modal_entry_existing_attachments, function(Browser $existing_attachment) {
                         $existing_attachment->assertVisible($this->_selector_modal_entry_existing_attachments_attachment_btn_delete);
