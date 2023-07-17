@@ -93,10 +93,10 @@ trait FilterModal {
                 if ($is_account) {
                     // account
                     $account = Account::with(AccountType::getTableName())->find($filter_value['id']);
-                    $filter_value = $account->accountTypes()->withTrashed()->pluck('name')->toArray();
+                    $filter_value = $account->accountTypes()->withTrashed()->pluck('id')->toArray();
                 } else {
                     // account-type
-                    $filter_value = $filter_value['name'];
+                    $filter_value = $filter_value['id'];
                 }
                 break;
             case $this->_selector_modal_filter_field_tags:

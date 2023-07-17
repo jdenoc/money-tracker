@@ -683,13 +683,15 @@ class FilterModalTest extends DuskTestCase {
                                 );
                                 break;
                             case self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT:
-                                // only rows with account-type(s)
-                                $row_entry_account_type = $table_row->findElement(WebDriverBy::cssSelector($this->_selector_table_row_account_type))->getText();
-                                if (is_array($filter_value)) {
-                                    $this->assertContains($row_entry_account_type, $filter_value);
-                                } else {
-                                    $this->assertEquals($row_entry_account_type, $filter_value);
+                                if (is_array($filter_value)) {    // account
+                                    $account_type_names = AccountType::withTrashed()->whereIn('id', $filter_value)->pluck('name')->all();
+                                } else {    // account-type
+                                    $account_type_names = AccountType::withTrashed()->where('id', $filter_value)->pluck('name')->all();
                                 }
+
+                                // rows only display account-type(s)
+                                $row_entry_account_type = $table_row->findElement(WebDriverBy::cssSelector($this->_selector_table_row_account_type))->getText();
+                                $this->assertContains($row_entry_account_type, $account_type_names);
                                 break;
                             case $this->_selector_modal_filter_field_tags:
                                 // only rows with .has-tags class
