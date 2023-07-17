@@ -2,7 +2,6 @@
 
 namespace Tests\Browser;
 
-use App\Models\AccountType;
 use App\Traits\ExportsHelper;
 use App\Traits\Tests\Dusk\FilterModal as DuskTraitFilterModal;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
@@ -103,9 +102,6 @@ class ExportsTest extends DuskTestCase {
     /**
      * @dataProvider providerPerformExport
      *
-     * @param string $filter_input_selector
-     * @throws Throwable
-     *
      * @group filter-modal-export-2
      * test (see provider)/20
      */
@@ -150,68 +146,70 @@ class ExportsTest extends DuskTestCase {
             $header = fgetcsv($fp);
             $this->assertEquals($this->getCsvHeaderLine(), $header);
 
+            $line_number = 0;
             while ($line = fgetcsv($fp)) {
+                $line_number++;
+                $error_msg = "item not found on line:%d; containing:".json_encode($line).'; column:%d';
                 switch($filter_input_selector) {
                     case $this->_selector_modal_filter_field_start_date:
-                        $this->assertGreaterThanOrEqual($filter_value['actual'], $line[1]);
+                        $this->assertGreaterThanOrEqual($filter_value['actual'], $line[1], sprintf($error_msg, $line_number, 1));
                         break;
                     case $this->_selector_modal_filter_field_end_date:
-                        $this->assertLessThanOrEqual($filter_value['actual'], $line[1]);
+                        $this->assertLessThanOrEqual($filter_value['actual'], $line[1], sprintf($error_msg, $line_number, 1));
                         break;
                     case self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT:
-                        if (is_array($filter_value)) {    // account
-                            $account_type_ids = AccountType::whereIn('name', $filter_value)->pluck('id')->all();
-                            $this->assertContains((int)$line[5], $account_type_ids);
+                        if(is_array($filter_value)) {    // account
+                            $account_type_ids = $filter_value;
                         } else {    // account-type
-                            $account_type_id = AccountType::where('name', $filter_value)->pluck('id')->first();
-                            $this->assertEquals((int)$line[5], $account_type_id);
+                            $account_type_ids = [$filter_value];
                         }
+                        $this->assertContains((int)$line[5], $account_type_ids, sprintf($error_msg, $line_number, 5));
                         break;
                     case $this->_selector_modal_filter_field_tags:
-                        $this->assertNotEmpty($line[8]);
+                        $this->assertNotEmpty($line[8], sprintf($error_msg, $line_number, 8));
                         $row_tags = json_decode($line[8], true);
                         foreach ($filter_value as $filtered_tag) {
-                            $this->assertContains($filtered_tag['id'], $row_tags);
+                            $this->assertContains($filtered_tag['id'], $row_tags, sprintf($error_msg, $line_number, 8));
                         }
                         break;
                     case $this->_selector_modal_filter_field_switch_income:
-                        $this->assertNotEmpty($line[3]);
-                        $this->assertEmpty($line[4]);
+                        $this->assertNotEmpty($line[3], sprintf($error_msg, $line_number, 3));
+                        $this->assertEmpty($line[4], sprintf($error_msg, $line_number, 4));
                         break;
                     case $this->_selector_modal_filter_field_switch_expense:
-                        $this->assertEmpty($line[3]);
-                        $this->assertNotEmpty($line[4]);
+                        $this->assertEmpty($line[3], sprintf($error_msg, $line_number, 3));
+                        $this->assertNotEmpty($line[4], sprintf($error_msg, $line_number, 4));
                         break;
                     case $this->_selector_modal_filter_field_switch_has_attachment:
-                        $this->assertNotEmpty($line[6]);
-                        $this->assertTrue(filter_var($line[6], FILTER_VALIDATE_BOOL));
+                        $this->assertNotEmpty($line[6], sprintf($error_msg, $line_number, 6));
+                        $this->assertTrue(filter_var($line[6], FILTER_VALIDATE_BOOL), sprintf($error_msg, $line_number, 6));
                         break;
                     case $this->_selector_modal_filter_field_switch_no_attachment:
-                        $this->assertEmpty($line[6]);
+                        $this->assertEmpty($line[6], sprintf($error_msg, $line_number, 6));
                         break;
                     case $this->_selector_modal_filter_field_switch_transfer:
-                        $this->assertNotEmpty($line[7]);
-                        $this->assertTrue(filter_var($line[7], FILTER_VALIDATE_BOOL));
+                        $this->assertNotEmpty($line[7], sprintf($error_msg, $line_number, 7));
+                        $this->assertTrue(filter_var($line[7], FILTER_VALIDATE_BOOL), sprintf($error_msg, $line_number, 7));
                         break;
                     case $this->_selector_modal_filter_field_switch_unconfirmed:
                         // export does not include information related to entry confirmation
                         break;
                     case $this->_selector_modal_filter_field_min_value:
                         if (!empty($line[3])) {           // income
-                            $this->assertGreaterThanOrEqual($filter_value, $line[3]);
+                            $this->assertGreaterThanOrEqual($filter_value, $line[3], sprintf($error_msg, $line_number, 3));
                         } elseif (!empty($line[4])) {     // expense
-                            $this->assertGreaterThanOrEqual($filter_value, $line[4]);
+                            $this->assertGreaterThanOrEqual($filter_value, $line[4], sprintf($error_msg, $line_number, 4));
                         } else {
-                            $this->fail("The income OR expense field was expected to contain a value");
+                            $this->fail("The income OR expense field was expected to contain a value\n".sprintf($error_msg, $line_number, -1));
                         }
                         break;
                     case $this->_selector_modal_filter_field_max_value:
                         if (!empty($line[3])) {       // income
-                            $this->assertLessThanOrEqual($filter_value, $line[3]);
+                            $this->assertLessThanOrEqual($filter_value, $line[3], sprintf($error_msg, $line_number, 3));
                         } elseif (!empty($line[4])) { // expense
-                            $this->assertLessThanOrEqual($filter_value, $line[4]);
+                            $this->assertLessThanOrEqual($filter_value, $line[4], sprintf($error_msg, $line_number, 4));
                         } else {
-                            $this->fail("The income OR expense field was expected to contain a value");
+                            $this->fail("The income OR expense field was expected to contain a value\n".sprintf($error_msg, $line_number, -1));
                         }
                         break;
                 }
