@@ -51,6 +51,11 @@ class TransferModalTest extends DuskTestCase {
     private static $METHOD_ACCOUNT = 'account';
     private static $METHOD_ACCOUNT_TYPE = 'account-type';
 
+    public function setUp(): void {
+        parent::setUp();
+        $this->initTagsInputColors();
+    }
+
     /**
      * @throws Throwable
      *

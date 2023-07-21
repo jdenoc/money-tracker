@@ -54,6 +54,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
     public function setUp(): void {
         parent::setUp();
         $this->initEntryModalColours();
+        $this->initTagsInputColors();
     }
 
     /**
