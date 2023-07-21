@@ -2,6 +2,7 @@
 
 namespace App\Traits\Tests;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Spatie\DbSnapshots\Events\CreatedSnapshot;
 
@@ -21,6 +22,7 @@ trait DatabaseMigrations {
                 $this->migrateWithSpecificSnapshot();
             }
         }
+        Cache::flush();
     }
 
     private function migrateWithLatestSnapshot() {
