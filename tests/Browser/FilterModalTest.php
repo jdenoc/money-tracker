@@ -51,6 +51,7 @@ class FilterModalTest extends DuskTestCase {
     public function setUp(): void {
         parent::setUp();
         $this->initFilterModalColors();
+        $this->initTagsInputColors();
     }
 
     /**

@@ -129,12 +129,7 @@
         <!-- tags -->
         <label class="font-medium justify-self-end py-1">Tags:</label>
         <div class="col-span-3 relative">
-          <span class="loading absolute inset-y-2 right-0 z-10" v-show="!tagsStore.isSet">
-            <svg class="animate-spin mr-3 h-5 w-5 text-blue-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-          </span>
+          <tags-input-info-loading></tags-input-info-loading>
           <tags-input
               v-show="!isLocked"
               tagsInputName="entry-tags"
@@ -231,6 +226,7 @@ import FileDragNDrop from "./../file-drag-n-drop";
 import EntryModalAttachment from "./entry-modal-attachment";
 import ToggleButton from './../toggle-button';
 import TagsInput from "./../tags-input";
+import TagsInputInfoLoading from "../tags-input-info-loading.vue";
 // stores
 import {useAccountsStore} from "../../stores/accounts";
 import {useAccountTypesStore} from "../../stores/accountTypes";
@@ -246,6 +242,7 @@ export default {
     EntryModalAttachment,
     FileDragNDrop,
     TagsInput,
+    TagsInputInfoLoading,
     ToggleButton,
   },
   data: function(){

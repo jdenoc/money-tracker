@@ -83,6 +83,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
             $this->addRulesToHtaccessToDisableDisplayErrors();
         }
         $this->initEntryModalColours();
+        $this->initTagsInputColors();
     }
 
     public function tearDown(): void {
