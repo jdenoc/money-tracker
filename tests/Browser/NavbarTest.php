@@ -25,14 +25,15 @@ class NavbarTest extends DuskTestCase {
     use DuskTraitNavbar;
     use DuskTraitLoading;
 
-    private $_label_add_entry = "Add Entry";
-    private $_label_filter = "Filter";
-    private $_label_transfer = "Add Transfer";
-    private $_label_version = "Version:";
-    private $_label_home = "Home";
-    private $_label_stats = "Statistics";
-    private $_label_settings = "Settings";
-    private $_label_logout = "Logout";
+    private string $_label_add_entry = "Add Entry";
+    private string $_label_filter = "Filter";
+    private string $_label_transfer = "Add Transfer";
+    private string $_label_version = "Version:";
+    private string $_label_home = "Home";
+    private string $_label_stats = "Statistics";
+    private string $_label_settings = "Settings";
+    private string $_label_health = "Health";
+    private string $_label_logout = "Logout";
 
     public function providerNavbarLogoVisible(): array {
         return [
@@ -215,7 +216,9 @@ class NavbarTest extends DuskTestCase {
                         } else {
                             $navbar_dropdown->assertSeeLink($this->_label_settings);
                         }
-                        $navbar_dropdown->assertSeeLink($this->_label_logout);
+                        $navbar_dropdown
+                            ->assertSeeLink($this->_label_health)
+                            ->assertSeeLink($this->_label_logout);
                     });
             });
         });
@@ -287,7 +290,7 @@ class NavbarTest extends DuskTestCase {
         });
     }
 
-    public function providerNavberSmScreenBurgerMenu(): array {
+    public function providerNavbarSmScreenBurgerMenu(): array {
         return [
             'home'=>['home'],           // test 4/20
             'stats'=>['stats'],         // test 5/20
@@ -296,14 +299,14 @@ class NavbarTest extends DuskTestCase {
     }
 
     /**
-     * @dataProvider providerNavberSmScreenBurgerMenu
+     * @dataProvider providerNavbarSmScreenBurgerMenu
      * @param string $page_name
      * @throws Throwable
      *
      * @group navigation-3
      * test ?/20
      */
-    public function testNavberSmScreenBurgerMenu(string $page_name) {
+    public function testNavbarSmScreenBurgerMenu(string $page_name) {
         $pageObject = $this->getDuskPageObject($page_name);
         $this->browse(function(Browser $browser) use ($pageObject, $page_name) {
             $browser
@@ -340,13 +343,15 @@ class NavbarTest extends DuskTestCase {
                         } else {
                             $navbar_dropdown->assertSeeLink($this->_label_settings);
                         }
-                        $navbar_dropdown->assertSeeLink($this->_label_logout);
+                        $navbar_dropdown
+                            ->assertSeeLink($this->_label_health)
+                            ->assertSeeLink($this->_label_logout);
                     });
             });
         });
     }
 
-    public function providerNavberSmScreenSidebar(): array {
+    public function providerNavbarSmScreenSidebar(): array {
         return [
             'home'=>['home'],           // test 7/20
             'stats'=>['stats'],         // test 8/20
@@ -355,14 +360,14 @@ class NavbarTest extends DuskTestCase {
     }
 
     /**
-     * @dataProvider providerNavberSmScreenSidebar
+     * @dataProvider providerNavbarSmScreenSidebar
      * @param string $page_name
      * @throws Throwable
      *
      * @group navigation-3
      * test ?/25
      */
-    public function testNavberSmScreenSidebar(string $page_name) {
+    public function testNavbarSmScreenSidebar(string $page_name) {
         $pageObject = $this->getDuskPageObject($page_name);
         $this->browse(function(Browser $browser) use ($pageObject) {
             $browser
