@@ -41,6 +41,7 @@ class StatsBase extends DuskTestCase {
 
     protected $today = '';
     protected $previous_year_start = '';
+    protected $three_months_prior_start = '';
     protected $month_start = '';
     protected $month_end = '';
 
@@ -48,6 +49,7 @@ class StatsBase extends DuskTestCase {
         parent::__construct($name, $data, $dataName);
         $this->today = date("Y-m-d");
         $this->previous_year_start = date("Y-01-01", strtotime('-1 year'));
+        $this->three_months_prior_start = date('Y-m-01', strtotime('-3 month'));
         $this->month_start = date('Y-m-01');
         $this->month_end = date("Y-m-t");
     }
@@ -64,7 +66,7 @@ class StatsBase extends DuskTestCase {
             $browser
                 ->assertVisible($stats_form_selector)
                 ->with($stats_form_selector, function(Browser $form) {
-                    $this->setDateRangeDate($form, 'start', $this->previous_year_start);
+                    $this->setDateRangeDate($form, 'start', $this->three_months_prior_start);
                     $this->setDateRangeDate($form, 'end', $this->today);
                     $form->click(self::$SELECTOR_BUTTON_GENERATE);
                 });
