@@ -4,12 +4,9 @@ namespace App\Traits\Tests;
 
 trait LogTestName {
 
-    protected $can_log_test_name = true;
+    protected bool $can_log_test_name = true;
 
-    /**
-     * @param string $testName
-     */
-    public function runTestNameLogging($testName){
+    public function runTestNameLogging(string $testName): void {
         $this->logTestNameStatement("[TEST-START] ".$testName);
 
         $this->beforeApplicationDestroyed(function() use ($testName) {
@@ -17,16 +14,13 @@ trait LogTestName {
         });
     }
 
-    /**
-     * @param string $statement
-     */
-    public function logTestNameStatement($statement){
-        if($this->can_log_test_name){
-            logger($statement);
+    public function logTestNameStatement(string $statement): void {
+        if ($this->can_log_test_name) {
+            logger()->info($statement);
         }
     }
 
-    public function dontLogTestName(){
+    public function dontLogTestName(): void {
         $this->can_log_test_name = false;
     }
 

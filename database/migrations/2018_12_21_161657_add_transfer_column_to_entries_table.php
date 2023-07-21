@@ -6,17 +6,17 @@ use Illuminate\Database\Migrations\Migration;
 
 class AddTransferColumnToEntriesTable extends Migration {
 
-    private $_table = "entries";
-    private $_new_column = "transfer_entry_id";
+    private static $TABLE = "entries";
+    private static $NEW_COLUMN = "transfer_entry_id";
 
     /**
      * Run the migrations.
      *
      * @return void
      */
-    public function up(){
-        Schema::table($this->_table, function (Blueprint $table) {
-            $table->unsignedInteger($this->_new_column)->after('disabled')->nullable()
+    public function up() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
+            $table->unsignedInteger(self::$NEW_COLUMN)->after('disabled')->nullable()
                 ->comment("ID of an entry corresponding to a transfer");
         });
     }
@@ -26,9 +26,10 @@ class AddTransferColumnToEntriesTable extends Migration {
      *
      * @return void
      */
-    public function down(){
-        Schema::table($this->_table, function (Blueprint $table) {
-            $table->dropColumn($this->_new_column);
+    public function down() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
+            $table->dropColumn(self::$NEW_COLUMN);
         });
     }
+
 }

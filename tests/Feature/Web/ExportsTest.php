@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Web;
 
-use App\AccountType;
+use App\Models\AccountType;
 use App\Traits\EntryFilterKeys;
 use App\Traits\ExportsHelper;
 use App\Traits\Tests\GenerateFilterTestCases;
@@ -13,7 +13,6 @@ use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\Feature\Api\ListEntriesBase;
 
 class ExportsTest extends ListEntriesBase {
-
     use EntryFilterKeys;
     use ExportsHelper;
     use GenerateFilterTestCases;
@@ -21,17 +20,17 @@ class ExportsTest extends ListEntriesBase {
     const URI = "/export";
     const DOWNLOAD_LOCATION_CONFIG = 'excel.temporary_files.local_path';
 
-    public function tearDown(): void{
+    public function tearDown(): void {
         $download_location = config(self::DOWNLOAD_LOCATION_CONFIG);
-        foreach (File::files($download_location) as $file){
-            if(!Str::contains($file, 'gitignore')){
+        foreach (File::files($download_location) as $file) {
+            if (!Str::contains($file, 'gitignore')) {
                 File::delete($file);
             }
         }
         parent::tearDown();
     }
 
-    public function providerExportRequestMethodNotAllowed():array{
+    public function providerExportRequestMethodNotAllowed(): array {
         return [
             // Note: POST is the only valid request method
             'GET'=>['GET'],
@@ -43,9 +42,8 @@ class ExportsTest extends ListEntriesBase {
 
     /**
      * @dataProvider providerExportRequestMethodNotAllowed
-     * @param string $method
      */
-    public function testExportRequestMethodNotAllowed(string $method){
+    public function testExportRequestMethodNotAllowed(string $method) {
         // GIVEN - see provider
 
         // WHEN
@@ -56,30 +54,29 @@ class ExportsTest extends ListEntriesBase {
         $this->assertEquals(HttpStatus::HTTP_METHOD_NOT_ALLOWED, $status_code);
     }
 
-    public function providerExportPostRequest():array{
-        return $this->generateFilterTestCases($this->makeFaker(Factory::DEFAULT_LOCALE));   // manually setting local to bypass needing to access configs
+    public function providerExportPostRequest(): array {
+        return $this->generateFilterTestCases(fake(Factory::DEFAULT_LOCALE));   // manually setting local to bypass needing to access configs
     }
 
     /**
      * @dataProvider providerExportPostRequest
-     * @param array $filter
      */
-    public function testExportPostRequest(array $filter){
+    public function testExportPostRequest(array $filter) {
         // GIVEN - see provider
-        $total_entries_to_create = $this->faker->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE);
-        $generated_account_type = factory(AccountType::class)->create(['account_id'=>$this->_generated_account->id]);
-        $filter = $this->setTestSpecificFilters($this->faker, $filter, $this->_generated_account, $this->_generated_tags);
+        $total_entries_to_create = fake()->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE);
+        $generated_account_type = AccountType::factory()->create(['account_id'=>$this->_generated_account->id]);
+        $filter = $this->setTestSpecificFilters(fake(), $filter, $this->_generated_account, $this->_generated_tags);
         $this->batch_generate_entries($total_entries_to_create, $generated_account_type->id, $this->convert_filters_to_entry_components($filter));
 
         $filename = $this->pregenerateExportFilenameAtStartOfSecond();
 
         // WHEN
-        $download_response = $this->json('POST', self::URI, $filter);
-        $data_response = $this->json('POST', '/api/entries', $filter);
+        $download_response = $this->postJson(self::URI, $filter);
+        $data_response = $this->postJson('/api/entries', $filter);
 
         // THEN
         $download_response->assertStatus(HttpStatus::HTTP_OK);
-        $download_response->assertHeader('content-type', 'text/csv');
+        $download_response->assertHeader('content-type', 'text/csv; charset=UTF-8');
         $download_response->assertHeader('content-disposition', sprintf('attachment; filename=%s', $filename));
 
         // We don't need to do any validation on the data from POST /api/entries
@@ -104,7 +101,7 @@ class ExportsTest extends ListEntriesBase {
         $this->assertEquals($this->getCsvHeaderLine(), $header);
 
         // assert contents
-        while($line = fgetcsv($file_handle)){
+        while ($line = fgetcsv($file_handle)) {
             $expected_entry = $data_response->firstWhere('id', $line[0]);
 
             $this->assertEquals($expected_entry['entry_date'], $line[1]);
@@ -120,6 +117,15 @@ class ExportsTest extends ListEntriesBase {
             $this->assertEquals($expected_entry['tags'], $actual_tags);
         }
         fclose($file_handle);
+    }
+
+    private function pregenerateExportFilenameAtStartOfSecond(): string {
+        // without this do-while loop we run the risk of generating
+        // a filename that is off by 1 seconds from the download
+        do {
+            $microtime = explode(' ', microtime())[0];
+        } while ($microtime > 0.25);
+        return $this->generateExportFilename();
     }
 
 }

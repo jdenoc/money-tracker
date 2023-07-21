@@ -6,14 +6,17 @@ use Illuminate\Database\Migrations\Migration;
 
 class DropAttachmentsColumnExt extends Migration {
 
+    private static $TABLE = 'attachments';
+    private static $COLUMN = 'ext';
+
     /**
      * Drop column attachments.ext
      *
      * @return void
      */
-    public function up(){
-        Schema::table('attachments', function (Blueprint $table) {
-            $table->dropColumn('ext');
+    public function up() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
+            $table->dropColumn(self::$COLUMN);
         });
     }
 
@@ -22,9 +25,9 @@ class DropAttachmentsColumnExt extends Migration {
      *
      * @return void
      */
-    public function down(){
-        Schema::table('attachments', function (Blueprint $table) {
-            $table->string('ext', 10);
+    public function down() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
+            $table->string(self::$COLUMN, 10);
         });
     }
 

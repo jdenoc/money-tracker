@@ -6,14 +6,17 @@ use Illuminate\Database\Migrations\Migration;
 
 class AddAccountsColumnInstitutionId extends Migration {
 
+    private static $TABLE = 'accounts';
+    private static $COLUMN_NEW = 'institution_id';
+
     /**
      * Run the migrations.
      *
      * @return void
      */
-    public function up(){
-        Schema::table('accounts', function (Blueprint $table) {
-            $table->unsignedInteger('institution_id')->after('account');
+    public function up() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
+            $table->unsignedInteger(self::$COLUMN_NEW)->after('account');
         });
     }
 
@@ -22,9 +25,9 @@ class AddAccountsColumnInstitutionId extends Migration {
      *
      * @return void
      */
-    public function down(){
-        Schema::table('accounts', function (Blueprint $table) {
-            $table->dropColumn('institution_id');
+    public function down() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
+            $table->dropColumn(self::$COLUMN_NEW);
         });
     }
 

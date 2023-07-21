@@ -4,6 +4,6 @@ namespace App\Traits;
 
 trait MaxEntryResponseValue {
 
-    public static $MAX_ENTRIES_IN_RESPONSE = 50;
+    public static int $MAX_ENTRIES_IN_RESPONSE = 50;
 
 }

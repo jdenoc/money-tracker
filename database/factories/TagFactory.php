@@ -1,10 +1,17 @@
 <?php
 
-use Faker\Generator as Faker;
+namespace Database\Factories;
 
-/** @var \Illuminate\Database\Eloquent\Factory $factory */
-$factory->define(App\Tag::class, function(Faker $faker){
-    return [
-        'name'=>$faker->unique()->safeColorName
-    ];
-});
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Jdenoc\Faker\TailwindColors\Provider as TailwindColorsProvider;
+
+class TagFactory extends Factory {
+
+    public function definition(): array {
+        fake()->addProvider(new TailwindColorsProvider(fake()));
+        return [
+            'name'=>fake()->unique()->tailwindColorName(),
+        ];
+    }
+
+}

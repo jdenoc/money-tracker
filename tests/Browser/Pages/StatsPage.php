@@ -12,7 +12,7 @@ class StatsPage extends BasePage {
      *
      * @return string
      */
-    public function url(){
+    public function url() {
         return '/stats';
     }
 
@@ -22,7 +22,7 @@ class StatsPage extends BasePage {
      * @param  Browser  $browser
      * @return void
      */
-    public function assert(Browser $browser){
+    public function assert(Browser $browser) {
         // $browser->assertPathIs($this->url());
     }
 
@@ -31,9 +31,10 @@ class StatsPage extends BasePage {
      *
      * @return array
      */
-    public function elements(){
+    public function elements() {
         return [
             // '@element' => '#selector',
         ];
     }
+
 }

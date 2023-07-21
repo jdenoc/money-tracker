@@ -6,14 +6,18 @@ use Illuminate\Database\Migrations\Migration;
 
 class RenameEntriesAccountTypeColumnToAccountTypeId extends Migration {
 
+    private static $TABLE = 'entries';
+    private static $COLUMN_OLD_NAME = 'account_type';
+    private static $COLUMN_NEW_NAME = 'account_type_id';
+
     /**
      * Rename entries.account_type to entries.account_type_id
      *
      * @return void
      */
-    public function up(){
-        Schema::table('entries', function (Blueprint $table) {
-            $table->renameColumn('account_type', 'account_type_id');
+    public function up() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
+            $table->renameColumn(self::$COLUMN_OLD_NAME, self::$COLUMN_NEW_NAME);
         });
     }
 
@@ -22,9 +26,9 @@ class RenameEntriesAccountTypeColumnToAccountTypeId extends Migration {
      *
      * @return void
      */
-    public function down(){
-        Schema::table('entries', function (Blueprint $table) {
-            $table->renameColumn('account_type_id', 'account_type');
+    public function down() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
+            $table->renameColumn(self::$COLUMN_NEW_NAME, self::$COLUMN_OLD_NAME);
         });
     }
 

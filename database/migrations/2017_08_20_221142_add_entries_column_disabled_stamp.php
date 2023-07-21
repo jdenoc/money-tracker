@@ -1,10 +1,14 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class AddEntriesColumnDisabledStamp extends Migration {
+
+    private static $TABLE = 'entries';
+    private static $COLUMN_NEW = 'disabled_stamp';
 
     /**
      * Add column entries.disabled_stamp
@@ -12,11 +16,11 @@ class AddEntriesColumnDisabledStamp extends Migration {
      *
      * @return void
      */
-    public function up(){
-        Schema::table('entries', function (Blueprint $table) {
-            $table->timestamp('disabled_stamp')->nullable();
+    public function up() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
+            $table->timestamp(self::$COLUMN_NEW)->nullable();
         });
-        DB::statement("UPDATE entries SET disabled_stamp=modified_stamp WHERE disabled=1");
+        DB::table(self::$TABLE)->where('disabled', 1)->update([self::$COLUMN_NEW=>DB::raw('modified_stamp')]);
     }
 
     /**
@@ -24,9 +28,9 @@ class AddEntriesColumnDisabledStamp extends Migration {
      *
      * @return void
      */
-    public function down(){
-        Schema::table('entries', function (Blueprint $table) {
-            $table->dropColumn('disabled_stamp');
+    public function down() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
+            $table->dropColumn(self::$COLUMN_NEW);
         });
     }
 

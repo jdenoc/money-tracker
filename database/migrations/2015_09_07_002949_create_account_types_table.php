@@ -6,17 +6,19 @@ use Illuminate\Database\Migrations\Migration;
 
 class CreateAccountTypesTable extends Migration {
 
+    private static $TABLE = 'account_types';
+
     /**
      * Create `account_types` table
      *
      * @return void
      */
-    public function up(){
-        Schema::create('account_types', function (Blueprint $table) {
+    public function up() {
+        Schema::create(self::$TABLE, function(Blueprint $table) {
             $table->increments('id');
-            $table->enum('type', array(
+            $table->enum('type', [
                 'checking','savings','credit card','debit card'
-            ));
+            ]);
             $table->integer('last_digits');
             $table->string('type_name', 21);
             $table->unsignedInteger('account_group');
@@ -30,8 +32,8 @@ class CreateAccountTypesTable extends Migration {
      *
      * @return void
      */
-    public function down(){
-        Schema::dropIfExists('account_types');
+    public function down() {
+        Schema::dropIfExists(self::$TABLE);
     }
 
 }

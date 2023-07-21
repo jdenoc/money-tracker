@@ -2,29 +2,27 @@
 
 namespace Tests\Feature\Api\Post;
 
-use App\Account;
-use App\AccountType;
-use App\Attachment;
-use App\Entry;
-use App\Tag;
+use App\Models\Account;
+use App\Models\AccountType;
+use App\Models\Attachment;
+use App\Models\Entry;
+use App\Models\Tag;
 use App\Traits\EntryResponseKeys;
-use Illuminate\Foundation\Testing\WithFaker;
+use Brick\Money\Money;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 
 class PostEntryTest extends TestCase {
-
     use EntryResponseKeys;
-    use WithFaker;
 
-    private $_base_uri = '/api/entry';
+    private string $_base_uri = '/api/entry';
 
-    public function testCreateEntryWithoutData(){
+    public function testCreateEntryWithoutData() {
         // GIVEN
         $entry_data = [];
 
         // WHEN
-        $response = $this->json('POST', $this->_base_uri, $entry_data);
+        $response = $this->postJson($this->_base_uri, $entry_data);
 
         // THEN
         $this->assertResponseStatus($response, HttpStatus::HTTP_BAD_REQUEST);
@@ -33,11 +31,11 @@ class PostEntryTest extends TestCase {
         $this->assertFailedPostResponse($response_as_array, self::$ERROR_MSG_SAVE_ENTRY_NO_DATA);
     }
 
-    public function providerCreateEntryWithMissingData(){
+    public function providerCreateEntryWithMissingData(): array {
         // PHPUnit data providers are called before setUp() and setUpBeforeClass() are called.
         // With that piece of information, we need to call setUp() earlier than we normally would so that we can use model factories
         //$this->setUp();
-        // We can no longer call setUp() as a work around
+        // We can no longer call setUp() as a workaround
         // it caused the database to populate and in doing so we caused some tests to fail.
         // Said tests failed because they were testing the absence of database values.
         $this->initialiseApplication();
@@ -46,7 +44,7 @@ class PostEntryTest extends TestCase {
 
         $missing_data_entries = [];
         // provide data that is missing one property
-        for($i=0; $i<count($required_entry_fields); $i++){
+        for ($i=0; $i<count($required_entry_fields); $i++) {
             $entry_data = $this->generateEntryData();
             unset($entry_data[$required_entry_fields[$i]]);
             $missing_data_entries['missing ['.$required_entry_fields[$i].']'] = [
@@ -59,7 +57,7 @@ class PostEntryTest extends TestCase {
         $entry_data = $this->generateEntryData();
         $unset_keys = array_rand($required_entry_fields, mt_rand(2, count($required_entry_fields)-1));
         $removed_keys = [];
-        foreach($unset_keys as $unset_key){
+        foreach ($unset_keys as $unset_key) {
             $removed_key = $required_entry_fields[$unset_key];
             unset($entry_data[$removed_key]);
             $removed_keys[] = $removed_key;
@@ -77,11 +75,11 @@ class PostEntryTest extends TestCase {
      * @param array $entry_data
      * @param string $expected_response_error_msg
      */
-    public function testCreateEntryWithMissingData($entry_data, $expected_response_error_msg){
+    public function testCreateEntryWithMissingData($entry_data, string $expected_response_error_msg) {
         // GIVEN - $entry_data by providerCreateEntryWithMissingData
 
         // WHEN
-        $response = $this->json('POST', $this->_base_uri, $entry_data);
+        $response = $this->postJson($this->_base_uri, $entry_data);
 
         // THEN
         $this->assertResponseStatus($response, HttpStatus::HTTP_BAD_REQUEST);
@@ -90,12 +88,12 @@ class PostEntryTest extends TestCase {
         $this->assertFailedPostResponse($response_as_array, $expected_response_error_msg);
     }
 
-    public function testCreateEntryButAccountTypeDoesNotExist(){
+    public function testCreateEntryButAccountTypeDoesNotExist() {
         // GIVEN
         $entry_data = $this->generateEntryData();
 
         // WHEN
-        $response = $this->json("POST", $this->_base_uri, $entry_data);
+        $response = $this->postJson($this->_base_uri, $entry_data);
 
         // THEN
         $this->assertResponseStatus($response, HttpStatus::HTTP_BAD_REQUEST);
@@ -104,10 +102,10 @@ class PostEntryTest extends TestCase {
         $this->assertFailedPostResponse($response_as_array, self::$ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE);
     }
 
-    public function testCreateEntryAndAccountTotalUpdate(){
+    public function testCreateEntryAndAccountTotalUpdate() {
         // GIVEN
-        $generated_account = factory(Account::class)->create();
-        $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
+        $generated_account = Account::factory()->create();
+        $generated_account_type = AccountType::factory()->for($generated_account)->create();
         $generated_entry_data = $this->generateEntryData();
         $generated_entry_data['account_type_id'] = $generated_account_type->id;
 
@@ -117,13 +115,14 @@ class PostEntryTest extends TestCase {
         $this->assertResponseStatus($get_account_response1, HttpStatus::HTTP_OK);
         $get_account_response1_as_array = $get_account_response1->json();
         $this->assertArrayHasKey('total', $get_account_response1_as_array);
-        $original_account_total = $get_account_response1_as_array['total'];
+        $this->assertArrayHasKey('currency', $get_account_response1_as_array);
+        $original_account_total = Money::of($get_account_response1_as_array['total'], $get_account_response1_as_array['currency']);
         $this->assertArrayHasKey('account_types', $get_account_response1_as_array);
-        $this->assertTrue(is_array($get_account_response1_as_array['account_types']));
+        $this->assertIsArray($get_account_response1_as_array['account_types']);
         $this->assertNotEmpty($get_account_response1_as_array['account_types']);
 
         // WHEN
-        $post_response = $this->json("POST", $this->_base_uri, $generated_entry_data);
+        $post_response = $this->postJson($this->_base_uri, $generated_entry_data);
         // THEN
         $this->assertResponseStatus($post_response, HttpStatus::HTTP_CREATED);
         $post_response_as_array = $post_response->json();
@@ -151,30 +150,31 @@ class PostEntryTest extends TestCase {
         $this->assertResponseStatus($get_account_response2, HttpStatus::HTTP_OK);
         $get_account_response2_as_array = $get_account_response2->json();
         $this->assertArrayHasKey('total', $get_account_response2_as_array);
-        $new_account_total = $get_account_response2_as_array['total'];
+        $this->assertArrayHasKey('currency', $get_account_response2_as_array);
+        $new_account_total = Money::of($get_account_response2_as_array['total'], $get_account_response2_as_array['currency']);
 
-        $entry_value = (($generated_entry_data['expense']) ? -1 : 1)*$generated_entry_data['entry_value'];
-        $this->assertEquals($original_account_total+$entry_value, $new_account_total);
+        $entry_value = Money::of($generated_entry_data['expense'], $generated_account->currency)
+            ->multipliedBy(($generated_entry_data['expense'] ? -1 : 1));
+        $new_account_total->isEqualTo($original_account_total->plus($entry_value));
     }
 
-    public function testCreateEntryWithTagsButOneTagDoesNotExist(){
+    public function testCreateEntryWithTagsButOneTagDoesNotExist() {
         // GIVEN
         $generate_tag_count = 3;
-        $generated_tags = factory(Tag::class, $generate_tag_count)->create();
+        $generated_tags = Tag::factory()->count($generate_tag_count)->create();
         $generated_tag_ids = $generated_tags->pluck('id')->toArray();
-        do{
-            $non_existent_tag_id = $this->faker->randomNumber();
-        }while(in_array($non_existent_tag_id, $generated_tag_ids));
+        do {
+            $non_existent_tag_id = fake()->randomNumber();
+        } while (in_array($non_existent_tag_id, $generated_tag_ids));
 
-        $generated_account = factory(Account::class)->create();
-        $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
+        $generated_account_type = AccountType::factory()->for(Account::factory())->create();
         $generated_entry_data = $this->generateEntryData();
         $generated_entry_data['tags'] = [$non_existent_tag_id];
         $generated_entry_data['tags'] = array_merge($generated_entry_data['tags'], $generated_tag_ids);
         $generated_entry_data['account_type_id'] = $generated_account_type->id;
 
         // WHEN
-        $post_response = $this->json('POST', $this->_base_uri, $generated_entry_data);
+        $post_response = $this->postJson($this->_base_uri, $generated_entry_data);
         // THEN
         $this->assertResponseStatus($post_response, HttpStatus::HTTP_CREATED);
         $post_response_as_array = $post_response->json();
@@ -199,7 +199,7 @@ class PostEntryTest extends TestCase {
         $this->assertTrue(is_array($get_response_as_array['tags']), $failure_message);
         $this->assertNotEmpty($get_response_as_array['tags'], $failure_message);
         $this->assertFalse(in_array($non_existent_tag_id, $get_response_as_array['tags']), $failure_message);
-        foreach($get_response_as_array['tags'] as $entry_tag){
+        foreach ($get_response_as_array['tags'] as $entry_tag) {
             $this->assertContains(
                 $entry_tag['id'],
                 $generated_tag_ids,
@@ -208,15 +208,14 @@ class PostEntryTest extends TestCase {
         }
     }
 
-    public function testCreateEntryWithAttachments(){
+    public function testCreateEntryWithAttachments() {
         // GIVEN
-        $generated_attachments = factory(Attachment::class, $this->faker->randomDigitNotNull)->make();
-        $generated_account = factory(Account::class)->create();
-        $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
+        $generated_attachments = Attachment::factory()->count(fake()->randomDigitNotZero())->make();
+        $generated_account_type = AccountType::factory()->for(Account::factory())->create();
         $generated_entry_data = $this->generateEntryData();
         $generated_entry_data['account_type_id'] = $generated_account_type->id;
         $generated_entry_data['attachments'] = [];
-        foreach($generated_attachments as $generated_attachment){
+        foreach ($generated_attachments as $generated_attachment) {
             $generated_entry_data['attachments'][] = [
                 'uuid'=>$generated_attachment->uuid,
                 'name'=>$generated_attachment->name
@@ -224,7 +223,7 @@ class PostEntryTest extends TestCase {
         }
 
         // WHEN
-        $post_response = $this->json("POST", $this->_base_uri, $generated_entry_data);
+        $post_response = $this->postJson($this->_base_uri, $generated_entry_data);
 
         // THEN
         $this->assertResponseStatus($post_response, HttpStatus::HTTP_CREATED);
@@ -250,7 +249,7 @@ class PostEntryTest extends TestCase {
         $this->assertArrayHasKey('attachments', $get_response_as_array);
         $this->assertTrue(is_array($get_response_as_array['attachments']));
         $this->assertNotEmpty($get_response_as_array['attachments']);
-        foreach($get_response_as_array['attachments'] as $attachment){
+        foreach ($get_response_as_array['attachments'] as $attachment) {
             $attachment_data = [
                 'uuid'=>$attachment['uuid'],
                 'name'=>$attachment['name']
@@ -259,17 +258,16 @@ class PostEntryTest extends TestCase {
         }
     }
 
-    public function testCreateEntryWithRelatedTransferEntryId(){
+    public function testCreateEntryWithRelatedTransferEntryId() {
         // GIVEN
-        $generated_account = factory(Account::class)->create();
-        $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
+        $generated_account_type = AccountType::factory()->for(Account::factory())->create();
         $generated_entry_data = $this->generateEntryData();
         $generated_entry_data['account_type_id'] = $generated_account_type->id;
-        $generated_transfer_entry = factory(Entry::class)->create($generated_entry_data);
+        $generated_transfer_entry = Entry::factory()->create($generated_entry_data);
         $generated_entry_data['transfer_entry_id'] = $generated_transfer_entry->id;
 
         // WHEN
-        $post_response = $this->json("POST", $this->_base_uri, $generated_entry_data);
+        $post_response = $this->postJson($this->_base_uri, $generated_entry_data);
 
         // THEN
         $this->assertResponseStatus($post_response, HttpStatus::HTTP_CREATED);
@@ -296,8 +294,8 @@ class PostEntryTest extends TestCase {
         $this->assertEquals($generated_entry_data['transfer_entry_id'], $get_response_as_array['transfer_entry_id'], $failure_message);
     }
 
-    private function generateEntryData(){
-        $entry_data = factory(Entry::class)->make();
+    private function generateEntryData(): array {
+        $entry_data = Entry::factory()->make();
         return [
             'account_type_id'=>$entry_data->account_type_id,
             'confirm'=>$entry_data->confirm,
@@ -308,21 +306,13 @@ class PostEntryTest extends TestCase {
         ];
     }
 
-    /**
-     * @param array $response_as_array
-     */
-    private function assertPostResponseHasCorrectKeys($response_as_array){
+    private function assertPostResponseHasCorrectKeys(array $response_as_array): void {
         $failure_message = "POST Response is ".json_encode($response_as_array);
-        $this->assertTrue(is_array($response_as_array), $failure_message);
         $this->assertArrayHasKey(self::$RESPONSE_SAVE_KEY_ID, $response_as_array, $failure_message);
         $this->assertArrayHasKey(self::$RESPONSE_SAVE_KEY_ERROR, $response_as_array, $failure_message);
     }
 
-    /**
-     * @param array $response_as_array
-     * @param string $response_error_msg
-     */
-    private function assertFailedPostResponse($response_as_array, $response_error_msg){
+    private function assertFailedPostResponse(array $response_as_array, string $response_error_msg): void {
         $failure_message = "POST Response is ".json_encode($response_as_array);
         $this->assertEquals(self::$ERROR_ENTRY_ID, $response_as_array[self::$RESPONSE_SAVE_KEY_ID], $failure_message);
         $this->assertNotEmpty($response_as_array[self::$RESPONSE_SAVE_KEY_ERROR], $failure_message);

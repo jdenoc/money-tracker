@@ -4,25 +4,63 @@
 Sometimes, you just don't want to use Docker. That's fine. We support your decision. Here are some helpful steps for the setup.
 
 ### Application setup
+<details><summary><strong>Clone Repo</strong></summary>
+<p>
+
 ```bash
-# Clone repo
 git clone git@github.com:jdenoc/money-tracker.git --branch=master
 cd money-tracker/
-
-# setup composer packages & environment variables
-cp .env.example .env
-composer install
-php artisan app:version `git describe --always`
-
-# ***OPTIONAL***
-# If you're working with PhpStorm, be sure to run the following command.
-# It will generate Laravel Facades that PhpStorm can use.
-composer run-script ide-helper
-
-# setup npm packages
-npm install
-npm run-script build-dev
 ```
+
+</p>
+</details>
+
+<details><summary><strong>Setup .env file</strong></summary>
+<p>
+
+```bash
+cp .env.example .env
+```
+
+</p>
+</details>
+
+<details><summary><strong>Setup/Install composer packages</strong></summary>
+<p>
+
+```bash
+composer install
+```
+
+**_OPTIONAL:_**
+If you're working with PhpStorm, be sure to run the following command.
+It will generate Laravel Facades that PhpStorm can use.
+```bash
+composer run-script ide-helper
+```
+
+</p>
+</details>
+
+<details><summary><strong>Set application version</strong></summary>
+<p>
+
+```bash
+php artisan app:version `git describe --always`
+```
+
+</details>
+
+<details><summary><strong>Setup/Install npm packages</strong></summary>
+<p>
+
+```bash
+npm ci
+npm run build:dev
+```
+
+</p>
+</details>
 
 ---
 

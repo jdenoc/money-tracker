@@ -1,6 +1,13 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Api\AccountController;
+use App\Http\Controllers\Api\AccountTypeController;
+use App\Http\Controllers\Api\AttachmentController;
+use App\Http\Controllers\Api\EntryController;
+use App\Http\Controllers\Api\InstitutionController;
+use App\Http\Controllers\Api\TagController;
+use App\Http\Controllers\Api\VersionController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,67 +20,100 @@ use Illuminate\Http\Request;
 |
 */
 
-//Route::middleware('auth:api')->get('/user', function (Request $request) {
+//Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //    return $request->user();
 //});
 
 // GET /api/version
-Route::get('version', 'Api\VersionController@get')
+Route::get('version', [VersionController::class, 'get'])
     ->name('version');
-// GET /api/institutions
-Route::get('institutions', 'Api\InstitutionController@get_institutions')
-    ->name('institutions');
-// GET /api/institutes
-Route::get('institutes', 'Api\InstitutionController@get_institutions')
-    ->name('institutes');
-// GET /api/institution/{institution_id}
-Route::get('institution/{institution_id}', 'Api\InstitutionController@get_institution')
-    ->name('institution');
-// GET /api/institute/{institution_id}
-Route::get('institute/{institution_id}', 'Api\InstitutionController@get_institution')
-    ->name('institute');
+
+Route::controller(InstitutionController::class)->group(function() {
+    // /api/institutions
+    Route::get('institutions', 'get_institutions')->name('institutions');
+
+    // /api/institution/{?}
+    Route::prefix('institution/')->name('institution.')->group(function() {
+        Route::delete('{institutionId}', 'disableInstitution')->name('delete');
+        Route::get('{institution_id}', 'get_institution')->name('get');
+        Route::patch('{institutionId}', 'restoreInstitution')->name('patch');
+        Route::post('', 'create_institution')->name('post');
+        Route::put('{institution_id}', 'update_institution')->name('put');
+    });
+
+    // /api/institutes
+    Route::get('institutes', 'get_institutions')->name('institutes');
+
+    // /api/institute/{?}
+    Route::prefix('institute/')->name('institute.')->group(function() {
+        Route::delete('{institutionId}', 'disabledInstitution')->name('delete');
+        Route::get('{institution_id}', 'get_institution')->name('get');
+        Route::patch('{institutionId}', 'restoreInstitution')->name('patch');
+        Route::post('', 'create_institution')->name('post');
+        Route::put('{institution_id}', 'update_institution')->name('put');
+    });
+});
+
+Route::controller(AccountController::class)->group(function() {
+    // /api/accounts
+    Route::get('accounts', 'get_accounts')->name('accounts');
+
+    // /api/account/{?}
+    Route::prefix('account/')->name('account.')->group(function() {
+        Route::delete('{accountId}', 'disableAccount')->name('delete');
+        Route::get('{account_id}', 'get_account')->name('get');
+        Route::patch('{accountId}', 'reactivateAccount')->name('patch');
+        Route::post('', 'create_account')->name('post');
+        Route::put('{account_id}', 'update_account')->name('put');
+    });
+});
+
 // GET /api/tags
-Route::get('tags', 'Api\TagController@get_tags')
+Route::get('tags', [TagController::class, 'get_tags'])
     ->name('tags');
-// GET /api/accounts
-Route::get('accounts', 'Api\AccountController@get_accounts')
-    ->name('accounts');
-// GET /api/account/{account_id}
-Route::get('account/{account_id}', 'Api\AccountController@get_account')
-    ->name('account');
-// GET /api/account-types
-Route::get('account-types', 'Api\AccountTypeController@list_account_types')
-    ->name('account_types.get');
-// DELETE /api/account-type/{account_type_id}
-Route::delete('account-type/{account_type_id}', 'Api\AccountTypeController@disable_account_type')
-    ->name('account_type.delete');
-// GET /api/entries
-Route::get('entries', 'Api\EntryController@get_paged_entries')
-    ->name('entries.get');
-// GET /api/entries/{page}
-Route::get('entries/{page}', 'Api\EntryController@get_paged_entries')
-    ->name('entries.get.paged');
-// POST /api/entries
-Route::post('entries', 'Api\EntryController@filter_paged_entries')
-    ->name('entries.post');
-// POST /api/entries/{page}
-Route::post('entries/{page}', 'Api\EntryController@filter_paged_entries')
-    ->name('entries.post.paged');
-// POST /api/entry
-Route::post('entry', 'Api\EntryController@create_entry')
-    ->name('entry.post');
-// GET /api/entry/{entry_id}
-Route::get('entry/{entry_id}', 'Api\EntryController@get_entry')
-    ->name('entry.get');
-// PUT /api/entry/{entry_id}
-Route::put('entry/{entry_id}', 'Api\EntryController@update_entry')
-    ->name('entry.put');
-// DELETE /api/entry/{entry_id}
-Route::delete('entry/{entry_id}', 'Api\EntryController@delete_entry')
-    ->name('entry.delete');
-// POST /api/entry/transfer
-Route::post('entry/transfer', 'Api\EntryController@create_transfer_entries')
-    ->name('entry.transfer');
+// POST /api/tag
+Route::post('tag', [TagController::class, 'createTag'])
+    ->name('tag.post');
+// PUT /api/tag/{tag_id}
+Route::put('tag/{tag_id}', [TagController::class, 'updateTag'])
+    ->name('tag.put');
+
+Route::controller(AccountTypeController::class)->group(function() {
+    // /api/account-types/{?}
+    Route::prefix('account-types/')->name('account_types.')->group(function() {
+        Route::get('', 'list_account_types')->name('get');
+        Route::get('types', 'list_account_type_types')->name('types.get');
+    });
+
+    // /api/account-type/{?}
+    Route::prefix('account-type/')->name('account_type.')->group(function() {
+        Route::delete('{account_type_id}', 'disable_account_type')->name('delete');
+        Route::get('{account_type_id}', 'get_account_type')->name('get');
+        Route::patch('{account_type_id}', 'enable_account_type')->name('patch');
+        Route::post('', 'create_account_type')->name('post');
+        Route::put('{account_type_id}', 'update_account_type')->name('put');
+    });
+});
+
+Route::controller(EntryController::class)->group(function() {
+    // /api/entries/{?}
+    Route::prefix('entries')->name('entries.')->group(function() {
+        Route::get('', 'get_paged_entries')->name('get');
+        Route::get('{page}', 'get_paged_entries')->name('get.page');
+        Route::post('', 'filter_paged_entries')->name('post');
+        Route::post('{page}', 'filter_paged_entries')->name('post.page');
+    });
+
+    // /api/entry/{?}
+    Route::prefix('entry')->name('entry.')->group(function() {
+        Route::delete('{entry_id}', 'delete_entry')->name('delete');
+        Route::get('{entry_id}', 'get_entry')->name('get');
+        Route::post('', 'create_entry')->name('post');
+        Route::post('transfer', 'create_transfer_entries')->name('post.transfer');
+        Route::put('{entry_id}', 'update_entry')->name('put');
+    });
+});
+
 // DELETE /api/attachment/{uuid}
-Route::delete('attachment/{uuid}', 'Api\AttachmentController@delete_attachment')
+Route::delete('attachment/{uuid}', [AttachmentController::class, 'delete_attachment'])
     ->name('attachment.delete');

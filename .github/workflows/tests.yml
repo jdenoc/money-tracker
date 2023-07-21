@@ -7,15 +7,14 @@ on:
   push:
     branches:
       - master
+      - release/v5
   pull_request:
     branches:
       - master
+      - release/v5
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-
-env:
-  PROJECT_NAME: "moneytracker"
 
 jobs:
 
@@ -28,7 +27,7 @@ jobs:
 
       - name: Generate cache keys [docker]
         id: cache-key-docker
-        run: echo "value=cache-docker-${{ hashFiles('.docker/*') }}" >> $GITHUB_OUTPUT
+        run: echo "value=cache-docker-${{ hashFiles('docker-compose.yml', '.docker/**') }}" >> $GITHUB_OUTPUT
 
       - name: Generate cache keys [composer]
         id: cache-key-composer
@@ -40,7 +39,7 @@ jobs:
 
       - name: Generate cache keys [vue]
         id: cache-key-vue
-        run: echo "value=cache-vue-${{ hashFiles('package*.json') }}-${{ hashFiles('resources/*') }}-${{ hashFiles('webpack.mix.js') }}" >> $GITHUB_OUTPUT
+        run: echo "value=cache-vue-${{ hashFiles('package*.json', 'resources/**', 'tailwind.config.js', 'webpack.mix.js') }}" >> $GITHUB_OUTPUT
 
       - name: Generate cache paths [docker]
         id: cache-path-docker
@@ -58,21 +57,28 @@ jobs:
         id: cache-path-vue
         run: |
           echo "value<<EOF" >> $GITHUB_OUTPUT
-          echo "public/vue" >> $GITHUB_OUTPUT 
-          echo "public/mix-manifest.json" >> $GITHUB_OUTPUT 
+          echo "public/dist" >> $GITHUB_OUTPUT
+          echo "public/mix-manifest.json" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Generate failure content paths for artifact upload
         id: failure-artifact-paths
         run: |
           echo "value<<EOF" >> $GITHUB_OUTPUT
-          echo "storage/app/test/downloads/*.csv" >> $GITHUB_OUTPUT
-          echo "storage/logs/*.log" >> $GITHUB_OUTPUT
-          echo "tests/Browser/console/*.log" >> $GITHUB_OUTPUT
-          echo "tests/Browser/db-dump/*.sql" >> $GITHUB_OUTPUT
-          echo "tests/Browser/screenshots/" >> $GITHUB_OUTPUT
-          echo "!tests/Browser/screenshots/.gitignore" >> $GITHUB_OUTPUT
+          echo ".docker/logs/*.json" >> $GITHUB_OUTPUT
+          echo ".docker/logs/*.log" >> $GITHUB_OUTPUT
+          echo ".docker/logs/application/*.log" >> $GITHUB_OUTPUT
+          echo ".docker/logs/database/*.log" >> $GITHUB_OUTPUT
+          echo "database/snapshots/*.sql" >> $GITHUB_OUTPUT
+          echo "storage/tests/downloads/*.csv" >> $GITHUB_OUTPUT
+          echo "storage/tests/dusk/console/*.log" >> $GITHUB_OUTPUT
+          echo "storage/tests/dusk/screenshots/*.png" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Generate image tag [composer]
+        id: image-tag-composer
+        run: echo "value=composer:money-tracker" >> $GITHUB_OUTPUT
+
     outputs:
       cache-key-docker: ${{ steps.cache-key-docker.outputs.value }}
       cache-key-composer: ${{ steps.cache-key-composer.outputs.value }}
@@ -83,31 +89,38 @@ jobs:
       cache-path-npm: ${{ steps.cache-path-npm.outputs.value }}
       cache-path-vue: ${{ steps.cache-path-vue.outputs.value }}
       failure-upload-paths: ${{ steps.failure-artifact-paths.outputs.value }}
+      image-tag-composer: ${{ steps.image-tag-composer.outputs.value }}
 
   build:
     needs:
       - pre-build
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Cache Docker images
-        id: docker-image-cache
+      - name: "Cache: Docker images"
+        id: cache-docker-image
         uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-docker }}
           key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
       - name: Docker build
+        id: build-docker
         uses: ./.github/actions/setup-docker
-        if: steps.docker-image-cache.outputs.cache-hit != 'true'
+        if: steps.cache-docker-image.outputs.cache-hit != 'true'
         with:
           image-path: ${{ needs.pre-build.outputs.cache-path-docker }}
+          image-tag-composer: ${{ needs.pre-build.outputs.image-tag-composer }}
 
-      - name: Cache Composer packages
-        id: composer-cache
+      - name: Load composer docker image
+        run: docker load -i ${{ needs.pre-build.outputs.cache-path-docker }}/${{ needs.pre-build.outputs.image-tag-composer }}.tar.gz
+        if: steps.cache-docker-image.outputs.cache-hit == 'true'
+
+      - name: "Cache: Composer packages"
+        id: cache-composer
         uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-composer }}
@@ -115,13 +128,13 @@ jobs:
 
       - name: Composer setup
         uses: ./.github/actions/setup-composer
-        if: steps.composer-cache.outputs.cache-hit != 'true'
+        if: steps.cache-composer.outputs.cache-hit != 'true'
         with:
           github-token: ${{ github.token }}
-          php-version: 7.3
+          php-version: "8.0.22"
 
-      - name: Cache npm packages
-        id: npm-cache
+      - name: "Cache: npm packages"
+        id: cache-npm
         uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-npm }}
@@ -129,10 +142,10 @@ jobs:
 
       - name: npm setup
         uses: ./.github/actions/setup-npm
-        if: steps.npm-cache.outputs.cache-hit != 'true'
+        if: steps.cache-npm.outputs.cache-hit != 'true'
 
-      - name: Cache vue
-        id: vue-cache
+      - name: "Cache: vue"
+        id: cache-vue
         uses: actions/cache@v3
         with:
           path: ${{ needs.pre-build.outputs.cache-path-vue }}
@@ -140,7 +153,19 @@ jobs:
 
       - name: Build Vue
         uses: ./.github/actions/build-vue
-        if: steps.vue-cache.outputs.cache-hit != 'true'
+        if: steps.cache-vue.outputs.cache-hit != 'true'
+
+      - name: "Linter: PHP"
+        id: linter-php
+        run: .docker/scripts/composer.sh run-script lint:php
+
+      - name: "Linter: JS"
+        id: linter-js
+        run: .docker/scripts/npm.sh run lint:js
+
+      - name: "Linter: Style"
+        id: linter-style
+        run: .docker/scripts/npm.sh run lint:style
 
   tests-unit:
     needs:
@@ -179,57 +204,56 @@ jobs:
       - uses: ./.github/actions/app-init
         with:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
-      - name: unit tests - PUT API endpoints
-        run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-put
 
-      - uses: ./.github/actions/app-init
-        with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
-      - name: unit tests - GET API endpoints
-        run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-get
-
-      - uses: ./.github/actions/app-init
-        with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
-      - name: unit tests - POST API endpoints
-        run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-post
-
-      - uses: ./.github/actions/app-init
-        with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
+      - uses: ./.github/actions/app-run
       - name: unit tests - DELETE API endpoints
-        run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite api-delete
+        run: .docker/scripts/artisan.sh test -v --testsuite api-delete
 
-      - uses: ./.github/actions/app-init
+      - uses: ./.github/actions/app-run
+      - name: unit tests - GET API endpoints
+        run: .docker/scripts/artisan.sh test -v --testsuite api-get
+
+      - uses: ./.github/actions/app-run
+      - name: unit tests - PATCH API endpoints
+        run: .docker/scripts/artisan.sh test -v --testsuite api-patch
+
+      - uses: ./.github/actions/app-run
+      - name: unit tests - POST API endpoints
+        run: .docker/scripts/artisan.sh test -v --testsuite api-post
+
+      - uses: ./.github/actions/app-run
+      - name: unit tests - PUT API endpoints
+        run: .docker/scripts/artisan.sh test -v --testsuite api-put
+
+      - uses: ./.github/actions/app-run
         with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
           is-cacheless: true  # artisan app:version testing doesn't work well when configs have been cached
       - name: unit tests - console
-        run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite console
+        run: .docker/scripts/artisan.sh test -v --testsuite console
 
-      - uses: ./.github/actions/app-init
+      - uses: ./.github/actions/app-run
         with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
           is-cacheless: true  # testing the /export endpoint doesn't work well when configs have been cached
       - name: unit tests - web
-        run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite web
+        run: .docker/scripts/artisan.sh test -v --testsuite web
 
-      - uses: ./.github/actions/app-init
-        with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
+      - uses: ./.github/actions/app-run
       - name: unit tests - unit (generic)
-        run: docker container exec -t app.money-tracker vendor/bin/phpunit --testsuite unit
+        run: .docker/scripts/artisan.sh test -v --testsuite unit
 
       - name: Failure docker inspection
         uses: ./.github/actions/failure-docker-inspect
         if: failure()
+
+      - uses: ./.github/actions/app-stop
+        if: always()
 
       - name: Failure upload
         uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: ${{ github.sha }}-unit
-          path: storage/logs/*.log
+          path: ${{ needs.pre-build.outputs.failure-upload-paths }}
           retention-days: 10
 
   tests-e2e-demo:
@@ -275,17 +299,25 @@ jobs:
       - uses: ./.github/actions/app-init
         with:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
-      - run: .docker/cmd/artisan.sh dusk --group demo --stop-on-failure
+
+      - uses: ./.github/actions/app-run
+      - run: .docker/scripts/artisan.sh dusk --group demo-1 --stop-on-failure
+
+      - uses: ./.github/actions/app-run
+      - run: .docker/scripts/artisan.sh dusk --group demo-2 --stop-on-failure
 
       - name: Failure docker inspection
         uses: ./.github/actions/failure-docker-inspect
         if: failure()
 
+      - uses: ./.github/actions/app-stop
+        if: always()
+
       - name: Failure upload
         uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-demo
           path: ${{ needs.pre-build.outputs.failure-upload-paths }}
           retention-days: 10
 
@@ -332,17 +364,25 @@ jobs:
       - uses: ./.github/actions/app-init
         with:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
-      - run: .docker/cmd/artisan.sh dusk --group notifications-1 --stop-on-failure
+
+      - uses: ./.github/actions/app-run
+      - run: .docker/scripts/artisan.sh dusk --group notifications-1 --stop-on-failure
+
+      - uses: ./.github/actions/app-run
+      - run: .docker/scripts/artisan.sh dusk --group notifications-2 --stop-on-failure
 
       - name: Failure docker inspection
         uses: ./.github/actions/failure-docker-inspect
         if: failure()
 
+      - uses: ./.github/actions/app-stop
+        if: always()
+
       - name: Failure upload
         uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-notifications
           path: ${{ needs.pre-build.outputs.failure-upload-paths }}
           retention-days: 10
 
@@ -389,32 +429,34 @@ jobs:
       - uses: ./.github/actions/app-init
         with:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
-      - run: .docker/cmd/artisan.sh dusk --group navigation-1 --stop-on-failure
 
-      - uses: ./.github/actions/app-init
-        with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
-      - run: .docker/cmd/artisan.sh dusk --group navigation-2 --stop-on-failure
+      - uses: ./.github/actions/app-run
+      - run: .docker/scripts/artisan.sh dusk --group navigation-1 --stop-on-failure
 
-      - uses: ./.github/actions/app-init
-        with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
-      - run: .docker/cmd/artisan.sh dusk --group navigation-3 --stop-on-failure
+      - uses: ./.github/actions/app-run
+      - run: .docker/scripts/artisan.sh dusk --group navigation-2 --stop-on-failure
 
-      - uses: ./.github/actions/app-init
-        with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
-      - run: .docker/cmd/artisan.sh dusk --group navigation-4 --stop-on-failure
+      - uses: ./.github/actions/app-run
+      - run: .docker/scripts/artisan.sh dusk --group navigation-3 --stop-on-failure
+
+      - uses: ./.github/actions/app-run
+      - run: .docker/scripts/artisan.sh dusk --group navigation-4 --stop-on-failure
+
+      - uses: ./.github/actions/app-run
+      - run: .docker/scripts/artisan.sh dusk --group navigation-5 --stop-on-failure
 
       - name: Failure docker inspection
         uses: ./.github/actions/failure-docker-inspect
         if: failure()
 
+      - uses: ./.github/actions/app-stop
+        if: always()
+
       - name: Failure upload
         uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-nav
           path: ${{ needs.pre-build.outputs.failure-upload-paths }}
           retention-days: 10
 
@@ -461,27 +503,31 @@ jobs:
       - uses: ./.github/actions/app-init
         with:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
-      - run: .docker/cmd/artisan.sh dusk --group entry-modal-1 --stop-on-failure
 
-      - uses: ./.github/actions/app-init
-        with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
-      - run: .docker/cmd/artisan.sh dusk --group entry-modal-2 --stop-on-failure
+      - uses: ./.github/actions/app-run
+      - run: .docker/scripts/artisan.sh dusk --group entry-modal-1 --stop-on-failure
 
-      - uses: ./.github/actions/app-init
-        with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
-      - run: .docker/cmd/artisan.sh dusk --group entry-modal-3 --stop-on-failure
+      - uses: ./.github/actions/app-run
+      - run: .docker/scripts/artisan.sh dusk --group entry-modal-2 --stop-on-failure
+
+      - uses: ./.github/actions/app-run
+      - run: .docker/scripts/artisan.sh dusk --group entry-modal-3 --stop-on-failure
+
+      - uses: ./.github/actions/app-run
+      - run: .docker/scripts/artisan.sh dusk --group entry-modal-4 --stop-on-failure
 
       - name: Failure docker inspection
         uses: ./.github/actions/failure-docker-inspect
         if: failure()
 
+      - uses: ./.github/actions/app-stop
+        if: always()
+
       - name: Failure upload
         uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-entry-modal
           path: ${{ needs.pre-build.outputs.failure-upload-paths }}
           retention-days: 10
 
@@ -528,22 +574,25 @@ jobs:
       - uses: ./.github/actions/app-init
         with:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
-      - run: .docker/cmd/artisan.sh dusk --group transfer-modal-1 --stop-on-failure
 
-      - uses: ./.github/actions/app-init
-        with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
-      - run: .docker/cmd/artisan.sh dusk --group transfer-modal-2 --stop-on-failure
+      - uses: ./.github/actions/app-run
+      - run: .docker/scripts/artisan.sh dusk --group transfer-modal-1 --stop-on-failure
+
+      - uses: ./.github/actions/app-run
+      - run: .docker/scripts/artisan.sh dusk --group transfer-modal-2 --stop-on-failure
 
       - name: Failure docker inspection
         uses: ./.github/actions/failure-docker-inspect
         if: failure()
 
+      - uses: ./.github/actions/app-stop
+        if: always()
+
       - name: Failure upload
         uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-transfer-modal
           path: ${{ needs.pre-build.outputs.failure-upload-paths }}
           retention-days: 10
 
@@ -590,36 +639,35 @@ jobs:
       - uses: ./.github/actions/app-init
         with:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
-      - run: .docker/cmd/artisan.sh dusk --group filter-modal-1 --stop-on-failure
 
-      - uses: ./.github/actions/app-init
-        with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
-      - run: .docker/cmd/artisan.sh dusk --group filter-modal-2 --stop-on-failure
+      - uses: ./.github/actions/app-run
+      - run: .docker/scripts/artisan.sh dusk --group filter-modal-1 --stop-on-failure
 
-      - uses: ./.github/actions/app-init
-        with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
-      - run: .docker/cmd/artisan.sh dusk --group filter-modal-export-1 --stop-on-failure
+      - uses: ./.github/actions/app-run
+      - run: .docker/scripts/artisan.sh dusk --group filter-modal-2 --stop-on-failure
 
-      - uses: ./.github/actions/app-init
-        with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
-      - run: .docker/cmd/artisan.sh dusk --group filter-modal-export-2 --stop-on-failure
+      - uses: ./.github/actions/app-run
+      - run: .docker/scripts/artisan.sh dusk --group filter-modal-export-1 --stop-on-failure
+
+      - uses: ./.github/actions/app-run
+      - run: .docker/scripts/artisan.sh dusk --group filter-modal-export-2 --stop-on-failure
 
       - name: Failure docker inspection
         uses: ./.github/actions/failure-docker-inspect
         if: failure()
 
+      - uses: ./.github/actions/app-stop
+        if: always()
+
       - name: Failure upload
         uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-filter-modal
           path: ${{ needs.pre-build.outputs.failure-upload-paths }}
           retention-days: 10
 
-  tests-e2e-stats-summary:
+  tests-e2e-stats:
     needs:
       - pre-build
       - build
@@ -662,21 +710,41 @@ jobs:
       - uses: ./.github/actions/app-init
         with:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
-      - run: .docker/cmd/artisan.sh dusk --group stats-summary --stop-on-failure
+
+      - uses: ./.github/actions/app-run
+      - run: .docker/scripts/artisan.sh dusk --group stats-summary --stop-on-failure
+
+      - uses: ./.github/actions/app-run
+      - run: .docker/scripts/artisan.sh dusk --group stats-trending --stop-on-failure
+
+      - uses: ./.github/actions/app-run
+      - run: .docker/scripts/artisan.sh dusk --group stats-distribution-1 --stop-on-failure
+
+      - uses: ./.github/actions/app-run
+      - run: .docker/scripts/artisan.sh dusk --group stats-distribution-2 --stop-on-failure
+
+      - uses: ./.github/actions/app-run
+      - run: .docker/scripts/artisan.sh dusk --group stats-tags-1 --stop-on-failure
+
+      - uses: ./.github/actions/app-run
+      - run: .docker/scripts/artisan.sh dusk --group stats-tags-2 --stop-on-failure
 
       - name: Failure docker inspection
         uses: ./.github/actions/failure-docker-inspect
         if: failure()
 
+      - uses: ./.github/actions/app-stop
+        if: always()
+
       - name: Failure upload
         uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-stats
           path: ${{ needs.pre-build.outputs.failure-upload-paths }}
           retention-days: 10
 
-  tests-e2e-stats-trending:
+  tests-e2e-settings:
     needs:
       - pre-build
       - build
@@ -719,141 +787,31 @@ jobs:
       - uses: ./.github/actions/app-init
         with:
           docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
-      - run: .docker/cmd/artisan.sh dusk --group stats-trending --stop-on-failure
+
+      - uses: ./.github/actions/app-run
+      - run: .docker/scripts/artisan.sh dusk --group settings-institutions --stop-on-failure
+
+      - uses: ./.github/actions/app-run
+      - run: .docker/scripts/artisan.sh dusk --group settings-accounts --stop-on-failure
+
+      - uses: ./.github/actions/app-run
+      - run: .docker/scripts/artisan.sh dusk --group settings-account-types --stop-on-failure
+
+      - uses: ./.github/actions/app-run
+      - run: .docker/scripts/artisan.sh dusk --group settings-tags --stop-on-failure
 
       - name: Failure docker inspection
         uses: ./.github/actions/failure-docker-inspect
         if: failure()
 
-      - name: Failure upload
-        uses: actions/upload-artifact@v3
-        if: failure()
-        with:
-          name: ${{ github.sha }}-e2e
-          path: ${{ needs.pre-build.outputs.failure-upload-paths }}
-          retention-days: 10
-
-  tests-e2e-stats-distribution:
-    needs:
-      - pre-build
-      - build
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      # retrieve cache
-      - name: Get Cached Docker images
-        id: docker-image-cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ needs.pre-build.outputs.cache-path-docker }}
-          key: ${{ needs.pre-build.outputs.cache-key-docker }}
-
-      - name: Get Cached Composer packages
-        id: composer-cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ needs.pre-build.outputs.cache-path-composer }}
-          key: ${{ needs.pre-build.outputs.cache-key-composer }}
-
-      - name: Get Cached npm packages
-        id: npm-cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ needs.pre-build.outputs.cache-path-npm }}
-          key: ${{ needs.pre-build.outputs.cache-key-npm }}
-
-      - name: Get Cached vue
-        id: vue-cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ needs.pre-build.outputs.cache-path-vue }}
-          key: ${{ needs.pre-build.outputs.cache-key-vue }}
-
-      # end-2-end tests
-      - uses: ./.github/actions/app-init
-        with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
-      - run: .docker/cmd/artisan.sh dusk --group stats-distribution-1 --stop-on-failure
-
-      - uses: ./.github/actions/app-init
-        with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
-      - run: .docker/cmd/artisan.sh dusk --group stats-distribution-2 --stop-on-failure
-
-      - name: Failure docker inspection
-        uses: ./.github/actions/failure-docker-inspect
-        if: failure()
+      - uses: ./.github/actions/app-stop
+        if: always()
 
       - name: Failure upload
         uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: ${{ github.sha }}-e2e
-          path: ${{ needs.pre-build.outputs.failure-upload-paths }}
-          retention-days: 10
-
-  tests-e2e-stats-tags:
-    needs:
-      - pre-build
-      - build
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      # retrieve cache
-      - name: Get Cached Docker images
-        id: docker-image-cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ needs.pre-build.outputs.cache-path-docker }}
-          key: ${{ needs.pre-build.outputs.cache-key-docker }}
-
-      - name: Get Cached Composer packages
-        id: composer-cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ needs.pre-build.outputs.cache-path-composer }}
-          key: ${{ needs.pre-build.outputs.cache-key-composer }}
-
-      - name: Get Cached npm packages
-        id: npm-cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ needs.pre-build.outputs.cache-path-npm }}
-          key: ${{ needs.pre-build.outputs.cache-key-npm }}
-
-      - name: Get Cached vue
-        id: vue-cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ needs.pre-build.outputs.cache-path-vue }}
-          key: ${{ needs.pre-build.outputs.cache-key-vue }}
-
-      # end-2-end tests
-      - uses: ./.github/actions/app-init
-        with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
-      - run: .docker/cmd/artisan.sh dusk --group stats-tags-1 --stop-on-failure
-
-      - uses: ./.github/actions/app-init
-        with:
-          docker-image-directory: ${{ needs.pre-build.outputs.cache-path-docker }}
-      - run: .docker/cmd/artisan.sh dusk --group stats-tags-2 --stop-on-failure
-
-      - name: Failure docker inspection
-        uses: ./.github/actions/failure-docker-inspect
-        if: failure()
-
-      - name: Failure upload
-        uses: actions/upload-artifact@v3
-        if: failure()
-        with:
-          name: ${{ github.sha }}-e2e
+          name: ${{ github.sha }}-e2e-settings
           path: ${{ needs.pre-build.outputs.failure-upload-paths }}
           retention-days: 10
 
@@ -867,12 +825,10 @@ jobs:
       - tests-e2e-entry-modal
       - tests-e2e-transfer-modal
       - tests-e2e-filter-modal
-      - tests-e2e-stats-summary
-      - tests-e2e-stats-trending
-      - tests-e2e-stats-distribution
-      - tests-e2e-stats-tags
+      - tests-e2e-stats
+      - tests-e2e-settings
     if: ${{ always() }} # You always want to be notified: success, failure, or cancelled
-    timeout-minutes: 60
+    timeout-minutes: 15
     steps:
       - name: discord
         uses: nobrayner/discord-webhook@v1

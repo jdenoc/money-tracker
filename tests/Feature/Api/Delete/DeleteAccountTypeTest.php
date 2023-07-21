@@ -2,29 +2,25 @@
 
 namespace Tests\Feature\Api\Delete;
 
-use App\Account;
-use App\AccountType;
-use Illuminate\Foundation\Testing\WithFaker;
+use App\Models\Account;
+use App\Models\AccountType;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\TestCase;
 
 class DeleteAccountTypeTest extends TestCase {
 
-    use WithFaker;
+    private const ACCOUNT_TYPE_URI = '/api/account-type/%d';
 
-    private $_disable_account_type_uri = '/api/account-type/';
-    private $_get_account_uri = '/api/account/';
-
-    public function testDisableAccountTypeThatDoesNotExist(){
+    public function testDisableAccountTypeThatDoesNotExist() {
         // GIVEN - account_type does not exist
-        $account_type_id = $this->faker->randomNumber();
+        $account_type_id = fake()->randomNumber();
 
         // WHEN
-        $response = $this->delete($this->_disable_account_type_uri.$account_type_id);
+        $response = $this->delete(sprintf(self::ACCOUNT_TYPE_URI, $account_type_id));
 
         // THEN
         // confirm there are no database records
-        $account_type_collection = AccountType::all();
+        $account_type_collection = AccountType::withTrashed()->get();
         $this->assertTrue($account_type_collection->isEmpty(), $account_type_collection->toJson());
 
         // confirm we got the right response
@@ -32,46 +28,36 @@ class DeleteAccountTypeTest extends TestCase {
         $this->assertEmpty($response->getContent());
     }
 
-    public function testDisabledAccountType(){
+    public function testDisabledAccountType() {
         // GIVEN
-        $generated_account = factory(Account::class)->create();
-        $generated_account_type = factory(AccountType::class)->create(['account_id'=>$generated_account->id]);
+        $generated_account_type = AccountType::factory()->create();
 
         // WHEN
-        $account_response1 = $this->get($this->_get_account_uri.$generated_account->id);    // make this call to confirm account type is NOT disabled
-        $disabled_response = $this->delete($this->_disable_account_type_uri.$generated_account_type->id);
-        $account_response2 = $this->get($this->_get_account_uri.$generated_account->id);    // make this call to confirm account type is disabled
+        $get_response1 = $this->get(sprintf(self::ACCOUNT_TYPE_URI, $generated_account_type->id));
+        $disabled_response = $this->delete(sprintf(self::ACCOUNT_TYPE_URI, $generated_account_type->id));
+        $get_response2 = $this->get(sprintf(self::ACCOUNT_TYPE_URI, $generated_account_type->id));
 
         // THEN
-        $this->assertResponseStatus($account_response1, HttpStatus::HTTP_OK);
+        $this->assertResponseStatus($get_response1, HttpStatus::HTTP_OK);
         $this->assertResponseStatus($disabled_response, HttpStatus::HTTP_NO_CONTENT);
-        $this->assertResponseStatus($account_response2, HttpStatus::HTTP_OK);
+        $this->assertResponseStatus($get_response2, HttpStatus::HTTP_OK);
 
-        $account_response1_as_array = $account_response1->json();
-        $this->assertNotEmpty($account_response1_as_array, $account_response1->getContent());
-        $this->assertArrayHasKey('account_types', $account_response1_as_array, $account_response1->getContent());
-        $this->assertTrue(is_array($account_response1_as_array['account_types']), $account_response1->getContent());
-        $this->assertNotEmpty($account_response1_as_array['account_types'], $account_response1->getContent());
-        $this->assertCount(1, $account_response1_as_array['account_types'], "We only created 1 account_type, why has this happened\n".$account_response1->getContent());
-        foreach($account_response1_as_array['account_types'] as $account_type_in_response){
-            $this->assertTrue(is_array($account_type_in_response), $account_response1->getContent());
-            $this->assertArrayHasKey('disabled', $account_type_in_response, $account_response1->getContent());
-            $this->assertFalse($account_type_in_response['disabled'], $account_response1->getContent());
-        }
+        $get_response1_as_array = $get_response1->json();
+        $error_message = $get_response1->getContent();
+        $this->assertNotEmpty($get_response1_as_array, $error_message);
+        $this->assertArrayHasKey('active', $get_response1_as_array, $error_message);
+        $this->assertTrue($get_response1_as_array['active'], $error_message);
+        $this->assertArrayHasKey('disabled_stamp', $get_response1_as_array, $error_message);
+        $this->assertNull($get_response1_as_array['disabled_stamp'], $error_message);
 
         $this->assertEmpty($disabled_response->getContent());
 
-        $account_response2_as_array = $account_response2->json();
-        $this->assertNotEmpty($account_response2_as_array, $account_response2->getContent());
-        $this->assertArrayHasKey('account_types', $account_response2_as_array, $account_response2->getContent());
-        $this->assertTrue(is_array($account_response2_as_array['account_types']), $account_response2->getContent());
-        $this->assertNotEmpty($account_response2_as_array['account_types'], $account_response2->getContent());
-        $this->assertCount(1, $account_response2_as_array['account_types'], "We only created 1 account_type, why has this happened\n".$account_response2->getContent());
-        foreach($account_response2_as_array['account_types'] as $account_type_in_response){
-            $this->assertTrue(is_array($account_type_in_response), $account_response2->getContent());
-            $this->assertArrayHasKey('disabled', $account_type_in_response, $account_response2->getContent());
-            $this->assertTrue($account_type_in_response['disabled'], $account_response2->getContent());
-        }
+        $get_response2_as_array = $get_response2->json();
+        $this->assertNotEmpty($get_response2_as_array, $get_response2->getContent());
+        $this->assertArrayHasKey('active', $get_response2_as_array, $error_message);
+        $this->assertFalse($get_response2_as_array['active'], $error_message);
+        $this->assertArrayHasKey('disabled_stamp', $get_response2_as_array, $error_message);
+        $this->assertNotNull($get_response2_as_array['disabled_stamp'], $error_message);
     }
 
 }

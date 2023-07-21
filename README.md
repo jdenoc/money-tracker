@@ -1,10 +1,10 @@
-# Money Tracker  
+# Money Tracker
 ![Github Actions](https://github.com/jdenoc/money-tracker/workflows/Money-tracker%20CI/badge.svg?branch=master)
 [![Latest Release](https://img.shields.io/github/release/jdenoc/money-tracker.svg?style=flat-square)](https://github.com/jdenoc/money-tracker/releases/latest)
 [![License](https://img.shields.io/github/license/jdenoc/laravel-app-version?style=flat-square)](LICENSE)
 
 ## About
-Money Tracker is a web portal dedicated to help record and manage income & expenses, built on the [Laravel framework](https://laravel.com/docs/6.x).
+Money Tracker is a web portal dedicated to help record and manage income & expenses, built on the [Laravel framework](https://laravel.com/docs/9.x).
 
 ## Topics
 - [Requirements](#requirements)
@@ -25,6 +25,7 @@ Money Tracker is a web portal dedicated to help record and manage income & expen
   - [GitHub Actions](docs/TESTING.md#github-actions)
   - [Docker](docs/TESTING.md#docker)
   - [Local/Dev](docs/TESTING.md#localdev)
+- [Monitoring](docs/MONITORING.md)
 - [Benchmarking](docs/BENCHMARKING.md)
 - [Features/Test Cases](docs/FEATURES.md)
 - [Other Documentation](#other-documentation)
@@ -32,20 +33,20 @@ Money Tracker is a web portal dedicated to help record and manage income & expen
 ---
 
 ## Requirements
-- NodeJS 12
+- NodeJS 18
   ```bash
   # confirm installation and version of NodeJS
   node -v
   
   # confirm installation and version of npm
   npm --version
-  # should be 6
+  # should be 9.x
   
   # confirm installation and version of npx
   npx --version
-  # should be 6
+  # should be 9.x
   ```
-- PHP 7.3
+- PHP 8.0
   ```bash
   # confirm installation and version of PHP
   php -v
@@ -56,15 +57,20 @@ Money Tracker is a web portal dedicated to help record and manage income & expen
   Extensions should include:
   - BCMath PHP Extension
   - Ctype PHP Extension
+  - DOM PHP Extension
   - Fileinfo PHP Extension
+  - IgBinary PHP Extension
   - JSON PHP Extension
+  - Memcached PHP Extension
   - Mbstring PHP Extension
   - OpenSSL PHP Extension
+  - PCNTL PHP Extension
+  - PCRE PHP Extension
   - PDO PHP Extension
   - PDO Mysql PHP Extension
   - Tokenizer PHP Extension
   - XML PHP Extension
-- Composer 2.1
+- Composer 2.2
   ```bash
   # confirm installation and version of PHP
   composer --version
@@ -73,15 +79,20 @@ Money Tracker is a web portal dedicated to help record and manage income & expen
 ---
 
 ## Other Documentation
-- [Laravel](https://laravel.com/docs/6.x/)
+- [Laravel](https://laravel.com/docs/9.x/)
+  - [Dusk](https://laravel.com/docs/9.x/dusk)
+- [Spatie](https://spatie.be/open-source?search=&sort=-downloads)
+  - [laravel-db-snapshots](https://github.com/spatie/laravel-db-snapshots)
+  - [laravel-health](https://github.com/spatie/laravel-health)
+  - [laravel-ignition](https://github.com/spatie/laravel-ignition)
+  - [laravel-schedule-monitor](https://github.com/spatie/laravel-schedule-monitor)
 - [VueJS](https://vuejs.org/v2/guide/)
-- [Bulma](https://bulma.io/documentation/)
+- [TailwindCSS](https://tailwindcss.com/)
 - [ChartJs](https://www.chartjs.org/)
 - [Docker](https://docs.docker.com/)
 - [Composer](https://getcomposer.org/doc/)
-- [npm](https://docs.npmjs.com/cli/v6)
-- [PhpUnit](https://phpunit.readthedocs.io/en/8.5/)
-- [Laravel Dusk](https://laravel.com/docs/6.x/dusk)
+- [npm](https://docs.npmjs.com/cli/v9)
+- [PhpUnit](https://phpunit.readthedocs.io/en/9.5/)
 - [GitHub Actions](https://docs.github.com/en/actions)
 - [git](https://git-scm.com/doc)
 - [F.A.Q.](docs/FAQ.md)

@@ -6,11 +6,11 @@ use App\Http\Controllers\Controller;
 
 class HomeController extends Controller {
 
-    public function display(){
+    public function display() {
         return view('home');
     }
 
-    public function laravelWelcome(){
+    public function laravelWelcome() {
         return view('laravel-welcome');
     }
 

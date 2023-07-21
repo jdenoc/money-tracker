@@ -1,10 +1,16 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 class RenameEntriesColumnStamp extends Migration {
+
+    private static $TABLE = 'entries';
+    private static $COLUMN_CREATE = 'create_stamp';
+    private static $COLUMN_MODIFIED = 'modified_stamp';
+    private static $COLUMN_STAMP = 'stamp';
 
     /**
      * Add column entries.create_stamp
@@ -13,23 +19,19 @@ class RenameEntriesColumnStamp extends Migration {
      *
      * @return void
      */
-    public function up(){
+    public function up() {
         // add a new column
-        Schema::table('entries', function (Blueprint $table) {
-            $table->timestamp('create_stamp')->nullable();
-            $table->timestamp('modified_stamp')->useCurrent();
+        Schema::table(self::$TABLE, function(Blueprint $table) {
+            $table->timestamp(self::$COLUMN_CREATE)->nullable();
+            $table->timestamp(self::$COLUMN_MODIFIED)->useCurrent();
         });
 
         // move data from old column to new column
-        $entries = App\Entry::all('id');
-        foreach($entries as $entry){
-            $entry_stamp = DB::table('entries')->select('stamp')->where('id', $entry->id)->get();
-            DB::table('entries')->where('id', $entry->id)->update(['create_stamp'=>$entry_stamp[0]->stamp]);
-        }
+        DB::table(self::$TABLE)->update([self::$COLUMN_CREATE=>DB::raw(self::$COLUMN_STAMP)]);
 
         // delete old column
-        Schema::table('entries', function (Blueprint $table) {
-            $table->dropColumn('stamp');
+        Schema::table(self::$TABLE, function(Blueprint $table) {
+            $table->dropColumn(self::$COLUMN_STAMP);
         });
     }
 
@@ -38,23 +40,19 @@ class RenameEntriesColumnStamp extends Migration {
      *
      * @return void
      */
-    public function down(){
+    public function down() {
         // add a new column
-        Schema::table('entries', function (Blueprint $table) {
-            $table->timestamp('stamp')->default(DB::raw("CURRENT_TIMESTAMP"));
+        Schema::table(self::$TABLE, function(Blueprint $table) {
+            $table->timestamp(self::$COLUMN_STAMP)->useCurrent();
         });
 
         // move data from old column to new column
-        $entries = App\Entry::all('id');
-        foreach($entries as $entry){
-            $entry_stamp = DB::table('entries')->select('create_stamp')->where('id', $entry->id)->get();
-            DB::table('entries')->where('id', $entry->id)->update(['stamp'=>$entry_stamp[0]->create_stamp]);
-        }
+        DB::table(self::$TABLE)->update([self::$COLUMN_STAMP=>DB::raw(self::$COLUMN_CREATE)]);
 
         // delete old column
-        Schema::table('entries', function (Blueprint $table) {
-            $table->dropColumn('modified_stamp');
-            $table->dropColumn('create_stamp');
+        Schema::table(self::$TABLE, function(Blueprint $table) {
+            $table->dropColumn(self::$COLUMN_CREATE);
+            $table->dropColumn(self::$COLUMN_MODIFIED);
         });
     }
 

@@ -12,11 +12,11 @@ class QueryLoggingServiceProvider extends ServiceProvider {
      *
      * @return void
      */
-    public function boot(){
-        if(config("app.debug", false)){
+    public function boot() {
+        if (config("app.debug", false)) {
             // log queries.
             // solution found here: https://scotch.io/tutorials/debugging-queries-in-laravel#toc-listening-for-query-events
-            DB::listen(function($query){
+            DB::listen(function($query) {
                 $query_string = str_replace('?', '%s', $query->sql);
                 $log_message  = '[MYSQL] ';
                 $log_message .= vsprintf($query_string, $query->bindings).';';
@@ -31,7 +31,7 @@ class QueryLoggingServiceProvider extends ServiceProvider {
      *
      * @return void
      */
-    public function register(){
+    public function register() {
         //
     }
 

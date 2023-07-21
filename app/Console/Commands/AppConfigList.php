@@ -16,8 +16,8 @@ class AppConfigList extends Command {
      * @var string
      */
     protected $signature = 'app:config-list
-                            {--only-env : only output environment variables and values}
-                            {--only-config : only output config variables and values}';
+                            {--'.self::OPTION_ONLY_ENV.' : only output environment variables and values}
+                            {--'.self::OPTION_ONLY_CONFIG.' : only output config variables and values}';
 
     /**
      * The console command description.
@@ -29,10 +29,10 @@ class AppConfigList extends Command {
     /**
      * Execute the console command.
      */
-    public function handle(){
+    public function handle(): int {
         $has_options = $this->hasOption(self::OPTION_ONLY_CONFIG) || $this->hasOption(self::OPTION_ONLY_ENV);
 
-        if(($has_options && $this->hasOption(self::OPTION_ONLY_CONFIG)) || !$has_options) {
+        if (($has_options && $this->hasOption(self::OPTION_ONLY_CONFIG)) || !$has_options) {
             // as only as we're
             $config = config()->all();
             $parsed_config = $this->parseConfigValues($config);
@@ -50,6 +50,8 @@ class AppConfigList extends Command {
             $this->table(['variable', 'value'], $env_values);
             $this->line('');    // new line after output in case we have other output
         }
+
+        return 0;
     }
 
     /**
@@ -58,7 +60,7 @@ class AppConfigList extends Command {
      * @param array $config_table
      * @return array
      */
-    private function parseConfigValues(array $config, string $config_name_current_level = '', array $config_table = []): array{
+    private function parseConfigValues(array $config, string $config_name_current_level = '', array $config_table = []): array {
         foreach ($config as $config_name => $config_value) {
             if (!empty($config_name_current_level)) {
                 $config_name = $config_name_current_level . '.' . $config_name;
@@ -78,7 +80,7 @@ class AppConfigList extends Command {
      * @param string $variable_name
      * @return array
      */
-    private function output_environment_variable_and_value(string $variable_name): array{
+    private function output_environment_variable_and_value(string $variable_name): array {
         return ['variable' => $variable_name, 'value' => env($variable_name)];
     }
 
@@ -86,14 +88,14 @@ class AppConfigList extends Command {
      * @param string $dot_env_file_path path to .env file
      * @return array
      */
-    private function get_env_names_from_dotenv(string $dot_env_file_path): array{
+    private function get_env_names_from_dotenv(string $dot_env_file_path): array {
         $dot_env_variable_names = [];
         if (File::exists($dot_env_file_path)) {
             try {
                 $dot_env_contents = File::get($dot_env_file_path);
                 $dot_env_content_lines = explode("\n", $dot_env_contents);
                 foreach ($dot_env_content_lines as $dot_env_content_line) {
-                    if (!empty($dot_env_content_line) && strpos($dot_env_content_line, '#') !== 0) {
+                    if (!empty($dot_env_content_line) && !str_starts_with($dot_env_content_line, '#')) {
                         $dot_env_variable_names[] = substr($dot_env_content_line, 0, strpos($dot_env_content_line, '='));
                     }
                 }

@@ -2,19 +2,18 @@
 
 namespace Tests\Feature\Api\Get;
 
+use App\Models\Tag;
 use Tests\TestCase;
 use Symfony\Component\HttpFoundation\Response;
 
-Use App\Tag;
-
 class GetTagsTest extends TestCase {
 
-    private $_uri = '/api/tags';
+    private string $_uri = '/api/tags';
 
-    public function testObtainingListOfTagsWhenTagsArePresentInDatabase(){
+    public function testObtainingListOfTagsWhenTagsArePresentInDatabase() {
         // GIVEN
         $tag_count = 5;
-        $generated_tags = factory(Tag::class, $tag_count)->create();
+        $generated_tags = Tag::factory()->count($tag_count)->create();
 
         // WHEN
         $response = $this->get($this->_uri);
@@ -26,19 +25,18 @@ class GetTagsTest extends TestCase {
         $this->assertArrayHasKey('count', $response_body_as_array);
         $this->assertEquals($response_body_as_array['count'], $tag_count);
         unset($response_body_as_array['count']);
-        foreach($response_body_as_array as $tag_in_response){
-            $this->assertArrayHasKey('id', $tag_in_response);
-            $this->assertArrayHasKey('name', $tag_in_response);
-        }
-        foreach($generated_tags as $generated_tag){
-            $this->assertTrue(
-                in_array($generated_tag->toArray(), $response_body_as_array),
-                "Factory generate tag in JSON: ".$generated_tag->toJson()."\nResponse Body:".$response->getContent()
-            );
+        $this->assertCount($tag_count, $response_body_as_array);
+
+        $expected_elements = ['id', 'name'];
+        foreach ($response_body_as_array as $tag_in_response) {
+            $this->assertEqualsCanonicalizing($expected_elements, array_keys($tag_in_response));
+            $generated_tag = $generated_tags->where('id', $tag_in_response['id'])->first();
+            $this->assertNotEmpty($generated_tag);
+            $this->assertEquals($generated_tag->toArray(), $tag_in_response);
         }
     }
 
-    public function testObtainingListOfTagsWhenTagsAreNotPresentInDatabase(){
+    public function testObtainingListOfTagsWhenTagsAreNotPresentInDatabase() {
         // GIVEN - nothing. database should be empty
 
         // WHEN
@@ -47,7 +45,7 @@ class GetTagsTest extends TestCase {
         // THEN
         $response->assertStatus(Response::HTTP_NOT_FOUND);
         $response_body_as_array = $response->json();
-        $this->assertTrue(is_array($response_body_as_array));
+        $this->assertIsArray($response_body_as_array);
         $this->assertEmpty($response_body_as_array);
     }
 

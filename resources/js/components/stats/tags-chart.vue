@@ -1,40 +1,40 @@
 <template>
     <div id="stats-tags">
-        <section id="stats-form-tags"  class="section">
-            <account-account-type-toggling-selector
-                id="tags-chart"
-                v-bind:account-or-account-type-id="accountOrAccountTypeId"
-                v-bind:account-or-account-type-toggled="accountOrAccountTypeToggle"
-                v-on:update-toggle="accountOrAccountTypeToggle = $event"
-                v-on:update-select="accountOrAccountTypeId = $event"
-            ></account-account-type-toggling-selector>
+        <section id="stats-form-tags"  class="pb-0 text-sm">
+          <account-account-type-toggling-selector
+            id="tags-chart"
+            class="max-w-lg mt-0 mx-4 mb-4"
+            v-bind:account-or-account-type-id.sync="accountOrAccountTypeId"
+            v-bind:account-or-account-type-toggled.sync="accountOrAccountTypeToggle"
+          ></account-account-type-toggling-selector>
 
-            <div class="field is-horizontal">
-                <div class="field-label is-normal"><label class="label">Tags:</label></div>
-                <div class="field-body"><div class="field"><div class="control" v-bind:class="{'is-loading': !areTagsSet}">
-                    <tagsinput
-                        tagsInputName="stats-tags-chart-tag-input"
-                        v-bind:existingTags="listTags"
-                        v-bind:selected-tags="chartTagIds"
-                        v-on:update-tags-input="chartTagIds = $event"
-                    ></tagsinput>
-                </div></div></div>
+          <div class="max-w-lg mt-0 mx-4 mb-4 grid-cols-4 gap-y-2 gap-x-4">
+            <label class="text-sm font-medium justify-self-end py-1 my-0.5">Tags:</label>
+            <div class="col-span-3 relative">
+              <tags-input-info-loading></tags-input-info-loading>
+              <tags-input
+                  tagsInputName="stats-tags-chart-tag-input"
+                  v-bind:existing-tags="tagsStore.list"
+                  v-bind:selected-tags.sync="chartTagIds"
+              ></tags-input>
             </div>
+          </div>
 
-            <div class="field">
-                <bulma-calendar
-                    ref="tagsStatsChartBulmaCalendar"
-                ></bulma-calendar>
-            </div>
+          <date-range class="max-w-lg mt-0 mx-4 mb-4" chart-name="tags-chart" v-bind:start-date.sync="startDate" v-bind:end-date.sync="endDate"></date-range>
 
-            <div class="field"><div class="control">
-                <button class="button is-primary generate-stats" v-on:click="makeRequest"><i class="fas fa-chart-bar"></i>Generate Chart</button>
-            </div></div>
+          <div class="max-w-lg mt-0 mx-4 mb-4">
+            <button class="generate-stats w-full py-2 text-white bg-blue-600 rounded opacity-90 hover:opacity-100" v-on:click="makeRequest">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-1.5 inline-block" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5 3a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2H5zm9 4a1 1 0 10-2 0v6a1 1 0 102 0V7zm-3 2a1 1 0 10-2 0v4a1 1 0 102 0V9zm-3 3a1 1 0 10-2 0v1a1 1 0 102 0v-1z" clip-rule="evenodd" />
+              </svg>
+              Generate Chart
+            </button>
+          </div>
         </section>
 
-        <hr />
+        <hr class="my-8" />
 
-        <section v-if="areEntriesAvailable && dataLoaded" class="section stats-results-tags">
+        <section v-if="entriesStore.isSet && dataLoaded" class="pt-4 stats-results-tags">
             <include-transfers-checkbox
                 chart-name="tags"
                 v-bind:include-transfers="includeTransfers"
@@ -46,143 +46,149 @@
                 v-bind:options="chartOptions"
             >Your browser does not support the canvas element.</bar-chart>
         </section>
-        <section v-else class="section has-text-centered has-text-weight-semibold is-size-6 stats-results-tags">
+        <section v-else class="text-center font-semibold text-base stats-results-tags pt-0 overflow-auto">
             No data available
         </section>
     </div>
 </template>
 
 <script>
-    // utilities
-    import _ from 'lodash';
-    // components
-    import AccountAccountTypeTogglingSelector from "../account-account-type-toggling-selector";
-    import BarChart from "./chart-defaults/bar-chart";
-    import BulmaCalendar from '../bulma-calendar';
-    import IncludeTransfersCheckbox from "../include-transfers-checkbox";
-    import tagsinput from "../tagsinput";
-    // mixins
-    import {entriesObjectMixin} from "../../mixins/entries-object-mixin";
-    import {statsChartMixin} from "../../mixins/stats-chart-mixin";
-    import {tagsObjectMixin} from "../../mixins/tags-object-mixin";
+// utilities
+import _ from 'lodash';
+// components
+import AccountAccountTypeTogglingSelector from "../account-account-type-toggling-selector";
+import BarChart from "./chart-defaults/bar-chart";
+import DateRange from './date-range';
+import IncludeTransfersCheckbox from "./include-transfers-checkbox";
+import TagsInput from "../tags-input";
+import TagsInputInfoLoading from "../tags-input-info-loading.vue";
+// mixins
+import {batchEntriesMixin} from "../../mixins/batch-entries-mixin";
+import {statsChartMixin} from "../../mixins/stats-chart-mixin";
+import {tailwindColorsMixin} from "../../mixins/tailwind-colors-mixin";
+// stores
+import {useEntriesStore} from "../../stores/entries";
+import {useTagsStore} from "../../stores/tags";
 
-    export default {
-        name: "tags-chart",
-        mixins: [entriesObjectMixin, statsChartMixin, tagsObjectMixin],
-        components: {AccountAccountTypeTogglingSelector, BarChart, BulmaCalendar, IncludeTransfersCheckbox, tagsinput},
-        data: function(){
-            return {
-                accountOrAccountTypeToggle: true,
-                accountOrAccountTypeId: '',
-                chartTagIds: []
-            }
-        },
-        computed: {
-            chartData: function(){
-                let chartData = this.standardiseData;
-                let chartBgColors = [];
-                for(let i=0; i<chartData.length; i++){
-                    chartBgColors.push(this.randomColor());
-                }
-                return {
-                    labels: chartData.map(function(d){ return d.x }),
-                    datasets: [{
-                        data: chartData,
-                        backgroundColor: chartBgColors
-                    }]
-                };
-            },
-            chartOptions: function(){
-                return {
-                    maintainAspectRatio: false,
-                    title: {
-                        display: true,
-                        text: this.chartConfig.titleText
-                    },
-                    legend: {
-                        display: false
-                    },
-                    scales: {
-                        yAxes: [{
-                            ticks: {
-                                beginAtZero: true
-                            }
-                        }]
-                    }
-                };
-            },
-
-            getBulmaCalendar: function(){
-                return this.$refs.tagsStatsChartBulmaCalendar;
-            },
-
-            standardiseData: function(){
-                let standardisedChartData = {};
-
-                this.largeBatchEntryData
-                    .filter(this.filterIncludeTransferEntries)
-                    .forEach(function(entryDatum){
-                        let tempDatum = _.cloneDeep(entryDatum);
-                        if(tempDatum.tags.length === 0){
-                            tempDatum.tags.push(0);
-                        }
-                        tempDatum.tags.forEach(function(tag){
-                            let key = (tag === 0) ? 'untagged' : this.tagsObject.getNameById(tag);
-                            if(!standardisedChartData.hasOwnProperty(key)){
-                                standardisedChartData[key] = {x: key, y: 0}
-                            }
-                            if(tempDatum.expense){
-                                standardisedChartData[key].y -= parseFloat(tempDatum.entry_value);
-                            } else {
-                                standardisedChartData[key].y += parseFloat(tempDatum.entry_value);
-                            }
-                            standardisedChartData[key].y = _.round(standardisedChartData[key].y, 2);
-                        }.bind(this));
-                    }.bind(this), Object.create(null));
-
-                return _.sortBy(
-                    Object.values(standardisedChartData),
-                    function(o){ return o.x;}
-                );
-            }
-        },
-        methods: {
-            setChartTitle: function(startDate, endDate){
-                this.chartConfig.titleText = "Tags ["+startDate+" - "+endDate+"]";
-            },
-
-            makeRequest: function(){
-                this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
-
-                let chartDataFilterParameters = {
-                    start_date: this.getBulmaCalendar.calendarStartDate(),
-                    end_date: this.getBulmaCalendar.calendarEndDate(),
-                };
-
-                if(this.accountOrAccountTypeToggle === true){
-                    chartDataFilterParameters.account = this.accountOrAccountTypeId;
-                } else {
-                    chartDataFilterParameters.account_type = this.accountOrAccountTypeId;
-                }
-
-                if(!_.isEmpty(this.chartTagIds)){
-                    chartDataFilterParameters.tags = this.chartTagIds.map(function(tag){ return tag.id; });
-                }
-
-                this.setChartTitle(chartDataFilterParameters.start_date, chartDataFilterParameters.end_date);
-                this.multiPageDataFetch(chartDataFilterParameters);
-            },
-        },
-        mounted: function(){
-            this.getBulmaCalendar.setBulmaCalendarDateRange(this.currentMonthStartDate, this.currentMonthEndDate);
-        }
+export default {
+  name: "tags-chart",
+  mixins: [batchEntriesMixin, statsChartMixin, tailwindColorsMixin],
+  components: {AccountAccountTypeTogglingSelector, BarChart, DateRange, IncludeTransfersCheckbox, TagsInput, TagsInputInfoLoading},
+  data: function(){
+    return {
+      accountOrAccountTypeToggle: true,
+      accountOrAccountTypeId: '',
+      chartTagIds: [],
+      endDate: '',
+      startDate: '',
     }
+  },
+  computed: {
+    chartData: function(){
+      let chartData = this.standardiseData;
+      let chartBgColors = this.getRandomColors(chartData.length);
+
+      return {
+        labels: chartData.map(function(d){ return d.x }),
+        datasets: [{
+          data: chartData,
+          backgroundColor: chartBgColors
+        }]
+      };
+    },
+    chartOptions: function(){
+      return {
+        maintainAspectRatio: false,
+        title: {
+          display: true,
+          text: this.chartConfig.titleText
+        },
+        legend: {
+          display: false
+        },
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true
+            }
+          }]
+        }
+      };
+    },
+    entriesStore: function(){
+      return useEntriesStore();
+    },
+    getBulmaCalendar: function(){
+      return this.$refs.tagsStatsChartBulmaCalendar;
+    },
+    standardiseData: function(){
+      let standardisedChartData = {};
+
+      this.largeBatchEntryData
+        .filter(this.filterIncludeTransferEntries)
+        .forEach(function(entryDatum){
+          let tempDatum = _.cloneDeep(entryDatum);
+          if(tempDatum.tags.length === 0){
+            tempDatum.tags.push(0);
+          }
+          tempDatum.tags.forEach(function(tagId){
+            let key = (tagId === 0) ? 'untagged' : this.tagsStore.find(tagId).name;
+            if(!Object.prototype.hasOwnProperty.call(standardisedChartData, key)){
+              standardisedChartData[key] = {x: key, y: 0}
+            }
+            if(tempDatum.expense){
+              standardisedChartData[key].y -= parseFloat(tempDatum.entry_value);
+            } else {
+              standardisedChartData[key].y += parseFloat(tempDatum.entry_value);
+            }
+            standardisedChartData[key].y = _.round(standardisedChartData[key].y, 2);
+          }.bind(this));
+        }.bind(this), Object.create(null));
+
+      return _.sortBy(
+        Object.values(standardisedChartData),
+        function(o){ return o.x;}
+      );
+    },
+    tagsStore: function(){
+      return useTagsStore();
+    }
+  },
+  methods: {
+    setChartTitle: function(startDate, endDate){
+      this.chartConfig.titleText = "Tags ["+startDate+" - "+endDate+"]";
+    },
+
+    makeRequest: function(){
+      this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
+
+      let chartDataFilterParameters = {
+        start_date: this.startDate,
+        end_date: this.endDate,
+      };
+
+      if(this.accountOrAccountTypeToggle === true){
+        chartDataFilterParameters.account = this.accountOrAccountTypeId;
+      } else {
+        chartDataFilterParameters.account_type = this.accountOrAccountTypeId;
+      }
+
+      if(!_.isEmpty(this.chartTagIds)){
+        chartDataFilterParameters.tags = this.chartTagIds.map(function(tag){ return tag.id; });
+      }
+
+      this.setChartTitle(chartDataFilterParameters.start_date, chartDataFilterParameters.end_date);
+      this.multiPageDataFetch(chartDataFilterParameters);
+    },
+  }
+}
 </script>
 
 <style lang="scss" scoped>
-    @import '../../../sass/stats-chart';
-
-    .field.is-horizontal:nth-child(2){
-        margin-bottom: 0;
-    }
+// #account-or-account-type-toggling-selector-for-tags-chart obtained
+// from the account-account-type-toggling-selector component
+::v-deep #account-or-account-type-toggling-selector-for-tags-chart select {
+  // tailwind class .w-full
+  width: 100%;
+}
 </style>

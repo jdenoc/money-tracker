@@ -14,8 +14,8 @@ class ChangeUsersIdColumnToBigInteger extends Migration {
      *
      * @return void
      */
-    public function up(){
-        Schema::table(self::$TABLE, function (Blueprint $table) {
+    public function up() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
             $table->bigIncrements(self::$COLUMN)->change();
         });
     }
@@ -25,9 +25,10 @@ class ChangeUsersIdColumnToBigInteger extends Migration {
      *
      * @return void
      */
-    public function down(){
-        Schema::table(self::$TABLE, function (Blueprint $table) {
+    public function down() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
             $table->increments(self::$COLUMN)->change();
         });
     }
+
 }

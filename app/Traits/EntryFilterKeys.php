@@ -2,6 +2,8 @@
 
 namespace App\Traits;
 
+use App\Models\Tag;
+
 trait EntryFilterKeys {
 
     // filter parameter keys
@@ -25,7 +27,7 @@ trait EntryFilterKeys {
      * @param bool $include_tag_ids
      * @return array
      */
-    public static function getFilterValidationRules($include_tag_ids = true){
+    public static function getFilterValidationRules($include_tag_ids = true) {
         $filter_details = [
             static::$FILTER_KEY_START_DATE=>'date_format:Y-m-d',
             static::$FILTER_KEY_END_DATE=>'date_format:Y-m-d',
@@ -40,12 +42,13 @@ trait EntryFilterKeys {
             static::$FILTER_KEY_IS_TRANSFER=>'boolean'
         ];
 
-        if($include_tag_ids){
-            $tags = \App\Tag::all();
+        if ($include_tag_ids) {
+            $tags = Tag::cache()->get('all');
             $tag_ids = $tags->pluck('id')->toArray();
             $filter_details['tags.*'] = 'in:'.implode(',', $tag_ids);
         }
 
         return $filter_details;
     }
+
 }

@@ -6,15 +6,11 @@
     @endcomponent
 </head>
 <body>
-<div id="app-stats">
-    <navbar page-name="stats"></navbar>
-    <div class="columns is-gapless">
-        <div class="column is-one-fifth">
-            <stats-nav></stats-nav>
-        </div>
-        <div class="column is-three-fifths">
-            <stats></stats>
-        </div>
+<div id="app-stats" class="py-16">
+    <nav-bar page-name="stats"></nav-bar>
+    <stats-nav></stats-nav>
+    <div class="ml-80">
+        <stats-display></stats-display>
 
         <!--
         loading-modal must ALWAYS be on the bottom.
@@ -26,6 +22,6 @@
         <notification></notification>
     </div>
 </div>
-<script type="text/javascript" src="{{mix('vue/js/app-stats.js')}}"></script>
+<script type="text/javascript" src="{{mix('dist/js/app-stats.js')}}"></script>
 </body>
 </html>

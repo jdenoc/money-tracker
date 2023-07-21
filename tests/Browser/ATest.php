@@ -3,8 +3,8 @@
 namespace Tests\Browser;
 
 use Facebook\WebDriver\WebDriverBy;
-use Tests\DuskTestCase;
 use Laravel\Dusk\Browser;
+use Tests\DuskTestCase;
 
 /**
  * Class ATest
@@ -15,26 +15,31 @@ use Laravel\Dusk\Browser;
  */
 class ATest extends DuskTestCase {
 
-    private static $LARAVEL_FAVICON_PATH_PREFIX = '/laravel-favicon/';
-    private static $FAVICON_PATH_PREFIX = 'imgs/favicon/';
+    private static string $LARAVEL_FAVICON_PATH_PREFIX = '/laravel-favicon/';
+    private static string $FAVICON_PATH_PREFIX = 'imgs/favicon/';
 
     /**
      * A basic browser test to make sure selenium integration works
      *
      * @throws \Throwable
+     *
+     * @group demo-1
+     * test 1/20
      */
-    public function testBasicExample(){
-        $this->browse(function (Browser $browser) {
-            $browser->visit('/laravel')
-                    ->assertSee('Laravel');
+    public function testBasicExample() {
+        $this->browse(function(Browser $browser) {
+            $browser
+                ->visit('/laravel')
+                ->assertSee('Laravel');
         });
     }
 
-    public function providerTitleIsCorrect(){
+    public function providerTitleIsCorrect(): array {
         return [
             // [$url, $title]
-            'home'=>['/', "Money Tracker | HOME"],
-            'stats'=>['/stats', "Money Tracker | STATS"],
+            'home'=>['/', "Money Tracker | HOME"],                  // test 2/20
+            'stats'=>['/stats', "Money Tracker | STATS"],           // test 3/20
+            'settings'=>['/settings', 'Money Tracker | Settings'],  // test 4/20
         ];
     }
 
@@ -43,8 +48,11 @@ class ATest extends DuskTestCase {
      * @param string $url
      * @param string $title
      * @throws \Throwable
+     *
+     * @group demo-1
+     * test ?/20
      */
-    public function testTitleAndFaviconAreCorrectAndPresent($url, $title){
+    public function testTitleAndFaviconAreCorrectAndPresent(string $url, string $title) {
         $favicon_file_paths = [
             self::$FAVICON_PATH_PREFIX.'favicon-16x16.png',
             self::$FAVICON_PATH_PREFIX.'favicon-32x32.png',
@@ -53,17 +61,18 @@ class ATest extends DuskTestCase {
             self::$FAVICON_PATH_PREFIX.'android-chrome-512x512.png',
             self::$FAVICON_PATH_PREFIX.'site.webmanifest'
         ];
-        foreach($favicon_file_paths as $favicon_file_path){
+        foreach ($favicon_file_paths as $favicon_file_path) {
             $this->assertFileExists(public_path($favicon_file_path));
         }
 
-        $this->browse(function (Browser $browser) use ($url, $title){
-            $browser->visit($url)->assertTitleContains($title);
+        $this->browse(function(Browser $browser) use ($url, $title) {
+            $browser
+                ->visit($url)
+                ->assertTitleContains($title);
 
-            $link_elements = $browser->driver
-                ->findElements(WebDriverBy::cssSelector('link'));
-            foreach($link_elements as $link_element){
-                if(in_array($link_element->getAttribute('rel'), ['apple-touch-icon', 'icon'])){
+            $link_elements = $browser->driver->findElements(WebDriverBy::cssSelector('link'));
+            foreach ($link_elements as $link_element) {
+                if (in_array($link_element->getAttribute('rel'), ['apple-touch-icon', 'icon'])) {
                     $this->assertStringContainsString(
                         self::$LARAVEL_FAVICON_PATH_PREFIX.self::$FAVICON_PATH_PREFIX,
                         $link_element->getAttribute('href')
