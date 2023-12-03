@@ -24,7 +24,7 @@
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.2",
-        "filp/whoops": "2.12.1",
+        "filp/whoops": "2.15.4",
         "jdenoc/bulma-colors": "0.0.2",
         "laravel/dusk": "6.15.0",
         "mockery/mockery": "^1.0",
