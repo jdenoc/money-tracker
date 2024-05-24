@@ -31,7 +31,7 @@
         "nunomaduro/collision": "^3.0",
         "phpunit/php-invoker": "^3.1",
         "phpunit/phpunit": "8.5.23",
-        "spatie/db-dumper": "2.21.1"
+        "spatie/db-dumper": "3.6.0"
     },
     "autoload": {
         "psr-4": {
