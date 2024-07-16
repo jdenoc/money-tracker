@@ -4,5 +4,5 @@ description: Down docker containers & volumes
 runs:
   using: composite
   steps:
-    - run: docker-compose down -v
+    - run: docker compose down -v
       shell: bash

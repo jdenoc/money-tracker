@@ -3,7 +3,7 @@
 
 Make sure xdebug is enabled. It is enabled by default when building container images.
 ```bash
-docker-compose exec application php -v | grep -i xdebug
+docker compose exec application php -v | grep -i xdebug
 ```
 
 **TODO:** write how to hook up IDE to docker xdebug.
