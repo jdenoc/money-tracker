@@ -31,14 +31,14 @@ This will generate Laravel Facades that PhpStorm can use.
 
 ### Bring "_UP_" application container(s)
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 <small>***OPTIONAL***</small>:
 If you wish to run docker without xdebug, prefix the above command with `DISABLE_XDEBUG=true`  
 For Example:
 ```bash
-DISABLE_XDEBUG=true docker-compose up -d
+DISABLE_XDEBUG=true docker compose up -d
 ```
 `DISABLE_XDEBUG=true` is required _once_ to build the docker image. Afterwards, it is never used again.
 
@@ -79,11 +79,11 @@ cp /path/to/file.sql database/snapshots/dump-file.sql
 
 ### Tear-down
 ```bash
-docker-compose down
+docker compose down
 ```
 
 _**Note:** You can tear down the docker containers as well as their associated volumes with this command:_
 ```bash
-docker-compose down -v
+docker compose down -v
 ```
 _**Note:** You do not need to worry about "tearing down" the npm and/or composer containers. They will "remove" themselves once they have completed their tasks._
