@@ -8,7 +8,7 @@ RUN apt-get update --fix-missing \
 # host access
 RUN apt-get install -y tini \
   && ln -s /usr/bin/tini /sbin/tini
-RUN curl -L https://raw.githubusercontent.com/composer/docker/main/2.2/docker-entrypoint.sh --output /docker-entrypoint.sh \
+RUN curl -L https://raw.githubusercontent.com/composer/docker/096f0c28275343aa6e530c7ead34dcef3b79323f/lts/docker-entrypoint.sh --output /docker-entrypoint.sh \
   && chmod +x /docker-entrypoint.sh
 WORKDIR /app
 ENTRYPOINT ["/docker-entrypoint.sh"]
