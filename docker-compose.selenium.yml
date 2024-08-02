@@ -1,6 +1,6 @@
 ---
 services:
-  selenium: # needed for e2e (End-to-End) testing
+  selenium:  # needed for e2e (End-to-End) testing
     container_name: "money-tracker.selenium"
     depends_on:
       - application
