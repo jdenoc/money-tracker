@@ -21,27 +21,18 @@ class DatabaseMigrationsCheck extends Check {
     }
 
     protected function migrationStatusOutput(): string {
-        Artisan::call("migrate:status");
+        Artisan::call("migrate:status", ["--pending"=>true]);
         return trim(Artisan::output());
     }
 
     public function findUnRunMigrations($migration_status_output): array {
         $migration_status_rows = explode("\n", $migration_status_output);
-
-        $table_index_h1 = 0;
-        $table_index_h2 = 1;
-        $table_index_h3 = 2;
-        $table_index_foot = count($migration_status_rows)-1;
-        unset($migration_status_rows[$table_index_h1], $migration_status_rows[$table_index_h2], $migration_status_rows[$table_index_h3], $migration_status_rows[$table_index_foot]);
-        $row_index_ran = 1;
-        $row_index_migration = 2;
+        array_shift($migration_status_rows);    // remove header row
 
         $unrun_migrations = [];
         foreach ($migration_status_rows as $migration_status_row) {
-            $migration_status_row_cells = explode("|", $migration_status_row);
-            if ("no" === strtolower(trim($migration_status_row_cells[$row_index_ran]))) {
-                $unrun_migrations[] = trim($migration_status_row_cells[$row_index_migration]);
-            }
+            $migration_status_row_cells = explode(" ", trim($migration_status_row));
+            $unrun_migrations[] = $migration_status_row_cells[0];
         }
         return $unrun_migrations;
     }
