@@ -20,7 +20,7 @@ runs:
 
     - name: set initial user:group ownership
       run: |
-        docker-compose \
+        docker compose \
           run --rm -T --no-deps --user root \
           application \
           chown -R www-data:www-data .
@@ -28,13 +28,13 @@ runs:
 
     - name: create laravel logs
       run: |
-        docker-compose run --rm --no-deps -T --user www-data application touch /var/log/php/laravel.log
-        docker-compose run --rm --no-deps -T --user www-data application ln -fs /var/log/php/laravel.log storage/logs/laravel.log
+        docker compose run --rm --no-deps -T --user www-data application touch /var/log/php/laravel.log
+        docker compose run --rm --no-deps -T --user www-data application ln -fs /var/log/php/laravel.log storage/logs/laravel.log
       shell: bash
 
     - name: ensure correct user:group ownership for other containers
       run: |
-        docker-compose run --rm --no-deps -T --user root database chgrp root /var/log/mysql
-        docker-compose run --rm --no-deps -T --user root selenium chgrp seluser /home/seluser/Downloads
-        docker-compose run --rm --no-deps -T --user root selenium chmod g+w /home/seluser/Downloads
+        docker compose run --rm --no-deps -T --user root database chgrp root /var/log/mysql
+        docker compose run --rm --no-deps -T --user root selenium chgrp seluser /home/seluser/Downloads
+        docker compose run --rm --no-deps -T --user root selenium chmod g+w /home/seluser/Downloads
       shell: bash

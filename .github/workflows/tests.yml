@@ -28,7 +28,7 @@ jobs:
 
       - name: Generate cache keys [docker]
         id: cache-key-docker
-        run: echo "value=cache-docker-${{ hashFiles('docker-compose.yml', '.docker/**') }}" >> $GITHUB_OUTPUT
+        run: echo "value=cache-docker-${{ hashFiles('docker-compose*.yml', '.docker/**') }}" >> $GITHUB_OUTPUT
 
       - name: Generate cache keys [composer]
         id: cache-key-composer

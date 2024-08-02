@@ -14,7 +14,7 @@ runs:
   steps:
     - name: build docker images
       run: |
-        docker-compose --file docker-compose.yml --file docker-compose.selenium.yml build --build-arg DISABLE_XDEBUG=true
+        docker compose --file docker-compose.yml --file docker-compose.selenium.yml build --build-arg DISABLE_XDEBUG=true
         docker build --file .docker/composer.dockerfile --tag ${{ inputs.image-tag-composer }} .
       shell: bash
 
