@@ -142,7 +142,7 @@ class Entry extends BaseModel {
      */
     public static function count_collection_of_entries(array $filters = []): int {
         $entries_query = self::filter_entry_collection($filters);
-        return $entries_query->count();
+        return $entries_query->select('entries.id')->count();
     }
 
     /**
