@@ -2,16 +2,13 @@
 
 namespace App\Helpers;
 
-use App\Currency;
+use App\Models\Currency;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 
 class CurrencyHelper {
 
-    /**
-     * @var string
-     */
-    private static $CURRENCY_FILE_PATH = "json/currency.json";
+    private static string $CURRENCY_FILE_PATH = "json/currency.json";
 
     /**
      * @var Collection|null
@@ -21,11 +18,11 @@ class CurrencyHelper {
     /**
      * @return Collection
      */
-    public static function fetchCurrencies(){
+    public static function fetchCurrencies() {
         $currency_json = Storage::get(self::$CURRENCY_FILE_PATH);
         $raw_currency_data = json_decode($currency_json, true);
         $currency_collection = collect();
-        foreach($raw_currency_data as $currency_data){
+        foreach ($raw_currency_data as $currency_data) {
             $currency_object = new Currency($currency_data);
             $currency_collection->push($currency_object);
         }
@@ -38,13 +35,38 @@ class CurrencyHelper {
      * Currency codes are based on the ISO4217 standard
      * @link https://en.wikipedia.org/wiki/ISO_4217
      */
-    public static function getCodesAsArray(){
-        if(is_null(self::$_currencies)){
+    public static function getCodesAsArray() {
+        if (is_null(self::$_currencies)) {
             $currencies = self::fetchCurrencies();
         } else {
             $currencies = self::$_currencies;
         }
         return $currencies->pluck('code')->all();
+    }
+
+    public static function getCurrencyHtmlFromCode(string $code): string {
+        if (is_null(self::$_currencies)) {
+            $currencies = self::fetchCurrencies();
+        } else {
+            $currencies = self::$_currencies;
+        }
+        return $currencies->where('code', $code)->first()->html;
+    }
+
+    /**
+     * This returns a Currency object containing default values outlined in resources/js/currency.js
+     */
+    public static function getCurrencyDefaults(): Currency {
+        return new Currency([
+            "label"=>"dollarUs",
+            "code"=>"USD",
+            "class"=>"fas fa-dollar-sign",
+            "html"=>"&dollar;"
+        ]);
+    }
+
+    public static function convertCurrencyHtmlToCharacter($html): string {
+        return html_entity_decode($html, ENT_HTML5);
     }
 
 }

@@ -3,15 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-
-use App\Attachment;
+use App\Models\Attachment;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 
 class AttachmentController extends Controller {
 
-    public function delete_attachment($uuid){
+    public function delete_attachment($uuid) {
         $attachment = Attachment::find($uuid);
-        if(empty($attachment)){
+        if (empty($attachment)) {
             return response('', HttpStatus::HTTP_NOT_FOUND);
         } else {
             $attachment->forceDelete();

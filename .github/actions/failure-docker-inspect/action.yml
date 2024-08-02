@@ -4,17 +4,28 @@ description: Provide a snap-shot of docker containers used after a failure
 runs:
   using: composite
   steps:
-    # confirm docker containers running
-    - run: |
-        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps
-        docker container ls
+    - name: confirm docker containers running
+      run: |
+        docker compose ps --filter status=running
+        docker container ls --size --no-trunc
       shell: bash
-    # output docker logs into a file
-    - run: |
-        docker container exec -t --user www-data $(docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps -q application) touch storage/logs/docker.log
-        docker container exec -t $(docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps -q application) chmod -R 777 storage/logs/docker.log
-        docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME logs >> storage/logs/docker.log
+
+    - name: output docker logs into a file
+      run: |
+        DOCKER_LOG=.docker/logs/docker.log
+        docker compose run --rm --no-deps -T --user root application touch $DOCKER_LOG
+        docker compose run --rm --no-deps -T --user root application chmod -R 777 $DOCKER_LOG
+        docker compose logs > $DOCKER_LOG
       shell: bash
-    # output docker container configurations
-    - run: docker inspect $(docker-compose -f .docker/docker-compose.yml -p $PROJECT_NAME ps -q)
+
+    - name: output docker container configurations
+      run: |
+        INSPECT_FILE=.docker/logs/docker-inspect.json
+        docker compose run --rm --no-deps -T --user root application touch $INSPECT_FILE
+        docker compose run --rm --no-deps -T --user root application chmod -R 777 $INSPECT_FILE
+        docker inspect $(docker compose ps -q) > $INSPECT_FILE
+      shell: bash
+
+    - name: give all files read access to allow artifact upload
+      run: docker compose run --rm --no-deps -T --user root application chmod -R a+r .
       shell: bash

@@ -14,8 +14,8 @@ class AddEmailVerifiedAtColumnToUsersTable extends Migration {
      *
      * @return void
      */
-    public function up(){
-        Schema::table(self::$TABLE, function (Blueprint $table) {
+    public function up() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
             $table->timestamp(self::$NEW_COLUMN)->nullable();
         });
     }
@@ -25,9 +25,10 @@ class AddEmailVerifiedAtColumnToUsersTable extends Migration {
      *
      * @return void
      */
-    public function down(){
-        Schema::table(self::$TABLE, function (Blueprint $table) {
+    public function down() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
             $table->dropColumn(self::$NEW_COLUMN);
         });
     }
+
 }

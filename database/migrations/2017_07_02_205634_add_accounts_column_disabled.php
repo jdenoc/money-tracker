@@ -6,14 +6,17 @@ use Illuminate\Database\Migrations\Migration;
 
 class AddAccountsColumnDisabled extends Migration {
 
+    private static $TABLE = 'accounts';
+    private static $NEW_COLUMN = 'disabled';
+
     /**
      * Add column accounts.disabled
      *
      * @return void
      */
-    public function up(){
-        Schema::table('accounts', function (Blueprint $table) {
-            $table->unsignedTinyInteger('disabled')->after('institution_id')->default(0);
+    public function up() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
+            $table->unsignedTinyInteger(self::$NEW_COLUMN)->after('institution_id')->default(0);
         });
     }
 
@@ -22,9 +25,9 @@ class AddAccountsColumnDisabled extends Migration {
      *
      * @return void
      */
-    public function down(){
-        Schema::table('accounts', function (Blueprint $table) {
-            $table->dropColumn('disabled');
+    public function down() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
+            $table->dropColumn(self::$NEW_COLUMN);
         });
     }
 

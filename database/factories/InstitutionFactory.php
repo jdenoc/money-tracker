@@ -1,13 +1,28 @@
 <?php
 
-use Faker\Generator as Faker;
+namespace Database\Factories;
 
-/**
- * @var \Illuminate\Database\Eloquent\Factory $factory
- */
-$factory->define(App\Institution::class, function (Faker $faker) {
-    return [
-        'name'=>$faker->company,
-        'active'=>$faker->boolean
-    ];
-});
+use App\Helpers\DatabaseFactoryConstants as FactoryConstants;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+class InstitutionFactory extends Factory {
+
+    public function definition(): array {
+        return [
+            'name'=>fake()->company(),
+            'disabled_stamp'=>null,
+        ];
+    }
+
+    /**
+     * Indicate that an institution is "disabled"
+     */
+    public function disabled(): Factory {
+        return $this->state(function() {
+            return [
+                'disabled_stamp'=>fake()->date(FactoryConstants::DATE_FORMAT)
+            ];
+        });
+    }
+
+}

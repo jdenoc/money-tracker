@@ -1,17 +1,21 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
 
 class UpdateAccountTypesColumnType extends Migration {
+
+    private static $TABLE = 'account_types';
+    private static $COLUMN = 'type';
 
     /**
      * Run the migrations.
      *
      * @return void
      */
-    public function up(){
-        // Because there is a column of type ENUM in the account_types, we can't modify any columns using ORM
-        DB::statement("ALTER TABLE account_types CHANGE type type ENUM('checking','savings','credit card','debit card','loan')");
+    public function up() {
+        // ORM does not currently allow modification of ENUM type columns
+        DB::statement("ALTER TABLE ".self::$TABLE." CHANGE ".self::$COLUMN." ".self::$COLUMN." ENUM('checking','savings','credit card','debit card','loan')");
     }
 
     /**
@@ -19,9 +23,9 @@ class UpdateAccountTypesColumnType extends Migration {
      *
      * @return void
      */
-    public function down(){
-        // Because there is a column of type ENUM in the account_types, we can't modify any columns using ORM
-        DB::statement("ALTER TABLE account_types CHANGE type type ENUM('checking','savings','credit card','debit card')");
+    public function down() {
+        // ORM does not currently allow modification of ENUM type columns
+        DB::statement("ALTER TABLE ".self::$TABLE." CHANGE ".self::$COLUMN." ".self::$COLUMN." ENUM('checking','savings','credit card','debit card')");
     }
 
 }

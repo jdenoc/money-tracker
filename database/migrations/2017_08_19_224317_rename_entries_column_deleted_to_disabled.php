@@ -1,19 +1,23 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
 
 class RenameEntriesColumnDeletedToDisabled extends Migration {
+
+    private static $TABLE = 'entries';
+    private static $COLUMN_OLD_NAME = 'deleted';
+    private static $COLUMN_NEW_NAME = 'disabled';
 
     /**
      * Rename column entries.deleted to entries.disabled
      *
      * @return void
      */
-    public function up(){
-        Schema::table('entries', function (Blueprint $table) {
-            $table->renameColumn('deleted', 'disabled');
+    public function up() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
+            $table->renameColumn(self::$COLUMN_OLD_NAME, self::$COLUMN_NEW_NAME);
         });
     }
 
@@ -22,9 +26,9 @@ class RenameEntriesColumnDeletedToDisabled extends Migration {
      *
      * @return void
      */
-    public function down(){
-        Schema::table('entries', function (Blueprint $table) {
-            $table->renameColumn('disabled', 'deleted');
+    public function down() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
+            $table->renameColumn(self::$COLUMN_NEW_NAME, self::$COLUMN_OLD_NAME);
         });
     }
 

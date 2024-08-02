@@ -4,15 +4,18 @@
 ### GitHub Actions
 This project has been set up to use [Github-Actions](https://github.com/jdenoc/money-tracker/actions) for continuous integration (CI) testing.
 
+---
+
 ### Docker
-Assuming we already have our docker environment already setup ([instructions here](SETUP-DOCKER.md)).  
-Once the docker environment is running, running the following commands should run the tests we want:
+Once the docker environment is setup ([instructions here](SETUP-DOCKER.md)) and already running, performing the following commands should run the tests we want:
 ```bash
 # Run PhpUnit tests
-docker container exec -t app.money-tracker vendor/bin/phpunit --stop-on-failure
+.docker/scripts/artisan.sh test
 # Run Laravel Dusk tests
-.docker/cmd/artisan.sh dusk --stop-on-failure
+.docker/scripts/artisan.sh dusk --stop-on-failure
 ```
+
+---
 
 ### Local/Dev
 If you wish to test locally (or on your dev environment), here are some steps to follow:

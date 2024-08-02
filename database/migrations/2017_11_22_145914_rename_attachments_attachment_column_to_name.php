@@ -6,14 +6,18 @@ use Illuminate\Database\Migrations\Migration;
 
 class RenameAttachmentsAttachmentColumnToName extends Migration {
 
+    private static $TABLE = 'attachments';
+    private static $COLUMN_OLD_NAME = 'attachment';
+    private static $COLUMN_NEW_NAME = 'name';
+
     /**
      * Rename attachments.attachment to attachments.name
      *
      * @return void
      */
-    public function up(){
-        Schema::table('attachments', function (Blueprint $table) {
-            $table->renameColumn('attachment', 'name');
+    public function up() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
+            $table->renameColumn(self::$COLUMN_OLD_NAME, self::$COLUMN_NEW_NAME);
         });
     }
 
@@ -22,9 +26,9 @@ class RenameAttachmentsAttachmentColumnToName extends Migration {
      *
      * @return void
      */
-    public function down(){
-        Schema::table('attachments', function (Blueprint $table) {
-            $table->renameColumn('name', 'attachment');
+    public function down() {
+        Schema::table(self::$TABLE, function(Blueprint $table) {
+            $table->renameColumn(self::$COLUMN_NEW_NAME, self::$COLUMN_OLD_NAME);
         });
     }
 

@@ -3,36 +3,40 @@ import _ from 'lodash';
 
 export class Currency {
 
-    constructor(){
-        this.currencyData = json;
-        this.default = {
-            "label": "dollarUs",
-            "code": "USD",
-            "class": "fas fa-dollar-sign",
-            "html": "&#36;"
-        };
-    }
+  constructor(){
+    this.currencyData = json;
+    this.default = {
+      "label": "dollarUs",
+      "code": "USD",
+      "class": "fas fa-dollar-sign",
+      "html": "&dollar;"
+    };
+  }
 
-    getClassFromCode(currencyCode){
-        let currencyNode = this.currencyData.filter(function(currencyDatum){
-            return currencyCode === currencyDatum.code;
-        }).shift();
-        if(_.isEmpty(currencyNode)){
-            return this.default.class;
-        } else {
-            return currencyNode.class;
-        }
-    }
+  list(){
+    return this.currencyData;
+  }
 
-    getHtmlFromCode(currencyCode){
-        let currencyNode = this.currencyData.filter(function(currencyDatum){
-            return currencyCode === currencyDatum.code;
-        }).shift();
-        if(_.isEmpty(currencyNode)){
-            return this.default.html;
-        } else {
-            return currencyNode.html;
-        }
+  getClassFromCode(currencyCode){
+    let currencyNode = this.currencyData.filter(function(currencyDatum){
+      return currencyCode === currencyDatum.code;
+    }).shift();
+    if(_.isEmpty(currencyNode)){
+      return this.default.class;
+    } else {
+      return currencyNode.class;
     }
+  }
+
+  getHtmlFromCode(currencyCode){
+    let currencyNode = this.currencyData.filter(function(currencyDatum){
+      return currencyCode === currencyDatum.code;
+    }).shift();
+    if(_.isEmpty(currencyNode)){
+      return this.default.html;
+    } else {
+      return currencyNode.html;
+    }
+  }
 
 }

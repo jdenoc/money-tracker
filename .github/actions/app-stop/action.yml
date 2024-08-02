@@ -1,0 +1,8 @@
+# .github/actions/app-stop/action.yml
+name: Down docker containers
+description: Down docker containers & volumes
+runs:
+  using: composite
+  steps:
+    - run: docker compose down -v
+      shell: bash

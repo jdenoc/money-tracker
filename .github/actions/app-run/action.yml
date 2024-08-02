@@ -1,0 +1,58 @@
+# .github/actions/app-run/action.yml
+name: App Init
+description: Initialise app for use
+inputs:
+  is-cacheless:
+    description: "Set to true to clear cache and create an alternative .env file"
+    required: false
+    default: 'false'
+runs:
+  using: composite
+  steps:
+    - name: start containers
+      run: |
+        # start containers
+        docker compose up -d --force-recreate
+
+        # wait until health status determined
+        i=0
+        while [[
+          $(docker container ls --filter "status=running" -q) != $(docker container ls --filter "status=running" --filter "health=healthy" -q)
+          &&
+          $(docker container ls --filter "status=running" --filter "health=unhealthy" -q | wc -l) -eq 0
+        ]]; do
+          sleep 1
+          i=$((i+1))
+          if [[ $(($i % 10)) -eq 0 ]]; then
+            echo "$(docker container ls --filter "status=running" --filter "health=healthy" -q | wc -l) healthy container(s)"
+          fi
+        done
+
+        # check if any containers are unhealthy
+        unhealthy_count=$(docker container ls --filter "status=running" --filter "health=unhealthy" -q | wc -l)
+        if [[ $unhealthy_count -eq 0 ]]; then
+          echo "it took $i seconds for containers to become healthy"
+          docker container ls --size --no-trunc
+        else
+          echo "Failing due to $unhealthy_count containers"
+          docker inspect --format "{{json .State.Health}}" $(docker container ls --filter "status=running" --filter "health=unhealthy" -q)
+          # force a failure due to unhealthy containers
+          exit 1;
+        fi
+      shell: bash
+
+    - name: general application setup
+      run: |
+        .docker/scripts/artisan.sh optimize:clear
+        .docker/scripts/artisan.sh key:generate
+        .docker/scripts/artisan.sh app:version $(git describe --always)
+        .docker/scripts/artisan.sh optimize
+        .docker/scripts/artisan.sh view:cache
+      shell: bash
+
+    - if: ${{ inputs.is-cacheless != 'false' }}
+      name: clear cache and create alternative .env file
+      run: |
+        .docker/scripts/artisan.sh config:clear
+        docker compose exec -T --user www-data application cp .env.docker .env.testing
+      shell: bash

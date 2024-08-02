@@ -2,9 +2,8 @@
 
 namespace Tests;
 
-use App\Traits\Tests\DatabaseFileDump;
-use App\Traits\Tests\TruncateDatabaseTables;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use App\Traits\Tests\DatabaseMigrations;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Class DuskWithMigrationsTestCase
@@ -13,39 +12,25 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
  *
  * This class exists purely so that we can cut down on the amount of code duplication.
  * This way Dusk test classes don't need to include the DatabaseMigrations trait
+ * Instead, we can front-load the database schema & data seeding, export it to an SQL file
+ * and on subsequent tests loan that file.
  */
 abstract class DuskWithMigrationsTestCase extends DuskTestCase {
+    use DatabaseMigrations;
 
-    use TruncateDatabaseTables;
-
-    /**
-     * This trait is not used in the DuskTestCase class for those instances
-     * when a database migration is not required for said tests.
-     */
-    use DatabaseMigrations {
-        runDatabaseMigrations as defaultRunDatabaseMigrations;
-    }
-
-    /**
-     * Often when a test involving a database fails, the failure is very database content dependent.
-     * The best way to re-create said failure is to perform a database dump.
-     * Doing this will allow us to re-produce the failing issue and in doing so, allow us to fix the issue.
-     */
-    use DatabaseFileDump;
-
-    public function setUp(): void{
+    public function setUp(): void {
         parent::setUp();
-        $this->seed('UiSampleDatabaseSeeder');  // run database seeder
+        $this->migrate();
     }
 
-    /**
-     * Overriding the method from the DatabaseMigrations trait
-     */
-    public function runDatabaseMigrations(){
-        $this->beforeApplicationDestroyed(function () {
-            $this->truncateDatabaseTables(['migrations']);
-        });
-        $this->defaultRunDatabaseMigrations();
+    protected function tearDown(): void {
+        Cache::flush();
+        parent::tearDown();
+    }
+
+    public static function tearDownAfterClass(): void {
+        self::cleanup();
+        parent::tearDownAfterClass();
     }
 
 }

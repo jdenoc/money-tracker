@@ -2,9 +2,9 @@
 
 namespace Tests\Unit;
 
+use App\Models\AccountType;
+use InvalidArgumentException;
 use Tests\TestCase;
-
-use App;
 
 class BaseModelTest extends TestCase {
 
@@ -14,14 +14,14 @@ class BaseModelTest extends TestCase {
      *  WHEN:    we call DatabaseHelper::get_enum_values()
      *  THEN:    the method should return a non-empty array
      */
-    public function testGetEnumValuesWhenColumnIsTypeEnum(){
+    public function testGetEnumValuesWhenColumnIsTypeEnum() {
         // GIVEN
         // as of the migration 2015_09_07_002949_create_account_types_table
         // the database column account_types.type exists and is of type ENUM
         $column = 'type';
 
         // WHEN
-        $enum_values = App\AccountType::get_enum_values($column);
+        $enum_values = AccountType::get_enum_values($column);
 
         // THEN
         $this->assertNotEmpty($enum_values);
@@ -34,14 +34,14 @@ class BaseModelTest extends TestCase {
      *  WHEN:    we call DatabaseHelper::get_enum_values()
      *  THEN:    an empty array is returned
      */
-    public function testGetEnumValuesFromANonEnumColumn(){
+    public function testGetEnumValuesFromANonEnumColumn() {
         // GIVEN
         // as of the migration 2015_09_07_002949_create_account_types_table
         // the database column account_types.id exists and is of type INT
         $column = 'id';
 
         // WHEN
-        $enum_values = App\AccountType::get_enum_values($column);
+        $enum_values = AccountType::get_enum_values($column);
 
         // THEN
         $this->assertEmpty($enum_values);
@@ -54,16 +54,16 @@ class BaseModelTest extends TestCase {
      *  WHEN:    we call DatabaseHelper::get_enum_values()
      *  THEN:    InvalidArgumentException is thrown
      */
-    public function testGetEnumValuesFromADataBaseTableColumnThatDoesNotExist(){
+    public function testGetEnumValuesFromADataBaseTableColumnThatDoesNotExist() {
         // THEN
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         // GIVEN
         // the database column account_types.foobar does not exist as of 2017-02-05
         $column = 'foobar';
 
         // WHEN
-        $enum_values = App\AccountType::get_enum_values($column);
+        AccountType::get_enum_values($column);
     }
 
 }

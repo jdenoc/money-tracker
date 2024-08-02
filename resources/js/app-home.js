@@ -1,5 +1,8 @@
 import Vue from 'vue';
-import Store from './store';
+
+import { createPinia, PiniaVuePlugin } from 'pinia';
+Vue.use(PiniaVuePlugin);
+const pinia = createPinia();
 
 import Snotify from 'vue-snotify';
 Vue.use(Snotify, {toast: {timeout: 8000}});    // 8 seconds
@@ -14,82 +17,92 @@ import eventHub from "./plugins/eventHub";
 Vue.use(eventHub);
 
 // components
-import EntryModal from './components/entry-modal';
-import EntriesTable from './components/entries-table';
-import EntriesTableEntryRow from './components/entries-table-entry-row';
-import FilterModal from "./components/filter-modal";
-import InstitutionsPanel from './components/institutions-panel';
+import EntryModal from './components/home/entry-modal';
+import EntriesTable from './components/home/entries-table';
+import EntriesTableEntryRow from './components/home/entries-table-entry-row';
+import FilterModal from "./components/home/filter-modal";
+import InstitutionsPanel from './components/home/institutions-panel';
 import LoadingModal from './components/loading-modal';
-import Navbar from './components/navbar';
-import Notification from './components/notification';
-import TransferModal from './components/transfer-modal';
-// objects
-import { AccountTypes } from './account-types';
-import { Institutions } from './institutions';
-import { Tags } from './tags';
-import { Version } from './version';
+import NavBar from './components/nav-bar';
+import NotificationItem from './components/notification-item';
+import TransferModal from './components/home/transfer-modal';
+// stores
+import {useAccountTypesStore} from "./stores/accountTypes";
+import {useInstitutionsStore} from "./stores/institutions";
+import {useModalStore} from "./stores/modal";
+import {useTagsStore} from "./stores/tags";
+import {useVersionStore} from "./stores/version";
 
 new Vue({
-    el: "#app-home",
-    components: {
-        EntryModal,
-        EntriesTable,
-        EntriesTableEntryRow,
-        FilterModal,
-        InstitutionsPanel,
-        LoadingModal,
-        Navbar,
-        Notification,
-        TransferModal
+  el: "#app-home",
+  components: {
+    EntryModal,
+    EntriesTable,
+    EntriesTableEntryRow,
+    FilterModal,
+    InstitutionsPanel,
+    LoadingModal,
+    NavBar,
+    Notification: NotificationItem,
+    TransferModal
+  },
+  pinia,
+  computed:{
+    searchHotkey: function(){
+      return this.detectOs() === 'Mac OS' ? 'command+k' : 'ctrl+k';
     },
-    store: Store,
-    computed:{
-        keymap: function(){
-            return {
-                // FIXME: hotkey already used for something else on windows
-                'ctrl+esc': function(){ // close modal
-                    switch(Store.getters.currentModal){
-                        case Store.getters.STORE_MODAL_ENTRY:
-                            console.debug('entry:ctrl+esc');
-                            this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_MODAL_CLOSE);
-                            break;
-                        case Store.getters.STORE_MODAL_TRANSFER:
-                            console.debug('transfer:ctrl+esc');
-                            this.$eventHub.broadcast(this.$eventHub.EVENT_TRANSFER_MODAL_CLOSE);
-                            break;
-                        case Store.getters.STORE_MODAL_FILTER:
-                            console.debug('filter:ctrl+esc');
-                            this.$eventHub.broadcast(this.$eventHub.EVENT_FILTER_MODAL_CLOSE);
-                            break;
-                        default:
-                            console.debug("ctrl+esc");
-                    }
-                }.bind(this)
-            };
-        },
+
+    keymap: function(){
+      return {
+        [this.searchHotkey]: function(){  // open filter-modal
+          this.$eventHub.broadcast(this.$eventHub.EVENT_FILTER_MODAL_OPEN);
+        }.bind(this),
+        'esc': function(){ // close modal
+          switch (useModalStore().activeModal){
+            case useModalStore().MODAL_ENTRY:
+              this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_MODAL_CLOSE);
+              break;
+            case useModalStore().MODAL_TRANSFER:
+              this.$eventHub.broadcast(this.$eventHub.EVENT_TRANSFER_MODAL_CLOSE);
+              break;
+            case useModalStore().MODAL_FILTER:
+              this.$eventHub.broadcast(this.$eventHub.EVENT_FILTER_MODAL_CLOSE);
+              break;
+            default:
+              // do nothing
+          }
+        }.bind(this)
+      };
     },
-    methods: {
-        displayNotification: function(notification){
-            this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, notification);
-        },
+  },
+  methods: {
+    detectOs: function(){
+      const platform = navigator.platform;
+      if (platform.indexOf('Win') !== -1) return 'Windows';
+      if (platform.indexOf('Mac') !== -1) return 'Mac OS';
+      if (platform.indexOf('Linux') !== -1) return 'Linux';
+      return 'Unknown';
     },
-    mounted: function(){
-        this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
+    displayNotification: function(notification){
+      this.$eventHub.broadcast(this.$eventHub.EVENT_NOTIFICATION, notification);
+    },
+  },
+  mounted: function(){
+    this.$eventHub.broadcast(this.$eventHub.EVENT_LOADING_SHOW);
 
-        this.$eventHub.broadcast(this.$eventHub.EVENT_ACCOUNT_UPDATE);
+    this.$eventHub.broadcast(this.$eventHub.EVENT_ACCOUNT_UPDATE);
 
-        let version = new Version();
-        version.fetch();
+    useVersionStore().fetch();
 
-        let accountTypes = new AccountTypes();
-        accountTypes.fetch().then(this.displayNotification.bind(this));
+    useAccountTypesStore().fetch()
+      .then(this.displayNotification.bind(this));
 
-        this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, 0);
+    this.$eventHub.broadcast(this.$eventHub.EVENT_ENTRY_TABLE_UPDATE, 0);
 
-        let institutions = new Institutions();
-        institutions.fetch().then(this.displayNotification.bind(this));
+    useInstitutionsStore().fetch()
+      .then(this.displayNotification.bind(this));
 
-        let tags = new Tags();
-        tags.fetch().then(this.displayNotification.bind(this));
-    }
+    useTagsStore().fetch()
+      .then(this.displayNotification.bind(this));
+  }
 });

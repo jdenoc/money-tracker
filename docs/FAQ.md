@@ -26,7 +26,7 @@ NODE_OPTIONS="--max_old_space_size=2048"
 
 For example:
 ```bash
-NODE_OPTIONS="--max_old_space_size=2048" npm run build-dev
+NODE_OPTIONS="--max_old_space_size=2048" npm run build:dev
 ```
 
 If you continue to have issues, (and if possible,) increase the value.  
@@ -39,7 +39,7 @@ Sometime you will be alerted that you can't clear the cache. This is usually a p
 1. Identify what groups your user belongs to
     ```bash
     groups
-    ````
+    ```
 2. Find out the existing permissions
     ```bash
     ls -lah storage/framework/cache/data
@@ -53,3 +53,12 @@ Sometime you will be alerted that you can't clear the cache. This is usually a p
         ```bash
         rm -rf storage/framework/cache/data
         ```
+
+---
+
+### Docker
+
+View docker container healthcheck logs
+```bash
+docker inspect --format "{{json .State.Health }}" <container name> | jq
+```

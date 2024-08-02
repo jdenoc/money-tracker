@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Attachment;
+use App\Models\Attachment;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 
@@ -24,23 +24,23 @@ class ClearTmpUploads extends Command {
 
     /**
      * Execute the console command.
-     *
-     * @return void
      */
-    public function handle(){
+    public function handle(): int {
         $tmp_upload_file_count = 0;
         $tmp_upload_files = Storage::files(Attachment::STORAGE_TMP_UPLOAD);
-        foreach($tmp_upload_files as $tmp_upload_file){
-            if(strpos($tmp_upload_file, 'gitignore') !== false){
+        foreach ($tmp_upload_files as $tmp_upload_file) {
+            if (str_contains($tmp_upload_file, 'gitignore')) {
                 continue;   // don't delete .gitignore file
             }
             $deleted = Storage::delete($tmp_upload_file);
-            if($deleted){
+            if ($deleted) {
                 $tmp_upload_file_count++;
             }
         }
 
         $this->info($tmp_upload_file_count." files deleted from ".Attachment::STORAGE_TMP_UPLOAD);
+
+        return 0;
     }
 
 }

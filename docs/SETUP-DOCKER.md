@@ -2,7 +2,7 @@
 ## Docker Environment Setup
 
 ### Host machine prep
-Add `127.0.0.1  money-tracker.docker` to the host machines host file.
+Add `127.0.0.1  money-tracker.test` to the host machines host file.
 Host file locations can be found [here](https://en.wikipedia.org/wiki/Hosts_(file)#Location_in_the_file_system).
 
 ### Clone repo
@@ -13,68 +13,77 @@ cd money-tracker/
 
 ### Run composer install
 ```bash
-.docker/cmd/composer.sh install
+.docker/scripts/composer.sh install
 ```
 
 <small>***OPTIONAL***</small>:
 If you're working with PhpStorm, be sure to run the following command:
 ```bash
-.docker/cmd/composer.sh run-script ide-helper
+.docker/scripts/composer.sh run-script ide-helper
 ```
 This will generate Laravel Facades that PhpStorm can use.
 
 ### Run npm install
 ```bash
-.docker/cmd/npm.sh install
-.docker/cmd/npm.sh run-script build-dev
+.docker/scripts/npm.sh ci
+.docker/scripts/npm.sh run build:dev
 ```
 
 ### Bring "_UP_" application container(s)
 ```bash
-docker-compose -f .docker/docker-compose.yml -p "moneytracker" up -d
-# composer doesn't write to the correct .env file during setup
-# so we need to generate the APP_KEY value again
-.docker/cmd/artisan.sh key:generate
+docker compose up -d
 ```
 
 <small>***OPTIONAL***</small>:
 If you wish to run docker without xdebug, prefix the above command with `DISABLE_XDEBUG=true`  
 For Example:
 ```bash
-DISABLE_XDEBUG=true docker-compose -f .docker/docker-compose.yml -p "moneytracker" up -d
+DISABLE_XDEBUG=true docker compose up -d
 ```
 `DISABLE_XDEBUG=true` is required _once_ to build the docker image. Afterwards, it is never used again.
 
-### Set application version value
+### Set application key
+composer doesn't write to the correct .env file during setup so we need to generate the `APP_KEY` value again
+```bash
+.docker/scripts/artisan.sh key:generate
+```
+
+### Set application version
 _**Note:** you can replace_ `git describe --always` _with any value you want_
 ```bash
-.docker/cmd/artisan.sh app:version `git describe --always`
+.docker/scripts/artisan.sh app:version $(git describe --always)
 ```
 
 ### Setup database/clear existing database and re-initialise it as empty
 ```bash
-.docker/cmd/artisan.sh migrate:fresh
+.docker/scripts/artisan.sh migrate:fresh
 ```
 
 ### Load dummy data into database
 ```bash
-.docker/cmd/artisan.sh migrate:fresh --seeder=UiSampleDatabaseSeeder
+.docker/scripts/artisan.sh migrate:fresh --seeder=UiSampleDatabaseSeeder
 ```
 
-<small>***OPTIONAL***</small>:
-If you have a database dump file, you can load it with this command:
+### Load database backup
+If you have a database dump/backup file, you can load it with this command:
 ```bash
-.docker/cmd/mysql.sh < /path/to/file.sql
+.docker/scripts/mysql.sh < /path/to/file.sql
 ```
-`.docker/cmd/mysql.sh -i` can be used just like the typical `mysql` command, but is run within the mysql container
+
+Alternatively, you may wish to load the dump/backup sql files by copying the mysql dump file into the `database/snapshots/` directory and running the `snapshot:load` command.
+For example:
+```bash
+cp /path/to/file.sql database/snapshots/dump-file.sql
+.docker/scripts/artisan.sh snapshot:load dump-file
+```
 
 ### Tear-down
 ```bash
-docker-compose -f .docker/docker-compose.yml -p "moneytracker" down
+docker compose down
 ```
 
 _**Note:** You can tear down the docker containers as well as their associated volumes with this command:_
 ```bash
-docker-compose -f .docker/docker-compose.yml -p "moneytracker" down -v
+docker compose down -v
 ```
 _**Note:** You do not need to worry about "tearing down" the npm and/or composer containers. They will "remove" themselves once they have completed their tasks._

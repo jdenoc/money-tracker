@@ -2,17 +2,16 @@
 
 namespace App\Traits\Tests;
 
-use App\Account;
+use App\Models\Account;
 use App\Traits\EntryFilterKeys;
 use Faker\Generator as FakerGenerator;
 use Illuminate\Support\Collection;
 use PHPUnit\Framework\Assert;
 
 trait GenerateFilterTestCases {
-
     use EntryFilterKeys;
 
-    public function generateFilterTestCases($faker):array{
+    public function generateFilterTestCases($faker): array {
         $filter = [];
         $filter['no filter'] = [[]];
 
@@ -37,17 +36,17 @@ trait GenerateFilterTestCases {
 
         // confirm all filters in EntryFilterKeys trait are listed here
         $current_filters = self::getFilterValidationRules(false);
-        foreach(array_keys($current_filters) as $existing_filter){
+        foreach (array_keys($current_filters) as $existing_filter) {
             Assert::assertArrayHasKey($existing_filter, $filter_details);
         }
 
         // individual filter requests
-        foreach($filter_details as $filter_name=>$filter_value){
+        foreach ($filter_details as $filter_name=>$filter_value) {
             // confirm all filters listed in test are in EntryFilterKeys trait
             Assert::assertArrayHasKey($filter_name, $current_filters);
 
             // adding a switch to catch all eventualities for boolean conditions
-            switch($filter_name){
+            switch ($filter_name) {
                 case self::$FILTER_KEY_EXPENSE:
                 case self::$FILTER_KEY_ATTACHMENTS:
                 case self::$FILTER_KEY_UNCONFIRMED:
@@ -88,20 +87,19 @@ trait GenerateFilterTestCases {
      *
      * @return array
      */
-    protected function setTestSpecificFilters(FakerGenerator $faker, array $filter_details, $account=null, $tags=null):array{
-        if(key_exists(self::$FILTER_KEY_TAGS, $filter_details)){
+    protected function setTestSpecificFilters(FakerGenerator $faker, array $filter_details, $account=null, $tags=null): array {
+        if (key_exists(self::$FILTER_KEY_TAGS, $filter_details)) {
             $tag_ids = $tags->pluck('id')->toArray();
             $filter_details[self::$FILTER_KEY_TAGS] = $faker->randomElements($tag_ids, $faker->numberBetween(1, count($tag_ids)));
         }
-        if(key_exists(self::$FILTER_KEY_ACCOUNT_TYPE, $filter_details)){
+        if (key_exists(self::$FILTER_KEY_ACCOUNT_TYPE, $filter_details)) {
             $account_types = $account->account_types()->pluck('id')->toArray();
             $filter_details[self::$FILTER_KEY_ACCOUNT_TYPE] = $faker->randomElement($account_types);
         }
-        if(key_exists(self::$FILTER_KEY_ACCOUNT, $filter_details)){
+        if (key_exists(self::$FILTER_KEY_ACCOUNT, $filter_details)) {
             $filter_details[self::$FILTER_KEY_ACCOUNT] = $account->id;
         }
         return $filter_details;
     }
-
 
 }
