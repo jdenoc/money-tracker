@@ -1,2 +1,3 @@
 [mysqld]
+# allows stored function creators to be trusted not to create stored functions that may cause unsafe events to be written to the binary log
 log_bin_trust_function_creators = 1

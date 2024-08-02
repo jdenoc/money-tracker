@@ -7,7 +7,7 @@ services:
       dockerfile: .docker/app.dockerfile
       args:
         - DISABLE_XDEBUG=${DISABLE_XDEBUG:-false}
-    container_name: "app.money-tracker"
+    container_name: "money-tracker.app"
     hostname: app.money-tracker
     ports:
       - "80:80"
@@ -23,57 +23,46 @@ services:
     dns_search:
       - money-tracker.test
     networks:
-      - net.money-tracker
+      - default
 
   database:
-    build:
-      context: .
-      dockerfile: .docker/mysql.dockerfile
-    container_name: "mysql.money-tracker"
-    hostname: mysql.money-tracker
-    volumes:
-      - db.money-tracker:/var/lib/mysql
-      - ./.docker/logs/database:/var/log/mysql  # for logs
+    container_name: "money-tracker.mysql"
     environment:
       # if you change any of these, be sure to change the corresponding values in .env.docker
       - MYSQL_RANDOM_ROOT_PASSWORD=yes
       - MYSQL_DATABASE=money_tracker
       - MYSQL_USER=jdenoc
       - MYSQL_PASSWORD=password
+    healthcheck:
+      test: ["CMD", "mysql-health-check"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+    hostname: mysql.money-tracker
+    image: mysql:8.0.27
     networks:
-      - net.money-tracker
+      - default
+    volumes:
+      - db:/var/lib/mysql
+      - .docker/conf/mysql-log_bin_trust.cnf:/etc/mysql/conf.d/log_bin_trust.cnf
+      # healthcheck
+      - .docker/healthcheck/mysql-health-check.sh:/usr/local/bin/mysql-health-check
+      # logging
+      - .docker/conf/mysql-logging.cnf:/etc/mysql/conf.d/logging.cnf
+      - .docker/logs/database:/var/log/mysql
 
   cache:
     build:
       context: .
       dockerfile: .docker/memcached.dockerfile
-    container_name: "memcached.money-tracker"
+    container_name: "money-tracker.memcached"
     hostname: memcached.money-tracker
     networks:
-      - net.money-tracker
-
-  selenium: # needed for e2e (End-to-End) testing
-    build:
-      context: .
-      dockerfile: .docker/selenium.dockerfile
-    container_name: "selenium.money-tracker"
-    hostname: selenium.money-tracker
-    shm_size: "2g"
-    ports:
-      - "7900:7900"   # for VNC via browser
-    volumes:
-      - ./storage/tests/downloads:/home/seluser/Downloads
-    environment:
-      - VNC_NO_PASSWORD=1
-    depends_on:
-      - application
-    links:
-      - application:money-tracker.test
-    networks:
-      - net.money-tracker
+      - default
 
 volumes:
-  db.money-tracker: {}
+  db:
+    name: money-tracker.db
 
 networks:
-  net.money-tracker: {}
+  default: {}

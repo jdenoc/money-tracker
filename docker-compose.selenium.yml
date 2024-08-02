@@ -1,0 +1,25 @@
+---
+services:
+  selenium: # needed for e2e (End-to-End) testing
+    container_name: "money-tracker.selenium"
+    depends_on:
+      - application
+    environment:
+      - VNC_NO_PASSWORD=1
+    healthcheck:
+      test: ["CMD", "/home/seluser/selenium-health-check"]
+      timeout: 10s
+      retries: 3
+    hostname: selenium.money-tracker
+    image: selenium/standalone-chrome:4.9.0
+    links:
+      - application:money-tracker.test
+    networks:
+      - default
+    ports:
+      - "7900:7900"   # for VNC via browser
+    shm_size: "2g"
+    volumes:
+      - ./storage/tests/downloads:/home/seluser/Downloads
+      # healthcheck
+      - .docker/healthcheck/selenium-health-check.sh:/home/seluser/selenium-health-check
