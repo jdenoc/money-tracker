@@ -1,4 +1,5 @@
 # .github/actions/setup-docker/action.yml
+---
 name: Docker Setup
 description: build docker containers for use while testing
 inputs:
@@ -22,7 +23,7 @@ runs:
         mkdir -p ${{ inputs.image-path }}
         docker image ls "$(basename $PWD)*" --no-trunc
         docker image ls "${{ inputs.image-tag-composer }}" --no-trunc
-        
+
         IFS=$'\n'
         for image_name in $(docker image ls "$(basename $PWD)*" --format '{{.Repository}}')
         do

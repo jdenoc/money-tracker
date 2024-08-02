@@ -1,4 +1,5 @@
 # .github/workflows/tests.yml
+---
 name: Money-tracker CI
 
 # Controls when the action will run.
@@ -827,7 +828,7 @@ jobs:
       - tests-e2e-filter-modal
       - tests-e2e-stats
       - tests-e2e-settings
-    if: ${{ always() }} # You always want to be notified: success, failure, or cancelled
+    if: ${{ always() }}  # You always want to be notified: success, failure, or cancelled
     timeout-minutes: 15
     steps:
       - name: discord

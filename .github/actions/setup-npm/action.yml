@@ -1,4 +1,5 @@
 # .github/actions/setup-npm/action.yml
+---
 name: NPM Setup
 description: Load npm dependancies
 runs:
