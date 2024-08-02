@@ -7,8 +7,6 @@ use App\Traits\EntryFilterKeys;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Query\Builder;
-use Illuminate\Support\Facades\DB;
 
 class Entry extends BaseModel {
     use EntryFilterKeys;
@@ -130,7 +128,7 @@ class Entry extends BaseModel {
      * @return \Illuminate\Support\Collection
      */
     public static function get_collection_of_entries(array $filters = [], int $limit=10, int $offset=0, string $sort_by=self::DEFAULT_SORT_PARAMETER, string $sort_direction=self::DEFAULT_SORT_DIRECTION) {
-        $entries_query = self::build_entry_query($filters);
+        $entries_query = self::filter_entry_collection($filters);
         // this makes sure that the correct ID is present if a JOIN is required
         $entries_query->distinct()->select("entries.*");
         $entries_query->orderBy($sort_by, $sort_direction);
@@ -143,27 +141,16 @@ class Entry extends BaseModel {
      * @return int
      */
     public static function count_collection_of_entries(array $filters = []): int {
-        $entries_query = self::build_entry_query($filters);
-        // due to the risk of failure with potentially adding GROUP BY to the query
-        // we're going to use the generated query as a sub-query and count from that
-        return DB::table($entries_query->select('entries.id'))->count();
+        $entries_query = self::filter_entry_collection($filters);
+        return $entries_query->count();
     }
 
     /**
      * @param array $filters
      * @return mixed
      */
-    private static function build_entry_query(array $filters) {
-        $entries_query = Entry::whereNull('entries.'.self::DELETED_AT);
-        return self::filter_entry_collection($entries_query, $filters);
-    }
-
-    /**
-     * @param Builder $entries_query
-     * @param array $filters
-     * @return mixed
-     */
-    private static function filter_entry_collection($entries_query, array $filters) {
+    private static function filter_entry_collection(array $filters) {
+        $entries_query = Entry::query();
         foreach ($filters as $filter_name => $filter_constraint) {
             switch($filter_name) {
                 case self::$FILTER_KEY_START_DATE:
