@@ -2,6 +2,9 @@
 
 namespace App\Traits\Tests;
 
+/**
+ * @deprecated - unneeded if using the `artisan test` command
+ */
 trait OutputTestInfo {
 
     private static int $TEST_COUNT;

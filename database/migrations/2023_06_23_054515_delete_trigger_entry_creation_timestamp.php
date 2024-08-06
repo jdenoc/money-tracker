@@ -13,19 +13,19 @@ return new class extends Migration {
     /**
      * Run the migrations.
      */
-    public function up() {
-        DB::unprepared("DROP TRIGGER IF EXISTS ".self::TRIGGER);
+    public function up(): void {
+        DB::unprepared('DROP TRIGGER IF EXISTS ' . self::TRIGGER);
     }
 
     /**
      * Reverse the migrations.
      */
-    public function down() {
+    public function down(): void {
         DB::unprepared(
-            "CREATE TRIGGER ".self::TRIGGER."
+            'CREATE TRIGGER ' . self::TRIGGER . '
             BEFORE INSERT ON entries
             FOR EACH ROW
-            SET NEW.create_stamp = NOW()"
+            SET NEW.create_stamp = NOW()'
         );
     }
 

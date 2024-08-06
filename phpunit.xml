@@ -1,64 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation="./vendor/phpunit/phpunit/phpunit.xsd"
+    xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
     bootstrap="vendor/autoload.php"
     colors="true"
     stopOnFailure="true"
     enforceTimeLimit="true"
     defaultTimeLimit="600"
 >
-  <coverage processUncoveredFiles="true">
-    <include>
-      <directory suffix=".php">./app</directory>
-    </include>
-  </coverage>
+    <testsuites>
+        <testsuite name="api-delete">
+            <directory>tests/Feature/Api/Delete</directory>
+        </testsuite>
 
-  <testsuites>
-    <testsuite name="api-delete">
-      <directory suffix="Test.php">./tests/Feature/Api/Delete</directory>
-    </testsuite>
+        <testsuite name="api-get">
+            <directory>tests/Feature/Api/Get</directory>
+        </testsuite>
 
-    <testsuite name="api-get">
-      <directory suffix="Test.php">./tests/Feature/Api/Get</directory>
-    </testsuite>
+        <testsuite name="api-patch">
+            <directory>tests/Feature/Api/Patch</directory>
+        </testsuite>
 
-    <testsuite name="api-patch">
-      <directory suffix="Test.php">./tests/Feature/Api/Patch</directory>
-    </testsuite>
+        <testsuite name="api-post">
+            <directory>tests/Feature/Api/Post</directory>
+        </testsuite>
 
-    <testsuite name="api-post">
-      <directory suffix="Test.php">./tests/Feature/Api/Post</directory>
-    </testsuite>
+        <testsuite name="api-put">
+            <directory>tests/Feature/Api/Put</directory>
+        </testsuite>
 
-    <testsuite name="api-put">
-      <directory suffix="Test.php">./tests/Feature/Api/Put</directory>
-    </testsuite>
+        <testsuite name="console">
+            <directory>tests/Feature/Console</directory>
+        </testsuite>
 
-    <testsuite name="console">
-      <directory suffix="Test.php">./tests/Feature/Console</directory>
-    </testsuite>
+        <testsuite name="unit">
+            <directory>tests/Unit</directory>
+        </testsuite>
 
-    <testsuite name="unit">
-      <directory suffix="Test.php">./tests/Unit</directory>
-    </testsuite>
+        <testsuite name="web">
+            <directory>tests/Feature/Web</directory>
+        </testsuite>
+    </testsuites>
 
-    <testsuite name="web">
-      <directory suffix="Test.php">./tests/Feature/Web</directory>
-    </testsuite>
-  </testsuites>
-  <php>
-    <!--
-    In laravel $_SERVER is referenced before $_ENV
-    If $_SERVER differs from $_ENV, then the $_SERVER value takes precedence
-    -->
-    <server name="APP_ENV" value="testing" force="true"/>
-    <env name="APP_ENV" value="testing" force="true"/>
-    <env name="BCRYPT_ROUNDS" value="4" force="true"/>
-    <env name="CACHE_DRIVER" value="array" force="true"/>
-    <env name="MAIL_MAILER" value="array" force="true"/>
-    <env name="QUEUE_CONNECTION" value="sync" force="true"/>
-    <env name="SESSION_DRIVER" value="array" force="true"/>
-    <env name="TELESCOPE_ENABLED" value="false" force="true"/>
-  </php>
+    <source>
+        <include>
+            <directory>app</directory>
+        </include>
+    </source>
+
+    <php>
+        <!--
+        In laravel $_SERVER is referenced before $_ENV
+        If $_SERVER differs from $_ENV, then the $_SERVER value takes precedence
+        -->
+        <server name="APP_ENV" value="testing" force="true"/>
+        <env name="APP_ENV" value="testing" force="true"/>
+        <env name="BCRYPT_ROUNDS" value="4" force="true"/>
+        <env name="CACHE_DRIVER" value="array" force="true"/>
+        <env name="MAIL_MAILER" value="array" force="true"/>
+        <env name="PULSE_ENABLED" value="false"/>
+        <env name="QUEUE_CONNECTION" value="sync" force="true"/>
+        <env name="SESSION_DRIVER" value="array" force="true"/>
+        <env name="TELESCOPE_ENABLED" value="false" force="true"/>
+    </php>
 </phpunit>

@@ -21,8 +21,8 @@ class Attachment extends BaseModel {
     protected $guarded = [
         'stamp'
     ];
-    protected $dates = [
-        'stamp'
+    protected $casts = [
+        'stamp' => 'datetime'
     ];
     public $timestamps = false;
 

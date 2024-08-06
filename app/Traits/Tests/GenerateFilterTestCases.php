@@ -11,7 +11,7 @@ use PHPUnit\Framework\Assert;
 trait GenerateFilterTestCases {
     use EntryFilterKeys;
 
-    public function generateFilterTestCases($faker): array {
+    public static function generateFilterTestCases($faker): array {
         $filter = [];
         $filter['no filter'] = [[]];
 

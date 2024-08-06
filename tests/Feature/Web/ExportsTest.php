@@ -30,7 +30,7 @@ class ExportsTest extends ListEntriesBase {
         parent::tearDown();
     }
 
-    public function providerExportRequestMethodNotAllowed(): array {
+    public static function providerExportRequestMethodNotAllowed(): array {
         return [
             // Note: POST is the only valid request method
             'GET'=>['GET'],
@@ -54,8 +54,8 @@ class ExportsTest extends ListEntriesBase {
         $this->assertEquals(HttpStatus::HTTP_METHOD_NOT_ALLOWED, $status_code);
     }
 
-    public function providerExportPostRequest(): array {
-        return $this->generateFilterTestCases(fake(Factory::DEFAULT_LOCALE));   // manually setting local to bypass needing to access configs
+    public static function providerExportPostRequest(): array {
+        return self::generateFilterTestCases(fake(Factory::DEFAULT_LOCALE));   // manually setting local to bypass needing to access configs
     }
 
     /**
