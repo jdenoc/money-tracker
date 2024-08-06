@@ -1,4 +1,5 @@
 # .github/workflows/tests.yml
+---
 name: Money-tracker CI
 
 # Controls when the action will run.
@@ -154,6 +155,10 @@ jobs:
       - name: Build Vue
         uses: ./.github/actions/build-vue
         if: steps.cache-vue.outputs.cache-hit != 'true'
+
+      - name: "Linter: YAML"
+        id: linter-yaml
+        run: yamllint docker-compose*yml .github/**/*.yml
 
       - name: "Linter: PHP"
         id: linter-php
@@ -827,7 +832,7 @@ jobs:
       - tests-e2e-filter-modal
       - tests-e2e-stats
       - tests-e2e-settings
-    if: ${{ always() }} # You always want to be notified: success, failure, or cancelled
+    if: ${{ always() }}  # You always want to be notified: success, failure, or cancelled
     timeout-minutes: 15
     steps:
       - name: discord
