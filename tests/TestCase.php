@@ -2,7 +2,6 @@
 
 namespace Tests;
 
-use App\Traits\Tests\OutputTestInfo;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Http\Response;
@@ -11,22 +10,12 @@ use Illuminate\Testing\TestResponse;
 
 abstract class TestCase extends BaseTestCase {
     use CreatesApplication;
-    use OutputTestInfo;
     use RefreshDatabase;
 
-    public static function setUpBeforeClass(): void {
-        self::initOutputTestInfo();
-    }
 
     public function setUp(): void {
-        $this->outputTestName();
         parent::setUp();
         Cache::flush();
-    }
-
-    public function tearDown(): void {
-        parent::tearDown();
-        $this->incrementTestCount();
     }
 
     protected function assertDateFormat(string $date_string, string $format, string $assert_failure_message=''): void {

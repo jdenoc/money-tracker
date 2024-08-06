@@ -15,20 +15,12 @@ class PostEntriesTest extends ListEntriesBase {
     use GenerateFilterTestCases;
     use MaxEntryResponseValue;
 
-    public function providerPostEntriesFilter(): array {
-        // need to call setUp() before running through a data provider method
-        // environment needs setting up and isn't until setUp() is called
-        //$this->setUp();
-        // We can no longer call setUp() as a workaround
-        // it caused the database to populate and in doing so we caused some tests to fail.
-        // Said tests failed because they were testing the absence of database values.
-        $this->initialiseApplication();
-        return $this->generateFilterTestCases(fake());
+    public static function providerPostEntriesFilter(): array {
+        return self::generateFilterTestCases(fake());
     }
 
     /**
      * @dataProvider providerPostEntriesFilter
-     * @param array $filter_details
      */
     public function testPostEntriesThatDoNotExist(array $filter_details) {
         // GIVEN - no entries exist
@@ -40,7 +32,6 @@ class PostEntriesTest extends ListEntriesBase {
 
     /**
      * @dataProvider providerPostEntriesFilter
-     * @param array $filter_details
      * @throws Exception
      */
     public function testPostEntries(array $filter_details) {

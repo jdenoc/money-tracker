@@ -23,7 +23,7 @@ class GetInstitutionsTest extends TestCase {
         $this->assertEmpty($response_body_as_array);
     }
 
-    public function providerGetInstitutions(): array {
+    public static function providerGetInstitutions(): array {
         return [
             'all active:true'=>[true],      // all institutes are active
             'all active:false'=>[false]     // some institutes are active

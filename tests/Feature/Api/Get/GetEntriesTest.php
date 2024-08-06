@@ -91,7 +91,7 @@ class GetEntriesTest extends ListEntriesBase {
         $this->runEntryListAssertions($generate_entry_count, $entries_in_response, $generated_entries);
     }
 
-    public function providerLargeDataSets(): array {
+    public static function providerLargeDataSets(): array {
         $counts = [200, 500, 1000, 2000, 5000, 10000, 20000, 25000];
         $data_sets = [];
         foreach ($counts as $c) {

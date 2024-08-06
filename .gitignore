@@ -3,15 +3,16 @@
 
 # development
 .idea
-_ide_helper*.php
 .phpstorm.meta.php
-phpunit.dusk.xml
+.phpunit.cache
 .phpunit.result.cache
 .php-cs-fixer.cache
+_ide_helper*.php
+phpunit.dusk.xml
 
 # composer
-vendor
 auth.json
+vendor
 
 # npm
 node_modules

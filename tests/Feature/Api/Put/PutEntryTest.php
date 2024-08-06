@@ -207,50 +207,35 @@ class PutEntryTest extends TestCase {
         );
     }
 
-    public function providerUpdateEntryWithCertainProperties(): array {
-        // PHPUnit data providers are called before setUp() and setUpBeforeClass() are called.
-        // With that piece of information, we need to call setUp() earlier than we normally would so that we can use model factories
-        //$this->setUp();
-        // We can no longer call setUp() as a workaround
-        // it caused the database to populate and in doing so we caused some tests to fail.
-        // Said tests failed because they were testing the absence of database values.
-        $this->initialiseApplication();
-        // faker doesn't get setup until setUp() is called.
-        // Providers are called before setUp() is called, so we need to init faker here.
-        $this->setUpFaker();
-
+    public static function providerUpdateEntryWithCertainProperties(): array {
         $required_entry_fields = Entry::get_fields_required_for_update();
         unset($required_entry_fields[array_search('entry_value', $required_entry_fields)]);
         unset($required_entry_fields[array_search('account_type_id', $required_entry_fields)]);
         $required_entry_fields = array_values($required_entry_fields);  // do this to reset array index after unset
-        $generated_entry_data1 = Entry::factory()->make();
-        $generated_entry_data2 = Entry::factory()->make();
 
-        $update_entry_data = [];
-        $required_entry_field_count = count($required_entry_fields);
-        for ($i=0; $i<$required_entry_field_count; $i++) {
-            $update_entry_data['update ['.$required_entry_fields[$i].']'] = [
-                [$required_entry_fields[$i]=>$generated_entry_data1[$required_entry_fields[$i]]]
-            ];
+        $update_entry_fields = [];
+        foreach ($required_entry_fields as $required_entry_field) {
+            $update_entry_fields["update [$required_entry_field]"] = ['entry_data_fields'=>[$required_entry_field]];
         }
 
         $update_batch_properties = [];
-        $batch_entry_fields = array_rand($required_entry_fields, $this->faker->numberBetween(2, count($required_entry_fields)-1));
+        $batch_entry_fields = array_rand($required_entry_fields, mt_rand(2, count($required_entry_fields)-1));
         $batch_entry_fields = array_intersect_key($required_entry_fields, array_flip($batch_entry_fields));
         foreach ($batch_entry_fields as $entry_property) {
-            $update_batch_properties[$entry_property] = $generated_entry_data2[$entry_property];
+            $update_batch_properties[$entry_property] = $entry_property;
         }
-        $update_entry_data['update ['.implode(',', $batch_entry_fields).']'] = [$update_batch_properties];
+        $update_entry_fields['update ['.implode(',', $batch_entry_fields).']'] = ['entry_data_fields'=>$update_batch_properties];
 
-        return $update_entry_data;
+        return $update_entry_fields;
     }
 
     /**
      * @dataProvider providerUpdateEntryWithCertainProperties
-     * @param array $entry_data
      */
-    public function testUpdateEntryWithCertainProperties($entry_data) {
+    public function testUpdateEntryWithCertainProperties(array $entry_data_fields) {
         // GIVEN - see setUp()
+        $generated_entry_data = Entry::factory()->make()->toArray();
+        $entry_data = array_intersect_key($generated_entry_data, array_flip($entry_data_fields));
 
         // WHEN
         $put_response = $this->putJson($this->_base_uri.$this->_generated_entry->id, $entry_data);

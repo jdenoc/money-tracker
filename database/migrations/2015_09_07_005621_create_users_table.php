@@ -10,10 +10,8 @@ return new class extends Migration {
 
     /**
      * Create `users` table
-     *
-     * @return void
      */
-    public function up() {
+    public function up(): void {
         Schema::create(self::$TABLE, function(Blueprint $table) {
             $table->increments('id');
             $table->string('email', 100);
@@ -22,10 +20,8 @@ return new class extends Migration {
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down() {
+    public function down(): void {
         Schema::dropIfExists(self::$TABLE);
     }
 
