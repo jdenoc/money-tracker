@@ -1,4 +1,4 @@
-FROM php:8.0-apache
+FROM php:8.1-apache-bullseye
 
 ENV DOCKER_LOG_STDOUT /proc/1/fd/1
 ENV DOCKER_LOG_STDERR /proc/1/fd/2
