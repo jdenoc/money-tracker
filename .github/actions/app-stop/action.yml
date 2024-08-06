@@ -1,4 +1,5 @@
 # .github/actions/app-stop/action.yml
+---
 name: Down docker containers
 description: Down docker containers & volumes
 runs:

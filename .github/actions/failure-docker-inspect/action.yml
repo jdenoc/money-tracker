@@ -1,4 +1,5 @@
 # .github/actions/failure-docker-inspect/action.yml
+---
 name: Failure - Docker Inspection
 description: Provide a snap-shot of docker containers used after a failure
 runs:

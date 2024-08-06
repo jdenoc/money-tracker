@@ -1,4 +1,5 @@
 # .github/actions/setup-composer/action.yml
+---
 name: Composer Setup
 description: Load composer dependancies
 inputs:

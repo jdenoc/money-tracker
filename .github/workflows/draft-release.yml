@@ -1,4 +1,5 @@
 # .github/workflows/draft-release.yml
+---
 name: Money-tracker CI - Create draft release
 
 # Triggers the workflow when a tag is pushed

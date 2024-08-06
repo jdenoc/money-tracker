@@ -1,4 +1,5 @@
 # .github/actions/app-run/action.yml
+---
 name: App Init
 description: Initialise app for use
 inputs:

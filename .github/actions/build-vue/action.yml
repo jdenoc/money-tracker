@@ -1,4 +1,5 @@
 # .github/actions/build-vue/action.yml
+---
 name: Build Vue
 description: Build vue components
 runs:
