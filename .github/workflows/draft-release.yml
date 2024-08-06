@@ -17,7 +17,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
 
@@ -46,9 +46,9 @@ jobs:
           release_name: ${{ github.ref }}
           body: |
             ${{ env.RELEASE_MESSAGE }}
-            
+
             ---
-            
+
             **Full Changelog**: https://github.com/jdenoc/money-tracker/compare/${{ env.PREVIOUS_RELEASE_NAME }}...${{ env.RELEASE_NAME }}
 
             ---
