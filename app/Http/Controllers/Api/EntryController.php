@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\AttachAttachmentToEntry;
 use App\Models\Entry;
 use App\Models\AccountType;
 use App\Models\Attachment;
@@ -173,7 +174,7 @@ class EntryController extends Controller {
         $this->update_entry_tags($entry_being_modified, $entry_tags);
 
         $entry_attachments = !empty($entry_data['attachments']) && is_array($entry_data['attachments']) ? $entry_data['attachments'] : [];
-        $this->attach_attachments_to_entry($entry_being_modified, $entry_attachments);
+        AttachAttachmentToEntry::dispatchIf(!empty($entry_attachments), $entry_being_modified->id, $entry_attachments);
 
         return response(
             [self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_NO_ERROR, self::$RESPONSE_SAVE_KEY_ID=>$entry_being_modified->id],
@@ -370,24 +371,6 @@ class EntryController extends Controller {
         $tags_to_remove = array_diff($currently_attached_tags, $new_entry_tags);
         foreach ($tags_to_remove as $tag_to_remove) {
             $entry->tags()->detach($tag_to_remove);
-        }
-    }
-
-    private function attach_attachments_to_entry(Entry $entry, array $entry_attachments) {
-        foreach ($entry_attachments as $attachment_data) {
-            if (!is_array($attachment_data)) {
-                continue;
-            }
-
-            $existing_attachment = Attachment::find($attachment_data['uuid']);
-            if (is_null($existing_attachment)) {
-                $new_attachment = new Attachment();
-                $new_attachment->uuid = $attachment_data['uuid'];
-                $new_attachment->name = $attachment_data['name'];
-                $new_attachment->entry_id = $entry->id;
-                $new_attachment->storage_move_from_tmp_to_main();
-                $new_attachment->save();
-            }
         }
     }
 

@@ -14,6 +14,8 @@ use App\Traits\Tests\Dusk\TagsInput as DuskTraitTagsInput;
 use App\Traits\Tests\Dusk\ToggleButton as DuskTraitToggleButton;
 use App\Traits\Tests\WaitTimes;
 use App\Traits\Tests\WithTailwindColors;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskWithMigrationsTestCase as DuskTestCase;
 use Laravel\Dusk\Browser;
@@ -681,19 +683,19 @@ class EntryModalNewEntryTest extends DuskTestCase {
         $account_type = $account_types[array_rand($account_types, 1)];
 
         $this->browse(function(Browser $browser) use ($account_type, $has_tags, $has_attachments) {
-            $memo_field = "Test entry - generic".($has_tags ? " w\ tags" : "").($has_attachments ? " \w attachments" : "");
+            $memo_field_text = "Test entry - generic".($has_tags ? " w\ tags" : "").($has_attachments ? " \w attachments" : "");
             $upload_file_path = $has_attachments ? $this->getFullPathOfRandomAttachmentFromTestStorage() : '';
 
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $this->openNewEntryModal($browser);
             $browser
-                ->within($this->_selector_modal_entry.' '.$this->_selector_modal_body, function(Browser $modal_body) use ($account_type, $memo_field, $has_tags, $has_attachments, $upload_file_path) {
+                ->within($this->_selector_modal_entry.' '.$this->_selector_modal_body, function(Browser $modal_body) use ($account_type, $memo_field_text, $has_tags, $has_attachments, $upload_file_path) {
                     $this->waitUntilSelectLoadingIsMissing($modal_body, $this->_selector_modal_entry_field_account_type);
                     $modal_body
                         ->type($this->_selector_modal_entry_field_value, "9.99")
                         ->select($this->_selector_modal_entry_field_account_type, $account_type['id'])
-                        ->type($this->_selector_modal_entry_field_memo, $memo_field);
+                        ->type($this->_selector_modal_entry_field_memo, $memo_field_text);
 
                     if ($has_tags) {
                         $tags = $this->getApiTags();
@@ -708,8 +710,16 @@ class EntryModalNewEntryTest extends DuskTestCase {
                     }
                 });
             if ($has_attachments) {
-                $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_INFO, sprintf(self::$LABEL_FILE_UPLOAD_SUCCESS_NOTIFICATION, basename($upload_file_path)));
+                $uploaded_base_filename = basename($upload_file_path);
+                $this->assertNotificationContents($browser, self::$NOTIFICATION_TYPE_INFO, sprintf(self::$LABEL_FILE_UPLOAD_SUCCESS_NOTIFICATION, $uploaded_base_filename));
                 $this->dismissNotification($browser);
+
+                // assert file got uploaded to `tmp-uploads/` storage directory
+                $tmp_files = Storage::files('tmp-uploads');
+                $uploaded_to_tmp_dir = array_filter($tmp_files, function(string $f) use ($uploaded_base_filename) {
+                    return Str::contains($f, $uploaded_base_filename);
+                });
+                $this->assertNotEmpty($uploaded_to_tmp_dir);
             }
 
             $browser->within($this->_selector_modal_entry.' '.$this->_selector_modal_foot, function(Browser $modal_foot) {
@@ -721,8 +731,8 @@ class EntryModalNewEntryTest extends DuskTestCase {
             $browser
                 ->assertMissing($this->_selector_modal_entry)
 
-                ->within($this->_selector_table.' .unconfirmed'.($has_attachments ? ".has-attachments" : "").($has_tags ? ".has-tags" : ""), function(Browser $table_row) use ($memo_field) {
-                    $table_row->assertSee($memo_field);
+                ->within($this->_selector_table.' .unconfirmed'.($has_attachments ? ".has-attachments" : "").($has_tags ? ".has-tags" : ""), function(Browser $table_row) use ($memo_field_text) {
+                    $table_row->assertSee($memo_field_text);
                 });
         });
     }
