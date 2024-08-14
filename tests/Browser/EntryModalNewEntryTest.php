@@ -716,7 +716,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
 
                 // assert file got uploaded to `tmp-uploads/` storage directory
                 $tmp_files = Storage::files('tmp-uploads');
-                $uploaded_to_tmp_dir = array_filter($tmp_files, function (string $f) use ($uploaded_base_filename){
+                $uploaded_to_tmp_dir = array_filter($tmp_files, function(string $f) use ($uploaded_base_filename) {
                     return Str::contains($f, $uploaded_base_filename);
                 });
                 $this->assertNotEmpty($uploaded_to_tmp_dir);
