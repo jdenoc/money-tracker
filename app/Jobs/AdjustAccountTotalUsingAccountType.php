@@ -31,7 +31,7 @@ class AdjustAccountTotalUsingAccountType implements ShouldQueue {
     /**
      * Execute the job.
      */
-    public function handle() {
+    public function handle(): void {
         Log::debug(class_basename(__CLASS__)." job running [accountId:{$this->account->id}]");
         $entry_value = Money::ofMinor($this->rawValue, $this->account->currency)
             ->multipliedBy(($this->isExpense) ? -1 : 1);
