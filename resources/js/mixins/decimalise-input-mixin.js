@@ -4,7 +4,13 @@ export const decimaliseInputMixin = {
 
   methods: {
     decimaliseValue: function(inputValue){
-      return _.toNumber(inputValue).toFixed(2);
+      let sanitisedValue;
+      if(!_.isNumber(inputValue)){
+        sanitisedValue = inputValue.replace(/[^\d.-]/g, '');
+      } else {
+        sanitisedValue = inputValue;
+      }
+      return _.toNumber(sanitisedValue).toFixed(2);
     }
   }
 };
