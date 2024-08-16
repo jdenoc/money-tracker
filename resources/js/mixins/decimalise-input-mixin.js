@@ -4,12 +4,15 @@ export const decimaliseInputMixin = {
 
   methods: {
     decimaliseValue: function(inputValue){
-      let sanitisedValue;
-      if(!_.isNumber(inputValue)){
-        sanitisedValue = inputValue.replace(/[^\d.-]/g, '');
-      } else {
-        sanitisedValue = inputValue;
+      if(_.isNumber(inputValue)){
+        return _.toNumber(inputValue).toFixed(2);
       }
+
+      if(_.isEmpty(inputValue)){
+        return '';
+      }
+
+      let sanitisedValue = inputValue.replace(/[^\d.-]/g, '');
       return _.toNumber(sanitisedValue).toFixed(2);
     }
   }
