@@ -402,6 +402,7 @@ export default {
       useModalStore().activeModal = useModalStore().MODAL_ENTRY;
       if(!_.isEmpty(entryData)){
         this.entryData = _.clone(entryData);
+        this.entryData.entry_value = this.decimaliseValue(this.entryData.entry_value);
         this.entryData.confirm ? this.lockModal() : this.unlockModal();
         this.isDeletable = true;
       } else {
