@@ -358,7 +358,7 @@ class UpdateAccountTotalTest extends DuskTestCase {
 
             $institution_node->within($this->_selector_panel_institutions_accounts.' #account-'.$account_id, function(Browser $account_node) use ($expected_account_total) {
                 $account_node_total = $account_node->text($this->_selector_panel_institutions_accounts_account_total);
-                $this->assertTrue($expected_account_total->isEqualTo($account_node_total));
+                $this->assertTrue($expected_account_total->isEqualTo($account_node_total), "Account total does not match. Expected: {$expected_account_total}, Actual: {$account_node_total}");
             });
         });
     }
