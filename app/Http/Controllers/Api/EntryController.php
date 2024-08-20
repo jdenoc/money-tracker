@@ -404,10 +404,10 @@ class EntryController extends Controller {
             return response([], HttpStatus::HTTP_NOT_FOUND);
         } else {
             $entries_collection->transform(function(Entry $entry) {
-                $entry->has_attachments = $entry->has_attachments();
+                $entry->has_attachments = $entry->attachments_exists;
                 $entry->tags = $entry->get_tag_ids();
                 $entry->is_transfer = !is_null($entry->transfer_entry_id);
-                unset($entry->transfer_entry_id);
+                unset($entry->transfer_entry_id, $entry->attachments_exists);
                 $entry->makeHidden(['accountType']);
                 return $entry;
             });

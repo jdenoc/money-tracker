@@ -130,9 +130,11 @@ class Entry extends BaseModel {
     public static function get_collection_of_entries(array $filters = [], int $limit=10, int $offset=0, string $sort_by=self::DEFAULT_SORT_PARAMETER, string $sort_direction=self::DEFAULT_SORT_DIRECTION) {
         $entries_query = self::filter_entry_collection($filters);
         // this makes sure that the correct ID is present if a JOIN is required
-        $entries_query->distinct()->select("entries.*");
-        $entries_query->orderBy($sort_by, $sort_direction);
-        $entries_query->latest(self::CREATED_AT);
+        $entries_query
+            ->distinct()->select("entries.*")
+            ->withExists("attachments")
+            ->orderBy($sort_by, $sort_direction)
+            ->latest(self::CREATED_AT);
         return $entries_query->offset($offset)->limit($limit)->get();
     }
 
@@ -147,7 +149,6 @@ class Entry extends BaseModel {
 
     /**
      * @param array $filters
-     * @return mixed
      */
     private static function filter_entry_collection(array $filters) {
         $entries_query = Entry::query();
