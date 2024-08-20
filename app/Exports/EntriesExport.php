@@ -27,7 +27,6 @@ class EntriesExport implements FromCollection, WithHeadings, WithMapping, WithCo
     public function map($row): array {
         $income_value = $row->expense ? '' : $row->entry_value;
         $expense_value = $row->expense ? $row->entry_value : '';
-        $has_attachment = $row->has_attachments;
         $is_transfer = !is_null($row->transfer_entry_id);
         $tags = $row->has_tags() ? $row->get_tag_ids() : [];
 
@@ -38,7 +37,7 @@ class EntriesExport implements FromCollection, WithHeadings, WithMapping, WithCo
             $income_value,
             $expense_value,
             $row->account_type_id,
-            $has_attachment,
+            $row->attachments_exists,
             $is_transfer,
             $tags,
         ];
