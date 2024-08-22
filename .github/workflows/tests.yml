@@ -23,7 +23,7 @@ jobs:
     timeout-minutes: 1
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Generate cache keys [docker]
         id: cache-key-docker
@@ -98,11 +98,11 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: "Cache: Docker images"
         id: cache-docker-image
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-docker }}
           key: ${{ needs.pre-build.outputs.cache-key-docker }}
@@ -121,7 +121,7 @@ jobs:
 
       - name: "Cache: Composer packages"
         id: cache-composer
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-composer }}
           key: ${{ needs.pre-build.outputs.cache-key-composer }}
@@ -135,7 +135,7 @@ jobs:
 
       - name: "Cache: npm packages"
         id: cache-npm
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-npm }}
           key: ${{ needs.pre-build.outputs.cache-key-npm }}
@@ -146,7 +146,7 @@ jobs:
 
       - name: "Cache: vue"
         id: cache-vue
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-vue }}
           key: ${{ needs.pre-build.outputs.cache-key-vue }}
@@ -175,26 +175,26 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # retrieve cache
       - name: Get Cached Docker images
         id: docker-image-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-docker }}
           key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
       - name: Get Cached Composer packages
         id: composer-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-composer }}
           key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
       - name: Get Cached npm packages
         id: npm-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-npm }}
           key: ${{ needs.pre-build.outputs.cache-key-npm }}
@@ -249,7 +249,7 @@ jobs:
         if: always()
 
       - name: Failure upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: ${{ github.sha }}-unit
@@ -264,33 +264,33 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # retrieve cache
       - name: Get Cached Docker images
         id: docker-image-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-docker }}
           key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
       - name: Get Cached Composer packages
         id: composer-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-composer }}
           key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
       - name: Get Cached npm packages
         id: npm-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-npm }}
           key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
       - name: Get Cached vue
         id: vue-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-vue }}
           key: ${{ needs.pre-build.outputs.cache-key-vue }}
@@ -314,7 +314,7 @@ jobs:
         if: always()
 
       - name: Failure upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: ${{ github.sha }}-e2e-demo
@@ -329,33 +329,33 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # retrieve cache
       - name: Get Cached Docker images
         id: docker-image-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-docker }}
           key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
       - name: Get Cached Composer packages
         id: composer-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-composer }}
           key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
       - name: Get Cached npm packages
         id: npm-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-npm }}
           key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
       - name: Get Cached vue
         id: vue-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-vue }}
           key: ${{ needs.pre-build.outputs.cache-key-vue }}
@@ -379,7 +379,7 @@ jobs:
         if: always()
 
       - name: Failure upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: ${{ github.sha }}-e2e-notifications
@@ -394,33 +394,33 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # retrieve cache
       - name: Get Cached Docker images
         id: docker-image-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-docker }}
           key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
       - name: Get Cached Composer packages
         id: composer-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-composer }}
           key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
       - name: Get Cached npm packages
         id: npm-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-npm }}
           key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
       - name: Get Cached vue
         id: vue-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-vue }}
           key: ${{ needs.pre-build.outputs.cache-key-vue }}
@@ -453,7 +453,7 @@ jobs:
         if: always()
 
       - name: Failure upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: ${{ github.sha }}-e2e-nav
@@ -468,33 +468,33 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # retrieve cache
       - name: Get Cached Docker images
         id: docker-image-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-docker }}
           key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
       - name: Get Cached Composer packages
         id: composer-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-composer }}
           key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
       - name: Get Cached npm packages
         id: npm-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-npm }}
           key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
       - name: Get Cached vue
         id: vue-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-vue }}
           key: ${{ needs.pre-build.outputs.cache-key-vue }}
@@ -524,7 +524,7 @@ jobs:
         if: always()
 
       - name: Failure upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: ${{ github.sha }}-e2e-entry-modal
@@ -539,33 +539,33 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # retrieve cache
       - name: Get Cached Docker images
         id: docker-image-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-docker }}
           key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
       - name: Get Cached Composer packages
         id: composer-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-composer }}
           key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
       - name: Get Cached npm packages
         id: npm-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-npm }}
           key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
       - name: Get Cached vue
         id: vue-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-vue }}
           key: ${{ needs.pre-build.outputs.cache-key-vue }}
@@ -589,7 +589,7 @@ jobs:
         if: always()
 
       - name: Failure upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: ${{ github.sha }}-e2e-transfer-modal
@@ -604,33 +604,33 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # retrieve cache
       - name: Get Cached Docker images
         id: docker-image-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-docker }}
           key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
       - name: Get Cached Composer packages
         id: composer-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-composer }}
           key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
       - name: Get Cached npm packages
         id: npm-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-npm }}
           key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
       - name: Get Cached vue
         id: vue-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-vue }}
           key: ${{ needs.pre-build.outputs.cache-key-vue }}
@@ -660,7 +660,7 @@ jobs:
         if: always()
 
       - name: Failure upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: ${{ github.sha }}-e2e-filter-modal
@@ -675,33 +675,33 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # retrieve cache
       - name: Get Cached Docker images
         id: docker-image-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-docker }}
           key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
       - name: Get Cached Composer packages
         id: composer-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-composer }}
           key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
       - name: Get Cached npm packages
         id: npm-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-npm }}
           key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
       - name: Get Cached vue
         id: vue-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-vue }}
           key: ${{ needs.pre-build.outputs.cache-key-vue }}
@@ -737,7 +737,7 @@ jobs:
         if: always()
 
       - name: Failure upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: ${{ github.sha }}-e2e-stats
@@ -752,33 +752,33 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # retrieve cache
       - name: Get Cached Docker images
         id: docker-image-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-docker }}
           key: ${{ needs.pre-build.outputs.cache-key-docker }}
 
       - name: Get Cached Composer packages
         id: composer-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-composer }}
           key: ${{ needs.pre-build.outputs.cache-key-composer }}
 
       - name: Get Cached npm packages
         id: npm-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-npm }}
           key: ${{ needs.pre-build.outputs.cache-key-npm }}
 
       - name: Get Cached vue
         id: vue-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-vue }}
           key: ${{ needs.pre-build.outputs.cache-key-vue }}
@@ -808,7 +808,7 @@ jobs:
         if: always()
 
       - name: Failure upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: ${{ github.sha }}-e2e-settings

@@ -529,6 +529,7 @@ export default {
         this.unlockModal();
       } else {
         this.entryData = _.clone(this.entriesStore.find(this.entryData.id));
+        this.entryData.entry_value = this.decimaliseValue(this.entryData.entry_value);
         this.lockModal();
       }
     },
