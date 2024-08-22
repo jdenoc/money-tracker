@@ -129,9 +129,9 @@ class Entry extends BaseModel {
      */
     public static function get_collection_of_entries(array $filters = [], int $limit=10, int $offset=0, string $sort_by=self::DEFAULT_SORT_PARAMETER, string $sort_direction=self::DEFAULT_SORT_DIRECTION) {
         $entries_query = self::filter_entry_collection($filters);
-        // this makes sure that the correct ID is present if a JOIN is required
         $entries_query
             ->distinct()->select("entries.*")
+            ->selectSub("SELECT GROUP_CONCAT(COALESCE(entry_tags.tag_id, '')) FROM entry_tags WHERE entry_tags.entry_id=entries.id", "tags")
             ->withExists("attachments")
             ->orderBy($sort_by, $sort_direction)
             ->latest(self::CREATED_AT);
