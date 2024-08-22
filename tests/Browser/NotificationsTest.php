@@ -15,6 +15,7 @@ use App\Traits\Tests\Dusk\EntryModal as DuskTraitEntryModal;
 use App\Traits\Tests\Dusk\Loading as DuskTraitLoading;
 use App\Traits\Tests\Dusk\Navbar as DuskTraitNavbar;
 use App\Traits\Tests\Dusk\Notification as DuskTraitNotification;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -172,6 +173,8 @@ class NotificationsTest extends DuskTestCase {
      * test 6/20
      */
     public function testNotificationDeleteAttachment404() {
+        $this->generatedEntryWithAttachmentOneMonthInTheFuture();
+
         $this->browse(function(Browser $browser) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
@@ -204,6 +207,8 @@ class NotificationsTest extends DuskTestCase {
      * test 7/20
      */
     public function testNotificationDeleteAttachment500() {
+        $this->generatedEntryWithAttachmentOneMonthInTheFuture();
+
         $table = Attachment::getTableName();
         $recreate_table_query = $this->getTableRecreationQuery($table);
 
@@ -238,6 +243,15 @@ class NotificationsTest extends DuskTestCase {
         });
 
         DB::statement($recreate_table_query);
+    }
+
+    private function generatedEntryWithAttachmentOneMonthInTheFuture() {
+        $account_type = AccountType::all()->random();
+        $new_entry = Entry::factory()->create([
+            'account_type_id'=>$account_type->id,
+            'entry_date'=>Carbon::now()->addDays(30)
+        ]);
+        Attachment::factory()->create(['entry_id'=>$new_entry->id]);
     }
 
     /**
