@@ -102,7 +102,7 @@ jobs:
 
       - name: "Cache: Docker images"
         id: cache-docker-image
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-docker }}
           key: ${{ needs.pre-build.outputs.cache-key-docker }}
@@ -121,7 +121,7 @@ jobs:
 
       - name: "Cache: Composer packages"
         id: cache-composer
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ needs.pre-build.outputs.cache-path-composer }}
           key: ${{ needs.pre-build.outputs.cache-key-composer }}
