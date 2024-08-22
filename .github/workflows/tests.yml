@@ -249,7 +249,7 @@ jobs:
         if: always()
 
       - name: Failure upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: ${{ github.sha }}-unit
@@ -314,7 +314,7 @@ jobs:
         if: always()
 
       - name: Failure upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: ${{ github.sha }}-e2e-demo
@@ -379,7 +379,7 @@ jobs:
         if: always()
 
       - name: Failure upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: ${{ github.sha }}-e2e-notifications
@@ -453,7 +453,7 @@ jobs:
         if: always()
 
       - name: Failure upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: ${{ github.sha }}-e2e-nav
@@ -524,7 +524,7 @@ jobs:
         if: always()
 
       - name: Failure upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: ${{ github.sha }}-e2e-entry-modal
@@ -589,7 +589,7 @@ jobs:
         if: always()
 
       - name: Failure upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: ${{ github.sha }}-e2e-transfer-modal
@@ -660,7 +660,7 @@ jobs:
         if: always()
 
       - name: Failure upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: ${{ github.sha }}-e2e-filter-modal
@@ -737,7 +737,7 @@ jobs:
         if: always()
 
       - name: Failure upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: ${{ github.sha }}-e2e-stats
@@ -808,7 +808,7 @@ jobs:
         if: always()
 
       - name: Failure upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: ${{ github.sha }}-e2e-settings
