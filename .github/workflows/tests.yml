@@ -23,7 +23,7 @@ jobs:
     timeout-minutes: 1
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Generate cache keys [docker]
         id: cache-key-docker
@@ -98,7 +98,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: "Cache: Docker images"
         id: cache-docker-image
@@ -175,7 +175,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # retrieve cache
       - name: Get Cached Docker images
@@ -264,7 +264,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # retrieve cache
       - name: Get Cached Docker images
@@ -329,7 +329,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # retrieve cache
       - name: Get Cached Docker images
@@ -394,7 +394,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # retrieve cache
       - name: Get Cached Docker images
@@ -468,7 +468,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # retrieve cache
       - name: Get Cached Docker images
@@ -539,7 +539,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # retrieve cache
       - name: Get Cached Docker images
@@ -604,7 +604,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # retrieve cache
       - name: Get Cached Docker images
@@ -675,7 +675,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # retrieve cache
       - name: Get Cached Docker images
@@ -752,7 +752,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # retrieve cache
       - name: Get Cached Docker images
