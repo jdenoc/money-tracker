@@ -126,7 +126,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                     $entry_id = $entry_modal->inputValue($this->_selector_modal_entry_field_entry_id);
                     $this->assertNotEmpty($entry_id);
                     $entry_data = $this->getApiEntry($entry_id);
-                    $entry_data['entry_value'] = number_format($entry_data['entry_value'], 2);
+                    $entry_data['entry_value'] = number_format($entry_data['entry_value'], 2, '.', '');
 
                     $entry_modal
                         ->within($this->_selector_modal_head, function(Browser $modal_head) {
@@ -187,7 +187,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                     $entry_id = $entry_modal->inputValue($this->_selector_modal_entry_field_entry_id);
                     $this->assertNotEmpty($entry_id);
                     $entry_data = $this->getApiEntry($entry_id);
-                    $entry_data['entry_value'] = number_format($entry_data['entry_value'], 2);
+                    $entry_data['entry_value'] = number_format($entry_data['entry_value'], 2, '.', '');
 
                     $entry_modal
                         ->within($this->_selector_modal_head, function(Browser $modal_head) {
@@ -740,7 +740,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                     $entry_modal
                         ->within($this->_selector_modal_body, function(Browser $modal_body) use ($transfer_entry_data) {
                             $this->assertEntryModalDate($modal_body, $transfer_entry_data['entry_date']);
-                            $transfer_entry_data['entry_value'] = number_format($transfer_entry_data['entry_value'], 2);
+                            $transfer_entry_data['entry_value'] = number_format($transfer_entry_data['entry_value'], 2, '.', '');
                             $this->assertEntryModalValue($modal_body, $transfer_entry_data['entry_value']);
                             $this->assertEntryModalAccountType($modal_body, $transfer_entry_data['account_type_id']);
                             $this->assertEntryModalMemo($modal_body, $transfer_entry_data['memo']);
@@ -764,7 +764,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                     $entry_modal
                         ->within($this->_selector_modal_body, function(Browser $modal_body) use ($entry_data) {
                             $this->assertEntryModalDate($modal_body, $entry_data['entry_date']);
-                            $entry_data['entry_value'] = number_format($entry_data['entry_value'], 2);
+                            $entry_data['entry_value'] = number_format($entry_data['entry_value'], 2, '.', '');
                             $this->assertEntryModalValue($modal_body, $entry_data['entry_value']);
                             $this->assertEntryModalAccountType($modal_body, $entry_data['account_type_id']);
                             $this->assertEntryModalMemo($modal_body, $entry_data['memo']);
@@ -1234,7 +1234,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                     // retrieve entry data prior to input changes to avoid worry of values changing unintentionally
                     $entry_id = $this->getEntryIdFromSelector($entry_selector);
                     $entry_data = $this->getApiEntry($entry_id);
-                    $entry_data['entry_value'] = number_format($entry_data['entry_value'], 2);
+                    $entry_data['entry_value'] = number_format($entry_data['entry_value'], 2, '.', '');
 
                     // unlock modal
                     $entry_modal->within($this->_selector_modal_foot, function(Browser $modal_foot) {
