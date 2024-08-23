@@ -30,7 +30,7 @@ services:
     container_name: "money-tracker.mysql"
     hostname: mysql.money-tracker
     volumes:
-      - db.money-tracker:/var/lib/mysql
+      - db:/var/lib/mysql
       # allows stored function creators to be trusted not to create stored functions that may cause unsafe events to be written to the binary log
       - .docker/conf/mysql-log_bin_trust.cnf:/etc/mysql/conf.d/log_bin_trust.cnf:ro
       # logging
@@ -82,7 +82,8 @@ services:
       - net.money-tracker
 
 volumes:
-  db.money-tracker: {}
+  db:
+    name: money-tracker.db
 
 networks:
   net.money-tracker: {}
