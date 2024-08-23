@@ -23,7 +23,7 @@ services:
     dns_search:
       - money-tracker.test
     networks:
-      - net.money-tracker
+      - default
 
   database:
     image: mysql:8.0.27
@@ -50,7 +50,7 @@ services:
       timeout: 10s
       retries: 10
     networks:
-      - net.money-tracker
+      - default
 
   cache:
     build:
@@ -59,7 +59,7 @@ services:
     container_name: "memcached.money-tracker"
     hostname: memcached.money-tracker
     networks:
-      - net.money-tracker
+      - default
 
   selenium: # needed for e2e (End-to-End) testing
     build:
@@ -79,11 +79,11 @@ services:
     links:
       - application:money-tracker.test
     networks:
-      - net.money-tracker
+      - default
 
 volumes:
   db:
     name: money-tracker.db
 
 networks:
-  net.money-tracker: {}
+  default: {}
