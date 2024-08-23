@@ -53,11 +53,16 @@ services:
       - default
 
   cache:
-    build:
-      context: .
-      dockerfile: .docker/memcached.dockerfile
-    container_name: "memcached.money-tracker"
+    image: memcached:1.6.29-alpine
+    container_name: "money-tracker.memcached"
     hostname: memcached.money-tracker
+    volumes:
+      - .docker/healthcheck/memcached-health-check.sh:/usr/local/bin/memcached-health-check:ro
+    healthcheck:
+      test: memcached-health-check
+      interval: 5s
+      timeout: 10s
+      retries: 10
     networks:
       - default
 
