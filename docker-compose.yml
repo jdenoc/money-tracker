@@ -6,7 +6,6 @@ services:
       dockerfile: .docker/app.dockerfile
       args:
         - DISABLE_XDEBUG=${DISABLE_XDEBUG:-false}
-    container_name: "app.money-tracker"
     hostname: app.money-tracker
     ports:
       - "80:80"
@@ -26,8 +25,6 @@ services:
 
   database:
     image: mysql:8.0.27
-    container_name: "money-tracker.mysql"
-    hostname: mysql.money-tracker
     volumes:
       - db:/var/lib/mysql
       # allows stored function creators to be trusted not to create stored functions that may cause unsafe events to be written to the binary log
@@ -53,8 +50,6 @@ services:
 
   cache:
     image: memcached:1.6.29-alpine
-    container_name: "money-tracker.memcached"
-    hostname: memcached.money-tracker
     volumes:
       - .docker/healthcheck/memcached-health-check.sh:/usr/local/bin/memcached-health-check:ro
     healthcheck:
@@ -67,8 +62,6 @@ services:
 
   selenium: # needed for e2e (End-to-End) testing
     image: selenium/standalone-chrome:4.9.0
-    container_name: "money-tracker.selenium"
-    hostname: selenium.money-tracker
     shm_size: "2g"
     ports:
       - "7900:7900"   # for VNC via browser
