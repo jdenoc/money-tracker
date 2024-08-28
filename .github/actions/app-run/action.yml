@@ -48,6 +48,7 @@ runs:
         .docker/scripts/artisan.sh app:version $(git describe --always)
         .docker/scripts/artisan.sh optimize
         .docker/scripts/artisan.sh view:cache
+        .docker/scripts/artisan.sh event:cache
       shell: bash
 
     - if: ${{ inputs.is-cacheless != 'false' }}
