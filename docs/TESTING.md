@@ -7,11 +7,18 @@ This project has been set up to use [Github-Actions](https://github.com/jdenoc/m
 ---
 
 ### Docker
-Once the docker environment is setup ([instructions here](SETUP-DOCKER.md)) and already running, performing the following commands should run the tests we want:
+Docker environment should be setup as ([described here](SETUP-DOCKER.md)). One setup, we will want to also start the selenium container to run Laravel Dusk tests.
 ```bash
-# Run PhpUnit tests
-.docker/scripts/artisan.sh test
-# Run Laravel Dusk tests
+docker compose --file docker-compose.yml --file .docker/docker-composer.selenium.yml up -d
+```
+
+Running unit tests can be done with this command:
+```bash
+.docker/scripts/artisan.sh test -v
+```
+
+Running end-to-end (e2e) tests can be done with this command:
+```bash
 .docker/scripts/artisan.sh dusk --stop-on-failure
 ```
 

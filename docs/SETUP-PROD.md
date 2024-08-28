@@ -3,15 +3,15 @@
 
 ### Application Setup
 
-<details><summary><strong>Clone & checkout the most recent git tag</strong></summary>
+<details><summary><strong>Download the most recent release</strong></summary>
 <p>
 
 ```bash
-git clone git@github.com:jdenoc/money-tracker.git --depth=1 --no-checkout
-cd money-tracker/
-git fetch --tags
-MOST_RECENT_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
-git checkout -q tags/$MOST_RECENT_TAG
+# define latest tag
+RELEASE_NUMBER=
+curl -O money-tracker-${RELEASE_NUMBER}.tar.gz https://github.com/jdenoc/money-tracker/archive/refs/tags/${RELEASE_NUMBER}.tar.gz
+tar -xzf money-tracker-${RELEASE_NUMBER}.tar.gz
+mv money-tracker-${RELEASE_NUMBER} /path/to/money-tracker
 ````
 
 </p>
@@ -35,7 +35,7 @@ sed "s/LOG_LEVEL=.*/LOG_LEVEL=warning/" .env > .env.tmp; mv .env.tmp .env
 <p>
 
 ```bash
-composer install --no-dev -a
+composer install --no-dev --classmap-authoritative
 ```
 
 </p>
@@ -45,7 +45,7 @@ composer install --no-dev -a
 <p>
 
 ```bash
-php artisan app:version $MOST_RECENT_TAG
+php artisan app:version $RELEASE_NUMBER
 ```
 
 </p>
@@ -55,7 +55,7 @@ php artisan app:version $MOST_RECENT_TAG
 <p>
 
 ```bash
-npm ci
+npm clean-install
 npm run build:prod
 ```
 
@@ -85,6 +85,7 @@ sed "s/MEMCACHED_HOST=.*/MEMCACHED_HOST=127.0.0.1/" .env > .env.tmp; mv .env.tmp
 ```bash
 php artisan optimize
 php artisan view:cache
+php artisan event:cache
 ```
 
 </p>
