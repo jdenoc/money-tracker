@@ -86,4 +86,5 @@ volumes:
     name: money-tracker.db
 
 networks:
-  default: {}
+  default:
+    name: money-tracker
