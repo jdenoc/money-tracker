@@ -18,6 +18,6 @@ services:
       - "7900:7900"   # for VNC via browser
     shm_size: "2g"
     volumes:
-      - storage/tests/downloads:/home/seluser/Downloads
+      - $PWD/storage/tests/downloads:/home/seluser/Downloads
       # healthcheck
       - .docker/healthcheck/selenium-health-check.sh:/home/seluser/selenium-health-check:ro
