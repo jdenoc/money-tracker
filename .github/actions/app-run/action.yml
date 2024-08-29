@@ -55,5 +55,5 @@ runs:
       name: clear cache and create alternative .env file
       run: |
         .docker/scripts/artisan.sh config:clear
-        docker compose exec -T --user www-data application cp .env.docker .env.testing
+        docker compose run -T --user www-data --no-deps application cp .env.docker .env.testing
       shell: bash
