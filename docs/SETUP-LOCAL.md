@@ -46,7 +46,7 @@ composer run-script ide-helper
 <p>
 
 ```bash
-php artisan app:version `git describe --always`
+php artisan app:version $(git describe --always)
 ```
 
 </details>

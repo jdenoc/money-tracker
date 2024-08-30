@@ -6,21 +6,46 @@ From time to time, there will be new updates released. Such updates will contain
 ---
 
 #### Step 1
+Put site into maintenance mode
 ```bash
 # Navigate to the application directory, i.e.: cd money-tracker/
 
-# put site into maintenance mode
 php artisan down
 ```
 
 ---
 
 #### Step 2
+
+Define latest tag
 ```bash
-# fetch newest version
-git fetch --tags
-MOST_RECENT_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
-git checkout -q tags/$MOST_RECENT_TAG
+RELEASE_NUMBER=x.y.z
+```
+Where `x.y.z` is the desired release number.
+
+Download the most recent release
+```bash
+curl -O money-tracker-${RELEASE_NUMBER}.tar.gz https://github.com/jdenoc/money-tracker/archive/refs/tags/${RELEASE_NUMBER}.tar.gz
+tar -xzf money-tracker-${RELEASE_NUMBER}.tar.gz
+```
+
+Swap directories
+```bash
+OLD_DIR_PATH=/path/to/money-tracker-old.$(date +%Y%m%dT%H%M%S%Z)
+NEW_DIR_PATH=/path/to/money-tracker
+mv $NEW_DIR_PATH $OLD_DIR_PATH
+mv money-tracker-${RELEASE_NUMBER} $NEW_DIR_PATH
+```
+
+Copy directories from old directory to new
+```bash
+cp -a $OLD_DIR_PATH/storage/app/attachments/* $NEW_DIR_PATH/storage/app/attachments
+cp -a $OLD_DIR_PATH/storage/app/tmp-uploads/* $NEW_DIR_PATH/storage/app/tmp-uploads/
+cp -a $OLD_DIR_PATH/storage/logs/*.log $NEW_DIR_PATH/storage/logs/
+cp -a $OLD_DIR_PATH/database/snapshots/* $NEW_DIR_PATH/database/snapshots/
+cp -a $OLD_DIR_PATH/.env $NEW_DIR_PATH/.env
+cp -ar $OLD_DIR_PATH/vendor/ $NEW_DIR_PATH/
+cp -ar $OLD_DIR_PATH/node_modules/ $NEW_DIR_PATH/node_modules
 ```
 
 ---
@@ -38,58 +63,61 @@ cp .env .env.bkup
 ```
 
 #### Step 3.b <small>_(optional)_</small>
+New/Updates to composer packages
 ```bash
-# *** OPTIONAL ***
-# New/Updates to composer packages
-composer install --no-dev -a
+composer install --no-dev --classmap-authoritative
 ```
 
 #### Step 3.c <small>_(optional)_</small>
+New/Updates to npm packages
 ```bash
-# *** OPTIONAL ***
-# New/Updates to npm packages
-npm ci
+npm clean-install
 ```
 
 #### Step 3.d <small>_(optional)_</small>
+Database updates
 ```bash
-# *** OPTIONAL ***
-# Database updates
 php artisan migrate
 ```
 
 ---
 
 #### Step 4
+Build website from *.vue files
 ```bash
-# Build website from *.vue files
 npm run build:prod
 ```
 
 ---
 
 #### Step 5
+Clear existing cache
 ```bash
-# clear existing cache
 php artisan optimize:clear
+````
 
-# Label the latest version
-php artisan app:version $MOST_RECENT_TAG
+Set application version
+```bash
+php artisan app:version $RELEASE_NUMBER
+```
 
-# setup new cache
+Setup new cache
+```bash
 php artisan optimize
 php artisan view:cache
-php artisan events:cache
+php artisan event:cache
+```
 
-# re-sync schedule monitoring
+Re-sync schedule monitoring
+```bash
 php artisan schedule-monitor:sync
 ```
 
 ---
 
 #### Step 6
+Take site out of maintenance mode
 ```bash
-# take site out of maintenance mode
 php artisan up
 ```
 

@@ -61,7 +61,7 @@ RUN docker-php-ext-configure gd --enable-gd --with-jpeg --with-freetype
 RUN docker-php-ext-install gd
 
 # install php igbinary & memcached extensions
-RUN apt-get install -y libmemcached-dev \
+RUN apt-get install -y libmemcached-dev --no-install-recommends \
   && pecl install igbinary-3.2.7 \
   && pecl install memcached-3.2.0
 RUN docker-php-ext-enable igbinary \
@@ -91,7 +91,8 @@ EXPOSE 9003
 
 # clean up after installs
 RUN apt-get autoremove \
-  && apt-get clean
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # alias for php artisan
 # allows us to call artisan without prefixing it with "php"

@@ -12,7 +12,7 @@ runs:
     - name: start containers
       run: |
         # start containers
-        docker compose up -d --force-recreate
+        docker compose --file docker-compose.yml --file .docker/docker-compose.selenium.yml up -d --force-recreate
 
         # wait until health status determined
         i=0
@@ -48,11 +48,12 @@ runs:
         .docker/scripts/artisan.sh app:version $(git describe --always)
         .docker/scripts/artisan.sh optimize
         .docker/scripts/artisan.sh view:cache
+        .docker/scripts/artisan.sh event:cache
       shell: bash
 
     - if: ${{ inputs.is-cacheless != 'false' }}
       name: clear cache and create alternative .env file
       run: |
         .docker/scripts/artisan.sh config:clear
-        docker compose exec -T --user www-data application cp .env.docker .env.testing
+        docker compose run -T --user www-data --no-deps application cp .env.docker .env.testing
       shell: bash

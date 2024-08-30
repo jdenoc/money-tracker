@@ -1,5 +1,4 @@
-version: '3'
-
+---
 services:
   application:
     build:
@@ -7,14 +6,13 @@ services:
       dockerfile: .docker/app.dockerfile
       args:
         - DISABLE_XDEBUG=${DISABLE_XDEBUG:-false}
-    container_name: "app.money-tracker"
     hostname: app.money-tracker
     ports:
       - "80:80"
       - "9003:9003"   # for xdebug
     volumes:
       - .:/var/www/money-tracker
-      - ./.docker/logs/application:/var/log/php  # for logs
+      - .docker/logs/application:/var/log/php  # for logs
     environment:
       - APP_ENV=docker
     depends_on:
@@ -23,57 +21,49 @@ services:
     dns_search:
       - money-tracker.test
     networks:
-      - net.money-tracker
+      - default
 
   database:
-    build:
-      context: .
-      dockerfile: .docker/mysql.dockerfile
-    container_name: "mysql.money-tracker"
-    hostname: mysql.money-tracker
+    image: mysql:8.0.27
     volumes:
-      - db.money-tracker:/var/lib/mysql
-      - ./.docker/logs/database:/var/log/mysql  # for logs
+      - db:/var/lib/mysql
+      # allows stored function creators to be trusted not to create stored functions that may cause unsafe events to be written to the binary log
+      - .docker/conf/mysql-log_bin_trust.cnf:/etc/mysql/conf.d/log_bin_trust.cnf:ro
+      # logging
+      - .docker/conf/mysql-logging.cnf:/etc/mysql/conf.d/logging.cnf:ro
+      - .docker/logs/database:/var/log/mysql
+      # health-check
+      - .docker/healthcheck/mysql-health-check.sh:/usr/local/bin/mysql-health-check:ro
     environment:
       # if you change any of these, be sure to change the corresponding values in .env.docker
       - MYSQL_RANDOM_ROOT_PASSWORD=yes
       - MYSQL_DATABASE=money_tracker
       - MYSQL_USER=jdenoc
       - MYSQL_PASSWORD=password
+    healthcheck:
+      test: mysql-health-check
+      interval: 5s
+      timeout: 10s
+      retries: 10
     networks:
-      - net.money-tracker
+      - default
 
   cache:
-    build:
-      context: .
-      dockerfile: .docker/memcached.dockerfile
-    container_name: "memcached.money-tracker"
-    hostname: memcached.money-tracker
-    networks:
-      - net.money-tracker
-
-  selenium: # needed for e2e (End-to-End) testing
-    build:
-      context: .
-      dockerfile: .docker/selenium.dockerfile
-    container_name: "selenium.money-tracker"
-    hostname: selenium.money-tracker
-    shm_size: "2g"
-    ports:
-      - "7900:7900"   # for VNC via browser
+    image: memcached:1.6.29-alpine
     volumes:
-      - ./storage/tests/downloads:/home/seluser/Downloads
-    environment:
-      - VNC_NO_PASSWORD=1
-    depends_on:
-      - application
-    links:
-      - application:money-tracker.test
+      - .docker/healthcheck/memcached-health-check.sh:/usr/local/bin/memcached-health-check:ro
+    healthcheck:
+      test: memcached-health-check
+      interval: 5s
+      timeout: 10s
+      retries: 10
     networks:
-      - net.money-tracker
+      - default
 
 volumes:
-  db.money-tracker: {}
+  db:
+    name: money-tracker.db
 
 networks:
-  net.money-tracker: {}
+  default:
+    name: money-tracker

@@ -114,7 +114,7 @@ class ExportsTest extends ListEntriesBase {
             $this->assertEquals($expected_entry['has_attachments'], filter_var($line[6], FILTER_VALIDATE_BOOL)); // Attachment
             $this->assertEquals($expected_entry['is_transfer'], filter_var($line[7], FILTER_VALIDATE_BOOL));     // Transfer
             $actual_tags = empty($line[8]) ? [] : json_decode($line[8], true);     // Tags
-            $this->assertEquals($expected_entry['tags'], $actual_tags);
+            $this->assertEqualsCanonicalizing($expected_entry['tags'], $actual_tags);
         }
         fclose($file_handle);
     }
