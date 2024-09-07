@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Log;
 class AdjustAccountTotalUsingAccountType implements ShouldQueue {
     use Dispatchable;
 
+    // variables
     protected Account $account;
     protected int $rawValue;
     protected bool $isExpense;

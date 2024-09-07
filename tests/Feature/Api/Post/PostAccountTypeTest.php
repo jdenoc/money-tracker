@@ -13,6 +13,7 @@ use Tests\TestCase;
 class PostAccountTypeTest extends TestCase {
     use AccountTypeResponseKeys;
 
+    // uri
     private string $_base_uri = '/api/account-type';
 
     public function setUp(): void {
@@ -40,12 +41,12 @@ class PostAccountTypeTest extends TestCase {
 
         // only 1 property missing
         foreach ($required_properties as $property) {
-            $test_cases[$property] = ['missing_properties'=>[$property]];
+            $test_cases[$property] = ['missing_properties' => [$property]];
         }
 
         // 1 < property missing < count(required properties)
-        $missing_properties = array_rand(array_flip($required_properties), mt_rand(2, count($required_properties)-1));
-        $test_cases['multi-random'] = ['missing_properties'=>$missing_properties];
+        $missing_properties = array_rand(array_flip($required_properties), mt_rand(2, count($required_properties) - 1));
+        $test_cases['multi-random'] = ['missing_properties' => $missing_properties];
 
         return $test_cases;
     }
@@ -56,7 +57,7 @@ class PostAccountTypeTest extends TestCase {
     public function testCreateAccountMissingProperty(array $missing_properties) {
         // GIVEN
         $account_type_data = $this->generateDummyAccountTypeData();
-        if(!in_array('account_id', $missing_properties)){
+        if(!in_array('account_id', $missing_properties)) {
             // set a valid account ID
             $account_type_data['account_id'] = Account::all()->random()->id;
         }

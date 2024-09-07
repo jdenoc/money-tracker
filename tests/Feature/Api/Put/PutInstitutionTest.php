@@ -11,6 +11,7 @@ use Tests\TestCase;
 class PutInstitutionTest extends TestCase {
     use InstitutionResponseKeys;
 
+    // uri
     private string $_base_uri = '/api/institution/%d';
 
     public function setUp(): void {
@@ -50,7 +51,7 @@ class PutInstitutionTest extends TestCase {
 
         $test_cases = [];
         foreach ($required_fields as $required_field) {
-            $test_cases[$required_field] = ['institution_data_field'=>$required_field];
+            $test_cases[$required_field] = ['institution_data_field' => $required_field];
         }
         return $test_cases;
     }
@@ -62,7 +63,7 @@ class PutInstitutionTest extends TestCase {
         // GIVEN - see providerUpdateInstitutionEachProperty()
         $institution = $this->getRandomActiveExistingInstitution();
         $sample_institution_data = $this->generateInstitutionData();
-        $institution_data = [$institution_data_field=>$sample_institution_data[$institution_data_field]];
+        $institution_data = [$institution_data_field => $sample_institution_data[$institution_data_field]];
 
         // WHEN
         $response = $this->putJson(sprintf($this->_base_uri, $institution->id), $institution_data);
@@ -99,7 +100,7 @@ class PutInstitutionTest extends TestCase {
     private function generateInstitutionData(): array {
         $dummy_institution = Institution::factory()->make();
         return [
-            'name'=>$dummy_institution->name
+            'name' => $dummy_institution->name,
         ];
     }
 

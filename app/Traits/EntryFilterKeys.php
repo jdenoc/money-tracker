@@ -18,6 +18,7 @@ trait EntryFilterKeys {
     private static $FILTER_KEY_START_DATE = 'start_date';
     private static $FILTER_KEY_TAGS = 'tags';
     private static $FILTER_KEY_UNCONFIRMED = 'unconfirmed';
+
     // filter sorting keys
     private static $FILTER_KEY_SORT = 'sort';
     private static $FILTER_KEY_SORT_PARAMETER = 'parameter';
@@ -29,17 +30,17 @@ trait EntryFilterKeys {
      */
     public static function getFilterValidationRules($include_tag_ids = true) {
         $filter_details = [
-            static::$FILTER_KEY_START_DATE=>'date_format:Y-m-d',
-            static::$FILTER_KEY_END_DATE=>'date_format:Y-m-d',
-            static::$FILTER_KEY_ACCOUNT=>'integer',
-            static::$FILTER_KEY_ACCOUNT_TYPE=>'integer',
-            static::$FILTER_KEY_TAGS=>'array',
-            static::$FILTER_KEY_EXPENSE=>'boolean',
-            static::$FILTER_KEY_ATTACHMENTS=>'boolean',
-            static::$FILTER_KEY_MIN_VALUE=>'numeric',
-            static::$FILTER_KEY_MAX_VALUE=>'numeric',
-            static::$FILTER_KEY_UNCONFIRMED=>'boolean',
-            static::$FILTER_KEY_IS_TRANSFER=>'boolean'
+            static::$FILTER_KEY_START_DATE => 'date_format:Y-m-d',
+            static::$FILTER_KEY_END_DATE => 'date_format:Y-m-d',
+            static::$FILTER_KEY_ACCOUNT => 'integer',
+            static::$FILTER_KEY_ACCOUNT_TYPE => 'integer',
+            static::$FILTER_KEY_TAGS => 'array',
+            static::$FILTER_KEY_EXPENSE => 'boolean',
+            static::$FILTER_KEY_ATTACHMENTS => 'boolean',
+            static::$FILTER_KEY_MIN_VALUE => 'numeric',
+            static::$FILTER_KEY_MAX_VALUE => 'numeric',
+            static::$FILTER_KEY_UNCONFIRMED => 'boolean',
+            static::$FILTER_KEY_IS_TRANSFER => 'boolean',
         ];
 
         if ($include_tag_ids) {

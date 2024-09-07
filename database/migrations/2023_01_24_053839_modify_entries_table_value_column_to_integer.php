@@ -24,7 +24,7 @@ class ModifyEntriesTableValueColumnToInteger extends Migration {
 
         $this->copyDataAndReplaceColumn(
             $new_column,
-            [$new_column=>DB::raw(self::$COLUMN_VALUE.'*100')]  // insert entry_value*100 into int_value
+            [$new_column => DB::raw(self::$COLUMN_VALUE.'*100')]  // insert entry_value*100 into int_value
         );
     }
 
@@ -40,7 +40,7 @@ class ModifyEntriesTableValueColumnToInteger extends Migration {
 
         $this->copyDataAndReplaceColumn(
             $new_column,
-            [$new_column=>DB::raw(self::$COLUMN_VALUE.'/100')]  // insert entry_value/100 into decimal_value
+            [$new_column => DB::raw(self::$COLUMN_VALUE.'/100')]  // insert entry_value/100 into decimal_value
         );
     }
 

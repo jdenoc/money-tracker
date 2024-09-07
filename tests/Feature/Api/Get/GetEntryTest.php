@@ -13,8 +13,11 @@ use Tests\TestCase;
 
 class GetEntryTest extends TestCase {
 
+    // generated counts
     private int $_generate_tag_count;
     private int $_generate_attachment_count;
+
+    // uri
     private string $_base_uri = '/api/entry/%d';
 
     public function setUp(): void {
@@ -64,7 +67,7 @@ class GetEntryTest extends TestCase {
         /** @var Entry $generated_transfer_entry */
         $generated_transfer_entry = Entry::factory()->for($generated_account_type)->create();
         /** @var Entry $generated_entry */
-        $generated_entry = Entry::factory()->for($generated_account_type)->state(['transfer_entry_id'=>$generated_transfer_entry->id])->create();
+        $generated_entry = Entry::factory()->for($generated_account_type)->state(['transfer_entry_id' => $generated_transfer_entry->id])->create();
         $generated_tags_as_array = $this->generateTagsAndOutputAsArray($generated_entry);
         $generated_attachments_as_array = $this->generateAttachmentsAndOutputAsArray($generated_entry->id);
 
@@ -154,7 +157,7 @@ class GetEntryTest extends TestCase {
     }
 
     private function generateAttachmentsAndOutputAsArray(int $generated_entry_id): array {
-        $generated_attachments = Attachment::factory()->count($this->_generate_attachment_count)->create(['entry_id'=>$generated_entry_id]);
+        $generated_attachments = Attachment::factory()->count($this->_generate_attachment_count)->create(['entry_id' => $generated_entry_id]);
         $generated_attachments->makeHidden('entry_id');
         return $generated_attachments->toArray();
     }

@@ -104,14 +104,14 @@ class InstitutionController extends Controller {
         return $this->modify_institution($request, $institutionId);
     }
 
-    private function modify_institution(Request $request, int $institutionId=null): Response {
+    private function modify_institution(Request $request, int $institutionId = null): Response {
         $request_body = $request->getContent();
         $institution_data = json_decode($request_body, true);
 
         // no data check
         if (empty($institution_data)) {
             return response(
-                [self::$RESPONSE_KEY_ID=>self::$ERROR_ID, self::$RESPONSE_KEY_ERROR=>self::$ERROR_MSG_NO_DATA],
+                [self::$RESPONSE_KEY_ID => self::$ERROR_ID, self::$RESPONSE_KEY_ERROR => self::$ERROR_MSG_NO_DATA],
                 HttpStatus::HTTP_BAD_REQUEST
             );
         }
@@ -125,7 +125,7 @@ class InstitutionController extends Controller {
             $missing_properties = array_diff_key(array_flip($required_fields), $institution_data);
             if (count($missing_properties) > 0) {
                 return response(
-                    [self::$RESPONSE_KEY_ID=>self::$ERROR_ID, self::$RESPONSE_KEY_ERROR=>$this->fillMissingPropertyErrorMessage(array_keys($missing_properties))],
+                    [self::$RESPONSE_KEY_ID => self::$ERROR_ID, self::$RESPONSE_KEY_ERROR => $this->fillMissingPropertyErrorMessage(array_keys($missing_properties))],
                     HttpStatus::HTTP_BAD_REQUEST
                 );
             }
@@ -136,13 +136,13 @@ class InstitutionController extends Controller {
                 $institution_to_modify = Institution::findOrFail($institutionId);
             } catch(Exception $exception) {
                 return response(
-                    [self::$RESPONSE_KEY_ID=>self::$ERROR_ID, self::$RESPONSE_KEY_ERROR=>self::$ERROR_MSG_DOES_NOT_EXIST],
+                    [self::$RESPONSE_KEY_ID => self::$ERROR_ID, self::$RESPONSE_KEY_ERROR => self::$ERROR_MSG_DOES_NOT_EXIST],
                     HttpStatus::HTTP_NOT_FOUND
                 );
             }
         }
 
-        foreach ($institution_data as $property=>$value) {
+        foreach ($institution_data as $property => $value) {
             if (in_array($property, $required_fields)) {
                 $institution_to_modify->$property = $value;
             }
@@ -154,7 +154,7 @@ class InstitutionController extends Controller {
         }
 
         return response(
-            [self::$RESPONSE_KEY_ID=>$institution_to_modify->id, self::$RESPONSE_KEY_ERROR=>self::$ERROR_MSG_NO_ERROR],
+            [self::$RESPONSE_KEY_ID => $institution_to_modify->id, self::$RESPONSE_KEY_ERROR => self::$ERROR_MSG_NO_ERROR],
             $http_response_status_code
         );
     }

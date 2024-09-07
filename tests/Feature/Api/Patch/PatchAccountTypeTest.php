@@ -10,6 +10,7 @@ use Tests\TestCase;
 
 class PatchAccountTypeTest extends TestCase {
 
+    // uri
     private const PLACEHOLDER_URI_ACCOUNT_TYPE = '/api/account-type/%d';
 
     public function testRestoringAccountTypeThatDoesNotExist() {

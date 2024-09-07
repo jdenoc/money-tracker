@@ -49,7 +49,7 @@ class AttachmentsDisplayTest extends TestCase {
 
     public function testFileNotOnDisk() {
         //GIVEN - file does NOT exist on disk
-        $generated_attachment = Attachment::factory()->create([self::ATTACHMENT_PARAMETER_UUID=>$this->generateValidUuid()]);
+        $generated_attachment = Attachment::factory()->create([self::ATTACHMENT_PARAMETER_UUID => $this->generateValidUuid()]);
 
         //WHEN
         $response = $this->get(sprintf(self::WEB_ATTACHMENT_URI, $generated_attachment->uuid));
@@ -66,7 +66,7 @@ class AttachmentsDisplayTest extends TestCase {
         } while (in_array($file_ext, $this->_valid_file_types));
         $generated_attachment = Attachment::factory()->create([
             self::ATTACHMENT_PARAMETER_UUID => $this->generateValidUuid(),
-            self::ATTACHMENT_PARAMETER_FILENAME => fake()->word().'.'.$file_ext
+            self::ATTACHMENT_PARAMETER_FILENAME => fake()->word().'.'.$file_ext,
         ]);
         // make sure file exists on disk by generating a dummy file.
         $generated_attachment->storage_store(fake()->sentence());
@@ -82,7 +82,7 @@ class AttachmentsDisplayTest extends TestCase {
         //GIVEN
         $generated_attachment = Attachment::factory()->create([
             self::ATTACHMENT_PARAMETER_UUID => $this->generateValidUuid(),
-            self::ATTACHMENT_PARAMETER_FILENAME => fake()->word().'.'.fake()->randomElement($this->_valid_file_types)
+            self::ATTACHMENT_PARAMETER_FILENAME => fake()->word().'.'.fake()->randomElement($this->_valid_file_types),
         ]);
         // make sure file exists on disk by generating a dummy file.
         $generated_attachment->storage_store(fake()->sentence());

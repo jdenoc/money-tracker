@@ -9,8 +9,8 @@ use Laravel\Dusk\Browser;
 trait StatsIncludeTransfersCheckboxButton {
     use AssertElementColor;
 
+    // variables
     private static $LABEL_STATS_INCLUDES_TRANSFER = "Include Transfers";
-
     protected $include_transfers_chart_name = '';
 
     private function hasIncludeTransfersChartNameBeenSet() {

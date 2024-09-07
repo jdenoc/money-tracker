@@ -8,6 +8,7 @@ use Laravel\Dusk\Browser;
 trait Navbar {
     use WaitTimes;
 
+    // selectors
     private static string $SELECTOR_NAVBAR = '#navbar';
     private static string $SELECTOR_NAVBAR_BRAND_IMAGE = '#navbar-logo';
     private static string $SELECTOR_NAVBAR_PROFILE = '.profile-picture';

@@ -10,6 +10,7 @@ use Tests\TestCase;
 
 class GetAccountTypesTest extends TestCase {
 
+    // uri
     private string $_uri = '/api/account-types';
 
     public function testGetAccountTypesWhenNoAccountTypesExist() {
@@ -30,7 +31,7 @@ class GetAccountTypesTest extends TestCase {
         $generated_account_types = AccountType::factory()
             ->count($account_type_count)
             ->state(new Sequence(function() {
-                return [AccountType::DELETED_AT=>function() {
+                return [AccountType::DELETED_AT => function() {
                     return fake()->boolean() ? fake()->date(DatabaseFactoryConstants::DATE_FORMAT) : null;
                 }];
             }))

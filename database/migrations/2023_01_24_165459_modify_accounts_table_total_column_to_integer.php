@@ -26,7 +26,7 @@ class ModifyAccountsTableTotalColumnToInteger extends Migration {
 
         $this->copyDataAndReplaceColumn(
             $new_column,
-            [$new_column=>DB::raw(self::$COLUMN_TOTAL.'*100')]  // insert total*100 into int_total
+            [$new_column => DB::raw(self::$COLUMN_TOTAL.'*100')]  // insert total*100 into int_total
         );
     }
 
@@ -45,7 +45,7 @@ class ModifyAccountsTableTotalColumnToInteger extends Migration {
 
         $this->copyDataAndReplaceColumn(
             $new_column,
-            [$new_column=>DB::raw(self::$COLUMN_TOTAL.'/100')]  // insert total/100 into decimal_total
+            [$new_column => DB::raw(self::$COLUMN_TOTAL.'/100')]  // insert total/100 into decimal_total
         );
     }
 

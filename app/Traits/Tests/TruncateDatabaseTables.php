@@ -12,9 +12,8 @@ trait TruncateDatabaseTables {
      * Allow truncating tables with foreign keys
      * @link https://stackoverflow.com/a/5452798/4152012
      */
-    private function truncateDatabaseTables(array $ignore_tables=[]) {
+    private function truncateDatabaseTables(array $ignore_tables = []): void {
         $query_set_foreign_key_checks = "SET FOREIGN_KEY_CHECKS = %d;";
-//        DB::statement(DB::raw(sprintf($query_set_foreign_key_checks, 0)));
         DB::statement(sprintf($query_set_foreign_key_checks, 0));
         $tables = DB::connection()->getDoctrineSchemaManager()->listTableNames();
         foreach ($tables as $table) {
@@ -24,8 +23,7 @@ trait TruncateDatabaseTables {
             }
             DB::table($table)->truncate();
         }
-//        DB::statement(DB::raw(sprintf($query_set_foreign_key_checks, 1)));
-        DB::statement(sprintf($query_set_foreign_key_checks, 0));
+        DB::statement(sprintf($query_set_foreign_key_checks, 1));
     }
 
 }

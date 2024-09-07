@@ -59,14 +59,14 @@ class AccountTypeController extends Controller {
         return $this->modify_account_type($request, $account_type_id);
     }
 
-    public function modify_account_type(Request $request, int $account_type_id=null) {
+    public function modify_account_type(Request $request, int $account_type_id = null) {
         $request_body = $request->getContent();
         $account_type_data = json_decode($request_body, true);
 
         // no data check
         if (empty($account_type_data)) {
             return response(
-                [self::$RESPONSE_KEY_ID=>self::$ERROR_ID, self::$RESPONSE_KEY_ERROR=>self::$ERROR_MSG_NO_DATA],
+                [self::$RESPONSE_KEY_ID => self::$ERROR_ID, self::$RESPONSE_KEY_ERROR => self::$ERROR_MSG_NO_DATA],
                 HttpStatus::HTTP_BAD_REQUEST
             );
         }
@@ -77,7 +77,7 @@ class AccountTypeController extends Controller {
                 Account::withTrashed()->findOrFail($account_type_data['account_id']);
             } catch (\Exception $e) {
                 return response(
-                    [self::$RESPONSE_KEY_ERROR=>self::$ERROR_MSG_INVALID_ACCOUNT, self::$RESPONSE_KEY_ID=>self::$ERROR_ID],
+                    [self::$RESPONSE_KEY_ERROR => self::$ERROR_MSG_INVALID_ACCOUNT, self::$RESPONSE_KEY_ID => self::$ERROR_ID],
                     HttpStatus::HTTP_BAD_REQUEST
                 );
             }
@@ -88,7 +88,7 @@ class AccountTypeController extends Controller {
             $types = AccountType::cache()->get(AccountType::CACHE_KEY_TYPES);
             if (!in_array($account_type_data['type'], $types)) {
                 return response(
-                    [self::$RESPONSE_KEY_ID=>self::$ERROR_ID, self::$RESPONSE_KEY_ERROR=>self::$ERROR_MSG_INVALID_TYPE],
+                    [self::$RESPONSE_KEY_ID => self::$ERROR_ID, self::$RESPONSE_KEY_ERROR => self::$ERROR_MSG_INVALID_TYPE],
                     HttpStatus::HTTP_BAD_REQUEST
                 );
             }
@@ -103,7 +103,7 @@ class AccountTypeController extends Controller {
             $missing_properties = array_diff_key(array_flip($required_properties), $account_type_data);
             if (count($missing_properties) > 0) {
                 return response(
-                    [self::$RESPONSE_KEY_ID=>self::$ERROR_ID, self::$RESPONSE_KEY_ERROR=>$this->fillMissingPropertyErrorMessage(array_keys($missing_properties))],
+                    [self::$RESPONSE_KEY_ID => self::$ERROR_ID, self::$RESPONSE_KEY_ERROR => $this->fillMissingPropertyErrorMessage(array_keys($missing_properties))],
                     HttpStatus::HTTP_BAD_REQUEST
                 );
             }
@@ -116,13 +116,13 @@ class AccountTypeController extends Controller {
                 $account_type_to_modify = AccountType::withTrashed()->findOrFail($account_type_id);
             } catch (\Exception $e) {
                 return response(
-                    [self::$RESPONSE_KEY_ID=>self::$ERROR_ID, self::$RESPONSE_KEY_ERROR=>self::$ERROR_MSG_DOES_NOT_EXIST],
+                    [self::$RESPONSE_KEY_ID => self::$ERROR_ID, self::$RESPONSE_KEY_ERROR => self::$ERROR_MSG_DOES_NOT_EXIST],
                     HttpStatus::HTTP_NOT_FOUND
                 );
             }
         }
 
-        foreach ($account_type_data as $account_type_datum_property=>$account_type_datum_value) {
+        foreach ($account_type_data as $account_type_datum_property => $account_type_datum_value) {
             if (in_array($account_type_datum_property, $required_properties)) {
                 $account_type_to_modify->{$account_type_datum_property} = $account_type_datum_value;
             }
@@ -133,7 +133,7 @@ class AccountTypeController extends Controller {
             $account_type_to_modify->save();
         }
         return response(
-            [self::$RESPONSE_KEY_ERROR=>self::$ERROR_MSG_NO_ERROR, self::$RESPONSE_KEY_ID=>$account_type_to_modify->id],
+            [self::$RESPONSE_KEY_ERROR => self::$ERROR_MSG_NO_ERROR, self::$RESPONSE_KEY_ID => $account_type_to_modify->id],
             $http_response_status_code
         );
     }

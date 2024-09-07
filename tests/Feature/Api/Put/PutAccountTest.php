@@ -12,6 +12,7 @@ use Tests\TestCase;
 class PutAccountTest extends TestCase {
     use AccountResponseKeys;
 
+    // uri
     private string $_base_uri = '/api/account/%d';
 
     public function setUp(): void {

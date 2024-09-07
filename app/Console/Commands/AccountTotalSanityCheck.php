@@ -16,13 +16,12 @@ use Illuminate\Support\Facades\DB;
 class AccountTotalSanityCheck extends Command {
 
     const CONFIG_ENV = "app.env";
-    const CONFIG_DISCORD_WEBHOOK_URL ="services.discord.webhook_url";
+    const CONFIG_DISCORD_WEBHOOK_URL = "services.discord.webhook_url";
     const ARG_ACCOUNT_ID = "accountId";
     const OPTION_FORCE_FAILURE = 'force-failure';
     const OPTION_DONT_NOTIFY_DISCORD = 'dont-notify-discord';
     const OPTION_NOTIFY_SCREEN = "notify-screen";
     const WEBHOOK_ALIAS = "account-total-sanity-check-failure";
-
     const LOG_LEVEL_DEBUG = 'debug';
     const LOG_LEVEL_WARNING = 'warning';
     const LOG_LEVEL_EMERGENCY = 'emergency';
@@ -151,7 +150,7 @@ class AccountTotalSanityCheck extends Command {
      * @param DiscordContentObject $webhook_data
      * @param string $level
      */
-    private function notifyDiscord($webhook_data, string $level=self::LOG_LEVEL_DEBUG) {
+    private function notifyDiscord($webhook_data, string $level = self::LOG_LEVEL_DEBUG) {
         if (!$this->option(self::OPTION_DONT_NOTIFY_DISCORD)) {
             switch($level) {
                 case self::LOG_LEVEL_DEBUG:
@@ -182,7 +181,7 @@ class AccountTotalSanityCheck extends Command {
      * Log a message in a log file
      * Or if option is enabled, to screen
      */
-    private function notifyInternally(string $notification_message, string $level=self::LOG_LEVEL_DEBUG) {
+    private function notifyInternally(string $notification_message, string $level = self::LOG_LEVEL_DEBUG) {
         logger()->log($level, $notification_message);
         if ($this->option(self::OPTION_NOTIFY_SCREEN)) {
             switch($level) {

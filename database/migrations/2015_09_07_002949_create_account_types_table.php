@@ -17,7 +17,7 @@ class CreateAccountTypesTable extends Migration {
         Schema::create(self::$TABLE, function(Blueprint $table) {
             $table->increments('id');
             $table->enum('type', [
-                'checking','savings','credit card','debit card'
+                'checking','savings','credit card','debit card',
             ]);
             $table->integer('last_digits');
             $table->string('type_name', 21);

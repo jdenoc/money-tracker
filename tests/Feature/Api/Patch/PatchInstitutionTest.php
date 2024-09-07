@@ -8,6 +8,7 @@ use Tests\TestCase;
 
 class PatchInstitutionTest extends TestCase {
 
+    // uri
     private const PLACEHOLDER_URI_INSTITUTION = '/api/institution/%d';
 
     public function testRestoreInstitutionThatDoesNotExist() {

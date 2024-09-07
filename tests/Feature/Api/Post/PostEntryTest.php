@@ -15,6 +15,7 @@ use Tests\TestCase;
 class PostEntryTest extends TestCase {
     use EntryResponseKeys;
 
+    // uri
     private string $_base_uri = '/api/entry';
 
     public function testCreateEntryWithoutData() {
@@ -37,12 +38,12 @@ class PostEntryTest extends TestCase {
         $test_cases = [];
         // provide data that is missing one property
         foreach ($required_entry_fields as $required_entry_field) {
-            $test_cases[$required_entry_field] = ['missing_properties'=>[$required_entry_field]];
+            $test_cases[$required_entry_field] = ['missing_properties' => [$required_entry_field]];
         }
 
         // provide data that is missing two or more properties, but 1 less than the total properties
-        $random_missing_properties = array_rand(array_flip($required_entry_fields), mt_rand(2, count($required_entry_fields)-1));
-        $test_cases['missing:'.json_encode($random_missing_properties)] = ['missing_properties'=>$random_missing_properties];
+        $random_missing_properties = array_rand(array_flip($required_entry_fields), mt_rand(2, count($required_entry_fields) - 1));
+        $test_cases['missing:'.json_encode($random_missing_properties)] = ['missing_properties' => $random_missing_properties];
 
         return $test_cases;
     }
@@ -194,8 +195,8 @@ class PostEntryTest extends TestCase {
         $generated_entry_data['attachments'] = [];
         foreach ($generated_attachments as $generated_attachment) {
             $generated_entry_data['attachments'][] = [
-                'uuid'=>$generated_attachment->uuid,
-                'name'=>$generated_attachment->name
+                'uuid' => $generated_attachment->uuid,
+                'name' => $generated_attachment->name,
             ];
         }
 
@@ -228,8 +229,8 @@ class PostEntryTest extends TestCase {
         $this->assertNotEmpty($get_response_as_array['attachments']);
         foreach ($get_response_as_array['attachments'] as $attachment) {
             $attachment_data = [
-                'uuid'=>$attachment['uuid'],
-                'name'=>$attachment['name']
+                'uuid' => $attachment['uuid'],
+                'name' => $attachment['name'],
             ];
             $this->assertContains($attachment_data, $generated_entry_data['attachments'], 'Generated attachments:'.json_encode($generated_entry_data['attachments']));
         }
@@ -274,12 +275,12 @@ class PostEntryTest extends TestCase {
     private function generateEntryData(): array {
         $entry_data = Entry::factory()->make();
         return [
-            'account_type_id'=>$entry_data->account_type_id,
-            'confirm'=>$entry_data->confirm,
-            'entry_date'=>$entry_data->entry_date,
-            'entry_value'=>$entry_data->entry_value,
-            'expense'=>$entry_data->expense,
-            'memo'=>$entry_data->memo
+            'account_type_id' => $entry_data->account_type_id,
+            'confirm' => $entry_data->confirm,
+            'entry_date' => $entry_data->entry_date,
+            'entry_value' => $entry_data->entry_value,
+            'expense' => $entry_data->expense,
+            'memo' => $entry_data->memo,
         ];
     }
 

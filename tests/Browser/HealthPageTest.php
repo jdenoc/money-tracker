@@ -17,6 +17,7 @@ use Tests\DuskTestCase;
 class HealthPageTest extends DuskTestCase {
     use HealthCheck;
 
+    // selectors
     private static string $SELECTOR_HEALTH_INFO_NODE = 'div.flex.items-start';
     private static string $SELECTOR_HEALTH_INFO_NODE_LABEL = 'div dd:first-child';
 

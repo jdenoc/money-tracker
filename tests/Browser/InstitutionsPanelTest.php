@@ -114,7 +114,7 @@ class InstitutionsPanelTest extends DuskTestCase {
         $institutions_collection = $this->getInstitutionsCollection(false);
         $institution_id = $institutions_collection->pluck('id')->random(1)->first();
         DB::table('accounts')->truncate();
-        Account::factory()->count(4)->create(['institution_id'=>$institution_id]);
+        Account::factory()->count(4)->create(['institution_id' => $institution_id]);
 
         $this->browse(function(Browser $browser) {
             $browser->visit(new HomePage());
@@ -173,13 +173,12 @@ class InstitutionsPanelTest extends DuskTestCase {
             ["0.00"],   // test 8/20
             ["-0.01"],  // test 9/20
             ["-0.10"],  // test 10/20
-            ["-0.12"]   // test 11/20
+            ["-0.12"],  // test 11/20
         ];
     }
 
     /**
      * @dataProvider providerAccountTotalValueIsTwoDecimalPlaces
-     * @param string $test_total
      *
      * @throws Throwable
      *
@@ -191,8 +190,8 @@ class InstitutionsPanelTest extends DuskTestCase {
         $new_institution = Institution::factory()->create();
         $institution_id = $new_institution->id;
         DB::table('accounts')->truncate();
-        $new_account = Account::factory()->create(['institution_id'=>$institution_id, 'total'=>$test_total]);
-        DB::statement("UPDATE account_types SET account_id=:id", ['id'=>$new_account->id]);
+        $new_account = Account::factory()->create(['institution_id' => $institution_id, 'total' => $test_total]);
+        DB::statement("UPDATE account_types SET account_id=:id", ['id' => $new_account->id]);
         $this->assertEquals($test_total, $new_account->total);
 
         $this->browse(function(Browser $browser) use ($institution_id, $new_account) {
@@ -215,21 +214,13 @@ class InstitutionsPanelTest extends DuskTestCase {
         });
     }
 
-    /**
-     * @param Browser $account_node
-     * @param string $account_name
-     */
-    private function assertAccountNodeName(Browser $account_node, string $account_name) {
+    private function assertAccountNodeName(Browser $account_node, string $account_name): void {
         // confirm account name is within collection
         $account_node_name = $account_node->text($this->_selector_panel_institutions_accounts_account_name);
         $this->assertStringContainsString($account_name, $account_node_name, "account name NOT found within institution-account node");
     }
 
-    /**
-     * @param Browser $account_node
-     * @param bool $isActive
-     */
-    private function assertAccountNodeActiveState(Browser $account_node, bool $isActive) {
+    private function assertAccountNodeActiveState(Browser $account_node, bool $isActive): void {
         // account is NOT "active"
         $account_node_classes = $account_node->attribute('', 'class');
         if ($isActive) {
@@ -240,12 +231,9 @@ class InstitutionsPanelTest extends DuskTestCase {
     }
 
     /**
-     * @param Browser $account_node
-     * @param string $account_name
      * @param Collection $account_types_collection
-     * @param boolean $has_tooltip
      */
-    private function assertInstitutionPanelAccountNode(Browser $account_node, $account_name, $account_types_collection, bool $has_tooltip=true) {
+    private function assertInstitutionPanelAccountNode(Browser $account_node, string $account_name, $account_types_collection, bool $has_tooltip = true): void {
         // account is NOT "active"
         $this->assertAccountNodeActiveState($account_node, false);
 
@@ -272,10 +260,9 @@ class InstitutionsPanelTest extends DuskTestCase {
     }
 
     /**
-     * @param Browser $account_node
      * @param Collection $account_types_collection
      */
-    private function assertInstitutionPanelAccountNodeClickInteraction(Browser $account_node, $account_types_collection) {
+    private function assertInstitutionPanelAccountNodeClickInteraction(Browser $account_node, $account_types_collection): void {
         $account_node->click('');
         // wait for loading to finish
         $account_css_prefix = $account_node->resolver->prefix;
@@ -304,7 +291,6 @@ class InstitutionsPanelTest extends DuskTestCase {
     }
 
     /**
-     * @param bool $include_inactive_institutions
      * @return Collection
      */
     private function getInstitutionsCollection(bool $include_inactive_institutions = true) {
@@ -324,7 +310,6 @@ class InstitutionsPanelTest extends DuskTestCase {
 
     /**
      * @param Collection $institutions_collection
-     * @param bool $include_disabled_accounts
      * @return Collection
      */
     private function getAccountsCollection($institutions_collection, bool $include_disabled_accounts = true) {
@@ -333,7 +318,7 @@ class InstitutionsPanelTest extends DuskTestCase {
         $accounts_collection = collect($accounts);
         if ($include_disabled_accounts) {
             if ($accounts_collection->where('active', false)->count() == 0) {
-                $disabled_account = Account::factory()->count(1)->disabled()->create(['institution_id'=>$institutions_collection->random(1)->pluck('id')->first()]);
+                $disabled_account = Account::factory()->count(1)->disabled()->create(['institution_id' => $institutions_collection->random(1)->pluck('id')->first()]);
                 $accounts_collection->push($disabled_account);
             }
         } else {

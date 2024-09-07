@@ -41,6 +41,7 @@ class NotificationsTest extends DuskTestCase {
     use EntryResponseKeys;
     use HomePageSelectors;
 
+    // message templates
     const TEMPLATE_MESSAGE_ERROR_OCCURRED = "An error occurred while attempting to retrieve %s";
     const TEMPLATE_MESSAGE_NOT_FOUND = "No %s currently available";
 
@@ -248,10 +249,10 @@ class NotificationsTest extends DuskTestCase {
     private function generatedEntryWithAttachmentOneMonthInTheFuture() {
         $account_type = AccountType::all()->random();
         $new_entry = Entry::factory()->create([
-            'account_type_id'=>$account_type->id,
-            'entry_date'=>Carbon::now()->addDays(30)
+            'account_type_id' => $account_type->id,
+            'entry_date' => Carbon::now()->addDays(30),
         ]);
-        Attachment::factory()->create(['entry_id'=>$new_entry->id]);
+        Attachment::factory()->create(['entry_id' => $new_entry->id]);
     }
 
     /**
@@ -461,7 +462,7 @@ class NotificationsTest extends DuskTestCase {
                     $old_value = floatval($modal->inputValue($this->_selector_modal_entry_field_value));
                     $modal
                        ->clear($this->_selector_modal_entry_field_value)
-                        ->type($this->_selector_modal_entry_field_value, $old_value+10);
+                        ->type($this->_selector_modal_entry_field_value, $old_value + 10);
                     $old_memo = $modal->inputValue($this->_selector_modal_entry_field_memo);
                     $modal
                         ->clear($this->_selector_modal_entry_field_memo)
@@ -633,20 +634,16 @@ class NotificationsTest extends DuskTestCase {
         DB::statement($recreate_table_query);
     }
 
-    /**
-     * @param string $table_name
-     * @return string
-     */
     private function getTableRecreationQuery(string $table_name): string {
         $create_query = DB::select(sprintf("SHOW CREATE TABLE %s", $table_name));
         return $create_query[0]->{"Create Table"};
     }
 
-    private function dropTable(string $tableName) {
+    private function dropTable(string $tableName): void {
         DB::statement(sprintf("DROP TABLE %s", $tableName));
     }
 
-    private function truncateTable(string $tableName) {
+    private function truncateTable(string $tableName): void {
         DB::table($tableName)->truncate();
         $this->refreshCache($tableName);
     }

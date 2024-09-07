@@ -4,9 +4,11 @@ namespace App\Traits;
 
 trait AccountTypeResponseKeys {
 
+    // response keys
     private static $RESPONSE_KEY_ID = 'id';
     private static $RESPONSE_KEY_ERROR = 'error';
 
+    // error keys
     private static $ERROR_ID = 0;
     private static $ERROR_MSG_NO_ERROR = '';
     private static $ERROR_MSG_NO_DATA = 'No data provided';

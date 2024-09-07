@@ -29,6 +29,7 @@ class ExportsTest extends DuskTestCase {
     use ExportsHelper;
     use HomePageSelectors;
 
+    // selectors
     private static string $SELECTOR_EXPORT_BTN = '#filter-export-btn';
 
     public function __construct($name = null, array $data = [], $dataName = '') {
@@ -133,10 +134,10 @@ class ExportsTest extends DuskTestCase {
 
             // make sure export filename is within a time period variance after clicking on the export button
             $timestamp_variance = 2;
-            $file_timestamp=filter_var(basename($file_path), FILTER_SANITIZE_NUMBER_INT);
+            $file_timestamp = filter_var(basename($file_path), FILTER_SANITIZE_NUMBER_INT);
             $this->assertTrue(
-                $file_timestamp >= ($timestamp-$timestamp_variance) && $file_timestamp <= ($timestamp+$timestamp_variance),
-                sprintf("Failed asserting %d >= %d <= %d", ($timestamp-$timestamp_variance), $file_timestamp, ($timestamp+$timestamp_variance))
+                $file_timestamp >= ($timestamp - $timestamp_variance) && $file_timestamp <= ($timestamp + $timestamp_variance),
+                sprintf("Failed asserting %d >= %d <= %d", ($timestamp - $timestamp_variance), $file_timestamp, ($timestamp + $timestamp_variance))
             );
 
             $this->assertFileExists($file_path, "Directory [".$this->getAbsoluteDownloadDir()."] contents: ".print_r(File::files($this->getAbsoluteDownloadDir()), true));

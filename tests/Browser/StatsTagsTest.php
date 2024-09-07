@@ -31,8 +31,10 @@ class StatsTagsTest extends StatsBase {
 
     private static $SELECTOR_STATS_TAGS = "#stats-tags";
     private static $SELECTOR_CHART_TAGS = 'canvas#bar-chart';
+    // Selectors
 
     private static $VUE_KEY_STANDARDISEDATA = "standardiseData";
+    // vue keys
 
     public function __construct($name = null, array $data = [], $dataName = '') {
         parent::__construct($name, $data, $dataName);
@@ -134,9 +136,9 @@ class StatsTagsTest extends StatsBase {
         return [
             //[$datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $tag_count, $include_transfers]
             // test 1/20
-            'defaults account/account-type & tags & date-picker values'=>[null, null, false, false, false, 0, false],
+            'defaults account/account-type & tags & date-picker values' => [null, null, false, false, false, 0, false],
             // test 2/20
-            'defaults account/account-type & tags & date-picker values & include transfers checkbox button clicked'=>[null, null, false, false, false, 0, true],
+            'defaults account/account-type & tags & date-picker values & include transfers checkbox button clicked' => [null, null, false, false, false, 0, true],
             // test 3/20
             'date-picker 3 months prior start to present & default tags & default account/account-type'=>[$this->three_months_prior_start, $this->today, false, false, false, 0, false],
             // test 4/20
@@ -272,7 +274,6 @@ class StatsTagsTest extends StatsBase {
     /**
      * @param Collection $entries
      * @param Collection $tags
-     * @return array
      */
     private function standardiseData($entries, $tags): array {
         $standardised_chart_data = [];
@@ -285,7 +286,7 @@ class StatsTagsTest extends StatsBase {
             foreach ($entry['tags'] as $tag) {
                 $key = ($tag === 0) ? 'untagged' : $tags->where('id', $tag)->pluck('name')->first();
                 if (!isset($standardised_chart_data[$key])) {
-                    $standardised_chart_data[$key] = ['x'=>$key, 'y'=>0];
+                    $standardised_chart_data[$key] = ['x' => $key, 'y' => 0];
                 }
 
                 if ($entry['expense']) {
@@ -302,8 +303,6 @@ class StatsTagsTest extends StatsBase {
     }
 
     /**
-     * @param bool $is_account_type_rather_than_account_toggled
-     * @param int|null $account_or_account_type_id
      * @param Collection $account_types
      * @param Collection $tags
      */

@@ -10,13 +10,14 @@ class Tag extends BaseModel {
     use HasFactory;
     use LaraCache;
 
+    // variables
     protected $table = 'tags';
     public $timestamps = false; // turns off default laravel timestamping
     protected $fillable = [
-        'name'
+        'name',
     ];
     protected $guarded = [
-        'id'
+        'id',
     ];
 
     public function entries() {
@@ -30,7 +31,7 @@ class Tag extends BaseModel {
             }),
             CacheEntity::make('count')->forever()->cache(function() {
                 return Tag::count();
-            })
+            }),
         ];
     }
 

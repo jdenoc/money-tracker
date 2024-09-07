@@ -41,6 +41,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
     use WaitTimes;
     use WithTailwindColors;
 
+    // variables
     private $method_account = 'account';
     private $method_account_type = 'account-type';
     private $default_currency_character;
@@ -330,8 +331,8 @@ class EntryModalNewEntryTest extends DuskTestCase {
     public function providerSelectingDisabledAccountTypeMetaDataIsGrey(): array {
         // [$account_type_method]
         return [
-            [$this->method_account],        // test 12/20
-            [$this->method_account_type]    // test 13/20
+            [$this->method_account],       // test 12/20
+            [$this->method_account_type],  // test 13/20
         ];
     }
 
@@ -485,7 +486,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
                     // laravel dusk has an issue typing into input[type="date"] fields
                     // work-around for this is to use individual keystrokes
                     $backspace_count = strlen($entry_modal_body->inputValue($this->_selector_modal_entry_field_date));
-                    for ($i=0; $i<$backspace_count; $i++) {
+                    for ($i = 0; $i < $backspace_count; $i++) {
                         $entry_modal_body->keys($this->_selector_modal_entry_field_date, "{backspace}");
                     }
                 })
@@ -606,8 +607,8 @@ class EntryModalNewEntryTest extends DuskTestCase {
 
     public function providerCreateEntryWithMinimumRequirements(): array {
         return [
-            'expense'=>[true],  // 1/20
-            'income'=>[false]   // 2/20
+            'expense' => [true],  // 1/20
+            'income' => [false],  // 2/20
         ];
     }
 
@@ -662,7 +663,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
             [false, false], // test 3/20
             [true, false],  // test 4/20
             [false, true],  // test 5/20
-            [true, true]    // test 6/20
+            [true, true],   // test 6/20
         ];
     }
 

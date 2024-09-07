@@ -82,7 +82,7 @@ return [
 
         'discord' => [  // TODO: fill in
 
-        ]
+        ],
     ],
 
     /*

@@ -10,9 +10,10 @@ trait ToggleButton {
     use AssertElementColor;
     use WaitTimes;
 
+    // selectors
     private static string $SELECTOR_TOGGLE_BUTTON = ".vue-toggles";
 
-    public function assertToggleButtonState(Browser $browser, string $selector, string $label, ?string $color=null): void {
+    public function assertToggleButtonState(Browser $browser, string $selector, string $label, ?string $color = null): void {
         $browser
             ->assertVisible($selector)
             ->assertSeeIn($selector, $label);

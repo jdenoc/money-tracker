@@ -22,17 +22,15 @@ class UiSampleDatabaseSeeder extends Seeder {
     use EntryTransferKeys;
     use MaxEntryResponseValue;
 
+    //
     const CLI_OUTPUT_PREFIX = "<info>".__CLASS__.":</info> ";
-
     const COUNT_ACCOUNT_TYPE = 3;
     const COUNT_ATTACHMENT = 4;
     const COUNT_ENTRY = 5;
     const COUNT_INSTITUTION = 2;
     const COUNT_MIN = 1;
     const COUNT_TAG = 10;
-
     const YEAR_IN_DAYS = 365;
-
     private int $attachment_stored_count = 0;
 
     /**
@@ -51,23 +49,23 @@ class UiSampleDatabaseSeeder extends Seeder {
         // ***** ACCOUNTS *****
         $accounts = collect();
         foreach ($institutions as $institution) {
-            $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$institution->id]);
+            $accounts = $this->addAccountToCollection($accounts, ['institution_id' => $institution->id]);
         }
-        $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$institutions->random()->id, Account::DELETED_AT=>now()]);  // disabled account
+        $accounts = $this->addAccountToCollection($accounts, ['institution_id' => $institutions->random()->id, Account::DELETED_AT => now()]);  // disabled account
         $currencies = CurrencyHelper::fetchCurrencies();
         foreach ($currencies as $currency) {
-            $accounts = $this->addAccountToCollection($accounts, ['institution_id'=>$institutions->random()->id, 'currency'=>$currency->code]);
+            $accounts = $this->addAccountToCollection($accounts, ['institution_id' => $institutions->random()->id, 'currency' => $currency->code]);
         }
         $this->command->line(self::CLI_OUTPUT_PREFIX."Accounts seeded [".$accounts->count()."]");
 
         // ***** ACCOUNT-TYPES *****
         $account_types = collect();
         foreach ($accounts->pluck('id') as $account_id) {
-            $account_types = $this->addAccountTypeToCollection($account_types, ['account_id'=>$account_id]);
+            $account_types = $this->addAccountTypeToCollection($account_types, ['account_id' => $account_id]);
         }
         // disabled account-types
-        $account_types = $this->addAccountTypeToCollection($account_types, ['account_id'=>$accounts->where('active', true)->pluck('id')->random(), AccountType::DELETED_AT=>now()]);
-        $account_types = $this->addAccountTypeToCollection($account_types, ['account_id'=>$accounts->where('active', false)->pluck('id')->random(), AccountType::DELETED_AT=>now()]);
+        $account_types = $this->addAccountTypeToCollection($account_types, ['account_id' => $accounts->where('active', true)->pluck('id')->random(), AccountType::DELETED_AT => now()]);
+        $account_types = $this->addAccountTypeToCollection($account_types, ['account_id' => $accounts->where('active', false)->pluck('id')->random(), AccountType::DELETED_AT => now()]);
         $this->command->line(self::CLI_OUTPUT_PREFIX."Account-types seeded [".$account_types->count()."]");
 
         // ***** ENTRIES *****
@@ -75,12 +73,12 @@ class UiSampleDatabaseSeeder extends Seeder {
         $entry_date_generator = new Carbon();
         foreach ($account_types->pluck('id') as $account_type_id) {
             $entries = $this->addEntryToCollection($entries, [
-                'account_type_id'=>$account_type_id,
-                'entry_date'=>$entry_date_generator->now()->subDays(rand(0, 1.25*self::YEAR_IN_DAYS))
+                'account_type_id' => $account_type_id,
+                'entry_date' => $entry_date_generator->now()->subDays(rand(0, 1.25 * self::YEAR_IN_DAYS)),
             ]);
         }
-        $entries = $this->addEntryToCollection($entries, ['account_type_id'=>$account_types->pluck('id')->random(), 'entry_date'=>$entry_date_generator->now()]);
-        $entries = $this->addEntryToCollection($entries, ['account_type_id'=>$account_types->pluck('id')->random(), Entry::DELETED_AT=>$entry_date_generator->now()]);
+        $entries = $this->addEntryToCollection($entries, ['account_type_id' => $account_types->pluck('id')->random(), 'entry_date' => $entry_date_generator->now()]);
+        $entries = $this->addEntryToCollection($entries, ['account_type_id' => $account_types->pluck('id')->random(), Entry::DELETED_AT => $entry_date_generator->now()]);
         $this->command->line(self::CLI_OUTPUT_PREFIX."Entries seeded [".$entries->count()."]");
 
         foreach ($entries as $entry) {
@@ -103,7 +101,7 @@ class UiSampleDatabaseSeeder extends Seeder {
         // randomly select some entries and mark them as transfers
         $transfer_to_entries = collect();
         $transfer_from_entries = collect();
-        for ($transfer_i=0; $transfer_i<self::COUNT_ENTRY; $transfer_i++) {
+        for ($transfer_i = 0; $transfer_i < self::COUNT_ENTRY; $transfer_i++) {
             $transfer_to_entry = $this->firstFromApiCall($entries_not_disabled)
                 ->where('expense', 0)
                 ->whereNull('transfer_entry_id')
@@ -142,7 +140,7 @@ class UiSampleDatabaseSeeder extends Seeder {
 
         // ***** ATTACHMENTS *****
         // assign attachments to entries. if entry is a "transfer", then add an attachment of the same name to its counterpart
-        for ($attachment_i=0; $attachment_i<self::COUNT_ATTACHMENT; $attachment_i++) {
+        for ($attachment_i = 0; $attachment_i < self::COUNT_ATTACHMENT; $attachment_i++) {
             // income entries
             $entry_income_ids = $entries_not_disabled->where('expense', 0)->pluck('id');
             $this->assignAttachmentToEntry($entry_income_ids->random(), $transfer_to_entries->pluck('id')->toArray(), $entries);
@@ -199,7 +197,7 @@ class UiSampleDatabaseSeeder extends Seeder {
 
     private function addEntryToCollection(Collection $entry_collection, array $data): Collection {
         $new_entry_collection = Entry::factory()
-            ->count(fake()->numberBetween(self::COUNT_MIN, self::COUNT_ENTRY*2))
+            ->count(fake()->numberBetween(self::COUNT_MIN, self::COUNT_ENTRY * 2))
             ->create($data);
         return $entry_collection->merge($new_entry_collection);
     }
@@ -209,11 +207,11 @@ class UiSampleDatabaseSeeder extends Seeder {
      * @param Entry $entry
      * @param bool $attach_all
      */
-    private function attachTagToEntry($tag_ids, Entry $entry, bool $attach_all=false): void {
+    private function attachTagToEntry($tag_ids, Entry $entry, bool $attach_all = false): void {
         if ($attach_all) {
             $entry_tag_ids = $tag_ids;
         } else {
-            $entry_tag_ids = fake()->randomElements($tag_ids, fake()->numberBetween(self::COUNT_MIN, self::COUNT_TAG/2));
+            $entry_tag_ids = fake()->randomElements($tag_ids, fake()->numberBetween(self::COUNT_MIN, self::COUNT_TAG / 2));
         }
         $entry->tags()->syncWithoutDetaching($entry_tag_ids);
     }
@@ -226,15 +224,15 @@ class UiSampleDatabaseSeeder extends Seeder {
     private function assignAttachmentToEntry(int $entry_id, $transfer_entry_ids, Collection $entries_collection): void {
         if (in_array($entry_id, $transfer_entry_ids)) {
             /** @var Attachment $new_attachment */
-            $new_attachment = Attachment::factory()->create(['entry_id'=>$entry_id]);
+            $new_attachment = Attachment::factory()->create(['entry_id' => $entry_id]);
             $this->storeAttachment($new_attachment);
             $transfer_entry = $entries_collection->where('id', $entry_id)->first();
             /** @var Attachment $attachment */
-            $attachment = Attachment::factory()->create(['entry_id'=>$transfer_entry->transfer_entry_id, 'name'=>$new_attachment->name]);
+            $attachment = Attachment::factory()->create(['entry_id' => $transfer_entry->transfer_entry_id, 'name' => $new_attachment->name]);
             $this->storeAttachment($attachment);
         } else {
             /** @var Attachment $attachment */
-            $attachment = Attachment::factory()->create(['entry_id'=>$entry_id]);
+            $attachment = Attachment::factory()->create(['entry_id' => $entry_id]);
             $this->storeAttachment($attachment);
         }
     }

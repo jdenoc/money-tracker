@@ -10,6 +10,7 @@ use Tests\TestCase;
 class PutTagTest extends TestCase {
     use TagResponseKeys;
 
+    // uri
     private string $_uri = '/api/tag/%d';
     private $_generated_tag;
 
@@ -38,7 +39,7 @@ class PutTagTest extends TestCase {
     public function testUpdateExistingTagButNameIsEmpty() {
         // GIVEN
         $existing_tag_id = $this->_generated_tag->id;
-        $new_tag_data = Tag::factory()->make(['name'=>''])->toArray();
+        $new_tag_data = Tag::factory()->make(['name' => ''])->toArray();
 
         // WHEN
         $response = $this->putJson(sprintf($this->_uri, $existing_tag_id), $new_tag_data);

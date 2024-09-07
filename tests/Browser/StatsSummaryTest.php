@@ -30,6 +30,7 @@ class StatsSummaryTest extends StatsBase {
     private static $LABEL_GENERATE_TABLE_BUTTON = "Generate Tables";
     private static $LABEL_TABLE_NAME_TOTAL = 'Total Income/Expenses';
     private static $LABEL_TABLE_NAME_TOP = 'Top 10 income/expense entries';
+    // labels
 
     public function __construct($name = null, array $data = [], $dataName = '') {
         parent::__construct($name, $data, $dataName);
@@ -99,9 +100,9 @@ class StatsSummaryTest extends StatsBase {
         //[$datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $include_transfers]
         return [
             // test 4/20
-            'defaults account/account-type & date-picker values'=>[null, null, false, false, false, false],
+            'defaults account/account-type & date-picker values' => [null, null, false, false, false, false],
             // test 5/20
-            'defaults account/account-type & date-picker values & include transfers'=>[null, null, false, false, false, true],
+            'defaults account/account-type & date-picker values & include transfers' => [null, null, false, false, false, true],
             // test 6/20
             'date-picker previous year start to present & default account/account-type'=>[$this->previous_year_start, $this->today, false, false, false, false],
             // test 7/20
@@ -273,7 +274,6 @@ class StatsSummaryTest extends StatsBase {
      * @param Collection $entries
      * @param Collection $accounts
      * @param Collection $account_types
-     * @return array
      */
     private function getTotalIncomeExpenses($entries, $accounts, $account_types): array {
         $totals = [];
@@ -295,7 +295,7 @@ class StatsSummaryTest extends StatsBase {
         }
 
         // purge any 0 values
-        foreach ($totals as $currency=>$total) {
+        foreach ($totals as $currency => $total) {
             if ($total['income']->isZero() && $total['expense']->isZero()) {
                 unset($totals[$currency]);
             }
@@ -305,7 +305,6 @@ class StatsSummaryTest extends StatsBase {
 
     /**
      * @param Collection $entries
-     * @return array
      */
     private function getTop10IncomeExpenses($entries): array {
         $limit = 10;
@@ -313,21 +312,21 @@ class StatsSummaryTest extends StatsBase {
         $top_expense_entries = $entries->where('expense', 1)->sortByDesc($this->sortCallable())->take($limit)->values();
 
         $top_entries = [];
-        $empty_top_entry = ['memo'=>'', 'entry_value'=>'', 'entry_date'=>''];
-        for ($i=0; $i<$limit; $i++) {
+        $empty_top_entry = ['memo' => '', 'entry_value' => '', 'entry_date' => ''];
+        for ($i = 0; $i < $limit; $i++) {
             $top_income = $top_income_entries->get($i) ?: $empty_top_entry;
             $top_expense = $top_expense_entries->get($i) ?: $empty_top_entry;
             if ($top_expense == $empty_top_entry && $top_income == $empty_top_entry) {
                 break;
             }
 
-            $top_entries[$i+1] = [
-                'income_memo'=>$top_income['memo'],
-                'income_value'=>$top_income['entry_value'],
-                'income_date'=>$top_income['entry_date'],
-                'expense_memo'=>$top_expense['memo'],
-                'expense_value'=>$top_expense['entry_value'],
-                'expense_date'=>$top_expense['entry_date'],
+            $top_entries[$i + 1] = [
+                'income_memo' => $top_income['memo'],
+                'income_value' => $top_income['entry_value'],
+                'income_date' => $top_income['entry_date'],
+                'expense_memo' => $top_expense['memo'],
+                'expense_value' => $top_expense['entry_value'],
+                'expense_date' => $top_expense['entry_date'],
             ];
         }
         return $top_entries;
@@ -337,9 +336,7 @@ class StatsSummaryTest extends StatsBase {
      * This method takes a lot of code from predefined Browser methods
      * This allows us to do some work around testing without having to worry about css selector chaining
      *
-     * @param Browser $browser
      * @param RemoteWebElement $element
-     * @param string $tooltip_text
      */
     private function assertTooltip(Browser $browser, $element, string $tooltip_text) {
         $browser->driver->getMouse()->mouseMove($element->getCoordinates());    // move mouse over element

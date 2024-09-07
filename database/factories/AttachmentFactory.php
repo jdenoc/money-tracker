@@ -11,10 +11,10 @@ class AttachmentFactory extends Factory {
     public function definition(): array {
         fake()->addProvider(new ProjectFilenameProvider(fake()));
         return [
-            'uuid'=>fake()->uuid(),
-            'name'=>fake()->filename(),
-            'entry_id'=>fake()->randomNumber(FactoryConstants::MAX_RAND_ID_LENGTH, true),
-            'stamp'=>date(FactoryConstants::DATE_FORMAT)
+            'uuid' => fake()->uuid(),
+            'name' => fake()->filename(),
+            'entry_id' => fake()->randomNumber(FactoryConstants::MAX_RAND_ID_LENGTH, true),
+            'stamp' => date(FactoryConstants::DATE_FORMAT),
         ];
     }
 

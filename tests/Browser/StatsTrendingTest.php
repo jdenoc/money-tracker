@@ -28,11 +28,13 @@ class StatsTrendingTest extends StatsBase {
 
     private static $SELECTOR_STATS_TRENDING = "#stats-trending";
     private static $SELECTOR_CHART_TRENDING = 'canvas#line-chart';
+    // selectors
 
     private static $VUE_KEY_EXPENSEDATA = "expenseData";
     private static $VUE_KEY_INCOMEDATA = "incomeData";
     private static $VUE_KEY_COMPARISONDATA = 'comparisonData';
     private static $VUE_KEY_PERIODTOTALSDATA = 'periodTotalsData';
+    // vue keys
 
     public function __construct($name = null, array $data = [], $dataName = '') {
         parent::__construct($name, $data, $dataName);
@@ -114,9 +116,9 @@ class StatsTrendingTest extends StatsBase {
         return [
             //[$datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $include_transfers]
             // test 4/20
-            'defaults account/account-type & date-picker values'=>[null, null, false, false, false, false],
+            'defaults account/account-type & date-picker values' => [null, null, false, false, false, false],
             // test 5/20
-            'defaults account/account-type & date-picker values & include transfers checkbox button clicked'=>[null, null, false, false, false, true],
+            'defaults account/account-type & date-picker values & include transfers checkbox button clicked' => [null, null, false, false, false, true],
             // test 6/20
             'date-picker previous year start to present & default account/account-type'=>[$this->previous_year_start, $this->today, false, false, false, false],
             // test 7/20
@@ -250,7 +252,7 @@ class StatsTrendingTest extends StatsBase {
             // condense data points with similar entry_date values
             $key = $entry['entry_date'];
             if (!isset($standardised_chart_data[$key])) {
-                $standardised_chart_data[$key] = ['x'=>$key, 'y'=>Money::zero(Currency::DEFAULT_CURRENCY_CODE)];
+                $standardised_chart_data[$key] = ['x' => $key, 'y' => Money::zero(Currency::DEFAULT_CURRENCY_CODE)];
             }
             $standardised_chart_data[$key]['y'] = $standardised_chart_data[$key]['y']->plus($entry['entry_value']);
         }
@@ -268,14 +270,14 @@ class StatsTrendingTest extends StatsBase {
         foreach ($income_data as $datum) {
             $key = $datum['x'];
             if (!isset($comparison_data[$key])) {
-                $comparison_data[$key] = ['x'=>$key, 'y'=>Money::zero(Currency::DEFAULT_CURRENCY_CODE)];
+                $comparison_data[$key] = ['x' => $key, 'y' => Money::zero(Currency::DEFAULT_CURRENCY_CODE)];
             }
             $comparison_data[$key]['y'] = $comparison_data[$key]['y']->plus($datum['y']);
         }
         foreach ($expense_data as $datum) {
             $key = $datum['x'];
             if (!isset($comparison_data[$key])) {
-                $comparison_data[$key] = ['x'=>$key, 'y'=>Money::zero(Currency::DEFAULT_CURRENCY_CODE)];
+                $comparison_data[$key] = ['x' => $key, 'y' => Money::zero(Currency::DEFAULT_CURRENCY_CODE)];
             }
             $comparison_data[$key]['y'] = $comparison_data[$key]['y']->minus($datum['y']);
         }
@@ -290,9 +292,9 @@ class StatsTrendingTest extends StatsBase {
     private function periodTotalsChartData(array $comparison_chart_data): array {
         $period_totals_data = [];
         $previous_value = Money::zero(Currency::DEFAULT_CURRENCY_CODE);
-        foreach ($comparison_chart_data as $i=>$chart_datum) {
+        foreach ($comparison_chart_data as $i => $chart_datum) {
             $new_total = $previous_value->plus($chart_datum['y']);
-            $period_totals_data[$i] = ['x'=>$chart_datum['x'], 'y'=>$new_total];
+            $period_totals_data[$i] = ['x' => $chart_datum['x'], 'y' => $new_total];
             $previous_value = $new_total;
         }
         return $period_totals_data;

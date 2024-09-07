@@ -10,6 +10,7 @@ use Tests\TestCase;
 class PostTagTest extends TestCase {
     use TagResponseKeys;
 
+    // uri
     private string $_uri = '/api/tag';
 
     public function testCreateTag() {
@@ -44,7 +45,7 @@ class PostTagTest extends TestCase {
 
     public function testCreateTagWithMissingData() {
         // GIVEN
-        $tag_data = Tag::factory()->make(['name'=>''])->toArray();
+        $tag_data = Tag::factory()->make(['name' => ''])->toArray();
 
         // WHEN
         $response = $this->postJson($this->_uri, $tag_data);

@@ -9,6 +9,7 @@ use Tests\TestCase;
 class HealthTest extends TestCase {
     use HealthCheck;
 
+    // variables
     private array $health_check_labels = [];
 
     public function setUp(): void {
@@ -30,7 +31,7 @@ class HealthTest extends TestCase {
             ->assertStatus(200)
             ->assertJsonCount(count($this->health_check_labels), 'checkResults');
         foreach ($this->health_check_labels as $health_info_label) {
-            $response->assertJsonFragment(['label'=>$health_info_label]);
+            $response->assertJsonFragment(['label' => $health_info_label]);
         }
     }
 

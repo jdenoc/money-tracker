@@ -8,6 +8,7 @@ use Tests\TestCase;
 
 class GetInstitutionsTest extends TestCase {
 
+    // uri
     protected string $_base_uri = '/api/institutions';
 
     public function testGetInstitutionsWhenNoneAreAvailable() {
@@ -25,14 +26,13 @@ class GetInstitutionsTest extends TestCase {
 
     public static function providerGetInstitutions(): array {
         return [
-            'all active:true'=>[true],      // all institutes are active
-            'all active:false'=>[false]     // some institutes are active
+            'all active:true' => [true],    // all institutes are active
+            'all active:false' => [false],  // some institutes are active
         ];
     }
 
     /**
      * @dataProvider providerGetInstitutions
-     * @param bool $all_active
      */
     public function testGetInstitutions(bool $all_active) {
         // GIVEN
@@ -40,7 +40,7 @@ class GetInstitutionsTest extends TestCase {
         $disabled_stamp = function() use ($all_active) { return fake()->boolean(($all_active ? 100 : 50)) ? null : now(); };
         $generated_institutions = Institution::factory()
             ->count($institutions_count)
-            ->state([Institution::DELETED_AT=>$disabled_stamp])
+            ->state([Institution::DELETED_AT => $disabled_stamp])
             ->create();
 
         $generated_institutions->makeHidden([Institution::CREATED_AT, Institution::UPDATED_AT, Institution::DELETED_AT]);

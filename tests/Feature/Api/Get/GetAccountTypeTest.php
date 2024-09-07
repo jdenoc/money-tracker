@@ -10,6 +10,7 @@ use Tests\TestCase;
 
 class GetAccountTypeTest extends TestCase {
 
+    // uri
     private string $_base_uri = '/api/account-type/%d';
 
     public function testGetAccountTypeDataWhenNoAccountTypeDataExists() {
@@ -41,7 +42,6 @@ class GetAccountTypeTest extends TestCase {
     }
 
     /**
-     * @param array       $response_as_array
      * @param AccountType $generated_account_type
      */
     private function assertAccountTypeDetailsOK(array $response_as_array, $generated_account_type) {

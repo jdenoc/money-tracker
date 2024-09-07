@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class DeleteAttachmentTest extends TestCase {
 
+    // uri
     private string $_attachment_base_uri = '/api/attachment/';
     private string $_entry_base_uri = '/api/entry/';
 

@@ -37,16 +37,14 @@ class ATest extends DuskTestCase {
     public function providerTitleIsCorrect(): array {
         return [
             // [$url, $title]
-            'home'=>['/', "Money Tracker | HOME"],                  // test 2/20
-            'stats'=>['/stats', "Money Tracker | STATS"],           // test 3/20
-            'settings'=>['/settings', 'Money Tracker | Settings'],  // test 4/20
+            'home' => ['/', "Money Tracker | HOME"],                  // test 2/20
+            'stats' => ['/stats', "Money Tracker | STATS"],           // test 3/20
+            'settings' => ['/settings', 'Money Tracker | Settings'],  // test 4/20
         ];
     }
 
     /**
      * @dataProvider providerTitleIsCorrect
-     * @param string $url
-     * @param string $title
      * @throws \Throwable
      *
      * @group demo-1
@@ -59,7 +57,7 @@ class ATest extends DuskTestCase {
             self::$FAVICON_PATH_PREFIX.'apple-touch-icon.png',
             self::$FAVICON_PATH_PREFIX.'android-chrome-192x192.png',
             self::$FAVICON_PATH_PREFIX.'android-chrome-512x512.png',
-            self::$FAVICON_PATH_PREFIX.'site.webmanifest'
+            self::$FAVICON_PATH_PREFIX.'site.webmanifest',
         ];
         foreach ($favicon_file_paths as $favicon_file_path) {
             $this->assertFileExists(public_path($favicon_file_path));

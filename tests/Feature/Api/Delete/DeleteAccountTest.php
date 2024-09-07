@@ -10,6 +10,7 @@ use Tests\TestCase;
 class DeleteAccountTest extends TestCase {
     use WithFaker;
 
+    // uri
     private const PLACEHOLDER_URI_ACCOUNT = '/api/account/%d';
 
     public function testDisablingAccountThatDoesNotExist() {

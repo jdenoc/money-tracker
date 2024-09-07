@@ -27,7 +27,7 @@ class RenameEntriesColumnStamp extends Migration {
         });
 
         // move data from old column to new column
-        DB::table(self::$TABLE)->update([self::$COLUMN_CREATE=>DB::raw(self::$COLUMN_STAMP)]);
+        DB::table(self::$TABLE)->update([self::$COLUMN_CREATE => DB::raw(self::$COLUMN_STAMP)]);
 
         // delete old column
         Schema::table(self::$TABLE, function(Blueprint $table) {
@@ -47,7 +47,7 @@ class RenameEntriesColumnStamp extends Migration {
         });
 
         // move data from old column to new column
-        DB::table(self::$TABLE)->update([self::$COLUMN_STAMP=>DB::raw(self::$COLUMN_CREATE)]);
+        DB::table(self::$TABLE)->update([self::$COLUMN_STAMP => DB::raw(self::$COLUMN_CREATE)]);
 
         // delete old column
         Schema::table(self::$TABLE, function(Blueprint $table) {

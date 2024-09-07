@@ -13,23 +13,26 @@ class Account extends BaseModel {
     use LaraCache;
     use SoftDeletes;
 
+    // cache constants
     const CACHE_KEY_ALL = 'all';
     const CACHE_KEY_COUNT = 'count';
 
+    // timestamp table columns
     const CREATED_AT = 'create_stamp';
     const UPDATED_AT = 'modified_stamp';
     const DELETED_AT = 'disabled_stamp';
 
+    // variables
     protected $table = 'accounts';
     protected $attributes = [
-        'currency'=>'USD',
-        'total'=>0,
+        'currency' => 'USD',
+        'total' => 0,
     ];
     protected $fillable = [
-        'name', 'institution_id' ,'total'
+        'name', 'institution_id' ,'total',
     ];
     protected $guarded = [
-        'id'
+        'id',
     ];
     protected $appends = [
         'active',
@@ -101,7 +104,7 @@ class Account extends BaseModel {
                 ->forever()
                 ->cache(function() {
                     return Account::withTrashed()->count();
-                })
+                }),
         ];
     }
 

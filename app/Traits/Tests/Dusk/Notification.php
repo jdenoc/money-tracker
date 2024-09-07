@@ -9,24 +9,20 @@ use PHPUnit\Framework\Assert;
 trait Notification {
     use WaitTimes;
 
+    // notification types
     protected static string $NOTIFICATION_TYPE_ERROR = 'error';
     protected static string $NOTIFICATION_TYPE_INFO = 'info';
     protected static string $NOTIFICATION_TYPE_SUCCESS = 'success';
     protected static string $NOTIFICATION_TYPE_WARNING = 'warning';
 
+    // selectors
     private static string $SELECTOR_NOTIFICATION = '.snotifyToast:last-child';
     private static string $NOTIFICATION_CLASS_INFO = "snotify-info";
     private static string $NOTIFICATION_CLASS_ERROR = "snotify-error";
     private static string $NOTIFICATION_CLASS_SUCCESS = "snotify-success";
     private static string $NOTIFICATION_CLASS_WARNING = "snotify-warning";
 
-    /**
-     * @param Browser $browser
-     * @param string $notification_type
-     * @param string $notification_message
-     * @throws \Facebook\WebDriver\Exception\TimeOutException
-     */
-    public function assertNotificationContents(Browser $browser, string $notification_type, string $notification_message) {
+    public function assertNotificationContents(Browser $browser, string $notification_type, string $notification_message): void {
         switch ($notification_type) {
             case self::$NOTIFICATION_TYPE_ERROR:
                 $notification_class = self::$NOTIFICATION_CLASS_ERROR;
@@ -56,11 +52,6 @@ trait Notification {
             });
     }
 
-    /**
-     * @param Browser $browser
-     *
-     * @throws \Facebook\WebDriver\Exception\TimeOutException
-     */
     public function dismissNotification(Browser $browser) {
         $browser
             ->click(self::$SELECTOR_NOTIFICATION)

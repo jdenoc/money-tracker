@@ -46,10 +46,11 @@ class TransferModalTest extends DuskTestCase {
     use HomePageSelectors;
     use WithTailwindColors;
 
-    private static $METHOD_TO = 'to';
-    private static $METHOD_FROM = 'from';
-    private static $METHOD_ACCOUNT = 'account';
-    private static $METHOD_ACCOUNT_TYPE = 'account-type';
+    // transfer types
+    private static string $METHOD_TO = 'to';
+    private static string $METHOD_FROM = 'from';
+    private static string $METHOD_ACCOUNT = 'account';
+    private static string $METHOD_ACCOUNT_TYPE = 'account-type';
 
     public function setUp(): void {
         parent::setUp();
@@ -374,8 +375,6 @@ class TransferModalTest extends DuskTestCase {
 
     /**
      * @dataProvider providerSelectingDisabledTransferAccountTypeMetaDataIsGrey
-     * @param string $transfer_field
-     * @param string $account_type_method
      *
      * @throws Throwable
      *
@@ -430,24 +429,22 @@ class TransferModalTest extends DuskTestCase {
     public function providerResetTransferModalFields(): array {
         return [
             // [$has_tags, $has_attachments]
-            'standard fields'=>[false, false],                           // test 15/20
-            'standard fields \w rawTagsData'=>[true, false],             // test 16/20
-            'standard fields \w attachments'=>[false, true],             // test 17/20
-            'standard fields \w rawTagsData & attachments'=>[true, true] // test 18/20
+            'standard fields' => [false, false],                            // test 15/20
+            'standard fields \w rawTagsData' => [true, false],              // test 16/20
+            'standard fields \w attachments' => [false, true],              // test 17/20
+            'standard fields \w rawTagsData & attachments' => [true, true], // test 18/20
         ];
     }
 
     /**
      * @dataProvider providerResetTransferModalFields
-     * @param $has_tags
-     * @param $has_attachments
      *
      * @throws Throwable
      *
      * @group transfer-modal-1
      * test (see provider)/20
      */
-    public function testResetTransferModalFields($has_tags, $has_attachments) {
+    public function testResetTransferModalFields(bool $has_tags, bool $has_attachments) {
         $all_account_types = $this->getApiAccountTypes();
         $account_types = fake()->randomElements($all_account_types, 2);
 
@@ -538,10 +535,6 @@ class TransferModalTest extends DuskTestCase {
 
     /**
      * @dataProvider providerSaveTransferEntry
-     * @param bool $is_to_account_external
-     * @param bool $is_from_account_external
-     * @param bool $has_tags
-     * @param bool $has_attachments
      *
      * @throws Throwable
      *
@@ -571,13 +564,13 @@ class TransferModalTest extends DuskTestCase {
 
             // generate some test values
             $transfer_entry_data = [
-                'date'=>$browser_locale_date_for_typing,
-                'memo'=>"Test transfer - save".($has_tags ? " w/ tags" : '').($has_attachments ? " w/ attachments" : '').' - '.fake()->uuid(),
-                'value'=>fake()->randomFloat(2, 0, 100),
-                'from_account_type_id'=>($is_from_account_external ? self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID : $account_types[0]['id']),
-                'to_account_type_id'=>($is_to_account_external ? self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID : $account_types[1]['id']),
-                'tag'=>$tag,
-                'attachment_path'=>$attachment_path,
+                'date' => $browser_locale_date_for_typing,
+                'memo' => "Test transfer - save".($has_tags ? " w/ tags" : '').($has_attachments ? " w/ attachments" : '').' - '.fake()->uuid(),
+                'value' => fake()->randomFloat(2, 0, 100),
+                'from_account_type_id' => ($is_from_account_external ? self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID : $account_types[0]['id']),
+                'to_account_type_id' => ($is_to_account_external ? self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID : $account_types[1]['id']),
+                'tag' => $tag,
+                'attachment_path' => $attachment_path,
             ];
 
             $browser->visit(new HomePage());
@@ -588,7 +581,7 @@ class TransferModalTest extends DuskTestCase {
                     // laravel dusk has an issue typing into input[type="date"] fields
                     // work-around for this is to use individual keystrokes
                     $backspace_count = strlen($modal->inputValue($this->_selector_modal_transfer_field_date));
-                    for ($i=0; $i<$backspace_count; $i++) {
+                    for ($i = 0; $i < $backspace_count; $i++) {
                         $modal->keys($this->_selector_modal_transfer_field_date, "{backspace}");
                     }
 
@@ -665,8 +658,8 @@ class TransferModalTest extends DuskTestCase {
         // disabled account-types
         $account_type_id1 = AccountType::onlyTrashed()->get()->random();
         $account_type_id2 = AccountType::onlyTrashed()->whereNotIn('id', [$account_type_id1->id])->get()->random();
-        $default_entry_data = ['entry_date'=>date('Y-m-d'), 'expense'=>true, 'entry_value'=>fake()->randomFloat(2)];
-        $entry_data_income = ['account_type_id'=>$account_type_id2->id, 'entry_date'=>date("Y-m-d", strtotime("-18 months")), 'expense'=>false];
+        $default_entry_data = ['entry_date' => date('Y-m-d'), 'expense' => true, 'entry_value' => fake()->randomFloat(2)];
+        $entry_data_income = ['account_type_id' => $account_type_id2->id, 'entry_date' => date("Y-m-d", strtotime("-18 months")), 'expense' => false];
 
         // transfer pair 1
         $e1_1 = Entry::factory()->create(array_merge(
@@ -732,17 +725,7 @@ class TransferModalTest extends DuskTestCase {
         });
     }
 
-    /**
-     * @param Browser $browser
-     * @param string $table_row_selector
-     * @param array $transfer_entry_data
-     * @param string $entry_modal_date_input_value
-     * @param string $entry_switch_expense_label
-     * @param string $account_type_key
-     * @param bool $has_tags
-     * @param bool $has_attachments
-     */
-    private function assertTransferEntrySaved(Browser $browser, string $table_row_selector, array $transfer_entry_data, string $entry_modal_date_input_value, string $account_type_key, string $entry_switch_expense_label, bool $has_tags, bool $has_attachments) {
+    private function assertTransferEntrySaved(Browser $browser, string $table_row_selector, array $transfer_entry_data, string $entry_modal_date_input_value, string $account_type_key, string $entry_switch_expense_label, bool $has_tags, bool $has_attachments): void {
         if ($has_tags) {
             $table_row_selector .= '.has-tags';
         }

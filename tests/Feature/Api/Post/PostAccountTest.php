@@ -12,6 +12,7 @@ use Tests\TestCase;
 class PostAccountTest extends TestCase {
     use AccountResponseKeys;
 
+    // uri
     private string $_base_uri = '/api/account';
 
     public function setUp(): void {
@@ -36,12 +37,12 @@ class PostAccountTest extends TestCase {
 
         // only 1 property missing
         foreach ($required_properties as $property) {
-            $test_cases[$property] = ['missing_fields'=>[$property],];
+            $test_cases[$property] = ['missing_fields' => [$property]];
         }
 
         // 1 < property missing < count(required properties)
-        $missing_fields = array_rand(array_flip($required_properties), mt_rand(2, count($required_properties)-1));
-        $test_cases['multi-random'] = ['missing_fields'=>$missing_fields];
+        $missing_fields = array_rand(array_flip($required_properties), mt_rand(2, count($required_properties) - 1));
+        $test_cases['multi-random'] = ['missing_fields' => $missing_fields];
 
         return $test_cases;
     }
@@ -109,10 +110,10 @@ class PostAccountTest extends TestCase {
     private function generateDummyAccountData(): array {
         $account_data = Account::factory()->make();
         return [
-            'name'=>$account_data->name,
-            'institution_id'=>$account_data->institution_id,
-            'total'=>$account_data->total,
-            'currency'=>$account_data->currency
+            'name' => $account_data->name,
+            'institution_id' => $account_data->institution_id,
+            'total' => $account_data->total,
+            'currency' => $account_data->currency,
         ];
     }
 

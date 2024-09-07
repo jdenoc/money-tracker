@@ -12,7 +12,7 @@ trait DatabaseMigrations {
     protected static bool $FRESH_RUN = true;
     protected static string $SNAPSHOT_NAME = '';
 
-    public function migrate(bool $withSeeder=true) {
+    public function migrate(bool $withSeeder = true) {
         if (config('testing.snapshot.use_latest')) {
             $this->migrateWithLatestSnapshot();
         } else {
@@ -26,7 +26,7 @@ trait DatabaseMigrations {
     }
 
     private function migrateWithLatestSnapshot() {
-        $this->artisan('snapshot:load', ['--latest'=>true]);
+        $this->artisan('snapshot:load', ['--latest' => true]);
     }
 
     private function migrateFresh(bool $withSeeder) {
@@ -43,12 +43,12 @@ trait DatabaseMigrations {
         });
 
         // load database migrations and seed with data
-        $options = ($withSeeder) ? ['--seeder'=>'UiSampleDatabaseSeeder'] : [];
+        $options = ($withSeeder) ? ['--seeder' => 'UiSampleDatabaseSeeder'] : [];
         $this->artisan('migrate:fresh', $options);
 
         // dump database contents to file
         self::$SNAPSHOT_NAME = class_basename(get_called_class());
-        $this->artisan('snapshot:create', ['name'=>self::$SNAPSHOT_NAME]);
+        $this->artisan('snapshot:create', ['name' => self::$SNAPSHOT_NAME]);
 
         self::$FRESH_RUN = false;
     }
@@ -59,7 +59,7 @@ trait DatabaseMigrations {
             sleep(1);
         }
         // init database from file
-        $this->artisan('snapshot:load', ['name'=>self::$SNAPSHOT_NAME]);
+        $this->artisan('snapshot:load', ['name' => self::$SNAPSHOT_NAME]);
     }
 
     public static function cleanup() {

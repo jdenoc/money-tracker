@@ -9,13 +9,16 @@ use Laravel\Dusk\Browser;
 trait StatsDateRange {
     use BrowserDateUtil;
 
+    // selectors
     private static $SELECTOR_DATERANGE_START = '#%s-start-date';
     private static $SELECTOR_DATERANGE_END = '#%s-end-date';
     private static $SELECTOR_LABEL_DATERANGE = "label[for='%s']";
 
+    // labels
     private static $LABEL_DATERANGE_START = "Start Date:";
     private static $LABEL_DATERANGE_END = "End Date:";
 
+    // variables
     protected $date_range_chart_name = '';
 
     private function hasDateRangeChartNameBeenSet() {
@@ -42,7 +45,7 @@ trait StatsDateRange {
         return sprintf(self::$SELECTOR_LABEL_DATERANGE, ltrim($this->getChartDateEndRangeId(), '#'));
     }
 
-    public function setDateRangeDate(Browser $browser, string $start_or_end, string $date) {
+    public function setDateRangeDate(Browser $browser, string $start_or_end, string $date): void {
         switch ($start_or_end) {
             case 'start':
                 $selector = $this->getChartDateStartRangeId();
@@ -64,7 +67,7 @@ trait StatsDateRange {
             ->assertValue($selector, $date);
     }
 
-    public function assertDefaultStateDateRange(Browser $browser) {
+    public function assertDefaultStateDateRange(Browser $browser): void {
         $browser
             ->assertVisible($this->getChartDateStartRangeLabel())
             ->assertSeeIn($this->getChartDateStartRangeLabel(), self::$LABEL_DATERANGE_START)

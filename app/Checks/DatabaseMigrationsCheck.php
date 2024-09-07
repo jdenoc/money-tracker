@@ -21,7 +21,7 @@ class DatabaseMigrationsCheck extends Check {
     }
 
     protected function migrationStatusOutput(): string {
-        Artisan::call("migrate:status", ["--pending"=>true]);
+        Artisan::call("migrate:status", ["--pending" => true]);
         return trim(Artisan::output());
     }
 

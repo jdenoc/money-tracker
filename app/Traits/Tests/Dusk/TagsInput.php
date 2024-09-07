@@ -13,6 +13,7 @@ trait TagsInput {
     use WithTailwindColors;
     use Tooltip;
 
+    // selectors
     private static string $SELECTOR_TAGS_INPUT_CONTAINER = ".tags-input";
     private static string $SELECTOR_TAGS_INPUT_LOADING = 'span.loading + div .tags-input';
     private static string $SELECTOR_TAGS_INPUT_INFO_ICON = 'span.tags-info-icon svg:nth-child(2)';
@@ -20,6 +21,7 @@ trait TagsInput {
     private static string $SELECTOR_TAGS_INPUT_TAG = "span.tags-input-badge-pill";
     private static string $SELECTOR_TAG_AUTOCOMPLETE_OPTIONS = '.typeahead-badges span.tags-input-badge';
 
+    // colours
     private string $_color_tags_icon_default = "";
     private string $_color_tags_icon_hover = "";
 
@@ -52,7 +54,7 @@ trait TagsInput {
         $browser->waitUntilMissing(self::$SELECTOR_TAGS_INPUT_LOADING, self::$WAIT_SECONDS);
         // using colorName as our tag, we can be guaranteed that a tag can be between 3 and 20 characters
         // that is a large range; so we'll keep typing up 75% of the characters to guarantee that we'll get the correct tag to show up first
-        $character_limit = max(3, ceil(strlen($tag)*0.75));  // character limit should be a minimum of 3
+        $character_limit = max(3, ceil(strlen($tag) * 0.75));  // character limit should be a minimum of 3
         for ($tag_character_i = 0; $tag_character_i < $character_limit; $tag_character_i++) {
             $browser->keys(self::$SELECTOR_TAGS_INPUT_INPUT, substr($tag, $tag_character_i, 1));
         }

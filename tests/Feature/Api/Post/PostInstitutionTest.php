@@ -11,6 +11,7 @@ use Tests\TestCase;
 class PostInstitutionTest extends TestCase {
     use InstitutionResponseKeys;
 
+    // uri
     private string $_base_uri = '/api/institution';
 
     public function testCreateInstitutionWithoutData() {
@@ -30,7 +31,7 @@ class PostInstitutionTest extends TestCase {
 
         // only 1 property missing
         foreach ($required_properties as $property) {
-            $test_cases[$property] = ['missing_property'=>$property];
+            $test_cases[$property] = ['missing_property' => $property];
         }
 
         return $test_cases;
@@ -92,7 +93,7 @@ class PostInstitutionTest extends TestCase {
     private function generateDummyInstitutionData(): array {
         $institution_data = Institution::factory()->make();
         return [
-            'name'=>$institution_data->name,
+            'name' => $institution_data->name,
         ];
     }
 

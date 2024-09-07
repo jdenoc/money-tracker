@@ -31,21 +31,21 @@ class AttachmentController extends Controller {
             case 'pdf':
                 $display_headers = [
                     'Content-Type' => 'application/pdf',
-                    'Content-Disposition' => 'inline; filename="'.$attachment->name.'"'
+                    'Content-Disposition' => 'inline; filename="'.$attachment->name.'"',
                 ];
                 break;
             case 'jpeg':
             case 'jpg':
-                $display_headers = ['Content-Type'=>'image/jpeg'];
+                $display_headers = ['Content-Type' => 'image/jpeg'];
                 break;
             case 'png':
-                $display_headers = ['Content-Type'=>'image/png'];
+                $display_headers = ['Content-Type' => 'image/png'];
                 break;
             case 'gif':
-                $display_headers = ['Content-Type'=>'image/gif'];
+                $display_headers = ['Content-Type' => 'image/gif'];
                 break;
             case 'txt':
-                $display_headers = ['Content-Type'=>'text/plain'];
+                $display_headers = ['Content-Type' => 'text/plain'];
                 break;
             default:
                 $display_headers = [];
@@ -63,12 +63,12 @@ class AttachmentController extends Controller {
             $attachment->name = $upload_file_request->getClientOriginalName();
             $attachment->storage_store(file_get_contents($upload_file_request->getRealPath()), true);
             return response(
-                ['uuid'=>$attachment->uuid, 'name'=>$attachment->name, 'tmp_filename'=>$attachment->get_tmp_filename()],
+                ['uuid' => $attachment->uuid, 'name' => $attachment->name, 'tmp_filename' => $attachment->get_tmp_filename()],
                 HttpStatus::HTTP_OK
             );
         } else {
             return response(
-                ['error'=>$upload_file_request->getErrorMessage()],
+                ['error' => $upload_file_request->getErrorMessage()],
                 HttpStatus::HTTP_BAD_REQUEST
             );
         }

@@ -8,12 +8,6 @@ use Laravel\Dusk\Browser;
 trait AccountOrAccountTypeSelector {
     use WaitTimes;
 
-    /**
-     * @param Browser $component
-     * @param string $select_selector
-     *
-     * @throws \Facebook\WebDriver\Exception\TimeOutException
-     */
     private function waitUntilSelectLoadingIsMissing(Browser $component, string $select_selector) {
         $class_loading = '.loading';
         $parent_visible_script = <<<JS

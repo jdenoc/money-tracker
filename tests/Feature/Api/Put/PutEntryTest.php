@@ -17,7 +17,10 @@ class PutEntryTest extends TestCase {
     use EntryResponseKeys;
     use WithFaker;
 
+    // uri
     private string $_base_uri = '/api/entry/';
+
+    // objects
     private $_generated_account;
     private $_generated_account_type;
     private $_generated_entry;
@@ -87,7 +90,7 @@ class PutEntryTest extends TestCase {
         // GIVEN - see setUp()
         $entry_data = Entry::factory()->for($this->_generated_account_type)->make();
         $entry_data = [
-            'entry_value'=>$entry_data->entry_value
+            'entry_value' => $entry_data->entry_value,
         ];
 
         // WHEN
@@ -138,7 +141,7 @@ class PutEntryTest extends TestCase {
 
     public function testUpdateEntryAndChangeAccountTypeCausingAccountTotalsToUpdate() {
         // GIVEN - see setUp()
-        $generated_account2 = Account::factory()->state(['currency'=>$this->_generated_account->currency])->create();
+        $generated_account2 = Account::factory()->state(['currency' => $this->_generated_account->currency])->create();
         $generated_account_type2 = AccountType::factory()->for($generated_account2)->create();
         $entry_data = $this->_generated_entry->toArray();
         $entry_data['account_type_id'] = $generated_account_type2->id;
@@ -215,16 +218,16 @@ class PutEntryTest extends TestCase {
 
         $update_entry_fields = [];
         foreach ($required_entry_fields as $required_entry_field) {
-            $update_entry_fields["update [$required_entry_field]"] = ['entry_data_fields'=>[$required_entry_field]];
+            $update_entry_fields["update [$required_entry_field]"] = ['entry_data_fields' => [$required_entry_field]];
         }
 
         $update_batch_properties = [];
-        $batch_entry_fields = array_rand($required_entry_fields, mt_rand(2, count($required_entry_fields)-1));
+        $batch_entry_fields = array_rand($required_entry_fields, mt_rand(2, count($required_entry_fields) - 1));
         $batch_entry_fields = array_intersect_key($required_entry_fields, array_flip($batch_entry_fields));
         foreach ($batch_entry_fields as $entry_property) {
             $update_batch_properties[$entry_property] = $entry_property;
         }
-        $update_entry_fields['update ['.implode(',', $batch_entry_fields).']'] = ['entry_data_fields'=>$update_batch_properties];
+        $update_entry_fields['update ['.implode(',', $batch_entry_fields).']'] = ['entry_data_fields' => $update_batch_properties];
 
         return $update_entry_fields;
     }
@@ -250,14 +253,14 @@ class PutEntryTest extends TestCase {
         // THEN
         $get_response->assertStatus(HttpStatus::HTTP_OK);
         $get_response_as_array = $get_response->json();
-        foreach ($entry_data as $property=>$value) {
+        foreach ($entry_data as $property => $value) {
             $this->assertEquals($value, $get_response_as_array[$property], "Entry data:".json_encode($entry_data)."\nGET Response:".$get_response->getContent());
         }
     }
 
     public function testUpdateEntryToHaveTransferEntryCounterpart() {
         // GIVEN - see setup()
-        $entry_data = ['transfer_entry_id'=>fake()->randomDigitNotZero()];
+        $entry_data = ['transfer_entry_id' => fake()->randomDigitNotZero()];
 
         // WHEN
         $get_response = $this->get($this->_base_uri.$this->_generated_entry->id);
@@ -285,7 +288,7 @@ class PutEntryTest extends TestCase {
         // GIVEN - see setUp()
         $generate_tag_count = fake()->numberBetween(2, 5);
         Tag::factory($generate_tag_count)->create();
-        $put_entry_data = ['tags'=>Tag::all()->pluck('id')->toArray()];
+        $put_entry_data = ['tags' => Tag::all()->pluck('id')->toArray()];
         do {
             $non_existent_tag_id = fake()->unique()->randomNumber(3);
         } while (in_array($non_existent_tag_id, $put_entry_data['tags']));
@@ -307,7 +310,7 @@ class PutEntryTest extends TestCase {
         $this->assertArrayHasKey('tags', $get_response_as_array);
         $this->assertTrue(is_array($get_response_as_array['tags']));
         $this->assertNotEmpty($get_response_as_array['tags']);
-        foreach ($get_response_as_array['tags'] as $idx=>$response_tag) {
+        foreach ($get_response_as_array['tags'] as $idx => $response_tag) {
             $this->assertContains($response_tag['id'], $put_entry_data['tags']);
             unset($get_response_as_array['tags'][$idx]);
         }
@@ -321,7 +324,7 @@ class PutEntryTest extends TestCase {
         $generated_tag_ids = $generated_tags->pluck('pivot.tag_id')->toArray();
         $attaching_tag_id = fake()->randomElement($generated_tag_ids);
         $this->_generated_entry->tags()->attach($attaching_tag_id);
-        $put_entry_data = ['tags'=>[$attaching_tag_id]];
+        $put_entry_data = ['tags' => [$attaching_tag_id]];
         $put_entry_data['tags'] = array_merge(
             $put_entry_data['tags'],
             [$attaching_tag_id],
@@ -348,9 +351,9 @@ class PutEntryTest extends TestCase {
     public function testUpdateEntryWithAttachments() {
         // GIVEN
         $attachment_data = Attachment::factory()->make();
-        $put_entry_data = ['attachments'=>[[
-            'uuid'=>$attachment_data->uuid,
-            'name'=>$attachment_data->name
+        $put_entry_data = ['attachments' => [[
+            'uuid' => $attachment_data->uuid,
+            'name' => $attachment_data->name,
         ]]];
 
         // WHEN
@@ -371,8 +374,8 @@ class PutEntryTest extends TestCase {
         $this->assertNotEmpty($get_response_as_array['attachments']);
         foreach ($get_response_as_array['attachments'] as $response_attachment) {
             $attachment_data = [
-                'uuid'=>$response_attachment['uuid'],
-                'name'=>$response_attachment['name']
+                'uuid' => $response_attachment['uuid'],
+                'name' => $response_attachment['name'],
             ];
             $this->assertContains($attachment_data, $put_entry_data['attachments'], 'Generated attachments:'.json_encode($put_entry_data['attachments']));
         }
@@ -381,12 +384,12 @@ class PutEntryTest extends TestCase {
     public function testUpdateEntryWithAttachmentsAndAttachmentsAreAlreadyAttached() {
         // GIVEN
         $unattached_attachment = Attachment::factory()->make();
-        $put_entry_data = ['attachments'=>[
-            ['uuid'=>$unattached_attachment->uuid, 'name'=>$unattached_attachment->name]
+        $put_entry_data = ['attachments' => [
+            ['uuid' => $unattached_attachment->uuid, 'name' => $unattached_attachment->name],
         ]];
-        $attached_attachments = Attachment::factory()->count(3)->create(['entry_id'=>$this->_generated_entry->id]);
+        $attached_attachments = Attachment::factory()->count(3)->create(['entry_id' => $this->_generated_entry->id]);
         foreach ($attached_attachments as $attached_attachment) {
-            $put_entry_data['attachments'][] = ['uuid'=>$attached_attachment->uuid, 'name'=>$attached_attachment->name];
+            $put_entry_data['attachments'][] = ['uuid' => $attached_attachment->uuid, 'name' => $attached_attachment->name];
         }
 
         // WHEN
@@ -409,8 +412,8 @@ class PutEntryTest extends TestCase {
         $this->assertNotEmpty($get_response_as_array['attachments']);
         foreach ($get_response_as_array['attachments'] as $response_attachment) {
             $attachment_data = [
-                'uuid'=>$response_attachment['uuid'],
-                'name'=>$response_attachment['name']
+                'uuid' => $response_attachment['uuid'],
+                'name' => $response_attachment['name'],
             ];
             // This step really makes sure that entries have not been duplicated
             $this->assertContains($attachment_data, $put_entry_data['attachments'], 'Generated attachments:'.json_encode($put_entry_data['attachments']));

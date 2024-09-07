@@ -10,6 +10,7 @@ trait FileDragNDrop {
     use StorageTestFiles;
     use WaitTimes;
 
+    // selectors
     private static $SELECTOR_FILE_DRAG_N_DROP_UPLOAD_THUMBNAIL = ".dz-complete:last-child";
     private static $SELECTOR_FILE_DRAG_N_DROP__DROPZONE_PROGRESS = ".dz-progress";
     private static $SELECTOR_FILE_DRAG_N_DROP__DROPZONE_ERROR_MARK = ".dz-error-mark";
@@ -18,6 +19,7 @@ trait FileDragNDrop {
     private static $SELECTOR_FILE_DRAG_N_DROP__DROPZONE_ERROR_MESSAGE = ".dz-error-message";
     private static $SELECTOR_FILE_DRAG_N_DROP__DROPZONE_BTN_REMOVE = ".dz-remove";
 
+    // labels
     private static $LABEL_FILE_DRAG_N_DROP = "Drag & Drop";
     private static $LABEL_FILE_DRAG_N_DROP__DROPZONE_REMOVE_FILE = "REMOVE FILE";
     private static $LABEL_FILE_UPLOAD_SUCCESS_NOTIFICATION = 'Uploaded: %s';
