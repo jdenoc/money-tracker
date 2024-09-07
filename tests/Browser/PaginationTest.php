@@ -48,11 +48,11 @@ class PaginationTest extends DuskTestCase {
     // variables
     private $_account_types = [];
 
-    public function __construct($name = null, array $data = [], $dataName = '') {
-        parent::__construct($name, $data, $dataName);
+    public function __construct($name = null) {
+        parent::__construct($name);
 
-        self::$ENTRY_COUNT_TWO = (self::$MAX_ENTRIES_IN_RESPONSE*2)-10;
-        self::$ENTRY_COUNT_THREE = (self::$MAX_ENTRIES_IN_RESPONSE*3)-25;
+        self::$ENTRY_COUNT_TWO = (self::$MAX_ENTRIES_IN_RESPONSE * 2) - 10;
+        self::$ENTRY_COUNT_THREE = (self::$MAX_ENTRIES_IN_RESPONSE * 3) - 25;
     }
 
     public function setUp(): void {

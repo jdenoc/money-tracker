@@ -25,17 +25,17 @@ class StatsDistributionTest extends StatsBase {
     use DuskTraitStatsDateRange;
     use DuskTraitStatsSidePanel;
 
+    // selectors
     private static $SELECTOR_STATS_DISTRIBUTION = '#stats-distribution';
     private static $SELECTOR_STATS_FORM_TOGGLE_EXPENSEINCOME = '#distribution-expense-or-income';
     private static $SELECTOR_CHART_DISTRIBUTION = "canvas#pie-chart";
-    // selectors
 
+    // labels
     private static $LABEL_FORM_TOGGLE_EXPENSEINCOME_DEFAULT = "Expense";
     private static $LABEL_FORM_TOGGLE_EXPENSEINCOME_INCOME = "Income";
-    // labels
 
-    private static $VUE_KEY_STANDARDISEDATA = "standardiseData";
     // vue keys
+    private static $VUE_KEY_STANDARDISEDATA = "standardiseData";
 
     // variables
     private $_color_switch_default;
@@ -141,49 +141,49 @@ class StatsDistributionTest extends StatsBase {
             // test 4/20
             'default state of account/account-types; income; default date range; include transfers' => [null, null, false, true, false, false, true],
             // test 5/20
-            'default state of account/account-types; expense; date range a year past to today'=>[$this->previous_year_start, $this->today, false, false, false, false, false],
+            'default state of account/account-types; expense; date range a year past to today' => [$this->previous_year_start, $this->today, false, false, false, false, false],
             // test 6/20
-            'default state of account/account-types; expense; date range a year past to today; include transfers'=>[$this->previous_year_start, $this->today, false, false, false, false, true],
+            'default state of account/account-types; expense; date range a year past to today; include transfers' => [$this->previous_year_start, $this->today, false, false, false, false, true],
             // test 7/20
-            'default state of account/account-types; income; date range a year past to today'=>[$this->previous_year_start, $this->today, false, true, false, false, false],
+            'default state of account/account-types; income; date range a year past to today' => [$this->previous_year_start, $this->today, false, true, false, false, false],
             // test 8/20
-            'default state of account/account-types; income; date range a year past to today; include transfers'=>[$this->previous_year_start, $this->today, false, true, false, false, true],
+            'default state of account/account-types; income; date range a year past to today; include transfers' => [$this->previous_year_start, $this->today, false, true, false, false, true],
             // test 9/20
-            'random account; expense; date range a year past to today'=>[$this->previous_year_start, $this->today, false, false, true, false, false],
+            'random account; expense; date range a year past to today' => [$this->previous_year_start, $this->today, false, false, true, false, false],
             // test 10/20
-            'random account; expense; date range a year past to today; include transfers'=>[$this->previous_year_start, $this->today, false, false, true, false, true],
+            'random account; expense; date range a year past to today; include transfers' => [$this->previous_year_start, $this->today, false, false, true, false, true],
             // test 11/20
-            'random account; income; date range a year past to today'=>[$this->previous_year_start, $this->today, false, true, true, false, false],
+            'random account; income; date range a year past to today' => [$this->previous_year_start, $this->today, false, true, true, false, false],
             // test 12/20
-            'random account; income; date range a year past to today; include transfers'=>[$this->previous_year_start, $this->today, false, true, true, false, true],
+            'random account; income; date range a year past to today; include transfers' => [$this->previous_year_start, $this->today, false, true, true, false, true],
             // test 13/20
-            'random account-type; expense; date range a year past to today'=>[$this->previous_year_start, $this->today, true, false, true, false, false],
+            'random account-type; expense; date range a year past to today' => [$this->previous_year_start, $this->today, true, false, true, false, false],
             // test 14/20
-            'random account-type; expense; date range a year past to today; include transfers'=>[$this->previous_year_start, $this->today, true, false, true, false, true],
+            'random account-type; expense; date range a year past to today; include transfers' => [$this->previous_year_start, $this->today, true, false, true, false, true],
             // test 15/20
-            'random account-type; income; date range a year past to today'=>[$this->previous_year_start, $this->today, true, true, true, false, false],
+            'random account-type; income; date range a year past to today' => [$this->previous_year_start, $this->today, true, true, true, false, false],
             // test 16/20
-            'random account-type; income; date range a year past to today; include transfers'=>[$this->previous_year_start, $this->today, true, true, true, false, true],
+            'random account-type; income; date range a year past to today; include transfers' => [$this->previous_year_start, $this->today, true, true, true, false, true],
             // test 17/20
-            'random disabled account; expense; date range a year past to today'=>[$this->previous_year_start, $this->today, false, false, true, true, false],
+            'random disabled account; expense; date range a year past to today' => [$this->previous_year_start, $this->today, false, false, true, true, false],
             // test 18/20
-            'random disabled account; expense; date range a year past to today; include transfers'=>[$this->previous_year_start, $this->today, false, false, true, true, true],
+            'random disabled account; expense; date range a year past to today; include transfers' => [$this->previous_year_start, $this->today, false, false, true, true, true],
             // test 19/20
-            'random disabled account; income; date range a year past to today'=>[$this->previous_year_start, $this->today, false, true, true, true, false],
+            'random disabled account; income; date range a year past to today' => [$this->previous_year_start, $this->today, false, true, true, true, false],
             // test 20/20
-            'random disabled account; income; date range a year past to today; include transfers'=>[$this->previous_year_start, $this->today, false, true, true, true, true],
+            'random disabled account; income; date range a year past to today; include transfers' => [$this->previous_year_start, $this->today, false, true, true, true, true],
             // test 21/20
-            'random disabled account-type; expense; date range a year past to today'=>[$this->previous_year_start, $this->today, true, false, true, true, false],
+            'random disabled account-type; expense; date range a year past to today' => [$this->previous_year_start, $this->today, true, false, true, true, false],
             // test 22/20
-            'random disabled account-type; expense; date range a year past to today; include transfers'=>[$this->previous_year_start, $this->today, true, false, true, true, true],
+            'random disabled account-type; expense; date range a year past to today; include transfers' => [$this->previous_year_start, $this->today, true, false, true, true, true],
             // test 23/20
-            'random disabled account-type; income; date range a year past to today'=>[$this->previous_year_start, $this->today, true, true, true, true, false],
+            'random disabled account-type; income; date range a year past to today' => [$this->previous_year_start, $this->today, true, true, true, true, false],
             // test 24/20
-            'random disabled account-type; income; date range a year past to today; include transfers'=>[$this->previous_year_start, $this->today, true, true, true, true, true],
+            'random disabled account-type; income; date range a year past to today; include transfers' => [$this->previous_year_start, $this->today, true, true, true, true, true],
             // test 25/20
-            'default state of account/account-types; expense; date range today only'=>[$this->today, $this->today, false, false, false, false, false],
+            'default state of account/account-types; expense; date range today only' => [$this->today, $this->today, false, false, false, false, false],
             // test 26/20
-            'default state of account/account-types; expense; date range today only; include transfers'=>[$this->today, $this->today, false, false, false, false, true],
+            'default state of account/account-types; expense; date range today only; include transfers' => [$this->today, $this->today, false, false, false, false, true],
         ];
     }
 
@@ -314,7 +314,7 @@ class StatsDistributionTest extends StatsBase {
             $account_type_id = $account_types->pluck('id')->random();
         }
 
-        $disabled_entry = Entry::factory()->create(['memo'=>$this->getName().' - ALL tags', 'account_type_id'=>$account_type_id, 'entry_date'=>date('Y-m-d', strtotime('-1 day'))]);
+        $disabled_entry = Entry::factory()->create(['memo' => $this->getName().' - ALL tags', 'account_type_id' => $account_type_id, 'entry_date' => date('Y-m-d', strtotime('-1 day'))]);
         foreach ($tags->pluck('id')->all() as $tag_id) {
             $disabled_entry->tags()->attach($tag_id);
         }

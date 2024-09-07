@@ -39,12 +39,12 @@ class StatsBase extends DuskTestCase {
     protected static $LABEL_GENERATE_CHART_BUTTON = "Generate Chart";
     protected static $LABEL_NO_STATS_DATA = 'No data available';
 
+    // dates
     protected $today = '';
     protected $previous_year_start = '';
     protected $three_months_prior_start = '';
     protected $month_start = '';
     protected $month_end = '';
-    // dates
 
     public function __construct($name = null, array $data = [], $dataName = '') {
         parent::__construct($name, $data, $dataName);
