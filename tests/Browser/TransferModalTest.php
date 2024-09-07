@@ -664,12 +664,12 @@ class TransferModalTest extends DuskTestCase {
         // transfer pair 1
         $e1_1 = Entry::factory()->create(array_merge(
             $default_entry_data,
-            ['account_type_id'=>$account_type_id1->id, 'memo'=>$this->getName(false).'1']
+            ['account_type_id' => $account_type_id1->id, 'memo' => $this->getName(false).'1']
         ));
         $e1_2 = Entry::factory()->create(array_merge(
             $default_entry_data,
             $entry_data_income,
-            ['transfer_entry_id'=>$e1_1->id, 'memo'=>$this->getName(false).'1']
+            ['transfer_entry_id' => $e1_1->id, 'memo' => $this->getName(false).'1']
         ));
         $e1_1->transfer_entry_id = $e1_2->id;
         $e1_1->save();
@@ -677,12 +677,12 @@ class TransferModalTest extends DuskTestCase {
         // transfer pair 2
         $e2_1 = Entry::factory()->create(array_merge(
             $default_entry_data,
-            ['account_type_id'=>$account_type_id1->id, 'memo'=>$this->getName(false).'2']
+            ['account_type_id' => $account_type_id1->id, 'memo' => $this->getName(false).'2']
         ));
         $e2_2 = Entry::factory()->create(array_merge(
             $default_entry_data,
             $entry_data_income,
-            ['transfer_entry_id'=>$e2_1->id, 'memo'=>$this->getName(false).'2']
+            ['transfer_entry_id' => $e2_1->id, 'memo' => $this->getName(false).'2']
         ));
         $e2_1->transfer_entry_id = $e2_2->id;
         $e2_1->save();

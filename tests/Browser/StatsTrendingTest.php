@@ -26,15 +26,15 @@ class StatsTrendingTest extends StatsBase {
     use DuskTraitStatsDateRange;
     use DuskTraitStatsSidePanel;
 
+    // selectors
     private static $SELECTOR_STATS_TRENDING = "#stats-trending";
     private static $SELECTOR_CHART_TRENDING = 'canvas#line-chart';
-    // selectors
 
+    // vue keys
     private static $VUE_KEY_EXPENSEDATA = "expenseData";
     private static $VUE_KEY_INCOMEDATA = "incomeData";
     private static $VUE_KEY_COMPARISONDATA = 'comparisonData';
     private static $VUE_KEY_PERIODTOTALSDATA = 'periodTotalsData';
-    // vue keys
 
     public function __construct($name = null, array $data = [], $dataName = '') {
         parent::__construct($name, $data, $dataName);
@@ -120,29 +120,29 @@ class StatsTrendingTest extends StatsBase {
             // test 5/20
             'defaults account/account-type & date-picker values & include transfers checkbox button clicked' => [null, null, false, false, false, true],
             // test 6/20
-            'date-picker previous year start to present & default account/account-type'=>[$this->previous_year_start, $this->today, false, false, false, false],
+            'date-picker previous year start to present & default account/account-type' => [$this->previous_year_start, $this->today, false, false, false, false],
             // test 7/20
-            'date-picker previous year start to present & default account/account-type & include transfers checkbox button clicked'=>[$this->previous_year_start, $this->today, false, false, false, true],
+            'date-picker previous year start to present & default account/account-type & include transfers checkbox button clicked' => [$this->previous_year_start, $this->today, false, false, false, true],
             // test 8/20
-            'date-picker previous year start to present & random account'=>[$this->previous_year_start, $this->today, false, true, false, false],
+            'date-picker previous year start to present & random account' => [$this->previous_year_start, $this->today, false, true, false, false],
             // test 9/20
-            'date-picker previous year start to present & random account & include transfers checkbox button clicked'=>[$this->previous_year_start, $this->today, false, true, false, true],
+            'date-picker previous year start to present & random account & include transfers checkbox button clicked' => [$this->previous_year_start, $this->today, false, true, false, true],
             // test 10/20
-            'date-picker previous year start to present & random account-type'=>[$this->previous_year_start, $this->today, true, true, false, false],
+            'date-picker previous year start to present & random account-type' => [$this->previous_year_start, $this->today, true, true, false, false],
             // test 11/20
-            'date-picker previous year start to present & random account-type & include transfers checkbox button clicked'=>[$this->previous_year_start, $this->today, true, true, false, true],
+            'date-picker previous year start to present & random account-type & include transfers checkbox button clicked' => [$this->previous_year_start, $this->today, true, true, false, true],
             // test 12/20
-            'date-picker previous year start to present & random disabled account'=>[$this->previous_year_start, $this->today, false, true, false, false],
+            'date-picker previous year start to present & random disabled account' => [$this->previous_year_start, $this->today, false, true, false, false],
             // test 13/20
-            'date-picker previous year start to present & random disabled account & include transfers checkbox button clicked'=>[$this->previous_year_start, $this->today, false, true, false, true],
+            'date-picker previous year start to present & random disabled account & include transfers checkbox button clicked' => [$this->previous_year_start, $this->today, false, true, false, true],
             // test 14/20
-            'date-picker previous year start to present & random disabled account-type'=>[$this->previous_year_start, $this->today, true, true, false, false],
+            'date-picker previous year start to present & random disabled account-type' => [$this->previous_year_start, $this->today, true, true, false, false],
             // test 15/20
-            'date-picker previous year start to present & random disabled account-type & include transfers checkbox button clicked'=>[$this->previous_year_start, $this->today, true, true, false, true],
+            'date-picker previous year start to present & random disabled account-type & include transfers checkbox button clicked' => [$this->previous_year_start, $this->today, true, true, false, true],
             // test 16/20
-            'defaults account/account-type; date-picker today ONLY'=>[$this->today, $this->today, false, false, false, false],
+            'defaults account/account-type; date-picker today ONLY' => [$this->today, $this->today, false, false, false, false],
             // test 17/20
-            'defaults account/account-type; date-picker today ONLY; include transfers'=>[$this->today, $this->today, false, false, false, true],
+            'defaults account/account-type; date-picker today ONLY; include transfers' => [$this->today, $this->today, false, false, false, true],
         ];
     }
 

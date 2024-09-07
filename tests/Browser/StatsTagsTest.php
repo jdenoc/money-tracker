@@ -29,12 +29,12 @@ class StatsTagsTest extends StatsBase {
     use DuskTraitStatsSidePanel;
     use DuskTraitTagsInput;
 
+    // Selectors
     private static $SELECTOR_STATS_TAGS = "#stats-tags";
     private static $SELECTOR_CHART_TAGS = 'canvas#bar-chart';
-    // Selectors
 
-    private static $VUE_KEY_STANDARDISEDATA = "standardiseData";
     // vue keys
+    private static $VUE_KEY_STANDARDISEDATA = "standardiseData";
 
     public function __construct($name = null, array $data = [], $dataName = '') {
         parent::__construct($name, $data, $dataName);
@@ -140,53 +140,53 @@ class StatsTagsTest extends StatsBase {
             // test 2/20
             'defaults account/account-type & tags & date-picker values & include transfers checkbox button clicked' => [null, null, false, false, false, 0, true],
             // test 3/20
-            'date-picker 3 months prior start to present & default tags & default account/account-type'=>[$this->three_months_prior_start, $this->today, false, false, false, 0, false],
+            'date-picker 3 months prior start to present & default tags & default account/account-type' => [$this->three_months_prior_start, $this->today, false, false, false, 0, false],
             // test 4/20
-            'date-picker 3 months prior start to present & default tags & default account/account-type & include transfers checkbox button clicked'=>[$this->three_months_prior_start, $this->today, false, false, false, 0, true],
+            'date-picker 3 months prior start to present & default tags & default account/account-type & include transfers checkbox button clicked' => [$this->three_months_prior_start, $this->today, false, false, false, 0, true],
             // test 5/20
-            'date-picker 3 months prior start to present & default tags & random account'=>[$this->three_months_prior_start, $this->today, false, true, false, 0, false],
+            'date-picker 3 months prior start to present & default tags & random account' => [$this->three_months_prior_start, $this->today, false, true, false, 0, false],
             // test 6/20
-            'date-picker 3 months prior start to present & default tags & random account & include transfers checkbox button clicked'=>[$this->three_months_prior_start, $this->today, false, true, false, 0, true],
+            'date-picker 3 months prior start to present & default tags & random account & include transfers checkbox button clicked' => [$this->three_months_prior_start, $this->today, false, true, false, 0, true],
             // test 7/20
-            'date-picker 3 months prior start to present & default tags & random account-type'=>[$this->three_months_prior_start, $this->today, true, true, false, 0, false],
+            'date-picker 3 months prior start to present & default tags & random account-type' => [$this->three_months_prior_start, $this->today, true, true, false, 0, false],
             // test 8/20
-            'date-picker 3 months prior start to present & default tags & random account-type & include transfers checkbox button clicked'=>[$this->three_months_prior_start, $this->today, true, true, false, 0, true],
+            'date-picker 3 months prior start to present & default tags & random account-type & include transfers checkbox button clicked' => [$this->three_months_prior_start, $this->today, true, true, false, 0, true],
             // test 9/20
-            'date-picker 3 months prior start to present & default tags & random disabled account'=>[$this->three_months_prior_start, $this->today, false, true, true, 0, false],
+            'date-picker 3 months prior start to present & default tags & random disabled account' => [$this->three_months_prior_start, $this->today, false, true, true, 0, false],
             // test 10/20
-            'date-picker 3 months prior start to present & default tags & random disabled account & include transfers checkbox button clicked'=>[$this->three_months_prior_start, $this->today, false, true, true, 0, true],
+            'date-picker 3 months prior start to present & default tags & random disabled account & include transfers checkbox button clicked' => [$this->three_months_prior_start, $this->today, false, true, true, 0, true],
             // test 11/20
-            'date-picker 3 months prior start to present & default tags & random disabled account-type'=>[$this->three_months_prior_start, $this->today, true, true, true, 0, false],
+            'date-picker 3 months prior start to present & default tags & random disabled account-type' => [$this->three_months_prior_start, $this->today, true, true, true, 0, false],
             // test 12/20
-            'date-picker 3 months prior start to present & default tags & random disabled account-type & include transfers checkbox button clicked'=>[$this->three_months_prior_start, $this->today, true, true, true, 0, true],
+            'date-picker 3 months prior start to present & default tags & random disabled account-type & include transfers checkbox button clicked' => [$this->three_months_prior_start, $this->today, true, true, true, 0, true],
             // test 13/20
-            'date-picker 3 months prior start to present & random tag & default account/account-type'=>[$this->three_months_prior_start, $this->today, false, false, false, 1, false],
+            'date-picker 3 months prior start to present & random tag & default account/account-type' => [$this->three_months_prior_start, $this->today, false, false, false, 1, false],
             // test 14/20
-            'date-picker 3 months prior start to present & random tag & default account/account-type & include transfers checkbox button clicked'=>[$this->three_months_prior_start, $this->today, false, false, false, 1, true],
+            'date-picker 3 months prior start to present & random tag & default account/account-type & include transfers checkbox button clicked' => [$this->three_months_prior_start, $this->today, false, false, false, 1, true],
             // test 15/20
-            'date-picker 3 months prior start to present & random tag & random account'=>[$this->three_months_prior_start, $this->today, false, true, false, 1, false],
+            'date-picker 3 months prior start to present & random tag & random account' => [$this->three_months_prior_start, $this->today, false, true, false, 1, false],
             // test 16/20
-            'date-picker 3 months prior start to present & random tag & random account & include transfers checkbox button clicked'=>[$this->three_months_prior_start, $this->today, false, true, false, 1, true],
+            'date-picker 3 months prior start to present & random tag & random account & include transfers checkbox button clicked' => [$this->three_months_prior_start, $this->today, false, true, false, 1, true],
             // test 17/20
-            'date-picker 3 months prior start to present & random tag & random account-type'=>[$this->three_months_prior_start, $this->today, true, true, false, 1, false],
+            'date-picker 3 months prior start to present & random tag & random account-type' => [$this->three_months_prior_start, $this->today, true, true, false, 1, false],
             // test 18/20
-            'date-picker 3 months prior start to present & random tag & random account-type & include transfers checkbox button clicked'=>[$this->three_months_prior_start, $this->today, true, true, false, 1, true],
+            'date-picker 3 months prior start to present & random tag & random account-type & include transfers checkbox button clicked' => [$this->three_months_prior_start, $this->today, true, true, false, 1, true],
             // test 19/20
-            'date-picker 3 months prior start to present & random tag & random disabled account'=>[$this->three_months_prior_start, $this->today, false, true, true, 1, false],
+            'date-picker 3 months prior start to present & random tag & random disabled account' => [$this->three_months_prior_start, $this->today, false, true, true, 1, false],
             // test 20/20
-            'date-picker 3 months prior start to present & random tag & random disabled account & include transfers checkbox button clicked'=>[$this->three_months_prior_start, $this->today, false, true, true, 1, true],
+            'date-picker 3 months prior start to present & random tag & random disabled account & include transfers checkbox button clicked' => [$this->three_months_prior_start, $this->today, false, true, true, 1, true],
             // test 21/20
-            'date-picker 3 months prior start to present & random tag & random disabled account-type'=>[$this->three_months_prior_start, $this->today, true, true, true, 1, false],
+            'date-picker 3 months prior start to present & random tag & random disabled account-type' => [$this->three_months_prior_start, $this->today, true, true, true, 1, false],
             // test 22/20
-            'date-picker 3 months prior start to present & random tag & random disabled account-type & include transfers checkbox button clicked'=>[$this->three_months_prior_start, $this->today, true, true, true, 1, true],
+            'date-picker 3 months prior start to present & random tag & random disabled account-type & include transfers checkbox button clicked' => [$this->three_months_prior_start, $this->today, true, true, true, 1, true],
             // test 23/20
-            'date-picker 3 months prior start to present & random tags & default account/account-type'=>[$this->three_months_prior_start, $this->today, false, false, false, 2, false],
+            'date-picker 3 months prior start to present & random tags & default account/account-type' => [$this->three_months_prior_start, $this->today, false, false, false, 2, false],
             // test 24/20
-            'date-picker 3 months prior start to present & random tags & default account/account-type & include transfers checkbox button clicked'=>[$this->three_months_prior_start, $this->today, false, false, false, 2, true],
+            'date-picker 3 months prior start to present & random tags & default account/account-type & include transfers checkbox button clicked' => [$this->three_months_prior_start, $this->today, false, false, false, 2, true],
             // test 25/20
-            'defaults account/account-type & tags; date-picker today ONLY'=>[$this->today, $this->today, false, false, false, 0, false],
+            'defaults account/account-type & tags; date-picker today ONLY' => [$this->today, $this->today, false, false, false, 0, false],
             // test 26/20
-            'defaults account/account-type & tags; date-picker today ONLY; include transfers'=>[$this->today, $this->today, false, false, false, 0, true],
+            'defaults account/account-type & tags; date-picker today ONLY; include transfers' => [$this->today, $this->today, false, false, false, 0, true],
         ];
     }
 
@@ -317,7 +317,7 @@ class StatsTagsTest extends StatsBase {
             $account_type_id = $account_types->pluck('id')->random();
         }
 
-        $entry_with_tags = Entry::factory()->create(['memo'=>$this->getName(true).' - ALL TAGS', 'account_type_id'=>$account_type_id, 'entry_date'=>date('Y-m-d')]);
+        $entry_with_tags = Entry::factory()->create(['memo' => $this->getName(true).' - ALL TAGS', 'account_type_id' => $account_type_id, 'entry_date' => date('Y-m-d')]);
         foreach ($tags->pluck('id')->all() as $tag_id) {
             $entry_with_tags->tags()->attach($tag_id);
         }
