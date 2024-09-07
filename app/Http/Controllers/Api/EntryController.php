@@ -75,7 +75,7 @@ class EntryController extends Controller {
 
         $filter_validator = Validator::make($filter_data, self::getFilterValidationRules(isset($filter_data[self::$FILTER_KEY_TAGS])));
         if ($filter_validator->fails()) {
-            return response([self::$RESPONSE_FILTER_KEY_ERROR=>self::$ERROR_MSG_FILTER_INVALID], HttpStatus::HTTP_BAD_REQUEST);
+            return response([self::$RESPONSE_FILTER_KEY_ERROR => self::$ERROR_MSG_FILTER_INVALID], HttpStatus::HTTP_BAD_REQUEST);
         }
 
         return $this->provide_paged_entries_response($filter_data, $page_number, $sort_by, $sort_direction);
@@ -108,14 +108,14 @@ class EntryController extends Controller {
         return $this->modify_entry($request, $entry_id);
     }
 
-    private function modify_entry(Request $request, ?int $updateId=null): Response {
+    private function modify_entry(Request $request, ?int $updateId = null): Response {
         $request_body = $request->getContent();
         $entry_data = json_decode($request_body, true);
 
         // no data check
         if (empty($entry_data)) {
             return response(
-                [self::$RESPONSE_SAVE_KEY_ID=>self::$ERROR_ENTRY_ID, self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_NO_DATA],
+                [self::$RESPONSE_SAVE_KEY_ID => self::$ERROR_ENTRY_ID, self::$RESPONSE_SAVE_KEY_ERROR => self::$ERROR_MSG_SAVE_ENTRY_NO_DATA],
                 HttpStatus::HTTP_BAD_REQUEST
             );
         }
@@ -128,7 +128,7 @@ class EntryController extends Controller {
             $missing_properties = array_diff_key(array_flip($required_fields), $entry_data);
             if (count($missing_properties) > 0) {
                 return response(
-                    [self::$RESPONSE_SAVE_KEY_ID=>self::$ERROR_ENTRY_ID, self::$RESPONSE_SAVE_KEY_ERROR=>sprintf(self::$ERROR_MSG_SAVE_ENTRY_MISSING_PROPERTY, json_encode(array_keys($missing_properties)))],
+                    [self::$RESPONSE_SAVE_KEY_ID => self::$ERROR_ENTRY_ID, self::$RESPONSE_SAVE_KEY_ERROR => sprintf(self::$ERROR_MSG_SAVE_ENTRY_MISSING_PROPERTY, json_encode(array_keys($missing_properties)))],
                     HttpStatus::HTTP_BAD_REQUEST
                 );
             }
@@ -143,7 +143,7 @@ class EntryController extends Controller {
                 $entry_being_modified = Entry::findOrFail($updateId);
             } catch (\Exception $e) {
                 return response(
-                    [self::$RESPONSE_SAVE_KEY_ID=>self::$ERROR_ENTRY_ID, self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_DOES_NOT_EXIST],
+                    [self::$RESPONSE_SAVE_KEY_ID => self::$ERROR_ENTRY_ID, self::$RESPONSE_SAVE_KEY_ERROR => self::$ERROR_MSG_SAVE_ENTRY_DOES_NOT_EXIST],
                     HttpStatus::HTTP_NOT_FOUND
                 );
             }
@@ -153,13 +153,13 @@ class EntryController extends Controller {
         if (isset($entry_data['account_type_id'])) {
             if(!$this->checkAccountTypeExists($entry_data['account_type_id'])) {
                 return response(
-                    [self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE, self::$RESPONSE_SAVE_KEY_ID=>self::$ERROR_ENTRY_ID],
+                    [self::$RESPONSE_SAVE_KEY_ERROR => self::$ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE, self::$RESPONSE_SAVE_KEY_ID => self::$ERROR_ENTRY_ID],
                     HttpStatus::HTTP_BAD_REQUEST
                 );
             }
         }
 
-        foreach ($entry_data as $property=>$value) {
+        foreach ($entry_data as $property => $value) {
             if (in_array($property, $required_fields)) {
                 $entry_being_modified->$property = $value;
             }
@@ -176,7 +176,7 @@ class EntryController extends Controller {
         $this->attach_attachments_to_entry($entry_being_modified, $entry_attachments);
 
         return response(
-            [self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_NO_ERROR, self::$RESPONSE_SAVE_KEY_ID=>$entry_being_modified->id],
+            [self::$RESPONSE_SAVE_KEY_ERROR => self::$ERROR_MSG_SAVE_ENTRY_NO_ERROR, self::$RESPONSE_SAVE_KEY_ID => $entry_being_modified->id],
             $successful_http_status_code
         );
     }
@@ -190,7 +190,7 @@ class EntryController extends Controller {
 
         if (empty($transfer_data)) {
             return response(
-                [self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_NO_DATA, self::$RESPONSE_SAVE_KEY_ID=>[]],
+                [self::$RESPONSE_SAVE_KEY_ERROR => self::$ERROR_MSG_SAVE_ENTRY_NO_DATA, self::$RESPONSE_SAVE_KEY_ID => []],
                 HttpStatus::HTTP_BAD_REQUEST
             );
         }
@@ -209,7 +209,7 @@ class EntryController extends Controller {
         $missing_properties = array_diff_key(array_flip($required_transfer_fields), $transfer_data);
         if (count($missing_properties) > 0) {
             return response(
-                [self::$RESPONSE_SAVE_KEY_ERROR=>sprintf(self::$ERROR_MSG_SAVE_ENTRY_MISSING_PROPERTY, json_encode(array_keys($missing_properties))), self::$RESPONSE_SAVE_KEY_ID=>[]],
+                [self::$RESPONSE_SAVE_KEY_ERROR => sprintf(self::$ERROR_MSG_SAVE_ENTRY_MISSING_PROPERTY, json_encode(array_keys($missing_properties))), self::$RESPONSE_SAVE_KEY_ID => []],
                 HttpStatus::HTTP_BAD_REQUEST
             );
         }
@@ -221,7 +221,7 @@ class EntryController extends Controller {
                 $from_entry = $this->initTransferEntry($transfer_data, self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE, $required_transfer_fields, $transfer_specific_fields, $entry_tags);
             } catch(OutOfRangeException $e) {
                 return response(
-                    [self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE, self::$RESPONSE_SAVE_KEY_ID=>[]],
+                    [self::$RESPONSE_SAVE_KEY_ERROR => self::$ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE, self::$RESPONSE_SAVE_KEY_ID => []],
                     HttpStatus::HTTP_BAD_REQUEST
                 );
             }
@@ -234,7 +234,7 @@ class EntryController extends Controller {
                 $to_entry = $this->initTransferEntry($transfer_data, self::$TRANSFER_KEY_TO_ACCOUNT_TYPE, $required_transfer_fields, $transfer_specific_fields, $entry_tags);
             } catch(OutOfRangeException $e) {
                 return response(
-                    [self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE, self::$RESPONSE_SAVE_KEY_ID=>[]],
+                    [self::$RESPONSE_SAVE_KEY_ERROR => self::$ERROR_MSG_SAVE_ENTRY_INVALID_ACCOUNT_TYPE, self::$RESPONSE_SAVE_KEY_ID => []],
                     HttpStatus::HTTP_BAD_REQUEST
                 );
             }
@@ -267,8 +267,8 @@ class EntryController extends Controller {
                         $clone_attachment->uuid = Uuid::uuid4();
                         $clone_attachment->name = $entry_attachment['name'];
                         $clone_attachment->storage_store(file_get_contents($tmp_file_path), true);
-                        $cloned_entry_attachments[] = ['uuid'=>$clone_attachment->uuid, 'name'=>$clone_attachment->name];
-                        $new_entry_attachments[] = ['uuid'=>$new_attachment->uuid, 'name'=>$new_attachment->name];
+                        $cloned_entry_attachments[] = ['uuid' => $clone_attachment->uuid, 'name' => $clone_attachment->name];
+                        $new_entry_attachments[] = ['uuid' => $new_attachment->uuid, 'name' => $new_attachment->name];
                     }
                 }
             }
@@ -277,7 +277,7 @@ class EntryController extends Controller {
             $this->attach_attachments_to_entry($from_entry, $cloned_entry_attachments);
 
             return response(
-                [self::$RESPONSE_SAVE_KEY_ID=>[$to_entry->id, $from_entry->id], self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_NO_ERROR],
+                [self::$RESPONSE_SAVE_KEY_ID => [$to_entry->id, $from_entry->id], self::$RESPONSE_SAVE_KEY_ERROR => self::$ERROR_MSG_SAVE_ENTRY_NO_ERROR],
                 HttpStatus::HTTP_CREATED
             );
         } elseif (is_null($to_entry) && !is_null($from_entry)) {
@@ -286,7 +286,7 @@ class EntryController extends Controller {
             $from_entry->save();
             $this->attach_attachments_to_entry($from_entry, $entry_attachments);
             return response(
-                [self::$RESPONSE_SAVE_KEY_ID=>[$from_entry->id], self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_NO_ERROR],
+                [self::$RESPONSE_SAVE_KEY_ID => [$from_entry->id], self::$RESPONSE_SAVE_KEY_ERROR => self::$ERROR_MSG_SAVE_ENTRY_NO_ERROR],
                 HttpStatus::HTTP_CREATED
             );
         } elseif (!is_null($to_entry) && is_null($from_entry)) {
@@ -295,13 +295,13 @@ class EntryController extends Controller {
             $to_entry->save();
             $this->attach_attachments_to_entry($to_entry, $entry_attachments);
             return response(
-                [self::$RESPONSE_SAVE_KEY_ID=>[$to_entry->id], self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_ENTRY_NO_ERROR],
+                [self::$RESPONSE_SAVE_KEY_ID => [$to_entry->id], self::$RESPONSE_SAVE_KEY_ERROR => self::$ERROR_MSG_SAVE_ENTRY_NO_ERROR],
                 HttpStatus::HTTP_CREATED
             );
         } else {
             // "FROM" & "TO" entries are EXTERNAL
             return response(
-                [self::$RESPONSE_SAVE_KEY_ID=>[], self::$RESPONSE_SAVE_KEY_ERROR=>self::$ERROR_MSG_SAVE_TRANSFER_BOTH_EXTERNAL],
+                [self::$RESPONSE_SAVE_KEY_ID => [], self::$RESPONSE_SAVE_KEY_ERROR => self::$ERROR_MSG_SAVE_TRANSFER_BOTH_EXTERNAL],
                 HttpStatus::HTTP_BAD_REQUEST
             );
         }
@@ -323,7 +323,7 @@ class EntryController extends Controller {
         }
 
         $transfer_entry = new Entry();
-        foreach ($transfer_data as $property=>$value) {
+        foreach ($transfer_data as $property => $value) {
             if (in_array($property, $required_transfer_fields)) {
                 if (in_array($property, $transfer_specific_fields)) {
                     if ($property == $transfer_side) {
@@ -391,11 +391,11 @@ class EntryController extends Controller {
         }
     }
 
-    private function provide_paged_entries_response(array $filters, int $page_number=0, string $sort_by=Entry::DEFAULT_SORT_PARAMETER, string $sort_direction=Entry::DEFAULT_SORT_DIRECTION): Response {
+    private function provide_paged_entries_response(array $filters, int $page_number = 0, string $sort_by = Entry::DEFAULT_SORT_PARAMETER, string $sort_direction = Entry::DEFAULT_SORT_DIRECTION): Response {
         $entries_collection = Entry::get_collection_of_entries(
             $filters,
             self::$MAX_ENTRIES_IN_RESPONSE,
-            self::$MAX_ENTRIES_IN_RESPONSE*$page_number,
+            self::$MAX_ENTRIES_IN_RESPONSE * $page_number,
             $sort_by,
             $sort_direction
         );

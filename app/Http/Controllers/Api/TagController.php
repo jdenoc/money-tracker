@@ -45,14 +45,14 @@ class TagController extends Controller {
         return $this->modifyTag($request, $tagId);
     }
 
-    private function modifyTag(Request $request, int $tag_id=null) {
+    private function modifyTag(Request $request, int $tag_id = null) {
         $request_body = $request->getContent();
         $tag_data = json_decode($request_body, true);
 
         // no data check
         if (empty($tag_data)) {
             return response(
-                [self::$RESPONSE_KEY_ID=>self::$ERROR_ID, self::$RESPONSE_KEY_ERROR=>self::$ERROR_MSG_NO_DATA],
+                [self::$RESPONSE_KEY_ID => self::$ERROR_ID, self::$RESPONSE_KEY_ERROR => self::$ERROR_MSG_NO_DATA],
                 HttpStatus::HTTP_BAD_REQUEST
             );
         }
@@ -65,7 +65,7 @@ class TagController extends Controller {
                 $tag_to_modify = Tag::findOrFail($tag_id);
             } catch(Exception $exception) {
                 return response(
-                    [self::$RESPONSE_KEY_ID=>self::$ERROR_ID, self::$RESPONSE_KEY_ERROR=>self::$ERROR_MSG_DOES_NOT_EXIST],
+                    [self::$RESPONSE_KEY_ID => self::$ERROR_ID, self::$RESPONSE_KEY_ERROR => self::$ERROR_MSG_DOES_NOT_EXIST],
                     HttpStatus::HTTP_NOT_FOUND
                 );
             }
@@ -74,7 +74,7 @@ class TagController extends Controller {
 
         if (empty($tag_data['name'])) {
             return response(
-                [self::$RESPONSE_KEY_ID=>self::$ERROR_ID, self::$RESPONSE_KEY_ERROR=>self::$ERROR_MSG_NO_DATA],
+                [self::$RESPONSE_KEY_ID => self::$ERROR_ID, self::$RESPONSE_KEY_ERROR => self::$ERROR_MSG_NO_DATA],
                 HttpStatus::HTTP_BAD_REQUEST
             );
         }
@@ -87,7 +87,7 @@ class TagController extends Controller {
         }
 
         return response(
-            [self::$RESPONSE_KEY_ID=>$tag_to_modify->id, self::$RESPONSE_KEY_ERROR=>self::$ERROR_MSG_NO_ERROR],
+            [self::$RESPONSE_KEY_ID => $tag_to_modify->id, self::$RESPONSE_KEY_ERROR => self::$ERROR_MSG_NO_ERROR],
             $http_response_status_code
         );
     }

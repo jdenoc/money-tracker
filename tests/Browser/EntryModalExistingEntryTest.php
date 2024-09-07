@@ -52,28 +52,31 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     use WaitTimes;
     use WithTailwindColors;
 
+    // server stuff
     const INI_POSTMAXSIZE = 'post_max_size';
     const INI_UPLOADMAXFILESIZE = 'upload_max_filesize';
+    private const HTACCESS_FILEPATH = 'public/.htaccess';
+    private const BKUP_EXT = '.bkup';
 
-    private static string $HTACCESS_FILEPATH = 'public/.htaccess';
-    private static string $BKUP_EXT = '.bkup';
+    // labels
+    private const LABEL_SUCCESS_NOTIFICATION = "Entry updated";
 
-    private static string $LABEL_SUCCESS_NOTIFICATION = "Entry updated";
+    // classes
+    private const CLASS_UNCONFIRMED = '.unconfirmed';
+    private const CLASS_IS_CONFIRMED = '.is-confirmed';
+    private const CLASS_DISABLED = "disabled";
+    private const CLASS_HAS_ATTACHMENTS = ".has-attachments";
+    private const CLASS_IS_TRANSFER = ".is-transfer";
+    private const CLASS_HAS_TAGS = ".has-tags";
+    private const CLASS_EXISTING_ATTACHMENT = "existing-attachment";
 
-    private $_class_unconfirmed = '.unconfirmed';
-    private $_class_is_confirmed = '.is-confirmed';
-    private $_class_disabled = "disabled";
-    private $_class_has_attachments = ".has-attachments";
-    private $_class_is_transfer = ".is-transfer";
-    private $_class_has_tags = ".has-tags";
-    private $_class_existing_attachment = "existing-attachment";
-
+    // variables
     private $_cached_entries_collection = [];
-    private $_tests_that_override_htaccess = [];
+    private array $_tests_that_override_htaccess = [];
 
-    public function __construct(?string $name = null, array $data = [], $dataName = '') {
-        parent::__construct($name, $data, $dataName);
-        $this->_tests_that_override_htacces[] = 'testAttemptToAddAnAttachmentTooLargeToAnExistingEntry';
+    public function __construct(?string $name = null) {
+        parent::__construct($name);
+        $this->_tests_that_override_htaccess[] = 'testAttemptToAddAnAttachmentTooLargeToAnExistingEntry';
     }
 
     public function setUp(): void {
@@ -101,14 +104,13 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     public function providerUnconfirmedEntry(): array {
         return [
-            'Expense'=>[true],  // test 1/20
-            'Income'=>[false],  // test 2/20
+            'Expense' => [true],  // test 1/20
+            'Income' => [false],  // test 2/20
         ];
     }
 
     /**
      * @dataProvider providerUnconfirmedEntry
-     * @param bool $is_expense
      *
      * @throws Throwable
      *
@@ -162,14 +164,13 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     public function providerConfirmedEntry(): array {
         return [
-            "Expense"=>[true],  // test 3/20
-            "Income"=>[false],  // test 4/20
+            "Expense" => [true],  // test 3/20
+            "Income" => [false],  // test 4/20
         ];
     }
 
     /**
      * @dataProvider providerConfirmedEntry
-     * @param bool $is_expense
      *
      * @throws Throwable
      *
@@ -315,8 +316,6 @@ class EntryModalExistingEntryTest extends DuskTestCase {
 
     /**
      * @dataProvider providerEntryWithTags
-     * @param string $data_entry_selector
-     * @param bool $data_is_tags_input_visible
      *
      * @throws Throwable
      *

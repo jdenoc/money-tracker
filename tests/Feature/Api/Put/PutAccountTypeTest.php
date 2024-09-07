@@ -14,6 +14,7 @@ use Tests\TestCase;
 class PutAccountTypeTest extends TestCase {
     use AccountTypeResponseKeys;
 
+    // uri
     private string $_base_uri = '/api/account-type/%d';
 
     public function setUp(): void {
@@ -26,7 +27,7 @@ class PutAccountTypeTest extends TestCase {
         AccountType::factory()
             ->count(5)
             ->state(new Sequence(function() use ($accounts) {
-                return ['account_id'=>$accounts->random()->id];
+                return ['account_id' => $accounts->random()->id];
             }))
             ->create();
     }
@@ -103,8 +104,6 @@ class PutAccountTypeTest extends TestCase {
 
     /**
      * @dataProvider providerUpdateAccountTypeEachProperty
-     *
-     * @param array $account_type_data
      */
     public function testUpdateAccountTypeEachProperty(string $account_type_data_field) {
         // GIVEN - see providerUpdateAccountEachProperty()

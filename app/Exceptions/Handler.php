@@ -55,7 +55,7 @@ class Handler extends ExceptionHandler {
             // handle PostTooLargeException's for /attachment/upload
             if ($request->is('attachment/upload')) {
                 return response()->json(
-                    ['error'=>'The uploaded file exceeds your post_max_size ini directive.'],
+                    ['error' => 'The uploaded file exceeds your post_max_size ini directive.'],
                     HttpStatus::HTTP_REQUEST_ENTITY_TOO_LARGE
                 );
             }
@@ -65,7 +65,7 @@ class Handler extends ExceptionHandler {
             // handle generic Exception's for /attachment/upload
             if ($request->is('attachment/upload')) {
                 return response()->json(
-                    ['error'=>'Error occurred during upload. Contact admin.'],
+                    ['error' => 'Error occurred during upload. Contact admin.'],
                     HttpStatus::HTTP_INTERNAL_SERVER_ERROR
                 );
             }

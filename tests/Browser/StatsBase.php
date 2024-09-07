@@ -24,18 +24,18 @@ class StatsBase extends DuskTestCase {
     use EntryFilterKeys;
     use WithTailwindColors;
 
+    // selectors
     protected static $SELECTOR_STATS_FORM_SUMMARY = "#stats-form-summary";
     protected static $SELECTOR_STATS_FORM_TRENDING = '#stats-form-trending';
     protected static $SELECTOR_STATS_FORM_DISTRIBUTION = '#stats-form-distribution';
     protected static $SELECTOR_STATS_FORM_TAGS = '#stats-form-tags';
-
     protected static $SELECTOR_STATS_RESULTS_SUMMARY = '.stats-results-summary';
     protected static $SELECTOR_STATS_RESULTS_TRENDING = '.stats-results-trending';
     protected static $SELECTOR_STATS_RESULTS_DISTRIBUTION = '.stats-results-distribution';
     protected static $SELECTOR_STATS_RESULTS_TAGS = '.stats-results-tags';
-
     protected static $SELECTOR_BUTTON_GENERATE = '.generate-stats';
 
+    // labels
     protected static $LABEL_GENERATE_CHART_BUTTON = "Generate Chart";
     protected static $LABEL_NO_STATS_DATA = 'No data available';
 
@@ -44,6 +44,7 @@ class StatsBase extends DuskTestCase {
     protected $three_months_prior_start = '';
     protected $month_start = '';
     protected $month_end = '';
+    // dates
 
     public function __construct($name = null, array $data = [], $dataName = '') {
         parent::__construct($name, $data, $dataName);
@@ -120,7 +121,6 @@ class StatsBase extends DuskTestCase {
 
     /**
      * @param Collection $entries
-     * @param bool $is_transfer
      * @return Collection
      */
     protected function filterTransferEntries($entries, bool $is_transfer) {

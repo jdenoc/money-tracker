@@ -21,17 +21,17 @@ trait GenerateFilterTestCases {
         $min_value = $faker->randomFloat(2, 0, $max_value);
 
         $filter_details = [
-            self::$FILTER_KEY_START_DATE=>$start_date,
-            self::$FILTER_KEY_END_DATE=>$end_date,
-            self::$FILTER_KEY_ACCOUNT=>0,       // will be set later
-            self::$FILTER_KEY_ACCOUNT_TYPE=>0,  // will be set later
-            self::$FILTER_KEY_TAGS=>[],         // will be set later
-            self::$FILTER_KEY_EXPENSE=>$faker->boolean,
-            self::$FILTER_KEY_ATTACHMENTS=>$faker->boolean,
-            self::$FILTER_KEY_MIN_VALUE=>$min_value,
-            self::$FILTER_KEY_MAX_VALUE=>$max_value,
-            self::$FILTER_KEY_UNCONFIRMED=>$faker->boolean,
-            self::$FILTER_KEY_IS_TRANSFER=>$faker->boolean,
+            self::$FILTER_KEY_START_DATE => $start_date,
+            self::$FILTER_KEY_END_DATE => $end_date,
+            self::$FILTER_KEY_ACCOUNT => 0,       // will be set later
+            self::$FILTER_KEY_ACCOUNT_TYPE => 0,  // will be set later
+            self::$FILTER_KEY_TAGS => [],         // will be set later
+            self::$FILTER_KEY_EXPENSE => $faker->boolean,
+            self::$FILTER_KEY_ATTACHMENTS => $faker->boolean,
+            self::$FILTER_KEY_MIN_VALUE => $min_value,
+            self::$FILTER_KEY_MAX_VALUE => $max_value,
+            self::$FILTER_KEY_UNCONFIRMED => $faker->boolean,
+            self::$FILTER_KEY_IS_TRANSFER => $faker->boolean,
         ];
 
         // confirm all filters in EntryFilterKeys trait are listed here
@@ -41,7 +41,7 @@ trait GenerateFilterTestCases {
         }
 
         // individual filter requests
-        foreach ($filter_details as $filter_name=>$filter_value) {
+        foreach ($filter_details as $filter_name => $filter_value) {
             // confirm all filters listed in test are in EntryFilterKeys trait
             Assert::assertArrayHasKey($filter_name, $current_filters);
 
@@ -52,15 +52,15 @@ trait GenerateFilterTestCases {
                 case self::$FILTER_KEY_UNCONFIRMED:
                 case self::$FILTER_KEY_IS_TRANSFER:
                     $filter["filtering [".$filter_name.":true]"] = [
-                        [$filter_name=>true]
+                        [$filter_name => true],
                     ];
                     $filter["filtering [".$filter_name.":false]"] = [
-                        [$filter_name=>false]
+                        [$filter_name => false],
                     ];
                     break;
                 default:
                     $filter["filtering [".$filter_name."]"] = [
-                        [$filter_name=>$filter_value]
+                        [$filter_name => $filter_value],
                     ];
             }
         }
@@ -87,7 +87,7 @@ trait GenerateFilterTestCases {
      *
      * @return array
      */
-    protected function setTestSpecificFilters(FakerGenerator $faker, array $filter_details, $account=null, $tags=null): array {
+    protected function setTestSpecificFilters(FakerGenerator $faker, array $filter_details, $account = null, $tags = null): array {
         if (key_exists(self::$FILTER_KEY_TAGS, $filter_details)) {
             $tag_ids = $tags->pluck('id')->toArray();
             $filter_details[self::$FILTER_KEY_TAGS] = $faker->randomElements($tag_ids, $faker->numberBetween(1, count($tag_ids)));

@@ -14,6 +14,9 @@ use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 class EntriesExport implements FromCollection, WithHeadings, WithMapping, WithColumnFormatting, WithCustomCsvSettings {
     use ExportsHelper;
 
+    /**
+     * @var array
+     */
     private $filterData;
 
     public function __construct($filterData) {
@@ -62,7 +65,7 @@ class EntriesExport implements FromCollection, WithHeadings, WithMapping, WithCo
     public function getCsvSettings(): array {
         return [
             'delimiter' => ',',
-            'line_ending'=>"\n"
+            'line_ending' => "\n",
         ];
     }
 

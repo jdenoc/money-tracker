@@ -9,6 +9,7 @@ use Tests\TestCase;
 
 class PatchAccountTest extends TestCase {
 
+    // uri
     private const PLACEHOLDER_URI_ACCOUNT = '/api/account/%d';
 
     public function testRestoringAccountThatDoesNotExist() {

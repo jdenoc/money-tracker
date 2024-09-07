@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class GetTagsTest extends TestCase {
 
+    // uri
     private string $_uri = '/api/tags';
 
     public function testObtainingListOfTagsWhenTagsArePresentInDatabase() {

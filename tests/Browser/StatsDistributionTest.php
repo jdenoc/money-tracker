@@ -28,12 +28,16 @@ class StatsDistributionTest extends StatsBase {
     private static $SELECTOR_STATS_DISTRIBUTION = '#stats-distribution';
     private static $SELECTOR_STATS_FORM_TOGGLE_EXPENSEINCOME = '#distribution-expense-or-income';
     private static $SELECTOR_CHART_DISTRIBUTION = "canvas#pie-chart";
+    // selectors
 
     private static $LABEL_FORM_TOGGLE_EXPENSEINCOME_DEFAULT = "Expense";
     private static $LABEL_FORM_TOGGLE_EXPENSEINCOME_INCOME = "Income";
+    // labels
 
     private static $VUE_KEY_STANDARDISEDATA = "standardiseData";
+    // vue keys
 
+    // variables
     private $_color_switch_default;
 
     public function __construct($name = null, array $data = [], $dataName = '') {
@@ -129,13 +133,13 @@ class StatsDistributionTest extends StatsBase {
         //[$datepicker_start, $datepicker_end, $is_account_switch_toggled, $is_expense_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $include_transfers]
         return [
             // test 1/20
-            'default state of account/account-types; expense; default date range'=>[null, null, false, false, false, false, false],
+            'default state of account/account-types; expense; default date range' => [null, null, false, false, false, false, false],
             // test 2/20
-            'default state of account/account-types; expense; default date range; include transfers'=>[null, null, false, false, false, false, true],
+            'default state of account/account-types; expense; default date range; include transfers' => [null, null, false, false, false, false, true],
             // test 3/20
-            'default state of account/account-types; income; default date range'=>[null, null, false, true, false, false, false],
+            'default state of account/account-types; income; default date range' => [null, null, false, true, false, false, false],
             // test 4/20
-            'default state of account/account-types; income; default date range; include transfers'=>[null, null, false, true, false, false, true],
+            'default state of account/account-types; income; default date range; include transfers' => [null, null, false, true, false, false, true],
             // test 5/20
             'default state of account/account-types; expense; date range a year past to today'=>[$this->previous_year_start, $this->today, false, false, false, false, false],
             // test 6/20
@@ -268,7 +272,6 @@ class StatsDistributionTest extends StatsBase {
     /**
      * @param Collection $entries
      * @param Collection $tags
-     * @return array
      */
     private function standardiseData($entries, $tags): array {
         $standardised_chart_data = [];
@@ -281,7 +284,7 @@ class StatsDistributionTest extends StatsBase {
                 $key = $tag_id === 0 ? 'untagged' : $tags->where('id', $tag_id)->pluck('name')->first();
 
                 if (!isset($standardised_chart_data[$key])) {
-                    $standardised_chart_data[$key] = ['x'=>$key,'y'=>0];
+                    $standardised_chart_data[$key] = ['x' => $key,'y' => 0];
                 }
                 $standardised_chart_data[$key]['y'] += $entry['entry_value'];
                 $standardised_chart_data[$key]['y'] = round($standardised_chart_data[$key]['y'], 2);
@@ -297,8 +300,6 @@ class StatsDistributionTest extends StatsBase {
      * It's a waste of resources to do that for every test when most tests don't need that kind of data.
      * So instead for these tests, we'll create a disabled with all the tags
      *
-     * @param bool $is_account_type_rather_than_account_toggled
-     * @param int|null $account_or_account_type_id
      * @param Collection $account_types
      * @param Collection $tags
      */

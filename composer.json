@@ -30,10 +30,10 @@
     "require-dev": {
         "ext-intl": "*",
         "barryvdh/laravel-ide-helper": "^2.2",
-        "ely/php-code-style": "0.4",
+        "ely/php-code-style": "^1.0",
         "fakerphp/faker": "1.15.0",
         "filp/whoops": "^2.14.3",
-        "friendsofphp/php-cs-fixer": "^3.13",
+        "friendsofphp/php-cs-fixer": "v3.64.0",
         "jdenoc/faker-tailwind-colors": "^0.0.1",
         "jdenoc/laravel-make-trait": "^4.0",
         "jdenoc/tailwind-colors": "0.0.2",
@@ -62,7 +62,7 @@
             "php artisan ide-helper:meta",
             "php artisan ide-helper:eloquent"
         ],
-        "lint:php": "vendor/bin/php-cs-fixer fix --dry-run --verbose --diff --stop-on-violation",
+        "lint:php": "vendor/bin/php-cs-fixer check --verbose --diff --stop-on-violation",
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"

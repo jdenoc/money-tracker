@@ -38,6 +38,7 @@ class FilterModalTest extends DuskTestCase {
     use HomePageSelectors;
     use WithTailwindColors;
 
+    // variables
     private $_default_currency_character;
 
     public function __construct($name = null, array $data = [], $dataName = '') {
@@ -302,10 +303,10 @@ class FilterModalTest extends DuskTestCase {
     public function providerFlipAccountAndAccountTypeSwitch(): array {
         return [
             // [account.disabled, account-type.disabled]
-            ['account'=>false, 'account-type'=>true],   // test 9/20
-            ['account'=>false, 'account-type'=>false],  // test 10/20
-            ['account'=>true, 'account-type'=>false],   // test 11/20
-            ['account'=>true, 'account-type'=>true],    // test 12/20
+            ['account' => false, 'account-type' => true],   // test 9/20
+            ['account' => false, 'account-type' => false],  // test 10/20
+            ['account' => true, 'account-type' => false],   // test 11/20
+            ['account' => true, 'account-type' => true],    // test 12/20
         ];
     }
 
@@ -322,15 +323,15 @@ class FilterModalTest extends DuskTestCase {
         $institutions = $this->getApiInstitutions();
         $institution_id = collect($institutions)->pluck('id')->random(1)->first();
 
-        Account::factory()->count(3)->create(['institution_id'=>$institution_id]);
+        Account::factory()->count(3)->create(['institution_id' => $institution_id]);
         if ($has_disabled_account) {
-            Account::factory()->count(1)->disabled()->create(['institution_id'=>$institution_id]);
+            Account::factory()->count(1)->disabled()->create(['institution_id' => $institution_id]);
         }
         $accounts = $this->getApiAccounts();
 
-        AccountType::factory()->count(3)->create(['account_id'=>collect($accounts)->pluck('id')->random(1)->first()]);
+        AccountType::factory()->count(3)->create(['account_id' => collect($accounts)->pluck('id')->random(1)->first()]);
         if ($has_disabled_account_type) {
-            AccountType::factory()->count(1)->disabled()->create(['account_id'=>collect($accounts)->pluck('id')->random(1)->first()]);
+            AccountType::factory()->count(1)->disabled()->create(['account_id' => collect($accounts)->pluck('id')->random(1)->first()]);
         }
         $account_types = $this->getApiAccountTypes();
 
@@ -413,12 +414,12 @@ class FilterModalTest extends DuskTestCase {
 
     public function providerFlipSwitch(): array {
         return [
-            "flip income"=>[$this->_selector_modal_filter_field_switch_income],                 // test 13/20
-            "flip expense"=>[$this->_selector_modal_filter_field_switch_expense],               // test 14/20
-            "flip has-attachment"=>[$this->_selector_modal_filter_field_switch_has_attachment], // test 15/20
-            "flip no-attachment"=>[$this->_selector_modal_filter_field_switch_no_attachment],   // test 16/20
-            "flip transfer"=>[$this->_selector_modal_filter_field_switch_transfer],             // test 17/20
-            "flip not confirmed"=>[$this->_selector_modal_filter_field_switch_unconfirmed]      // test 18/20
+            "flip income" => [$this->_selector_modal_filter_field_switch_income],                 // test 13/20
+            "flip expense" => [$this->_selector_modal_filter_field_switch_expense],               // test 14/20
+            "flip has-attachment" => [$this->_selector_modal_filter_field_switch_has_attachment], // test 15/20
+            "flip no-attachment" => [$this->_selector_modal_filter_field_switch_no_attachment],   // test 16/20
+            "flip transfer" => [$this->_selector_modal_filter_field_switch_transfer],             // test 17/20
+            "flip not confirmed" => [$this->_selector_modal_filter_field_switch_unconfirmed],     // test 18/20
         ];
     }
 
@@ -444,8 +445,8 @@ class FilterModalTest extends DuskTestCase {
 
     public function providerRangeValueConvertsIntoDecimalOfTwoPlaces(): array {
         return [
-            'Min Range'=>[$this->_selector_modal_filter_field_min_value], // test 19/20
-            'Max Range'=>[$this->_selector_modal_filter_field_max_value], // test 20/20
+            'Min Range' => [$this->_selector_modal_filter_field_min_value], // test 19/20
+            'Max Range' => [$this->_selector_modal_filter_field_max_value], // test 20/20
         ];
     }
 
@@ -472,10 +473,10 @@ class FilterModalTest extends DuskTestCase {
 
     public function providerFlippingCompanionSwitches(): array {
         return [
-            "flip income with expense"=>[$this->_selector_modal_filter_field_switch_income, $this->_selector_modal_filter_field_switch_expense],                              // test 1/20
-            "flip expense with income"=>[$this->_selector_modal_filter_field_switch_expense, $this->_selector_modal_filter_field_switch_income],                              // test 2/20
-            "flip has-attachment with no-attachment"=>[$this->_selector_modal_filter_field_switch_has_attachment, $this->_selector_modal_filter_field_switch_no_attachment],  // test 3/20
-            "flip no-attachment with has-attachment"=>[$this->_selector_modal_filter_field_switch_no_attachment, $this->_selector_modal_filter_field_switch_has_attachment]   // test 4/20
+            "flip income with expense" => [$this->_selector_modal_filter_field_switch_income, $this->_selector_modal_filter_field_switch_expense],                              // test 1/20
+            "flip expense with income" => [$this->_selector_modal_filter_field_switch_expense, $this->_selector_modal_filter_field_switch_income],                              // test 2/20
+            "flip has-attachment with no-attachment" => [$this->_selector_modal_filter_field_switch_has_attachment, $this->_selector_modal_filter_field_switch_no_attachment],  // test 3/20
+            "flip no-attachment with has-attachment" => [$this->_selector_modal_filter_field_switch_no_attachment, $this->_selector_modal_filter_field_switch_has_attachment],  // test 4/20
         ];
     }
 

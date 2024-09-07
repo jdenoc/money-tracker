@@ -95,14 +95,14 @@ class AccountController extends Controller {
         return $this->modify_account($request, $account_id);
     }
 
-    public function modify_account(Request $request, ?int $account_id=null): Response {
+    public function modify_account(Request $request, ?int $account_id = null): Response {
         $request_body = $request->getContent();
         $account_data = json_decode($request_body, true);
 
         // no data check
         if (empty($account_data)) {
             return response(
-                [self::$RESPONSE_KEY_ID=>self::$ERROR_ID, self::$RESPONSE_KEY_ERROR=>self::$ERROR_MSG_NO_DATA],
+                [self::$RESPONSE_KEY_ID => self::$ERROR_ID, self::$RESPONSE_KEY_ERROR => self::$ERROR_MSG_NO_DATA],
                 HttpStatus::HTTP_BAD_REQUEST
             );
         }
@@ -113,7 +113,7 @@ class AccountController extends Controller {
                 Institution::findOrFail($account_data['institution_id']);
             } catch (\Exception $e) {
                 return response(
-                    [self::$RESPONSE_KEY_ERROR=>self::$ERROR_MSG_INVALID_INSTITUTION, self::$RESPONSE_KEY_ID=>self::$ERROR_ID],
+                    [self::$RESPONSE_KEY_ERROR => self::$ERROR_MSG_INVALID_INSTITUTION, self::$RESPONSE_KEY_ID => self::$ERROR_ID],
                     HttpStatus::HTTP_BAD_REQUEST
                 );
             }
@@ -121,7 +121,7 @@ class AccountController extends Controller {
 
         if (isset($account_data['currency']) && !in_array($account_data['currency'], ISOCurrencyProvider::getInstance()->getAvailableCurrencies())) {
             return response(
-                [self::$RESPONSE_KEY_ERROR=>self::$ERROR_MSG_INVALID_CURRENCY, self::$RESPONSE_KEY_ID=>self::$ERROR_ID],
+                [self::$RESPONSE_KEY_ERROR => self::$ERROR_MSG_INVALID_CURRENCY, self::$RESPONSE_KEY_ID => self::$ERROR_ID],
                 HttpStatus::HTTP_BAD_REQUEST
             );
         }
@@ -135,7 +135,7 @@ class AccountController extends Controller {
             $missing_properties = array_diff_key(array_flip($required_properties), $account_data);
             if (count($missing_properties) > 0) {
                 return response(
-                    [self::$RESPONSE_KEY_ID=>self::$ERROR_ID, self::$RESPONSE_KEY_ERROR=>$this->fillMissingPropertyErrorMessage(array_keys($missing_properties))],
+                    [self::$RESPONSE_KEY_ID => self::$ERROR_ID, self::$RESPONSE_KEY_ERROR => $this->fillMissingPropertyErrorMessage(array_keys($missing_properties))],
                     HttpStatus::HTTP_BAD_REQUEST
                 );
             }
@@ -148,14 +148,14 @@ class AccountController extends Controller {
                 $account_to_modify = Account::findOrFail($account_id);
             } catch(\Exception $e) {
                 return response(
-                    [self::$RESPONSE_KEY_ID=>self::$ERROR_ID, self::$RESPONSE_KEY_ERROR=>self::$ERROR_MSG_DOES_NOT_EXIST],
+                    [self::$RESPONSE_KEY_ID => self::$ERROR_ID, self::$RESPONSE_KEY_ERROR => self::$ERROR_MSG_DOES_NOT_EXIST],
                     HttpStatus::HTTP_NOT_FOUND
                 );
             }
         }
 
         ksort($account_data);   // currency needs to be set prior to entry_value
-        foreach ($account_data as $account_datum_property=>$account_datum_value) {
+        foreach ($account_data as $account_datum_property => $account_datum_value) {
             if (in_array($account_datum_property, $required_properties)) {
                 $account_to_modify->{$account_datum_property} = $account_datum_value;
             }
@@ -166,7 +166,7 @@ class AccountController extends Controller {
             $account_to_modify->save();
         }
         return response(
-            [self::$RESPONSE_KEY_ERROR=>self::$ERROR_MSG_NO_ERROR, self::$RESPONSE_KEY_ID=>$account_to_modify->id],
+            [self::$RESPONSE_KEY_ERROR => self::$ERROR_MSG_NO_ERROR, self::$RESPONSE_KEY_ID => $account_to_modify->id],
             $http_response_status_code
         );
     }

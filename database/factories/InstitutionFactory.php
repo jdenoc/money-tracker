@@ -9,8 +9,8 @@ class InstitutionFactory extends Factory {
 
     public function definition(): array {
         return [
-            'name'=>fake()->company(),
-            'disabled_stamp'=>null,
+            'name' => fake()->company(),
+            'disabled_stamp' => null,
         ];
     }
 
@@ -20,7 +20,7 @@ class InstitutionFactory extends Factory {
     public function disabled(): Factory {
         return $this->state(function() {
             return [
-                'disabled_stamp'=>fake()->date(FactoryConstants::DATE_FORMAT)
+                'disabled_stamp' => fake()->date(FactoryConstants::DATE_FORMAT),
             ];
         });
     }

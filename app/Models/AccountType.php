@@ -12,23 +12,26 @@ class AccountType extends BaseModel {
     use LaraCache;
     use SoftDeletes;
 
+    // cache constants
     const CACHE_KEY_ALL = 'all';
     const CACHE_KEY_COUNT = 'count';
     const CACHE_KEY_TYPES = 'types';
 
+    // timestamp table columns
     const CREATED_AT = 'create_stamp';
     const UPDATED_AT = 'modified_stamp';
     const DELETED_AT = 'disabled_stamp';
 
+    // variables
     protected $table = 'account_types';
     protected $fillable = [
-        'type', 'last_digits', 'name', 'account_id'
+        'type', 'last_digits', 'name', 'account_id',
     ];
     protected $guarded = [
-        'id', 'modified_stamp'
+        'id', 'modified_stamp',
     ];
     protected $appends = [
-        'active'
+        'active',
     ];
     private static $required_fields = [
         'name',
@@ -77,7 +80,7 @@ class AccountType extends BaseModel {
                 ->forever()
                 ->cache(function() {
                     return AccountType::getEnumValues();
-                })
+                }),
         ];
     }
 

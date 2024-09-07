@@ -9,6 +9,7 @@ use Tests\TestCase;
 
 class DeleteAccountTypeTest extends TestCase {
 
+    // uri
     private const ACCOUNT_TYPE_URI = '/api/account-type/%d';
 
     public function testDisableAccountTypeThatDoesNotExist() {

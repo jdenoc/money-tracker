@@ -16,12 +16,9 @@ use Laravel\Dusk\Browser;
 class SettingsAccountTypesTest extends SettingsBase {
     use DuskTraitToggleButton;
 
+    // selectors
     protected static string $SELECTOR_SETTINGS_NAV_ELEMENT = 'li.settings-nav-option:nth-child(3)';
-    protected static string $LABEL_SETTINGS_NAV_ELEMENT = 'Account-types';
-
     protected static string $SELECTOR_SETTINGS_DISPLAY_SECTION = 'section#settings-account-types';
-    protected static string $LABEL_SETTINGS_SECTION_HEADER = "Account Types";
-
     private static string $SELECTOR_SETTINGS_FORM_LABEL_NAME = "label[for='settings-account-type-name']:nth-child(1)";
     private static string $SELECTOR_SETTINGS_FORM_INPUT_NAME = "input#settings-account-type-name:nth-child(2)";
     private static string $SELECTOR_SETTINGS_FORM_LABEL_TYPE = "label[for='settings-account-type-type']:nth-child(3)";
@@ -42,10 +39,12 @@ class SettingsAccountTypesTest extends SettingsBase {
     private static string $SELECTOR_SETTINGS_FORM_DISABLED = "div:nth-child(16)";
     protected static string $SELECTOR_SETTINGS_FORM_BUTTON_CLEAR = 'button:nth-child(17)';
     protected static string $SELECTOR_SETTINGS_FORM_BUTTON_SAVE = 'button:nth-child(18)';
-
     protected static string $SELECTOR_SETTINGS_LOADING_OBJECTS =  '#loading-settings-account-types';
     protected static string $TEMPLATE_SELECTOR_SETTINGS_NODE_ID = '#settings-account-type-%d';
 
+    // labels
+    protected static string $LABEL_SETTINGS_NAV_ELEMENT = 'Account-types';
+    protected static string $LABEL_SETTINGS_SECTION_HEADER = "Account Types";
     private static string $LABEL_SETTINGS_FORM_TYPE = 'Type:';
     private static string $LABEL_SETTINGS_FORM_LAST_DIGITS = 'Last Digits:';
     private static string $LABEL_SETTINGS_FORM_ACCOUNT = 'Account:';
@@ -56,17 +55,17 @@ class SettingsAccountTypesTest extends SettingsBase {
 
     public function providerDisablingOrRestoringObject(): array {
         return [
-            'disabling account-type'=>['isInitAccountTypeActive'=>true],     // test 7/20
-            'restoring account-type'=>['isInitAccountTypeActive'=>false],    // test 8/20
+            'disabling account-type' => ['isInitAccountTypeActive' => true],   // test 7/20
+            'restoring account-type' => ['isInitAccountTypeActive' => false],  // test 8/20
         ];
     }
 
     public function providerSaveExistingSettingObject(): array {
         return [
-            'name'=>[self::$SELECTOR_SETTINGS_FORM_INPUT_NAME],                 // test 7/20
-            'type'=>[self::$SELECTOR_SETTINGS_FORM_SELECT_TYPE],                // test 8/20
-            'last_digits'=>[self::$SELECTOR_SETTINGS_FORM_INPUT_LAST_DIGITS],   // test 9/20
-            'account'=>[self::$SELECTOR_SETTINGS_FORM_SELECT_ACCOUNT],          // test 10/20
+            'name' => [self::$SELECTOR_SETTINGS_FORM_INPUT_NAME],                // test 7/20
+            'type' => [self::$SELECTOR_SETTINGS_FORM_SELECT_TYPE],               // test 8/20
+            'last_digits' => [self::$SELECTOR_SETTINGS_FORM_INPUT_LAST_DIGITS],  // test 9/20
+            'account' => [self::$SELECTOR_SETTINGS_FORM_SELECT_ACCOUNT],         // test 10/20
         ];
     }
 
@@ -102,7 +101,7 @@ class SettingsAccountTypesTest extends SettingsBase {
         $this->assertSaveButtonDisabled($section);
     }
 
-    protected function assertFormDefaultsFull(Browser $section) {
+    protected function assertFormDefaultsFull(Browser $section): void {
         $section
             ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_LABEL_NAME, self::$LABEL_SETTINGS_FORM_INPUT_NAME)
             ->assertVisible(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME)
@@ -140,7 +139,7 @@ class SettingsAccountTypesTest extends SettingsBase {
         $this->assertSaveButtonDefault($section);
     }
 
-    protected function assertFormWithExistingData(Browser $section, BaseModel $object) {
+    protected function assertFormWithExistingData(Browser $section, BaseModel $object): void {
         $this->assertObjectIsOfType($object, AccountType::class);
 
         $section
@@ -173,7 +172,7 @@ class SettingsAccountTypesTest extends SettingsBase {
         $this->assertSaveButtonDisabled($section);
     }
 
-    protected function assertNodesVisible(Browser $section) {
+    protected function assertNodesVisible(Browser $section): void {
         $account_types = AccountType::withTrashed()->get();
         $this->assertCount($account_types->count(), $section->elements('hr~ul li'));
         foreach ($account_types as $account_type) {
@@ -194,7 +193,7 @@ class SettingsAccountTypesTest extends SettingsBase {
         }
     }
 
-    protected function fillForm(Browser $section) {
+    protected function fillForm(Browser $section): void {
         $this->interactWithFormElement($section, self::$SELECTOR_SETTINGS_FORM_INPUT_NAME);
         $section->assertInputValueIsNot(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, '');
 
@@ -223,7 +222,7 @@ class SettingsAccountTypesTest extends SettingsBase {
         }
     }
 
-    protected function getObject(?int $id=null): AccountType {
+    protected function getObject(?int $id = null): AccountType {
         if(is_null($id)) {
             return AccountType::get()->random();
         } else {
@@ -235,7 +234,7 @@ class SettingsAccountTypesTest extends SettingsBase {
         return AccountType::withTrashed()->get();
     }
 
-    protected function interactWithObjectListItem(Browser $section, BaseModel $object, bool $is_fresh_load=true): void {
+    protected function interactWithObjectListItem(Browser $section, BaseModel $object, bool $is_fresh_load = true): void {
         $this->assertObjectIsOfType($object, AccountType::class);
 
         $class_state = $object->active ? '.is-active' : '.is-disabled';
@@ -250,7 +249,7 @@ class SettingsAccountTypesTest extends SettingsBase {
         $section->pause($this->toggleButtonTransitionTimeInMilliseconds());
     }
 
-    protected function interactWithFormElement(Browser $section, string $selector, ?BaseModel $object=null): void {
+    protected function interactWithFormElement(Browser $section, string $selector, ?BaseModel $object = null): void {
         if (is_null($object)) {
             $object = new AccountType();
         }

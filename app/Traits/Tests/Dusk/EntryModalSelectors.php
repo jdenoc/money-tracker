@@ -9,7 +9,7 @@ trait EntryModalSelectors {
     private $_selector_modal_entry_confirmed = "#entry-confirm";
     private $_selector_modal_entry_btn_transfer = "#entry-transfer-btn";
     private $_selector_modal_entry_field_entry_id = "#entry-id";
-    private $_selector_modal_entry_field_date="input#entry-date";
+    private $_selector_modal_entry_field_date = "input#entry-date";
     private $_selector_modal_entry_field_value = "input#entry-value";
     private $_selector_modal_entry_field_account_type = "select#entry-account-type";
     private $_selector_modal_entry_meta = "#entry-account-type-meta";

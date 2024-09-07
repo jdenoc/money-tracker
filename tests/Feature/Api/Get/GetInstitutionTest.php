@@ -10,6 +10,7 @@ use Tests\TestCase;
 
 class GetInstitutionTest extends TestCase {
 
+    // uri
     protected string $_base_uri = '/api/institution/%d';
 
     public function testGetInstitutionWhenNoInstitutionExists() {

@@ -7,7 +7,6 @@ use App\Models\Entry;
 use App\Models\Tag;
 use App\Traits\Tests\GenerateFilterTestCases;
 use App\Traits\MaxEntryResponseValue;
-use Exception;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
 use Tests\Feature\Api\ListEntriesBase;
 
@@ -32,7 +31,6 @@ class PostEntriesTest extends ListEntriesBase {
 
     /**
      * @dataProvider providerPostEntriesFilter
-     * @throws Exception
      */
     public function testPostEntries(array $filter_details) {
         // GIVEN
@@ -69,19 +67,17 @@ class PostEntriesTest extends ListEntriesBase {
 
     /**
      * @dataProvider providerPostEntriesFilter
-     * @param array $filter_details
-     * @throws Exception
      */
     public function testPostEntriesByPage(array $filter_details) {
         $page_limit = 3;
         // GIVEN
-        $generate_entry_count = fake()->numberBetween(($page_limit-1)*self::$MAX_ENTRIES_IN_RESPONSE+1, $page_limit*self::$MAX_ENTRIES_IN_RESPONSE);
+        $generate_entry_count = fake()->numberBetween(($page_limit - 1) * self::$MAX_ENTRIES_IN_RESPONSE + 1, $page_limit * self::$MAX_ENTRIES_IN_RESPONSE);
         $generated_account_type = AccountType::factory()->for($this->_generated_account)->create();
         $filter_details = $this->setTestSpecificFilters(fake(), $filter_details, $this->_generated_account, $this->_generated_tags);
         $generated_entries = $this->batch_generate_entries($generate_entry_count, $generated_account_type->id, $this->convert_filters_to_entry_components($filter_details));
 
         $entries_in_response = [];
-        for ($i=0; $i<$page_limit; $i++) {
+        for ($i = 0; $i < $page_limit; $i++) {
             // WHEN
             $response = $this->postJson($this->_uri.'/'.$i, $filter_details);
 
@@ -94,8 +90,8 @@ class PostEntriesTest extends ListEntriesBase {
             $this->assertEquals($generate_entry_count, $response_body_as_array['count']);
             unset($response_body_as_array['count']);
 
-            if ($i+1 == $page_limit) {
-                $this->assertCount($generate_entry_count-(($page_limit-1)*self::$MAX_ENTRIES_IN_RESPONSE), $response_body_as_array);
+            if ($i + 1 == $page_limit) {
+                $this->assertCount($generate_entry_count - (($page_limit - 1) * self::$MAX_ENTRIES_IN_RESPONSE), $response_body_as_array);
             } else {
                 $this->assertCount(self::$MAX_ENTRIES_IN_RESPONSE, $response_body_as_array);
             }
@@ -135,8 +131,8 @@ class PostEntriesTest extends ListEntriesBase {
             $end_date = fake()->date("Y-m-d", $start_date);  // second parameter guarantees $start_date is >= $end_date
         } while ($start_date < $end_date);
         $filter_details = [
-            self::$FILTER_KEY_START_DATE=>$start_date,
-            self::$FILTER_KEY_END_DATE=>$end_date,
+            self::$FILTER_KEY_START_DATE => $start_date,
+            self::$FILTER_KEY_END_DATE => $end_date,
         ];
 
         $generated_account_type = AccountType::factory()->for($this->_generated_account)->create();
@@ -151,8 +147,8 @@ class PostEntriesTest extends ListEntriesBase {
             $start_date = fake()->date("Y-m-d", $end_date); // second parameter guarantees $start_date is <= $end_date
         } while ($start_date > $end_date);
         $filter_details = [
-            self::$FILTER_KEY_START_DATE=>$start_date,
-            self::$FILTER_KEY_END_DATE=>$end_date,
+            self::$FILTER_KEY_START_DATE => $start_date,
+            self::$FILTER_KEY_END_DATE => $end_date,
         ];
 
         $generated_account_type = AccountType::factory()->for($this->_generated_account)->create();
@@ -177,8 +173,8 @@ class PostEntriesTest extends ListEntriesBase {
             $max_value = fake()->randomFloat(2, 0, $min_value);
         } while ($min_value < $max_value);
         $filter_details = [
-            self::$FILTER_KEY_MIN_VALUE=>$min_value,
-            self::$FILTER_KEY_MAX_VALUE=>$max_value,
+            self::$FILTER_KEY_MIN_VALUE => $min_value,
+            self::$FILTER_KEY_MAX_VALUE => $max_value,
         ];
 
         $generated_account_type = AccountType::factory()->for($this->_generated_account)->create();
@@ -193,8 +189,8 @@ class PostEntriesTest extends ListEntriesBase {
             $min_value = fake()->randomFloat(2, 0, $max_value);
         } while ($min_value > $max_value);
         $filter_details = [
-            self::$FILTER_KEY_MIN_VALUE=>$min_value,
-            self::$FILTER_KEY_MAX_VALUE=>$max_value,
+            self::$FILTER_KEY_MIN_VALUE => $min_value,
+            self::$FILTER_KEY_MAX_VALUE => $max_value,
         ];
 
         $generated_account_type = AccountType::factory()->for($this->_generated_account)->create();

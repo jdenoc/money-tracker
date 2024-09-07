@@ -16,7 +16,7 @@ return new class extends Migration {
         // make sure create_stamp has a value
         DB::table(self::TABLE)
             ->whereNull(self::COLUMN_TIMESTAMP_CREATE)
-            ->update([self::COLUMN_TIMESTAMP_CREATE=>DB::raw(self::COLUMN_TIMESTAMP_MODIFY)]);
+            ->update([self::COLUMN_TIMESTAMP_CREATE => DB::raw(self::COLUMN_TIMESTAMP_MODIFY)]);
 
         // laravel currently can not handle table schema updates using an ORM approach
         $update_create_stamp_column_query = "ALTER TABLE %s CHANGE %s %s TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;";

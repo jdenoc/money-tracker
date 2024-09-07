@@ -10,8 +10,7 @@ class AccountTotalSanityCheck {
     private string $account_name;
     private Money $actual;
     private Money $expected;
-
-    private array $acceptible_parameters = [
+    private array $acceptable_parameters = [
         'account_id',
         'account_name',
         'actual',
@@ -24,21 +23,19 @@ class AccountTotalSanityCheck {
 
     /**
      * Get the array representation of this object
-     *
-     * @return array
      */
-    public function toArray() {
+    public function toArray(): array {
         return [
-            'account_id'=>$this->account_id,
-            'account_name'=>$this->account_name,
-            'actual'=>$this->actual,
-            'diff'=>$this->diff(),
-            'expected'=>$this->expected,
+            'account_id' => $this->account_id,
+            'account_name' => $this->account_name,
+            'actual' => $this->actual,
+            'diff' => $this->diff(),
+            'expected' => $this->expected,
         ];
     }
 
     public function __get($name) {
-        if (in_array($name, $this->acceptible_parameters)) {
+        if (in_array($name, $this->acceptable_parameters)) {
             return $this->{$name};
         } else {
             return null;
@@ -46,7 +43,7 @@ class AccountTotalSanityCheck {
     }
 
     public function __set($name, $value) {
-        if (in_array($name, $this->acceptible_parameters)) {
+        if (in_array($name, $this->acceptable_parameters)) {
             $this->{$name} = $value;
         }
     }

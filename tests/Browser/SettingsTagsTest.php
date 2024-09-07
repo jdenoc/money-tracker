@@ -15,20 +15,18 @@ class SettingsTagsTest extends SettingsBase {
 
     protected static string $SELECTOR_SETTINGS_NAV_ELEMENT = 'li.settings-nav-option:nth-child(4)';
     protected static string $LABEL_SETTINGS_NAV_ELEMENT = 'Tags';
-
     protected static string $SELECTOR_SETTINGS_DISPLAY_SECTION = 'section#settings-tags';
     protected static string $LABEL_SETTINGS_SECTION_HEADER = 'Tags';
-
     private static string $SELECTOR_SETTINGS_FORM_LABEL_NAME = "label[for='settings-tag-name']:nth-child(1)";
     protected static string $LABEL_SETTINGS_INPUT_NAME = 'Tag:';
     private static string $SELECTOR_SETTINGS_FORM_INPUT_NAME = "input#settings-tag-name:nth-child(2)";
     protected static string $SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE = ''; // this page doesn't use this element
     protected static string $SELECTOR_SETTINGS_FORM_BUTTON_CLEAR = 'button:nth-child(3)';
     protected static string $SELECTOR_SETTINGS_FORM_BUTTON_SAVE = 'button:nth-child(4)';
-
     protected static string $SELECTOR_SETTINGS_LOADING_OBJECTS =  '#loading-settings-tags';
     protected static string $TEMPLATE_SELECTOR_SETTINGS_NODE_ID = 'span#settings-tag-%d';
 
+    // labels
     protected static string $LABEL_SETTINGS_NOTIFICATION_NEW = 'New tag created';
     protected static string $LABEL_SETTINGS_NOTIFICATION_UPDATE = 'Tag updated';
     protected static string $LABEL_SETTINGS_NOTIFICATION_RESTORE = 'Tag has been enabled';  // TODO: confirm
@@ -40,7 +38,7 @@ class SettingsTagsTest extends SettingsBase {
 
     public function providerSaveExistingSettingObject(): array {
         return [
-            'tag'=>[self::$SELECTOR_SETTINGS_FORM_INPUT_NAME]   // test 7/20
+            'tag' => [self::$SELECTOR_SETTINGS_FORM_INPUT_NAME],  // test 7/20
         ];
     }
 
@@ -49,14 +47,14 @@ class SettingsTagsTest extends SettingsBase {
      *   Name: (empty)
      *   Save button [disabled]
      */
-    protected function assertFormDefaults(Browser $section) {
+    protected function assertFormDefaults(Browser $section): void {
         $section
             ->scrollIntoView(self::$SELECTOR_SETTINGS_HEADER)
             ->assertInputValue(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME, '');
         $this->assertSaveButtonDisabled($section);
     }
 
-    protected function assertFormDefaultsFull(Browser $section) {
+    protected function assertFormDefaultsFull(Browser $section): void {
         $section
             ->assertSeeIn(self::$SELECTOR_SETTINGS_FORM_LABEL_NAME, self::$LABEL_SETTINGS_INPUT_NAME)
             ->assertVisible(self::$SELECTOR_SETTINGS_FORM_INPUT_NAME)
@@ -69,7 +67,7 @@ class SettingsTagsTest extends SettingsBase {
         $this->assertSaveButtonDefault($section);
     }
 
-    protected function assertFormWithExistingData(Browser $section, BaseModel $object) {
+    protected function assertFormWithExistingData(Browser $section, BaseModel $object): void {
         $this->assertObjectIsOfType($object, Tag::class);
 
         $section
@@ -78,7 +76,7 @@ class SettingsTagsTest extends SettingsBase {
         $this->assertSaveButtonDisabled($section);
     }
 
-    protected function assertNodesVisible(Browser $section) {
+    protected function assertNodesVisible(Browser $section): void {
         $tags = $this->getAllObjects();
         $this->assertCount($tags->count(), $section->elements('hr~div span.tag'));
         foreach ($tags as $tag) {
@@ -98,7 +96,7 @@ class SettingsTagsTest extends SettingsBase {
         return Tag::factory()->create();
     }
 
-    protected function getObject(int $id=null): BaseModel {
+    protected function getObject(int $id = null): BaseModel {
         return Tag::get()->random();
     }
 
@@ -106,7 +104,7 @@ class SettingsTagsTest extends SettingsBase {
         return Tag::all();
     }
 
-    protected function interactWithObjectListItem(Browser $section, BaseModel $object, bool $is_fresh_load=true): void {
+    protected function interactWithObjectListItem(Browser $section, BaseModel $object, bool $is_fresh_load = true): void {
         $this->assertObjectIsOfType($object, Tag::class);
 
         $selector = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID, $object->id);
@@ -115,7 +113,7 @@ class SettingsTagsTest extends SettingsBase {
             ->click($selector);
     }
 
-    protected function interactWithFormElement(Browser $section, string $selector, ?BaseModel $object=null): void {
+    protected function interactWithFormElement(Browser $section, string $selector, ?BaseModel $object = null): void {
         if (is_null($object)) {
             $object = new Tag();
         }

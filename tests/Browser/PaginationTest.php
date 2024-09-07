@@ -35,13 +35,18 @@ class PaginationTest extends DuskTestCase {
     use HomePageSelectors;
     use MaxEntryResponseValue;
 
+    // pages
     const PAGE_NUMBER_ZERO = 0;
     const PAGE_NUMBER_ONE = 1;
     const PAGE_NUMBER_TWO = 2;
 
+    // entry counts
     private static int $ENTRY_COUNT_ONE = 10;   // number of entries needed to be generated for 1 page of results
     private static int $ENTRY_COUNT_TWO;        // number of entries needed to be generated for 2 pages of results; set in constructor
     private static int $ENTRY_COUNT_THREE;      // number of entries needed to be generated for 3 pages of results; set in constructor
+
+    // variables
+    private $_account_types = [];
 
     public function __construct($name = null, array $data = [], $dataName = '') {
         parent::__construct($name, $data, $dataName);
@@ -49,8 +54,6 @@ class PaginationTest extends DuskTestCase {
         self::$ENTRY_COUNT_TWO = (self::$MAX_ENTRIES_IN_RESPONSE*2)-10;
         self::$ENTRY_COUNT_THREE = (self::$MAX_ENTRIES_IN_RESPONSE*3)-25;
     }
-
-    private $_account_types = [];
 
     public function setUp(): void {
         parent::setUp();
@@ -111,8 +114,8 @@ class PaginationTest extends DuskTestCase {
         $entries_page2 = $this->getApiEntries(self::PAGE_NUMBER_TWO);
 
         $this->assertEquals($entries_page1['count'], $entries_page2['count']);
-        $this->assertGreaterThanOrEqual(self::$MAX_ENTRIES_IN_RESPONSE*2, $entries_page1['count']);
-        $this->assertLessThan(self::$MAX_ENTRIES_IN_RESPONSE*3, $entries_page2['count']);
+        $this->assertGreaterThanOrEqual(self::$MAX_ENTRIES_IN_RESPONSE * 2, $entries_page1['count']);
+        $this->assertLessThan(self::$MAX_ENTRIES_IN_RESPONSE * 3, $entries_page2['count']);
         unset($entries_page1['count'], $entries_page2['count']);
 
         $this->browse(function(Browser $browser) use ($entries_page1, $entries_page2) {
@@ -287,11 +290,7 @@ class PaginationTest extends DuskTestCase {
         });
     }
 
-    /**
-     * @param Browser $browser
-     * @param array $entries
-     */
-    private function assertEntriesDisplayed(Browser $browser, $entries) {
+    private function assertEntriesDisplayed(Browser $browser, array $entries): void {
         $browser->within($this->_selector_table_body, function(Browser $table) use ($entries) {
             foreach ($entries as $entry) {
                 $entry_row_selector = sprintf(self::$PLACEHOLDER_SELECTOR_EXISTING_ENTRY_ROW, $entry['id']);
@@ -305,10 +304,10 @@ class PaginationTest extends DuskTestCase {
 
     private function entryOverrideAttributes(): array {
         $account_type_id = collect($this->_account_types)->pluck('id')->random(1)->first();
-        return ['account_type_id'=>$account_type_id];
+        return ['account_type_id' => $account_type_id];
     }
 
-    private function clickNextButton(Browser $browser) {
+    private function clickNextButton(Browser $browser): void {
         $browser
             ->scrollIntoView($this->_selector_pagination_btn_next)
             ->assertVisible($this->_selector_pagination_btn_next)
@@ -318,7 +317,7 @@ class PaginationTest extends DuskTestCase {
         $this->isVisibleInViewport($browser, $this->_selector_table.' '.$this->_selector_table_head);
     }
 
-    private function clickPrevButton(Browser $browser) {
+    private function clickPrevButton(Browser $browser): void {
         $browser
             ->scrollIntoView($this->_selector_pagination_btn_prev)
             ->assertVisible($this->_selector_pagination_btn_prev)
