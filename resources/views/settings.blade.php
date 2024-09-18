@@ -4,6 +4,7 @@
     @component('head-component')
         Money Tracker | Settings
     @endcomponent
+    @vite('resources/js/app-settings.js')
 </head>
 <body>
 <div id="app-settings" class="py-16">
@@ -21,6 +22,5 @@
         <notification></notification>
     </div>
 </div>
-<script type="text/javascript" src="{{mix('dist/js/app-settings.js')}}"></script>
 </body>
 </html>

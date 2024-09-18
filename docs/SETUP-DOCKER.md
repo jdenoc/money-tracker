@@ -26,7 +26,16 @@ This will generate Laravel Facades that PhpStorm can use.
 ### Run npm install
 ```bash
 .docker/scripts/npm.sh ci
-.docker/scripts/npm.sh run build:dev
+```
+
+### Bundle JavaScript and CSS assets
+```bash
+.docker/scripts/npm.sh run build
+```
+This command will statically bundle the JavaScript and CSS assets for the application. Meaning they won't dynamically change when you make changes directly to the source files.
+If you wish for changes to occur dynamically, you can run the following command:
+```bash
+.docker/scripts/vite-dev.sh
 ```
 
 ### Bring "_UP_" application container(s)

@@ -52,11 +52,11 @@
 // utilities
 import _ from 'lodash';
 // components
-import AccountAccountTypeTogglingSelector from "../account-account-type-toggling-selector";
-import DateRange from "./date-range";
-import IncludeTransfersCheckbox from "./include-transfers-checkbox";
-import PieChart from './chart-defaults/pie-chart';
-import ToggleButton from "../toggle-button";
+import AccountAccountTypeTogglingSelector from "../account-account-type-toggling-selector.vue";
+import DateRange from "./date-range.vue";
+import IncludeTransfersCheckbox from "./include-transfers-checkbox.vue";
+import PieChart from './chart-defaults/pie-chart.vue';
+import ToggleButton from "../toggle-button.vue";
 // mixins
 import {batchEntriesMixin} from "../../mixins/batch-entries-mixin";
 import {statsChartMixin} from "../../mixins/stats-chart-mixin";

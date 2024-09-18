@@ -56,7 +56,16 @@ php artisan app:version $RELEASE_NUMBER
 
 ```bash
 npm clean-install
-npm run build:prod
+```
+
+</p>
+</details>
+
+<details><summary><strong>Bundle JavaScript and CSS assets</strong></summary>
+<p>
+
+```bash
+npm run build
 ```
 
 </p>

@@ -18,9 +18,9 @@ vendor
 node_modules
 npm-debug.log
 
-# laravel-mix
-mix-manifest.json
-public/dist
+# vite
+public/build
+public/hot
 
 # misc
 .env*

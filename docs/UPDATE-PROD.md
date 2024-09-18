@@ -83,9 +83,9 @@ php artisan migrate
 ---
 
 #### Step 4
-Build website from *.vue files
+Bundle JavaScript and CSS assets
 ```bash
-npm run build:prod
+npm run build
 ```
 
 ---

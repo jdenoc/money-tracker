@@ -44,10 +44,10 @@
 // utilities
 import _ from 'lodash';
 // components
-import AccountAccountTypeTogglingSelector from "../account-account-type-toggling-selector";
-import DateRange from "./date-range";
-import IncludeTransfersCheckbox from "./include-transfers-checkbox";
-import LineChart from "./chart-defaults/line-chart";
+import AccountAccountTypeTogglingSelector from "../account-account-type-toggling-selector.vue";
+import DateRange from "./date-range.vue";
+import IncludeTransfersCheckbox from "./include-transfers-checkbox.vue";
+import LineChart from "./chart-defaults/line-chart.vue";
 // mixins
 import {batchEntriesMixin} from "../../mixins/batch-entries-mixin";
 import {statsChartMixin} from "../../mixins/stats-chart-mixin";

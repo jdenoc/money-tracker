@@ -51,8 +51,8 @@
 
 <script lang="js">
 // components
-import InstitutionsPanelInstitution from "./institutions-panel-institution";
-import InstitutionsPanelInstitutionAccount from './institutions-panel-institution-account';
+import InstitutionsPanelInstitution from "./institutions-panel-institution.vue";
+import InstitutionsPanelInstitutionAccount from './institutions-panel-institution-account.vue';
 // stores
 import {useAccountsStore} from "../../stores/accounts";
 import {useInstitutionsStore} from "../../stores/institutions";

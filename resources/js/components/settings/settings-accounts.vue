@@ -127,7 +127,7 @@ import {decimaliseInputMixin} from "../../mixins/decimalise-input-mixin";
 import {settingsMixin} from "../../mixins/settings-mixin";
 // components
 import Spinner from 'vue-spinner-component/src/Spinner.vue';
-import ToggleButton from "../toggle-button";
+import ToggleButton from "../toggle-button.vue";
 // stores
 import {useAccountsStore} from "../../stores/accounts";
 import {useInstitutionsStore} from "../../stores/institutions";

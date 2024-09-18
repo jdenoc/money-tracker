@@ -1,6 +1,7 @@
 // const colors = require('tailwindcss/colors')
+import forms from '@tailwindcss/forms'
 
-module.exports = {
+export default {
   content: [
     "./resources/views/*.blade.php",
     "./resources/js/components/**/*.vue",
@@ -34,6 +35,6 @@ module.exports = {
     }
   },
   plugins: [
-    require('@tailwindcss/forms'),
+    forms,
   ],
 }

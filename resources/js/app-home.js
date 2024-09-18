@@ -17,15 +17,15 @@ import eventHub from "./plugins/eventHub";
 Vue.use(eventHub);
 
 // components
-import EntryModal from './components/home/entry-modal';
-import EntriesTable from './components/home/entries-table';
-import EntriesTableEntryRow from './components/home/entries-table-entry-row';
-import FilterModal from "./components/home/filter-modal";
-import InstitutionsPanel from './components/home/institutions-panel';
-import LoadingModal from './components/loading-modal';
-import NavBar from './components/nav-bar';
-import NotificationItem from './components/notification-item';
-import TransferModal from './components/home/transfer-modal';
+import EntryModal from './components/home/entry-modal.vue';
+import EntriesTable from './components/home/entries-table.vue';
+import EntriesTableEntryRow from './components/home/entries-table-entry-row.vue';
+import FilterModal from "./components/home/filter-modal.vue";
+import InstitutionsPanel from './components/home/institutions-panel.vue';
+import LoadingModal from './components/loading-modal.vue';
+import NavBar from './components/nav-bar.vue';
+import NotificationItem from './components/notification-item.vue';
+import TransferModal from './components/home/transfer-modal.vue';
 // stores
 import {useAccountTypesStore} from "./stores/accountTypes";
 import {useInstitutionsStore} from "./stores/institutions";

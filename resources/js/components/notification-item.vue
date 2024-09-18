@@ -36,7 +36,7 @@ export default {
 </script>
 
 <style scoped>
-@import "~vue-snotify/styles/material";
+@import "vue-snotify/styles/material";
 
 .snotifyToast__body {
   font-size: 1.1rem;

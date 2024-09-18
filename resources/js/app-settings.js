@@ -14,11 +14,11 @@ import eventHub from "./plugins/eventHub";
 Vue.use(eventHub);
 
 // components
-import LoadingModal from './components/loading-modal';
-import NavBar from './components/nav-bar';
-import NotificationItem from './components/notification-item';
-import SettingsDisplay from "../js/components/settings/settings-display";
-import SettingsNav from "../js/components/settings/settings-nav";
+import LoadingModal from './components/loading-modal.vue';
+import NavBar from './components/nav-bar.vue';
+import NotificationItem from './components/notification-item.vue';
+import SettingsDisplay from "../js/components/settings/settings-display.vue";
+import SettingsNav from "../js/components/settings/settings-nav.vue";
 // stores
 import {useAccountsStore} from "./stores/accounts";
 import {useAccountTypesStore} from "./stores/accountTypes";

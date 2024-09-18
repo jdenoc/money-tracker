@@ -40,7 +40,7 @@ jobs:
 
       - name: Generate cache keys [vue]
         id: cache-key-vue
-        run: echo "value=cache-vue-${{ hashFiles('package*.json', 'resources/**', 'tailwind.config.js', 'webpack.mix.js') }}" >> $GITHUB_OUTPUT
+        run: echo "value=cache-vue-${{ hashFiles('package*.json', 'resources/**', 'tailwind.config.js', 'postcss.config.js', 'vite.config.js') }}" >> $GITHUB_OUTPUT
 
       - name: Generate cache paths [docker]
         id: cache-path-docker

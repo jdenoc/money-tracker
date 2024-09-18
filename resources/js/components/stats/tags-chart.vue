@@ -56,11 +56,11 @@
 // utilities
 import _ from 'lodash';
 // components
-import AccountAccountTypeTogglingSelector from "../account-account-type-toggling-selector";
-import BarChart from "./chart-defaults/bar-chart";
-import DateRange from './date-range';
-import IncludeTransfersCheckbox from "./include-transfers-checkbox";
-import TagsInput from "../tags-input";
+import AccountAccountTypeTogglingSelector from "../account-account-type-toggling-selector.vue";
+import BarChart from "./chart-defaults/bar-chart.vue";
+import DateRange from './date-range.vue';
+import IncludeTransfersCheckbox from "./include-transfers-checkbox.vue";
+import TagsInput from "../tags-input.vue";
 import TagsInputInfoLoading from "../tags-input-info-loading.vue";
 // mixins
 import {batchEntriesMixin} from "../../mixins/batch-entries-mixin";

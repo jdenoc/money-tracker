@@ -54,7 +54,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import "~@voerro/vue-tagsinput/dist/style.css";
+@import "@voerro/vue-tagsinput/dist/style.css";
 
 /* additional styling for voerro-tags-input component */
 ::v-deep .tags-input {

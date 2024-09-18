@@ -9,11 +9,11 @@
 </template>
 
 <script>
-import SettingsAccounts from "./settings-accounts";
-import SettingsAccountTypes from "./settings-account-types";
-import SettingsHome from "./settings-home";
-import SettingsInstitutions from "./settings-institutions";
-import SettingsTags from "./settings-tags";
+import SettingsAccounts from "./settings-accounts.vue";
+import SettingsAccountTypes from "./settings-account-types.vue";
+import SettingsHome from "./settings-home.vue";
+import SettingsInstitutions from "./settings-institutions.vue";
+import SettingsTags from "./settings-tags.vue";
 
 import {settingsNavMixin} from "../../mixins/settings-nav-mixin";
 import _ from "lodash";

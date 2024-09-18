@@ -64,7 +64,7 @@
 <script lang="js">
 import _ from "lodash";
 import {tailwindColorsMixin} from "../mixins/tailwind-colors-mixin";
-import ToggleButton from "./toggle-button";
+import ToggleButton from "./toggle-button.vue";
 // stores
 import {useAccountsStore} from "../stores/accounts";
 import {useAccountTypesStore} from "../stores/accountTypes";
