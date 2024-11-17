@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Jobs\AdjustAccountTotalUsingAccountType;
 use App\Traits\EntryFilterKeys;
 use Brick\Money\Money;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -84,7 +85,12 @@ class Entry extends BaseModel {
     }
 
     public function getCurrencyAttribute() {
-        return $this->accountType ? ($this->accountType->account ? $this->accountType->account->currency : Currency::DEFAULT_CURRENCY_CODE) : Currency::DEFAULT_CURRENCY_CODE;
+        try {
+            return $this->accountType ? ($this->accountType->account ? $this->accountType->account->currency : Currency::DEFAULT_CURRENCY_CODE) : Currency::DEFAULT_CURRENCY_CODE;
+        } catch (\Exception $e) {
+            error_log($e);
+            return Currency::DEFAULT_CURRENCY_CODE;
+        }
     }
 
     public function delete() {
