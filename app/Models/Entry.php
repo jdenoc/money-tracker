@@ -75,22 +75,77 @@ class Entry extends BaseModel {
         return $this->hasMany(Attachment::class);
     }
 
-    public function getEntryValueAttribute($value) {
-        return Money::ofMinor($value, $this->currency)->getAmount()->toFloat();
+    protected function entryValue(): Attribute {
+        return Attribute::make(
+            get: function ($value) {
+                return Money::ofMinor($value, $this->currency)->getAmount()->toFloat();
+            },
+            set: function ($value) {
+                $entry_value = Money::of($value, $this->currency);
+                return $entry_value->getMinorAmount()->toInt();
+            }
+        );
     }
 
-    public function setEntryValueAttribute($value) {
-        $entry_value = Money::of($value, $this->currency);
-        $this->attributes['entry_value'] = $entry_value->getMinorAmount()->toInt();
+    protected function currency(): Attribute {
+        return Attribute::make(
+            get: function ($value) {
+                try {
+                    if($this->accountType) {
+                        return $this->accountType->account ? $this->accountType->account->currency : Currency::DEFAULT_CURRENCY_CODE;
+                    } else {
+                        return Currency::DEFAULT_CURRENCY_CODE;
+                    }
+                } Catch (\Exception $e) {
+                    error_log($e);
+                    return Currency::DEFAULT_CURRENCY_CODE;
+                }
+            }
+        );
     }
 
-    public function getCurrencyAttribute() {
-        try {
-            return $this->accountType ? ($this->accountType->account ? $this->accountType->account->currency : Currency::DEFAULT_CURRENCY_CODE) : Currency::DEFAULT_CURRENCY_CODE;
-        } catch (\Exception $e) {
-            error_log($e);
-            return Currency::DEFAULT_CURRENCY_CODE;
-        }
+    protected function hasAttachments(): Attribute {
+        return Attribute::make(
+            get: function ($value): bool {
+                try {
+                    return $this->attachments()->count() > 0;
+                } catch (\Exception $e) {
+                    error_log($e);
+                    return false;
+                }
+            }
+        );
+    }
+
+    protected function hasTags(): Attribute {
+        return Attribute::make(
+            get: function ($value): bool {
+                try {
+                    return $this->tags()->count() > 0;
+                } catch (\Exception $e) {
+                    error_log($e);
+                    return false;
+                }
+            }
+        );
+    }
+
+    protected function getTagIds(): Attribute {
+        return Attribute::make(
+            get: function ($value) {
+                try {
+                    $collection_of_tags = $this->tags()->getResults();
+                } catch (\Exception $e) {
+                    error_log($e);
+                    return [];
+                }
+                if (is_null($collection_of_tags) || $collection_of_tags->isEmpty()) {
+                    return [];
+                } else {
+                    return $collection_of_tags->pluck('pivot.tag_id')->toArray();
+                }
+            }
+        );
     }
 
     public function delete() {
@@ -111,14 +166,14 @@ class Entry extends BaseModel {
         return $saved_entry;
     }
 
-    private function addEntryValueToAccountTotal() {
+    private function addEntryValueToAccountTotal(): void {
         $current_account_type_id = $this->account_type_id;
         $current_raw_entry_value = $this->attributes['entry_value'];
         $current_is_expense = $this->expense;
         AdjustAccountTotalUsingAccountType::dispatch($current_account_type_id, $current_raw_entry_value, $current_is_expense, true);
     }
 
-    private function removeEntryValueFromAccountTotal() {
+    private function removeEntryValueFromAccountTotal(): void {
         $original_account_type_id = $this->getOriginal('account_type_id');
         $original_raw_entry_value = $this->getRawOriginal('entry_value');
         $original_is_expense = $this->getOriginal('expense');
@@ -232,38 +287,6 @@ class Entry extends BaseModel {
         }
 
         return $entries_query;
-    }
-
-    public function has_attachments(): bool {
-        try {
-            return $this->attachments()->count() > 0;
-        } catch (\Exception $e) {
-            error_log($e);
-            return false;
-        }
-    }
-
-    public function has_tags(): bool {
-        try {
-            return $this->tags()->count() > 0;
-        } catch(\Exception $e) {
-            error_log($e);
-            return false;
-        }
-    }
-
-    public function get_tag_ids(): array {
-        try {
-            $collection_of_tags = $this->tags()->getResults();
-        } catch (\Exception $e) {
-            error_log($e);
-            return [];
-        }
-        if (is_null($collection_of_tags) || $collection_of_tags->isEmpty()) {
-            return [];
-        } else {
-            return $collection_of_tags->pluck('pivot.tag_id')->toArray();
-        }
     }
 
     public static function get_fields_required_for_creation(): array {
