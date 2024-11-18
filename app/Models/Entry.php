@@ -130,7 +130,7 @@ class Entry extends BaseModel {
         );
     }
 
-    protected function getTagIds(): Attribute {
+    protected function tagIds(): Attribute {
         return Attribute::make(
             get: function($value) {
                 try {

@@ -361,7 +361,7 @@ class EntryController extends Controller {
      * @param int[] $new_entry_tags
      */
     private function update_entry_tags(Entry $entry, $new_entry_tags) {
-        $currently_attached_tags = $entry->get_tag_ids();
+        $currently_attached_tags = $entry->tagIds;
         foreach ($new_entry_tags as $new_tag) {
             if (!in_array($new_tag, $currently_attached_tags)) {
                 $entry->tags()->attach($new_tag);
