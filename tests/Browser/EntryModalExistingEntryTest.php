@@ -332,7 +332,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
                 ->within($this->_selector_modal_entry, function(Browser $entry_modal) use ($data_is_tags_input_visible) {
                     $entry_id = $entry_modal->value($this->_selector_modal_entry_field_entry_id);
                     $entry_data = Entry::findOrFail($entry_id);
-                    $this->assertTrue($entry_data->has_tags());
+                    $this->assertTrue($entry_data->hasTags);
                     $entry_tags = $entry_data->tags->pluck('name');
 
                     if ($data_is_tags_input_visible) {

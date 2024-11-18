@@ -28,7 +28,7 @@ class EntriesExport implements FromCollection, WithHeadings, WithMapping, WithCo
         $income_value = $row->expense ? '' : $row->entry_value;
         $expense_value = $row->expense ? $row->entry_value : '';
         $is_transfer = !is_null($row->transfer_entry_id);
-        $tags = $row->has_tags() ? $row->get_tag_ids() : [];
+        $tags = $row->has_tags ? $row->tag_ids : [];
 
         return [
             $row->id,

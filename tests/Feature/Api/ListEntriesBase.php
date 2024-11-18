@@ -77,7 +77,6 @@ class ListEntriesBase extends TestCase {
                     $generate_attachment_count = fake()->randomDigitNotZero();
                 }
                 Attachment::factory()->count($generate_attachment_count)->for($entry)->create();
-                $entry->has_attachments = $entry->has_attachments();
 
                 if (isset($filter_details['tags'])) {
                     $entry->tags()->sync($filter_details['tags']);
@@ -87,7 +86,7 @@ class ListEntriesBase extends TestCase {
                         ->tags()
                         ->syncWithoutDetaching($this->_generated_tags->random($assign_tag_to_entry_count)->pluck('id')->toArray());
                 }
-                $entry->tags = $entry->get_tag_ids();
+                $entry->tags = $entry->tagIds;
 
                 $entry->makeHidden(['accountType', 'attachments', 'transfer_entry_id']);
             }
@@ -166,11 +165,11 @@ class ListEntriesBase extends TestCase {
 
             /** @var Entry $generated_entry */
             $generated_entry = $generated_entries->where('id', $entry_in_response['id'])->first();
-            $failure_msg = "generated entries:".json_encode($generated_entry)."\nresponse entry:".json_encode($entry_in_response);
+            $failure_msg = "generated entry:".json_encode($generated_entry)."\nresponse entry:".json_encode($entry_in_response);
             $this->assertNotEmpty($generated_entry, $failure_msg);
 
             $generated_entry_as_array = $generated_entry->toArray();
-            $elements_to_pre_check = [Entry::CREATED_AT, Entry::UPDATED_AT, 'tags'];
+            $elements_to_pre_check = [Entry::CREATED_AT, Entry::UPDATED_AT, 'tags', 'has_attachments'];
             foreach ($elements_to_pre_check as $element) {
                 switch($element) {
                     case Entry::CREATED_AT:
@@ -181,10 +180,13 @@ class ListEntriesBase extends TestCase {
                     case 'tags':
                         $this->assertEqualsCanonicalizing($generated_entry_as_array[$element], $entry_in_response[$element], $failure_msg);
                         break;
+                    case 'has_attachments':
+                        $this->assertEquals($generated_entry->$element, $entry_in_response[$element], $failure_msg);
+                        break;
                 }
                 unset($generated_entry_as_array[$element], $entry_in_response[$element]);
             }
-            // compare the reset of the response
+            // compare the rest of the response
             $this->assertEquals($generated_entry_as_array, $entry_in_response, $failure_msg);
 
             // testing sort order
