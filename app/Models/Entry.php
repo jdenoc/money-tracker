@@ -77,10 +77,10 @@ class Entry extends BaseModel {
 
     protected function entryValue(): Attribute {
         return Attribute::make(
-            get: function ($value) {
+            get: function($value) {
                 return Money::ofMinor($value, $this->currency)->getAmount()->toFloat();
             },
-            set: function ($value) {
+            set: function($value) {
                 $entry_value = Money::of($value, $this->currency);
                 return $entry_value->getMinorAmount()->toInt();
             }
@@ -89,14 +89,14 @@ class Entry extends BaseModel {
 
     protected function currency(): Attribute {
         return Attribute::make(
-            get: function ($value) {
+            get: function($value) {
                 try {
                     if($this->accountType) {
                         return $this->accountType->account ? $this->accountType->account->currency : Currency::DEFAULT_CURRENCY_CODE;
                     } else {
                         return Currency::DEFAULT_CURRENCY_CODE;
                     }
-                } Catch (\Exception $e) {
+                } catch (\Exception $e) {
                     error_log($e);
                     return Currency::DEFAULT_CURRENCY_CODE;
                 }
@@ -106,7 +106,7 @@ class Entry extends BaseModel {
 
     protected function hasAttachments(): Attribute {
         return Attribute::make(
-            get: function ($value): bool {
+            get: function($value): bool {
                 try {
                     return $this->attachments()->count() > 0;
                 } catch (\Exception $e) {
@@ -119,7 +119,7 @@ class Entry extends BaseModel {
 
     protected function hasTags(): Attribute {
         return Attribute::make(
-            get: function ($value): bool {
+            get: function($value): bool {
                 try {
                     return $this->tags()->count() > 0;
                 } catch (\Exception $e) {
@@ -132,7 +132,7 @@ class Entry extends BaseModel {
 
     protected function getTagIds(): Attribute {
         return Attribute::make(
-            get: function ($value) {
+            get: function($value) {
                 try {
                     $collection_of_tags = $this->tags()->getResults();
                 } catch (\Exception $e) {
