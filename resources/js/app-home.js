@@ -10,8 +10,8 @@ Vue.use(Snotify, {toast: {timeout: 8000}});    // 8 seconds
 import VueHotkey from 'v-hotkey';
 Vue.use(VueHotkey);
 
-import VTooltip from 'v-tooltip';
-Vue.use(VTooltip);
+import vToolTip from 'v-tooltip';
+Vue.use(vToolTip);
 
 import eventHub from "./plugins/eventHub";
 Vue.use(eventHub);

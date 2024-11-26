@@ -127,7 +127,8 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-@import "dropzone/dist/min/dropzone.min.css";
-@import "vue2-dropzone/dist/vue2Dropzone.min.css";
-</style>
+<!--
+vite/vue2 setup is broken for scoped styles stored in node_modules.
+style element order is all mixed up
+-->
+<style lang="css" src="vue2-dropzone/dist/vue2Dropzone.min.css"></style>

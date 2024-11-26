@@ -35,9 +35,13 @@ export default {
 }
 </script>
 
-<style scoped>
-@import "vue-snotify/styles/material";
+<style lang="scss">
+// vite/vue2 setup is broken for scoped styles stored in node_modules.
+// style element order is all mixed up
+@import 'vue-snotify/styles/material';
+</style>
 
+<style lang="css" scoped>
 .snotifyToast__body {
   font-size: 1.1rem;
 }

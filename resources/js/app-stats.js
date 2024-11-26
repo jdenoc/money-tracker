@@ -7,8 +7,8 @@ const pinia = createPinia();
 import Snotify from 'vue-snotify';
 Vue.use(Snotify, {toast: {timeout: 8000}});    // 8 seconds
 
-import VTooltip from 'v-tooltip';
-Vue.use(VTooltip);
+import vTooltip from 'v-tooltip';
+Vue.use(vTooltip);
 
 import eventHub from "./plugins/eventHub";
 Vue.use(eventHub);

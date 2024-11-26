@@ -4,8 +4,7 @@
 # development
 .idea
 .phpstorm.meta.php
-.phpunit.cache
-.phpunit.result.cache
+.phpunit.*
 .php-cs-fixer.cache
 _ide_helper*.php
 phpunit.dusk.xml
