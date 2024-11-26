@@ -9,7 +9,7 @@
         "php": "^8.1",
         "ext-json": "*",
         "ext-pdo": "*",
-        "beyondcode/laravel-favicon": "dev-master as 1.4.0",
+        "beyondcode/laravel-favicon": "1.6.0",
         "brick/money": "^0.8.0",
         "doctrine/dbal": "^3.4",
         "eklundkristoffer/laravel-discord-webhook": "dev-master",
@@ -91,10 +91,6 @@
         {
             "type": "vcs",
             "url": "https://github.com/jdenoc/laravel-discord-webhook"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/eminos/laravel-favicon"
         }
     ],
     "extra": {

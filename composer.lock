@@ -4,33 +4,32 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "983a6d2957f1ee232d7a0aec42af58f0",
+    "content-hash": "50079b7a49744b3742ce8446ffa94826",
     "packages": [
         {
             "name": "beyondcode/laravel-favicon",
-            "version": "dev-master",
+            "version": "1.6.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/eminos/laravel-favicon.git",
-                "reference": "1b88892632c76ea74411cae4a8205a8b9ce50428"
+                "url": "https://github.com/beyondcode/laravel-favicon.git",
+                "reference": "757c292cdca8a59473d759a8c841d1c172511415"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/eminos/laravel-favicon/zipball/1b88892632c76ea74411cae4a8205a8b9ce50428",
-                "reference": "1b88892632c76ea74411cae4a8205a8b9ce50428",
+                "url": "https://api.github.com/repos/beyondcode/laravel-favicon/zipball/757c292cdca8a59473d759a8c841d1c172511415",
+                "reference": "757c292cdca8a59473d759a8c841d1c172511415",
                 "shasum": ""
             },
             "require": {
-                "illuminate/http": "5.6.*|5.7.*|5.8.*|6.*|7.*|8.*|9.*|10.*",
-                "illuminate/support": "5.6.*|5.7.*|5.8.*|6.*|7.*|8.*|9.*|10.*",
+                "illuminate/http": "5.6.*|5.7.*|5.8.*|6.*|7.*|8.*|9.*|^10.0|^11.0",
+                "illuminate/support": "5.6.*|5.7.*|5.8.*|6.*|7.*|8.*|9.*|^10.0|^11.0",
                 "intervention/image": "^2.4",
-                "php": "^7.1|^8.0"
+                "php": "^7.1|^8.0|^8.1|^8.2|^8.3"
             },
             "require-dev": {
-                "orchestra/testbench": "^3.7|^4.0|^5.0|^6.0",
-                "phpunit/phpunit": "^7.0|^8.0|^9.0|^10.0"
+                "orchestra/testbench": "^3.7|^4.0|^5.0|^6.0|^7.0|^8.0|^9.0",
+                "phpunit/phpunit": "^7.0|^8.0|^9.0|^10.0|^11.0"
             },
-            "default-branch": true,
             "type": "library",
             "extra": {
                 "laravel": {
@@ -40,26 +39,14 @@
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "BeyondCode\\LaravelFavicon\\": "src"
-                },
                 "files": [
                     "src/helpers.php"
-                ]
-            },
-            "autoload-dev": {
+                ],
                 "psr-4": {
-                    "BeyondCode\\LaravelFavicon\\Tests\\": "tests"
+                    "BeyondCode\\LaravelFavicon\\": "src"
                 }
             },
-            "scripts": {
-                "test": [
-                    "vendor/bin/phpunit"
-                ],
-                "test-coverage": [
-                    "vendor/bin/phpunit --coverage-html coverage"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -78,9 +65,10 @@
                 "laravel-favicon"
             ],
             "support": {
-                "source": "https://github.com/eminos/laravel-favicon/tree/master"
+                "issues": "https://github.com/beyondcode/laravel-favicon/issues",
+                "source": "https://github.com/beyondcode/laravel-favicon/tree/1.6.0"
             },
-            "time": "2023-11-25T17:12:42+00:00"
+            "time": "2024-05-21T10:39:45+00:00"
         },
         {
             "name": "brick/math",
@@ -12015,17 +12003,9 @@
             "time": "2024-03-03T12:36:25+00:00"
         }
     ],
-    "aliases": [
-        {
-            "package": "beyondcode/laravel-favicon",
-            "version": "9999999-dev",
-            "alias": "1.4.0",
-            "alias_normalized": "1.4.0.0"
-        }
-    ],
+    "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "beyondcode/laravel-favicon": 20,
         "eklundkristoffer/laravel-discord-webhook": 20
     },
     "prefer-stable": true,
