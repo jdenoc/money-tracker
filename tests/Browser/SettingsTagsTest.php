@@ -34,7 +34,6 @@ class SettingsTagsTest extends SettingsBase {
     protected static string $LABEL_SETTINGS_NOTIFICATION_DELETE = 'Tag has been disabled';  // TODO: confirm
 
     public static function providerDisablingOrRestoringObject(): array {
-//        self::markTestSkipped("enabling/disabling tags is not currently supported");
         return [false];
     }
 
