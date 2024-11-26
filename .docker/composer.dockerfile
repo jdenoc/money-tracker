@@ -23,6 +23,13 @@ RUN apt-get install -y libpng-dev libjpeg-dev libfreetype6-dev --no-install-reco
 RUN docker-php-ext-configure gd --enable-gd --with-jpeg --with-freetype
 RUN docker-php-ext-install gd
 
+# install php igbinary & memcached extensions
+RUN apt-get install -y libmemcached-dev --no-install-recommends \
+  && pecl install igbinary-3.2.7 \
+  && pecl install memcached-3.2.0
+RUN docker-php-ext-enable igbinary \
+  && docker-php-ext-enable memcached
+
 # install php intl extension
 RUN apt-get install -y libicu-dev
 RUN docker-php-ext-install intl
