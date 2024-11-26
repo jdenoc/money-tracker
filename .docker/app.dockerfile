@@ -68,8 +68,8 @@ RUN docker-php-ext-enable igbinary \
   && docker-php-ext-enable memcached
 
 # install xdebug
-ARG DISABLE_XDEBUG
-RUN if [ "$DISABLE_XDEBUG" = false ]; \
+ARG ENABLE_XDEBUG
+RUN if [ "$ENABLE_XDEBUG" = true ]; \
   then \
     XDEBUG_LOG=$PHP_LOG_DIR/xdebug.log \
       && touch $XDEBUG_LOG \
