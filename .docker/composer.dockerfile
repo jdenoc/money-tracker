@@ -1,4 +1,4 @@
-FROM php:8.1-cli
+FROM php:8.1-cli-bullseye
 
 # update stuff
 RUN apt-get update --fix-missing \
