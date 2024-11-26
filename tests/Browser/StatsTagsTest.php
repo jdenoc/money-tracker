@@ -30,14 +30,14 @@ class StatsTagsTest extends StatsBase {
     use DuskTraitTagsInput;
 
     // Selectors
-    private static $SELECTOR_STATS_TAGS = "#stats-tags";
-    private static $SELECTOR_CHART_TAGS = 'canvas#bar-chart';
+    private const SELECTOR_STATS_TAGS = "#stats-tags";
+    private const SELECTOR_CHART_TAGS = 'canvas#bar-chart';
 
     // vue keys
-    private static $VUE_KEY_STANDARDISEDATA = "standardiseData";
+    private const VUE_KEY_STANDARDISEDATA = "standardiseData";
 
-    public function __construct($name = null, array $data = [], $dataName = '') {
-        parent::__construct($name, $data, $dataName);
+    public function __construct($name = null) {
+        parent::__construct($name);
         $chart_designation = 'tags-chart';
         $this->_account_or_account_type_toggling_selector_id_label = $chart_designation;
         $this->date_range_chart_name = $chart_designation;
@@ -76,8 +76,8 @@ class StatsTagsTest extends StatsBase {
             $this->clickStatsSidePanelOptionTags($browser);
 
             $browser
-                ->assertVisible(self::$SELECTOR_STATS_TAGS)
-                ->with(self::$SELECTOR_STATS_TAGS, function(Browser $stats_tags) use ($accounts) {
+                ->assertVisible(self::SELECTOR_STATS_TAGS)
+                ->with(self::SELECTOR_STATS_TAGS, function(Browser $stats_tags) use ($accounts) {
                     $stats_tags
                         ->assertVisible(self::$SELECTOR_STATS_FORM_TAGS)
                         ->with(self::$SELECTOR_STATS_FORM_TAGS, function(Browser $form) use ($accounts) {
@@ -111,8 +111,8 @@ class StatsTagsTest extends StatsBase {
             $this->clickStatsSidePanelOptionTags($browser);
 
             $browser
-                ->assertVisible(self::$SELECTOR_STATS_TAGS)
-                ->with(self::$SELECTOR_STATS_TAGS, function(Browser $stats_tags) {
+                ->assertVisible(self::SELECTOR_STATS_TAGS)
+                ->with(self::SELECTOR_STATS_TAGS, function(Browser $stats_tags) {
                     $stats_tags
                         ->assertVisible(self::$SELECTOR_STATS_RESULTS_TAGS)
                         ->assertSeeIn(self::$SELECTOR_STATS_RESULTS_TAGS, self::$LABEL_NO_STATS_DATA);
@@ -132,7 +132,7 @@ class StatsTagsTest extends StatsBase {
         );
     }
 
-    public function providerTestGenerateTagsChart(): array {
+    public static function providerTestGenerateTagsChart(): array {
         return [
             //[$datepicker_start, $datepicker_end, $is_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $tag_count, $include_transfers]
             // test 1/20
@@ -140,53 +140,53 @@ class StatsTagsTest extends StatsBase {
             // test 2/20
             'defaults account/account-type & tags & date-picker values & include transfers checkbox button clicked' => [null, null, false, false, false, 0, true],
             // test 3/20
-            'date-picker 3 months prior start to present & default tags & default account/account-type' => [$this->three_months_prior_start, $this->today, false, false, false, 0, false],
+            'date-picker 3 months prior start to present & default tags & default account/account-type' => [self::getDateThreeMonthsPriorStart(), self::getDateToday(), false, false, false, 0, false],
             // test 4/20
-            'date-picker 3 months prior start to present & default tags & default account/account-type & include transfers checkbox button clicked' => [$this->three_months_prior_start, $this->today, false, false, false, 0, true],
+            'date-picker 3 months prior start to present & default tags & default account/account-type & include transfers checkbox button clicked' => [self::getDateThreeMonthsPriorStart(), self::getDateToday(), false, false, false, 0, true],
             // test 5/20
-            'date-picker 3 months prior start to present & default tags & random account' => [$this->three_months_prior_start, $this->today, false, true, false, 0, false],
+            'date-picker 3 months prior start to present & default tags & random account' => [self::getDateThreeMonthsPriorStart(), self::getDateToday(), false, true, false, 0, false],
             // test 6/20
-            'date-picker 3 months prior start to present & default tags & random account & include transfers checkbox button clicked' => [$this->three_months_prior_start, $this->today, false, true, false, 0, true],
+            'date-picker 3 months prior start to present & default tags & random account & include transfers checkbox button clicked' => [self::getDateThreeMonthsPriorStart(), self::getDateToday(), false, true, false, 0, true],
             // test 7/20
-            'date-picker 3 months prior start to present & default tags & random account-type' => [$this->three_months_prior_start, $this->today, true, true, false, 0, false],
+            'date-picker 3 months prior start to present & default tags & random account-type' => [self::getDateThreeMonthsPriorStart(), self::getDateToday(), true, true, false, 0, false],
             // test 8/20
-            'date-picker 3 months prior start to present & default tags & random account-type & include transfers checkbox button clicked' => [$this->three_months_prior_start, $this->today, true, true, false, 0, true],
+            'date-picker 3 months prior start to present & default tags & random account-type & include transfers checkbox button clicked' => [self::getDateThreeMonthsPriorStart(), self::getDateToday(), true, true, false, 0, true],
             // test 9/20
-            'date-picker 3 months prior start to present & default tags & random disabled account' => [$this->three_months_prior_start, $this->today, false, true, true, 0, false],
+            'date-picker 3 months prior start to present & default tags & random disabled account' => [self::getDateThreeMonthsPriorStart(), self::getDateToday(), false, true, true, 0, false],
             // test 10/20
-            'date-picker 3 months prior start to present & default tags & random disabled account & include transfers checkbox button clicked' => [$this->three_months_prior_start, $this->today, false, true, true, 0, true],
+            'date-picker 3 months prior start to present & default tags & random disabled account & include transfers checkbox button clicked' => [self::getDateThreeMonthsPriorStart(), self::getDateToday(), false, true, true, 0, true],
             // test 11/20
-            'date-picker 3 months prior start to present & default tags & random disabled account-type' => [$this->three_months_prior_start, $this->today, true, true, true, 0, false],
+            'date-picker 3 months prior start to present & default tags & random disabled account-type' => [self::getDateThreeMonthsPriorStart(), self::getDateToday(), true, true, true, 0, false],
             // test 12/20
-            'date-picker 3 months prior start to present & default tags & random disabled account-type & include transfers checkbox button clicked' => [$this->three_months_prior_start, $this->today, true, true, true, 0, true],
+            'date-picker 3 months prior start to present & default tags & random disabled account-type & include transfers checkbox button clicked' => [self::getDateThreeMonthsPriorStart(), self::getDateToday(), true, true, true, 0, true],
             // test 13/20
-            'date-picker 3 months prior start to present & random tag & default account/account-type' => [$this->three_months_prior_start, $this->today, false, false, false, 1, false],
+            'date-picker 3 months prior start to present & random tag & default account/account-type' => [self::getDateThreeMonthsPriorStart(), self::getDateToday(), false, false, false, 1, false],
             // test 14/20
-            'date-picker 3 months prior start to present & random tag & default account/account-type & include transfers checkbox button clicked' => [$this->three_months_prior_start, $this->today, false, false, false, 1, true],
+            'date-picker 3 months prior start to present & random tag & default account/account-type & include transfers checkbox button clicked' => [self::getDateThreeMonthsPriorStart(), self::getDateToday(), false, false, false, 1, true],
             // test 15/20
-            'date-picker 3 months prior start to present & random tag & random account' => [$this->three_months_prior_start, $this->today, false, true, false, 1, false],
+            'date-picker 3 months prior start to present & random tag & random account' => [self::getDateThreeMonthsPriorStart(), self::getDateToday(), false, true, false, 1, false],
             // test 16/20
-            'date-picker 3 months prior start to present & random tag & random account & include transfers checkbox button clicked' => [$this->three_months_prior_start, $this->today, false, true, false, 1, true],
+            'date-picker 3 months prior start to present & random tag & random account & include transfers checkbox button clicked' => [self::getDateThreeMonthsPriorStart(), self::getDateToday(), false, true, false, 1, true],
             // test 17/20
-            'date-picker 3 months prior start to present & random tag & random account-type' => [$this->three_months_prior_start, $this->today, true, true, false, 1, false],
+            'date-picker 3 months prior start to present & random tag & random account-type' => [self::getDateThreeMonthsPriorStart(), self::getDateToday(), true, true, false, 1, false],
             // test 18/20
-            'date-picker 3 months prior start to present & random tag & random account-type & include transfers checkbox button clicked' => [$this->three_months_prior_start, $this->today, true, true, false, 1, true],
+            'date-picker 3 months prior start to present & random tag & random account-type & include transfers checkbox button clicked' => [self::getDateThreeMonthsPriorStart(), self::getDateToday(), true, true, false, 1, true],
             // test 19/20
-            'date-picker 3 months prior start to present & random tag & random disabled account' => [$this->three_months_prior_start, $this->today, false, true, true, 1, false],
+            'date-picker 3 months prior start to present & random tag & random disabled account' => [self::getDateThreeMonthsPriorStart(), self::getDateToday(), false, true, true, 1, false],
             // test 20/20
-            'date-picker 3 months prior start to present & random tag & random disabled account & include transfers checkbox button clicked' => [$this->three_months_prior_start, $this->today, false, true, true, 1, true],
+            'date-picker 3 months prior start to present & random tag & random disabled account & include transfers checkbox button clicked' => [self::getDateThreeMonthsPriorStart(), self::getDateToday(), false, true, true, 1, true],
             // test 21/20
-            'date-picker 3 months prior start to present & random tag & random disabled account-type' => [$this->three_months_prior_start, $this->today, true, true, true, 1, false],
+            'date-picker 3 months prior start to present & random tag & random disabled account-type' => [self::getDateThreeMonthsPriorStart(), self::getDateToday(), true, true, true, 1, false],
             // test 22/20
-            'date-picker 3 months prior start to present & random tag & random disabled account-type & include transfers checkbox button clicked' => [$this->three_months_prior_start, $this->today, true, true, true, 1, true],
+            'date-picker 3 months prior start to present & random tag & random disabled account-type & include transfers checkbox button clicked' => [self::getDateThreeMonthsPriorStart(), self::getDateToday(), true, true, true, 1, true],
             // test 23/20
-            'date-picker 3 months prior start to present & random tags & default account/account-type' => [$this->three_months_prior_start, $this->today, false, false, false, 2, false],
+            'date-picker 3 months prior start to present & random tags & default account/account-type' => [self::getDateThreeMonthsPriorStart(), self::getDateToday(), false, false, false, 2, false],
             // test 24/20
-            'date-picker 3 months prior start to present & random tags & default account/account-type & include transfers checkbox button clicked' => [$this->three_months_prior_start, $this->today, false, false, false, 2, true],
+            'date-picker 3 months prior start to present & random tags & default account/account-type & include transfers checkbox button clicked' => [self::getDateThreeMonthsPriorStart(), self::getDateToday(), false, false, false, 2, true],
             // test 25/20
-            'defaults account/account-type & tags; date-picker today ONLY' => [$this->today, $this->today, false, false, false, 0, false],
+            'defaults account/account-type & tags; date-picker today ONLY' => [self::getDateToday(), self::getDateToday(), false, false, false, 0, false],
             // test 26/20
-            'defaults account/account-type & tags; date-picker today ONLY; include transfers' => [$this->today, $this->today, false, false, false, 0, true],
+            'defaults account/account-type & tags; date-picker today ONLY; include transfers' => [self::getDateToday(), self::getDateToday(), false, false, false, 0, true],
         ];
     }
 
@@ -237,17 +237,17 @@ class StatsTagsTest extends StatsBase {
                     if (!is_null($datepicker_start)) {
                         $this->setDateRangeDate($form, 'start', $datepicker_start);
                     } else {
-                        $datepicker_start = $this->month_start;
+                        $datepicker_start = self::getDateMonthStart();
                     }
                     if (!is_null($datepicker_end)) {
                         $this->setDateRangeDate($form, 'end', $datepicker_end);
                     } else {
-                        $datepicker_end = $this->month_end;
+                        $datepicker_end = self::getDateMonthEnd();
                     }
 
                     $filter_data = $this->generateFilterArrayElementDatepicker($filter_data, $datepicker_start, $datepicker_end);
 
-                    $this->generateEntryFromFilterData($filter_data, $this->getName(true));
+                    $this->generateEntryFromFilterData($filter_data, $this->nameWithDataSet());
                     $this->createEntryWithAllTags($is_switch_toggled, $account_or_account_type_id, $account_types, $tags);
                     $form->click(self::$SELECTOR_BUTTON_GENERATE);
                 });
@@ -265,9 +265,9 @@ class StatsTagsTest extends StatsBase {
                         $this->assertIncludesTransfersCheckboxButtonStateActive($stats_results_area);
                     }
 
-                    $stats_results_area->assertVisible(self::$SELECTOR_CHART_TAGS);
+                    $stats_results_area->assertVisible(self::SELECTOR_CHART_TAGS);
                 })
-                ->assertVue(self::$VUE_KEY_STANDARDISEDATA, $this->standardiseData($entries, $tags), self::$SELECTOR_STATS_TAGS);
+                ->assertVue(self::VUE_KEY_STANDARDISEDATA, $this->standardiseData($entries, $tags), self::SELECTOR_STATS_TAGS);
         });
     }
 
@@ -317,7 +317,7 @@ class StatsTagsTest extends StatsBase {
             $account_type_id = $account_types->pluck('id')->random();
         }
 
-        $entry_with_tags = Entry::factory()->create(['memo' => $this->getName(true).' - ALL TAGS', 'account_type_id' => $account_type_id, 'entry_date' => date('Y-m-d')]);
+        $entry_with_tags = Entry::factory()->create(['memo' => $this->nameWithDataSet().' - ALL TAGS', 'account_type_id' => $account_type_id, 'entry_date' => date('Y-m-d')]);
         foreach ($tags->pluck('id')->all() as $tag_id) {
             $entry_with_tags->tags()->attach($tag_id);
         }

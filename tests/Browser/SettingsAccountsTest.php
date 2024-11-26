@@ -73,14 +73,14 @@ class SettingsAccountsTest extends SettingsBase {
         $this->color_currency_inactive = $this->tailwindColors->white();
     }
 
-    public function providerDisablingOrRestoringObject(): array {
+    public static function providerDisablingOrRestoringObject(): array {
         return [
             'disabling account' => ['isInitAccountActive' => true],     // test 7/20
             'restoring account' => ['isInitAccountActive' => false],    // test 8/20
         ];
     }
 
-    public function providerSaveExistingSettingObject(): array {
+    public static function providerSaveExistingSettingObject(): array {
         return [
             'name' => [self::$SELECTOR_SETTINGS_FORM_INPUT_NAME],                         // test 9/20
             'institution' => [self::$SELECTOR_SETTINGS_FORM_SELECT_INSTITUTION],          // test 10/20

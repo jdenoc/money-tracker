@@ -36,7 +36,7 @@ class NavbarTest extends DuskTestCase {
     private string $_label_health = "Health";
     private string $_label_logout = "Logout";
 
-    public function providerNavbarLogoVisible(): array {
+    public static function providerNavbarLogoVisible(): array {
         return [
             'home' => ['home'],          // test 1/20
             'stats' => ['stats'],        // test 2/20
@@ -60,7 +60,7 @@ class NavbarTest extends DuskTestCase {
         });
     }
 
-    public function providerNavbarAddEntryButton(): array {
+    public static function providerNavbarAddEntryButton(): array {
         return [
             'home' => ['home', true],           // test 4/20
             'stats' => ['stats', false],        // test 5/20
@@ -94,7 +94,7 @@ class NavbarTest extends DuskTestCase {
         });
     }
 
-    public function providerNavbarAddTransferButton(): array {
+    public static function providerNavbarAddTransferButton(): array {
         return [
             'home' => ['home', true],           // test 7/20
             'stats' => ['stats', false],        // test 8/20
@@ -128,7 +128,7 @@ class NavbarTest extends DuskTestCase {
         });
     }
 
-    public function providerNavbarFilterButtonExists(): array {
+    public static function providerNavbarFilterButtonExists(): array {
         return [
             'home' => ['home', true],             // test 10/20
             'stats' => ['stats', false],          // test 11/20
@@ -162,7 +162,7 @@ class NavbarTest extends DuskTestCase {
         });
     }
 
-    public function providerNavbarClickProfileImage(): array {
+    public static function providerNavbarClickProfileImage(): array {
         return [
             'home' => ['home'],          // test 13/20
             'stats' => ['stats'],        // test 14/20
@@ -217,7 +217,7 @@ class NavbarTest extends DuskTestCase {
         });
     }
 
-    public function providerNavbarSmScreenElementsNotVisibleByDefault(): array {
+    public static function providerNavbarSmScreenElementsNotVisibleByDefault(): array {
         return [
             'home' => ['home'],          // test 16/20
             'stats' => ['stats'],        // test 17/20
@@ -245,7 +245,7 @@ class NavbarTest extends DuskTestCase {
         });
     }
 
-    public function providerNavbarMdScreenElementsNotVisibleForSmScreenSize(): array {
+    public static function providerNavbarMdScreenElementsNotVisibleForSmScreenSize(): array {
         return [
             'home' => ['home'],          // test 1/20
             'stats' => ['stats'],        // test 2/20
@@ -281,7 +281,7 @@ class NavbarTest extends DuskTestCase {
         });
     }
 
-    public function providerNavbarSmScreenBurgerMenu(): array {
+    public static function providerNavbarSmScreenBurgerMenu(): array {
         return [
             'home' => ['home'],          // test 4/20
             'stats' => ['stats'],        // test 5/20
@@ -341,7 +341,7 @@ class NavbarTest extends DuskTestCase {
         });
     }
 
-    public function providerNavbarSmScreenSidebar(): array {
+    public static function providerNavbarSmScreenSidebar(): array {
         return [
             'home' => ['home'],          // test 7/20
             'stats' => ['stats'],        // test 8/20

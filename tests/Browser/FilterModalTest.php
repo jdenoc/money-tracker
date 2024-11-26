@@ -41,8 +41,8 @@ class FilterModalTest extends DuskTestCase {
     // variables
     private $_default_currency_character;
 
-    public function __construct($name = null, array $data = [], $dataName = '') {
-        parent::__construct($name, $data, $dataName);
+    public function __construct($name = null) {
+        parent::__construct($name);
         $this->initFilterModalTogglingSelectorLabelId();
 
         $default_currency = CurrencyHelper::getCurrencyDefaults();

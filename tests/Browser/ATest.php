@@ -16,7 +16,7 @@ use Tests\DuskTestCase;
 class ATest extends DuskTestCase {
 
     private static string $LARAVEL_FAVICON_PATH_PREFIX = '/laravel-favicon/';
-    private static string $FAVICON_PATH_PREFIX = 'imgs/favicon/';
+    private static string $FAVICON_PATH_PREFIX = 'favicon/';
 
     /**
      * A basic browser test to make sure selenium integration works
@@ -34,7 +34,7 @@ class ATest extends DuskTestCase {
         });
     }
 
-    public function providerTitleIsCorrect(): array {
+    public static function providerTitleIsCorrect(): array {
         return [
             // [$url, $title]
             'home' => ['/', "Money Tracker | HOME"],                  // test 2/20

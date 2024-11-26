@@ -32,8 +32,8 @@ class ExportsTest extends DuskTestCase {
     // selectors
     private static string $SELECTOR_EXPORT_BTN = '#filter-export-btn';
 
-    public function __construct($name = null, array $data = [], $dataName = '') {
-        parent::__construct($name, $data, $dataName);
+    public function __construct($name = null) {
+        parent::__construct($name);
         $this->initFilterModalTogglingSelectorLabelId();
     }
 

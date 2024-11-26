@@ -363,7 +363,7 @@ class TransferModalTest extends DuskTestCase {
         });
     }
 
-    public function providerSelectingDisabledTransferAccountTypeMetaDataIsGrey(): array {
+    public static function providerSelectingDisabledTransferAccountTypeMetaDataIsGrey(): array {
         // [$transfer_field, $account_type_method]
         return [
             [self::$METHOD_TO, self::$METHOD_ACCOUNT],          // test 11/20
@@ -426,7 +426,7 @@ class TransferModalTest extends DuskTestCase {
         });
     }
 
-    public function providerResetTransferModalFields(): array {
+    public static function providerResetTransferModalFields(): array {
         return [
             // [$has_tags, $has_attachments]
             'standard fields' => [false, false],                            // test 15/20
@@ -515,7 +515,7 @@ class TransferModalTest extends DuskTestCase {
         });
     }
 
-    public function providerSaveTransferEntry(): array {
+    public static function providerSaveTransferEntry(): array {
         return [
             // [$is_to_account_external, $is_from_account_external, $has_tags, $has_attachments]
             'TO account is external'                                   => [true,  false, false, false],    // test 1/20
@@ -664,12 +664,12 @@ class TransferModalTest extends DuskTestCase {
         // transfer pair 1
         $e1_1 = Entry::factory()->create(array_merge(
             $default_entry_data,
-            ['account_type_id' => $account_type_id1->id, 'memo' => $this->getName(false).'1']
+            ['account_type_id' => $account_type_id1->id, 'memo' => $this->name().'1']
         ));
         $e1_2 = Entry::factory()->create(array_merge(
             $default_entry_data,
             $entry_data_income,
-            ['transfer_entry_id' => $e1_1->id, 'memo' => $this->getName(false).'1']
+            ['transfer_entry_id' => $e1_1->id, 'memo' => $this->name().'1']
         ));
         $e1_1->transfer_entry_id = $e1_2->id;
         $e1_1->save();
@@ -677,12 +677,12 @@ class TransferModalTest extends DuskTestCase {
         // transfer pair 2
         $e2_1 = Entry::factory()->create(array_merge(
             $default_entry_data,
-            ['account_type_id' => $account_type_id1->id, 'memo' => $this->getName(false).'2']
+            ['account_type_id' => $account_type_id1->id, 'memo' => $this->name().'2']
         ));
         $e2_2 = Entry::factory()->create(array_merge(
             $default_entry_data,
             $entry_data_income,
-            ['transfer_entry_id' => $e2_1->id, 'memo' => $this->getName(false).'2']
+            ['transfer_entry_id' => $e2_1->id, 'memo' => $this->name().'2']
         ));
         $e2_1->transfer_entry_id = $e2_2->id;
         $e2_1->save();

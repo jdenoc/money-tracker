@@ -33,11 +33,12 @@ class SettingsTagsTest extends SettingsBase {
     protected static string $LABEL_SETTINGS_NOTIFICATION_RESTORE = 'Tag has been enabled';  // TODO: confirm
     protected static string $LABEL_SETTINGS_NOTIFICATION_DELETE = 'Tag has been disabled';  // TODO: confirm
 
-    public function providerDisablingOrRestoringObject(): array {
-        return [];
+    public static function providerDisablingOrRestoringObject(): array {
+//        self::markTestSkipped("enabling/disabling tags is not currently supported");
+        return [false];
     }
 
-    public function providerSaveExistingSettingObject(): array {
+    public static function providerSaveExistingSettingObject(): array {
         return [
             'tag' => [self::$SELECTOR_SETTINGS_FORM_INPUT_NAME],  // test 7/20
         ];

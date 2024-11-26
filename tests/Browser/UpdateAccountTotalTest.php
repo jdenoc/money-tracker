@@ -58,7 +58,7 @@ class UpdateAccountTotalTest extends DuskTestCase {
         $this->_account = $this->getAccount($account['id']);
     }
 
-    public function providerUpdateAccountTotalWithNewEntry(): array {
+    public static function providerUpdateAccountTotalWithNewEntry(): array {
         return [
             'expense' => [true],   // test 1/20
             'income' => [false],   // test 2/20
@@ -233,7 +233,7 @@ class UpdateAccountTotalTest extends DuskTestCase {
         });
     }
 
-    public function providerUpdateAccountTotalsWithNewTransferEntries(): array {
+    public static function providerUpdateAccountTotalsWithNewTransferEntries(): array {
         return [
             // [$is_from_account_external, $is_to_account_external]
             'neither account is external' => [false, false],  // test 6/20

@@ -41,13 +41,13 @@ class SettingsInstitutionsTest extends SettingsBase {
     protected static string $LABEL_SETTINGS_NOTIFICATION_RESTORE = 'Institution has been enabled';
     protected static string $LABEL_SETTINGS_NOTIFICATION_DELETE = 'Institution has been disabled';
 
-    public function providerSaveExistingSettingObject(): array {
+    public static function providerSaveExistingSettingObject(): array {
         return [
             'name' => [self::$SELECTOR_SETTINGS_FORM_INPUT_NAME],         // test 7/20
         ];
     }
 
-    public function providerDisablingOrRestoringObject(): array {
+    public static function providerDisablingOrRestoringObject(): array {
         return [
             'disabling institution' => ['isInitInstitutionActive' => true],     // test 8/20
             'restoring institution' => ['isInitInstitutionActive' => false],    // test 9/20

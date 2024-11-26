@@ -93,7 +93,7 @@ trait GenerateFilterTestCases {
             $filter_details[self::$FILTER_KEY_TAGS] = $faker->randomElements($tag_ids, $faker->numberBetween(1, count($tag_ids)));
         }
         if (key_exists(self::$FILTER_KEY_ACCOUNT_TYPE, $filter_details)) {
-            $account_types = $account->account_types()->pluck('id')->toArray();
+            $account_types = $account->accountTypes()->pluck('id')->toArray();
             $filter_details[self::$FILTER_KEY_ACCOUNT_TYPE] = $faker->randomElement($account_types);
         }
         if (key_exists(self::$FILTER_KEY_ACCOUNT, $filter_details)) {

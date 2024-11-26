@@ -246,9 +246,8 @@ abstract class SettingsBase extends DuskTestCase {
      * test ?/25
      */
     public function testDisablingOrRestoringObject(bool $isInitObjectActive) {
-        // TODO: remove as soon as other objects have been updated
         if (in_array(get_class(), ['SettingsTagsTest'])) {
-            $this->markTestSkipped();
+            $this->markTestSkipped("enabling/disabling tags is not currently supported");
         }
 
         $generated_object = $this->generateObject($isInitObjectActive);
@@ -327,9 +326,9 @@ abstract class SettingsBase extends DuskTestCase {
 
     abstract protected function interactWithFormElement(Browser $section, string $selector, ?BaseModel $object = null): void;
 
-    abstract public function providerDisablingOrRestoringObject(): array;
+    abstract public static function providerDisablingOrRestoringObject(): array;
 
-    abstract public function providerSaveExistingSettingObject(): array;
+    abstract public static function providerSaveExistingSettingObject(): array;
 
     // ------------ ------------ ------------
     // ------------ asserts      ------------

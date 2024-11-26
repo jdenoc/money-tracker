@@ -165,7 +165,7 @@ class InstitutionsPanelTest extends DuskTestCase {
         });
     }
 
-    public function providerAccountTotalValueIsTwoDecimalPlaces(): array {
+    public static function providerAccountTotalValueIsTwoDecimalPlaces(): array {
         return [
             ["0.12"],   // test 5/20
             ["0.10"],   // test 6/20

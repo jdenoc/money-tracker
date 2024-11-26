@@ -33,12 +33,6 @@ class AccountTotalSanityCheckTest extends TestCase {
         parent::tearDown();
     }
 
-    /**
-     * override the RefreshDatabase trait method to prevent the use of said trait in THIS test suite
-     */
-    public function refreshTestDatabase(): void {
-    }
-
     public function testForceFailureOutputtingToScreenAndWithoutNotifyingDiscord() {
         Artisan::call($this->_command, array_merge(['--force-failure' => true], $this->_screen_only_notification_options));
 

@@ -53,14 +53,14 @@ class SettingsAccountTypesTest extends SettingsBase {
     protected static string $LABEL_SETTINGS_NOTIFICATION_RESTORE = "Account-type has been reactivated";
     protected static string $LABEL_SETTINGS_NOTIFICATION_DELETE = "Account-type has been disabled";
 
-    public function providerDisablingOrRestoringObject(): array {
+    public static function providerDisablingOrRestoringObject(): array {
         return [
             'disabling account-type' => ['isInitAccountTypeActive' => true],   // test 7/20
             'restoring account-type' => ['isInitAccountTypeActive' => false],  // test 8/20
         ];
     }
 
-    public function providerSaveExistingSettingObject(): array {
+    public static function providerSaveExistingSettingObject(): array {
         return [
             'name' => [self::$SELECTOR_SETTINGS_FORM_INPUT_NAME],                // test 7/20
             'type' => [self::$SELECTOR_SETTINGS_FORM_SELECT_TYPE],               // test 8/20

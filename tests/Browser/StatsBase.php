@@ -40,19 +40,19 @@ class StatsBase extends DuskTestCase {
     protected static $LABEL_NO_STATS_DATA = 'No data available';
 
     // dates
-    protected $today = '';
-    protected $previous_year_start = '';
-    protected $three_months_prior_start = '';
-    protected $month_start = '';
-    protected $month_end = '';
+    private static $today = '';
+    private static $previous_year_start = '';
+    private static $three_months_prior_start = '';
+    private static $month_start = '';
+    private static $month_end = '';
 
-    public function __construct($name = null, array $data = [], $dataName = '') {
-        parent::__construct($name, $data, $dataName);
-        $this->today = date("Y-m-d");
-        $this->previous_year_start = date("Y-01-01", strtotime('-1 year'));
-        $this->three_months_prior_start = date('Y-m-01', strtotime('-3 month'));
-        $this->month_start = date('Y-m-01');
-        $this->month_end = date("Y-m-t");
+    public function __construct($name = null) {
+        parent::__construct($name);
+        self::$today = date("Y-m-d");
+        self::$previous_year_start = date("Y-01-01", strtotime('-1 year'));
+        self::$three_months_prior_start = date('Y-m-01', strtotime('-3 month'));
+        self::$month_start = date('Y-m-01');
+        self::$month_end = date("Y-m-t");
     }
 
     protected function generatingADifferentChartWontCauseSummaryTablesToBecomeVisible(string $side_panel_selector, string $stats_form_selector, string $stats_results_selector) {
@@ -67,8 +67,8 @@ class StatsBase extends DuskTestCase {
             $browser
                 ->assertVisible($stats_form_selector)
                 ->with($stats_form_selector, function(Browser $form) {
-                    $this->setDateRangeDate($form, 'start', $this->three_months_prior_start);
-                    $this->setDateRangeDate($form, 'end', $this->today);
+                    $this->setDateRangeDate($form, 'start', self::getDateThreeMonthsPriorStart());
+                    $this->setDateRangeDate($form, 'end', self::getDateToday());
                     $form->click(self::$SELECTOR_BUTTON_GENERATE);
                 });
             $this->waitForLoadingToStop($browser);
@@ -130,6 +130,26 @@ class StatsBase extends DuskTestCase {
         } else {
             return $entries;
         }
+    }
+
+    protected static function getDateToday(): string {
+        return self::$today;
+    }
+
+    protected static function getDatePreviousYearStart(): string {
+        return self::$previous_year_start;
+    }
+
+    protected static function getDateThreeMonthsPriorStart(): string {
+        return self::$three_months_prior_start;
+    }
+
+    protected static function getDateMonthStart(): string {
+        return self::$month_start;
+    }
+
+    protected static function getDateMonthEnd(): string {
+        return self::$month_end;
     }
 
 }

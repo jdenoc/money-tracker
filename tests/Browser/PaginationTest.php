@@ -41,9 +41,9 @@ class PaginationTest extends DuskTestCase {
     const PAGE_NUMBER_TWO = 2;
 
     // entry counts
-    private static int $ENTRY_COUNT_ONE = 10;   // number of entries needed to be generated for 1 page of results
-    private static int $ENTRY_COUNT_TWO;        // number of entries needed to be generated for 2 pages of results; set in constructor
-    private static int $ENTRY_COUNT_THREE;      // number of entries needed to be generated for 3 pages of results; set in constructor
+    private const ENTRY_COUNT_ONE = 10;    // number of entries needed to be generated for 1 page of results
+    private static int $ENTRY_COUNT_TWO;   // number of entries needed to be generated for 2 pages of results; set in constructor
+    private static int $ENTRY_COUNT_THREE; // number of entries needed to be generated for 3 pages of results; set in constructor
 
     // variables
     private $_account_types = [];
@@ -69,7 +69,7 @@ class PaginationTest extends DuskTestCase {
      * test 1/20
      */
     public function testPaginationButtonsNotVisibleIfEntryCountLessThanPageMax() {
-        Entry::factory()->count(self::$ENTRY_COUNT_ONE)->create($this->entryOverrideAttributes());
+        Entry::factory()->count(self::ENTRY_COUNT_ONE)->create($this->entryOverrideAttributes());
         $entries = $this->getApiEntries();
         $this->assertLessThan(self::$MAX_ENTRIES_IN_RESPONSE, $entries['count']);
 

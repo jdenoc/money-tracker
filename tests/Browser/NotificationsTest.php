@@ -42,13 +42,13 @@ class NotificationsTest extends DuskTestCase {
     use HomePageSelectors;
 
     // message templates
-    const TEMPLATE_MESSAGE_ERROR_OCCURRED = "An error occurred while attempting to retrieve %s";
-    const TEMPLATE_MESSAGE_NOT_FOUND = "No %s currently available";
+    private const TEMPLATE_MESSAGE_ERROR_OCCURRED = "An error occurred while attempting to retrieve %s";
+    private const TEMPLATE_MESSAGE_NOT_FOUND = "No %s currently available";
 
     public function setUp(): void {
         parent::setUp();
 
-        switch($this->getName()) {
+        switch($this->name()) {
             // disable & clear cache prior to the dropping any tables
             case 'testNotificationFetchAccounts500':
                 Account::cache()->disable();
@@ -615,7 +615,7 @@ class NotificationsTest extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * @group notifications-1
+     * @group notifications-2
      * test 2/20
      */
     public function testNotificationFetchTags500() {
