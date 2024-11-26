@@ -2,9 +2,7 @@
 extends: default
 
 rules:
-  line-length:
-    level: warning
-    max: 120
+  line-length: disable
 
   truthy:
     check-keys: false
