@@ -15,63 +15,63 @@ trait FilterModal {
     use WithTailwindColors;
 
     // selectors
-    private string $_selector_modal_filter = "@filter-modal";  // see Browser\Pages\HomePage.php
-    private string $_selector_modal_filter_field_start_date = "#filter-start-date";
-    private string $_selector_modal_filter_field_end_date = "#filter-end-date";
-    private string $_selector_modal_filter_field_tags = "#filter-tags";
-    private string $_selector_modal_filter_field_switch_income = "#filter-is-income";
-    private string $_selector_modal_filter_field_switch_expense = "#filter-is-expense";
-    private string $_selector_modal_filter_field_switch_has_attachment = "#filter-has-attachment";
-    private string $_selector_modal_filter_field_switch_no_attachment = "#filter-no-attachment";
-    private string $_selector_modal_filter_field_switch_transfer = "#filter-is-transfer";
-    private string $_selector_modal_filter_field_switch_unconfirmed = "#filter-unconfirmed";
-    private string $_selector_modal_filter_field_min_value = "#filter-min-value";
-    private string $_selector_modal_filter_field_max_value = "#filter-max-value";
-    private string $_selector_modal_filter_field_min_value_icon = "#filter-min-value+span i";
-    private string $_selector_modal_filter_field_max_value_icon = "#filter-max-value+span i";
-    private string $_selector_modal_filter_btn_cancel = "#filter-cancel-btn";
-    private string $_selector_modal_filter_btn_reset = "#filter-reset-btn";
-    private string $_selector_modal_filter_btn_filter = "#filter-btn";
+    private static string $SELECTOR_MODAL_FILTER = "@filter-modal";  // see Browser\Pages\HomePage.php
+    private static string $SELECTOR_MODAL_FILTER_FIELD_START_DATE = "#filter-start-date";
+    private static string $SELECTOR_MODAL_FILTER_FIELD_END_DATE = "#filter-end-date";
+    private static string $SELECTOR_MODAL_FILTER_FIELD_TAGS = "#filter-tags";
+    private static string $SELECTOR_MODAL_FILTER_FIELD_SWITCH_INCOME = "#filter-is-income";
+    private static string $SELECTOR_MODAL_FILTER_FIELD_SWITCH_EXPENSE = "#filter-is-expense";
+    private static string $SELECTOR_MODAL_FILTER_FIELD_SWITCH_HAS_ATTACHMENT = "#filter-has-attachment";
+    private static string $SELECTOR_MODAL_FILTER_FIELD_SWITCH_NO_ATTACHMENT = "#filter-no-attachment";
+    private static string $SELECTOR_MODAL_FILTER_FIELD_SWITCH_TRANSFER = "#filter-is-transfer";
+    private static string $SELECTOR_MODAL_FILTER_FIELD_SWITCH_UNCONFIRMED = "#filter-unconfirmed";
+    private static string $SELECTOR_MODAL_FILTER_FIELD_MIN_VALUE = "#filter-min-value";
+    private static string $SELECTOR_MODAL_FILTER_FIELD_MAX_VALUE = "#filter-max-value";
+    private static string $SELECTOR_MODAL_FILTER_FIELD_MIN_VALUE_ICON = "#filter-min-value+span i";
+    private static string $SELECTOR_MODAL_FILTER_FIELD_MAX_VALUE_ICON = "#filter-max-value+span i";
+    private static string $SELECTOR_MODAL_FILTER_BTN_CANCEL = "#filter-cancel-btn";
+    private static string $SELECTOR_MODAL_FILTER_BTN_RESET = "#filter-reset-btn";
+    private static string $SELECTOR_MODAL_FILTER_BTN_FILTER = "#filter-btn";
 
     // colors
-    private string $_color_filter_btn_export = '';
-    private string $_color_filter_switch_default = "";
-    private string $_color_filter_switch_active = "";
-    private string $_color_filter_switch_inactive = "";
+    private static string $COLOR_FILTER_BTN_EXPORT = '';
+    private static string $COLOR_FILTER_SWITCH_DEFAULT = "";
+    private static string $COLOR_FILTER_SWITCH_ACTIVE = "";
+    private static string $COLOR_FILTER_SWITCH_INACTIVE = "";
 
     protected function initFilterModalColors(): void {
-        $this->_color_filter_btn_export = $this->tailwindColors->blue(600);
-        $this->_color_filter_switch_active = $this->tailwindColors->blue(600);
-        $this->_color_filter_switch_inactive = $this->tailwindColors->gray(400);
-        $this->_color_filter_switch_default = $this->_color_filter_switch_inactive;
+        self::$COLOR_FILTER_BTN_EXPORT = $this->tailwindColors->blue(600);
+        self::$COLOR_FILTER_SWITCH_ACTIVE = $this->tailwindColors->blue(600);
+        self::$COLOR_FILTER_SWITCH_INACTIVE = $this->tailwindColors->gray(400);
+        self::$COLOR_FILTER_SWITCH_DEFAULT = self::$COLOR_FILTER_SWITCH_INACTIVE;
     }
 
     protected function initFilterModalTogglingSelectorLabelId(): void {
         $this->_account_or_account_type_toggling_selector_id_label = 'filter-modal';
     }
 
-    protected function filterModalInputs(): array {
+    protected static function filterModalInputs(): array {
         return [
-            "Start Date" => [$this->_selector_modal_filter_field_start_date],                         // test 1/25
-            "End Date" => [$this->_selector_modal_filter_field_end_date],                             // test 2/25
+            "Start Date" => [self::$SELECTOR_MODAL_FILTER_FIELD_START_DATE],                         // test 1/25
+            "End Date" => [self::$SELECTOR_MODAL_FILTER_FIELD_END_DATE],                             // test 2/25
             "Account & AccountType" => [self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT],       // test 3/25
-            "Tags" => [$this->_selector_modal_filter_field_tags],                                     // test 4/25
-            "Income" => [$this->_selector_modal_filter_field_switch_income],                          // test 5/25
-            "Expense" => [$this->_selector_modal_filter_field_switch_expense],                        // test 6/25
-            "Has Attachments" => [$this->_selector_modal_filter_field_switch_has_attachment],         // test 7/25
-            "No Attachments" => [$this->_selector_modal_filter_field_switch_no_attachment],           // test 8/25
-            "Transfer" => [$this->_selector_modal_filter_field_switch_transfer],                      // test 9/25
-            "Unconfirmed" => [$this->_selector_modal_filter_field_switch_unconfirmed],                // test 10/25
-            "Min Range" => [$this->_selector_modal_filter_field_min_value],                           // test 11/25
-            "Max Range" => [$this->_selector_modal_filter_field_max_value],                           // test 12/25
+            "Tags" => [self::$SELECTOR_MODAL_FILTER_FIELD_TAGS],                                     // test 4/25
+            "Income" => [self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_INCOME],                          // test 5/25
+            "Expense" => [self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_EXPENSE],                        // test 6/25
+            "Has Attachments" => [self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_HAS_ATTACHMENT],         // test 7/25
+            "No Attachments" => [self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_NO_ATTACHMENT],           // test 8/25
+            "Transfer" => [self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_TRANSFER],                      // test 9/25
+            "Unconfirmed" => [self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_UNCONFIRMED],                // test 10/25
+            "Min Range" => [self::$SELECTOR_MODAL_FILTER_FIELD_MIN_VALUE],                           // test 11/25
+            "Max Range" => [self::$SELECTOR_MODAL_FILTER_FIELD_MAX_VALUE],                           // test 12/25
         ];
     }
 
     protected function filterModalInputInteraction(Browser $modal, $filter_input_selector) {
         $filter_value = null;
         switch ($filter_input_selector) {
-            case $this->_selector_modal_filter_field_start_date:
-            case $this->_selector_modal_filter_field_end_date:
+            case self::$SELECTOR_MODAL_FILTER_FIELD_START_DATE:
+            case self::$SELECTOR_MODAL_FILTER_FIELD_END_DATE:
                 $filter_value = ['actual' => fake()->dateTimeBetween('-15 months', '-1 month')->format("Y-m-d")];
                 $browser_date = $this->getDateFromLocale($this->getBrowserLocale($modal), $filter_value['actual']);
                 $filter_value['typed'] = $this->processLocaleDateForTyping($browser_date);
@@ -99,7 +99,7 @@ trait FilterModal {
                     $filter_value = $filter_value['id'];
                 }
                 break;
-            case $this->_selector_modal_filter_field_tags:
+            case self::$SELECTOR_MODAL_FILTER_FIELD_TAGS:
                 $tags = $this->getApiTags();
                 $filter_value = collect($tags)->random(3)->toArray();
                 foreach ($filter_value as $tag) {
@@ -107,16 +107,16 @@ trait FilterModal {
                     $this->assertTagInInput($modal, $tag['name']);
                 }
                 break;
-            case $this->_selector_modal_filter_field_switch_income:
-            case $this->_selector_modal_filter_field_switch_expense:
-            case $this->_selector_modal_filter_field_switch_has_attachment:
-            case $this->_selector_modal_filter_field_switch_no_attachment:
-            case $this->_selector_modal_filter_field_switch_transfer:
-            case $this->_selector_modal_filter_field_switch_unconfirmed:
+            case self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_INCOME:
+            case self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_EXPENSE:
+            case self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_HAS_ATTACHMENT:
+            case self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_NO_ATTACHMENT:
+            case self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_TRANSFER:
+            case self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_UNCONFIRMED:
                 $this->toggleToggleButton($modal, $filter_input_selector);
                 break;
-            case $this->_selector_modal_filter_field_min_value:
-            case $this->_selector_modal_filter_field_max_value:
+            case self::$SELECTOR_MODAL_FILTER_FIELD_MIN_VALUE:
+            case self::$SELECTOR_MODAL_FILTER_FIELD_MAX_VALUE:
                 $filter_value = fake()->randomFloat(2, 0, 100);
                 // need to use type() here otherwise vuejs won't pick up the update
                 $modal->type($filter_input_selector, $filter_value);

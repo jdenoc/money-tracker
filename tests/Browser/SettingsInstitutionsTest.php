@@ -49,8 +49,9 @@ class SettingsInstitutionsTest extends SettingsBase {
 
     public static function providerDisablingOrRestoringObject(): array {
         return [
-            'disabling institution' => ['isInitInstitutionActive' => true],     // test 8/20
-            'restoring institution' => ['isInitInstitutionActive' => false],    // test 9/20
+            // [$isInitInstitutionActive]
+            'disabling institution' => [true],     // test 8/20
+            'restoring institution' => [false],    // test 9/20
         ];
     }
 

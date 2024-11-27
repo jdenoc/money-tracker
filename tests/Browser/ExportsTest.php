@@ -55,14 +55,14 @@ class ExportsTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openFilterModal($browser);
             $browser
-                ->within($this->_selector_modal_filter.' '.$this->_selector_modal_foot, function(Browser $modal) {
+                ->within(self::$SELECTOR_MODAL_FILTER.' '.$this->_selector_modal_foot, function(Browser $modal) {
                     $modal->assertMissing(self::$SELECTOR_EXPORT_BTN);
                 });
         });
     }
 
-    public function providerExportButtonVisibleAfterFilterSetAndNotVisibleWhenCleared(): array {
-        return $this->filterModalInputs();    // test (2 - 13)/20
+    public static function providerExportButtonVisibleAfterFilterSetAndNotVisibleWhenCleared(): array {
+        return self::filterModalInputs();    // test (2 - 13)/20
     }
 
     /**
@@ -79,23 +79,23 @@ class ExportsTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openFilterModal($browser);
             $browser
-                ->within($this->_selector_modal_filter, function(Browser $modal) use ($filter_input_selector) {
+                ->within(self::$SELECTOR_MODAL_FILTER, function(Browser $modal) use ($filter_input_selector) {
                     $modal
                         ->assertMissing($this->_selector_modal_foot.' '.self::$SELECTOR_EXPORT_BTN);
 
                     $this->filterModalInputInteraction($modal, $filter_input_selector);
 
                     $modal->assertVisible($this->_selector_modal_foot.' '.self::$SELECTOR_EXPORT_BTN);
-                    $this->assertElementBackgroundColor($modal, $this->_selector_modal_foot.' '.self::$SELECTOR_EXPORT_BTN, $this->_color_filter_btn_export);
+                    $this->assertElementBackgroundColor($modal, $this->_selector_modal_foot.' '.self::$SELECTOR_EXPORT_BTN, self::$COLOR_FILTER_BTN_EXPORT);
                     $modal
-                        ->click($this->_selector_modal_foot.' '.$this->_selector_modal_filter_btn_reset)
+                        ->click($this->_selector_modal_foot.' '.self::$SELECTOR_MODAL_FILTER_BTN_RESET)
                         ->assertMissing($this->_selector_modal_foot.' '.self::$SELECTOR_EXPORT_BTN);
                 });
         });
     }
 
-    public function providerPerformExport(): array {
-        $filter_options = $this->filterModalInputs();
+    public static function providerPerformExport(): array {
+        $filter_options = self::filterModalInputs();
         unset($filter_options['Unconfirmed']);  // export does not include information indicating if an entry has been confirmed
         return $filter_options;    // test (1 - 11)/20
     }
@@ -114,7 +114,7 @@ class ExportsTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openFilterModal($browser);
             $browser
-                ->within($this->_selector_modal_filter, function(Browser $modal) use ($filter_input_selector, &$filter_value) {
+                ->within(self::$SELECTOR_MODAL_FILTER, function(Browser $modal) use ($filter_input_selector, &$filter_value) {
                     $filter_value = $this->filterModalInputInteraction($modal, $filter_input_selector);
                     $modal->assertVisible($this->_selector_modal_foot.' '.self::$SELECTOR_EXPORT_BTN);
                     $modal->click($this->_selector_modal_foot.' '.self::$SELECTOR_EXPORT_BTN);
@@ -152,10 +152,10 @@ class ExportsTest extends DuskTestCase {
                 $line_number++;
                 $error_msg = "item not found on line:%d; containing:".json_encode($line).'; column:%d';
                 switch($filter_input_selector) {
-                    case $this->_selector_modal_filter_field_start_date:
+                    case self::$SELECTOR_MODAL_FILTER_FIELD_START_DATE:
                         $this->assertGreaterThanOrEqual($filter_value['actual'], $line[1], sprintf($error_msg, $line_number, 1));
                         break;
-                    case $this->_selector_modal_filter_field_end_date:
+                    case self::$SELECTOR_MODAL_FILTER_FIELD_END_DATE:
                         $this->assertLessThanOrEqual($filter_value['actual'], $line[1], sprintf($error_msg, $line_number, 1));
                         break;
                     case self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT:
@@ -166,36 +166,36 @@ class ExportsTest extends DuskTestCase {
                         }
                         $this->assertContains((int)$line[5], $account_type_ids, sprintf($error_msg, $line_number, 5));
                         break;
-                    case $this->_selector_modal_filter_field_tags:
+                    case self::$SELECTOR_MODAL_FILTER_FIELD_TAGS:
                         $this->assertNotEmpty($line[8], sprintf($error_msg, $line_number, 8));
                         $row_tags = json_decode($line[8], true);
                         foreach ($filter_value as $filtered_tag) {
                             $this->assertContains($filtered_tag['id'], $row_tags, sprintf($error_msg, $line_number, 8));
                         }
                         break;
-                    case $this->_selector_modal_filter_field_switch_income:
+                    case self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_INCOME:
                         $this->assertNotEmpty($line[3], sprintf($error_msg, $line_number, 3));
                         $this->assertEmpty($line[4], sprintf($error_msg, $line_number, 4));
                         break;
-                    case $this->_selector_modal_filter_field_switch_expense:
+                    case self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_EXPENSE:
                         $this->assertEmpty($line[3], sprintf($error_msg, $line_number, 3));
                         $this->assertNotEmpty($line[4], sprintf($error_msg, $line_number, 4));
                         break;
-                    case $this->_selector_modal_filter_field_switch_has_attachment:
+                    case self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_HAS_ATTACHMENT:
                         $this->assertNotEmpty($line[6], sprintf($error_msg, $line_number, 6));
                         $this->assertTrue(filter_var($line[6], FILTER_VALIDATE_BOOL), sprintf($error_msg, $line_number, 6));
                         break;
-                    case $this->_selector_modal_filter_field_switch_no_attachment:
+                    case self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_NO_ATTACHMENT:
                         $this->assertEmpty($line[6], sprintf($error_msg, $line_number, 6));
                         break;
-                    case $this->_selector_modal_filter_field_switch_transfer:
+                    case self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_TRANSFER:
                         $this->assertNotEmpty($line[7], sprintf($error_msg, $line_number, 7));
                         $this->assertTrue(filter_var($line[7], FILTER_VALIDATE_BOOL), sprintf($error_msg, $line_number, 7));
                         break;
-                    case $this->_selector_modal_filter_field_switch_unconfirmed:
+                    case self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_UNCONFIRMED:
                         // export does not include information related to entry confirmation
                         break;
-                    case $this->_selector_modal_filter_field_min_value:
+                    case self::$SELECTOR_MODAL_FILTER_FIELD_MIN_VALUE:
                         if (!empty($line[3])) {           // income
                             $this->assertGreaterThanOrEqual($filter_value, $line[3], sprintf($error_msg, $line_number, 3));
                         } elseif (!empty($line[4])) {     // expense
@@ -204,7 +204,7 @@ class ExportsTest extends DuskTestCase {
                             $this->fail("The income OR expense field was expected to contain a value\n".sprintf($error_msg, $line_number, -1));
                         }
                         break;
-                    case $this->_selector_modal_filter_field_max_value:
+                    case self::$SELECTOR_MODAL_FILTER_FIELD_MAX_VALUE:
                         if (!empty($line[3])) {       // income
                             $this->assertLessThanOrEqual($filter_value, $line[3], sprintf($error_msg, $line_number, 3));
                         } elseif (!empty($line[4])) { // expense

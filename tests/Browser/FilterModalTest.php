@@ -65,7 +65,7 @@ class FilterModalTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openFilterModal($browser);
             $browser
-                ->within($this->_selector_modal_filter.' '.$this->_selector_modal_head, function(Browser $modal) {
+                ->within(self::$SELECTOR_MODAL_FILTER.' '.$this->_selector_modal_head, function(Browser $modal) {
                     $modal
                         ->assertSee("Filter Entries")
                         ->assertVisible($this->_selector_modal_btn_close);
@@ -85,27 +85,27 @@ class FilterModalTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openFilterModal($browser);
             $browser
-                ->within($this->_selector_modal_filter.' '.$this->_selector_modal_body, function(Browser $modal) use ($accounts) {
+                ->within(self::$SELECTOR_MODAL_FILTER.' '.$this->_selector_modal_body, function(Browser $modal) use ($accounts) {
                     $modal
                         // start date - input
                         ->assertSee("Start Date:")
-                        ->assertVisible($this->_selector_modal_filter_field_start_date)
-                        ->assertInputValue($this->_selector_modal_filter_field_start_date, "");
+                        ->assertVisible(self::$SELECTOR_MODAL_FILTER_FIELD_START_DATE)
+                        ->assertInputValue(self::$SELECTOR_MODAL_FILTER_FIELD_START_DATE, "");
                     $this->assertEquals(
                         'date',
-                        $modal->attribute($this->_selector_modal_filter_field_start_date, 'type'),
-                        $this->_selector_modal_filter_field_start_date.' is not type="date"'
+                        $modal->attribute(self::$SELECTOR_MODAL_FILTER_FIELD_START_DATE, 'type'),
+                        self::$SELECTOR_MODAL_FILTER_FIELD_START_DATE.' is not type="date"'
                     );
 
                     $modal
                         // end date - input
                         ->assertSee("End Date:")
-                        ->assertVisible($this->_selector_modal_filter_field_end_date)
-                        ->assertInputValue($this->_selector_modal_filter_field_end_date, "");
+                        ->assertVisible(self::$SELECTOR_MODAL_FILTER_FIELD_END_DATE)
+                        ->assertInputValue(self::$SELECTOR_MODAL_FILTER_FIELD_END_DATE, "");
                     $this->assertEquals(
                         'date',
-                        $modal->attribute($this->_selector_modal_filter_field_end_date, 'type'),
-                        $this->_selector_modal_filter_field_end_date.' is not type="date"'
+                        $modal->attribute(self::$SELECTOR_MODAL_FILTER_FIELD_END_DATE, 'type'),
+                        self::$SELECTOR_MODAL_FILTER_FIELD_END_DATE.' is not type="date"'
                     );
 
                     // account/account-type selector
@@ -119,76 +119,76 @@ class FilterModalTest extends DuskTestCase {
                     $modal->assertSee("Income:");
                     $this->assertToggleButtonState(
                         $modal,
-                        $this->_selector_modal_filter_field_switch_income,
+                        self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_INCOME,
                         $this->_label_switch_disabled,
-                        $this->_color_filter_switch_default
+                        self::$COLOR_FILTER_SWITCH_DEFAULT
                     );
 
                     // expense - switch
                     $modal->assertSee("Expense:");
                     $this->assertToggleButtonState(
                         $modal,
-                        $this->_selector_modal_filter_field_switch_expense,
+                        self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_EXPENSE,
                         $this->_label_switch_disabled,
-                        $this->_color_filter_switch_default
+                        self::$COLOR_FILTER_SWITCH_DEFAULT
                     );
 
                     // has attachment - switch
                     $modal->assertSee("Has Attachment(s):");
                     $this->assertToggleButtonState(
                         $modal,
-                        $this->_selector_modal_filter_field_switch_has_attachment,
+                        self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_HAS_ATTACHMENT,
                         $this->_label_switch_disabled,
-                        $this->_color_filter_switch_default
+                        self::$COLOR_FILTER_SWITCH_DEFAULT
                     );
 
                     // no attachment - switch
                     $modal->assertSee("No Attachment(s):");
                     $this->assertToggleButtonState(
                         $modal,
-                        $this->_selector_modal_filter_field_switch_no_attachment,
+                        self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_NO_ATTACHMENT,
                         $this->_label_switch_disabled,
-                        $this->_color_filter_switch_default
+                        self::$COLOR_FILTER_SWITCH_DEFAULT
                     );
 
                     // is transfer - switch
                     $modal->assertSee("Transfer:");
                     $this->assertToggleButtonState(
                         $modal,
-                        $this->_selector_modal_filter_field_switch_transfer,
+                        self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_TRANSFER,
                         $this->_label_switch_disabled,
-                        $this->_color_filter_switch_default
+                        self::$COLOR_FILTER_SWITCH_DEFAULT
                     );
 
                     // unconfirmed - switch
                     $modal->assertSee("Not Confirmed:");
                     $this->assertToggleButtonState(
                         $modal,
-                        $this->_selector_modal_filter_field_switch_unconfirmed,
+                        self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_UNCONFIRMED,
                         $this->_label_switch_disabled,
-                        $this->_color_filter_switch_default
+                        self::$COLOR_FILTER_SWITCH_DEFAULT
                     );
 
                     // min range - input
                     $modal
                         ->assertSee("Min Range:")
-                        ->assertVisible($this->_selector_modal_filter_field_min_value)
-                        ->assertInputValue($this->_selector_modal_filter_field_min_value, "");
+                        ->assertVisible(self::$SELECTOR_MODAL_FILTER_FIELD_MIN_VALUE)
+                        ->assertInputValue(self::$SELECTOR_MODAL_FILTER_FIELD_MIN_VALUE, "");
                     $this->assertEquals(
                         'text',
-                        $modal->attribute($this->_selector_modal_filter_field_min_value, 'type'),
-                        $this->_selector_modal_filter_field_min_value.' is not type="text"'
+                        $modal->attribute(self::$SELECTOR_MODAL_FILTER_FIELD_MIN_VALUE, 'type'),
+                        self::$SELECTOR_MODAL_FILTER_FIELD_MIN_VALUE.' is not type="text"'
                     );
 
                     // max range - input
                     $modal
                         ->assertSee("Max Range:")
-                        ->assertVisible($this->_selector_modal_filter_field_max_value)
-                        ->assertInputValue($this->_selector_modal_filter_field_max_value, "");
+                        ->assertVisible(self::$SELECTOR_MODAL_FILTER_FIELD_MAX_VALUE)
+                        ->assertInputValue(self::$SELECTOR_MODAL_FILTER_FIELD_MAX_VALUE, "");
                     $this->assertEquals(
                         'text',
-                        $modal->attribute($this->_selector_modal_filter_field_max_value, 'type'),
-                        $this->_selector_modal_filter_field_max_value.' is not type="text"'
+                        $modal->attribute(self::$SELECTOR_MODAL_FILTER_FIELD_MAX_VALUE, 'type'),
+                        self::$SELECTOR_MODAL_FILTER_FIELD_MAX_VALUE.' is not type="text"'
                     );
                 });
         });
@@ -204,13 +204,13 @@ class FilterModalTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openFilterModal($browser);
             $browser
-                ->within($this->_selector_modal_filter.' '.$this->_selector_modal_foot, function(Browser $modal) {
+                ->within(self::$SELECTOR_MODAL_FILTER.' '.$this->_selector_modal_foot, function(Browser $modal) {
                     $modal
-                        ->assertVisible($this->_selector_modal_filter_btn_cancel)
+                        ->assertVisible(self::$SELECTOR_MODAL_FILTER_BTN_CANCEL)
                         ->assertSee($this->_label_btn_cancel)
-                        ->assertVisible($this->_selector_modal_filter_btn_reset)
+                        ->assertVisible(self::$SELECTOR_MODAL_FILTER_BTN_RESET)
                         ->assertSee($this->_label_btn_reset)
-                        ->assertVisible($this->_selector_modal_filter_btn_filter)
+                        ->assertVisible(self::$SELECTOR_MODAL_FILTER_BTN_FILTER)
                         ->assertSee($this->_label_btn_filter);
                 });
         });
@@ -228,7 +228,7 @@ class FilterModalTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openFilterModal($browser);
             $browser
-                ->within($this->_selector_modal_filter.' '.$this->_selector_modal_body, function(Browser $modal) use ($filter_modal_field_selectors) {
+                ->within(self::$SELECTOR_MODAL_FILTER.' '.$this->_selector_modal_body, function(Browser $modal) use ($filter_modal_field_selectors) {
                     $filter_modal_elements = $modal->elements('.filter-modal-element');
                     $this->assertCount(count($filter_modal_field_selectors), $filter_modal_elements);
                 });
@@ -245,10 +245,10 @@ class FilterModalTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openFilterModal($browser);
             $browser
-                ->within($this->_selector_modal_filter.' '.$this->_selector_modal_head, function(Browser $modal) {
+                ->within(self::$SELECTOR_MODAL_FILTER.' '.$this->_selector_modal_head, function(Browser $modal) {
                     $modal->click($this->_selector_modal_btn_close);
                 })
-                ->assertMissing($this->_selector_modal_filter);
+                ->assertMissing(self::$SELECTOR_MODAL_FILTER);
         });
     }
 
@@ -262,10 +262,10 @@ class FilterModalTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openFilterModal($browser);
             $browser
-                ->within($this->_selector_modal_filter.' '.$this->_selector_modal_foot, function(Browser $modal) {
-                    $modal->click($this->_selector_modal_filter_btn_cancel);
+                ->within(self::$SELECTOR_MODAL_FILTER.' '.$this->_selector_modal_foot, function(Browser $modal) {
+                    $modal->click(self::$SELECTOR_MODAL_FILTER_BTN_CANCEL);
                 })
-                ->assertMissing($this->_selector_modal_filter);
+                ->assertMissing(self::$SELECTOR_MODAL_FILTER);
         });
     }
 
@@ -279,9 +279,9 @@ class FilterModalTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openFilterModal($browser);
             $browser
-                ->assertVisible($this->_selector_modal_filter)
+                ->assertVisible(self::$SELECTOR_MODAL_FILTER)
                 ->keys('', "{escape}")
-                ->assertMissing($this->_selector_modal_filter);
+                ->assertMissing(self::$SELECTOR_MODAL_FILTER);
         });
     }
 
@@ -294,19 +294,19 @@ class FilterModalTest extends DuskTestCase {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $browser
-                ->assertMissing($this->_selector_modal_filter)
+                ->assertMissing(self::$SELECTOR_MODAL_FILTER)
                 ->keys('', "{control}", "k")
-                ->assertVisible($this->_selector_modal_filter);
+                ->assertVisible(self::$SELECTOR_MODAL_FILTER);
         });
     }
 
-    public function providerFlipAccountAndAccountTypeSwitch(): array {
+    public static function providerFlipAccountAndAccountTypeSwitch(): array {
         return [
-            // [account.disabled, account-type.disabled]
-            ['account' => false, 'account-type' => true],   // test 9/20
-            ['account' => false, 'account-type' => false],  // test 10/20
-            ['account' => true, 'account-type' => false],   // test 11/20
-            ['account' => true, 'account-type' => true],    // test 12/20
+            // [$has_disabled_account, $has_disabled_account_type]
+            'where account is NOT disabled & account-type is disabled'=>[false, true],   // test 9/20
+            'where account is NOT disabled & account-type is NOT disabled'=>[false, false],  // test 10/20
+            'where account is disabled & account-type is NOT disabled'=>[true, false],   // test 11/20
+            'where account is disabled & account-type is disabled'=>[true, true],    // test 12/20
         ];
     }
 
@@ -340,7 +340,7 @@ class FilterModalTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openFilterModal($browser);
             $browser
-                ->within($this->_selector_modal_filter.' '.$this->_selector_modal_body, function(Browser $modal) use ($has_disabled_account, $has_disabled_account_type, $accounts, $account_types) {
+                ->within(self::$SELECTOR_MODAL_FILTER.' '.$this->_selector_modal_body, function(Browser $modal) use ($has_disabled_account, $has_disabled_account_type, $accounts, $account_types) {
                     $this->assertDefaultStateOfAccountOrAccountTypeTogglingSelectorComponent($modal, $accounts);
 
                     if ($has_disabled_account) {
@@ -354,8 +354,8 @@ class FilterModalTest extends DuskTestCase {
                     }
 
                     // test currency displayed in "Min Range" & "Max Range" fields is $
-                    $this->assertValueFieldCurrency($modal, $this->_selector_modal_filter_field_min_value, $this->_default_currency_character);
-                    $this->assertValueFieldCurrency($modal, $this->_selector_modal_filter_field_max_value, $this->_default_currency_character);
+                    $this->assertValueFieldCurrency($modal, self::$SELECTOR_MODAL_FILTER_FIELD_MIN_VALUE, $this->_default_currency_character);
+                    $this->assertValueFieldCurrency($modal, self::$SELECTOR_MODAL_FILTER_FIELD_MAX_VALUE, $this->_default_currency_character);
 
                     // select an account and confirm the name in the select changes
                     $account_to_select = collect($accounts)->where('active', true)->random();
@@ -364,15 +364,15 @@ class FilterModalTest extends DuskTestCase {
 
                     // test select account changes currency displayed in "Min Range" & "Max Range" fields
                     $field_currency_character = CurrencyHelper::convertCurrencyHtmlToCharacter(CurrencyHelper::getCurrencyHtmlFromCode($account_to_select['currency']));
-                    $this->assertValueFieldCurrency($modal, $this->_selector_modal_filter_field_min_value, $field_currency_character);
-                    $this->assertValueFieldCurrency($modal, $this->_selector_modal_filter_field_max_value, $field_currency_character);
+                    $this->assertValueFieldCurrency($modal, self::$SELECTOR_MODAL_FILTER_FIELD_MIN_VALUE, $field_currency_character);
+                    $this->assertValueFieldCurrency($modal, self::$SELECTOR_MODAL_FILTER_FIELD_MAX_VALUE, $field_currency_character);
 
                     $this->toggleAccountOrAccountTypeSwitch($modal);
                     $this->assertToggleButtonState(
                         $modal,
                         $this->getSwitchAccountAndAccountTypeId($this->_account_or_account_type_toggling_selector_id_label),
                         self::$LABEL_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_TOGGLE_ACCOUNTTYPE,
-                        $this->_color_filter_switch_default
+                        self::$COLOR_FILTER_SWITCH_DEFAULT
                     );
 
                     $modal
@@ -390,8 +390,8 @@ class FilterModalTest extends DuskTestCase {
                     }
 
                     // test currency displayed in "Min Range" & "Max Range" fields is $
-                    $this->assertValueFieldCurrency($modal, $this->_selector_modal_filter_field_min_value, $this->_default_currency_character);
-                    $this->assertValueFieldCurrency($modal, $this->_selector_modal_filter_field_max_value, $this->_default_currency_character);
+                    $this->assertValueFieldCurrency($modal, self::$SELECTOR_MODAL_FILTER_FIELD_MIN_VALUE, $this->_default_currency_character);
+                    $this->assertValueFieldCurrency($modal, self::$SELECTOR_MODAL_FILTER_FIELD_MAX_VALUE, $this->_default_currency_character);
 
                     // select an account and confirm the name in the select changes
                     $account_type_to_select = fake()->randomElement($account_types);
@@ -401,8 +401,8 @@ class FilterModalTest extends DuskTestCase {
                     // test select account-type changes currency displayed in "Min Range" & "Max Range" fields
                     $account_from_account_type = collect($accounts)->where('id', '=', $account_type_to_select['account_id'])->first();
                     $field_currency_character = CurrencyHelper::convertCurrencyHtmlToCharacter(CurrencyHelper::getCurrencyHtmlFromCode($account_from_account_type['currency']));
-                    $this->assertValueFieldCurrency($modal, $this->_selector_modal_filter_field_min_value, $field_currency_character);
-                    $this->assertValueFieldCurrency($modal, $this->_selector_modal_filter_field_max_value, $field_currency_character);
+                    $this->assertValueFieldCurrency($modal, self::$SELECTOR_MODAL_FILTER_FIELD_MIN_VALUE, $field_currency_character);
+                    $this->assertValueFieldCurrency($modal, self::$SELECTOR_MODAL_FILTER_FIELD_MAX_VALUE, $field_currency_character);
                 });
         });
     }
@@ -412,14 +412,14 @@ class FilterModalTest extends DuskTestCase {
         $this->assertStringContainsString($currency_symbol, $value_currency);
     }
 
-    public function providerFlipSwitch(): array {
+    public static function providerFlipSwitch(): array {
         return [
-            "flip income" => [$this->_selector_modal_filter_field_switch_income],                 // test 13/20
-            "flip expense" => [$this->_selector_modal_filter_field_switch_expense],               // test 14/20
-            "flip has-attachment" => [$this->_selector_modal_filter_field_switch_has_attachment], // test 15/20
-            "flip no-attachment" => [$this->_selector_modal_filter_field_switch_no_attachment],   // test 16/20
-            "flip transfer" => [$this->_selector_modal_filter_field_switch_transfer],             // test 17/20
-            "flip not confirmed" => [$this->_selector_modal_filter_field_switch_unconfirmed],     // test 18/20
+            "flip income" => [self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_INCOME],                 // test 13/20
+            "flip expense" => [self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_EXPENSE],               // test 14/20
+            "flip has-attachment" => [self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_HAS_ATTACHMENT], // test 15/20
+            "flip no-attachment" => [self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_NO_ATTACHMENT],   // test 16/20
+            "flip transfer" => [self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_TRANSFER],             // test 17/20
+            "flip not confirmed" => [self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_UNCONFIRMED],     // test 18/20
         ];
     }
 
@@ -435,18 +435,18 @@ class FilterModalTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openFilterModal($browser);
             $browser
-                ->within($this->_selector_modal_filter, function(Browser $modal) use ($switch_selector) {
-                    $this->assertToggleButtonState($modal, $switch_selector, $this->_label_switch_disabled, $this->_color_filter_switch_inactive);
+                ->within(self::$SELECTOR_MODAL_FILTER, function(Browser $modal) use ($switch_selector) {
+                    $this->assertToggleButtonState($modal, $switch_selector, $this->_label_switch_disabled, self::$COLOR_FILTER_SWITCH_INACTIVE);
                     $this->toggleToggleButton($modal, $switch_selector);
-                    $this->assertToggleButtonState($modal, $switch_selector, $this->_label_switch_enabled, $this->_color_filter_switch_active);
+                    $this->assertToggleButtonState($modal, $switch_selector, $this->_label_switch_enabled, self::$COLOR_FILTER_SWITCH_ACTIVE);
                 });
         });
     }
 
-    public function providerRangeValueConvertsIntoDecimalOfTwoPlaces(): array {
+    public static function providerRangeValueConvertsIntoDecimalOfTwoPlaces(): array {
         return [
-            'Min Range' => [$this->_selector_modal_filter_field_min_value], // test 19/20
-            'Max Range' => [$this->_selector_modal_filter_field_max_value], // test 20/20
+            'Min Range' => [self::$SELECTOR_MODAL_FILTER_FIELD_MIN_VALUE], // test 19/20
+            'Max Range' => [self::$SELECTOR_MODAL_FILTER_FIELD_MIN_VALUE], // test 20/20
         ];
     }
 
@@ -462,7 +462,7 @@ class FilterModalTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openFilterModal($browser);
             $browser
-                ->within($this->_selector_modal_filter.' '.$this->_selector_modal_body, function(Browser $modal) use ($field_selector) {
+                ->within(self::$SELECTOR_MODAL_FILTER.' '.$this->_selector_modal_body, function(Browser $modal) use ($field_selector) {
                     $modal
                         ->type($field_selector, "rh48r7th72.9ewd3dadh1")
                         ->click(sprintf('label[for="%s"]', ltrim($field_selector, '#')))
@@ -471,12 +471,12 @@ class FilterModalTest extends DuskTestCase {
         });
     }
 
-    public function providerFlippingCompanionSwitches(): array {
+    public static function providerFlippingCompanionSwitches(): array {
         return [
-            "flip income with expense" => [$this->_selector_modal_filter_field_switch_income, $this->_selector_modal_filter_field_switch_expense],                              // test 1/20
-            "flip expense with income" => [$this->_selector_modal_filter_field_switch_expense, $this->_selector_modal_filter_field_switch_income],                              // test 2/20
-            "flip has-attachment with no-attachment" => [$this->_selector_modal_filter_field_switch_has_attachment, $this->_selector_modal_filter_field_switch_no_attachment],  // test 3/20
-            "flip no-attachment with has-attachment" => [$this->_selector_modal_filter_field_switch_no_attachment, $this->_selector_modal_filter_field_switch_has_attachment],  // test 4/20
+            "flip income with expense" => [self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_INCOME, self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_EXPENSE],                              // test 1/20
+            "flip expense with income" => [self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_EXPENSE, self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_INCOME],                              // test 2/20
+            "flip has-attachment with no-attachment" => [self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_HAS_ATTACHMENT, self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_NO_ATTACHMENT],  // test 3/20
+            "flip no-attachment with has-attachment" => [self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_NO_ATTACHMENT, self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_HAS_ATTACHMENT],  // test 4/20
         ];
     }
 
@@ -492,17 +492,17 @@ class FilterModalTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openFilterModal($browser);
             $browser
-                ->within($this->_selector_modal_filter, function(Browser $modal) use ($init_switch_selector, $companion_switch_selector) {
-                    $this->assertToggleButtonState($modal, $init_switch_selector, $this->_label_switch_disabled, $this->_color_filter_switch_inactive);
-                    $this->assertToggleButtonState($modal, $companion_switch_selector, $this->_label_switch_disabled, $this->_color_filter_switch_inactive);
+                ->within(self::$SELECTOR_MODAL_FILTER, function(Browser $modal) use ($init_switch_selector, $companion_switch_selector) {
+                    $this->assertToggleButtonState($modal, $init_switch_selector, $this->_label_switch_disabled, self::$COLOR_FILTER_SWITCH_INACTIVE);
+                    $this->assertToggleButtonState($modal, $companion_switch_selector, $this->_label_switch_disabled, self::$COLOR_FILTER_SWITCH_INACTIVE);
 
                     $this->toggleToggleButton($modal, $init_switch_selector);
-                    $this->assertToggleButtonState($modal, $init_switch_selector, $this->_label_switch_enabled, $this->_color_filter_switch_active);
-                    $this->assertToggleButtonState($modal, $companion_switch_selector, $this->_label_switch_disabled, $this->_color_filter_switch_inactive);
+                    $this->assertToggleButtonState($modal, $init_switch_selector, $this->_label_switch_enabled, self::$COLOR_FILTER_SWITCH_ACTIVE);
+                    $this->assertToggleButtonState($modal, $companion_switch_selector, $this->_label_switch_disabled, self::$COLOR_FILTER_SWITCH_INACTIVE);
 
                     $this->toggleToggleButton($modal, $companion_switch_selector);
-                    $this->assertToggleButtonState($modal, $companion_switch_selector, $this->_label_switch_enabled, $this->_color_filter_switch_active);
-                    $this->assertToggleButtonState($modal, $init_switch_selector, $this->_label_switch_disabled, $this->_color_filter_switch_inactive);
+                    $this->assertToggleButtonState($modal, $companion_switch_selector, $this->_label_switch_enabled, self::$COLOR_FILTER_SWITCH_ACTIVE);
+                    $this->assertToggleButtonState($modal, $init_switch_selector, $this->_label_switch_disabled, self::$COLOR_FILTER_SWITCH_INACTIVE);
                 });
         });
     }
@@ -518,7 +518,7 @@ class FilterModalTest extends DuskTestCase {
             $this->openFilterModal($browser);
             $browser
                 // modify all (or at least most) fields
-                ->within($this->_selector_modal_filter.' '.$this->_selector_modal_body, function(Browser $modal) {
+                ->within(self::$SELECTOR_MODAL_FILTER.' '.$this->_selector_modal_body, function(Browser $modal) {
                     $time_from_browser = $this->getBrowserLocaleDate($modal);
                     $start_date = $this->processLocaleDateForTyping($time_from_browser);
 
@@ -528,12 +528,12 @@ class FilterModalTest extends DuskTestCase {
                     $tags = $this->getApiTags();
                     $tags_to_select = fake()->unique->randomElements($tags, fake()->numberBetween(1, count($tags)));
 
-                    $companion_switch_set_1 = [$this->_selector_modal_filter_field_switch_expense, $this->_selector_modal_filter_field_switch_income];
-                    $companion_switch_set_2 = [$this->_selector_modal_filter_field_switch_has_attachment, $this->_selector_modal_filter_field_switch_no_attachment];
+                    $companion_switch_set_1 = [self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_EXPENSE, self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_INCOME];
+                    $companion_switch_set_2 = [self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_HAS_ATTACHMENT, self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_NO_ATTACHMENT];
 
                     $modal
-                        ->type($this->_selector_modal_filter_field_start_date, $start_date)
-                        ->type($this->_selector_modal_filter_field_end_date, $start_date);
+                        ->type(self::$SELECTOR_MODAL_FILTER_FIELD_START_DATE, $start_date)
+                        ->type(self::$SELECTOR_MODAL_FILTER_FIELD_END_DATE, $start_date);
                     $this->toggleAccountOrAccountTypeSwitch($modal);
                     $this->selectAccountOrAccountTypeValue($modal, $account_type['id']);
 
@@ -544,42 +544,42 @@ class FilterModalTest extends DuskTestCase {
                     $this->toggleToggleButton($modal, fake()->randomElement($companion_switch_set_1));
                     $this->toggleToggleButton($modal, fake()->randomElement($companion_switch_set_2));
                     $modal
-                        ->click($this->_selector_modal_filter_field_switch_transfer)
-                        ->click($this->_selector_modal_filter_field_switch_unconfirmed)
-                        ->type($this->_selector_modal_filter_field_max_value, "65.43")
-                        ->type($this->_selector_modal_filter_field_min_value, "9.87");
+                        ->click(self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_TRANSFER)
+                        ->click(self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_UNCONFIRMED)
+                        ->type(self::$SELECTOR_MODAL_FILTER_FIELD_MAX_VALUE, "65.43")
+                        ->type(self::$SELECTOR_MODAL_FILTER_FIELD_MIN_VALUE, "9.87");
                 })
 
                 // click reset button
-                ->within($this->_selector_modal_filter.' '.$this->_selector_modal_foot, function(Browser $modal) {
+                ->within(self::$SELECTOR_MODAL_FILTER.' '.$this->_selector_modal_foot, function(Browser $modal) {
                     $modal
-                        ->assertVisible($this->_selector_modal_filter_btn_reset)
-                        ->click($this->_selector_modal_filter_btn_reset)
+                        ->assertVisible(self::$SELECTOR_MODAL_FILTER_BTN_RESET)
+                        ->click(self::$SELECTOR_MODAL_FILTER_BTN_RESET)
                         ->pause(self::$WAIT_ONE_SECOND_IN_MILLISECONDS);
                 })
 
                 // confirm all fields have been reset
-                ->within($this->_selector_modal_filter.' '.$this->_selector_modal_body, function(Browser $modal) {
+                ->within(self::$SELECTOR_MODAL_FILTER.' '.$this->_selector_modal_body, function(Browser $modal) {
                     $modal
-                        ->assertInputValue($this->_selector_modal_filter_field_start_date, '')
-                        ->assertInputValue($this->_selector_modal_filter_field_end_date, '')
+                        ->assertInputValue(self::$SELECTOR_MODAL_FILTER_FIELD_START_DATE, '')
+                        ->assertInputValue(self::$SELECTOR_MODAL_FILTER_FIELD_END_DATE, '')
                         ->assertSelected(self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT, '')
                         ->assertSeeIn(self::$SELECTOR_FIELD_ACCOUNT_AND_ACCOUNT_TYPE_SELECT, self::$LABEL_ACCOUNT_AND_ACCOUNT_TYPE_SELECT_OPTION_DEFAULT);
 
                     $this->assertDefaultStateOfTagsInput($modal);
 
-                    $this->assertToggleButtonState($modal, $this->_selector_modal_filter_field_switch_income, $this->_label_switch_disabled, $this->_color_filter_switch_default);
-                    $this->assertToggleButtonState($modal, $this->_selector_modal_filter_field_switch_expense, $this->_label_switch_disabled, $this->_color_filter_switch_default);
-                    $this->assertToggleButtonState($modal, $this->_selector_modal_filter_field_switch_has_attachment, $this->_label_switch_disabled, $this->_color_filter_switch_default);
-                    $this->assertToggleButtonState($modal, $this->_selector_modal_filter_field_switch_no_attachment, $this->_label_switch_disabled, $this->_color_filter_switch_default);
-                    $this->assertToggleButtonState($modal, $this->_selector_modal_filter_field_switch_transfer, $this->_label_switch_disabled, $this->_color_filter_switch_default);
-                    $this->assertToggleButtonState($modal, $this->_selector_modal_filter_field_switch_unconfirmed, $this->_label_switch_disabled, $this->_color_filter_switch_default);
+                    $this->assertToggleButtonState($modal, self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_INCOME, $this->_label_switch_disabled, self::$COLOR_FILTER_SWITCH_DEFAULT);
+                    $this->assertToggleButtonState($modal, self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_EXPENSE, $this->_label_switch_disabled, self::$COLOR_FILTER_SWITCH_DEFAULT);
+                    $this->assertToggleButtonState($modal, self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_HAS_ATTACHMENT, $this->_label_switch_disabled, self::$COLOR_FILTER_SWITCH_DEFAULT);
+                    $this->assertToggleButtonState($modal, self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_NO_ATTACHMENT, $this->_label_switch_disabled, self::$COLOR_FILTER_SWITCH_DEFAULT);
+                    $this->assertToggleButtonState($modal, self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_TRANSFER, $this->_label_switch_disabled, self::$COLOR_FILTER_SWITCH_DEFAULT);
+                    $this->assertToggleButtonState($modal, self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_UNCONFIRMED, $this->_label_switch_disabled, self::$COLOR_FILTER_SWITCH_DEFAULT);
                     $modal
-                        ->assertInputValue($this->_selector_modal_filter_field_min_value, "")
-                        ->assertInputValue($this->_selector_modal_filter_field_max_value, "");
+                        ->assertInputValue(self::$SELECTOR_MODAL_FILTER_FIELD_MIN_VALUE, "")
+                        ->assertInputValue(self::$SELECTOR_MODAL_FILTER_FIELD_MAX_VALUE, "");
 
-                    $this->assertValueFieldCurrency($modal, $this->_selector_modal_filter_field_min_value, $this->_default_currency_character);
-                    $this->assertValueFieldCurrency($modal, $this->_selector_modal_filter_field_max_value, $this->_default_currency_character);
+                    $this->assertValueFieldCurrency($modal, self::$SELECTOR_MODAL_FILTER_FIELD_MIN_VALUE, $this->_default_currency_character);
+                    $this->assertValueFieldCurrency($modal, self::$SELECTOR_MODAL_FILTER_FIELD_MAX_VALUE, $this->_default_currency_character);
                 });
         });
     }
@@ -596,18 +596,18 @@ class FilterModalTest extends DuskTestCase {
             $this->openFilterModal($browser);
             $browser
                 // modify all (or at least most) fields
-                ->within($this->_selector_modal_filter.' '.$this->_selector_modal_body, function(Browser $modal) use (&$filter_value) {
+                ->within(self::$SELECTOR_MODAL_FILTER.' '.$this->_selector_modal_body, function(Browser $modal) use (&$filter_value) {
                     $accounts = $this->getApiAccounts();
                     $filter_value = collect($accounts)->where('active', true)->random();
                     $this->selectAccountOrAccountTypeValue($modal, $filter_value['id']);
                 })
 
-                ->within($this->_selector_modal_filter.' '.$this->_selector_modal_foot, function($modal) {
-                    $modal->click($this->_selector_modal_filter_btn_filter);
+                ->within(self::$SELECTOR_MODAL_FILTER.' '.$this->_selector_modal_foot, function($modal) {
+                    $modal->click(self::$SELECTOR_MODAL_FILTER_BTN_FILTER);
                 });
             $this->waitForLoadingToStop($browser);
             $browser
-                ->assertMissing($this->_selector_modal_filter)
+                ->assertMissing(self::$SELECTOR_MODAL_FILTER)
 
                 ->within($this->_selector_panel_institutions, function(Browser $panel) use ($filter_value) {
                     // TODO: confirm "Overview (filtered)" is visible
@@ -629,8 +629,8 @@ class FilterModalTest extends DuskTestCase {
         });
     }
 
-    public function providerClickFilterButtonToFilterResults(): array {
-        return $this->filterModalInputs();  // test (7 - 18)/20
+    public static function providerClickFilterButtonToFilterResults(): array {
+        return self::filterModalInputs();  // test (7 - 18)/20
     }
 
     /**
@@ -650,23 +650,23 @@ class FilterModalTest extends DuskTestCase {
             $this->openFilterModal($browser);
             $browser
                 // modify all (or at least most) fields
-                ->within($this->_selector_modal_filter.' '.$this->_selector_modal_body, function(Browser $modal) use ($filter_param, &$filter_value) {
+                ->within(self::$SELECTOR_MODAL_FILTER.' '.$this->_selector_modal_body, function(Browser $modal) use ($filter_param, &$filter_value) {
                     $filter_value = $this->filterModalInputInteraction($modal, $filter_param);
                 })
 
-                ->within($this->_selector_modal_filter.' '.$this->_selector_modal_foot, function(Browser $modal) {
-                    $modal->click($this->_selector_modal_filter_btn_filter);
+                ->within(self::$SELECTOR_MODAL_FILTER.' '.$this->_selector_modal_foot, function(Browser $modal) {
+                    $modal->click(self::$SELECTOR_MODAL_FILTER_BTN_FILTER);
                 });
             $this->waitForLoadingToStop($browser);
             $browser
-                ->assertMissing($this->_selector_modal_filter)
+                ->assertMissing(self::$SELECTOR_MODAL_FILTER)
 
                 // confirm only rows matching the filter parameters are shown
                 ->within($this->_selector_table.' '.$this->_selector_table_body, function(Browser $table) use ($filter_param, $filter_value) {
                     $table_rows = $table->elements('tr');
                     foreach ($table_rows as $table_row) {
                         switch($filter_param) {
-                            case $this->_selector_modal_filter_field_start_date:
+                            case self::$SELECTOR_MODAL_FILTER_FIELD_START_DATE:
                                 // only rows with dates >= $start_date
                                 $row_entry_date = $table_row->findElement(WebDriverBy::cssSelector($this->_selector_table_row_date))->getText();
                                 $this->assertGreaterThanOrEqual(
@@ -675,7 +675,7 @@ class FilterModalTest extends DuskTestCase {
                                     'Row date "'.$row_entry_date.'" less than filter start date "'.$filter_value['actual'].'" typed as "'.$filter_value['typed'].'"'
                                 );
                                 break;
-                            case $this->_selector_modal_filter_field_end_date:
+                            case self::$SELECTOR_MODAL_FILTER_FIELD_END_DATE:
                                 // only rows with dates <= $end_date
                                 $row_entry_date = $table_row->findElement(WebDriverBy::cssSelector($this->_selector_table_row_date))->getText();
                                 $this->assertLessThanOrEqual(
@@ -695,7 +695,7 @@ class FilterModalTest extends DuskTestCase {
                                 $row_entry_account_type = $table_row->findElement(WebDriverBy::cssSelector($this->_selector_table_row_account_type))->getText();
                                 $this->assertContains($row_entry_account_type, $account_type_names);
                                 break;
-                            case $this->_selector_modal_filter_field_tags:
+                            case self::$SELECTOR_MODAL_FILTER_FIELD_TAGS:
                                 // only rows with .has-tags class
                                 $this->assertStringContainsString('has-tags', $table_row->getAttribute('class'));
                                 // each row will contain the selected tag text
@@ -710,38 +710,38 @@ class FilterModalTest extends DuskTestCase {
                                     )
                                 );
                                 break;
-                            case $this->_selector_modal_filter_field_switch_income:
+                            case self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_INCOME:
                                 // only rows with .is-income class
                                 $this->assertStringContainsString('is-income', $table_row->getAttribute('class'));
                                 break;
-                            case $this->_selector_modal_filter_field_switch_expense:
+                            case self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_EXPENSE:
                                 // only rows with .is-expense class
                                 $this->assertStringContainsString('is-expense', $table_row->getAttribute('class'));
                                 break;
-                            case $this->_selector_modal_filter_field_switch_has_attachment:
+                            case self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_HAS_ATTACHMENT:
                                 // only rows with .has-attachments class
                                 $this->assertStringContainsString('has-attachments', $table_row->getAttribute('class'));
                                 break;
-                            case $this->_selector_modal_filter_field_switch_no_attachment:
+                            case self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_NO_ATTACHMENT:
                                 // rows DO NOT CONTAIN .has-attachments class
                                 $this->assertStringNotContainsString('has-attachments', $table_row->getAttribute('class'));
                                 break;
-                            case $this->_selector_modal_filter_field_switch_transfer:
+                            case self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_TRANSFER:
                                 // only rows with .is-transfer class
                                 $this->assertStringContainsString('is-transfer', $table_row->getAttribute('class'));
                                 break;
-                            case $this->_selector_modal_filter_field_switch_unconfirmed:
+                            case self::$SELECTOR_MODAL_FILTER_FIELD_SWITCH_UNCONFIRMED:
                                 // rows DO NOT CONTAIN .is-confirmed class
                                 $table_row_class = $table_row->getAttribute('class');
                                 $this->assertStringNotContainsString('is-confirmed', $table_row_class);
                                 $this->assertStringContainsString('unconfirmed', $table_row_class);
                                 break;
-                            case $this->_selector_modal_filter_field_min_value:
+                            case self::$SELECTOR_MODAL_FILTER_FIELD_MIN_VALUE:
                                 // only rows with value >= min_value
                                 $row_entry_value = $table_row->findElement(WebDriverBy::cssSelector($this->_selector_table_row_value))->getText();
                                 $this->assertGreaterThanOrEqual($filter_value, $row_entry_value);
                                 break;
-                            case $this->_selector_modal_filter_field_max_value:
+                            case self::$SELECTOR_MODAL_FILTER_FIELD_MAX_VALUE:
                                 // only rows with value <= max_value
                                 $row_entry_value = $table_row->findElement(WebDriverBy::cssSelector($this->_selector_table_row_value))->getText();
                                 $this->assertLessThanOrEqual($filter_value, $row_entry_value);

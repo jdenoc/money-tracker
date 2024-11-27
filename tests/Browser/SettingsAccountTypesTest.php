@@ -55,8 +55,9 @@ class SettingsAccountTypesTest extends SettingsBase {
 
     public static function providerDisablingOrRestoringObject(): array {
         return [
-            'disabling account-type' => ['isInitAccountTypeActive' => true],   // test 7/20
-            'restoring account-type' => ['isInitAccountTypeActive' => false],  // test 8/20
+            // [$isInitInstitutionActive]
+            'disabling account-type' => [true],   // test 7/20
+            'restoring account-type' => [false],  // test 8/20
         ];
     }
 

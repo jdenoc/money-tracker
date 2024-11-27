@@ -16,7 +16,6 @@ trait Navbar {
     private static string $SELECTOR_NAVBAR_VERSION = '.app-version';
     private static string $SELECTOR_MODAL_ENTRY = '#entry-modal';
     private static string $SELECTOR_MODAL_TRANSFER = '#transfer-modal';
-    private static string $SELECTOR_MODAL_FILTER = '#filter-modal';
 
     // md size screens and above
     private static string $SELECTOR_NAVBAR_NEW_ENTRY_BTN = '#navbar-entry-modal';
