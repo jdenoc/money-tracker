@@ -49,8 +49,8 @@ trait HomePageSelectors {
     private $_selector_table = "#entry-table";
     private $_selector_table_head = 'thead';
     private $_selector_table_body = 'tbody';
-    private $_selector_table_unconfirmed_expense = "tr.unconfirmed.is-expense";
-    private $_selector_table_unconfirmed_income = 'tr.unconfirmed.is-income';
+    private static string $SELECTOR_TABLE_UNCONFIRMED_EXPENSE = "tr.unconfirmed.is-expense";
+    private static string $SELECTOR_TABLE_UNCONFIRMED_INCOME = 'tr.unconfirmed.is-income';
     private static string $SELECTOR_TABLE_CONFIRMED_EXPENSE = 'tr.is-confirmed.is-expense';
     private static string $SELECTOR_TABLE_CONFIRMED_INCOME = 'tr.is-confirmed.is-income';
     private $_selector_table_row_date = 'td.row-entry-date';

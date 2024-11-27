@@ -623,7 +623,7 @@ class TransferModalTest extends DuskTestCase {
             if (!$is_from_account_external) {
                 $this->assertTransferEntrySaved(
                     $browser,
-                    $this->_selector_table.' '.$this->_selector_table_unconfirmed_expense.'.is-transfer',
+                    $this->_selector_table.' '.self::$SELECTOR_TABLE_UNCONFIRMED_EXPENSE.'.is-transfer',
                     $transfer_entry_data,
                     $entry_modal_date_input_value,
                     'from_account_type_id',
@@ -635,7 +635,7 @@ class TransferModalTest extends DuskTestCase {
             if (!$is_to_account_external) {
                 $this->assertTransferEntrySaved(
                     $browser,
-                    $this->_selector_table.' '.$this->_selector_table_unconfirmed_income.'.is-transfer',
+                    $this->_selector_table.' '.self::$SELECTOR_TABLE_UNCONFIRMED_INCOME.'.is-transfer',
                     $transfer_entry_data,
                     $entry_modal_date_input_value,
                     'to_account_type_id',

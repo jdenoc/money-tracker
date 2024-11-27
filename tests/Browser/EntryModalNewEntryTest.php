@@ -599,7 +599,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $browser
                 ->assertMissing($this->_selector_modal_entry)
-                ->with($this->_selector_table.' '.self::$SELECTOR_MODAL_ENTRY_FIELD_EXPENSE, function($table_row) use ($memo_field) {
+                ->with($this->_selector_table.' '.self::$SELECTOR_TABLE_CONFIRMED_EXPENSE, function($table_row) use ($memo_field) {
                     $table_row->assertSee($memo_field);
                 });
         });
@@ -648,7 +648,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
             $this->dismissNotification($browser);
             $this->waitForLoadingToStop($browser);
 
-            $table_row_selector = $this->_selector_table.' '.($is_expense ? $this->_selector_table_unconfirmed_expense : $this->_selector_table_unconfirmed_income);
+            $table_row_selector = $this->_selector_table.' '.($is_expense ? self::$SELECTOR_TABLE_UNCONFIRMED_EXPENSE : self::$SELECTOR_TABLE_UNCONFIRMED_INCOME);
             $browser
                 ->assertMissing($this->_selector_modal_entry)
                 ->within($table_row_selector, function(Browser $table_row) use ($memo_field) {

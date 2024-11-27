@@ -119,7 +119,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      */
     public function testClickingOnEntryTableEditButtonOfUnconfirmedEntry(bool $is_expense) {
         $this->browse(function(Browser $browser) use ($is_expense) {
-            $data_entry_selector = $is_expense ? $this->_selector_table_unconfirmed_expense : $this->_selector_table_unconfirmed_income;
+            $data_entry_selector = $is_expense ? self::$SELECTOR_TABLE_UNCONFIRMED_EXPENSE : self::$SELECTOR_TABLE_UNCONFIRMED_INCOME;
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $browser
@@ -292,7 +292,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         $this->browse(function(Browser $browser) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
-            $entry_selector = $this->randomEntrySelector(['has_attachments' => true]).self::CLASS_EXISTING_ATTACHMENT;
+            $entry_selector = $this->randomEntrySelector(['has_attachments' => true]).self::CLASS_HAS_ATTACHMENTS;
             $browser
                 ->openExistingEntryModal($entry_selector)
                 ->within($this->_selector_modal_entry, function(Browser $entry_modal) {
@@ -305,7 +305,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
     }
 
     public static function providerEntryWithTags(): array {
-        // [$entrySelectorShouldBeConfirmed, $data_is_tags_input_visible]
+        // [$entryShouldBeConfirmed, $isTagsInputVisible]
         return [
             // test 7/20
             "entry selector is confirmed and tags input is NOT visible" => [true, false],
@@ -322,20 +322,20 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      * @group entry-modal-1
      * test (see provider)/20
      */
-    public function testClickingOnEntryTableEditButtonOfEntryWithTags(bool $entrySelectorShouldBeConfirmed, bool $dataIsTagsInputVisible) {
-        $data_entry_selector = ($entrySelectorShouldBeConfirmed ? $this->randomConfirmedEntrySelector() : $this->randomUnconfirmedEntrySelector()).self::CLASS_HAS_TAGS;
-        $this->browse(function(Browser $browser) use ($data_entry_selector, $dataIsTagsInputVisible) {
+    public function testClickingOnEntryTableEditButtonOfEntryWithTags(bool $entryShouldBeConfirmed, bool $isTagsInputVisible) {
+        $entry_selector = ($entryShouldBeConfirmed ? $this->randomConfirmedEntrySelector() : $this->randomUnconfirmedEntrySelector()).self::CLASS_HAS_TAGS;
+        $this->browse(function(Browser $browser) use ($entry_selector, $isTagsInputVisible) {
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
             $browser
-                ->openExistingEntryModal($data_entry_selector)
-                ->within($this->_selector_modal_entry, function(Browser $entry_modal) use ($dataIsTagsInputVisible) {
+                ->openExistingEntryModal($entry_selector)
+                ->within($this->_selector_modal_entry, function(Browser $entry_modal) use ($isTagsInputVisible) {
                     $entry_id = $entry_modal->value($this->_selector_modal_entry_field_entry_id);
                     $entry_data = Entry::findOrFail($entry_id);
                     $this->assertTrue($entry_data->hasTags);
                     $entry_tags = $entry_data->tags->pluck('name');
 
-                    if ($dataIsTagsInputVisible) {
+                    if ($isTagsInputVisible) {
                         $entry_modal->assertVisible(self::$SELECTOR_TAGS_INPUT_INPUT);
                         foreach ($entry_tags as $entry_tag) {
                             $this->assertTagInInput($entry_modal, $entry_tag);
@@ -358,7 +358,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      */
     public function testOpenAttachment() {
         $this->browse(function(Browser $browser) {
-            $entry_selector = $this->randomEntrySelector(['has_attachments' => true]).self::CLASS_EXISTING_ATTACHMENT;
+            $entry_selector = $this->randomEntrySelector(['has_attachments' => true]).self::CLASS_HAS_ATTACHMENTS;
             $attachment_name = '';
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
@@ -393,7 +393,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      */
     public function testDeleteAttachmentFromUnconfirmedExistingEntry() {
         $this->browse(function(Browser $browser) {
-            $entry_selector = $this->randomEntrySelector(['has_attachments' => true, 'confirm' => false]).self::CLASS_EXISTING_ATTACHMENT;
+            $entry_selector = $this->randomEntrySelector(['has_attachments' => true, 'confirm' => false]).self::CLASS_HAS_ATTACHMENTS;
             // initialising this variable here, then pass it as a reference so that we can update its value.
             $attachment_count = 0;
 
@@ -433,7 +433,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
      */
     public function testExistingConfirmedEntryWithAttachmentsHasDeleteAttachmentButtonDisabled() {
         $this->browse(function(Browser $browser) {
-            $entry_selector = $this->randomEntrySelector(['confirm' => true, 'has_attachments' => true]).self::CLASS_EXISTING_ATTACHMENT.self::CLASS_IS_CONFIRMED;
+            $entry_selector = $this->randomEntrySelector(['confirm' => true, 'has_attachments' => true]).self::CLASS_HAS_ATTACHMENTS.self::CLASS_IS_CONFIRMED;
 
             $browser->visit(new HomePage());
             $this->waitForLoadingToStop($browser);
@@ -1138,7 +1138,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
             $class_selectors .= $is_expense ? '.is-expense' : '.is-income';
             $class_selectors .= $is_confirmed ? self::CLASS_IS_CONFIRMED : self::CLASS_UNCONFIRMED;
             $class_selectors .= self::CLASS_IS_TRANSFER;
-            $class_selectors .= self::CLASS_EXISTING_ATTACHMENT;
+            $class_selectors .= self::CLASS_HAS_ATTACHMENTS;
             $class_selectors .= self::CLASS_HAS_TAGS;
             $browser
                 ->scrollIntoView($selector_entry_id)
@@ -1348,7 +1348,7 @@ class EntryModalExistingEntryTest extends DuskTestCase {
         if ($get_id) {
             return $this->randomEntrySelector(['confirm' => false]);
         } else {
-            $unconfirmed_entry_selectors = [self::$SELECTOR_TABLE_CONFIRMED_EXPENSE, self::$SELECTOR_TABLE_CONFIRMED_INCOME];
+            $unconfirmed_entry_selectors = [self::$SELECTOR_TABLE_UNCONFIRMED_EXPENSE, self::$SELECTOR_TABLE_UNCONFIRMED_INCOME];
             return $unconfirmed_entry_selectors[array_rand($unconfirmed_entry_selectors, 1)];
         }
     }

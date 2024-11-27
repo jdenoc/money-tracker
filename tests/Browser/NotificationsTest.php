@@ -667,7 +667,7 @@ class NotificationsTest extends DuskTestCase {
     }
 
     private function getEntryTableRowSelector(): string {
-        $unconfirmed_entry_selectors = [$this->_selector_table_unconfirmed_expense, $this->_selector_table_unconfirmed_income];
+        $unconfirmed_entry_selectors = [self::$SELECTOR_TABLE_UNCONFIRMED_EXPENSE, self::$SELECTOR_TABLE_UNCONFIRMED_INCOME];
         return $unconfirmed_entry_selectors[array_rand($unconfirmed_entry_selectors, 1)];
     }
 
