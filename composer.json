@@ -31,7 +31,7 @@
         "ext-intl": "*",
         "barryvdh/laravel-ide-helper": "^2.2",
         "ely/php-code-style": "^1.0",
-        "fakerphp/faker": "1.15.0",
+        "fakerphp/faker": "1.23.1",
         "filp/whoops": "^2.14.3",
         "friendsofphp/php-cs-fixer": "v3.64.0",
         "jdenoc/faker-tailwind-colors": "^0.0.1",
