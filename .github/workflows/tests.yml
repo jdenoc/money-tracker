@@ -58,8 +58,7 @@ jobs:
         id: cache-path-vue
         run: |
           echo "value<<EOF" >> $GITHUB_OUTPUT
-          echo "public/dist" >> $GITHUB_OUTPUT
-          echo "public/mix-manifest.json" >> $GITHUB_OUTPUT
+          echo "public/build" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Generate failure content paths for artifact upload
