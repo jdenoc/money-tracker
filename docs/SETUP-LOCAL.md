@@ -55,8 +55,8 @@ php artisan app:version $(git describe --always)
 <p>
 
 ```bash
-npm ci
-npm run build:dev
+npm clean-install
+.docker/scripts/vite-dev.sh
 ```
 
 </p>

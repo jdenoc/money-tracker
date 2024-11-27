@@ -14,7 +14,7 @@ docker compose --file docker-compose.yml --file .docker/docker-composer.selenium
 
 Running unit tests can be done with this command:
 ```bash
-.docker/scripts/artisan.sh test -v
+.docker/scripts/artisan.sh test --stop-on-failure
 ```
 
 Running end-to-end (e2e) tests can be done with this command:
