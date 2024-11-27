@@ -53,7 +53,7 @@ JS;
 
     protected function assertEntryValueCurrency(Browser $modal, string $currency_character) {
         // check currency icon in input#entry-value
-        $entry_value_currency = $modal->text($this->_selector_modal_entry_field_value." + span.currency-symbol");
+        $entry_value_currency = $modal->text(self::$SELECTOR_MODAL_ENTRY_FIELD_VALUE." + span.currency-symbol");
         $this->assertStringContainsString($currency_character, $entry_value_currency);
     }
 
@@ -89,54 +89,54 @@ JS;
     protected function setEntryModalDate(Browser $modal, string $date) {
         $browser_date = $this->getDateFromLocale($this->getBrowserLocale($modal), $date);
         $new_value_to_type = $this->processLocaleDateForTyping($browser_date);
-        $modal->type($this->_selector_modal_entry_field_date, $new_value_to_type);
+        $modal->type(self::$SELECTOR_MODAL_ENTRY_FIELD_DATE, $new_value_to_type);
     }
 
     protected function assertEntryModalDate(Browser $modal, string $date) {
-        $modal->assertInputValue($this->_selector_modal_entry_field_date, $date);
+        $modal->assertInputValue(self::$SELECTOR_MODAL_ENTRY_FIELD_DATE, $date);
     }
 
     protected function setEntryModalValue(Browser $modal, string $value) {
-        $modal->type($this->_selector_modal_entry_field_value, $value);
+        $modal->type(self::$SELECTOR_MODAL_ENTRY_FIELD_VALUE, $value);
     }
 
     protected function assertEntryModalValue(Browser $modal, string $value) {
-        $modal->assertInputValue($this->_selector_modal_entry_field_value, $value);
+        $modal->assertInputValue(self::$SELECTOR_MODAL_ENTRY_FIELD_VALUE, $value);
     }
 
     protected function setEntryModalAccountType(Browser $modal, int $accountTypeId) {
-        $modal->select($this->_selector_modal_entry_field_account_type, $accountTypeId);
+        $modal->select(self::$SELECTOR_MODAL_ENTRY_FIELD_ACCOUNT_TYPE, $accountTypeId);
     }
 
     protected function assertEntryModalAccountType(Browser $modal, int $accountTypeId) {
         $modal
-            ->assertSelected($this->_selector_modal_entry_field_account_type, $accountTypeId)
+            ->assertSelected(self::$SELECTOR_MODAL_ENTRY_FIELD_ACCOUNT_TYPE, $accountTypeId)
             ->assertSee($this->_label_account_type_meta_account_name)
             ->assertSee($this->_label_account_type_meta_last_digits);
     }
 
     protected function setEntryModalMemo(Browser $modal, string $memo) {
-        $modal->type($this->_selector_modal_entry_field_memo, $memo);
+        $modal->type(self::$SELECTOR_MODAL_ENTRY_FIELD_MEMO, $memo);
     }
 
     protected function assertEntryModalMemo(Browser $modal, string $memo) {
-        $modal->assertInputValue($this->_selector_modal_entry_field_memo, $memo);
+        $modal->assertInputValue(self::$SELECTOR_MODAL_ENTRY_FIELD_MEMO, $memo);
     }
 
     protected function toggleEntryModalExpense(Browser $modal) {
-        $this->toggleToggleButton($modal, $this->_selector_modal_entry_field_expense);
+        $this->toggleToggleButton($modal, self::$SELECTOR_MODAL_ENTRY_FIELD_EXPENSE);
     }
 
     protected function assertEntryModalExpenseState(Browser $modal, bool $isExpense) {
         $data_expense_switch_label = $isExpense ? $this->_label_expense_switch_expense : $this->_label_expense_switch_income;
         $expense_switch_color = $isExpense ? $this->_color_expense_switch_expense : $this->_color_expense_switch_income;
-        $this->assertToggleButtonState($modal, $this->_selector_modal_entry_field_expense, $data_expense_switch_label, $expense_switch_color);
+        $this->assertToggleButtonState($modal, self::$SELECTOR_MODAL_ENTRY_FIELD_EXPENSE, $data_expense_switch_label, $expense_switch_color);
     }
 
     protected function assertTagInEntryModalLockedTags(Browser $modal, string $tag) {
         $modal
-            ->assertVisible($this->_selector_modal_entry_tags_locked.$this->_selector_tags_tag)
-            ->assertSeeIn($this->_selector_modal_entry_tags_locked, $tag);
+            ->assertVisible(self::$SELECTOR_MODAL_ENTRY_TAGS_LOCKED.$this->_selector_tags_tag)
+            ->assertSeeIn( self::$SELECTOR_MODAL_ENTRY_TAGS_LOCKED, $tag);
     }
 
     public function assertCountOfLockedTagsInEntryModal(Browser $modal, int $expectedTagCount) {
