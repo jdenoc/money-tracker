@@ -136,7 +136,7 @@ JS;
     protected function assertTagInEntryModalLockedTags(Browser $modal, string $tag) {
         $modal
             ->assertVisible(self::$SELECTOR_MODAL_ENTRY_TAGS_LOCKED.$this->_selector_tags_tag)
-            ->assertSeeIn( self::$SELECTOR_MODAL_ENTRY_TAGS_LOCKED, $tag);
+            ->assertSeeIn(self::$SELECTOR_MODAL_ENTRY_TAGS_LOCKED, $tag);
     }
 
     public function assertCountOfLockedTagsInEntryModal(Browser $modal, int $expectedTagCount) {
