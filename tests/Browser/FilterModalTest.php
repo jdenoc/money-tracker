@@ -303,10 +303,10 @@ class FilterModalTest extends DuskTestCase {
     public static function providerFlipAccountAndAccountTypeSwitch(): array {
         return [
             // [$has_disabled_account, $has_disabled_account_type]
-            'where account is NOT disabled & account-type is disabled'=>[false, true],   // test 9/20
-            'where account is NOT disabled & account-type is NOT disabled'=>[false, false],  // test 10/20
-            'where account is disabled & account-type is NOT disabled'=>[true, false],   // test 11/20
-            'where account is disabled & account-type is disabled'=>[true, true],    // test 12/20
+            'where account is NOT disabled & account-type is disabled' => [false, true],   // test 9/20
+            'where account is NOT disabled & account-type is NOT disabled' => [false, false],  // test 10/20
+            'where account is disabled & account-type is NOT disabled' => [true, false],   // test 11/20
+            'where account is disabled & account-type is disabled' => [true, true],    // test 12/20
         ];
     }
 

@@ -34,7 +34,7 @@ class SettingsTagsTest extends SettingsBase {
     protected static string $LABEL_SETTINGS_NOTIFICATION_DELETE = 'Tag has been disabled';  // TODO: confirm
 
     public static function providerDisablingOrRestoringObject(): array {
-        return ['unsupported'=>[false]];
+        return ['unsupported' => [false]];
     }
 
     public static function providerSaveExistingSettingObject(): array {
