@@ -88,17 +88,17 @@ class UpdateAccountTotalTest extends DuskTestCase {
             $browser
                 ->within($this->_selector_modal_body, function(Browser $entry_modal_body) use ($is_entry_expense, $entry_total) {
                     // The date field should already be filled in. No need to fill it in again.
-                    $entry_modal_body->type($this->_selector_modal_entry_field_value, $entry_total);
-                    $this->waitUntilSelectLoadingIsMissing($entry_modal_body, $this->_selector_modal_entry_field_account_type);
+                    $entry_modal_body->type(self::$SELECTOR_MODAL_ENTRY_FIELD_VALUE, $entry_total);
+                    $this->waitUntilSelectLoadingIsMissing($entry_modal_body, self::$SELECTOR_MODAL_ENTRY_FIELD_ACCOUNT_TYPE);
                     $entry_modal_body
-                        ->select($this->_selector_modal_entry_field_account_type, $this->_account_type_id)
-                        ->type($this->_selector_modal_entry_field_memo, "Test new entry account total update");
+                        ->select(self::$SELECTOR_MODAL_ENTRY_FIELD_ACCOUNT_TYPE, $this->_account_type_id)
+                        ->type(self::$SELECTOR_MODAL_ENTRY_FIELD_MEMO, "Test new entry account total update");
 
                     if (!$is_entry_expense) {
                         // entry is expense by default, so we only need to do something when we want to mark it as an income entry
-                        $entry_modal_body->click($this->_selector_modal_entry_field_expense);
+                        $entry_modal_body->click(self::$SELECTOR_MODAL_ENTRY_FIELD_EXPENSE);
                     }
-                    $entry_modal_body->click($this->_selector_modal_entry_field_date);
+                    $entry_modal_body->click(self::$SELECTOR_MODAL_ENTRY_FIELD_DATE);
                 })
                 ->within($this->_selector_modal_foot, function(Browser $modal_foot) {
                     $modal_foot->click($this->_selector_modal_entry_btn_save);
@@ -138,9 +138,9 @@ class UpdateAccountTotalTest extends DuskTestCase {
                 ->openExistingEntryModal($entry_selector)
                 ->within($this->_selector_modal_body, function(Browser $entry_modal_body) use ($entry_selector, &$switch_text) {
                     $entry_modal_body
-                        ->click($this->_selector_modal_entry_field_expense)
+                        ->click(self::$SELECTOR_MODAL_ENTRY_FIELD_EXPENSE)
                         ->pause(self::$WAIT_HALF_SECOND_IN_MILLISECONDS); // need to wait for the transition to complete after click;
-                    $switch_text = $entry_modal_body->text($this->_selector_modal_entry_field_expense);
+                    $switch_text = $entry_modal_body->text(self::$SELECTOR_MODAL_ENTRY_FIELD_EXPENSE);
                 })
                 ->within($this->_selector_modal_foot, function(Browser $modal_foot) {
                     $modal_foot->click($this->_selector_modal_entry_btn_save);
@@ -180,8 +180,8 @@ class UpdateAccountTotalTest extends DuskTestCase {
             $browser
                 ->openExistingEntryModal($entry_selector)
                 ->within($this->_selector_modal_body, function(Browser $entry_modal_body) use ($entry_selector, $new_value) {
-                    $entry_modal_body->clear($this->_selector_modal_entry_field_value);
-                    $entry_modal_body->type($this->_selector_modal_entry_field_value, $new_value);
+                    $entry_modal_body->clear(self::$SELECTOR_MODAL_ENTRY_FIELD_VALUE);
+                    $entry_modal_body->type(self::$SELECTOR_MODAL_ENTRY_FIELD_VALUE, $new_value);
                 })
                 ->within($this->_selector_modal_foot, function(Browser $modal_foot) {
                     $modal_foot->click($this->_selector_modal_entry_btn_save);

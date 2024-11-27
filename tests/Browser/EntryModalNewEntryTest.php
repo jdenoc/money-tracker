@@ -599,7 +599,7 @@ class EntryModalNewEntryTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $browser
                 ->assertMissing($this->_selector_modal_entry)
-                ->with($this->_selector_table.' '.$this->_selector_table_confirmed_expense, function($table_row) use ($memo_field) {
+                ->with($this->_selector_table.' '.self::$SELECTOR_MODAL_ENTRY_FIELD_EXPENSE, function($table_row) use ($memo_field) {
                     $table_row->assertSee($memo_field);
                 });
         });

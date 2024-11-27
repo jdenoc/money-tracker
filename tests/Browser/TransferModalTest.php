@@ -749,12 +749,12 @@ class TransferModalTest extends DuskTestCase {
             ->openExistingEntryModal($table_row_selector)
             ->within($this->_selector_modal_entry, function(Browser $modal) use ($transfer_entry_data, $entry_modal_date_input_value, $entry_switch_expense_label, $account_type_key, $has_tags, $has_attachments) {
                 $modal
-                    ->assertInputValue($this->_selector_modal_entry_field_date, $entry_modal_date_input_value)
-                    ->assertInputValue($this->_selector_modal_entry_field_value, $transfer_entry_data['value'])
-                    ->assertSelected($this->_selector_modal_entry_field_account_type, $transfer_entry_data[$account_type_key])
+                    ->assertInputValue(self::$SELECTOR_MODAL_ENTRY_FIELD_DATE, $entry_modal_date_input_value)
+                    ->assertInputValue(self::$SELECTOR_MODAL_ENTRY_FIELD_VALUE, $transfer_entry_data['value'])
+                    ->assertSelected(self::$SELECTOR_MODAL_ENTRY_FIELD_ACCOUNT_TYPE, $transfer_entry_data[$account_type_key])
                     ->assertSee($this->_label_account_type_meta_account_name)
                     ->assertSee($this->_label_account_type_meta_last_digits)
-                    ->assertInputValue($this->_selector_modal_entry_field_memo, $transfer_entry_data['memo'])
+                    ->assertInputValue(self::$SELECTOR_MODAL_ENTRY_FIELD_MEMO, $transfer_entry_data['memo'])
                     ->assertSee($entry_switch_expense_label);
 
                 if ($has_tags) {

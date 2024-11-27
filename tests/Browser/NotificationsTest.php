@@ -340,11 +340,11 @@ class NotificationsTest extends DuskTestCase {
             $memo_field = "Test entry - 500 ERROR saving requirements";
             $browser
                 ->within($this->_selector_modal_body, function(Browser $modal_body) use ($account_type, $memo_field) {
-                    $this->waitUntilSelectLoadingIsMissing($modal_body, $this->_selector_modal_entry_field_account_type);
+                    $this->waitUntilSelectLoadingIsMissing($modal_body, self::$SELECTOR_MODAL_ENTRY_FIELD_ACCOUNT_TYPE);
                     $modal_body
-                        ->type($this->_selector_modal_entry_field_value, "9.99")
-                        ->select($this->_selector_modal_entry_field_account_type, $account_type['id'])
-                        ->type($this->_selector_modal_entry_field_memo, $memo_field);
+                        ->type(self::$SELECTOR_MODAL_ENTRY_FIELD_VALUE, "9.99")
+                        ->select(self::$SELECTOR_MODAL_ENTRY_FIELD_ACCOUNT_TYPE, $account_type['id'])
+                        ->type(self::$SELECTOR_MODAL_ENTRY_FIELD_MEMO, $memo_field);
                 });
 
             // FORCE 500 from `POST /api/entry`
@@ -424,7 +424,7 @@ class NotificationsTest extends DuskTestCase {
             $browser
                 ->openExistingEntryModal(sprintf(self::$PLACEHOLDER_SELECTOR_EXISTING_ENTRY_ROW, $entry_id))
                 ->within($this->_selector_modal_body, function(Browser $modal_body) {
-                    $this->toggleToggleButton($modal_body, $this->_selector_modal_entry_field_expense);
+                    $this->toggleToggleButton($modal_body, self::$SELECTOR_MODAL_ENTRY_FIELD_EXPENSE);
                 })
                 ->within($this->_selector_modal_foot, function(Browser $modal_foot) {
                     // FORCE 404 from `GET /api/entry/{entry_id}`
@@ -459,14 +459,14 @@ class NotificationsTest extends DuskTestCase {
                 ->openExistingEntryModal(sprintf(self::$PLACEHOLDER_SELECTOR_EXISTING_ENTRY_ROW, $entry_id))
                 ->within($this->_selector_modal_body, function(Browser $modal) {
                     // We have tests for other fields so lets just update the easiest to update
-                    $old_value = floatval($modal->inputValue($this->_selector_modal_entry_field_value));
+                    $old_value = floatval($modal->inputValue(self::$SELECTOR_MODAL_ENTRY_FIELD_VALUE));
                     $modal
-                       ->clear($this->_selector_modal_entry_field_value)
-                        ->type($this->_selector_modal_entry_field_value, $old_value + 10);
-                    $old_memo = $modal->inputValue($this->_selector_modal_entry_field_memo);
+                       ->clear(self::$SELECTOR_MODAL_ENTRY_FIELD_VALUE)
+                        ->type(self::$SELECTOR_MODAL_ENTRY_FIELD_VALUE, $old_value + 10);
+                    $old_memo = $modal->inputValue(self::$SELECTOR_MODAL_ENTRY_FIELD_MEMO);
                     $modal
-                        ->clear($this->_selector_modal_entry_field_memo)
-                        ->type($this->_selector_modal_entry_field_memo, $old_memo.' [UPDATE]');
+                        ->clear(self::$SELECTOR_MODAL_ENTRY_FIELD_MEMO)
+                        ->type(self::$SELECTOR_MODAL_ENTRY_FIELD_MEMO, $old_memo.' [UPDATE]');
                 })
                 ->within($this->_selector_modal_foot, function(Browser $modal_foot) use ($table) {
                     // FORCE 500 from `GET /api/entry/{entry_id}`

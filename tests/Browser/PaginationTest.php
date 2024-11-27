@@ -189,10 +189,10 @@ class PaginationTest extends DuskTestCase {
                     $account_types = $this->getApiAccountTypes();
                     $account_type_id = collect($account_types)->pluck('id')->random(1)->first();
                     $entry_modal_body
-                        ->type($this->_selector_modal_entry_field_date, $new_entry_date_to_type)
-                        ->type($this->_selector_modal_entry_field_value, "342.36")
-                        ->select($this->_selector_modal_entry_field_account_type, $account_type_id)
-                        ->type($this->_selector_modal_entry_field_memo, "Pagination entry-modal test")
+                        ->type(self::$SELECTOR_MODAL_ENTRY_FIELD_DATE, $new_entry_date_to_type)
+                        ->type(self::$SELECTOR_MODAL_ENTRY_FIELD_VALUE, "342.36")
+                        ->select(self::$SELECTOR_MODAL_ENTRY_FIELD_ACCOUNT_TYPE, $account_type_id)
+                        ->type(self::$SELECTOR_MODAL_ENTRY_FIELD_MEMO, "Pagination entry-modal test")
                         ->click($this->_selector_modal_entry_btn_save);
                 });
             $this->waitForLoadingToStop($browser);
@@ -267,19 +267,19 @@ class PaginationTest extends DuskTestCase {
             $this->waitForLoadingToStop($browser);
             $this->openFilterModal($browser);
             $browser
-                ->within($this->_selector_modal_filter.' '.$this->_selector_modal_head, function(Browser $modal) {
+                ->within(self::$SELECTOR_MODAL_FILTER.' '.$this->_selector_modal_head, function(Browser $modal) {
                     $filter_value = date("Y-m-d", strtotime("+10 day"));
                     $browser_date = $this->getDateFromLocale($this->getBrowserLocale($modal), $filter_value);
                     $filter_value = $this->processLocaleDateForTyping($browser_date);
-                    $modal->type($this->_selector_modal_filter_field_start_date, $filter_value);
+                    $modal->type(self::$SELECTOR_MODAL_FILTER_FIELD_START_DATE, $filter_value);
 
                     $filter_value = date("Y-m-d");
                     $browser_date = $this->getDateFromLocale($this->getBrowserLocale($modal), $filter_value);
                     $filter_value = $this->processLocaleDateForTyping($browser_date);
-                    $modal->type($this->_selector_modal_filter_field_end_date, $filter_value);
+                    $modal->type(self::$SELECTOR_MODAL_FILTER_FIELD_END_DATE, $filter_value);
                 })
-                ->within($this->_selector_modal_filter.' '.$this->_selector_modal_foot, function(Browser $modal) {
-                    $modal->click($this->_selector_modal_filter_btn_filter);
+                ->within(self::$SELECTOR_MODAL_FILTER.' '.$this->_selector_modal_foot, function(Browser $modal) {
+                    $modal->click(self::$SELECTOR_MODAL_FILTER_BTN_FILTER);
                 });
             $this->waitForLoadingToStop($browser);
             $browser
