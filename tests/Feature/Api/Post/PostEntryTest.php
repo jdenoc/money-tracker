@@ -15,6 +15,7 @@ use Tests\TestCase;
 class PostEntryTest extends TestCase {
     use EntryResponseKeys;
 
+    // uri
     private string $_base_uri = '/api/entry';
 
     public function testCreateEntryWithoutData() {
@@ -31,52 +32,29 @@ class PostEntryTest extends TestCase {
         $this->assertFailedPostResponse($response_as_array, self::$ERROR_MSG_SAVE_ENTRY_NO_DATA);
     }
 
-    public function providerCreateEntryWithMissingData(): array {
-        // PHPUnit data providers are called before setUp() and setUpBeforeClass() are called.
-        // With that piece of information, we need to call setUp() earlier than we normally would so that we can use model factories
-        //$this->setUp();
-        // We can no longer call setUp() as a workaround
-        // it caused the database to populate and in doing so we caused some tests to fail.
-        // Said tests failed because they were testing the absence of database values.
-        $this->initialiseApplication();
-
+    public static function providerCreateEntryWithMissingData(): array {
         $required_entry_fields = Entry::get_fields_required_for_creation();
 
-        $missing_data_entries = [];
+        $test_cases = [];
         // provide data that is missing one property
-        for ($i=0; $i<count($required_entry_fields); $i++) {
-            $entry_data = $this->generateEntryData();
-            unset($entry_data[$required_entry_fields[$i]]);
-            $missing_data_entries['missing ['.$required_entry_fields[$i].']'] = [
-                $entry_data,
-                sprintf(self::$ERROR_MSG_SAVE_ENTRY_MISSING_PROPERTY, json_encode([$required_entry_fields[$i]]))
-            ];
+        foreach ($required_entry_fields as $required_entry_field) {
+            $test_cases[$required_entry_field] = ['missing_properties' => [$required_entry_field]];
         }
 
         // provide data that is missing two or more properties, but 1 less than the total properties
-        $entry_data = $this->generateEntryData();
-        $unset_keys = array_rand($required_entry_fields, mt_rand(2, count($required_entry_fields)-1));
-        $removed_keys = [];
-        foreach ($unset_keys as $unset_key) {
-            $removed_key = $required_entry_fields[$unset_key];
-            unset($entry_data[$removed_key]);
-            $removed_keys[] = $removed_key;
-        }
-        $missing_data_entries['missing ['.implode(',', $removed_keys).']'] = [
-            $entry_data,
-            sprintf(self::$ERROR_MSG_SAVE_ENTRY_MISSING_PROPERTY, json_encode($removed_keys))
-        ];
+        $random_missing_properties = array_rand(array_flip($required_entry_fields), mt_rand(2, count($required_entry_fields) - 1));
+        $test_cases['missing:'.json_encode($random_missing_properties)] = ['missing_properties' => $random_missing_properties];
 
-        return $missing_data_entries;
+        return $test_cases;
     }
 
     /**
      * @dataProvider providerCreateEntryWithMissingData
-     * @param array $entry_data
-     * @param string $expected_response_error_msg
      */
-    public function testCreateEntryWithMissingData($entry_data, string $expected_response_error_msg) {
-        // GIVEN - $entry_data by providerCreateEntryWithMissingData
+    public function testCreateEntryWithMissingData(array $missing_properties) {
+        // GIVEN
+        $entry_data = $this->generateEntryData();
+        $entry_data = array_diff_key($entry_data, array_flip($missing_properties));
 
         // WHEN
         $response = $this->postJson($this->_base_uri, $entry_data);
@@ -85,7 +63,7 @@ class PostEntryTest extends TestCase {
         $this->assertResponseStatus($response, HttpStatus::HTTP_BAD_REQUEST);
         $response_as_array = $response->json();
         $this->assertPostResponseHasCorrectKeys($response_as_array);
-        $this->assertFailedPostResponse($response_as_array, $expected_response_error_msg);
+        $this->assertFailedPostResponse($response_as_array, sprintf(self::$ERROR_MSG_SAVE_ENTRY_MISSING_PROPERTY, json_encode($missing_properties)));
     }
 
     public function testCreateEntryButAccountTypeDoesNotExist() {
@@ -217,8 +195,8 @@ class PostEntryTest extends TestCase {
         $generated_entry_data['attachments'] = [];
         foreach ($generated_attachments as $generated_attachment) {
             $generated_entry_data['attachments'][] = [
-                'uuid'=>$generated_attachment->uuid,
-                'name'=>$generated_attachment->name
+                'uuid' => $generated_attachment->uuid,
+                'name' => $generated_attachment->name,
             ];
         }
 
@@ -251,8 +229,8 @@ class PostEntryTest extends TestCase {
         $this->assertNotEmpty($get_response_as_array['attachments']);
         foreach ($get_response_as_array['attachments'] as $attachment) {
             $attachment_data = [
-                'uuid'=>$attachment['uuid'],
-                'name'=>$attachment['name']
+                'uuid' => $attachment['uuid'],
+                'name' => $attachment['name'],
             ];
             $this->assertContains($attachment_data, $generated_entry_data['attachments'], 'Generated attachments:'.json_encode($generated_entry_data['attachments']));
         }
@@ -297,12 +275,12 @@ class PostEntryTest extends TestCase {
     private function generateEntryData(): array {
         $entry_data = Entry::factory()->make();
         return [
-            'account_type_id'=>$entry_data->account_type_id,
-            'confirm'=>$entry_data->confirm,
-            'entry_date'=>$entry_data->entry_date,
-            'entry_value'=>$entry_data->entry_value,
-            'expense'=>$entry_data->expense,
-            'memo'=>$entry_data->memo
+            'account_type_id' => $entry_data->account_type_id,
+            'confirm' => $entry_data->confirm,
+            'entry_date' => $entry_data->entry_date,
+            'entry_value' => $entry_data->entry_value,
+            'expense' => $entry_data->expense,
+            'memo' => $entry_data->memo,
         ];
     }
 

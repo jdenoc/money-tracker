@@ -8,21 +8,23 @@ use Illuminate\Support\Facades\Storage;
 class Attachment extends BaseModel {
     use HasFactory;
 
+    // storage locations
     const STORAGE_TMP_UPLOAD = 'tmp-uploads';
     const STORAGE_ATTACHMENTS = 'attachments';
 
+    // variables
     protected $table = 'attachments';
     protected $primaryKey = 'uuid';
     protected $keyType = 'string';      // The "type" of the primary key ID.
     public $incrementing = false;   // because attachments.uuid isn't an int and so can't be incremented
     protected $fillable = [
-        'uuid', 'entry_id', 'name'
+        'uuid', 'entry_id', 'name',
     ];
     protected $guarded = [
-        'stamp'
+        'stamp',
     ];
-    protected $dates = [
-        'stamp'
+    protected $casts = [
+        'stamp' => 'datetime',
     ];
     public $timestamps = false;
 

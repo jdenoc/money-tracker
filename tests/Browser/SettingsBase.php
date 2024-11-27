@@ -21,40 +21,36 @@ abstract class SettingsBase extends DuskTestCase {
     use WaitTimes;
     use WithTailwindColors;
 
+    // selectors & labels
     protected static string $SELECTOR_PRIMARY_DIV = '#app-settings';
-
     private static string $SELECTOR_SETTINGS_NAV = '#settings-nav';
     private static string $SELECTOR_SETTINGS_NAV_HEADER = '#settings-panel-header';
     private static string $SELECTOR_SETTINGS_NAV_ACTIVE = 'li.settings-nav-option.is-active';
     protected static string $SELECTOR_SETTINGS_NAV_ELEMENT;
     protected static string $LABEL_SETTINGS_NAV_ELEMENT;
-
     private static string $SELECTOR_SETTINGS_DISPLAY = '#settings-display';
     private static string $SELECTOR_SETTINGS_DISPLAY_SECTION_DEFAULT = 'section#settings-default';
     protected static string $SELECTOR_SETTINGS_HEADER = 'h3';
     protected static string $SELECTOR_SETTINGS_DISPLAY_SECTION;
     protected static string $LABEL_SETTINGS_SECTION_HEADER;
-
     protected static string $LABEL_SETTINGS_FORM_INPUT_NAME = 'Name:';
     protected static string $LABEL_SETTINGS_FORM_LABEL_ACTIVE = 'Active State:';
     protected static string $LABEL_SETTINGS_LABEL_CREATED = "Created:";
     protected static string $LABEL_SETTINGS_LABEL_MODIFIED = "Modified:";
     protected static string $LABEL_SETTINGS_LABEL_DISABLED = "Disabled:";
-
     protected static string $SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE;
     protected static string $SELECTOR_SETTINGS_FORM_BUTTON_CLEAR;
     protected static string $LABEL_SETTINGS_FORM_BUTTON_CLEAR = "Clear";
     protected static string $SELECTOR_SETTINGS_FORM_BUTTON_SAVE;
     private static string $LABEL_SETTINGS_FORM_BUTTON_SAVE = "Save";
-
     protected static string $SELECTOR_SETTINGS_LOADING_OBJECTS;
     protected static string $TEMPLATE_SELECTOR_SETTINGS_NODE_ID;
-
     protected static string $LABEL_SETTINGS_NOTIFICATION_NEW;
     protected static string $LABEL_SETTINGS_NOTIFICATION_UPDATE;
     protected static string $LABEL_SETTINGS_NOTIFICATION_RESTORE;
     protected static string $LABEL_SETTINGS_NOTIFICATION_DELETE;
 
+    // colors
     private string $color_button_save;
 
     public function setUp(): void {
@@ -194,7 +190,7 @@ abstract class SettingsBase extends DuskTestCase {
 
                     $this->assertFormDefaults($section);
 
-                    $new_object =$this->getAllObjects()->diff($objects)->first();
+                    $new_object = $this->getAllObjects()->diff($objects)->first();
                     $this->interactWithObjectListItem($section, $new_object);
                     $section->elsewhere(self::$SELECTOR_PRIMARY_DIV, function(Browser $body) {
                         $this->waitForLoadingToStop($body);
@@ -250,9 +246,8 @@ abstract class SettingsBase extends DuskTestCase {
      * test ?/25
      */
     public function testDisablingOrRestoringObject(bool $isInitObjectActive) {
-        // TODO: remove as soon as other objects have been updated
-        if (in_array(get_class(), ['SettingsTagsTest'])) {
-            $this->markTestSkipped();
+        if(in_array(get_called_class(), [SettingsTagsTest::class])) {
+            $this->markTestSkipped("enabling/disabling tags is not currently supported");
         }
 
         $generated_object = $this->generateObject($isInitObjectActive);
@@ -323,17 +318,17 @@ abstract class SettingsBase extends DuskTestCase {
 
     abstract protected function generateObject(bool $isInitObjectActive): BaseModel;
 
-    abstract protected function getObject(int $id=null): BaseModel;
+    abstract protected function getObject(?int $id = null): BaseModel;
 
     abstract protected function getAllObjects(): Collection;
 
-    abstract protected function interactWithObjectListItem(Browser $section, BaseModel $object, bool $is_fresh_load=true): void;
+    abstract protected function interactWithObjectListItem(Browser $section, BaseModel $object, bool $is_fresh_load = true): void;
 
-    abstract protected function interactWithFormElement(Browser $section, string $selector, ?BaseModel $object=null): void;
+    abstract protected function interactWithFormElement(Browser $section, string $selector, ?BaseModel $object = null): void;
 
-    abstract public function providerDisablingOrRestoringObject(): array;
+    abstract public static function providerDisablingOrRestoringObject(): array;
 
-    abstract public function providerSaveExistingSettingObject(): array;
+    abstract public static function providerSaveExistingSettingObject(): array;
 
     // ------------ ------------ ------------
     // ------------ asserts      ------------
@@ -341,26 +336,26 @@ abstract class SettingsBase extends DuskTestCase {
 
     protected function assertConstantsSet(): void {
         $constants_to_be_set = [
-            'SELECTOR_SETTINGS_NAV_ELEMENT'=>static::$SELECTOR_SETTINGS_NAV_ELEMENT,
-            'LABEL_SETTINGS_NAV_ELEMENT'=>static::$LABEL_SETTINGS_NAV_ELEMENT,
+            'SELECTOR_SETTINGS_NAV_ELEMENT' => static::$SELECTOR_SETTINGS_NAV_ELEMENT,
+            'LABEL_SETTINGS_NAV_ELEMENT' => static::$LABEL_SETTINGS_NAV_ELEMENT,
 
-            'SELECTOR_SETTINGS_DISPLAY_SECTION'=>static::$SELECTOR_SETTINGS_DISPLAY_SECTION,
-            'LABEL_SETTINGS_SECTION_HEADER'=>static::$LABEL_SETTINGS_SECTION_HEADER,
+            'SELECTOR_SETTINGS_DISPLAY_SECTION' => static::$SELECTOR_SETTINGS_DISPLAY_SECTION,
+            'LABEL_SETTINGS_SECTION_HEADER' => static::$LABEL_SETTINGS_SECTION_HEADER,
 
-            'SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE'=>static::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE,
-            'SELECTOR_SETTINGS_FORM_BUTTON_CLEAR'=>static::$SELECTOR_SETTINGS_FORM_BUTTON_CLEAR,
-            'SELECTOR_SETTINGS_FORM_BUTTON_SAVE'=>static::$SELECTOR_SETTINGS_FORM_BUTTON_SAVE,
+            'SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE' => static::$SELECTOR_SETTINGS_FORM_TOGGLE_ACTIVE,
+            'SELECTOR_SETTINGS_FORM_BUTTON_CLEAR' => static::$SELECTOR_SETTINGS_FORM_BUTTON_CLEAR,
+            'SELECTOR_SETTINGS_FORM_BUTTON_SAVE' => static::$SELECTOR_SETTINGS_FORM_BUTTON_SAVE,
 
-            'SELECTOR_SETTINGS_LOADING_OBJECTS'=>static::$SELECTOR_SETTINGS_LOADING_OBJECTS,
-            'TEMPLATE_SELECTOR_SETTINGS_NODE_ID'=>static::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID,
+            'SELECTOR_SETTINGS_LOADING_OBJECTS' => static::$SELECTOR_SETTINGS_LOADING_OBJECTS,
+            'TEMPLATE_SELECTOR_SETTINGS_NODE_ID' => static::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID,
 
-            'LABEL_SETTINGS_NOTIFICATION_NEW'=>static::$LABEL_SETTINGS_NOTIFICATION_NEW,
-            'LABEL_SETTINGS_NOTIFICATION_UPDATE'=>static::$LABEL_SETTINGS_NOTIFICATION_UPDATE,
-            'LABEL_SETTINGS_NOTIFICATION_RESTORE'=>static::$LABEL_SETTINGS_NOTIFICATION_RESTORE,
-            'LABEL_SETTINGS_NOTIFICATION_DELETE'=>static::$LABEL_SETTINGS_NOTIFICATION_DELETE,
+            'LABEL_SETTINGS_NOTIFICATION_NEW' => static::$LABEL_SETTINGS_NOTIFICATION_NEW,
+            'LABEL_SETTINGS_NOTIFICATION_UPDATE' => static::$LABEL_SETTINGS_NOTIFICATION_UPDATE,
+            'LABEL_SETTINGS_NOTIFICATION_RESTORE' => static::$LABEL_SETTINGS_NOTIFICATION_RESTORE,
+            'LABEL_SETTINGS_NOTIFICATION_DELETE' => static::$LABEL_SETTINGS_NOTIFICATION_DELETE,
         ];
 
-        foreach ($constants_to_be_set as $constant_name=>$constant_value) {
+        foreach ($constants_to_be_set as $constant_name => $constant_value) {
             $this->assertNotNull($constant_value, sprintf("The constant %s must have a value set", $constant_name));
         }
     }

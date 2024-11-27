@@ -8,6 +8,7 @@ use Tests\TestCase;
 
 class GetAccountsTest extends TestCase {
 
+    // uri
     private string $_uri = '/api/accounts';
 
     public function testGetListOfAccountsWhenTheyAreAvailable() {

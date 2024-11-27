@@ -11,6 +11,7 @@ use Tests\TestCase;
 class PutInstitutionTest extends TestCase {
     use InstitutionResponseKeys;
 
+    // uri
     private string $_base_uri = '/api/institution/%d';
 
     public function setUp(): void {
@@ -36,7 +37,7 @@ class PutInstitutionTest extends TestCase {
         do {
             $institution_id = fake()->randomNumber(2);
         } while (in_array($institution_id, $existing_ids));
-        $institution_data = $this->generateInstitutionData();
+        $institution_data = self::generateInstitutionData();
 
         // WHEN
         $response = $this->putJson(sprintf($this->_base_uri, $institution_id), $institution_data);
@@ -45,25 +46,24 @@ class PutInstitutionTest extends TestCase {
         $this->assertFailedPostResponse($response, HttpStatus::HTTP_NOT_FOUND, self::$ERROR_MSG_DOES_NOT_EXIST);
     }
 
-    public function providerUpdateInstitutionEachProperty(): array {
-        $this->initialiseApplication();
-        $institution_data = $this->generateInstitutionData();
+    public static function providerUpdateInstitutionEachProperty(): array {
         $required_fields = Institution::getRequiredFieldsForUpdate();
 
         $test_cases = [];
         foreach ($required_fields as $required_field) {
-            $test_cases[$required_field]['data'] = [$required_field=>$institution_data[$required_field]];
+            $test_cases[$required_field] = ['institution_data_field' => $required_field];
         }
         return $test_cases;
     }
 
     /**
      * @dataProvider providerUpdateInstitutionEachProperty
-     * @param array $institution_data
      */
-    public function testUpdateInstitutionEachProperty(array $institution_data) {
+    public function testUpdateInstitutionEachProperty(string $institution_data_field) {
         // GIVEN - see providerUpdateInstitutionEachProperty()
         $institution = $this->getRandomActiveExistingInstitution();
+        $sample_institution_data = $this->generateInstitutionData();
+        $institution_data = [$institution_data_field => $sample_institution_data[$institution_data_field]];
 
         // WHEN
         $response = $this->putJson(sprintf($this->_base_uri, $institution->id), $institution_data);
@@ -100,7 +100,7 @@ class PutInstitutionTest extends TestCase {
     private function generateInstitutionData(): array {
         $dummy_institution = Institution::factory()->make();
         return [
-            'name'=>$dummy_institution->name
+            'name' => $dummy_institution->name,
         ];
     }
 

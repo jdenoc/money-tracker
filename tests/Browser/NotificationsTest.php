@@ -41,13 +41,14 @@ class NotificationsTest extends DuskTestCase {
     use EntryResponseKeys;
     use HomePageSelectors;
 
-    const TEMPLATE_MESSAGE_ERROR_OCCURRED = "An error occurred while attempting to retrieve %s";
-    const TEMPLATE_MESSAGE_NOT_FOUND = "No %s currently available";
+    // message templates
+    private const TEMPLATE_MESSAGE_ERROR_OCCURRED = "An error occurred while attempting to retrieve %s";
+    private const TEMPLATE_MESSAGE_NOT_FOUND = "No %s currently available";
 
     public function setUp(): void {
         parent::setUp();
 
-        switch($this->getName()) {
+        switch($this->name()) {
             // disable & clear cache prior to the dropping any tables
             case 'testNotificationFetchAccounts500':
                 Account::cache()->disable();
@@ -248,10 +249,10 @@ class NotificationsTest extends DuskTestCase {
     private function generatedEntryWithAttachmentOneMonthInTheFuture() {
         $account_type = AccountType::all()->random();
         $new_entry = Entry::factory()->create([
-            'account_type_id'=>$account_type->id,
-            'entry_date'=>Carbon::now()->addDays(30)
+            'account_type_id' => $account_type->id,
+            'entry_date' => Carbon::now()->addDays(30),
         ]);
-        Attachment::factory()->create(['entry_id'=>$new_entry->id]);
+        Attachment::factory()->create(['entry_id' => $new_entry->id]);
     }
 
     /**
@@ -339,11 +340,11 @@ class NotificationsTest extends DuskTestCase {
             $memo_field = "Test entry - 500 ERROR saving requirements";
             $browser
                 ->within($this->_selector_modal_body, function(Browser $modal_body) use ($account_type, $memo_field) {
-                    $this->waitUntilSelectLoadingIsMissing($modal_body, $this->_selector_modal_entry_field_account_type);
+                    $this->waitUntilSelectLoadingIsMissing($modal_body, self::$SELECTOR_MODAL_ENTRY_FIELD_ACCOUNT_TYPE);
                     $modal_body
-                        ->type($this->_selector_modal_entry_field_value, "9.99")
-                        ->select($this->_selector_modal_entry_field_account_type, $account_type['id'])
-                        ->type($this->_selector_modal_entry_field_memo, $memo_field);
+                        ->type(self::$SELECTOR_MODAL_ENTRY_FIELD_VALUE, "9.99")
+                        ->select(self::$SELECTOR_MODAL_ENTRY_FIELD_ACCOUNT_TYPE, $account_type['id'])
+                        ->type(self::$SELECTOR_MODAL_ENTRY_FIELD_MEMO, $memo_field);
                 });
 
             // FORCE 500 from `POST /api/entry`
@@ -423,7 +424,7 @@ class NotificationsTest extends DuskTestCase {
             $browser
                 ->openExistingEntryModal(sprintf(self::$PLACEHOLDER_SELECTOR_EXISTING_ENTRY_ROW, $entry_id))
                 ->within($this->_selector_modal_body, function(Browser $modal_body) {
-                    $this->toggleToggleButton($modal_body, $this->_selector_modal_entry_field_expense);
+                    $this->toggleToggleButton($modal_body, self::$SELECTOR_MODAL_ENTRY_FIELD_EXPENSE);
                 })
                 ->within($this->_selector_modal_foot, function(Browser $modal_foot) {
                     // FORCE 404 from `GET /api/entry/{entry_id}`
@@ -458,14 +459,14 @@ class NotificationsTest extends DuskTestCase {
                 ->openExistingEntryModal(sprintf(self::$PLACEHOLDER_SELECTOR_EXISTING_ENTRY_ROW, $entry_id))
                 ->within($this->_selector_modal_body, function(Browser $modal) {
                     // We have tests for other fields so lets just update the easiest to update
-                    $old_value = floatval($modal->inputValue($this->_selector_modal_entry_field_value));
+                    $old_value = floatval($modal->inputValue(self::$SELECTOR_MODAL_ENTRY_FIELD_VALUE));
                     $modal
-                       ->clear($this->_selector_modal_entry_field_value)
-                        ->type($this->_selector_modal_entry_field_value, $old_value+10);
-                    $old_memo = $modal->inputValue($this->_selector_modal_entry_field_memo);
+                       ->clear(self::$SELECTOR_MODAL_ENTRY_FIELD_VALUE)
+                        ->type(self::$SELECTOR_MODAL_ENTRY_FIELD_VALUE, $old_value + 10);
+                    $old_memo = $modal->inputValue(self::$SELECTOR_MODAL_ENTRY_FIELD_MEMO);
                     $modal
-                        ->clear($this->_selector_modal_entry_field_memo)
-                        ->type($this->_selector_modal_entry_field_memo, $old_memo.' [UPDATE]');
+                        ->clear(self::$SELECTOR_MODAL_ENTRY_FIELD_MEMO)
+                        ->type(self::$SELECTOR_MODAL_ENTRY_FIELD_MEMO, $old_memo.' [UPDATE]');
                 })
                 ->within($this->_selector_modal_foot, function(Browser $modal_foot) use ($table) {
                     // FORCE 500 from `GET /api/entry/{entry_id}`
@@ -614,7 +615,7 @@ class NotificationsTest extends DuskTestCase {
     /**
      * @throws Throwable
      *
-     * @group notifications-1
+     * @group notifications-2
      * test 2/20
      */
     public function testNotificationFetchTags500() {
@@ -633,20 +634,16 @@ class NotificationsTest extends DuskTestCase {
         DB::statement($recreate_table_query);
     }
 
-    /**
-     * @param string $table_name
-     * @return string
-     */
     private function getTableRecreationQuery(string $table_name): string {
         $create_query = DB::select(sprintf("SHOW CREATE TABLE %s", $table_name));
         return $create_query[0]->{"Create Table"};
     }
 
-    private function dropTable(string $tableName) {
+    private function dropTable(string $tableName): void {
         DB::statement(sprintf("DROP TABLE %s", $tableName));
     }
 
-    private function truncateTable(string $tableName) {
+    private function truncateTable(string $tableName): void {
         DB::table($tableName)->truncate();
         $this->refreshCache($tableName);
     }
@@ -670,7 +667,7 @@ class NotificationsTest extends DuskTestCase {
     }
 
     private function getEntryTableRowSelector(): string {
-        $unconfirmed_entry_selectors = [$this->_selector_table_unconfirmed_expense, $this->_selector_table_unconfirmed_income];
+        $unconfirmed_entry_selectors = [self::$SELECTOR_TABLE_UNCONFIRMED_EXPENSE, self::$SELECTOR_TABLE_UNCONFIRMED_INCOME];
         return $unconfirmed_entry_selectors[array_rand($unconfirmed_entry_selectors, 1)];
     }
 

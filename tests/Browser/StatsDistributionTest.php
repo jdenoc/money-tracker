@@ -25,19 +25,23 @@ class StatsDistributionTest extends StatsBase {
     use DuskTraitStatsDateRange;
     use DuskTraitStatsSidePanel;
 
-    private static $SELECTOR_STATS_DISTRIBUTION = '#stats-distribution';
-    private static $SELECTOR_STATS_FORM_TOGGLE_EXPENSEINCOME = '#distribution-expense-or-income';
-    private static $SELECTOR_CHART_DISTRIBUTION = "canvas#pie-chart";
+    // selectors
+    private const SELECTOR_STATS_DISTRIBUTION = '#stats-distribution';
+    private const SELECTOR_STATS_FORM_TOGGLE_EXPENSEINCOME = '#distribution-expense-or-income';
+    private const SELECTOR_CHART_DISTRIBUTION = "canvas#pie-chart";
 
-    private static $LABEL_FORM_TOGGLE_EXPENSEINCOME_DEFAULT = "Expense";
-    private static $LABEL_FORM_TOGGLE_EXPENSEINCOME_INCOME = "Income";
+    // labels
+    private const LABEL_FORM_TOGGLE_EXPENSEINCOME_DEFAULT = "Expense";
+    private const LABEL_FORM_TOGGLE_EXPENSEINCOME_INCOME = "Income";
 
-    private static $VUE_KEY_STANDARDISEDATA = "standardiseData";
+    // vue keys
+    private const VUE_KEY_STANDARDISEDATA = "standardiseData";
 
+    // variables
     private $_color_switch_default;
 
-    public function __construct($name = null, array $data = [], $dataName = '') {
-        parent::__construct($name, $data, $dataName);
+    public function __construct($name = null) {
+        parent::__construct($name);
         $chart_designation = 'distribution-chart';
         $this->_account_or_account_type_toggling_selector_id_label = $chart_designation;
         $this->date_range_chart_name = $chart_designation;
@@ -81,7 +85,7 @@ class StatsDistributionTest extends StatsBase {
                     $this->assertDefaultStateOfAccountOrAccountTypeTogglingSelectorComponent($form, $accounts);
 
                     // expense/income - switch
-                    $this->assertToggleButtonState($form, self::$SELECTOR_STATS_FORM_TOGGLE_EXPENSEINCOME, self::$LABEL_FORM_TOGGLE_EXPENSEINCOME_DEFAULT, $this->_color_switch_default);
+                    $this->assertToggleButtonState($form, self::SELECTOR_STATS_FORM_TOGGLE_EXPENSEINCOME, self::LABEL_FORM_TOGGLE_EXPENSEINCOME_DEFAULT, $this->_color_switch_default);
 
                     // date range
                     $this->assertDefaultStateDateRange($form);
@@ -125,61 +129,61 @@ class StatsDistributionTest extends StatsBase {
         );
     }
 
-    public function providerGenerateDistributionChart(): array {
+    public static function providerGenerateDistributionChart(): array {
         //[$datepicker_start, $datepicker_end, $is_account_switch_toggled, $is_expense_switch_toggled, $is_random_selector_value, $are_disabled_select_options_available, $include_transfers]
         return [
             // test 1/20
-            'default state of account/account-types; expense; default date range'=>[null, null, false, false, false, false, false],
+            'default state of account/account-types; expense; default date range' => [null, null, false, false, false, false, false],
             // test 2/20
-            'default state of account/account-types; expense; default date range; include transfers'=>[null, null, false, false, false, false, true],
+            'default state of account/account-types; expense; default date range; include transfers' => [null, null, false, false, false, false, true],
             // test 3/20
-            'default state of account/account-types; income; default date range'=>[null, null, false, true, false, false, false],
+            'default state of account/account-types; income; default date range' => [null, null, false, true, false, false, false],
             // test 4/20
-            'default state of account/account-types; income; default date range; include transfers'=>[null, null, false, true, false, false, true],
+            'default state of account/account-types; income; default date range; include transfers' => [null, null, false, true, false, false, true],
             // test 5/20
-            'default state of account/account-types; expense; date range a year past to today'=>[$this->previous_year_start, $this->today, false, false, false, false, false],
+            'default state of account/account-types; expense; date range a year past to today' => [self::getDatePreviousYearStart(), self::getDateToday(), false, false, false, false, false],
             // test 6/20
-            'default state of account/account-types; expense; date range a year past to today; include transfers'=>[$this->previous_year_start, $this->today, false, false, false, false, true],
+            'default state of account/account-types; expense; date range a year past to today; include transfers' => [self::getDatePreviousYearStart(), self::getDateToday(), false, false, false, false, true],
             // test 7/20
-            'default state of account/account-types; income; date range a year past to today'=>[$this->previous_year_start, $this->today, false, true, false, false, false],
+            'default state of account/account-types; income; date range a year past to today' => [self::getDatePreviousYearStart(), self::getDateToday(), false, true, false, false, false],
             // test 8/20
-            'default state of account/account-types; income; date range a year past to today; include transfers'=>[$this->previous_year_start, $this->today, false, true, false, false, true],
+            'default state of account/account-types; income; date range a year past to today; include transfers' => [self::getDatePreviousYearStart(), self::getDateToday(), false, true, false, false, true],
             // test 9/20
-            'random account; expense; date range a year past to today'=>[$this->previous_year_start, $this->today, false, false, true, false, false],
+            'random account; expense; date range a year past to today' => [self::getDatePreviousYearStart(), self::getDateToday(), false, false, true, false, false],
             // test 10/20
-            'random account; expense; date range a year past to today; include transfers'=>[$this->previous_year_start, $this->today, false, false, true, false, true],
+            'random account; expense; date range a year past to today; include transfers' => [self::getDatePreviousYearStart(), self::getDateToday(), false, false, true, false, true],
             // test 11/20
-            'random account; income; date range a year past to today'=>[$this->previous_year_start, $this->today, false, true, true, false, false],
+            'random account; income; date range a year past to today' => [self::getDatePreviousYearStart(), self::getDateToday(), false, true, true, false, false],
             // test 12/20
-            'random account; income; date range a year past to today; include transfers'=>[$this->previous_year_start, $this->today, false, true, true, false, true],
+            'random account; income; date range a year past to today; include transfers' => [self::getDatePreviousYearStart(), self::getDateToday(), false, true, true, false, true],
             // test 13/20
-            'random account-type; expense; date range a year past to today'=>[$this->previous_year_start, $this->today, true, false, true, false, false],
+            'random account-type; expense; date range a year past to today' => [self::getDatePreviousYearStart(), self::getDateToday(), true, false, true, false, false],
             // test 14/20
-            'random account-type; expense; date range a year past to today; include transfers'=>[$this->previous_year_start, $this->today, true, false, true, false, true],
+            'random account-type; expense; date range a year past to today; include transfers' => [self::getDatePreviousYearStart(), self::getDateToday(), true, false, true, false, true],
             // test 15/20
-            'random account-type; income; date range a year past to today'=>[$this->previous_year_start, $this->today, true, true, true, false, false],
+            'random account-type; income; date range a year past to today' => [self::getDatePreviousYearStart(), self::getDateToday(), true, true, true, false, false],
             // test 16/20
-            'random account-type; income; date range a year past to today; include transfers'=>[$this->previous_year_start, $this->today, true, true, true, false, true],
+            'random account-type; income; date range a year past to today; include transfers' => [self::getDatePreviousYearStart(), self::getDateToday(), true, true, true, false, true],
             // test 17/20
-            'random disabled account; expense; date range a year past to today'=>[$this->previous_year_start, $this->today, false, false, true, true, false],
+            'random disabled account; expense; date range a year past to today' => [self::getDatePreviousYearStart(), self::getDateToday(), false, false, true, true, false],
             // test 18/20
-            'random disabled account; expense; date range a year past to today; include transfers'=>[$this->previous_year_start, $this->today, false, false, true, true, true],
+            'random disabled account; expense; date range a year past to today; include transfers' => [self::getDatePreviousYearStart(), self::getDateToday(), false, false, true, true, true],
             // test 19/20
-            'random disabled account; income; date range a year past to today'=>[$this->previous_year_start, $this->today, false, true, true, true, false],
+            'random disabled account; income; date range a year past to today' => [self::getDatePreviousYearStart(), self::getDateToday(), false, true, true, true, false],
             // test 20/20
-            'random disabled account; income; date range a year past to today; include transfers'=>[$this->previous_year_start, $this->today, false, true, true, true, true],
+            'random disabled account; income; date range a year past to today; include transfers' => [self::getDatePreviousYearStart(), self::getDateToday(), false, true, true, true, true],
             // test 21/20
-            'random disabled account-type; expense; date range a year past to today'=>[$this->previous_year_start, $this->today, true, false, true, true, false],
+            'random disabled account-type; expense; date range a year past to today' => [self::getDatePreviousYearStart(), self::getDateToday(), true, false, true, true, false],
             // test 22/20
-            'random disabled account-type; expense; date range a year past to today; include transfers'=>[$this->previous_year_start, $this->today, true, false, true, true, true],
+            'random disabled account-type; expense; date range a year past to today; include transfers' => [self::getDatePreviousYearStart(), self::getDateToday(), true, false, true, true, true],
             // test 23/20
-            'random disabled account-type; income; date range a year past to today'=>[$this->previous_year_start, $this->today, true, true, true, true, false],
+            'random disabled account-type; income; date range a year past to today' => [self::getDatePreviousYearStart(), self::getDateToday(), true, true, true, true, false],
             // test 24/20
-            'random disabled account-type; income; date range a year past to today; include transfers'=>[$this->previous_year_start, $this->today, true, true, true, true, true],
+            'random disabled account-type; income; date range a year past to today; include transfers' => [self::getDatePreviousYearStart(), self::getDateToday(), true, true, true, true, true],
             // test 25/20
-            'default state of account/account-types; expense; date range today only'=>[$this->today, $this->today, false, false, false, false, false],
+            'default state of account/account-types; expense; date range today only' => [self::getDateToday(), self::getDateToday(), false, false, false, false, false],
             // test 26/20
-            'default state of account/account-types; expense; date range today only; include transfers'=>[$this->today, $this->today, false, false, false, false, true],
+            'default state of account/account-types; expense; date range today only; include transfers' => [self::getDateToday(), self::getDateToday(), false, false, false, false, true],
         ];
     }
 
@@ -221,28 +225,28 @@ class StatsDistributionTest extends StatsBase {
 
                     if ($is_expense_switch_toggled) {
                         // expense/income - switch toggled
-                        $this->toggleToggleButton($form, self::$SELECTOR_STATS_FORM_TOGGLE_EXPENSEINCOME);
-                        $this->assertToggleButtonState($form, self::$SELECTOR_STATS_FORM_TOGGLE_EXPENSEINCOME, self::$LABEL_FORM_TOGGLE_EXPENSEINCOME_INCOME, $this->_color_switch_default);
+                        $this->toggleToggleButton($form, self::SELECTOR_STATS_FORM_TOGGLE_EXPENSEINCOME);
+                        $this->assertToggleButtonState($form, self::SELECTOR_STATS_FORM_TOGGLE_EXPENSEINCOME, self::LABEL_FORM_TOGGLE_EXPENSEINCOME_INCOME, $this->_color_switch_default);
                     } else {
                         // expense/income - switch default
-                        $this->assertToggleButtonState($form, self::$SELECTOR_STATS_FORM_TOGGLE_EXPENSEINCOME, self::$LABEL_FORM_TOGGLE_EXPENSEINCOME_DEFAULT, $this->_color_switch_default);
+                        $this->assertToggleButtonState($form, self::SELECTOR_STATS_FORM_TOGGLE_EXPENSEINCOME, self::LABEL_FORM_TOGGLE_EXPENSEINCOME_DEFAULT, $this->_color_switch_default);
                     }
                     $filter_data = $this->generateFilterArrayElementExpense($filter_data, !$is_expense_switch_toggled);
 
                     if (is_null($datepicker_start)) {
-                        $datepicker_start = $this->month_start;
+                        $datepicker_start = self::getDateMonthStart();
                     } else {
                         $this->setDateRangeDate($form, 'start', $datepicker_start);
                     }
                     if (is_null($datepicker_end)) {
-                        $datepicker_end = $this->month_end;
+                        $datepicker_end = self::getDateMonthEnd();
                     } else {
                         $this->setDateRangeDate($form, 'end', $datepicker_end);
                     }
 
                     $filter_data = $this->generateFilterArrayElementDatepicker($filter_data, $datepicker_start, $datepicker_end);
 
-                    $this->generateEntryFromFilterData($filter_data, $this->getName());
+                    $this->generateEntryFromFilterData($filter_data, $this->name());
                     $this->createEntryWithAllTags($is_account_switch_toggled, $account_or_account_type_id, $account_types, $tags);
                     $form->click(self::$SELECTOR_BUTTON_GENERATE);
                 });
@@ -259,16 +263,15 @@ class StatsDistributionTest extends StatsBase {
                         $this->clickIncludeTransfersCheckboxButton($stats_results_area);
                         $this->assertIncludesTransfersCheckboxButtonStateActive($stats_results_area);
                     }
-                    $stats_results_area->assertVisible(self::$SELECTOR_CHART_DISTRIBUTION);
+                    $stats_results_area->assertVisible(self::SELECTOR_CHART_DISTRIBUTION);
                 })
-                ->assertVue(self::$VUE_KEY_STANDARDISEDATA, $this->standardiseData($entries, $tags), self::$SELECTOR_STATS_DISTRIBUTION);
+                ->assertVue(self::VUE_KEY_STANDARDISEDATA, $this->standardiseData($entries, $tags), self::SELECTOR_STATS_DISTRIBUTION);
         });
     }
 
     /**
      * @param Collection $entries
      * @param Collection $tags
-     * @return array
      */
     private function standardiseData($entries, $tags): array {
         $standardised_chart_data = [];
@@ -281,7 +284,7 @@ class StatsDistributionTest extends StatsBase {
                 $key = $tag_id === 0 ? 'untagged' : $tags->where('id', $tag_id)->pluck('name')->first();
 
                 if (!isset($standardised_chart_data[$key])) {
-                    $standardised_chart_data[$key] = ['x'=>$key,'y'=>0];
+                    $standardised_chart_data[$key] = ['x' => $key,'y' => 0];
                 }
                 $standardised_chart_data[$key]['y'] += $entry['entry_value'];
                 $standardised_chart_data[$key]['y'] = round($standardised_chart_data[$key]['y'], 2);
@@ -297,8 +300,6 @@ class StatsDistributionTest extends StatsBase {
      * It's a waste of resources to do that for every test when most tests don't need that kind of data.
      * So instead for these tests, we'll create a disabled with all the tags
      *
-     * @param bool $is_account_type_rather_than_account_toggled
-     * @param int|null $account_or_account_type_id
      * @param Collection $account_types
      * @param Collection $tags
      */
@@ -313,7 +314,7 @@ class StatsDistributionTest extends StatsBase {
             $account_type_id = $account_types->pluck('id')->random();
         }
 
-        $disabled_entry = Entry::factory()->create(['memo'=>$this->getName().' - ALL tags', 'account_type_id'=>$account_type_id, 'entry_date'=>date('Y-m-d', strtotime('-1 day'))]);
+        $disabled_entry = Entry::factory()->create(['memo' => $this->name().' - ALL tags', 'account_type_id' => $account_type_id, 'entry_date' => date('Y-m-d', strtotime('-1 day'))]);
         foreach ($tags->pluck('id')->all() as $tag_id) {
             $disabled_entry->tags()->attach($tag_id);
         }

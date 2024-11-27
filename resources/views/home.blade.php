@@ -4,6 +4,7 @@
     @component('head-component')
         Money Tracker | HOME
     @endcomponent
+    @vite('resources/js/app-home.js')
 </head>
 <body>
 <div id="app-home" class="py-16">
@@ -27,6 +28,5 @@
         </div>
     </div>
 </div>
-<script type="text/javascript" src="{{mix('dist/js/app-home.js')}}"></script>
 </body>
 </html>

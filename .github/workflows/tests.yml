@@ -1,4 +1,5 @@
 # .github/workflows/tests.yml
+---
 name: Money-tracker CI
 
 # Controls when the action will run.
@@ -39,7 +40,7 @@ jobs:
 
       - name: Generate cache keys [vue]
         id: cache-key-vue
-        run: echo "value=cache-vue-${{ hashFiles('package*.json', 'resources/**', 'tailwind.config.js', 'webpack.mix.js') }}" >> $GITHUB_OUTPUT
+        run: echo "value=cache-vue-${{ hashFiles('package*.json', 'resources/**', 'tailwind.config.js', 'postcss.config.js', 'vite.config.js') }}" >> $GITHUB_OUTPUT
 
       - name: Generate cache paths [docker]
         id: cache-path-docker
@@ -57,8 +58,7 @@ jobs:
         id: cache-path-vue
         run: |
           echo "value<<EOF" >> $GITHUB_OUTPUT
-          echo "public/dist" >> $GITHUB_OUTPUT
-          echo "public/mix-manifest.json" >> $GITHUB_OUTPUT
+          echo "public/build" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Generate failure content paths for artifact upload
@@ -131,7 +131,7 @@ jobs:
         if: steps.cache-composer.outputs.cache-hit != 'true'
         with:
           github-token: ${{ github.token }}
-          php-version: "8.0.22"
+          php-version: "8.1.20"
 
       - name: "Cache: npm packages"
         id: cache-npm
@@ -154,6 +154,10 @@ jobs:
       - name: Build Vue
         uses: ./.github/actions/build-vue
         if: steps.cache-vue.outputs.cache-hit != 'true'
+
+      - name: "Linter: YAML"
+        id: linter-yaml
+        run: yamllint docker-compose*yml .github/**/*.yml
 
       - name: "Linter: PHP"
         id: linter-php
@@ -207,39 +211,39 @@ jobs:
 
       - uses: ./.github/actions/app-run
       - name: unit tests - DELETE API endpoints
-        run: .docker/scripts/artisan.sh test -v --testsuite api-delete
+        run: .docker/scripts/artisan.sh test --testsuite api-delete
 
       - uses: ./.github/actions/app-run
       - name: unit tests - GET API endpoints
-        run: .docker/scripts/artisan.sh test -v --testsuite api-get
+        run: .docker/scripts/artisan.sh test --testsuite api-get
 
       - uses: ./.github/actions/app-run
       - name: unit tests - PATCH API endpoints
-        run: .docker/scripts/artisan.sh test -v --testsuite api-patch
+        run: .docker/scripts/artisan.sh test --testsuite api-patch
 
       - uses: ./.github/actions/app-run
       - name: unit tests - POST API endpoints
-        run: .docker/scripts/artisan.sh test -v --testsuite api-post
+        run: .docker/scripts/artisan.sh test --testsuite api-post
 
       - uses: ./.github/actions/app-run
       - name: unit tests - PUT API endpoints
-        run: .docker/scripts/artisan.sh test -v --testsuite api-put
+        run: .docker/scripts/artisan.sh test --testsuite api-put
 
       - uses: ./.github/actions/app-run
         with:
           is-cacheless: true  # artisan app:version testing doesn't work well when configs have been cached
       - name: unit tests - console
-        run: .docker/scripts/artisan.sh test -v --testsuite console
+        run: .docker/scripts/artisan.sh test --testsuite console
 
       - uses: ./.github/actions/app-run
         with:
           is-cacheless: true  # testing the /export endpoint doesn't work well when configs have been cached
       - name: unit tests - web
-        run: .docker/scripts/artisan.sh test -v --testsuite web
+        run: .docker/scripts/artisan.sh test --testsuite web
 
       - uses: ./.github/actions/app-run
       - name: unit tests - unit (generic)
-        run: .docker/scripts/artisan.sh test -v --testsuite unit
+        run: .docker/scripts/artisan.sh test --testsuite unit
 
       - name: Failure docker inspection
         uses: ./.github/actions/failure-docker-inspect
@@ -827,7 +831,7 @@ jobs:
       - tests-e2e-filter-modal
       - tests-e2e-stats
       - tests-e2e-settings
-    if: ${{ always() }} # You always want to be notified: success, failure, or cancelled
+    if: ${{ always() }}  # You always want to be notified: success, failure, or cancelled
     timeout-minutes: 15
     steps:
       - name: discord

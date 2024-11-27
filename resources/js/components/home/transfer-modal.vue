@@ -170,8 +170,8 @@ import {decimaliseInputMixin} from "../../mixins/decimalise-input-mixin";
 // objects
 import {Entry} from "../../entry";
 // components
-import FileDragNDrop from "../file-drag-n-drop";
-import TagsInput from "../tags-input";
+import FileDragNDrop from "../file-drag-n-drop.vue";
+import TagsInput from "../tags-input.vue";
 import TagsInputInfoLoading from "../tags-input-info-loading.vue";
 // stores
 import {useTagsStore} from "../../stores/tags";

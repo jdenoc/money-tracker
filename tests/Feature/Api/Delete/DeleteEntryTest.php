@@ -13,6 +13,7 @@ use Tests\TestCase;
 
 class DeleteEntryTest extends TestCase {
 
+    // uri
     private const BASE_URI = '/api/entry/%d';
 
     public function testMarkingEntryDeleted() {

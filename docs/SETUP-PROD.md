@@ -6,10 +6,15 @@
 <details><summary><strong>Download the most recent release</strong></summary>
 <p>
 
+Define latest tag
 ```bash
-# define latest tag
-RELEASE_NUMBER=
-curl -O money-tracker-${RELEASE_NUMBER}.tar.gz https://github.com/jdenoc/money-tracker/archive/refs/tags/${RELEASE_NUMBER}.tar.gz
+RELEASE_NUMBER=x.y.z
+```
+Where `x.y.z` is the desired release number.
+
+Download the most recent release
+```bash
+curl --location --output money-tracker-${RELEASE_NUMBER}.tar.gz https://github.com/jdenoc/money-tracker/archive/refs/tags/${RELEASE_NUMBER}.tar.gz
 tar -xzf money-tracker-${RELEASE_NUMBER}.tar.gz
 mv money-tracker-${RELEASE_NUMBER} /path/to/money-tracker
 ````
@@ -24,7 +29,7 @@ mv money-tracker-${RELEASE_NUMBER} /path/to/money-tracker
 cp .env.example .env
 sed "s/APP_ENV=.*/APP_ENV=production/" .env > .env.tmp; mv .env.tmp .env
 sed "s/APP_DEBUG=.*/APP_DEBUG=false/" .env > .env.tmp; mv .env.tmp .env
-sed "s/LOG_CHANNEL=.*/LOG_CHANNEL=daily/" .env > .env.tmp; mv .env.tmp .env
+sed "s/LOG_CHANNEL=.*/LOG_CHANNEL=single/" .env > .env.tmp; mv .env.tmp .env
 sed "s/LOG_LEVEL=.*/LOG_LEVEL=warning/" .env > .env.tmp; mv .env.tmp .env
 ```
 
@@ -56,7 +61,16 @@ php artisan app:version $RELEASE_NUMBER
 
 ```bash
 npm clean-install
-npm run build:prod
+```
+
+</p>
+</details>
+
+<details><summary><strong>Bundle JavaScript and CSS assets</strong></summary>
+<p>
+
+```bash
+npm run build
 ```
 
 </p>

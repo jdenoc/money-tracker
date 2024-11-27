@@ -83,9 +83,9 @@
 
 <script>
 // components
-import AccountAccountTypeTogglingSelector from "../account-account-type-toggling-selector";
-import DateRange from "./date-range";
-import IncludeTransfersCheckbox from "./include-transfers-checkbox";
+import AccountAccountTypeTogglingSelector from "../account-account-type-toggling-selector.vue";
+import DateRange from "./date-range.vue";
+import IncludeTransfersCheckbox from "./include-transfers-checkbox.vue";
 // utilities
 import _ from 'lodash';
 import {Currency} from "../../currency";

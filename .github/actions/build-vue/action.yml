@@ -1,9 +1,10 @@
 # .github/actions/build-vue/action.yml
+---
 name: Build Vue
 description: Build vue components
 runs:
   using: composite
   steps:
     - name: Build/Compile website
-      run: .docker/scripts/npm.sh run build:prod
+      run: .docker/scripts/npm.sh run build
       shell: bash

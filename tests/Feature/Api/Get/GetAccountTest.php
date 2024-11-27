@@ -11,6 +11,7 @@ use Tests\TestCase;
 
 class GetAccountTest extends TestCase {
 
+    // uri
     private string $_base_uri = '/api/account/%d';
 
     public function testGetAccountData() {
@@ -95,9 +96,7 @@ class GetAccountTest extends TestCase {
     }
 
     /**
-     * @param array $response_as_array
      * @param Account $generated_account
-     * @param int $account_type_count
      */
     private function assertAccountDetailsOK(array $response_as_array, $generated_account, int $account_type_count): void {
         $expected_elements = ['id', 'name', 'institution_id', 'active', 'total', 'currency', 'account_types', Account::CREATED_AT, Account::UPDATED_AT, Account::DELETED_AT];

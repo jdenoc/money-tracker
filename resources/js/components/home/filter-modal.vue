@@ -196,10 +196,10 @@ import {tailwindColorsMixin} from "../../mixins/tailwind-colors-mixin";
 // objects
 import {Currency} from "../../currency";
 // components
-import AccountAccountTypeTogglingSelector from "../account-account-type-toggling-selector";
-import TagsInput from '../tags-input';
+import AccountAccountTypeTogglingSelector from "../account-account-type-toggling-selector.vue";
+import TagsInput from '../tags-input.vue';
 import TagsInputInfoLoading from "../tags-input-info-loading.vue";
-import ToggleButton from '../toggle-button';
+import ToggleButton from '../toggle-button.vue';
 // stores
 import {useAccountsStore} from "../../stores/accounts";
 import {useAccountTypesStore} from "../../stores/accountTypes";

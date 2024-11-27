@@ -34,6 +34,7 @@ class UpdateAccountTotalTest extends DuskTestCase {
     use HomePageSelectors;
     use WaitTimes;
 
+    // variables
     private $_institution_id;
     private $_account;
     private $_account_type_id;
@@ -52,21 +53,20 @@ class UpdateAccountTotalTest extends DuskTestCase {
         $this->_account_type_id = $account_types_collection->where('disabled', false)->where('account_id', $account['id'])->pluck('id')->random();
 
         // make sure that at least 1 entry exists for the test
-        Entry::factory()->count(1)->create(['entry_date'=>date("Y-m-d"), 'confirm'=>0, 'account_type_id'=>$this->_account_type_id]);
+        Entry::factory()->count(1)->create(['entry_date' => date("Y-m-d"), 'confirm' => 0, 'account_type_id' => $this->_account_type_id]);
         // account['total'] will have changed after the new entry is created. need to re-fetch
         $this->_account = $this->getAccount($account['id']);
     }
 
-    public function providerUpdateAccountTotalWithNewEntry(): array {
+    public static function providerUpdateAccountTotalWithNewEntry(): array {
         return [
-            'expense'=>[true],   // test 1/20
-            'income'=>[false]    // test 2/20
+            'expense' => [true],   // test 1/20
+            'income' => [false],   // test 2/20
         ];
     }
 
     /**
      * @dataProvider providerUpdateAccountTotalWithNewEntry
-     * @param bool $is_entry_expense
      *
      * @throws Throwable
      *
@@ -88,17 +88,17 @@ class UpdateAccountTotalTest extends DuskTestCase {
             $browser
                 ->within($this->_selector_modal_body, function(Browser $entry_modal_body) use ($is_entry_expense, $entry_total) {
                     // The date field should already be filled in. No need to fill it in again.
-                    $entry_modal_body->type($this->_selector_modal_entry_field_value, $entry_total);
-                    $this->waitUntilSelectLoadingIsMissing($entry_modal_body, $this->_selector_modal_entry_field_account_type);
+                    $entry_modal_body->type(self::$SELECTOR_MODAL_ENTRY_FIELD_VALUE, $entry_total);
+                    $this->waitUntilSelectLoadingIsMissing($entry_modal_body, self::$SELECTOR_MODAL_ENTRY_FIELD_ACCOUNT_TYPE);
                     $entry_modal_body
-                        ->select($this->_selector_modal_entry_field_account_type, $this->_account_type_id)
-                        ->type($this->_selector_modal_entry_field_memo, "Test new entry account total update");
+                        ->select(self::$SELECTOR_MODAL_ENTRY_FIELD_ACCOUNT_TYPE, $this->_account_type_id)
+                        ->type(self::$SELECTOR_MODAL_ENTRY_FIELD_MEMO, "Test new entry account total update");
 
                     if (!$is_entry_expense) {
                         // entry is expense by default, so we only need to do something when we want to mark it as an income entry
-                        $entry_modal_body->click($this->_selector_modal_entry_field_expense);
+                        $entry_modal_body->click(self::$SELECTOR_MODAL_ENTRY_FIELD_EXPENSE);
                     }
-                    $entry_modal_body->click($this->_selector_modal_entry_field_date);
+                    $entry_modal_body->click(self::$SELECTOR_MODAL_ENTRY_FIELD_DATE);
                 })
                 ->within($this->_selector_modal_foot, function(Browser $modal_foot) {
                     $modal_foot->click($this->_selector_modal_entry_btn_save);
@@ -138,9 +138,9 @@ class UpdateAccountTotalTest extends DuskTestCase {
                 ->openExistingEntryModal($entry_selector)
                 ->within($this->_selector_modal_body, function(Browser $entry_modal_body) use ($entry_selector, &$switch_text) {
                     $entry_modal_body
-                        ->click($this->_selector_modal_entry_field_expense)
+                        ->click(self::$SELECTOR_MODAL_ENTRY_FIELD_EXPENSE)
                         ->pause(self::$WAIT_HALF_SECOND_IN_MILLISECONDS); // need to wait for the transition to complete after click;
-                    $switch_text = $entry_modal_body->text($this->_selector_modal_entry_field_expense);
+                    $switch_text = $entry_modal_body->text(self::$SELECTOR_MODAL_ENTRY_FIELD_EXPENSE);
                 })
                 ->within($this->_selector_modal_foot, function(Browser $modal_foot) {
                     $modal_foot->click($this->_selector_modal_entry_btn_save);
@@ -180,8 +180,8 @@ class UpdateAccountTotalTest extends DuskTestCase {
             $browser
                 ->openExistingEntryModal($entry_selector)
                 ->within($this->_selector_modal_body, function(Browser $entry_modal_body) use ($entry_selector, $new_value) {
-                    $entry_modal_body->clear($this->_selector_modal_entry_field_value);
-                    $entry_modal_body->type($this->_selector_modal_entry_field_value, $new_value);
+                    $entry_modal_body->clear(self::$SELECTOR_MODAL_ENTRY_FIELD_VALUE);
+                    $entry_modal_body->type(self::$SELECTOR_MODAL_ENTRY_FIELD_VALUE, $new_value);
                 })
                 ->within($this->_selector_modal_foot, function(Browser $modal_foot) {
                     $modal_foot->click($this->_selector_modal_entry_btn_save);
@@ -233,12 +233,12 @@ class UpdateAccountTotalTest extends DuskTestCase {
         });
     }
 
-    public function providerUpdateAccountTotalsWithNewTransferEntries(): array {
+    public static function providerUpdateAccountTotalsWithNewTransferEntries(): array {
         return [
             // [$is_from_account_external, $is_to_account_external]
-            'neither account is external'=>[false, false],  // test 6/20
-            '"to" account is external'=>[false, true],      // test 7/20
-            '"from" account is external'=>[true, false]     // test 8/20
+            'neither account is external' => [false, false],  // test 6/20
+            '"to" account is external' => [false, true],      // test 7/20
+            '"from" account is external' => [true, false],    // test 8/20
             // there will NEVER be a [true, true] option. there can not be two "external" accounts
         ];
     }
@@ -302,10 +302,10 @@ class UpdateAccountTotalTest extends DuskTestCase {
 
             // generate some test values
             $transfer_entry_data = [
-                'memo'=>"Test transfer - save - ".fake()->uuid,
-                'value'=>fake()->randomFloat(2, 0, 100),
-                'from_account_type_id'=>($account['from']['account_type_id']),
-                'to_account_type_id'=>($account['to']['account_type_id']),
+                'memo' => "Test transfer - save - ".fake()->uuid,
+                'value' => fake()->randomFloat(2, 0, 100),
+                'from_account_type_id' => ($account['from']['account_type_id']),
+                'to_account_type_id' => ($account['to']['account_type_id']),
             ];
             // get locale date string from browser
             $browser_locale_date = $this->getBrowserLocaleDate($browser);
@@ -344,7 +344,7 @@ class UpdateAccountTotalTest extends DuskTestCase {
         });
     }
 
-    private function assertAccountTotalInBrowser(Browser $browser, int $institution_id, int $account_id, Money $expected_account_total, bool $init=false): void {
+    private function assertAccountTotalInBrowser(Browser $browser, int $institution_id, int $account_id, Money $expected_account_total, bool $init = false): void {
         $browser->within($this->_selector_panel_institutions.' #institution-'.$institution_id, function(Browser $institution_node) use ($init, $account_id, $expected_account_total) {
             // ONLY click on the institution node if this is at start up
             // OTHERWISE the accounts should already be visible
@@ -364,11 +364,9 @@ class UpdateAccountTotalTest extends DuskTestCase {
     }
 
     /**
-     * @param int $id
-     * @param bool $is_institution_id
      * @return array
      */
-    private function getAccount(int $id, bool $is_institution_id=false) {
+    private function getAccount(int $id, bool $is_institution_id = false) {
         $accounts = $this->getApiAccounts();
         $accounts_collection = collect($accounts);
         if ($is_institution_id) {
@@ -379,7 +377,6 @@ class UpdateAccountTotalTest extends DuskTestCase {
     }
 
     /**
-     * @param int $account_type_id
      * @return array
      */
     private function getEntry(int $account_type_id) {

@@ -12,6 +12,7 @@ use Tests\TestCase;
 class PutAccountTest extends TestCase {
     use AccountResponseKeys;
 
+    // uri
     private string $_base_uri = '/api/account/%d';
 
     public function setUp(): void {
@@ -81,27 +82,28 @@ class PutAccountTest extends TestCase {
         $this->assertFailedPostResponse($response, HttpStatus::HTTP_NOT_FOUND, self::$ERROR_MSG_DOES_NOT_EXIST);
     }
 
-    public function providerUpdateAccountEachProperty(): array {
-        $this->initialiseApplication();
-        $account_data = $this->generateAccountData();
+    public static function providerUpdateAccountEachProperty(): array {
         $required_fields = Account::getRequiredFieldsForUpdate();
 
         $test_cases = [];
         foreach ($required_fields as $required_field) {
-            $test_cases[$required_field]['data'] = [$required_field=>$account_data[$required_field]];
+            $test_cases[$required_field] = [$required_field];
         }
         return $test_cases;
     }
 
     /**
      * @dataProvider providerUpdateAccountEachProperty
-     * @param array $account_data
      */
-    public function testUpdateAccountEachProperty(array $account_data) {
+    public function testUpdateAccountEachProperty(string $account_data_field) {
         // GIVEN - see providerUpdateAccountEachProperty()
+        $account_data = [];
         $account = $this->getRandomActiveExistingAccount();
-        if (isset($account_data['institution_id'])) {
-            $account_data['institution_id'] = $this->getExistingActiveInstitutionId();
+        if($account_data_field == 'institution_id') {
+            $account_data[$account_data_field] = $this->getExistingActiveInstitutionId();
+        } else {
+            $sample_account_data = $this->generateAccountData();
+            $account_data[$account_data_field] = $sample_account_data[$account_data_field];
         }
 
         // WHEN

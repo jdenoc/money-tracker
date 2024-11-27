@@ -17,7 +17,10 @@ class ExportsTest extends ListEntriesBase {
     use ExportsHelper;
     use GenerateFilterTestCases;
 
+    // uri
     const URI = "/export";
+
+    // config
     const DOWNLOAD_LOCATION_CONFIG = 'excel.temporary_files.local_path';
 
     public function tearDown(): void {
@@ -30,13 +33,13 @@ class ExportsTest extends ListEntriesBase {
         parent::tearDown();
     }
 
-    public function providerExportRequestMethodNotAllowed(): array {
+    public static function providerExportRequestMethodNotAllowed(): array {
         return [
             // Note: POST is the only valid request method
-            'GET'=>['GET'],
-            'PATCH'=>['PATCH'],
-            'PUT'=>['PUT'],
-            'DELETE'=>['DELETE']
+            'GET' => ['GET'],
+            'PATCH' => ['PATCH'],
+            'PUT' => ['PUT'],
+            'DELETE' => ['DELETE'],
         ];
     }
 
@@ -54,8 +57,8 @@ class ExportsTest extends ListEntriesBase {
         $this->assertEquals(HttpStatus::HTTP_METHOD_NOT_ALLOWED, $status_code);
     }
 
-    public function providerExportPostRequest(): array {
-        return $this->generateFilterTestCases(fake(Factory::DEFAULT_LOCALE));   // manually setting local to bypass needing to access configs
+    public static function providerExportPostRequest(): array {
+        return self::generateFilterTestCases(fake(Factory::DEFAULT_LOCALE));   // manually setting local to bypass needing to access configs
     }
 
     /**
@@ -64,7 +67,7 @@ class ExportsTest extends ListEntriesBase {
     public function testExportPostRequest(array $filter) {
         // GIVEN - see provider
         $total_entries_to_create = fake()->numberBetween(self::MIN_TEST_ENTRIES, self::$MAX_ENTRIES_IN_RESPONSE);
-        $generated_account_type = AccountType::factory()->create(['account_id'=>$this->_generated_account->id]);
+        $generated_account_type = AccountType::factory()->create(['account_id' => $this->_generated_account->id]);
         $filter = $this->setTestSpecificFilters(fake(), $filter, $this->_generated_account, $this->_generated_tags);
         $this->batch_generate_entries($total_entries_to_create, $generated_account_type->id, $this->convert_filters_to_entry_components($filter));
 

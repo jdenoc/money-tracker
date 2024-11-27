@@ -3,23 +3,23 @@
 
 # development
 .idea
-_ide_helper*.php
 .phpstorm.meta.php
-phpunit.dusk.xml
-.phpunit.result.cache
+.phpunit.*
 .php-cs-fixer.cache
+_ide_helper*.php
+phpunit.dusk.xml
 
 # composer
-vendor
 auth.json
+vendor
 
 # npm
 node_modules
 npm-debug.log
 
-# laravel-mix
-mix-manifest.json
-public/dist
+# vite
+public/build
+public/hot
 
 # misc
 .env*

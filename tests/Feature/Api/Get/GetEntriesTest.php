@@ -62,11 +62,11 @@ class GetEntriesTest extends ListEntriesBase {
         $page_limit = 3;
         // GIVEN
         $generated_account_type = AccountType::factory()->for($this->_generated_account)->create();
-        $generate_entry_count = fake()->numberBetween(($page_limit-1)*self::$MAX_ENTRIES_IN_RESPONSE+1, $page_limit*self::$MAX_ENTRIES_IN_RESPONSE);
+        $generate_entry_count = fake()->numberBetween(($page_limit - 1) * self::$MAX_ENTRIES_IN_RESPONSE + 1, $page_limit * self::$MAX_ENTRIES_IN_RESPONSE);
         $generated_entries = $this->batch_generate_entries($generate_entry_count, $generated_account_type->id);
 
         $entries_in_response = [];
-        for ($i=0; $i<$page_limit; $i++) {
+        for ($i = 0; $i < $page_limit; $i++) {
             // WHEN
             $response = $this->get($this->_uri.'/'.$i);
 
@@ -79,7 +79,7 @@ class GetEntriesTest extends ListEntriesBase {
             $this->assertEquals($generate_entry_count, $response_body_as_array['count']);
             unset($response_body_as_array['count']);
 
-            if ($i+1 == $page_limit) {
+            if ($i + 1 == $page_limit) {
                 $this->assertCount($generate_entry_count - (($page_limit - 1) * self::$MAX_ENTRIES_IN_RESPONSE), $response_body_as_array);
             } else {
                 $this->assertCount(self::$MAX_ENTRIES_IN_RESPONSE, $response_body_as_array);
@@ -91,7 +91,7 @@ class GetEntriesTest extends ListEntriesBase {
         $this->runEntryListAssertions($generate_entry_count, $entries_in_response, $generated_entries);
     }
 
-    public function providerLargeDataSets(): array {
+    public static function providerLargeDataSets(): array {
         $counts = [200, 500, 1000, 2000, 5000, 10000, 20000, 25000];
         $data_sets = [];
         foreach ($counts as $c) {
@@ -117,7 +117,7 @@ class GetEntriesTest extends ListEntriesBase {
                 return $entry;
             })->toArray();
         // generating entries in batches and using database insert methods because it's faster
-        for ($i=0; $i<($entry_count/self::$MAX_ENTRIES_IN_RESPONSE); $i++) {
+        for ($i = 0; $i < ($entry_count / self::$MAX_ENTRIES_IN_RESPONSE); $i++) {
             DB::table($table)->insert($generated_entries);
         }
 

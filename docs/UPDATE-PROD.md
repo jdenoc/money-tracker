@@ -9,7 +9,6 @@ From time to time, there will be new updates released. Such updates will contain
 Put site into maintenance mode
 ```bash
 # Navigate to the application directory, i.e.: cd money-tracker/
-
 php artisan down
 ```
 
@@ -25,7 +24,7 @@ Where `x.y.z` is the desired release number.
 
 Download the most recent release
 ```bash
-curl -O money-tracker-${RELEASE_NUMBER}.tar.gz https://github.com/jdenoc/money-tracker/archive/refs/tags/${RELEASE_NUMBER}.tar.gz
+curl --location --output money-tracker-${RELEASE_NUMBER}.tar.gz https://github.com/jdenoc/money-tracker/archive/refs/tags/${RELEASE_NUMBER}.tar.gz
 tar -xzf money-tracker-${RELEASE_NUMBER}.tar.gz
 ```
 
@@ -39,13 +38,13 @@ mv money-tracker-${RELEASE_NUMBER} $NEW_DIR_PATH
 
 Copy directories from old directory to new
 ```bash
-cp -a $OLD_DIR_PATH/storage/app/attachments/* $NEW_DIR_PATH/storage/app/attachments
+cp -a $OLD_DIR_PATH/storage/app/attachments/* $NEW_DIR_PATH/storage/app/attachments/
 cp -a $OLD_DIR_PATH/storage/app/tmp-uploads/* $NEW_DIR_PATH/storage/app/tmp-uploads/
-cp -a $OLD_DIR_PATH/storage/logs/*.log $NEW_DIR_PATH/storage/logs/
+cp -a $OLD_DIR_PATH/storage/logs/* $NEW_DIR_PATH/storage/logs/
 cp -a $OLD_DIR_PATH/database/snapshots/* $NEW_DIR_PATH/database/snapshots/
 cp -a $OLD_DIR_PATH/.env $NEW_DIR_PATH/.env
-cp -ar $OLD_DIR_PATH/vendor/ $NEW_DIR_PATH/
-cp -ar $OLD_DIR_PATH/node_modules/ $NEW_DIR_PATH/node_modules
+cp -a $OLD_DIR_PATH/vendor/ $NEW_DIR_PATH/
+cp -a $OLD_DIR_PATH/node_modules/ $NEW_DIR_PATH/
 ```
 
 ---
@@ -83,9 +82,9 @@ php artisan migrate
 ---
 
 #### Step 4
-Build website from *.vue files
+Bundle JavaScript and CSS assets
 ```bash
-npm run build:prod
+npm run build
 ```
 
 ---

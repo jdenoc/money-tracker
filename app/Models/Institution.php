@@ -12,22 +12,25 @@ class Institution extends BaseModel {
     use LaraCache;
     use SoftDeletes;
 
+    // cache constants
     const CACHE_KEY_ALL = 'all';
     const CACHE_KEY_COUNT = 'count';
 
+    // timestamps table columns
     const CREATED_AT = 'create_stamp';
     const UPDATED_AT = 'modified_stamp';
     const DELETED_AT = 'disabled_stamp';
 
+    // variables
     protected $table = 'institutions';
     protected $fillable = [
-        'name'
+        'name',
     ];
     protected $guarded = [
-        'id'
+        'id',
     ];
     protected $appends = [
-        'active'
+        'active',
     ];
     private static $required_fields = [
         'name',
@@ -60,7 +63,7 @@ class Institution extends BaseModel {
                 ->forever()
                 ->cache(function() {
                     return Institution::withTrashed()->count();
-                })
+                }),
         ];
     }
 

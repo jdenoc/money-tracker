@@ -24,7 +24,7 @@ class Kernel extends ConsoleKernel {
      *
      * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
      */
-    protected function schedule(Schedule $schedule) {
+    protected function schedule(Schedule $schedule): void {
         $schedule->command(Commands\AccountTotalSanityCheck::class)->dailyAt("03:17");
         $schedule->command(Commands\ClearTmpUploads::class)->daily();
         $schedule->command(SnapshotCreate::class, [date('Ymd.His.e'), '--compress'])->dailyAt("02:15")
@@ -40,7 +40,7 @@ class Kernel extends ConsoleKernel {
     /**
      * Register the commands for the application.
      */
-    protected function commands() {
+    protected function commands(): void {
         $this->load(__DIR__.'/Commands');
         require base_path('routes/console.php');
     }

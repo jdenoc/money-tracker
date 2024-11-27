@@ -13,39 +13,32 @@ class HomePage extends Page {
 
     /**
      * Get the URL for the page.
-     *
-     * @return string
      */
-    public function url() {
+    public function url(): string {
         return '/';
     }
 
     /**
      * Assert that the browser is on the page.
-     *
-     * @param  Browser  $browser
-     * @return void
      */
-    public function assert(Browser $browser) {
+    public function assert(Browser $browser): void {
         //
     }
 
     /**
      * Get the element shortcuts for the page.
-     *
-     * @return array
      */
-    public function elements() {
+    public function elements(): array {
         return [
             // entry-modal
-            '@entry-modal'=>'#entry-modal',
-            '@entry-modal-save-btn'=>"button#entry-save-btn",
-            '@edit-existing-entry-modal-btn'=>"button.edit-entry-button",
+            '@entry-modal' => '#entry-modal',
+            '@entry-modal-save-btn' => "button#entry-save-btn",
+            '@edit-existing-entry-modal-btn' => "button.edit-entry-button",
             // transfer-modal
-            '@transfer-modal'=>'#transfer-modal',
-            '@transfer-modal-save-btn'=>"#transfer-modal button#transfer-save-btn",
+            '@transfer-modal' => '#transfer-modal',
+            '@transfer-modal-save-btn' => "#transfer-modal button#transfer-save-btn",
             // filter-modal
-            '@filter-modal'=>'#filter-modal'
+            '@filter-modal' => '#filter-modal',
         ];
     }
 

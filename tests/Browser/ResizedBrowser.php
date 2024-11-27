@@ -10,6 +10,7 @@ use Laravel\Dusk\Concerns;
 
 class ResizedBrowser extends Browser {
     use BrowserDimensions;
+
     // carried over from original Browser class
     use Concerns\InteractsWithAuthentication;
     use Concerns\InteractsWithCookies;
@@ -54,7 +55,7 @@ class ResizedBrowser extends Browser {
     private function getBrowserViewportSize(): WebDriverDimension {
         $viewport_dimensions = $this->script([
             "return window.innerWidth;",
-            "return window.innerHeight;"
+            "return window.innerHeight;",
         ]);
 
         return new WebDriverDimension(

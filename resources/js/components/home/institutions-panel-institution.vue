@@ -28,7 +28,7 @@
 
 <script lang="js">
 // components
-import InstitutionsPanelInstitutionAccount from "./institutions-panel-institution-account";
+import InstitutionsPanelInstitutionAccount from "./institutions-panel-institution-account.vue";
 // stores
 import {useAccountsStore} from "../../stores/accounts";
 

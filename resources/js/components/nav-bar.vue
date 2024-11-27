@@ -15,7 +15,7 @@
 
         <!-- Logo -->
         <div class="flex items-center">
-          <img src="/imgs/logo-white.png" id="navbar-logo" alt="Logo: Money Tracker" class="py-1 px-2 max-h-16" />
+          <img src="../../images/logo-white.png" id="navbar-logo" alt="Logo: Money Tracker" class="py-1 px-2 max-h-16" />
         </div>
 
         <!-- ---------------------------- -->
@@ -46,7 +46,7 @@
 
           <!-- overflow/profile menu button -->
           <button id="navbar-overflow-menu-btn" type="button" class="flex items-center px-3" v-on:click="clickNavbarOverflow">
-            <img src="/imgs/profile-placeholder.png" alt="profile" class="profile-picture max-h-12 rounded-full">
+            <img src="../../images/profile-placeholder.png" alt="profile" class="profile-picture max-h-12 rounded-full">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
             </svg>
@@ -116,7 +116,7 @@
       <!-- mobile menu -->
       <div id="navbar-sm-overflow-menu" class="md:hidden bg-white text-black divide-y divide-gray-400 divide-solid" v-show="hasNavbarOverflowBeenClicked">
         <div class="block pb-2 pl-4 pt-4 flex items-center font-medium">
-          <img src="/imgs/profile-placeholder.png" alt="profile" class="profile-picture max-h-8 pr-2 rounded-full">
+          <img src="../../images/profile-placeholder.png" alt="profile" class="profile-picture max-h-8 pr-2 rounded-full">
           <span class="profile-username" v-text="username"></span>
         </div>
         <div class="app-version text-blue-400 block p-2 pl-4 italic">Version: <span v-text="appVersion"></span></div>

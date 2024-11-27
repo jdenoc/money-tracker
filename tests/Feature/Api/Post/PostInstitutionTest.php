@@ -11,6 +11,7 @@ use Tests\TestCase;
 class PostInstitutionTest extends TestCase {
     use InstitutionResponseKeys;
 
+    // uri
     private string $_base_uri = '/api/institution';
 
     public function testCreateInstitutionWithoutData() {
@@ -24,19 +25,13 @@ class PostInstitutionTest extends TestCase {
         $this->assertFailedPostResponse($response, HttpStatus::HTTP_BAD_REQUEST, self::$ERROR_MSG_NO_DATA);
     }
 
-    public function providerCreateInstitutionWithMissingProperty(): array {
-        // Application must be initialised before factory helpers can be used with a provider method
-        $this->initialiseApplication();
-        $institution_data = $this->generateDummyInstitutionData();
-
+    public static function providerCreateInstitutionWithMissingProperty(): array {
         $test_cases = [];
         $required_properties = Institution::getRequiredFieldsForCreation();
 
         // only 1 property missing
         foreach ($required_properties as $property) {
-            $test_cases[$property]['data'] = $institution_data;
-            $test_cases[$property]['error_msg'] = $this->fillMissingPropertyErrorMessage([$property]);
-            unset($test_cases[$property]['data'][$property]);
+            $test_cases[$property] = ['missing_property' => $property];
         }
 
         return $test_cases;
@@ -44,12 +39,11 @@ class PostInstitutionTest extends TestCase {
 
     /**
      * @dataProvider providerCreateInstitutionWithMissingProperty
-     *
-     * @param array  $institution_data
-     * @param string $error_message
      */
-    public function testCreateInstitutionWithMissingProperty(array $institution_data, string $error_message) {
-        // GIVEN: see providerCreateInstitutionWithMissingProperty()
+    public function testCreateInstitutionWithMissingProperty(string $missing_property) {
+        // GIVEN
+        $institution_data = $this->generateDummyInstitutionData();
+        unset($institution_data[$missing_property]);
         if (empty($institution_data)) {
             $this->markTestSkipped('Institution data not provided. Data required to create an institution:'.print_r(Institution::getRequiredFieldsForCreation(), true));
         }
@@ -58,7 +52,7 @@ class PostInstitutionTest extends TestCase {
         $response = $this->postJson($this->_base_uri, $institution_data);
 
         // THEN
-        $this->assertFailedPostResponse($response, HttpStatus::HTTP_BAD_REQUEST, $error_message);
+        $this->assertFailedPostResponse($response, HttpStatus::HTTP_BAD_REQUEST, $this->fillMissingPropertyErrorMessage([$missing_property]));
     }
 
     public function testCreateInstitution() {
@@ -99,7 +93,7 @@ class PostInstitutionTest extends TestCase {
     private function generateDummyInstitutionData(): array {
         $institution_data = Institution::factory()->make();
         return [
-            'name'=>$institution_data->name,
+            'name' => $institution_data->name,
         ];
     }
 

@@ -60,10 +60,10 @@ trait BatchFilterEntries {
             throw new \UnexpectedValueException("Entries not available with filter ".json_encode($filter_data));
         }
 
-        $total_pages = (int) ceil($entries['count']/self::$MAX_ENTRIES_IN_RESPONSE);
+        $total_pages = (int) ceil($entries['count'] / self::$MAX_ENTRIES_IN_RESPONSE);
         $entries_collection = collect($this->removeCountFromApiResponse($entries));
 
-        for ($i=1; $i<$total_pages; $i++) {
+        for ($i = 1; $i < $total_pages; $i++) {
             $entries_collection = $entries_collection->merge(collect($this->removeCountFromApiResponse($this->getApiEntries($i, $filter_data))));
         }
         $this->assertCount($entries['count'], $entries_collection);

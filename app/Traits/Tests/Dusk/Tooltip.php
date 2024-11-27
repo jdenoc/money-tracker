@@ -15,7 +15,7 @@ trait Tooltip {
         });
     }
 
-    protected function assertTooltipVisible(Browser $browser, ?string $tooltipId=null): void {
+    protected function assertTooltipVisible(Browser $browser, ?string $tooltipId = null): void {
         $tooltip_selector = $this->getTooltipElementSelector($tooltipId);
         $browser->elsewhere('', function(Browser $body) use ($tooltip_selector) {
             $body->assertVisible($tooltip_selector);
@@ -27,7 +27,7 @@ trait Tooltip {
         $this->assertTooltipVisible($browser, $tooltip_id);
     }
 
-    protected function assertStringInTooltipContents(Browser $browser, string $expectedStringInTooltipContents, ?string $tooltipId=null): void {
+    protected function assertStringInTooltipContents(Browser $browser, string $expectedStringInTooltipContents, ?string $tooltipId = null): void {
         $tooltip_selector = $this->getTooltipElementSelector($tooltipId);
         $browser->elsewhere('', function(Browser $body) use ($tooltip_selector, $expectedStringInTooltipContents) {
             $body
@@ -41,7 +41,7 @@ trait Tooltip {
         $this->assertStringInTooltipContents($browser, $expectedStringInTooltipContents, $tooltip_id);
     }
 
-    protected function assertStringNotInTooltipContents(Browser $browser, string $expectedStringNotInTooltipContents, ?string $tooltipId=null): void {
+    protected function assertStringNotInTooltipContents(Browser $browser, string $expectedStringNotInTooltipContents, ?string $tooltipId = null): void {
         $tooltip_selector = $this->getTooltipElementSelector($tooltipId);
         $browser->elsewhere('', function(Browser $body) use ($tooltip_selector, $expectedStringNotInTooltipContents) {
             $body
@@ -63,7 +63,7 @@ trait Tooltip {
         return $browser->element($triggerElementSelector)->getAttribute('aria-describedby');
     }
 
-    private function getTooltipElementSelector(?string $tooltipId=null): string {
+    private function getTooltipElementSelector(?string $tooltipId = null): string {
         return is_null($tooltipId) ? self::$SELECTOR_TOOLTIP : sprintf(self::$TEMPLATE_SELECTOR_TOOLTIP_ID, $tooltipId);
     }
 

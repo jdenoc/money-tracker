@@ -46,7 +46,7 @@ Money Tracker is a web portal dedicated to help record and manage income & expen
   npx --version
   # should be 9.x
   ```
-- PHP 8.0
+- PHP 8.1
   ```bash
   # confirm installation and version of PHP
   php -v
@@ -79,8 +79,8 @@ Money Tracker is a web portal dedicated to help record and manage income & expen
 ---
 
 ## Other Documentation
-- [Laravel](https://laravel.com/docs/9.x/)
-  - [Dusk](https://laravel.com/docs/9.x/dusk)
+- [Laravel](https://laravel.com/docs/10.x/)
+  - [Dusk](https://laravel.com/docs/10.x/dusk)
 - [Spatie](https://spatie.be/open-source?search=&sort=-downloads)
   - [laravel-db-snapshots](https://github.com/spatie/laravel-db-snapshots)
   - [laravel-health](https://github.com/spatie/laravel-health)

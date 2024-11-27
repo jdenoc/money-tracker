@@ -15,12 +15,9 @@ use Laravel\Dusk\Browser;
 class SettingsInstitutionsTest extends SettingsBase {
     use DuskTraitToggleButton;
 
+    // selectors
     protected static string $SELECTOR_SETTINGS_NAV_ELEMENT = 'li.settings-nav-option:nth-child(1)';
-    protected static string $LABEL_SETTINGS_NAV_ELEMENT = 'Institutions';
-
     protected static string $SELECTOR_SETTINGS_DISPLAY_SECTION = 'section#settings-institutions';
-    protected static string $LABEL_SETTINGS_SECTION_HEADER = 'Institutions';
-
     private static string $SELECTOR_SETTINGS_FORM_LABEL_NAME = "label[for='settings-institution-name']:nth-child(1)";
     private static string $SELECTOR_SETTINGS_FORM_INPUT_NAME = 'input#settings-institution-name:nth-child(2)';
     private static string $SELECTOR_SETTINGS_FORM_LABEL_ACTIVE = "label:nth-child(3)";
@@ -33,25 +30,28 @@ class SettingsInstitutionsTest extends SettingsBase {
     private static string $SELECTOR_SETTINGS_FORM_DISABLED = 'div:nth-child(10)';
     protected static string $SELECTOR_SETTINGS_FORM_BUTTON_CLEAR = 'button:nth-child(11)';
     protected static string $SELECTOR_SETTINGS_FORM_BUTTON_SAVE = 'button:nth-child(12)';
-
     protected static string $SELECTOR_SETTINGS_LOADING_OBJECTS = '#loading-settings-institutions';
     protected static string $TEMPLATE_SELECTOR_SETTINGS_NODE_ID = '#settings-institution-%d';
 
+    // labels
+    protected static string $LABEL_SETTINGS_NAV_ELEMENT = 'Institutions';
+    protected static string $LABEL_SETTINGS_SECTION_HEADER = 'Institutions';
     protected static string $LABEL_SETTINGS_NOTIFICATION_NEW = 'New Institution created';
     protected static string $LABEL_SETTINGS_NOTIFICATION_UPDATE = 'Institution updated';
     protected static string $LABEL_SETTINGS_NOTIFICATION_RESTORE = 'Institution has been enabled';
     protected static string $LABEL_SETTINGS_NOTIFICATION_DELETE = 'Institution has been disabled';
 
-    public function providerSaveExistingSettingObject(): array {
+    public static function providerSaveExistingSettingObject(): array {
         return [
-            'name'=>[self::$SELECTOR_SETTINGS_FORM_INPUT_NAME],         // test 7/20
+            'name' => [self::$SELECTOR_SETTINGS_FORM_INPUT_NAME],         // test 7/20
         ];
     }
 
-    public function providerDisablingOrRestoringObject(): array {
+    public static function providerDisablingOrRestoringObject(): array {
         return [
-            'disabling institution'=>['isInitInstitutionActive'=>true],     // test 8/20
-            'restoring institution'=>['isInitInstitutionActive'=>false],    // test 9/20
+            // [$isInitInstitutionActive]
+            'disabling institution' => [true],     // test 8/20
+            'restoring institution' => [false],    // test 9/20
         ];
     }
 
@@ -162,7 +162,7 @@ class SettingsInstitutionsTest extends SettingsBase {
         }
     }
 
-    protected function getObject(int $id=null): Institution {
+    protected function getObject(int $id = null): Institution {
         if (is_null($id)) {
             return Institution::get()->random();
         } else {
@@ -174,7 +174,7 @@ class SettingsInstitutionsTest extends SettingsBase {
         return Institution::withTrashed()->get();
     }
 
-    protected function interactWithObjectListItem(Browser $section, BaseModel $object, bool $is_fresh_load=true): void {
+    protected function interactWithObjectListItem(Browser $section, BaseModel $object, bool $is_fresh_load = true): void {
         $this->assertObjectIsOfType($object, Institution::class);
         $institution_class_state = $object->active ? '.is-active' : '.is-disabled';
         $selector_institution_id = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID.$institution_class_state, $object->id);
@@ -190,7 +190,7 @@ class SettingsInstitutionsTest extends SettingsBase {
         $section->pause($this->toggleButtonTransitionTimeInMilliseconds()); // wait for toggle to transition
     }
 
-    protected function interactWithFormElement(Browser $section, string $selector, ?BaseModel $object=null): void {
+    protected function interactWithFormElement(Browser $section, string $selector, ?BaseModel $object = null): void {
         if (is_null($object)) {
             $object = new Institution();
         }

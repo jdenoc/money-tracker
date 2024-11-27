@@ -8,6 +8,7 @@ use Tests\TestCase;
 
 class VersionControllerTest extends TestCase {
 
+    // uri
     private string $_base_uri = '/api/version';
 
     /**
@@ -19,7 +20,7 @@ class VersionControllerTest extends TestCase {
     public function testGetVersion() {
         // GIVEN
         $test_version = fake()->randomDigit().'.'.fake()->randomDigit().'.'.fake()->randomDigit().'-test-'.substr(fake()->sha1(), 0, 7);
-        config([VersionController::CONFIG_VERSION=>$test_version]);
+        config([VersionController::CONFIG_VERSION => $test_version]);
 
         // WHEN
         $get_response = $this->get($this->_base_uri);
@@ -31,7 +32,7 @@ class VersionControllerTest extends TestCase {
 
     public function testGetVersionButItHasNotBeenSet() {
         // GIVEN
-        config([VersionController::CONFIG_VERSION=>'']);
+        config([VersionController::CONFIG_VERSION => '']);
 
         // WHEN
         $get_response = $this->get($this->_base_uri);

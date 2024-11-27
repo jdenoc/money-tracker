@@ -53,9 +53,13 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
-@import "~@voerro/vue-tagsinput/dist/style.css";
+<!--
+vite/vue2 setup is broken for scoped styles stored in node_modules.
+style element order is all mixed up
+-->
+<style lang="css" src="@voerro/vue-tagsinput/dist/style.css"></style>
 
+<style scoped lang="scss">
 /* additional styling for voerro-tags-input component */
 ::v-deep .tags-input {
   /* taken from the tailwindcss [type='text'] selector */

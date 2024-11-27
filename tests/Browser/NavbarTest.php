@@ -25,6 +25,7 @@ class NavbarTest extends DuskTestCase {
     use DuskTraitNavbar;
     use DuskTraitLoading;
 
+    // labels
     private string $_label_add_entry = "Add Entry";
     private string $_label_filter = "Filter";
     private string $_label_transfer = "Add Transfer";
@@ -35,17 +36,16 @@ class NavbarTest extends DuskTestCase {
     private string $_label_health = "Health";
     private string $_label_logout = "Logout";
 
-    public function providerNavbarLogoVisible(): array {
+    public static function providerNavbarLogoVisible(): array {
         return [
-            'home'=>['home'],           // test 1/20
-            'stats'=>['stats'],         // test 2/20
-            'settings'=>['settings'],   // test 3/20
+            'home' => ['home'],          // test 1/20
+            'stats' => ['stats'],        // test 2/20
+            'settings' => ['settings'],  // test 3/20
         ];
     }
 
     /**
      * @dataProvider providerNavbarLogoVisible
-     * @param string $page_name
      * @throws Throwable
      *
      * @group navigation-2
@@ -60,18 +60,16 @@ class NavbarTest extends DuskTestCase {
         });
     }
 
-    public function providerNavbarAddEntryButton(): array {
+    public static function providerNavbarAddEntryButton(): array {
         return [
-            'home'=>['home', true],             // test 4/20
-            'stats'=>['stats', false],          // test 5/20
-            'settings'=>['settings', false],    // test 6/20
+            'home' => ['home', true],           // test 4/20
+            'stats' => ['stats', false],        // test 5/20
+            'settings' => ['settings', false],  // test 6/20
         ];
     }
 
     /**
      * @dataProvider providerNavbarAddEntryButton
-     * @param string $page_name
-     * @param bool $exists
      * @throws Throwable
      *
      * @group navigation-2
@@ -96,18 +94,16 @@ class NavbarTest extends DuskTestCase {
         });
     }
 
-    public function providerNavbarAddTransferButton(): array {
+    public static function providerNavbarAddTransferButton(): array {
         return [
-            'home'=>['home', true],             // test 7/20
-            'stats'=>['stats', false],          // test 8/20
-            'settings'=>['settings', false],    // test 9/20
+            'home' => ['home', true],           // test 7/20
+            'stats' => ['stats', false],        // test 8/20
+            'settings' => ['settings', false],  // test 9/20
         ];
     }
 
     /**
      * @dataProvider providerNavbarAddTransferButton
-     * @param string $page_name
-     * @param bool $exists
      * @throws Throwable
      *
      * @group navigation-2
@@ -132,18 +128,16 @@ class NavbarTest extends DuskTestCase {
         });
     }
 
-    public function providerNavbarFilterButtonExists(): array {
+    public static function providerNavbarFilterButtonExists(): array {
         return [
-            'home'=>['home', true],             // test 10/20
-            'stats'=>['stats', false],          // test 11/20
-            'settings'=>['settings', false],    // test 12/20
+            'home' => ['home', true],             // test 10/20
+            'stats' => ['stats', false],          // test 11/20
+            'settings' => ['settings', false],    // test 12/20
         ];
     }
 
     /**
      * @dataProvider providerNavbarFilterButtonExists
-     * @param string $page_name
-     * @param bool $exists
      * @throws Throwable
      *
      * @group navigation-2
@@ -168,17 +162,16 @@ class NavbarTest extends DuskTestCase {
         });
     }
 
-    public function providerNavbarClickProfileImage(): array {
+    public static function providerNavbarClickProfileImage(): array {
         return [
-            'home'=>['home'],           // test 13/20
-            'stats'=>['stats'],         // test 14/20
-            'settings'=>['settings'],   // test 15/20
+            'home' => ['home'],          // test 13/20
+            'stats' => ['stats'],        // test 14/20
+            'settings' => ['settings'],  // test 15/20
         ];
     }
 
     /**
      * @dataProvider providerNavbarClickProfileImage
-     * @param string $page_name
      * @throws Throwable
      *
      * @group navigation-2
@@ -224,17 +217,16 @@ class NavbarTest extends DuskTestCase {
         });
     }
 
-    public function providerNavbarSmScreenElementsNotVisibleByDefault(): array {
+    public static function providerNavbarSmScreenElementsNotVisibleByDefault(): array {
         return [
-            'home'=>['home'],           // test 16/20
-            'stats'=>['stats'],         // test 17/20
-            'settings'=>['settings'],   // test 18/20
+            'home' => ['home'],          // test 16/20
+            'stats' => ['stats'],        // test 17/20
+            'settings' => ['settings'],  // test 18/20
         ];
     }
 
     /**
      * @dataProvider providerNavbarSmScreenElementsNotVisibleByDefault
-     * @param string $page_name
      * @throws Throwable
      *
      * @group navigation-2
@@ -253,17 +245,16 @@ class NavbarTest extends DuskTestCase {
         });
     }
 
-    public function providerNavbarMdScreenElementsNotVisibleForSmScreenSize(): array {
+    public static function providerNavbarMdScreenElementsNotVisibleForSmScreenSize(): array {
         return [
-            'home'=>['home'],           // test 1/20
-            'stats'=>['stats'],         // test 2/20
-            'settings'=>['settings'],   // test 3/20
+            'home' => ['home'],          // test 1/20
+            'stats' => ['stats'],        // test 2/20
+            'settings' => ['settings'],  // test 3/20
         ];
     }
 
     /**
      * @dataProvider providerNavbarMdScreenElementsNotVisibleForSmScreenSize
-     * @param string $page_name
      * @throws Throwable
      *
      * @group navigation-3
@@ -290,17 +281,16 @@ class NavbarTest extends DuskTestCase {
         });
     }
 
-    public function providerNavbarSmScreenBurgerMenu(): array {
+    public static function providerNavbarSmScreenBurgerMenu(): array {
         return [
-            'home'=>['home'],           // test 4/20
-            'stats'=>['stats'],         // test 5/20
-            'settings'=>['settings'],   // test 6/20
+            'home' => ['home'],          // test 4/20
+            'stats' => ['stats'],        // test 5/20
+            'settings' => ['settings'],  // test 6/20
         ];
     }
 
     /**
      * @dataProvider providerNavbarSmScreenBurgerMenu
-     * @param string $page_name
      * @throws Throwable
      *
      * @group navigation-3
@@ -351,17 +341,16 @@ class NavbarTest extends DuskTestCase {
         });
     }
 
-    public function providerNavbarSmScreenSidebar(): array {
+    public static function providerNavbarSmScreenSidebar(): array {
         return [
-            'home'=>['home'],           // test 7/20
-            'stats'=>['stats'],         // test 8/20
-            'settings'=>['settings'],   // test 9/20
+            'home' => ['home'],          // test 7/20
+            'stats' => ['stats'],        // test 8/20
+            'settings' => ['settings'],  // test 9/20
         ];
     }
 
     /**
      * @dataProvider providerNavbarSmScreenSidebar
-     * @param string $page_name
      * @throws Throwable
      *
      * @group navigation-3

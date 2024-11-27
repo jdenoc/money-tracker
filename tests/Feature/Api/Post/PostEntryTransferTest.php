@@ -19,11 +19,13 @@ class PostEntryTransferTest extends TestCase {
     use EntryResponseKeys;
     use StorageTestFiles;
 
+    // flags
     const FLAG_HAS_TAGS = 'has_tags';
     const FLAG_HAS_ATTACHMENTS = 'has_attachments';
     const FLAG_OVERRIDE_TO = "override_to_account_type_id";
     const FLAG_OVERRIDE_FROM = "override_from_account_type_id";
 
+    // uri
     private string $_base_uri = '/api/entry/transfer';
 
     public function testCreateEntryTransferWithoutData() {
@@ -39,48 +41,30 @@ class PostEntryTransferTest extends TestCase {
         $this->assertFailedPostResponse($response->json(), self::$ERROR_MSG_SAVE_ENTRY_NO_DATA);
     }
 
-    public function providerCreateEntryTransferWithMissingData(): array {
-        // We need to initialise the application to allow us to potentially populate the database
-        $this->initialiseApplication();
+    public static function providerCreateEntryTransferWithMissingData(): array {
+        $required_transfer_fields = self::getRequiredTransferFields();
+        $test_cases = [];
 
-        $required_transfer_fields = $this->getRequiredTransferFields();
-
-        $missing_data = [];
         // provide data that is missing one property
-        for ($i=0; $i<count($required_transfer_fields); $i++) {
-            $transfer_data = $this->generateTransferData();
-            unset($transfer_data[$required_transfer_fields[$i]]);
-            $missing_data['missing ['.$required_transfer_fields[$i].']'] = [
-                $transfer_data,
-                sprintf(self::$ERROR_MSG_SAVE_ENTRY_MISSING_PROPERTY, json_encode([$required_transfer_fields[$i]]))
-            ];
+        foreach ($required_transfer_fields as $required_transfer_field) {
+            $test_cases[$required_transfer_field] = ['missing_properties' => [$required_transfer_field]];
         }
 
         // provide data that is missing two or more properties, but 1 less than the total properties
-        $transfer_data = $this->generateTransferData();
-        $unset_keys = array_rand($required_transfer_fields, mt_rand(2, count($required_transfer_fields)-1));
-        $removed_keys = [];
-        foreach ($unset_keys as $unset_key) {
-            $removed_key = $required_transfer_fields[$unset_key];
+        $random_missing_properties = array_rand(array_flip($required_transfer_fields), mt_rand(2, count($required_transfer_fields) - 1));
+        $test_cases['missing:'.json_encode($random_missing_properties)] = ['missing_properties' => $random_missing_properties];
 
-            unset($transfer_data[$removed_key]);
-            $removed_keys[] = $removed_key;
-        }
-        $missing_data['missing ['.implode(',', $removed_keys).']'] = [
-            $transfer_data,
-            sprintf(self::$ERROR_MSG_SAVE_ENTRY_MISSING_PROPERTY, json_encode($removed_keys))
-        ];
-
-        return $missing_data;
+        return $test_cases;
     }
 
     /**
      * @dataProvider providerCreateEntryTransferWithMissingData
-     * @param array $transfer_data
-     * @param string $expected_response_error_msg
      */
-    public function testCreateEntryTransferWithMissingData($transfer_data, string $expected_response_error_msg) {
-        // GIVEN - $transfer_data by providerCreateEntryTransferWithMissingData
+    public function testCreateEntryTransferWithMissingData(array $missing_properties) {
+        // GIVEN
+        $transfer_data = $this->generateTransferData();
+        $transfer_data = array_diff_key($transfer_data, array_flip($missing_properties));
+
         $account = Account::factory()->create();
         if (isset($transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE])) {
             $account_type1 = AccountType::factory()->for($account)->create();
@@ -97,18 +81,14 @@ class PostEntryTransferTest extends TestCase {
         // THEN
         $this->assertResponseStatus($response, HttpStatus::HTTP_BAD_REQUEST);
         $this->assertPostResponseHasCorrectKeys($response->json());
-        $this->assertFailedPostResponse($response->json(), $expected_response_error_msg);
+        $this->assertFailedPostResponse($response->json(), sprintf(self::$ERROR_MSG_SAVE_ENTRY_MISSING_PROPERTY, json_encode($missing_properties)));
     }
 
-    public function providerCreatingEntryTransferWithInvalidAccountType(): array {
-        // We need to initialise the application to allow us to potentially populate the database
-        $this->initialiseApplication();
-
+    public static function providerCreatingEntryTransferWithInvalidAccountType(): array {
         $invalid_account_type_id_transfer_data = [];
-        foreach ($this->getAccountIdOverrideOptions() as $account_type_id_override_option) {
+        foreach (self::getAccountIdOverrideOptions() as $account_type_id_override_option) {
             $invalid_account_type_id_transfer_data["Invalid account_type:".json_encode($account_type_id_override_option)] = [
-                $this->generateTransferData(),
-                $account_type_id_override_option
+                $account_type_id_override_option,
             ];
         }
         return $invalid_account_type_id_transfer_data;
@@ -116,11 +96,10 @@ class PostEntryTransferTest extends TestCase {
 
     /**
      * @dataProvider providerCreatingEntryTransferWithInvalidAccountType
-     * @param array $transfer_data
-     * @param array $override_account_type_id
      */
-    public function testCreatingEntryTransferWithInvalidAccountType($transfer_data, $override_account_type_id) {
-        // GIVEN - $transfer_data
+    public function testCreatingEntryTransferWithInvalidAccountType($override_account_type_id) {
+        // GIVEN
+        $transfer_data = $this->generateTransferData();
         $account_type = AccountType::factory()
             ->for(Account::factory())
             ->create();
@@ -155,19 +134,11 @@ class PostEntryTransferTest extends TestCase {
         $this->assertFailedPostResponse($response->json(), self::$ERROR_MSG_SAVE_TRANSFER_BOTH_EXTERNAL);
     }
 
-    public function providerCreateEntryTransfer(): array {
-        // We need to initialise the application to allow us to potentially populate the database
-        $this->initialiseApplication();
-
+    public static function providerCreateEntryTransfer(): array {
         $valid_transfer_data = [];
-        foreach ($this->getAccountIdOverrideOptions() as $account_type_id_override_option) {
-            $transfer_data = $this->generateTransferData();
-            $transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE] = self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
-            $transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE] = self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
-
+        foreach (self::getAccountIdOverrideOptions() as $account_type_id_override_option) {
             $valid_transfer_data["external account_type ID:".json_encode($account_type_id_override_option)] = [
-                $transfer_data,
-                $account_type_id_override_option
+                $account_type_id_override_option,
             ];
         }
         return $valid_transfer_data;
@@ -175,12 +146,14 @@ class PostEntryTransferTest extends TestCase {
 
     /**
      * @dataProvider providerCreateEntryTransfer
-     * @param array $transfer_data
-     * @param array $remain_external_account_type_id
      */
-    public function testCreateEntryTransfer($transfer_data, $remain_external_account_type_id) {
+    public function testCreateEntryTransfer($remain_external_account_type_id) {
         $non_external_account_counter = 0;
-        // GIVEN - $transfer_data
+        // GIVEN
+        $transfer_data = $this->generateTransferData();
+        $transfer_data[self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE] = self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
+        $transfer_data[self::$TRANSFER_KEY_TO_ACCOUNT_TYPE] = self::$TRANSFER_EXTERNAL_ACCOUNT_TYPE_ID;
+
         $account = Account::factory()->create();
         if (!$remain_external_account_type_id[self::FLAG_OVERRIDE_TO]) {
             $account_type = AccountType::factory()->for($account)->create();
@@ -230,12 +203,12 @@ class PostEntryTransferTest extends TestCase {
         }
     }
 
-    public function providerCreateEntryTransferWithTagsAndAttachments(): array {
+    public static function providerCreateEntryTransferWithTagsAndAttachments(): array {
         return [
-            [[self::FLAG_HAS_TAGS=>false, self::FLAG_HAS_ATTACHMENTS=>false]],    // this is already tested, but for competition’s sake, lets include it
-            [[self::FLAG_HAS_TAGS=>false, self::FLAG_HAS_ATTACHMENTS=>true]],
-            [[self::FLAG_HAS_TAGS=>true, self::FLAG_HAS_ATTACHMENTS=>false]],
-            [[self::FLAG_HAS_TAGS=>true, self::FLAG_HAS_ATTACHMENTS=>true]],
+            [[self::FLAG_HAS_TAGS => false, self::FLAG_HAS_ATTACHMENTS => false]],  // this is already tested, but for competition’s sake, lets include it
+            [[self::FLAG_HAS_TAGS => false, self::FLAG_HAS_ATTACHMENTS => true]],
+            [[self::FLAG_HAS_TAGS => true, self::FLAG_HAS_ATTACHMENTS => false]],
+            [[self::FLAG_HAS_TAGS => true, self::FLAG_HAS_ATTACHMENTS => true]],
         ];
     }
 
@@ -271,8 +244,8 @@ class PostEntryTransferTest extends TestCase {
                     true
                 );
                 $transfer_data['attachments'][] = [
-                    'uuid'=>$generated_attachment->uuid,
-                    'name'=>$generated_attachment->name
+                    'uuid' => $generated_attachment->uuid,
+                    'name' => $generated_attachment->name,
                 ];
             }
         }
@@ -342,15 +315,15 @@ class PostEntryTransferTest extends TestCase {
     private function generateTransferData(): array {
         $entry_data = Entry::factory()->make();
         return [
-            'entry_date'=>$entry_data->entry_date,
-            'entry_value'=>$entry_data->entry_value,
-            'memo'=>$entry_data->memo,
-            self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE=>$entry_data->account_type_id,
-            self::$TRANSFER_KEY_TO_ACCOUNT_TYPE=>$entry_data->account_type_id
+            'entry_date' => $entry_data->entry_date,
+            'entry_value' => $entry_data->entry_value,
+            'memo' => $entry_data->memo,
+            self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE => $entry_data->account_type_id,
+            self::$TRANSFER_KEY_TO_ACCOUNT_TYPE => $entry_data->account_type_id,
         ];
     }
 
-    private function getRequiredTransferFields(): array {
+    private static function getRequiredTransferFields(): array {
         $required_transfer_fields = Entry::get_fields_required_for_creation();
         unset(
             $required_transfer_fields[array_search('account_type_id', $required_transfer_fields)],
@@ -360,19 +333,12 @@ class PostEntryTransferTest extends TestCase {
         return array_merge($required_transfer_fields, [self::$TRANSFER_KEY_FROM_ACCOUNT_TYPE, self::$TRANSFER_KEY_TO_ACCOUNT_TYPE]);
     }
 
-    /**
-     * @param array $response_as_array
-     */
     private function assertPostResponseHasCorrectKeys(array $response_as_array): void {
         $failure_message = "Response is ".json_encode($response_as_array);
         $this->assertArrayHasKey(self::$RESPONSE_SAVE_KEY_ID, $response_as_array, $failure_message);
         $this->assertArrayHasKey(self::$RESPONSE_SAVE_KEY_ERROR, $response_as_array, $failure_message);
     }
 
-    /**
-     * @param array $response_as_array
-     * @param string $response_error_msg
-     */
     private function assertFailedPostResponse(array $response_as_array, string $response_error_msg): void {
         $failure_message = "Response is ".json_encode($response_as_array);
         $this->assertTrue(is_array($response_as_array[self::$RESPONSE_SAVE_KEY_ID]), $failure_message);
@@ -381,11 +347,11 @@ class PostEntryTransferTest extends TestCase {
         $this->assertStringContainsString($response_error_msg, $response_as_array[self::$RESPONSE_SAVE_KEY_ERROR], $failure_message);
     }
 
-    private function getAccountIdOverrideOptions(): array {
+    private static function getAccountIdOverrideOptions(): array {
         return [
-            [self::FLAG_OVERRIDE_TO=>false, self::FLAG_OVERRIDE_FROM=>false],
-            [self::FLAG_OVERRIDE_TO=>true, self::FLAG_OVERRIDE_FROM=>false],
-            [self::FLAG_OVERRIDE_TO=>false, self::FLAG_OVERRIDE_FROM=>true],
+            [self::FLAG_OVERRIDE_TO => false, self::FLAG_OVERRIDE_FROM => false],
+            [self::FLAG_OVERRIDE_TO => true, self::FLAG_OVERRIDE_FROM => false],
+            [self::FLAG_OVERRIDE_TO => false, self::FLAG_OVERRIDE_FROM => true],
         ];
     }
 

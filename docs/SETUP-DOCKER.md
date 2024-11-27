@@ -25,8 +25,17 @@ This will generate Laravel Facades that PhpStorm can use.
 
 ### Run npm install
 ```bash
-.docker/scripts/npm.sh ci
-.docker/scripts/npm.sh run build:dev
+.docker/scripts/npm.sh clean-install
+```
+
+### Bundle JavaScript and CSS assets
+```bash
+.docker/scripts/npm.sh run build
+```
+This command will statically bundle the JavaScript and CSS assets for the application. Meaning they won't dynamically change when you make changes directly to the source files.
+If you wish for changes to occur dynamically, you can run the following command:
+```bash
+.docker/scripts/vite-dev.sh
 ```
 
 ### Bring "_UP_" application container(s)
@@ -35,12 +44,12 @@ docker compose up -d
 ```
 
 <small>***OPTIONAL***</small>:
-If you wish to run docker without xdebug, prefix the above command with `DISABLE_XDEBUG=true`  
+If you wish to run docker with xdebug, prefix the above command with `ENABLE_XDEBUG=true`  
 For Example:
 ```bash
-DISABLE_XDEBUG=true docker compose up -d
+ENABLE_XDEBUG=true docker compose up -d
 ```
-`DISABLE_XDEBUG=true` is required _once_ to build the docker image. Afterwards, it is never used again.
+`ENABLE_XDEBUG=true` is required _once_ to build the docker image. Afterwards, it is never used again.
 
 ### Set application key
 composer doesn't write to the correct .env file during setup so we need to generate the `APP_KEY` value again

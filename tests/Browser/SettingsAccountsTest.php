@@ -18,12 +18,15 @@ use Laravel\Dusk\Browser;
 class SettingsAccountsTest extends SettingsBase {
     use DuskTraitToggleButton;
 
+    // nav elements
     protected static string $SELECTOR_SETTINGS_NAV_ELEMENT = 'li.settings-nav-option:nth-child(2)';
     protected static string $LABEL_SETTINGS_NAV_ELEMENT = 'Accounts';
 
+    // header elements
     protected static string $SELECTOR_SETTINGS_DISPLAY_SECTION = 'section#settings-accounts';
     protected static string $LABEL_SETTINGS_SECTION_HEADER = "Accounts";
 
+    // selectors
     private static string $SELECTOR_SETTINGS_FORM_LABEL_NAME = "label[for='settings-account-name']:nth-child(1)";
     private static string $SELECTOR_SETTINGS_FORM_INPUT_NAME = "input#settings-account-name:nth-child(2)";
     private static string $SELECTOR_SETTINGS_FORM_LABEL_INSTITUTION = "label[for='settings-account-institution']:nth-child(3)";
@@ -45,15 +48,16 @@ class SettingsAccountsTest extends SettingsBase {
     private static string $SELECTOR_SETTINGS_FORM_DISABLED = "div:nth-child(16)";
     protected static string $SELECTOR_SETTINGS_FORM_BUTTON_CLEAR = "button:nth-child(17)";
     protected static string $SELECTOR_SETTINGS_FORM_BUTTON_SAVE = "button:nth-child(18)";
-
     protected static string $SELECTOR_SETTINGS_LOADING_OBJECTS = "#loading-settings-accounts";
     protected static string $TEMPLATE_SELECTOR_SETTINGS_NODE_ID = '#settings-account-%d';
 
+    // labels
     protected static string $LABEL_SETTINGS_NOTIFICATION_NEW = 'New account created';
     protected static string $LABEL_SETTINGS_NOTIFICATION_UPDATE = 'Account updated';
     protected static string $LABEL_SETTINGS_NOTIFICATION_RESTORE = 'Account has been reactivated';
     protected static string $LABEL_SETTINGS_NOTIFICATION_DELETE = 'Account has been disabled';
 
+    // variables
     private Currency $default_currency;
     private string $color_currency_active;
     private string $color_currency_inactive;
@@ -69,19 +73,20 @@ class SettingsAccountsTest extends SettingsBase {
         $this->color_currency_inactive = $this->tailwindColors->white();
     }
 
-    public function providerDisablingOrRestoringObject(): array {
+    public static function providerDisablingOrRestoringObject(): array {
         return [
-            'disabling account'=>['isInitAccountActive'=>true],     // test 7/20
-            'restoring account'=>['isInitAccountActive'=>false],    // test 8/20
+            // [$isInitInstitutionActive]
+            'disabling account' => [true],     // test 7/20
+            'restoring account' => [false],    // test 8/20
         ];
     }
 
-    public function providerSaveExistingSettingObject(): array {
+    public static function providerSaveExistingSettingObject(): array {
         return [
-            'name'=>[self::$SELECTOR_SETTINGS_FORM_INPUT_NAME],                         // test 9/20
-            'institution'=>[self::$SELECTOR_SETTINGS_FORM_SELECT_INSTITUTION],          // test 10/20
-            'currency'=>[self::$TEMPLATE_SELECTOR_SETTINGS_FORM_RADIO_CURRENCY_INPUT],  // test 11/20
-            'total'=>[self::$SELECTOR_SETTINGS_FORM_INPUT_TOTAL],                       // test 12/20
+            'name' => [self::$SELECTOR_SETTINGS_FORM_INPUT_NAME],                         // test 9/20
+            'institution' => [self::$SELECTOR_SETTINGS_FORM_SELECT_INSTITUTION],          // test 10/20
+            'currency' => [self::$TEMPLATE_SELECTOR_SETTINGS_FORM_RADIO_CURRENCY_INPUT],  // test 11/20
+            'total' => [self::$SELECTOR_SETTINGS_FORM_INPUT_TOTAL],                       // test 12/20
         ];
     }
 
@@ -263,7 +268,7 @@ class SettingsAccountsTest extends SettingsBase {
         }
     }
 
-    protected function getObject(?int $id=null): Account {
+    protected function getObject(?int $id = null): Account {
         if (is_null($id)) {
             return Account::get()->random();
         } else {
@@ -275,7 +280,7 @@ class SettingsAccountsTest extends SettingsBase {
         return Account::withTrashed()->get();
     }
 
-    protected function interactWithObjectListItem(Browser $section, BaseModel $object, bool $is_fresh_load=true): void {
+    protected function interactWithObjectListItem(Browser $section, BaseModel $object, bool $is_fresh_load = true): void {
         $this->assertObjectIsOfType($object, Account::class);
         $class_state = $object->active ? '.is-active' : '.is-disabled';
         $selector = sprintf(self::$TEMPLATE_SELECTOR_SETTINGS_NODE_ID.$class_state.' span', $object->id);
@@ -291,7 +296,7 @@ class SettingsAccountsTest extends SettingsBase {
         $section->pause($this->toggleButtonTransitionTimeInMilliseconds());
     }
 
-    protected function interactWithFormElement(Browser $section, string $selector, ?BaseModel $object=null): void {
+    protected function interactWithFormElement(Browser $section, string $selector, ?BaseModel $object = null): void {
         if (is_null($object)) {
             $object = new Account();
         }

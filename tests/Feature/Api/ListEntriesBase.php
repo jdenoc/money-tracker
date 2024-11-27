@@ -17,6 +17,7 @@ class ListEntriesBase extends TestCase {
     use EntryFilterKeys;
     use MaxEntryResponseValue;
 
+    // min entries to create for testing
     const MIN_TEST_ENTRIES = 4;
 
     /**
@@ -28,7 +29,6 @@ class ListEntriesBase extends TestCase {
      * @var Collection[Tag]
      */
     protected $_generated_tags;
-
     protected string $_uri = '/api/entries';
 
     public function setUp(): void {
@@ -38,16 +38,10 @@ class ListEntriesBase extends TestCase {
     }
 
     /**
-     * @param int   $totalEntriesToCreate
-     * @param int   $account_type_id
-     * @param array $filter_details
-     * @param bool  $randomly_mark_entries_disabled
-     * @param bool  $mark_entries_disabled
-     *
      * @return Collection
      */
-    protected function batch_generate_entries(int $totalEntriesToCreate, int $account_type_id, array $filter_details=[], bool $randomly_mark_entries_disabled=false, bool $mark_entries_disabled=false) {
-        $entry_data = array_merge(['account_type_id'=>$account_type_id], $filter_details);
+    protected function batch_generate_entries(int $totalEntriesToCreate, int $account_type_id, array $filter_details = [], bool $randomly_mark_entries_disabled = false, bool $mark_entries_disabled = false) {
+        $entry_data = array_merge(['account_type_id' => $account_type_id], $filter_details);
         unset($entry_data['tags'], $entry_data['has_attachments']);
 
         $generated_entries = Entry::factory()->count($totalEntriesToCreate)
@@ -142,14 +136,10 @@ class ListEntriesBase extends TestCase {
     }
 
     /**
-     * @param int $generate_entry_count
-     * @param array $entries_in_response
      * @param Collection $generated_entries
      * @param $generated_disabled_entries
-     * @param string $sort_parameter
-     * @param string $sort_direction
      */
-    protected function runEntryListAssertions(int $generate_entry_count, array $entries_in_response, $generated_entries, $generated_disabled_entries=[], string $sort_parameter=Entry::DEFAULT_SORT_PARAMETER, string $sort_direction=Entry::DEFAULT_SORT_DIRECTION) {
+    protected function runEntryListAssertions(int $generate_entry_count, array $entries_in_response, $generated_entries, $generated_disabled_entries = [], string $sort_parameter = Entry::DEFAULT_SORT_PARAMETER, string $sort_direction = Entry::DEFAULT_SORT_DIRECTION) {
         $this->assertcount($generate_entry_count, $entries_in_response);
 
         $previous_entry_in_response = null;

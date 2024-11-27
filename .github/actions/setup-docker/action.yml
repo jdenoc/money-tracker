@@ -1,4 +1,5 @@
 # .github/actions/setup-docker/action.yml
+---
 name: Docker Setup
 description: build docker containers for use while testing
 inputs:
@@ -13,7 +14,7 @@ runs:
   steps:
     - name: build docker images
       run: |
-        docker compose --file docker-compose.yml --file .docker/docker-compose.selenium.yml build --build-arg DISABLE_XDEBUG=true
+        docker compose --file docker-compose.yml --file .docker/docker-compose.selenium.yml build
         docker build --file .docker/composer.dockerfile --tag ${{ inputs.image-tag-composer }} .
       shell: bash
 

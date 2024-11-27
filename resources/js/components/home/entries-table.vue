@@ -51,7 +51,7 @@
 <script lang="js">
 import _ from 'lodash';
 // components
-import EntriesTableEntryRow from "./entries-table-entry-row";
+import EntriesTableEntryRow from "./entries-table-entry-row.vue";
 // stores
 import {useEntriesStore} from "../../stores/entries";
 import {usePaginationStore} from "../../stores/pagination";

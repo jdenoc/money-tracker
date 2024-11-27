@@ -14,25 +14,28 @@ class Entry extends BaseModel {
     use HasFactory;
     use SoftDeletes;
 
+    // timestamp table columns
     const CREATED_AT = 'create_stamp';
     const UPDATED_AT = 'modified_stamp';
     const DELETED_AT = 'disabled_stamp';
 
+    // filter keys
     const DEFAULT_SORT_PARAMETER = 'id';
     const DEFAULT_SORT_DIRECTION = 'desc';
     const SORT_DIRECTION_ASC = 'asc';
     const SORT_DIRECTION_DESC = 'desc';
 
+    // variables
     protected $table = 'entries';
     protected $fillable = [
-        'entry_date', 'account_type_id', 'entry_value', 'memo', 'expense', 'confirm', 'transfer_entry_id'
+        'entry_date', 'account_type_id', 'entry_value', 'memo', 'expense', 'confirm', 'transfer_entry_id',
     ];
     protected $guarded = [
-        'id', 'create_stamp', 'modified_stamp'
+        'id', 'create_stamp', 'modified_stamp',
     ];
     protected $casts = [
-        'expense'=>'boolean',
-        'confirm'=>'boolean',
+        'expense' => 'boolean',
+        'confirm' => 'boolean',
     ];
     private static $required_entry_fields = [
         'account_type_id',
@@ -40,7 +43,7 @@ class Entry extends BaseModel {
         'entry_date',
         'entry_value',
         'expense',
-        'memo'
+        'memo',
     ];
 
     /**
@@ -188,7 +191,7 @@ class Entry extends BaseModel {
      * @param string $sort_direction
      * @return \Illuminate\Support\Collection
      */
-    public static function get_collection_of_entries(array $filters = [], int $limit=10, int $offset=0, string $sort_by=self::DEFAULT_SORT_PARAMETER, string $sort_direction=self::DEFAULT_SORT_DIRECTION) {
+    public static function get_collection_of_entries(array $filters = [], int $limit = 10, int $offset = 0, string $sort_by = self::DEFAULT_SORT_PARAMETER, string $sort_direction = self::DEFAULT_SORT_DIRECTION) {
         $entries_query = self::filter_entry_collection($filters);
         $entries_query
             ->distinct()->select("entries.*")

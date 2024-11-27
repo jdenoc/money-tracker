@@ -9,10 +9,10 @@
 
 <script>
 // components
-import DistributionChart from "./distribution-chart";
-import SummaryChart from "./summary-chart";
-import TrendingChart from "./trending-chart";
-import TagsChart from "./tags-chart";
+import DistributionChart from "./distribution-chart.vue";
+import SummaryChart from "./summary-chart.vue";
+import TrendingChart from "./trending-chart.vue";
+import TagsChart from "./tags-chart.vue";
 // mixins
 import {statsNavMixin} from "../../mixins/stats-nav-mixin";
 

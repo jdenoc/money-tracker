@@ -1,4 +1,4 @@
-FROM php:8.0-apache
+FROM php:8.1-apache-bullseye
 
 ENV DOCKER_LOG_STDOUT /proc/1/fd/1
 ENV DOCKER_LOG_STDERR /proc/1/fd/2
@@ -68,8 +68,8 @@ RUN docker-php-ext-enable igbinary \
   && docker-php-ext-enable memcached
 
 # install xdebug
-ARG DISABLE_XDEBUG
-RUN if [ "$DISABLE_XDEBUG" = false ]; \
+ARG ENABLE_XDEBUG
+RUN if [ "$ENABLE_XDEBUG" = true ]; \
   then \
     XDEBUG_LOG=$PHP_LOG_DIR/xdebug.log \
       && touch $XDEBUG_LOG \

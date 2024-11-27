@@ -13,6 +13,7 @@ use Tests\TestCase;
 class PostAccountTypeTest extends TestCase {
     use AccountTypeResponseKeys;
 
+    // uri
     private string $_base_uri = '/api/account-type';
 
     public function setUp(): void {
@@ -34,52 +35,39 @@ class PostAccountTypeTest extends TestCase {
         $this->assertFailedPostResponse($response, HttpStatus::HTTP_BAD_REQUEST, self::$ERROR_MSG_NO_DATA);
     }
 
-    public function providerCreateAccountMissingProperty(): array {
-        // Application must be initialised before factory helpers can be used within a provider method
-        $this->initialiseApplication();
-        $account_type_data = $this->generateDummyAccountTypeData();
-
+    public static function providerCreateAccountMissingProperty(): array {
         $test_cases = [];
         $required_properties = AccountType::getRequiredFieldsForCreation();
 
         // only 1 property missing
         foreach ($required_properties as $property) {
-            $test_cases[$property]['data'] = $account_type_data;
-            $test_cases[$property]['error_msg'] = $this->fillMissingPropertyErrorMessage([$property]);
-            unset($test_cases[$property]['data'][$property]);
+            $test_cases[$property] = ['missing_properties' => [$property]];
         }
 
         // 1 < property missing < count(required properties)
-        $removed_keys = [];
-        $unset_keys = array_rand($required_properties, mt_rand(2, count($required_properties)-1));
-        $test_cases['multi-random']['data'] = $account_type_data;
-        foreach ($unset_keys as $unset_key) {
-            $unset_required_property = $required_properties[$unset_key];
-            unset($test_cases['multi-random']['data'][$unset_required_property]);
-            $removed_keys[] = $unset_required_property;
-        }
-        $test_cases['multi-random']['error_msg'] = $this->fillMissingPropertyErrorMessage($removed_keys);
+        $missing_properties = array_rand(array_flip($required_properties), mt_rand(2, count($required_properties) - 1));
+        $test_cases['multi-random'] = ['missing_properties' => $missing_properties];
 
         return $test_cases;
     }
 
     /**
      * @dataProvider providerCreateAccountMissingProperty
-     *
-     * @param array  $account_type_data
-     * @param string $error_message
      */
-    public function testCreateAccountMissingProperty(array $account_type_data, string $error_message) {
-        // GIVEN: see providerCreateAccountMissingProperty()
-        if (isset($account_type_data['account_id'])) {
+    public function testCreateAccountMissingProperty(array $missing_properties) {
+        // GIVEN
+        $account_type_data = $this->generateDummyAccountTypeData();
+        if(!in_array('account_id', $missing_properties)) {
+            // set a valid account ID
             $account_type_data['account_id'] = Account::all()->random()->id;
         }
+        $account_type_data = array_diff_key($account_type_data, array_flip($missing_properties));
 
         // WHEN
         $response = $this->postJson($this->_base_uri, $account_type_data);
 
         // THEN
-        $this->assertFailedPostResponse($response, HttpStatus::HTTP_BAD_REQUEST, $error_message);
+        $this->assertFailedPostResponse($response, HttpStatus::HTTP_BAD_REQUEST, $this->fillMissingPropertyErrorMessage($missing_properties));
     }
 
     public function testCreateAccountWithInvalidAccountId() {

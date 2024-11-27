@@ -10,7 +10,7 @@ class TagFactory extends Factory {
     public function definition(): array {
         fake()->addProvider(new TailwindColorsProvider(fake()));
         return [
-            'name'=>fake()->unique()->tailwindColorName(),
+            'name' => fake()->unique()->tailwindColorName(),
         ];
     }
 

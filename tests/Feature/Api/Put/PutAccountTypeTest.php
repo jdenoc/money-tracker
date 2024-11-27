@@ -14,6 +14,7 @@ use Tests\TestCase;
 class PutAccountTypeTest extends TestCase {
     use AccountTypeResponseKeys;
 
+    // uri
     private string $_base_uri = '/api/account-type/%d';
 
     public function setUp(): void {
@@ -26,7 +27,7 @@ class PutAccountTypeTest extends TestCase {
         AccountType::factory()
             ->count(5)
             ->state(new Sequence(function() use ($accounts) {
-                return ['account_id'=>$accounts->random()->id];
+                return ['account_id' => $accounts->random()->id];
             }))
             ->create();
     }
@@ -91,29 +92,28 @@ class PutAccountTypeTest extends TestCase {
         $this->assertFailedPostResponse($response, HttpStatus::HTTP_NOT_FOUND, self::$ERROR_MSG_DOES_NOT_EXIST);
     }
 
-    public function providerUpdateAccountTypeEachProperty(): array {
-        $this->initialiseApplication();
-        $this->artisan('migrate:fresh');
-        $dummy_account_type_data = $this->generateAccountTypeData();
+    public static function providerUpdateAccountTypeEachProperty(): array {
         $required_fields = AccountType::getRequiredFieldsForUpdate();
 
         $test_cases = [];
         foreach ($required_fields as $required_field) {
-            $test_cases[$required_field]['data'] = [$required_field => $dummy_account_type_data->{$required_field}];
+            $test_cases[$required_field] = [$required_field];
         }
         return $test_cases;
     }
 
     /**
      * @dataProvider providerUpdateAccountTypeEachProperty
-     *
-     * @param array $account_type_data
      */
-    public function testUpdateAccountTypeEachProperty(array $account_type_data) {
+    public function testUpdateAccountTypeEachProperty(string $account_type_data_field) {
         // GIVEN - see providerUpdateAccountEachProperty()
         $account_type = $this->getRandomActiveExistingAccountType();
-        if (isset($account_type_data['account_id'])) {
-            $account_type_data['account_id'] = $this->getExistingActiveAccountId();
+        $account_type_data = [];
+        if ($account_type_data_field == 'account_id') {
+            $account_type_data[$account_type_data_field] = $this->getExistingActiveAccountId();
+        } else {
+            $sample_account_type_data = $this->generateAccountTypeData();
+            $account_type_data[$account_type_data_field] = $sample_account_type_data[$account_type_data_field];
         }
 
         // WHEN

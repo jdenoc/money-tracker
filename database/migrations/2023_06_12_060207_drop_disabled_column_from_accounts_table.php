@@ -14,8 +14,8 @@ return new class extends Migration {
      * Run the migrations.
      */
     public function up() {
-        DB::table(self::$TABLE)->where(self::$DROP_COLUMN, 1)->update([self::$COLUMN_DISABLED_STAMP=>DB::raw("modified_stamp")]);
-        DB::table(self::$TABLE)->where(self::$DROP_COLUMN, 0)->update([self::$COLUMN_DISABLED_STAMP=>null]);
+        DB::table(self::$TABLE)->where(self::$DROP_COLUMN, 1)->update([self::$COLUMN_DISABLED_STAMP => DB::raw("modified_stamp")]);
+        DB::table(self::$TABLE)->where(self::$DROP_COLUMN, 0)->update([self::$COLUMN_DISABLED_STAMP => null]);
         Schema::table(self::$TABLE, function(Blueprint $table) {
             $table->dropColumn(self::$DROP_COLUMN);
         });
@@ -28,8 +28,8 @@ return new class extends Migration {
         Schema::table(self::$TABLE, function(Blueprint $table) {
             $table->unsignedTinyInteger(self::$DROP_COLUMN)->after('institution_id')->default(0);
         });
-        DB::table(self::$TABLE)->whereNotNull(self::$COLUMN_DISABLED_STAMP)->update([self::$DROP_COLUMN=>1]);
-        DB::table(self::$TABLE)->whereNull(self::$COLUMN_DISABLED_STAMP)->update([self::$DROP_COLUMN=>0]);
+        DB::table(self::$TABLE)->whereNotNull(self::$COLUMN_DISABLED_STAMP)->update([self::$DROP_COLUMN => 1]);
+        DB::table(self::$TABLE)->whereNull(self::$COLUMN_DISABLED_STAMP)->update([self::$DROP_COLUMN => 0]);
     }
 
 };

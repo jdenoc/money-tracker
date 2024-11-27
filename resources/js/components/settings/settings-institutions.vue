@@ -71,7 +71,7 @@ import {Institution} from "../../institution";  // TODO: figure out how to integ
 import {settingsMixin} from "../../mixins/settings-mixin";
 // components
 import Spinner from 'vue-spinner-component/src/Spinner.vue';
-import ToggleButton from "../toggle-button";
+import ToggleButton from "../toggle-button.vue";
 // stores
 import {useInstitutionsStore} from "../../stores/institutions";
 

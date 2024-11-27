@@ -222,10 +222,10 @@ import {Entry} from "../../entry";
 import {decimaliseInputMixin} from "../../mixins/decimalise-input-mixin";
 import {tailwindColorsMixin} from "../../mixins/tailwind-colors-mixin";
 // components
-import FileDragNDrop from "./../file-drag-n-drop";
-import EntryModalAttachment from "./entry-modal-attachment";
-import ToggleButton from './../toggle-button';
-import TagsInput from "./../tags-input";
+import FileDragNDrop from "./../file-drag-n-drop.vue";
+import EntryModalAttachment from "./entry-modal-attachment.vue";
+import ToggleButton from './../toggle-button.vue';
+import TagsInput from "./../tags-input.vue";
 import TagsInputInfoLoading from "../tags-input-info-loading.vue";
 // stores
 import {useAccountsStore} from "../../stores/accounts";

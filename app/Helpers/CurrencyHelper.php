@@ -58,10 +58,10 @@ class CurrencyHelper {
      */
     public static function getCurrencyDefaults(): Currency {
         return new Currency([
-            "label"=>"dollarUs",
-            "code"=>"USD",
-            "class"=>"fas fa-dollar-sign",
-            "html"=>"&dollar;"
+            "label" => "dollarUs",
+            "code" => "USD",
+            "class" => "fas fa-dollar-sign",
+            "html" => "&dollar;",
         ]);
     }
 

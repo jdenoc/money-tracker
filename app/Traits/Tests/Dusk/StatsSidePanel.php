@@ -6,6 +6,7 @@ use Laravel\Dusk\Browser;
 
 trait StatsSidePanel {
 
+    // selectors
     private static $SELECTOR_STATS_SIDE_PANEL = "#stats-nav";
     private static $SELECTOR_STATS_SIDE_PANEL_HEADING = '#stats-panel-header';
     private static $SELECTOR_STATS_SIDE_PANEL_OPTION_SUMMARY = "li.stats-nav-option:nth-child(1)";
@@ -14,13 +15,14 @@ trait StatsSidePanel {
     private static $SELECTOR_STATS_SIDE_PANEL_OPTION_TAGS = "li.stats-nav-option:nth-child(4)";
     private static $SELECTOR_STATS_SIDE_PANEL_ACTIVE_OPTION = "li.stats-nav-option.is-active";
 
+    // labels
     private static $LABEL_STATS_SIDE_PANEL_HEADING = "Stats";
     private static $LABEL_STATS_SIDE_PANEL_OPTION_SUMMARY = "Summary";
     private static $LABEL_STATS_SIDE_PANEL_OPTION_TRENDING = "Trending";
     private static $LABEL_STATS_SIDE_PANEL_OPTION_DISTRIBUTION = "Distribution";
     private static $LABEL_STATS_SIDE_PANEL_OPTION_TAGS = "Tags";
 
-    public function assertStatsSidePanelHeading(Browser $browser) {
+    public function assertStatsSidePanelHeading(Browser $browser): void {
         $browser
             ->within(self::$SELECTOR_STATS_SIDE_PANEL, function(Browser $side_panel) {
                 $side_panel
@@ -52,7 +54,7 @@ trait StatsSidePanel {
             });
     }
 
-    public function assertStatsSidePanelOptionIsActive(Browser $browser, string $label) {
+    public function assertStatsSidePanelOptionIsActive(Browser $browser, string $label): void {
         if (!in_array($label, $this->statsSidePanelOptionLabels())) {
             throw new \InvalidArgumentException("Label '".$label."' provided is not a valid stats side panel option");
         }
@@ -63,15 +65,12 @@ trait StatsSidePanel {
             });
     }
 
-    /**
-     * @return array
-     */
     private function statsSidePanelOptionLabels(): array {
         return [
             self::$LABEL_STATS_SIDE_PANEL_OPTION_SUMMARY,
             self::$LABEL_STATS_SIDE_PANEL_OPTION_TRENDING,
             self::$LABEL_STATS_SIDE_PANEL_OPTION_DISTRIBUTION,
-            self::$LABEL_STATS_SIDE_PANEL_OPTION_TAGS
+            self::$LABEL_STATS_SIDE_PANEL_OPTION_TAGS,
         ];
     }
 
