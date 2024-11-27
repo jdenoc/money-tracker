@@ -246,7 +246,7 @@ abstract class SettingsBase extends DuskTestCase {
      * test ?/25
      */
     public function testDisablingOrRestoringObject(bool $isInitObjectActive) {
-        if (in_array(get_class(), ['SettingsTagsTest'])) {
+        if(in_array(get_called_class(), [SettingsTagsTest::class])) {
             $this->markTestSkipped("enabling/disabling tags is not currently supported");
         }
 
