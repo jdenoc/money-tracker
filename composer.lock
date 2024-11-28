@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "50079b7a49744b3742ce8446ffa94826",
+    "content-hash": "6f0cce4107da5574683eecfa43812cd3",
     "packages": [
         {
             "name": "beyondcode/laravel-favicon",
@@ -4007,22 +4007,27 @@
         },
         {
             "name": "psr/container",
-            "version": "1.1.2",
+            "version": "2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/container.git",
-                "reference": "513e0666f7216c7459170d56df27dfcefe1689ea"
+                "reference": "c71ecc56dfe541dbd90c5360474fbc405f8d5963"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/container/zipball/513e0666f7216c7459170d56df27dfcefe1689ea",
-                "reference": "513e0666f7216c7459170d56df27dfcefe1689ea",
+                "url": "https://api.github.com/repos/php-fig/container/zipball/c71ecc56dfe541dbd90c5360474fbc405f8d5963",
+                "reference": "c71ecc56dfe541dbd90c5360474fbc405f8d5963",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.4.0"
             },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "Psr\\Container\\": "src/"
@@ -4049,9 +4054,9 @@
             ],
             "support": {
                 "issues": "https://github.com/php-fig/container/issues",
-                "source": "https://github.com/php-fig/container/tree/1.1.2"
+                "source": "https://github.com/php-fig/container/tree/2.0.2"
             },
-            "time": "2021-11-05T16:50:12+00:00"
+            "time": "2021-11-05T16:47:00+00:00"
         },
         {
             "name": "psr/event-dispatcher",
@@ -5399,25 +5404,25 @@
         },
         {
             "name": "symfony/deprecation-contracts",
-            "version": "v2.5.3",
+            "version": "v3.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/deprecation-contracts.git",
-                "reference": "80d075412b557d41002320b96a096ca65aa2c98d"
+                "reference": "74c71c939a79f7d5bf3c1ce9f5ea37ba0114c6f6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/deprecation-contracts/zipball/80d075412b557d41002320b96a096ca65aa2c98d",
-                "reference": "80d075412b557d41002320b96a096ca65aa2c98d",
+                "url": "https://api.github.com/repos/symfony/deprecation-contracts/zipball/74c71c939a79f7d5bf3c1ce9f5ea37ba0114c6f6",
+                "reference": "74c71c939a79f7d5bf3c1ce9f5ea37ba0114c6f6",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.1"
+                "php": ">=8.1"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "2.5-dev"
+                    "dev-main": "3.5-dev"
                 },
                 "thanks": {
                     "name": "symfony/contracts",
@@ -5446,7 +5451,7 @@
             "description": "A generic function and convention to trigger deprecation notices",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/deprecation-contracts/tree/v2.5.3"
+                "source": "https://github.com/symfony/deprecation-contracts/tree/v3.5.1"
             },
             "funding": [
                 {
@@ -5462,7 +5467,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-01-24T14:02:46+00:00"
+            "time": "2024-09-25T14:20:29+00:00"
         },
         {
             "name": "symfony/error-handler",
@@ -8267,43 +8272,41 @@
         },
         {
             "name": "fakerphp/faker",
-            "version": "v1.15.0",
+            "version": "v1.23.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FakerPHP/Faker.git",
-                "reference": "89c6201c74db25fa759ff16e78a4d8f32547770e"
+                "reference": "bfb4fe148adbf78eff521199619b93a52ae3554b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FakerPHP/Faker/zipball/89c6201c74db25fa759ff16e78a4d8f32547770e",
-                "reference": "89c6201c74db25fa759ff16e78a4d8f32547770e",
+                "url": "https://api.github.com/repos/FakerPHP/Faker/zipball/bfb4fe148adbf78eff521199619b93a52ae3554b",
+                "reference": "bfb4fe148adbf78eff521199619b93a52ae3554b",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.1 || ^8.0",
-                "psr/container": "^1.0",
-                "symfony/deprecation-contracts": "^2.2"
+                "php": "^7.4 || ^8.0",
+                "psr/container": "^1.0 || ^2.0",
+                "symfony/deprecation-contracts": "^2.2 || ^3.0"
             },
             "conflict": {
                 "fzaninotto/faker": "*"
             },
             "require-dev": {
                 "bamarni/composer-bin-plugin": "^1.4.1",
+                "doctrine/persistence": "^1.3 || ^2.0",
                 "ext-intl": "*",
-                "symfony/phpunit-bridge": "^4.4 || ^5.2"
+                "phpunit/phpunit": "^9.5.26",
+                "symfony/phpunit-bridge": "^5.4.16"
             },
             "suggest": {
+                "doctrine/orm": "Required to use Faker\\ORM\\Doctrine",
                 "ext-curl": "Required by Faker\\Provider\\Image to download images.",
                 "ext-dom": "Required by Faker\\Provider\\HtmlLorem for generating random HTML.",
                 "ext-iconv": "Required by Faker\\Provider\\ru_RU\\Text::realText() for generating real Russian text.",
                 "ext-mbstring": "Required for multibyte Unicode string functionality."
             },
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-main": "v1.15-dev"
-                }
-            },
             "autoload": {
                 "psr-4": {
                     "Faker\\": "src/Faker/"
@@ -8326,9 +8329,9 @@
             ],
             "support": {
                 "issues": "https://github.com/FakerPHP/Faker/issues",
-                "source": "https://github.com/FakerPHP/Faker/tree/v1.15.0"
+                "source": "https://github.com/FakerPHP/Faker/tree/v1.23.1"
             },
-            "time": "2021-07-06T20:39:40+00:00"
+            "time": "2024-01-02T13:46:09+00:00"
         },
         {
             "name": "fidry/cpu-core-counter",
@@ -8618,21 +8621,21 @@
         },
         {
             "name": "jdenoc/faker-tailwind-colors",
-            "version": "0.0.1",
+            "version": "0.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jdenoc/faker-tailwind-colors.git",
-                "reference": "729049c77e16748c70e30616587dd406f411fec7"
+                "reference": "a3866ed8f71111822b5a318064bd6287a339e7ae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jdenoc/faker-tailwind-colors/zipball/729049c77e16748c70e30616587dd406f411fec7",
-                "reference": "729049c77e16748c70e30616587dd406f411fec7",
+                "url": "https://api.github.com/repos/jdenoc/faker-tailwind-colors/zipball/a3866ed8f71111822b5a318064bd6287a339e7ae",
+                "reference": "a3866ed8f71111822b5a318064bd6287a339e7ae",
                 "shasum": ""
             },
             "require": {
-                "fakerphp/faker": "1.15.0",
-                "jdenoc/tailwind-colors": "^0.0.2"
+                "fakerphp/faker": "^1.15.0",
+                "jdenoc/tailwind-colors": "^0.1.0"
             },
             "type": "library",
             "autoload": {
@@ -8647,9 +8650,9 @@
             "description": "Faker Provider for TailwindCSS Colors",
             "support": {
                 "issues": "https://github.com/jdenoc/faker-tailwind-colors/issues",
-                "source": "https://github.com/jdenoc/faker-tailwind-colors/tree/0.0.1"
+                "source": "https://github.com/jdenoc/faker-tailwind-colors/tree/0.0.3"
             },
-            "time": "2022-09-30T00:42:57+00:00"
+            "time": "2024-11-27T22:22:39+00:00"
         },
         {
             "name": "jdenoc/laravel-make-trait",
@@ -8705,16 +8708,16 @@
         },
         {
             "name": "jdenoc/tailwind-colors",
-            "version": "0.0.2",
+            "version": "0.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jdenoc/tailwind-colors.git",
-                "reference": "1d5626610f1951f99cdefba7ac4a592d7c3e91a4"
+                "reference": "78557cf7b936c903a5333a1c3b960e3f77d32385"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jdenoc/tailwind-colors/zipball/1d5626610f1951f99cdefba7ac4a592d7c3e91a4",
-                "reference": "1d5626610f1951f99cdefba7ac4a592d7c3e91a4",
+                "url": "https://api.github.com/repos/jdenoc/tailwind-colors/zipball/78557cf7b936c903a5333a1c3b960e3f77d32385",
+                "reference": "78557cf7b936c903a5333a1c3b960e3f77d32385",
                 "shasum": ""
             },
             "type": "library",
@@ -8730,9 +8733,9 @@
             "description": "Provides a PHP class that contains hex value colors documented in the TailwindCSS framework",
             "support": {
                 "issues": "https://github.com/jdenoc/tailwind-colors/issues",
-                "source": "https://github.com/jdenoc/tailwind-colors/tree/0.0.2"
+                "source": "https://github.com/jdenoc/tailwind-colors/tree/0.1.0"
             },
-            "time": "2022-03-16T22:39:52+00:00"
+            "time": "2024-11-27T22:13:51+00:00"
         },
         {
             "name": "kubawerlos/php-cs-fixer-custom-fixers",
