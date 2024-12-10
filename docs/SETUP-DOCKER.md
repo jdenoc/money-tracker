@@ -44,12 +44,20 @@ docker compose up -d
 ```
 
 <small>***OPTIONAL***</small>:
-If you wish to run docker with xdebug, prefix the above command with `ENABLE_XDEBUG=true`  
+If you wish to run docker with xdebug, the docker image must be rebuilt with the `ENABLE_XDEBUG=true` build argument.  
 For Example:
 ```bash
-ENABLE_XDEBUG=true docker compose up -d
+docker compose build --build-arg ENABLE_XDEBUG=true application
 ```
-`ENABLE_XDEBUG=true` is required _once_ to build the docker image. Afterwards, it is never used again.
+`ENABLE_XDEBUG=true` is required _once_ to build the docker image. Afterwards, it is not used again as the newly built image will have xdebug enabled.
+
+<small>***OPTIONAL***</small>:
+If you wish to run docker with some PHP ini configuration values overridden, you can set them with an environment variable.
+Here is a list:
+- `PHP_INI_ERROR_LOG`
+- `PHP_INI_UPLOAD_MAX_FILESIZE`
+- `PHP_INI_POST_MAX_SIZE`
+- `TIMEZONE`
 
 ### Set application key
 composer doesn't write to the correct .env file during setup so we need to generate the `APP_KEY` value again
