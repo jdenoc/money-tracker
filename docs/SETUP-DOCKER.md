@@ -54,6 +54,7 @@ docker compose build --build-arg ENABLE_XDEBUG=true application
 <small>***OPTIONAL***</small>:
 If you wish to run docker with some PHP ini configuration values overridden, you can set them with an environment variable.
 Here is a list:
+- `PHP_INI_ERROR_LOG`
 - `PHP_INI_UPLOAD_MAX_FILESIZE`
 - `PHP_INI_POST_MAX_SIZE`
 - `TIMEZONE`
