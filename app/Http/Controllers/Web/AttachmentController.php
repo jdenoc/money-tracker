@@ -59,7 +59,7 @@ class AttachmentController extends Controller {
         $upload_file_request = $request->file('attachment');
         if ($upload_file_request->isValid()) {
             $attachment = new Attachment();
-            $attachment->uuid = Uuid::uuid4();
+            $attachment->uuid = Uuid::uuid7();
             $attachment->name = $upload_file_request->getClientOriginalName();
             $file_uploaded = $attachment->storage_store(file_get_contents($upload_file_request->getRealPath()), true);
             if(!$file_uploaded) {
