@@ -61,7 +61,14 @@ class AttachmentController extends Controller {
             $attachment = new Attachment();
             $attachment->uuid = Uuid::uuid4();
             $attachment->name = $upload_file_request->getClientOriginalName();
-            $attachment->storage_store(file_get_contents($upload_file_request->getRealPath()), true);
+            $file_uploaded = $attachment->storage_store(file_get_contents($upload_file_request->getRealPath()), true);
+            if(!$file_uploaded) {
+                error_log('Could not store attachment '.$attachment.' in '.$attachment->get_tmp_file_path());
+                return response(
+                    ['error' => 'Could not store attachment'],
+                    HttpStatus::HTTP_INTERNAL_SERVER_ERROR
+                );
+            }
             return response(
                 ['uuid' => $attachment->uuid, 'name' => $attachment->name, 'tmp_filename' => $attachment->get_tmp_filename()],
                 HttpStatus::HTTP_OK
