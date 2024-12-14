@@ -9,7 +9,7 @@ services:
       test: /home/seluser/selenium-health-check
       timeout: 10s
       retries: 3
-    image: selenium/standalone-chrome:4.9.0
+    image: selenium/standalone-chrome:4.26.0
     links:
       - application:money-tracker.test
     networks:
