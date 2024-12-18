@@ -49,7 +49,7 @@ services:
       - default
 
   cache:
-    image: memcached:1.6.29-alpine
+    image: memcached:1.6.32-alpine
     volumes:
       - .docker/healthcheck/memcached-health-check.sh:/usr/local/bin/memcached-health-check:ro
     healthcheck:
