@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\Attachment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Response as HttpStatus;
@@ -14,15 +15,18 @@ class AttachmentController extends Controller {
 
     public function display($uuid) {
         if (!Uuid::isValid($uuid)) {
+            Log::warning("Invalid UUID [$uuid] provided when trying to display attachment");
             abort(HttpStatus::HTTP_NOT_FOUND, 'Attachment not found');
         }
 
         $attachment = Attachment::find($uuid);
         if (is_null($attachment)) {
+            Log::warning("Attachment [$uuid] not found when trying to display attachment");
             abort(HttpStatus::HTTP_NOT_FOUND, 'Attachment not found');
         }
 
         if (!$attachment->storage_exists()) {
+            Log::warning("Attachment [$attachment] file not found when trying to display attachment");
             abort(HttpStatus::HTTP_NOT_FOUND, 'Attachment not found');  // TODO: build nicer "not found" page
         }
 
@@ -63,7 +67,7 @@ class AttachmentController extends Controller {
             $attachment->name = $upload_file_request->getClientOriginalName();
             $file_uploaded = $attachment->storage_store(file_get_contents($upload_file_request->getRealPath()), true);
             if(!$file_uploaded) {
-                error_log('Could not store attachment '.$attachment.' in '.$attachment->get_tmp_file_path());
+                Log::error("Could not store attachment [$attachment] in ".$attachment->get_tmp_file_path());
                 return response(
                     ['error' => 'Could not store attachment'],
                     HttpStatus::HTTP_INTERNAL_SERVER_ERROR
@@ -74,6 +78,7 @@ class AttachmentController extends Controller {
                 HttpStatus::HTTP_OK
             );
         } else {
+            Log::error($upload_file_request->getErrorMessage());
             return response(
                 ['error' => $upload_file_request->getErrorMessage()],
                 HttpStatus::HTTP_BAD_REQUEST
