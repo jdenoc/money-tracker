@@ -105,6 +105,8 @@ COPY .docker/conf/php-allow_url_fopen.ini $PHP_INI_DIR/conf.d/php-allow_url_fope
 COPY .docker/conf/php-date_timezone.ini $PHP_INI_DIR/conf.d/php-date.timezone.ini
 COPY .docker/conf/php-error_log.ini $PHP_INI_DIR/conf.d/php-error_log.ini
 COPY .docker/conf/php-expose_php.ini $PHP_INI_DIR/conf.d/php-expose_php.ini
+COPY .docker/conf/php-post_max_size.ini $PHP_INI_DIR/conf.d/php-post_max_size.ini
+COPY .docker/conf/php-upload_max_filesize.ini $PHP_INI_DIR/conf.d/php-upload_max_filesize.ini
 
 # health-check
 COPY .docker/healthcheck/app-health-check.sh /usr/local/bin/app-health-check
