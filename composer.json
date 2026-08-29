@@ -15,7 +15,7 @@
         "eklundkristoffer/laravel-discord-webhook": "dev-master",
         "guzzlehttp/guzzle": "^7.2",
         "jdenoc/laravel-app-version": "^4.0",
-        "laravel/framework": "^10.10",
+        "laravel/framework": "^12.0",
         "laravel/helpers": "^1.2",
         "laravel/legacy-factories": "^1.3",
         "laravel/sanctum": "^3.3",
